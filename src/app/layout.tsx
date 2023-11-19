@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Script src="../coachbots-widget.js" />
+      <Script src="../widget/coachbots-widget.js" />
 
       <body className={inter.className} suppressHydrationWarning>
         <>
