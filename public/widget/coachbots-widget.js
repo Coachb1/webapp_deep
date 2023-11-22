@@ -576,6 +576,34 @@ loadExternalModule().then(() => {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
+
+  const getTestCodesByRule = async (rule) =>{
+    const url = `${baseURL}/accounts/get-test-codes-for-web/`
+  
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+  
+      const resp_json = await response.json();
+      console.log(resp_json);
+      try {
+        return resp_json['data'][rule].split(',')
+      }catch (error) {
+        return []
+      }
+  
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+  
+  
    
 
   const testResponseHandler = async (formdata, questionObj) => {
@@ -967,6 +995,39 @@ loadExternalModule().then(() => {
                 questionData.results[0].orchestrated_conversation_details;
 
               if (questionIndex === 0) {
+
+                //signed user rules
+
+                if (user){
+                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
+                  // if (!signedUserTestCode.includes(testCode) ){
+                  //   signals.onResponse({
+                  //     text: 'not allowed'
+                  //   })
+                  const companyName = user.email.split('@')[1].split('.')[0]
+                  const companyTestCode = await getTestCodesByRule(companyName)
+                  console.log(companyName)
+                  if (companyTestCode.length > 0){
+                    if (!companyTestCode.includes(testCode)){
+                      signals.onResponse({
+                        text: 'You are not allowed to attempt this test.'
+                      })
+                    }
+                  }
+
+                  }else{
+
+                  const unSignedUserTestCode = await getTestCodesByRule('unsigned_user')
+                  if (unSignedUserTestCode.length > 0){
+                    if (!unSignedUserTestCode.includes(testCode) ){
+                      signals.onResponse({
+                        text: 'You are not allowed to attempt this test.'
+                      })
+                    }
+                  }
+                }
+
+                // const companyName = 
 
                 // restriction check like monthly test allowed start
                 await getAttemptedTestList(participantId)
