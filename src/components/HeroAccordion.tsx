@@ -24,10 +24,12 @@ const HeroAccordion = ({ tests }: testTypes) => {
           value={`item-${i + 1}`}
           className={i === tests.length - 1 ? "border-none" : "border-b"}
         >
-          <AccordionTrigger className="text-left">
-            {test.title}
+          <AccordionTrigger className="text-left max-sm:text-xs">
+            <div>
+              <b>{test.domain}</b> - {test.title}
+            </div>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="max-sm:text-xs">
             <p> {test.description}</p>
             <p className="mt-2">
               <span className="font-bold">Response mode Allowed</span> :{" "}
