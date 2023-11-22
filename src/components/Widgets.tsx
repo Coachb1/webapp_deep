@@ -10,8 +10,8 @@ const Widgets = () => {
           data-use-service-core
           defer
         />
-        <Script src="../../public/widget/coachbots-widget.js" />
-        <Script src="../../public/widget/coachbots-stt-widget.js" />
+        <Script src="../widget/coachbots-widget.js"/>
+        <Script src="../widget/coachbots-stt-widget.js"/>
 
         <div
           className={`fixed max-sm:left-[2.5rem] left-[3rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]`}
