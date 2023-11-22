@@ -1,16 +1,7 @@
 "use client";
 
-// import { usePathname } from "next/navigation";
 import Script from "next/script";
-// import { useEffect, useState } from "react";
 const Widgets = () => {
-  // const pathname = usePathname();
-  // const [botVisibility, setBotVisibility] = useState(true);
-  // useEffect(() => {
-  //   if (pathname !== "/profile") {
-  //     setBotVisibility(false);
-  //   }
-  // }, [pathname]);
   return (
     <div>
       <>
@@ -19,8 +10,8 @@ const Widgets = () => {
           data-use-service-core
           defer
         />
-        <Script src="../script.js" />
-        <Script src="../scriptSTT.js" />
+        <Script src="../../public/widget/coachbots-widget.js" />
+        <Script src="../../public/widget/coachbots-stt-widget.js" />
 
         <div
           className={`fixed max-sm:left-[2.5rem] left-[3rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]`}
