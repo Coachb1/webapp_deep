@@ -2,8 +2,6 @@ const key = "";
 const secret = "";
 const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
 
-//UPADTE FALAH
-
 let sessionId = "";
 let userId = "";
 let participantId;
