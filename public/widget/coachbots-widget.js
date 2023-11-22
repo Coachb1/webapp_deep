@@ -4,6 +4,7 @@ const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
 
 let sessionId = "";
 let userId = "";
+let userRole;
 let participantId;
 let testCode;
 let ipAddress;
@@ -384,6 +385,9 @@ loadExternalModule().then(() => {
   let userName = "";
   let userEmail = "";
   let reportUrl;
+  let testCodeList;
+  let isRepeatStatus;
+  let testPrevilage;
 
   const credentialsForm = `<div id="input-form">
   <div style="display: flex; flex-direction: column">
@@ -511,11 +515,78 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
+  // apis for restriction to attempt test like test previllage
+  const getAttemptedTestList = async (userId) => {
+    const url = `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+  
+      const responseJson = await response.json();
+      console.log(responseJson);
+  
+      testCodeList = responseJson['data']['codes'];
+      console.log(testCodeList);
+
+
+    } catch (error) {
+      console.error(`Error in getAttemptedTestList: ${error}`);
+    }
+  };
+
+  const getIsRepeatStatus = async (participantId) => {
+    const url = `${baseURL}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+  
+      isRepeatStatus = await response.json();
+      console.log(isRepeatStatus);
+
+    } catch (error) {
+      console.error(`Error in getIsRepeatStatus: ${error}`);
+    }
+  };
+
+  const getTestPrevilage = async (participantId) => {
+    const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+  
+      testPrevilage = await response.json();
+      console.log(testPrevilage);
+  
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+   
+
   const testResponseHandler = async (formdata, questionObj) => {
     const shadowRoot = document.getElementById("chat-element").shadowRoot;
     const players = shadowRoot.querySelectorAll(".audio-player");
     const targetPlayer = players[players.length - 1];
     targetPlayer.src = audioFileSrc;
+    // if audio response in orch
+    if (testType === 'orchestrated_conversation'){
+      formdata['transcribe_file'] = true
+    }
 
     const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
       method: "POST",
@@ -541,32 +612,68 @@ loadExternalModule().then(() => {
     const docUrlData = await docUrlResponse.json();
     userAudioResponse = docUrlData.url;
 
-    const testResponse = await fetch(`${baseURL}/test-responses/`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        test_attempt_session_id: sessionId,
-        question_id: questionObj.uid,
-        response_text: "",
-        response_file: userAudioResponse,
-        user_attributes: {
-          tag: "deepchat_profile",
-          attributes: {
-            username: "web_user",
-            email: user ? user.email : "test@test.com",
-          },
+    if (testType === 'orchestrated_conversation'){
+      // handling audio response in orch
+      const usertext = uploadDocData["transcript_details"]["text"]
+      console.log(usertext)
+      console.log('orch')
+
+      const testResponse = await fetch(`${baseURL}/test-responses/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          test_attempt_session_id: sessionId,
+          question_id: questionObj.uid,
+          response_text: usertext,
+          response_file: '',
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              username: "web_user",
+              email: user ? user.email : "test@test.com",
+            },
+          },
+        }),
+      });
+      const testResponseData = await testResponse.json();
+      resQuestionNumber = testResponseData.question.question_number;
 
-    const testResponseData = await testResponse.json();
-    resQuestionNumber = testResponseData.question.question_number;
 
+
+    } else {
+
+      const testResponse = await fetch(`${baseURL}/test-responses/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          test_attempt_session_id: sessionId,
+          question_id: questionObj.uid,
+          response_text: "",
+          response_file: userAudioResponse,
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              username: "web_user",
+              email: user ? user.email : "test@test.com",
+            },
+          },
+        }),
+      });
+      const testResponseData = await testResponse.json();
+      console.log(testResponseData)
+      resQuestionNumber = testResponseData.question.question_number;
+
+  }
+
+    // for generating question for dynamic and group meeting test type
     if (questionIndex < questionLength) {
-      if (testType === "dynamic_discussion_thread") {
+      if (testType === "dynamic_discussion_thread" || testType === 'orchestrated_conversation') {
         questionIndex += 1;
         responseProcessedQuestion++;
         console.log(questionIndex);
@@ -594,6 +701,12 @@ loadExternalModule().then(() => {
 
         const testResponseText = await response_text.json();
         questionText = testResponseText.response_text;
+
+        // checking if botname is present or not
+        const responder_name = testResponseText.responder_display_name;
+        if (!questionText.includes(responder_name)) {
+          questionText = responder_name + " : " + questionText;
+        }
 
         console.log(testResponseText);
         console.log(questionText);
@@ -627,7 +740,7 @@ loadExternalModule().then(() => {
           formdata.append("actions_pipeline[0]context", "null");
 
           if (questionIndex < questionLength) {
-            if (testType != "dynamic_discussion_thread") {
+            if (testType != "dynamic_discussion_thread" && testType != 'orchestrated_conversation') {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
               signals.onResponse({
@@ -669,12 +782,14 @@ loadExternalModule().then(() => {
               await testResponseHandler(formdata, questionObj);
 
               responseProcessedQuestion++;
-              responsesDone = responseProcessedQuestion === questionLength;
-
+              responsesDone = resQuestionNumber === questionLength;
+                
               if (!responsesDone) {
-                signals.onResponse({
-                  text: questionText,
-                });
+                if (testType === "orchestrated_conversation" || testType ==='dynamic_discussion_thread') {
+                  signals.onResponse({
+                    text: questionText,
+                  });
+                }
               }
 
               if (!user) {
@@ -688,7 +803,7 @@ loadExternalModule().then(() => {
               let getReportBody = {
                 user_id: participantId,
                 report_type: reportType,
-                test_attempt_session_id: sessionId,
+                session_id: sessionId,
                 interaction_id: testId,
               };
 
@@ -702,31 +817,31 @@ loadExternalModule().then(() => {
                 };
               } else if (testType === "dynamic_discussion_thread") {
                 reportType = "dynamicDiscussionReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                  interaction_id: testId,
+                };
               } else if (testType === "orchestrated_conversation") {
                 reportType = "meetingAnalysisReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                };
               }
 
-              getReportBody = {
-                user_id: participantId,
-                report_type: reportType,
-                session_id: sessionId,
-                interaction_id: testId,
-              };
+              
 
-              if (responseProcessedQuestion === questionLength) {
+              if (responsesDone) {
                 await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
                   method: "POST",
                   headers: {
                     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({
-                    user_id: participantId,
-                    report_type: reportType,
-                    test_attempt_session_id: sessionId,
-                    session_id: sessionId,
-                    interaction_id: testId,
-                  }),
+                  body: JSON.stringify(getReportBody),
                 })
                   .then((response) => response.json())
                   .then((data) => {
@@ -852,6 +967,39 @@ loadExternalModule().then(() => {
                 questionData.results[0].orchestrated_conversation_details;
 
               if (questionIndex === 0) {
+
+                // restriction check like monthly test allowed start
+                await getAttemptedTestList(participantId)
+                await getIsRepeatStatus(participantId)
+                await getTestPrevilage(participantId)
+
+                if (isRepeatStatus['monthly_remaining_tests'] < 1) {
+                  signals.onResponse({
+                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations."
+                  })
+                  return;
+                }
+                
+                // Test privilege
+                if (testPrevilage && testPrevilage.active && !testPrevilage.data.includes(testCode)) {
+                  signals.onResponse({
+                    text: "You are not allowed to attempt this test."
+                  })
+                  return;
+                }
+                
+                // User cannot attempt the test more than once if it is active
+                console.log(userRole)
+                if (userRole && userRole !== "admin") {
+                  if (!isRepeatStatus.is_repeat && testCodeList.includes(testCode)) {
+                    signals.onResponse({
+                      text: "You are not allowed to attempt this interaction again."
+                    })
+                    return;
+                  }
+                }
+                //end
+                
                 try {
                   const response = await fetch(
                     `${baseURL}/test-attempt-sessions/`,
@@ -932,9 +1080,11 @@ loadExternalModule().then(() => {
                       text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
                     });
                   } else {
-                    signals.onResponse({
-                      text: questionText,
-                    });
+                    if (testType != 'orchestrated_conversation' && testType != 'dynamic_discussion_thread' ){
+                      signals.onResponse({
+                        text: questionText,
+                      });
+                    }
                   }
                 }
                 if (
@@ -1035,6 +1185,12 @@ loadExternalModule().then(() => {
 
                       const qRespnse = await questionResponse.json();
                       questionText = qRespnse["response_text"];
+
+                      // checking if botname is present or not
+                      const responder_name = qRespnse.responder_display_name;
+                      if (!questionText.includes(responder_name)) {
+                        questionText = responder_name + " : " + questionText;
+                      }
                       console.log(questionText);
                       resQuestionNumber = qRespnse.question.question_number;
                     }
@@ -1042,7 +1198,7 @@ loadExternalModule().then(() => {
                 }
 
                 if (resQuestionNumber != questionLength) {
-                  if (testType === "orchestrated_conversation") {
+                  if (testType === "orchestrated_conversation" || testType ==='dynamic_discussion_thread') {
                     signals.onResponse({
                       text: questionText,
                     });
@@ -1063,13 +1219,39 @@ loadExternalModule().then(() => {
                       html: credentialsForm,
                     });
                   }
+
+                  let getReportBody = {
+                    user_id: participantId,
+                    report_type: reportType,
+                    session_id: sessionId,
+                    interaction_id: testId,
+                  };
+    
                   if (is_free) {
                     reportType = "summaryFeedbackReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      session_id: sessionId,
+                      interaction_id: testId,
+                    };
                   } else if (testType === "dynamic_discussion_thread") {
                     reportType = "dynamicDiscussionReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      test_attempt_session_id: sessionId,
+                      interaction_id: testId,
+                    };
                   } else if (testType === "orchestrated_conversation") {
                     reportType = "meetingAnalysisReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      test_attempt_session_id: sessionId,
+                    };
                   }
+    
 
                   console.log(sessionId);
                   const reportResponse = await fetch(
@@ -1083,12 +1265,7 @@ loadExternalModule().then(() => {
                         )}`,
                         "Content-Type": "application/json",
                       },
-                      body: JSON.stringify({
-                        user_id: participantId,
-                        report_type: reportType,
-                        session_id: sessionId,
-                        interaction_id: testId,
-                      }),
+                      body: JSON.stringify(getReportBody),
                     }
                   );
 
@@ -1216,6 +1393,7 @@ const openChatContainer = () => {
     .then((data) => {
       participantId = data.uid;
       userId = data.uid;
+      userRole = data.role;
     })
     .catch((err) => console.log(err));
 
