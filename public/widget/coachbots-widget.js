@@ -25,6 +25,11 @@ let inputEmail = "";
 
 let gShadowRoot;
 
+// only for mcq type test
+let globalQuestionData;
+let globalQuestionLength;
+let mcqQustionIndex = 0;
+
 function createBasicAuthToken(key = "", secret = "") {
   const token =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -55,6 +60,185 @@ function appendMessage(message) {
   const messageNode = createMessageNode(message);
   gShadowRoot.getElementById("messages").appendChild(messageNode);
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
+}
+
+
+async function setMcqVariables() {
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  const responseValue = gShadowRoot.querySelector('input[name="mcq_option"]:checked');
+  sessionQuestionId = gShadowRoot.getElementById("question").getAttribute("value");
+  const question_id = sessionQuestionId.split(':')[0];
+  const test_attempt_session_id = sessionQuestionId.split(':')[1];
+
+  const optionsName = gShadowRoot.querySelectorAll('[name="mcq_option"]')
+  
+  const responseText = responseValue.value
+  const responseOption = responseValue.id
+
+  console.log("question_id",question_id,"session",test_attempt_session_id)
+  console.log(mcqQustionIndex,globalQuestionLength)
+  mcqQustionIndex++;
+
+  if (mcqQustionIndex != globalQuestionLength){
+    // updating question
+    console.log('currentquestionidex',mcqQustionIndex)
+    console.log(`Story ${responseOption}`)
+    
+    
+    const matchingQuestions = globalQuestionData.results[0].questions.filter(question => question.mcq_path === `Story ${responseOption}`);
+
+    const qUid = matchingQuestions.map(question => question.uid)[0];
+    const mcqOptions = matchingQuestions.map(question => question.mcq_options)[0];
+    const optionName = Object.keys(mcqOptions)
+    const questionText = matchingQuestions.map(question => question.question)[0];
+    
+    const newOption1Name = optionName[0]
+    const newOption2Name = optionName[1]
+    const newOption1Text = mcqOptions[newOption1Name]['opt']
+    const newOption2Text = mcqOptions[newOption2Name]['opt']
+
+    console.log('newquestionid',qUid,'session',test_attempt_session_id)
+
+    formRadio = `
+                  <div id='question' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
+                  <input type="radio" id="${newOption1Name}" name="mcq_option" value="${newOption1Text}" style="margin-right: 5px;">
+                  <label for="${newOption1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption1Text}</label>
+                  <input type="radio" id="${newOption2Name}" name="mcq_option" value="${newOption2Text}" style="margin-right: 5px;">
+                  <label for="${newOption2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2Text}</label>
+                  <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                `
+    gShadowRoot.getElementById('mcq-option').innerHTML = formRadio
+
+    // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseText,
+        response_file: '',
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user ? user.email : "test@test.com",
+          },
+        },
+      }),
+    });
+    const testResponseData = await testResponse.json();
+    console.log(testResponseData)
+
+
+    
+  } else{
+    
+    // decisionAnalysisReport
+
+    let credentialsForm = `<div id="input-form">
+      Please submit details to get report:
+      <div style="display: flex; flex-direction: column">
+          <label for="name" style="margin: 4px 0">Name  </label>
+          <input  
+          type="text"
+          id="input-name"
+          style="
+              padding: 8px;
+              margin-bottom:4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+          "
+          />
+      </div>
+      <div style="display: flex; flex-direction: column; margin-top: 8px">
+          <label for="email" style="margin: 4px 0">Email </label>
+          <input
+          type="email"
+          id="input-email"
+          style="
+          padding: 8px;
+          margin-bottom:4px;
+          border-radius: 4px;
+          border: 1px solid rgb(188, 188, 188);
+          "
+          />
+          <button
+          style="
+              margin-top: 8px;
+              padding: 8px 12px;
+              width: fit-content;
+              border: 1px solid rgb(188, 188, 188);
+              border-radius: 20px;
+              color: white;
+              background-color: #1984ff;
+          "
+          id="submit-btn"
+          onclick="submitEmailAndName()"
+          >
+          Submit
+          </button>
+      </div>
+      </div>`;
+
+    if (!user){
+      gShadowRoot.getElementById('mcq-option').innerHTML = credentialsForm
+    }
+      // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseText,
+        response_file: '',
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user ? user.email : "test@test.com",
+          },
+        },
+      }),
+    });
+
+    const testResponseData = await testResponse.json();
+    console.log('last',testResponseData)
+
+
+    await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: participantId,
+        report_type: 'decisionAnalysisReport',
+        session_id: test_attempt_session_id,
+        interaction_id: globalQuestionData.results[0].uid,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        reportUrl = data.url;
+        globalReportUrl = reportUrl;
+
+        if (user) {
+          submitEmailAndName();
+        }
+      });
+
+  }
+
+
 }
 
 let queryParams;
@@ -604,7 +788,7 @@ loadExternalModule().then(() => {
   };
   
   
-   
+      
 
   const testResponseHandler = async (formdata, questionObj) => {
     const shadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -994,6 +1178,11 @@ loadExternalModule().then(() => {
               orch_details =
                 questionData.results[0].orchestrated_conversation_details;
 
+              if (testType === 'mcq'){
+                globalQuestionLength = Math.log2(questionLength + 1)
+                globalQuestionData = questionData
+              }
+
               if (questionIndex === 0) {
 
                 //signed user rules
@@ -1027,7 +1216,6 @@ loadExternalModule().then(() => {
                   }
                 }
 
-                // const companyName = 
 
                 // restriction check like monthly test allowed start
                 await getAttemptedTestList(participantId)
@@ -1131,8 +1319,32 @@ loadExternalModule().then(() => {
                       }
                     }
                   } else {
-                    questionText =
-                      questionData.results[0].questions[questionIndex].question;
+                    if (testType === 'mcq'){
+                      questionText = questionData.results[0].questions[questionIndex].question
+                      questionId = questionData.results[0].questions[questionIndex].uid
+                      const mcqOptions = questionData.results[0].questions[questionIndex].mcq_options
+                      const optionName = Object.keys(mcqOptions)
+                      console.log(mcqOptions,optionName,questionData)
+                      const option1Name = optionName[0]
+                      const option2Name = optionName[1]
+                      const option1Text = mcqOptions[option1Name]['opt']
+                      const option2Text = mcqOptions[option2Name]['opt']
+
+                      formRadio = `
+                      <div id='mcq-option' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
+                        <div id='question' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId}:${sessionId}"><b>Q. </b>${questionText}</div>
+                        <input type="radio" id="${option1Name}" name="mcq_option" value="${option1Text}" style="margin-right: 5px;">
+                        <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
+                        <input type="radio" id="${option2Name}" name="mcq_option" value="${option2Text}" style="margin-right: 5px;">
+                        <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+                        <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                      </div>`
+                      questionText = formRadio
+
+                    }else {
+                      questionText =
+                        questionData.results[0].questions[questionIndex].question;
+                    }
                   }
 
                   if (questionIndex === 0) {
@@ -1340,6 +1552,7 @@ loadExternalModule().then(() => {
                 }
               }
             } catch (err) {
+              console.log(err)
               if (!isTestcodeValid && body.messages[0].text !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
