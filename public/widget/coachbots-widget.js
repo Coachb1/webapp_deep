@@ -372,14 +372,20 @@ function generateOptionButtons() {
   });
 }
 
+//* Function to handle button click for no-code flow
 async function handleOptionButtonClick(labelText, area, information) {
   console.log("button clicked", labelText, area, information);
   optedNo = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   gShadowRoot.getElementById("text-input").focus();
-  gShadowRoot.getElementById("text-input").textContent = labelText;
-  gShadowRoot.querySelector(".input-button").click();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent = labelText;
+    setTimeout(() => {
+      gShadowRoot.querySelector(".input-button").click();
+    }, 100);
+  }, 100);
+
 
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
   const params = new URLSearchParams();
