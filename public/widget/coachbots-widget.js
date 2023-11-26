@@ -55,6 +55,13 @@ function createMessageNode(message) {
   return messageNode;
 }
 
+//* function to test if a text can be a test code
+function isTestCode(text) {
+  return ( text.length == 7 && (text[0] == 'q' || text[0] =='Q' ) );
+}
+
+
+//* add a custom message to chat
 function appendMessage(message) {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   const messageNode = createMessageNode(message);
@@ -63,6 +70,35 @@ function appendMessage(message) {
 }
 
 
+//************** session management :start */
+
+function getOrSetSessionData(name, email) {
+  
+  
+  const retrievedUserDataString = sessionStorage.getItem('coachbots-user-data');
+  
+  if (retrievedUserDataString) {
+    const retrievedUserData = JSON.parse(retrievedUserDataString);
+    console.log(retrievedUserData.name); 
+    console.log(retrievedUserData.email); 
+  } else {
+    console.log('No user data found in SessionStorage. So setting it now.');
+    const userData = {
+      name: name,
+      email: email
+    };
+    
+    const userDataString = JSON.stringify(userData);
+    sessionStorage.setItem('coachbots-user-data', userDataString);
+  }
+  
+}
+
+//************** session management : end */
+
+
+
+//* handle MCQ type test : start
 async function setMcqVariables() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   const responseValue = gShadowRoot.querySelector('input[name="mcq_option"]:checked');
@@ -241,7 +277,14 @@ async function setMcqVariables() {
 
 }
 
+//* handle MCQ type test : end
+
+
+
 let queryParams;
+
+
+//* submit email and name for report generation : start
 async function submitEmailAndName() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   if (!user) {
@@ -250,6 +293,9 @@ async function submitEmailAndName() {
 
     inputName = inputNameVal;
     inputEmail = inputEmailVal;
+
+    //* store these values in session storage
+    getOrSetSessionData(inputName, inputEmail);
 
     queryParams = new URLSearchParams({
       participant_id: participantId,
@@ -280,6 +326,11 @@ async function submitEmailAndName() {
       // append custom message to chat
       const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
       appendMessage(message);
+
+      //* send message to start new session
+      appendMessage(
+        "Please enter another access code to start a new interaction."
+      );
     })
     .catch((err) => {
       console.log(err);
@@ -308,6 +359,14 @@ async function submitEmailAndName() {
     .catch((err) => console.log(err));
 }
 
+//* submit email and name for report generation : end
+
+
+
+
+
+
+//* variables containing no-code flow data
 const optionDetail = [
   {
     "Integrating a New Team Member": {
@@ -346,6 +405,7 @@ const optionDetail = [
   },
 ];
 
+//* function to generate buttons for no-code flow
 function generateOptionButtons() {
   // Get the container element
   var container = document.getElementById("option-button-container");
@@ -372,7 +432,7 @@ function generateOptionButtons() {
   });
 }
 
-//* Function to handle button click for no-code flow
+//* Function to handle button click for no-code flow : start
 async function handleOptionButtonClick(labelText, area, information) {
   console.log("button clicked", labelText, area, information);
   optedNo = true;
@@ -385,7 +445,6 @@ async function handleOptionButtonClick(labelText, area, information) {
       gShadowRoot.querySelector(".input-button").click();
     }, 100);
   }, 100);
-
 
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
   const params = new URLSearchParams();
@@ -419,6 +478,8 @@ async function handleOptionButtonClick(labelText, area, information) {
     })
     .catch((err) => console.log(err));
 }
+
+//* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
   try {
@@ -708,7 +769,7 @@ loadExternalModule().then(() => {
   // apis for restriction to attempt test like test previllage
   const getAttemptedTestList = async (userId) => {
     const url = `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -716,14 +777,12 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
         },
       });
-  
+
       const responseJson = await response.json();
       console.log(responseJson);
-  
-      testCodeList = responseJson['data']['codes'];
+
+      testCodeList = responseJson["data"]["codes"];
       console.log(testCodeList);
-
-
     } catch (error) {
       console.error(`Error in getAttemptedTestList: ${error}`);
     }
@@ -731,7 +790,7 @@ loadExternalModule().then(() => {
 
   const getIsRepeatStatus = async (participantId) => {
     const url = `${baseURL}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -739,10 +798,9 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
         },
       });
-  
+
       isRepeatStatus = await response.json();
       console.log(isRepeatStatus);
-
     } catch (error) {
       console.error(`Error in getIsRepeatStatus: ${error}`);
     }
@@ -750,7 +808,7 @@ loadExternalModule().then(() => {
 
   const getTestPrevilage = async (participantId) => {
     const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -758,20 +816,19 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
         },
       });
-  
+
       testPrevilage = await response.json();
       console.log(testPrevilage);
-  
     } catch (error) {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
 
-  const getTestCodesByRule = async (rule) =>{
-    const url = `${baseURL}/accounts/get-test-codes-for-web/`
-  
+  const getTestCodesByRule = async (rule) => {
+    const url = `${baseURL}/accounts/get-test-codes-for-web/`;
+
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -779,22 +836,18 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
         },
       });
-  
+
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        return resp_json['data'][rule].split(',')
-      }catch (error) {
-        return []
+        return resp_json["data"][rule].split(",");
+      } catch (error) {
+        return [];
       }
-  
     } catch (error) {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
-  
-  
-      
 
   const testResponseHandler = async (formdata, questionObj) => {
     const shadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -802,8 +855,8 @@ loadExternalModule().then(() => {
     const targetPlayer = players[players.length - 1];
     targetPlayer.src = audioFileSrc;
     // if audio response in orch
-    if (testType === 'orchestrated_conversation'){
-      formdata['transcribe_file'] = true
+    if (testType === "orchestrated_conversation") {
+      formdata["transcribe_file"] = true;
     }
 
     const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
@@ -830,11 +883,11 @@ loadExternalModule().then(() => {
     const docUrlData = await docUrlResponse.json();
     userAudioResponse = docUrlData.url;
 
-    if (testType === 'orchestrated_conversation'){
+    if (testType === "orchestrated_conversation") {
       // handling audio response in orch
-      const usertext = uploadDocData["transcript_details"]["text"]
-      console.log(usertext)
-      console.log('orch')
+      const usertext = uploadDocData["transcript_details"]["text"];
+      console.log(usertext);
+      console.log("orch");
 
       const testResponse = await fetch(`${baseURL}/test-responses/`, {
         method: "POST",
@@ -846,7 +899,7 @@ loadExternalModule().then(() => {
           test_attempt_session_id: sessionId,
           question_id: questionObj.uid,
           response_text: usertext,
-          response_file: '',
+          response_file: "",
           user_attributes: {
             tag: "deepchat_profile",
             attributes: {
@@ -858,11 +911,7 @@ loadExternalModule().then(() => {
       });
       const testResponseData = await testResponse.json();
       resQuestionNumber = testResponseData.question.question_number;
-
-
-
     } else {
-
       const testResponse = await fetch(`${baseURL}/test-responses/`, {
         method: "POST",
         headers: {
@@ -884,14 +933,16 @@ loadExternalModule().then(() => {
         }),
       });
       const testResponseData = await testResponse.json();
-      console.log(testResponseData)
+      console.log(testResponseData);
       resQuestionNumber = testResponseData.question.question_number;
-
-  }
+    }
 
     // for generating question for dynamic and group meeting test type
     if (questionIndex < questionLength) {
-      if (testType === "dynamic_discussion_thread" || testType === 'orchestrated_conversation') {
+      if (
+        testType === "dynamic_discussion_thread" ||
+        testType === "orchestrated_conversation"
+      ) {
         questionIndex += 1;
         responseProcessedQuestion++;
         console.log(questionIndex);
@@ -958,7 +1009,10 @@ loadExternalModule().then(() => {
           formdata.append("actions_pipeline[0]context", "null");
 
           if (questionIndex < questionLength) {
-            if (testType != "dynamic_discussion_thread" && testType != 'orchestrated_conversation') {
+            if (
+              testType != "dynamic_discussion_thread" &&
+              testType != "orchestrated_conversation"
+            ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
               signals.onResponse({
@@ -1001,21 +1055,49 @@ loadExternalModule().then(() => {
 
               responseProcessedQuestion++;
               responsesDone = resQuestionNumber === questionLength;
-                
+
               if (!responsesDone) {
-                if (testType === "orchestrated_conversation" || testType ==='dynamic_discussion_thread') {
+                if (
+                  testType === "orchestrated_conversation" ||
+                  testType === "dynamic_discussion_thread"
+                ) {
                   signals.onResponse({
                     text: questionText,
                   });
                 }
               }
 
-              if (!user) {
+              //   if (!user) {
+              //     signals.onResponse({
+              //       text: "For obtaining your report, please submit the following details.",
+              //       html: credentialsForm,
+              //     });
+              //   }
+
+              //* check if we have user data in session storage
+              const retrievedUserDataString = sessionStorage.getItem(
+                "coachbots-user-data"
+              );
+
+              if (retrievedUserDataString) {
+                const retrievedUserData = JSON.parse(retrievedUserDataString);
+                console.log(retrievedUserData.name);
+                console.log(retrievedUserData.email);
+                const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                appendMessage(message);
+                //* send message to start new session
+                signals.onResponse({
+                  text: "Please enter another access code to start a new interaction.",
+                });
+                return;
+              } else {
+                //* else show the form to collect the data
                 signals.onResponse({
                   text: "For obtaining your report, please submit the following details.",
                   html: credentialsForm,
                 });
               }
+
               console.log(sessionId);
 
               let getReportBody = {
@@ -1050,8 +1132,6 @@ loadExternalModule().then(() => {
                 };
               }
 
-              
-
               if (responsesDone) {
                 await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
                   method: "POST",
@@ -1082,6 +1162,56 @@ loadExternalModule().then(() => {
           }
         } else {
           // TEXT RESPONSES
+
+          // get latest message
+          const latestMessage = body.messages[body.messages.length - 1].text;
+          console.log("Latest Message ===> ", latestMessage);
+          if (isTestCode(latestMessage)) {
+            //* check if a session is already running
+            if (responsesDone === false && questionIndex > 0) {
+              signals.onResponse({
+                text: "You are already in a session. Please complete the current session or  type 'STOP' to end the session.",
+              });
+              return;
+            }
+
+            //* reset all variables : start
+            questionText = "";
+            reportType = "interactionSessionReport";
+            questionIndex = 0;
+            questionId = null;
+            userResponse = "";
+
+            testId = null;
+            resQuestionNumber = null;
+            questionLength = null;
+            questionData = null;
+            documentId = null;
+            userAudioResponse = "";
+
+            is_free = true;
+            responseProcessedQuestion = 0;
+            senarioDescription = "";
+            senarioTitle = "";
+            responsesDone = false;
+            userName = "";
+            userEmail = "";
+            reportUrl = null;
+            testCodeList = [];
+            isRepeatStatus = false;
+            testPrevilage = "";
+
+            //global variables
+            sessionId = "";
+            testCode = null;
+            codeAvailabilityUserChoice = false;
+            optedNo = false;
+            globalReportUrl = null;
+
+            //* reset all variables : end
+            testCode = latestMessage;
+            codeAvailabilityUserChoice = true;
+          }
 
           const userAcessAvailability = body.messages[0].text;
           if (userAcessAvailability === "Yes") {
@@ -1184,77 +1314,82 @@ loadExternalModule().then(() => {
               orch_details =
                 questionData.results[0].orchestrated_conversation_details;
 
-              if (testType === 'mcq'){
-                globalQuestionLength = Math.log2(questionLength + 1)
-                globalQuestionData = questionData
+              if (testType === "mcq") {
+                globalQuestionLength = Math.log2(questionLength + 1);
+                globalQuestionData = questionData;
               }
 
               if (questionIndex === 0) {
-
                 //signed user rules
 
-                if (user){
+                if (user) {
                   // const signedUserTestCode = await getTestCodesByRule('signed_user')
                   // if (!signedUserTestCode.includes(testCode) ){
                   //   signals.onResponse({
                   //     text: 'not allowed'
                   //   })
-                  const companyName = user.email.split('@')[1].split('.')[0]
-                  const companyTestCode = await getTestCodesByRule(companyName)
-                  console.log(companyName)
-                  if (companyTestCode.length > 0){
-                    if (!companyTestCode.includes(testCode)){
+                  const companyName = user.email.split("@")[1].split(".")[0];
+                  const companyTestCode = await getTestCodesByRule(companyName);
+                  console.log(companyName);
+                  if (companyTestCode.length > 0) {
+                    if (!companyTestCode.includes(testCode)) {
                       signals.onResponse({
-                        text: 'You are not allowed to attempt this test.'
-                      })
+                        text: "You are not allowed to attempt this test.",
+                      });
                     }
                   }
-
-                  }else{
-
-                  const unSignedUserTestCode = await getTestCodesByRule('unsigned_user')
-                  if (unSignedUserTestCode.length > 0){
-                    if (!unSignedUserTestCode.includes(testCode) ){
+                } else {
+                  const unSignedUserTestCode = await getTestCodesByRule(
+                    "unsigned_user"
+                  );
+                  if (unSignedUserTestCode.length > 0) {
+                    if (!unSignedUserTestCode.includes(testCode)) {
                       signals.onResponse({
-                        text: 'You are not allowed to attempt this test.'
-                      })
+                        text: "You are not allowed to attempt this test.",
+                      });
                     }
                   }
                 }
-
 
                 // restriction check like monthly test allowed start
-                await getAttemptedTestList(participantId)
-                await getIsRepeatStatus(participantId)
-                await getTestPrevilage(participantId)
+                await getAttemptedTestList(participantId);
+                await getIsRepeatStatus(participantId);
+                await getTestPrevilage(participantId);
 
-                if (isRepeatStatus['monthly_remaining_tests'] < 1) {
+                if (isRepeatStatus["monthly_remaining_tests"] < 1) {
                   signals.onResponse({
-                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations."
-                  })
+                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations.",
+                  });
                   return;
                 }
-                
+
                 // Test privilege
-                if (testPrevilage && testPrevilage.active && !testPrevilage.data.includes(testCode)) {
+                if (
+                  testPrevilage &&
+                  testPrevilage.active &&
+                  !testPrevilage.data.includes(testCode)
+                ) {
                   signals.onResponse({
-                    text: "You are not allowed to attempt this test."
-                  })
+                    text: "You are not allowed to attempt this test.",
+                  });
                   return;
                 }
-                
+
                 // User cannot attempt the test more than once if it is active
-                console.log(userRole)
+                console.log(userRole);
                 if (userRole && userRole !== "admin") {
-                  if (!isRepeatStatus.is_repeat && testCodeList.includes(testCode)) {
+                  if (
+                    !isRepeatStatus.is_repeat &&
+                    testCodeList.includes(testCode)
+                  ) {
                     signals.onResponse({
-                      text: "You are not allowed to attempt this interaction again."
-                    })
+                      text: "You are not allowed to attempt this interaction again.",
+                    });
                     return;
                   }
                 }
                 //end
-                
+
                 try {
                   const response = await fetch(
                     `${baseURL}/test-attempt-sessions/`,
@@ -1325,16 +1460,21 @@ loadExternalModule().then(() => {
                       }
                     }
                   } else {
-                    if (testType === 'mcq'){
-                      questionText = questionData.results[0].questions[questionIndex].question
-                      questionId = questionData.results[0].questions[questionIndex].uid
-                      const mcqOptions = questionData.results[0].questions[questionIndex].mcq_options
-                      const optionName = Object.keys(mcqOptions)
-                      console.log(mcqOptions,optionName,questionData)
-                      const option1Name = optionName[0]
-                      const option2Name = optionName[1]
-                      const option1Text = mcqOptions[option1Name]['opt']
-                      const option2Text = mcqOptions[option2Name]['opt']
+                    if (testType === "mcq") {
+                      questionText =
+                        questionData.results[0].questions[questionIndex]
+                          .question;
+                      questionId =
+                        questionData.results[0].questions[questionIndex].uid;
+                      const mcqOptions =
+                        questionData.results[0].questions[questionIndex]
+                          .mcq_options;
+                      const optionName = Object.keys(mcqOptions);
+                      console.log(mcqOptions, optionName, questionData);
+                      const option1Name = optionName[0];
+                      const option2Name = optionName[1];
+                      const option1Text = mcqOptions[option1Name]["opt"];
+                      const option2Text = mcqOptions[option2Name]["opt"];
 
                       formRadio = `
                       <div id='mcq-option' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
@@ -1344,12 +1484,12 @@ loadExternalModule().then(() => {
                         <input type="radio" id="${option2Name}" name="mcq_option" value="${option2Text}" style="margin-right: 5px;">
                         <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
                         <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
-                      </div>`
-                      questionText = formRadio
-
-                    }else {
+                      </div>`;
+                      questionText = formRadio;
+                    } else {
                       questionText =
-                        questionData.results[0].questions[questionIndex].question;
+                        questionData.results[0].questions[questionIndex]
+                          .question;
                     }
                   }
 
@@ -1359,7 +1499,10 @@ loadExternalModule().then(() => {
                       text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
                     });
                   } else {
-                    if (testType != 'orchestrated_conversation' && testType != 'dynamic_discussion_thread' ){
+                    if (
+                      testType != "orchestrated_conversation" &&
+                      testType != "dynamic_discussion_thread"
+                    ) {
                       signals.onResponse({
                         text: questionText,
                       });
@@ -1477,7 +1620,10 @@ loadExternalModule().then(() => {
                 }
 
                 if (resQuestionNumber != questionLength) {
-                  if (testType === "orchestrated_conversation" || testType ==='dynamic_discussion_thread') {
+                  if (
+                    testType === "orchestrated_conversation" ||
+                    testType === "dynamic_discussion_thread"
+                  ) {
                     signals.onResponse({
                       text: questionText,
                     });
@@ -1492,7 +1638,33 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber === questionLength) {
                   responsesDone = true;
 
-                  if (!user) {
+                  //   if (!user) {
+                  //     signals.onResponse({
+                  //       text: "For obtaining your report, please submit the following details.",
+                  //       html: credentialsForm,
+                  //     });
+                  //   }
+                  //* check if we have user data in session storage
+                  const retrievedUserDataString = sessionStorage.getItem(
+                    "coachbots-user-data"
+                  );
+
+                  if (retrievedUserDataString) {
+                    const retrievedUserData = JSON.parse(
+                      retrievedUserDataString
+                    );
+                    console.log(retrievedUserData.name);
+                    console.log(retrievedUserData.email);
+                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                    appendMessage(message);
+                    // //* send message to start new session
+
+                    signals.onResponse({
+                      text: "Please enter another access code to start a new interaction.",
+                    });
+                    return;
+                  } else {
+                    //* else show the form to collect the data
                     signals.onResponse({
                       text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
@@ -1505,7 +1677,7 @@ loadExternalModule().then(() => {
                     session_id: sessionId,
                     interaction_id: testId,
                   };
-    
+
                   if (is_free) {
                     reportType = "summaryFeedbackReport";
                     getReportBody = {
@@ -1530,7 +1702,6 @@ loadExternalModule().then(() => {
                       test_attempt_session_id: sessionId,
                     };
                   }
-    
 
                   console.log(sessionId);
                   const reportResponse = await fetch(
@@ -1558,7 +1729,7 @@ loadExternalModule().then(() => {
                 }
               }
             } catch (err) {
-              console.log(err)
+              console.log(err);
               if (!isTestcodeValid && body.messages[0].text !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
