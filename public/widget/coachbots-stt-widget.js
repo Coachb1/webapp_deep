@@ -4,6 +4,7 @@ const baseURL2 = "https://coach-api-gcp.coachbots.com/api/v1";
 
 let sessionId2 = "";
 let userId2 = "";
+let userRole2;
 let participantId2;
 let testCode2;
 let ipAddress2;
@@ -11,6 +12,7 @@ let user2;
 let codeAvailabilityUserChoice2 = false;
 let optedNo2 = false;
 
+let gShadowRoot2;
 let globalReportUrl2 = "";
 
 //audio configs
@@ -43,10 +45,10 @@ function createMessageNode2(message) {
 }
 
 function appendMessage2(message2) {
-  gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  const messageNode = createMessageNode(message);
-  gShadowRoot.getElementById("messages").appendChild(messageNode);
-  gShadowRoot.getElementById("messages").scrollBy(0, 100);
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const messageNode = createMessageNode(message2);
+  gShadowRoot2.getElementById("messages").appendChild(messageNode);
+  gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
 
 let queryParams2;
@@ -85,7 +87,8 @@ async function submitEmailAndName2() {
     .then((data) => {
       credsUpdated2 = data.status;
       // append custom message to chat
-      const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+      const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+  
       appendMessage2(message2);
     })
     .catch((err) => {
@@ -169,7 +172,7 @@ function generateOptionButtons2() {
     // Set the onclick attribute to call the handleOptionButtonClick function
     button.setAttribute(
       "onclick",
-      "handleOptionButtonClick('" + buttonText + "')"
+      "handleOptionButtonClick2('" + buttonText + "')"
     );
 
     // Append the button to the container
@@ -178,13 +181,19 @@ function generateOptionButtons2() {
 }
 
 async function handleOptionButtonClick2(labelText, area, information) {
-  console.log("button clicked", labelText, area, information);
+  console.log("button clicked in stt", labelText, area, information);
   optedNo = true;
 
-  gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  gShadowRoot.getElementById("text-input").focus();
-  gShadowRoot.getElementById("text-input").textContent = labelText;
-  gShadowRoot.querySelector(".input-button").click();
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = labelText;
+    setTimeout(() => {
+      console.log(gShadowRoot2.querySelectorAll(".input-button"))
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
+
 
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
@@ -215,8 +224,8 @@ async function handleOptionButtonClick2(labelText, area, information) {
       const randomChallenge = challenges[randomIndex];
 
       console.log(randomChallenge);
-      testCode = randomChallenge.test_code;
-      codeAvailabilityUserChoice = true;
+      testCode2 = randomChallenge.test_code;
+      codeAvailabilityUserChoice2 = true;
     })
     .catch((err) => console.log(err));
 }
@@ -224,7 +233,8 @@ async function handleOptionButtonClick2(labelText, area, information) {
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
-      "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      "https://storage.googleapis.com/aadil-devops-practice/deepchat-bundle.js"
     );
   } catch (error) {
     console.error("Error loading external module:", error);
@@ -375,6 +385,11 @@ loadExternalModule().then(() => {
   let responsesDone2 = false;
   let userName2 = "";
   let userEmail2 = "";
+  let is_free2;
+  let testCodeList2;
+  let isRepeatStatus2;
+  let testPrevilage2;
+
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -451,6 +466,95 @@ loadExternalModule().then(() => {
     },
   };
 
+  const getAttemptedTestList2 = async (userId) => {
+    const url = `${baseURL2}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+  
+      const responseJson = await response.json();
+      console.log(responseJson);
+  
+      testCodeList2 = responseJson['data']['codes'];
+      console.log(testCodeList2);
+
+
+    } catch (error) {
+      console.error(`Error in getAttemptedTestList: ${error}`);
+    }
+  };
+
+  const getIsRepeatStatus2 = async (participantId) => {
+    const url = `${baseURL2}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+  
+      isRepeatStatus2 = await response.json();
+      console.log(isRepeatStatus2);
+
+    } catch (error) {
+      console.error(`Error in getIsRepeatStatus: ${error}`);
+    }
+  };
+
+  const getTestPrevilage2 = async (participantId) => {
+    const url = `${baseURL2}/tests/get-test-previlage-user/?user_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+  
+      testPrevilage2 = await response.json();
+      console.log(testPrevilage2);
+  
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+
+  const getTestCodesByRule2 = async (rule) =>{
+    const url = `${baseURL2}/accounts/get-test-codes-for-web/`
+  
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+  
+      const resp_json = await response.json();
+      console.log(resp_json);
+      try {
+        return resp_json['data'][rule].split(',')
+      }catch (error) {
+        return []
+      }
+  
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+  
+  
+
   //No condition STT pending
   chatElementRef2.request = {
     handler: async (body, signals) => {
@@ -463,6 +567,7 @@ loadExternalModule().then(() => {
             signals.onResponse({
               text: "Please enter the access code to get started.",
             });
+            return;
           } else if (userAcessAvailability2 === "No") {
             optedNo2 = true;
             signals.onResponse({
@@ -522,8 +627,7 @@ loadExternalModule().then(() => {
                 await new Promise((resolve) => setTimeout(resolve, 500));
               }
             }
-
-            codeAvailabilityUserChoice = true;
+            codeAvailabilityUserChoice2 = true;
           }
 
           if (questionIndex2 > 0 && !responsesDone2) {
@@ -551,7 +655,6 @@ loadExternalModule().then(() => {
               );
 
               questionData2 = await response.json();
-              console.log(questionData2);
               questionLength2 = questionData2.results[0].questions.length;
               testId2 = questionData2.results[0].uid;
               interactionMode2 = questionData2.results[0].interaction_mode;
@@ -563,6 +666,70 @@ loadExternalModule().then(() => {
               orch_details2 =
                 questionData2.results[0].orchestrated_conversation_details;
               if (questionIndex2 === 0) {
+                //signed user rules
+
+                if (user2){
+                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
+                  // if (!signedUserTestCode.includes(testCode) ){
+                  //   signals.onResponse({
+                  //     text: 'not allowed'
+                  //   })
+                  const companyName = user2.email.split('@')[1].split('.')[0]
+                  const companyTestCode = await getTestCodesByRule2(companyName)
+                  console.log(companyName)
+                  if (companyTestCode.length > 0){
+                    if (!companyTestCode.includes(testCode2)){
+                      signals.onResponse({
+                        text: 'You are not allowed to attempt this test.'
+                      })
+                    }
+                  }
+
+                  }else{
+
+                  const unSignedUserTestCode = await getTestCodesByRule2('unsigned_user')
+                  if (unSignedUserTestCode.length > 0){
+                    if (!unSignedUserTestCode.includes(testCode2) ){
+                      signals.onResponse({
+                        text: 'You are not allowed to attempt this test.'
+                      })
+                    }
+                  }
+                }
+
+
+                // restriction check like monthly test allowed start
+                await getAttemptedTestList2(participantId2)
+                await getIsRepeatStatus2(participantId2)
+                await getTestPrevilage2(participantId2)
+
+                if (isRepeatStatus2['monthly_remaining_tests'] < 1) {
+                  signals.onResponse({
+                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations."
+                  })
+                  return;
+                }
+                
+                // Test privilege
+                if (testPrevilage2 && testPrevilage2.active && !testPrevilage2.data.includes(testCode2)) {
+                  signals.onResponse({
+                    text: "You are not allowed to attempt this test."
+                  })
+                  return;
+                }
+                
+                // User cannot attempt the test more than once if it is active
+                console.log(userRole2)
+                if (userRole2 && userRole2 !== "admin") {
+                  if (!isRepeatStatus2.is_repeat && testCodeList2.includes(testCode2)) {
+                    signals.onResponse({
+                      text: "You are not allowed to attempt this interaction again."
+                    })
+                    return;
+                  }
+                }
+                //end
+                
                 try {
                   const response = await fetch(
                     `${baseURL2}/test-attempt-sessions/`,
@@ -622,13 +789,13 @@ loadExternalModule().then(() => {
                         let resultString2 = "";
 
                         for (let i = 0; i < initial_msg2.length; i++) {
-                          resultString2 += "<p>" + initial_msg[i] + "</p>";
+                          resultString2 += "<p>" + initial_msg2[i] + "</p>";
 
                           if (i < initial_msg2.length - 1) {
                             resultString2 += "<br>";
                           }
                         }
-                        questionText2 = resultString;
+                        questionText2 = resultString2;
                       }
                     }
                   } else {
@@ -643,9 +810,11 @@ loadExternalModule().then(() => {
                       text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
                     });
                   } else {
-                    signals.onResponse({
-                      text: questionText2,
-                    });
+                    if (testType2 != 'orchestrated_conversation' && testType2 != 'dynamic_discussion_thread' ){
+                      signals.onResponse({
+                        text: questionText2,
+                      });
+                    }
                   }
                 }
 
@@ -731,7 +900,7 @@ loadExternalModule().then(() => {
                             "Content-Type": "application/json",
                           },
                           body: JSON.stringify({
-                            test_attempt_session_id: sessionId,
+                            test_attempt_session_id: sessionId2,
                             question_id: questionId2,
                             response_text: "",
                             response_file: "",
@@ -748,13 +917,20 @@ loadExternalModule().then(() => {
 
                       const qRespnse2 = await questionResponse2.json();
                       questionText2 = qRespnse2["response_text"];
+
+                      // checking if botname is present or not
+                      const responder_name2 = qRespnse2.responder_display_name;
+                      if (!questionText2.includes(responder_name2)) {
+                        questionText2 = responder_name2 + " : " + questionText2;
+                      }
+
                       resQuestionNumber2 = qRespnse2.question.question_number;
                     }
                   }
                 }
 
                 if (resQuestionNumber2 != questionLength2) {
-                  if (testType2 === "orchestrated_conversation") {
+                  if (testType2 === "orchestrated_conversation" || testType2 ==='dynamic_discussion_thread') {
                     signals.onResponse({
                       text: questionText2,
                     });
@@ -775,13 +951,39 @@ loadExternalModule().then(() => {
                       html: credentialsForm2,
                     });
                   }
+
+                  let getReportBody2 = {
+                    user_id: participantId2,
+                    report_type: reportType2,
+                    session_id: sessionId2,
+                    interaction_id: testId2,
+                  };
+    
                   if (is_free2) {
                     reportType2 = "summaryFeedbackReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
                   } else if (testType2 === "dynamic_discussion_thread") {
                     reportType2 = "dynamicDiscussionReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      test_attempt_session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
                   } else if (testType2 === "orchestrated_conversation") {
                     reportType2 = "meetingAnalysisReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      test_attempt_session_id: sessionId2,
+                    };
                   }
+    
 
                   const reportResponse = await fetch(
                     `${baseURL2}/frontend-auth/get-report-url/`,
@@ -794,12 +996,7 @@ loadExternalModule().then(() => {
                         )}`,
                         "Content-Type": "application/json",
                       },
-                      body: JSON.stringify({
-                        user_id: participantId2,
-                        report_type: reportType2,
-                        session_id: sessionId2,
-                        interaction_id: testId2,
-                      }),
+                      body: JSON.stringify(getReportBody2),
                     }
                   );
 
@@ -816,6 +1013,7 @@ loadExternalModule().then(() => {
                 }
               }
             } catch (err) {
+              console.log(err)
               if (!isTestcodeValid2 && body.messages[0].text !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
@@ -829,6 +1027,7 @@ loadExternalModule().then(() => {
           }
         }
       } catch (e) {
+        console.log(e)
         signals.onResponse({
           error:
             "Your response could not be processed due to technical reasons, please refresh the page and try again. ",
@@ -883,6 +1082,7 @@ const openChatContainer2 = () => {
     .then((data) => {
       participantId2 = data.uid;
       userId2 = data.uid;
+      userRole2 = data.role;
       console.log(data);
     })
     .catch((err) => console.log(err));

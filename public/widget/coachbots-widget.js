@@ -855,8 +855,8 @@ loadExternalModule().then(() => {
     const targetPlayer = players[players.length - 1];
     targetPlayer.src = audioFileSrc;
     // if audio response in orch
-    if (testType === "orchestrated_conversation") {
-      formdata["transcribe_file"] = true;
+    if (testType === 'orchestrated_conversation' || interactionMode === 'text'){
+      formdata['transcribe_file'] = true
     }
 
     const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
@@ -883,11 +883,10 @@ loadExternalModule().then(() => {
     const docUrlData = await docUrlResponse.json();
     userAudioResponse = docUrlData.url;
 
-    if (testType === "orchestrated_conversation") {
+    if (testType === 'orchestrated_conversation' || interactionMode === 'text'){
       // handling audio response in orch
-      const usertext = uploadDocData["transcript_details"]["text"];
-      console.log(usertext);
-      console.log("orch");
+      const usertext = uploadDocData["transcript_details"]["text"]
+      console.log(usertext)
 
       const testResponse = await fetch(`${baseURL}/test-responses/`, {
         method: "POST",
@@ -1218,6 +1217,7 @@ loadExternalModule().then(() => {
             signals.onResponse({
               text: "Please enter the access code to get started.",
             });
+            return;
           } else if (userAcessAvailability === "No") {
             optedNo = true;
             signals.onResponse({
