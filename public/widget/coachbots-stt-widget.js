@@ -184,10 +184,16 @@ async function handleOptionButtonClick2(labelText, area, information) {
   console.log("button clicked in stt", labelText, area, information);
   optedNo = true;
 
-  gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   gShadowRoot2.getElementById("text-input").focus();
-  gShadowRoot2.getElementById("text-input").textContent = labelText;
-  gShadowRoot2.querySelector(".input-button").click();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = labelText;
+    setTimeout(() => {
+      console.log(gShadowRoot2.querySelectorAll(".input-button"))
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
+
 
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
@@ -227,7 +233,8 @@ async function handleOptionButtonClick2(labelText, area, information) {
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
-      "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      "https://storage.googleapis.com/aadil-devops-practice/deepchat-bundle.js"
     );
   } catch (error) {
     console.error("Error loading external module:", error);
@@ -560,6 +567,7 @@ loadExternalModule().then(() => {
             signals.onResponse({
               text: "Please enter the access code to get started.",
             });
+            return;
           } else if (userAcessAvailability2 === "No") {
             optedNo2 = true;
             signals.onResponse({
