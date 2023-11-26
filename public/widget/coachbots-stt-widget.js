@@ -22,6 +22,9 @@ let content_type2;
 let inputName2 = "";
 let inputEmail2 = "";
 
+let emailSent2;
+let globalSignals;
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -90,6 +93,16 @@ async function submitEmailAndName2() {
       const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
   
       appendMessage2(message2);
+      //* send message to start new session
+      if (!user2){
+        appendMessage2("Please enter another access code to start a new interaction.");
+      }
+      else{
+        globalSignals.onResponse({
+          text : "Please enter another access code to start a new interaction."
+        })
+      }
+    
     })
     .catch((err) => {
       console.log(err);
@@ -111,7 +124,9 @@ async function submitEmailAndName2() {
   )
     .then((response) => response.json())
     .then((data) => {
+      console.log(data.status)
       emailSent2 = data.status;
+      console.log(emailSent2)
     })
     .catch((err) => console.log(err));
 }
@@ -562,6 +577,56 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           // TEXT RESPONSES
+          globalSignals = signals;
+
+          // get latest message
+          const latestMessage = body.messages[body.messages.length - 1].text;
+          console.log("Latest Message ===> ", latestMessage);
+          if (isTestCode(latestMessage)) {
+            //* check if a session is already running
+            if (responsesDone2 === false && questionIndex2 > 0) {
+              signals.onResponse({
+                text: "You are already in a session. Please complete the current session or  type 'STOP' to end the session.",
+              });
+              return;
+            }
+
+            //* reset all variables : start
+            questionText2 = "";
+            reportType2 = "interactionSessionReport";
+            questionIndex2 = 0;
+            questionId2 = null;
+            userResponse2 = "";
+
+            testId2 = null;
+            resQuestionNumber2 = null;
+            questionLength2 = null;
+            questionData2 = null;
+
+            is_free2= true;
+            // responseProcessedQuestion = 0;
+            senarioDescription2 = "";
+            senarioTitle2 = "";
+            responsesDone2 = false;
+            userName2 = "";
+            userEmail2 = "";
+            reportUrl2 = null;
+            testCodeList2 = [];
+            isRepeatStatus2 = false;
+            testPrevilage2 = "";
+
+            //global variables
+            sessionId2 = "";
+            testCode2 = null;
+            codeAvailabilityUserChoice2 = false;
+            optedNo2 = false;
+            globalReportUrl2 = null;
+
+            //* reset all variables : end
+            testCode2 = latestMessage;
+            codeAvailabilityUserChoice2 = true;
+          }
+
           const userAcessAvailability2 = body.messages[0].text;
           if (userAcessAvailability2 === "Yes") {
             signals.onResponse({
@@ -1009,6 +1074,7 @@ loadExternalModule().then(() => {
 
                   if (user2) {
                     submitEmailAndName2();
+                    console.log('completed')
                   }
                 }
               }
