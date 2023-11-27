@@ -43,7 +43,7 @@ const NavProfile = () => {
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible">
-            <Avatar className="relative hover:cursor-pointer">
+            {/* <Avatar className="relative hover:cursor-pointer">
               {user.picture ? (
                 <AvatarImage
                   src={user.picture}
@@ -56,8 +56,8 @@ const NavProfile = () => {
                   <User className="h-6 w-4 text-zinc-900" />
                 </AvatarFallback>
               )}
-            </Avatar>
-            {/* <UserCircle2 className="h-6 w-6 text-zinc-700" /> */}
+            </Avatar> */}
+            <UserCircle2 className="h-6 w-6 text-zinc-700" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="flex items-center justify-center gap-2 p-2">

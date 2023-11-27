@@ -2,7 +2,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
 
 import { constructMetadata } from "@/lib/utils";
-import { TextTests, EQTests, Samples } from "@/lib/test";
+import {  EQTests, Samples } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -10,6 +10,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = constructMetadata();
 
@@ -25,11 +26,11 @@ const Page = async () => {
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-fit grainy max-sm:h-screen max-sm:min-h-screen pb-16">
-      <div className="fixed w-full flex items-center justify-end p-4 max-sm:bg-white max-sm:border-b-2 h-6 py-8">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8">
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092]"
+            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50"
           >
             ✨ Sign up to get EQ Insight Access{" "}
             <ArrowRight className="ml-2 w-4 h-4 " />{" "}
@@ -137,6 +138,40 @@ const Page = async () => {
         width={125}
         alt="arrow"
       /> */}
+      <hr className="my-4 mx-16 mt-16 max-sm:mx-8 max-sm:mt-4" />
+      <div className="h-[20vh] text-sm text-gray-700 mx-16 max-sm:mx-8 ">
+        <div className="flex flex-col items-center justify-between text-center">
+          <div>
+            <Link href={"https://www.coachbots.com/"}>
+              <Image
+                src={"/coachbots-logo-ts.svg"}
+                alt="coachbots-logo-lg"
+                height={80}
+                width={180}
+                className="max-sm:h-[40px] max-sm:w-[120px]"
+              />
+            </Link>
+          </div>
+          <div className="flex gap-4 max-sm:flex-col max-sm:gap-1 max-sm:text-xs mt-2 ">
+            <Link
+              href={"https://www.coachbots.com/interaction-report-analysis"}
+              target="_blank"
+            >
+              Interaction Analysis
+            </Link>
+            <Link
+              href={"https://www.coachbots.com/terms-privacy-policy"}
+              target="_blank"
+            >
+              Terms & Privacy Policy
+            </Link>
+          </div>
+        </div>
+        <div className="text-center mt-2 max-sm:text-xs">
+          <p >&copy; 2023 Coachbots™. All Rights Reserved.</p>
+        </div>
+      </div>
+      <hr className="my-8 mx-16 mt-16 max-sm:mx-8 max-sm:mt-4 hidden max-sm:block" />
       <Widgets />
     </div>
   );

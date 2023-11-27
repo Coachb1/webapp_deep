@@ -14,13 +14,13 @@ const Widgets = () => {
         <Script src="../widget/coachbots-stt-widget.js"/>
 
         <div
-          className={`fixed max-sm:left-[2.5rem] left-[3rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]`}
+          className={`fixed max-sm:left-[2.5rem] left-[1rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]`}
         >
-          <p className="text-sm">Text</p>
+          <p className="text-xs max-sm:hidden">High Performance + <br /> No speech analytics</p>
         </div>
 
-        <div className="fixed max-sm:right-[2.8rem] right-[3.2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]">
-          <p className="text-sm text">Audio</p>
+        <div className="fixed max-sm:right-[2.8rem] right-[1rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]">
+          <p className="text-xs text-right max-sm:hidden">Medium Performance + <br /> Speech Analytics</p>
         </div>
 
         <div
