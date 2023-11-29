@@ -11,6 +11,7 @@ let ipAddress2;
 let user2;
 let codeAvailabilityUserChoice2 = false;
 let optedNo2 = false;
+let questionIndex2 = 0;
 
 let gShadowRoot2;
 let globalReportUrl2 = "";
@@ -25,11 +26,11 @@ let inputEmail2 = "";
 let emailSent2;
 let globalSignals;
 
-
 // only for mcq type test
 let globalQuestionDataStt;
 let globalQuestionLengthStt;
 let mcqQustionIndexStt = 0;
+let mcqFormIdStt = 0;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -60,16 +61,6 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
 
-
-
-
-
-
-
-
-
-
-
 //* handle MCQ type test : start
 async function setMcqVariablesStt() {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
@@ -84,7 +75,9 @@ async function setMcqVariablesStt() {
   const question_id = sessionQuestionIdStt.split(":")[0];
   const test_attempt_session_id = sessionQuestionIdStt.split(":")[1];
 
-  const optionsNameStt = gShadowRoot2.querySelectorAll('[name="mcq_option_stt"]');
+  const optionsNameStt = gShadowRoot2.querySelectorAll(
+    '[name="mcq_option_stt"]'
+  );
 
   const responseTextStt = responseValueStt.value;
   const responseOptionStt = responseValueStt.id;
@@ -98,9 +91,10 @@ async function setMcqVariablesStt() {
     console.log("currentquestionidex", mcqQustionIndexStt);
     console.log(`Story ${responseOptionStt}`);
 
-    const matchingQuestionsStt = globalQuestionDataStt.results[0].questions.filter(
-      (question) => question.mcq_path === `Story ${responseOptionStt}`
-    );
+    const matchingQuestionsStt =
+      globalQuestionDataStt.results[0].questions.filter(
+        (question) => question.mcq_path === `Story ${responseOptionStt}`
+      );
 
     const qUid = matchingQuestionsStt.map((question) => question.uid)[0];
     const mcqOptionsStt = matchingQuestionsStt.map(
@@ -116,7 +110,12 @@ async function setMcqVariablesStt() {
     const newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
     const newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
 
-    console.log(newOption1NameStt, newOption2NameStt,newOption1TextStt, newOption2TextStt);
+    console.log(
+      newOption1NameStt,
+      newOption2NameStt,
+      newOption1TextStt,
+      newOption2TextStt
+    );
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -128,11 +127,9 @@ async function setMcqVariablesStt() {
                   <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
                   <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
-    
-                console.log("gshadowroot2 before : ",gShadowRoot2.getElementById("mcq-option-stt").innerHTML)
-                gShadowRoot2.getElementById("mcq-option-stt").innerHTML = formRadioStt;
 
-    console.log("gshadowroot2 after : ",gShadowRoot2.getElementById("mcq-option-stt").innerHTML)
+    gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+      formRadioStt;
 
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
@@ -206,11 +203,12 @@ async function setMcqVariablesStt() {
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
-      gShadowRoot2.getElementById("mcq-option-stt").innerHTML = credentialsForm2;
+      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+        credentialsForm2;
     } else {
       console.log("user logged in, so sending email");
       gShadowRoot2.getElementById(
-        "mcq-option-stt"
+        `mcq-option-stt-${mcqFormIdStt}`
       ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
     }
     // // submitting response
@@ -258,6 +256,7 @@ async function setMcqVariablesStt() {
         console.log("Report Url : ", reportUrl2, globalReportUrl2);
         responsesDone2 = true;
         questionIndex2 = 0;
+        mcqFormIdStt++;
 
         if (window.user) {
           // append custom message to chat
@@ -276,16 +275,7 @@ async function setMcqVariablesStt() {
 
 //* handle MCQ type test : end
 
-
-
-
-
-
-
-
-
 let queryParams2;
-
 
 function sendEmail2() {
   // responsesDone = false;
@@ -647,7 +637,7 @@ loadExternalModule().then(() => {
 
   let questionText2 = "";
   let reportType2 = "interactionSessionReport";
-  let questionIndex2 = 0;
+  questionIndex2 = 0;
   let questionId2;
   let userResponse2;
   let reportUrl2 = "";
@@ -879,6 +869,7 @@ loadExternalModule().then(() => {
             //* reset all variables : end
             testCode2 = latestMessage;
             codeAvailabilityUserChoice2 = true;
+            mcqQustionIndexStt = 0;
           }
 
           const userAcessAvailability2 = body.messages[0].text;
@@ -1149,7 +1140,7 @@ loadExternalModule().then(() => {
                       const option2Text = mcqOptionsStt[option2Name]["opt"];
 
                       formRadio = `
-                      <div id='mcq-option-stt' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
+                      <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
                         <div id='question-stt' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
                         <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
                         <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>

@@ -11,6 +11,7 @@ let ipAddress;
 let user;
 let codeAvailabilityUserChoice = false;
 let optedNo = false;
+let questionIndex = 0;
 
 let globalReportUrl;
 
@@ -29,6 +30,7 @@ let gShadowRoot;
 let globalQuestionData;
 let globalQuestionLength;
 let mcqQustionIndex = 0;
+let mcqFormId = 0;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -198,7 +200,7 @@ async function setMcqVariables() {
                   <label for="${newOption2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2Text}</label>
                   <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
-    gShadowRoot.getElementById("mcq-option").innerHTML = formRadio;
+    gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML = formRadio;
 
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
@@ -273,11 +275,12 @@ async function setMcqVariables() {
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
-      gShadowRoot.getElementById("mcq-option").innerHTML = credentialsForm;
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+        credentialsForm;
     } else {
       console.log("user logged in, so sending email");
       gShadowRoot.getElementById(
-        "mcq-option"
+        `mcq-option-${mcqFormId}`
       ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
     }
     // // submitting response
@@ -323,13 +326,18 @@ async function setMcqVariables() {
         reportUrl = data.url;
         globalReportUrl = reportUrl;
         responsesDone = true;
+        questionIndex = 0;
+        mcqFormId++;
+        // mcqQustionIndex = 0;
 
         console.log("Report Url mcq : ", responsesDone, globalReportUrl);
 
         if (window.user) {
           // append custom message to chat
-          const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-          appendMessage(message);
+          gShadowRoot.getElementById(
+            `mcq-option-${mcqFormId}`
+          ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
+          //   appendMessage(message);
 
           //* send message to start new session
           appendMessage(
@@ -705,7 +713,7 @@ loadExternalModule().then(() => {
 
   let questionText = "";
   let reportType = "interactionSessionReport";
-  let questionIndex = 0;
+  questionIndex = 0;
   let questionId;
   let userResponse;
 
@@ -1311,6 +1319,7 @@ loadExternalModule().then(() => {
             //* reset all variables : end
             testCode = latestMessage;
             codeAvailabilityUserChoice = true;
+            mcqQustionIndex = 0;
           }
 
           const userAcessAvailability = body.messages[0].text;
@@ -1580,7 +1589,7 @@ loadExternalModule().then(() => {
                       const option2Text = mcqOptions[option2Name]["opt"];
 
                       formRadio = `
-                      <div id='mcq-option' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
+                      <div id='mcq-option-${mcqFormId}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
                         <div id='question' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId}:${sessionId}"><b>Q. </b>${questionText}</div>
                         <input type="radio" id="${option1Name}" name="mcq_option" value="${option1Text}" style="margin-right: 5px;">
                         <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
