@@ -11,6 +11,7 @@ let ipAddress;
 let user;
 let codeAvailabilityUserChoice = false;
 let optedNo = false;
+let questionIndex = 0;
 
 let globalReportUrl;
 
@@ -29,6 +30,7 @@ let gShadowRoot;
 let globalQuestionData;
 let globalQuestionLength;
 let mcqQustionIndex = 0;
+let mcqFormId = 0;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -57,9 +59,8 @@ function createMessageNode(message) {
 
 //* function to test if a text can be a test code
 function isTestCode(text) {
-  return ( text.length == 7 && (text[0] == 'q' || text[0] =='Q' ) );
+  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
 }
-
 
 //* add a custom message to chat
 function appendMessage(message) {
@@ -69,71 +70,127 @@ function appendMessage(message) {
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
 }
 
-
 //************** session management :start */
 
 function getOrSetSessionData(name, email) {
-  
-  
-  const retrievedUserDataString = sessionStorage.getItem('coachbots-user-data');
-  
+  const retrievedUserDataString = sessionStorage.getItem("coachbots-user-data");
+
   if (retrievedUserDataString) {
     const retrievedUserData = JSON.parse(retrievedUserDataString);
-    console.log(retrievedUserData.name); 
-    console.log(retrievedUserData.email); 
+    console.log(retrievedUserData.name);
+    console.log(retrievedUserData.email);
   } else {
-    console.log('No user data found in SessionStorage. So setting it now.');
+    console.log("No user data found in SessionStorage. So setting it now.");
     const userData = {
       name: name,
-      email: email
+      email: email,
     };
-    
+
     const userDataString = JSON.stringify(userData);
-    sessionStorage.setItem('coachbots-user-data', userDataString);
+    sessionStorage.setItem("coachbots-user-data", userDataString);
   }
-  
 }
 
 //************** session management : end */
 
+function getAnonymousEmail() {
+  const user_name = "coachbots_anonyoususer";
+  const user_sid = getOrSetSessionId();
+  const user_email = `${user_name}-${user_sid}@gmail.com`;
 
+  return user_email;
+}
+
+//**************get or create sessionId: start */
+function getOrSetSessionId() {
+  let generatedSessionId = "";
+  const retrievedSessionId = localStorage.getItem("coachbots-session-id");
+  if (retrievedSessionId) {
+    console.log("SessionId found in SessionStorage.");
+    generatedSessionId = retrievedSessionId;
+  } else {
+    console.log("No sessionId found in SessionStorage. So setting it now.");
+    generatedSessionId = generateSessionId();
+    localStorage.setItem("coachbots-session-id", generatedSessionId);
+  }
+  return generatedSessionId;
+}
+
+//**************get or create sessionId: end */
+
+//************* store user data in localstorage : start */
+
+//* generate unique id for user
+function generateSessionId() {
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 10);
+  return `${timestamp}-${randomString}`;
+}
+
+function setUserData(name, email) {
+  const rawUserData = {
+    name: name,
+    email: email,
+  };
+  localStorage.setItem("coachbots-user", JSON.stringify(rawUserData));
+  console.log("data set successfully");
+}
+
+function getUserData() {
+  // Get saved data from localStorage
+  const userData = localStorage.getItem("coachbots-user")
+    ? JSON.parse(localStorage.getItem("coachbots-user"))
+    : "";
+  return userData;
+}
+
+//************* store user data in localstorage : end */
 
 //* handle MCQ type test : start
 async function setMcqVariables() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  const responseValue = gShadowRoot.querySelector('input[name="mcq_option"]:checked');
-  sessionQuestionId = gShadowRoot.getElementById("question").getAttribute("value");
-  const question_id = sessionQuestionId.split(':')[0];
-  const test_attempt_session_id = sessionQuestionId.split(':')[1];
+  const responseValue = gShadowRoot.querySelector(
+    'input[name="mcq_option"]:checked'
+  );
+  sessionQuestionId = gShadowRoot
+    .getElementById("question")
+    .getAttribute("value");
+  const question_id = sessionQuestionId.split(":")[0];
+  const test_attempt_session_id = sessionQuestionId.split(":")[1];
 
-  const optionsName = gShadowRoot.querySelectorAll('[name="mcq_option"]')
-  
-  const responseText = responseValue.value
-  const responseOption = responseValue.id
+  const optionsName = gShadowRoot.querySelectorAll('[name="mcq_option"]');
 
-  console.log("question_id",question_id,"session",test_attempt_session_id)
-  console.log(mcqQustionIndex,globalQuestionLength)
+  const responseText = responseValue.value;
+  const responseOption = responseValue.id;
+
+  console.log("question_id", question_id, "session", test_attempt_session_id);
+  console.log(mcqQustionIndex, globalQuestionLength);
   mcqQustionIndex++;
 
-  if (mcqQustionIndex != globalQuestionLength){
+  if (mcqQustionIndex != globalQuestionLength) {
     // updating question
-    console.log('currentquestionidex',mcqQustionIndex)
-    console.log(`Story ${responseOption}`)
-    
-    
-    const matchingQuestions = globalQuestionData.results[0].questions.filter(question => question.mcq_path === `Story ${responseOption}`);
+    console.log("currentquestionidex", mcqQustionIndex);
+    console.log(`Story ${responseOption}`);
 
-    const qUid = matchingQuestions.map(question => question.uid)[0];
-    const mcqOptions = matchingQuestions.map(question => question.mcq_options)[0];
-    const optionName = Object.keys(mcqOptions)
-    const questionText = matchingQuestions.map(question => question.question)[0];
-    
-    const newOption1Name = optionName[0]
-    const newOption2Name = optionName[1]
-    const newOption1Text = mcqOptions[newOption1Name]['opt']
-    const newOption2Text = mcqOptions[newOption2Name]['opt']
+    const matchingQuestions = globalQuestionData.results[0].questions.filter(
+      (question) => question.mcq_path === `Story ${responseOption}`
+    );
 
-    console.log('newquestionid',qUid,'session',test_attempt_session_id)
+    const qUid = matchingQuestions.map((question) => question.uid)[0];
+    const mcqOptions = matchingQuestions.map(
+      (question) => question.mcq_options
+    )[0];
+    const optionName = Object.keys(mcqOptions);
+    const questionText = matchingQuestions.map(
+      (question) => question.question
+    )[0];
+
+    const newOption1Name = optionName[0];
+    const newOption2Name = optionName[1];
+    const newOption1Text = mcqOptions[newOption1Name]["opt"];
+    const newOption2Text = mcqOptions[newOption2Name]["opt"];
+
+    console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadio = `
                   <div id='question' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
@@ -142,8 +199,8 @@ async function setMcqVariables() {
                   <input type="radio" id="${newOption2Name}" name="mcq_option" value="${newOption2Text}" style="margin-right: 5px;">
                   <label for="${newOption2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2Text}</label>
                   <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
-                `
-    gShadowRoot.getElementById('mcq-option').innerHTML = formRadio
+                `;
+    gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML = formRadio;
 
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
@@ -156,23 +213,19 @@ async function setMcqVariables() {
         test_attempt_session_id: test_attempt_session_id,
         question_id: question_id,
         response_text: responseText,
-        response_file: '',
+        response_file: "",
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
             username: "web_user",
-            email: user ? user.email : "test@test.com",
+            email: user ? user.email : getAnonymousEmail(),
           },
         },
       }),
     });
     const testResponseData = await testResponse.json();
-    console.log(testResponseData)
-
-
-    
-  } else{
-    
+    console.log(testResponseData);
+  } else {
     // decisionAnalysisReport
 
     let credentialsForm = `<div id="input-form">
@@ -220,10 +273,17 @@ async function setMcqVariables() {
       </div>
       </div>`;
 
-    if (!user){
-      gShadowRoot.getElementById('mcq-option').innerHTML = credentialsForm
+    if (!window.user) {
+      console.log("user not logged in, so asking for credentials");
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+        credentialsForm;
+    } else {
+      console.log("user logged in, so sending email");
+      gShadowRoot.getElementById(
+        `mcq-option-${mcqFormId}`
+      ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
     }
-      // // submitting response
+    // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
       method: "POST",
       headers: {
@@ -234,20 +294,19 @@ async function setMcqVariables() {
         test_attempt_session_id: test_attempt_session_id,
         question_id: question_id,
         response_text: responseText,
-        response_file: '',
+        response_file: "",
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
             username: "web_user",
-            email: user ? user.email : "test@test.com",
+            email: user ? user.email : getAnonymousEmail(),
           },
         },
       }),
     });
 
     const testResponseData = await testResponse.json();
-    console.log('last',testResponseData)
-
+    console.log("last", testResponseData);
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
       method: "POST",
@@ -257,7 +316,7 @@ async function setMcqVariables() {
       },
       body: JSON.stringify({
         user_id: participantId,
-        report_type: 'decisionAnalysisReport',
+        report_type: "decisionAnalysisReport",
         session_id: test_attempt_session_id,
         interaction_id: globalQuestionData.results[0].uid,
       }),
@@ -266,27 +325,66 @@ async function setMcqVariables() {
       .then((data) => {
         reportUrl = data.url;
         globalReportUrl = reportUrl;
+        responsesDone = true;
+        questionIndex = 0;
+        mcqFormId++;
+        // mcqQustionIndex = 0;
 
-        if (user) {
+        console.log("Report Url mcq : ", responsesDone, globalReportUrl);
+
+        if (window.user) {
+          // append custom message to chat
+          gShadowRoot.getElementById(
+            `mcq-option-${mcqFormId}`
+          ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
+          //   appendMessage(message);
+
+          //* send message to start new session
+          appendMessage(
+            "Please enter another access code to start a new interaction."
+          );
           submitEmailAndName();
         }
       });
-
   }
-
-
 }
 
 //* handle MCQ type test : end
 
-
 let queryParams;
 
+
+//*********** hit mail sending api */
+
+function sendEmail() {
+  // responsesDone = false;
+  console.log("sending email");
+  const queryParams2 = new URLSearchParams({
+    test_attempt_session_id: sessionId,
+    report_url: globalReportUrl,
+    is_whatsapp: false,
+  });
+
+
+  fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      emailSent = data.status;
+      console.log("email sent");
+    })
+    .catch((err) => console.log(err));
+}
 
 //* submit email and name for report generation : start
 async function submitEmailAndName() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  if (!user) {
+  if (!window.user) {
     const inputNameVal = gShadowRoot.getElementById("input-name").value;
     const inputEmailVal = gShadowRoot.getElementById("input-email").value;
 
@@ -294,7 +392,7 @@ async function submitEmailAndName() {
     inputEmail = inputEmailVal;
 
     //* store these values in session storage
-    getOrSetSessionData(inputName, inputEmail);
+    // getOrSetSessionData(inputName, inputEmail);
 
     queryParams = new URLSearchParams({
       participant_id: participantId,
@@ -304,8 +402,8 @@ async function submitEmailAndName() {
   } else {
     queryParams = new URLSearchParams({
       participant_id: participantId,
-      email: user.email,
-      name: user.given_name,
+      email: window.user.email,
+      name: window.user.given_name,
     });
   }
   await fetch(
@@ -320,51 +418,52 @@ async function submitEmailAndName() {
   )
     .then((response) => response.json())
     .then((data) => {
-      credsUpdated = data.status;
 
-      // append custom message to chat
-      console.log(globalReportUrl)
-      const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-      appendMessage(message);
+      console.log("name email updated, sending email");
+      sendEmail();
 
-      //* send message to start new session
-      appendMessage(
-        "Please enter another access code to start a new interaction."
-      );
+      if (!window.user) {
+        // append custom message to chat
+        const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+        appendMessage(message);
+
+        //* send message to start new session
+        appendMessage(
+          "Please enter another access code to start a new interaction."
+        );
+      }
+
     })
     .catch((err) => {
       console.log(err);
     });
 
-  const queryParams2 = new URLSearchParams({
-    test_attempt_session_id: sessionId,
-    report_url: globalReportUrl,
-    is_whatsapp: false,
-  });
+  // await sendEmail();
 
-  await fetch(
-    `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      emailSent = data.status;
-    })
-    .catch((err) => console.log(err));
+  //   const queryParams2 = new URLSearchParams({
+  //     test_attempt_session_id: sessionId,
+  //     report_url: globalReportUrl,
+  //     is_whatsapp: false,
+  //   });
+
+  //   await fetch(
+  //     `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       emailSent = data.status;
+  //     })
+  //     .catch((err) => console.log(err));
 }
 
 //* submit email and name for report generation : end
-
-
-
-
-
 
 //* variables containing no-code flow data
 const optionDetail = [
@@ -617,7 +716,7 @@ loadExternalModule().then(() => {
 
   let questionText = "";
   let reportType = "interactionSessionReport";
-  let questionIndex = 0;
+  questionIndex = 0;
   let questionId;
   let userResponse;
 
@@ -856,8 +955,11 @@ loadExternalModule().then(() => {
     const targetPlayer = players[players.length - 1];
     targetPlayer.src = audioFileSrc;
     // if audio response in orch
-    if (testType === 'orchestrated_conversation' || interactionMode === 'text'){
-      formdata['transcribe_file'] = true
+    if (
+      testType === "orchestrated_conversation" ||
+      interactionMode === "text"
+    ) {
+      formdata["transcribe_file"] = true;
     }
 
     const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
@@ -884,10 +986,13 @@ loadExternalModule().then(() => {
     const docUrlData = await docUrlResponse.json();
     userAudioResponse = docUrlData.url;
 
-    if (testType === 'orchestrated_conversation' || interactionMode === 'text'){
+    if (
+      testType === "orchestrated_conversation" ||
+      interactionMode === "text"
+    ) {
       // handling audio response in orch
-      const usertext = uploadDocData["transcript_details"]["text"]
-      console.log(usertext)
+      const usertext = uploadDocData["transcript_details"]["text"];
+      console.log(usertext);
 
       const testResponse = await fetch(`${baseURL}/test-responses/`, {
         method: "POST",
@@ -904,7 +1009,7 @@ loadExternalModule().then(() => {
             tag: "deepchat_profile",
             attributes: {
               username: "web_user",
-              email: user ? user.email : "test@test.com",
+              email: user ? user.email : getAnonymousEmail(),
             },
           },
         }),
@@ -927,7 +1032,7 @@ loadExternalModule().then(() => {
             tag: "deepchat_profile",
             attributes: {
               username: "web_user",
-              email: user ? user.email : "test@test.com",
+              email: user ? user.email : getAnonymousEmail(),
             },
           },
         }),
@@ -962,7 +1067,7 @@ loadExternalModule().then(() => {
               tag: "deepchat_profile",
               attributes: {
                 username: "web_user",
-                email: user ? user.email : "test@test.com",
+                email: user ? user.email : getAnonymousEmail(),
               },
             },
           }),
@@ -1067,37 +1172,32 @@ loadExternalModule().then(() => {
                 }
               }
 
-              //   if (!user) {
-              //     signals.onResponse({
-              //       text: "For obtaining your report, please submit the following details.",
-              //       html: credentialsForm,
-              //     });
-              //   }
+              if (!window.user) {
 
-              //* check if we have user data in session storage
-              const retrievedUserDataString = sessionStorage.getItem(
-                "coachbots-user-data"
-              );
-
-              console.log(globalReportUrl, reportUrl)
-              if (retrievedUserDataString) {
-                const retrievedUserData = JSON.parse(retrievedUserDataString);
-                console.log(retrievedUserData.name);
-                console.log(retrievedUserData.email);
-                const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-                appendMessage(message);
-                //* send message to start new session
-                signals.onResponse({
-                  text: "Please enter another access code to start a new interaction.",
-                });
-                return;
-              } else {
-                //* else show the form to collect the data
                 signals.onResponse({
                   text: "For obtaining your report, please submit the following details.",
                   html: credentialsForm,
                 });
               }
+
+              //   if (window.user) {
+              //     console.log("calling send email");
+              //     sendEmail();
+              //     console.log("sendEmail completed");
+              //     const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+              //     appendMessage(message);
+              //     //* send message to start new session
+              //     signals.onResponse({
+              //       text: "Please enter another access code to start a new interaction.",
+              //     });
+              //     return;
+              //   } else {
+              //     //* else show the form to collect the data
+              //     signals.onResponse({
+              //       text: "For obtaining your report, please submit the following details.",
+              //       html: credentialsForm,
+              //     });
+              //   }
 
               console.log(sessionId);
 
@@ -1146,9 +1246,20 @@ loadExternalModule().then(() => {
                   .then((data) => {
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
+                    console.log("Report Url : ", reportUrl, globalReportUrl);
 
-                    if (user) {
+                    //* send report message or form to collect data : start
+                    if (window.user) {
+                      // sendEmail();
+                      const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                      appendMessage(message);
+                      // //* send message to start new session
+
+                      signals.onResponse({
+                        text: "Please enter another access code to start a new interaction.",
+                      });
                       submitEmailAndName();
+                      return;
                     }
                   });
               }
@@ -1169,6 +1280,7 @@ loadExternalModule().then(() => {
           console.log("Latest Message ===> ", latestMessage);
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
+            console.log("responsesDone ===> ", responsesDone, questionIndex);
             if (responsesDone === false && questionIndex > 0) {
               signals.onResponse({
                 text: "You are already in a session. Please complete the current session or  type 'STOP' to end the session.",
@@ -1194,8 +1306,12 @@ loadExternalModule().then(() => {
             responseProcessedQuestion = 0;
             senarioDescription = "";
             senarioTitle = "";
+
             responsesDone = false;
             senarioMediaDescription = "";
+
+            responsesDone = false; // move elsewhere
+
             userName = "";
             userEmail = "";
             reportUrl = null;
@@ -1213,6 +1329,7 @@ loadExternalModule().then(() => {
             //* reset all variables : end
             testCode = latestMessage;
             codeAvailabilityUserChoice = true;
+            mcqQustionIndex = 0;
           }
 
           const userAcessAvailability = body.messages[0].text;
@@ -1315,6 +1432,8 @@ loadExternalModule().then(() => {
               senarioTitle = questionData.results[0].title;
               senarioMediaDescription = questionData.results[0].description_media
               console.log(senarioMediaDescription)
+
+              isTestcodeValid = true;
 
               testType = questionData.results[0].test_type;
               orch_details =
@@ -1483,7 +1602,7 @@ loadExternalModule().then(() => {
                       const option2Text = mcqOptions[option2Name]["opt"];
 
                       formRadio = `
-                      <div id='mcq-option' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
+                      <div id='mcq-option-${mcqFormId}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
                         <div id='question' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId}:${sessionId}"><b>Q. </b>${questionText}</div>
                         <input type="radio" id="${option1Name}" name="mcq_option" value="${option1Text}" style="margin-right: 5px;">
                         <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
@@ -1621,12 +1740,13 @@ loadExternalModule().then(() => {
                         tag: "deepchat_profile",
                         attributes: {
                           username: "web_user",
-                          email: user ? user.email : "test@test.com",
+                          email: user ? user.email : getAnonymousEmail(),
                         },
                       },
                     }),
                   });
                   const responseData = await response.json();
+                  console.log("Response from submit response : ", responseData);
                   resQuestionNumber = responseData.question.question_number;
 
                   if (questionIndex < questionLength) {
@@ -1660,7 +1780,7 @@ loadExternalModule().then(() => {
                               tag: "deepchat_profile",
                               attributes: {
                                 username: "web_user",
-                                email: user ? user.email : "test@test.com",
+                                email: user ? user.email : getAnonymousEmail(),
                               },
                             },
                           }),
@@ -1700,39 +1820,32 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber === questionLength) {
                   responsesDone = true;
 
-                  //   if (!user) {
-                  //     signals.onResponse({
-                  //       text: "For obtaining your report, please submit the following details.",
-                  //       html: credentialsForm,
-                  //     });
-                  //   }
-                  //* check if we have user data in session storage
-                  const retrievedUserDataString = sessionStorage.getItem(
-                    "coachbots-user-data"
-                  );
 
-                  if (retrievedUserDataString) {
-                    const retrievedUserData = JSON.parse(
-                      retrievedUserDataString
-                    );
-                    console.log(retrievedUserData.name);
-                    console.log(retrievedUserData.email);
-                    console.log(globalReportUrl, reportUrl)
-                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-                    appendMessage(message);
-                    // //* send message to start new session
+                  if (!window.user) {
 
-                    signals.onResponse({
-                      text: "Please enter another access code to start a new interaction.",
-                    });
-                    return;
-                  } else {
-                    //* else show the form to collect the data
                     signals.onResponse({
                       text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }
+
+                  //   if (window.user) {
+                  //     sendEmail();
+                  //     const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                  //     appendMessage(message);
+                  //     // //* send message to start new session
+
+                  //     signals.onResponse({
+                  //       text: "Please enter another access code to start a new interaction.",
+                  //     });
+                  //     return;
+                  //   } else {
+                  //     //* else show the form to collect the data
+                  //     signals.onResponse({
+                  //       text: "For obtaining your report, please submit the following details.",
+                  //       html: credentialsForm,
+                  //     });
+                  //   }
 
                   let getReportBody = {
                     user_id: participantId,
@@ -1786,9 +1899,23 @@ loadExternalModule().then(() => {
                   reportUrl = reportData.url;
                   globalReportUrl = reportUrl;
 
-                  if (user) {
+                  console.log("Report Url : ", reportUrl, globalReportUrl);
+
+                  //* send report message or form to collect data : start
+                  if (window.user) {
+                    // sendEmail();
+                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                    appendMessage(message);
+                    // //* send message to start new session
+
+                    signals.onResponse({
+                      text: "Please enter another access code to start a new interaction.",
+                    });
                     submitEmailAndName();
+                    return;
                   }
+
+                  //* send report message or form to collect data : end
                 }
               }
             } catch (err) {
@@ -1826,6 +1953,8 @@ const openChatContainer = () => {
   let audioChunks = [];
 
   user = window.user;
+  console.log(" User details ", user);
+  console.log(user === undefined);
 
   async function startRecording() {
     try {
@@ -1879,6 +2008,28 @@ const openChatContainer = () => {
     })
     .catch((error) => console.error("Error fetching IP address:", error));
 
+  //   const user_data = getUserData();
+
+  //   if (user_data) {
+  //     user_name = user_data.name;
+  //     user_email = user_data.email;
+  //   } else {
+  //     user_name = "coachbots_anonyoususer";
+  //     user_sid = generateSessionId();
+  //     user_email = `${user_name}-${sid}@gmail.com`;
+  //   }
+
+  let user_name;
+  let user_email;
+
+  if (user) {
+    user_name = user.given_name;
+    user_email = user.email;
+  } else {
+    user_name = "coachbots_anonyoususer";
+    user_email = getAnonymousEmail();
+  }
+
   fetch(`${baseURL}/accounts/`, {
     method: "POST",
     headers: {
@@ -1887,19 +2038,19 @@ const openChatContainer = () => {
     },
     body: JSON.stringify({
       user_context: {
-        name: user ? user.given_name : "newUser-1",
+        name: user_name,
         role: "member",
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
-            username: "web_user",
-            email: user ? user.email : "test@test.com",
+            username: user_name,
+            email: user_email,
           },
         },
       },
       identity_context: {
         identity_type: "deepchat_unique_id",
-        value: `user_name=${user ? user.given_name : ipAddress}`,
+        value: user_email,
       },
     }),
   })

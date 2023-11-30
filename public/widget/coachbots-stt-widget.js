@@ -11,6 +11,7 @@ let ipAddress2;
 let user2;
 let codeAvailabilityUserChoice2 = false;
 let optedNo2 = false;
+let questionIndex2 = 0;
 
 let gShadowRoot2;
 let globalReportUrl2 = "";
@@ -24,6 +25,12 @@ let inputEmail2 = "";
 
 let emailSent2;
 let globalSignals;
+
+// only for mcq type test
+let globalQuestionDataStt;
+let globalQuestionLengthStt;
+let mcqQustionIndexStt = 0;
+let mcqFormIdStt = 0;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -54,11 +61,253 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
 
+//* handle MCQ type test : start
+async function setMcqVariablesStt() {
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const responseValueStt = gShadowRoot2.querySelector(
+    'input[name="mcq_option_stt"]:checked'
+  );
+
+  console.log("Response value", responseValueStt);
+  const sessionQuestionIdStt = gShadowRoot2
+    .getElementById("question-stt")
+    .getAttribute("value");
+  const question_id = sessionQuestionIdStt.split(":")[0];
+  const test_attempt_session_id = sessionQuestionIdStt.split(":")[1];
+
+  const optionsNameStt = gShadowRoot2.querySelectorAll(
+    '[name="mcq_option_stt"]'
+  );
+
+  const responseTextStt = responseValueStt.value;
+  const responseOptionStt = responseValueStt.id;
+
+  console.log("question_id", question_id, "session", test_attempt_session_id);
+  console.log(mcqQustionIndexStt, globalQuestionLengthStt);
+  mcqQustionIndexStt++;
+
+  if (mcqQustionIndexStt != globalQuestionLengthStt) {
+    // updating question
+    console.log("currentquestionidex", mcqQustionIndexStt);
+    console.log(`Story ${responseOptionStt}`);
+
+    const matchingQuestionsStt =
+      globalQuestionDataStt.results[0].questions.filter(
+        (question) => question.mcq_path === `Story ${responseOptionStt}`
+      );
+
+    const qUid = matchingQuestionsStt.map((question) => question.uid)[0];
+    const mcqOptionsStt = matchingQuestionsStt.map(
+      (question) => question.mcq_options
+    )[0];
+    const optionName = Object.keys(mcqOptionsStt);
+    const questionText = matchingQuestionsStt.map(
+      (question) => question.question
+    )[0];
+
+    const newOption1NameStt = optionName[0];
+    const newOption2NameStt = optionName[1];
+    const newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
+    const newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
+
+    console.log(
+      newOption1NameStt,
+      newOption2NameStt,
+      newOption1TextStt,
+      newOption2TextStt
+    );
+
+    console.log("newquestionid", qUid, "session", test_attempt_session_id);
+
+    formRadioStt = `
+                  <div id='question-stt' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
+                  <input type="radio" id="${newOption1NameStt}" name="mcq_option_stt" value="${newOption1TextStt}" style="margin-right: 5px;">
+                  <label for="${newOption1NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption1TextStt}</label>
+                  <input type="radio" id="${newOption2NameStt}" name="mcq_option_stt" value="${newOption2TextStt}" style="margin-right: 5px;">
+                  <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
+                  <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                `;
+
+    gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+      formRadioStt;
+
+    // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseTextStt,
+        response_file: "",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user ? user.email : getAnonymousEmail(),
+          },
+        },
+      }),
+    });
+    const testResponseData = await testResponse.json();
+    console.log(testResponseData);
+  } else {
+    // decisionAnalysisReport
+
+    let credentialsForm2 = `<div id="input-form2">
+    <div style="display: flex; flex-direction: column">
+        <label for="name" style="margin: 4px 0">Name  </label>
+        <input  
+        type="text"
+        id="input-name2"
+        style="
+            padding: 8px;
+            margin-bottom:4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+        "
+        />
+    </div>
+    <div style="display: flex; flex-direction: column; margin-top: 8px">
+        <label for="email" style="margin: 4px 0">Email </label>
+        <input
+        type="email"
+        id="input-email2"
+        style="
+        padding: 8px;
+        margin-bottom:4px;
+        border-radius: 4px;
+        border: 1px solid rgb(188, 188, 188);
+        "
+        />
+        <button
+        style="
+            margin-top: 8px;
+            padding: 8px 12px;
+            width: fit-content;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+        "
+        id="submit-btn2"
+        onclick="submitEmailAndName2()"
+        >
+        Submit
+        </button>
+    </div>
+  </div>`;
+
+    if (!window.user) {
+      console.log("user not logged in, so asking for credentials");
+      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+        credentialsForm2;
+    } else {
+      console.log("user logged in, so sending email");
+      gShadowRoot2.getElementById(
+        `mcq-option-stt-${mcqFormIdStt}`
+      ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
+    }
+    // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseTextStt,
+        response_file: "",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: window.user ? window.user.email : getAnonymousEmail(),
+          },
+        },
+      }),
+    });
+
+    const testResponseData = await testResponse.json();
+    console.log("last", testResponseData);
+
+    await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: participantId2,
+        report_type: "decisionAnalysisReport",
+        session_id: test_attempt_session_id,
+        interaction_id: globalQuestionDataStt.results[0].uid,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        reportUrl2 = data.url;
+        globalReportUrl2 = data.url;
+        console.log("Report Url : ", reportUrl2, globalReportUrl2);
+        responsesDone2 = true;
+        questionIndex2 = 0;
+        mcqFormIdStt++;
+
+        if (window.user) {
+          // append custom message to chat
+          const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+          appendMessage2(message2);
+
+          //* send message to start new session
+          appendMessage2(
+            "Please enter another access code to start a new interaction."
+          );
+          submitEmailAndName2();
+        }
+      });
+  }
+}
+
+//* handle MCQ type test : end
+
 let queryParams2;
+
+function sendEmail2() {
+  // responsesDone = false;
+  console.log("sending email");
+  const queryParams22 = new URLSearchParams({
+    test_attempt_session_id: sessionId2,
+    report_url: globalReportUrl2,
+    is_whatsapp: false,
+  });
+
+  fetch(
+    `${baseURL2}/test-attempt-sessions/send-report-email/?${queryParams22}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      emailSent2 = data.status;
+      console.log("email sent");
+    })
+    .catch((err) => console.log(err));
+}
+
 async function submitEmailAndName2() {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
-  if (!user2) {
+  if (!window.user) {
     const inputNameVal2 = shadowRoot2.getElementById("input-name2").value;
     const inputEmailVal2 = shadowRoot2.getElementById("input-email2").value;
     inputName2 = inputNameVal2;
@@ -72,8 +321,8 @@ async function submitEmailAndName2() {
   } else {
     queryParams2 = new URLSearchParams({
       participant_id: participantId2,
-      email: user2.email,
-      name: user2.given_name,
+      email: window.user.email,
+      name: window.user.given_name,
     });
   }
   await fetch(
@@ -89,46 +338,48 @@ async function submitEmailAndName2() {
     .then((response) => response.json())
     .then((data) => {
       credsUpdated2 = data.status;
+      console.log("name email updated, sending email");
+      sendEmail2();
       // append custom message to chat
       const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-  
-      appendMessage2(message2);
+
       //* send message to start new session
-      if (!user2){
-        appendMessage2("Please enter another access code to start a new interaction.");
-      }
-      else{
+      if (!user2) {
+        appendMessage2(message2);
+        appendMessage2(
+          "Please enter another access code to start a new interaction."
+        );
+      } else {
         globalSignals.onResponse({
-          text : "Please enter another access code to start a new interaction."
-        })
+          text: "Please enter another access code to start a new interaction.",
+        });
       }
-    
     })
     .catch((err) => {
       console.log(err);
     });
-  const queryParams22 = new URLSearchParams({
-    test_attempt_session_id: sessionId2,
-    report_url: globalReportUrl2,
-    is_whatsapp: false,
-  });
-  await fetch(
-    `${baseURL2}/test-attempt-sessions/send-report-email/?${queryParams22}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.status)
-      emailSent2 = data.status;
-      console.log(emailSent2)
-    })
-    .catch((err) => console.log(err));
+  //   const queryParams22 = new URLSearchParams({
+  //     test_attempt_session_id: sessionId2,
+  //     report_url: globalReportUrl2,
+  //     is_whatsapp: false,
+  //   });
+  //   await fetch(
+  //     `${baseURL2}/test-attempt-sessions/send-report-email/?${queryParams22}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data.status)
+  //       emailSent2 = data.status;
+  //       console.log(emailSent2)
+  //     })
+  //     .catch((err) => console.log(err));
 }
 
 const optionDetail2 = [
@@ -195,6 +446,7 @@ function generateOptionButtons2() {
   });
 }
 
+//* Function to handle button click for no-code flow : start
 async function handleOptionButtonClick2(labelText, area, information) {
   console.log("button clicked in stt", labelText, area, information);
   optedNo = true;
@@ -204,11 +456,10 @@ async function handleOptionButtonClick2(labelText, area, information) {
   setTimeout(() => {
     gShadowRoot2.getElementById("text-input").textContent = labelText;
     setTimeout(() => {
-      console.log(gShadowRoot2.querySelectorAll(".input-button"))
+      console.log(gShadowRoot2.querySelectorAll(".input-button"));
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
   }, 100);
-
 
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
@@ -386,7 +637,7 @@ loadExternalModule().then(() => {
 
   let questionText2 = "";
   let reportType2 = "interactionSessionReport";
-  let questionIndex2 = 0;
+  questionIndex2 = 0;
   let questionId2;
   let userResponse2;
   let reportUrl2 = "";
@@ -405,7 +656,6 @@ loadExternalModule().then(() => {
   let testCodeList2;
   let isRepeatStatus2;
   let testPrevilage2;
-
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -484,7 +734,7 @@ loadExternalModule().then(() => {
 
   const getAttemptedTestList2 = async (userId) => {
     const url = `${baseURL2}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -492,14 +742,12 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
       });
-  
+
       const responseJson = await response.json();
       console.log(responseJson);
-  
-      testCodeList2 = responseJson['data']['codes'];
+
+      testCodeList2 = responseJson["data"]["codes"];
       console.log(testCodeList2);
-
-
     } catch (error) {
       console.error(`Error in getAttemptedTestList: ${error}`);
     }
@@ -507,7 +755,7 @@ loadExternalModule().then(() => {
 
   const getIsRepeatStatus2 = async (participantId) => {
     const url = `${baseURL2}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -515,10 +763,9 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
       });
-  
+
       isRepeatStatus2 = await response.json();
       console.log(isRepeatStatus2);
-
     } catch (error) {
       console.error(`Error in getIsRepeatStatus: ${error}`);
     }
@@ -526,7 +773,7 @@ loadExternalModule().then(() => {
 
   const getTestPrevilage2 = async (participantId) => {
     const url = `${baseURL2}/tests/get-test-previlage-user/?user_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -534,20 +781,19 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
       });
-  
+
       testPrevilage2 = await response.json();
       console.log(testPrevilage2);
-  
     } catch (error) {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
 
-  const getTestCodesByRule2 = async (rule) =>{
-    const url = `${baseURL2}/accounts/get-test-codes-for-web/`
-  
+  const getTestCodesByRule2 = async (rule) => {
+    const url = `${baseURL2}/accounts/get-test-codes-for-web/`;
+
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -555,21 +801,18 @@ loadExternalModule().then(() => {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
       });
-  
+
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        return resp_json['data'][rule].split(',')
-      }catch (error) {
-        return []
+        return resp_json["data"][rule].split(",");
+      } catch (error) {
+        return [];
       }
-  
     } catch (error) {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
-  
-  
 
   //No condition STT pending
   chatElementRef2.request = {
@@ -585,6 +828,7 @@ loadExternalModule().then(() => {
           console.log("Latest Message ===> ", latestMessage);
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
+            console.log("responsesDone2", responsesDone2, questionIndex2);
             if (responsesDone2 === false && questionIndex2 > 0) {
               signals.onResponse({
                 text: "You are already in a session. Please complete the current session or  type 'STOP' to end the session.",
@@ -604,7 +848,7 @@ loadExternalModule().then(() => {
             questionLength2 = null;
             questionData2 = null;
 
-            is_free2= true;
+            is_free2 = true;
             // responseProcessedQuestion = 0;
             senarioDescription2 = "";
             senarioTitle2 = "";
@@ -627,6 +871,7 @@ loadExternalModule().then(() => {
             //* reset all variables : end
             testCode2 = latestMessage;
             codeAvailabilityUserChoice2 = true;
+            mcqQustionIndexStt = 0;
           }
 
           const userAcessAvailability2 = body.messages[0].text;
@@ -734,71 +979,85 @@ loadExternalModule().then(() => {
               testType2 = questionData2.results[0].test_type;
               orch_details2 =
                 questionData2.results[0].orchestrated_conversation_details;
+
+              if (testType2 === "mcq") {
+                globalQuestionLengthStt = Math.log2(questionLength2 + 1);
+                globalQuestionDataStt = questionData2;
+              }
+
               if (questionIndex2 === 0) {
                 //signed user rules
 
-                if (user2){
+                if (user2) {
                   // const signedUserTestCode = await getTestCodesByRule('signed_user')
                   // if (!signedUserTestCode.includes(testCode) ){
                   //   signals.onResponse({
                   //     text: 'not allowed'
                   //   })
-                  const companyName = user2.email.split('@')[1].split('.')[0]
-                  const companyTestCode = await getTestCodesByRule2(companyName)
-                  console.log(companyName)
-                  if (companyTestCode.length > 0){
-                    if (!companyTestCode.includes(testCode2)){
+                  const companyName = user2.email.split("@")[1].split(".")[0];
+                  const companyTestCode = await getTestCodesByRule2(
+                    companyName
+                  );
+                  console.log(companyName);
+                  if (companyTestCode.length > 0) {
+                    if (!companyTestCode.includes(testCode2)) {
                       signals.onResponse({
-                        text: 'You are not allowed to attempt this test.'
-                      })
+                        text: "You are not allowed to attempt this test.",
+                      });
                     }
                   }
-
-                  }else{
-
-                  const unSignedUserTestCode = await getTestCodesByRule2('unsigned_user')
-                  if (unSignedUserTestCode.length > 0){
-                    if (!unSignedUserTestCode.includes(testCode2) ){
+                } else {
+                  const unSignedUserTestCode = await getTestCodesByRule2(
+                    "unsigned_user"
+                  );
+                  if (unSignedUserTestCode.length > 0) {
+                    if (!unSignedUserTestCode.includes(testCode2)) {
                       signals.onResponse({
-                        text: 'You are not allowed to attempt this test.'
-                      })
+                        text: "You are not allowed to attempt this test.",
+                      });
                     }
                   }
                 }
-
 
                 // restriction check like monthly test allowed start
-                await getAttemptedTestList2(participantId2)
-                await getIsRepeatStatus2(participantId2)
-                await getTestPrevilage2(participantId2)
+                await getAttemptedTestList2(participantId2);
+                await getIsRepeatStatus2(participantId2);
+                await getTestPrevilage2(participantId2);
 
-                if (isRepeatStatus2['monthly_remaining_tests'] < 1) {
+                if (isRepeatStatus2["monthly_remaining_tests"] < 1) {
                   signals.onResponse({
-                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations."
-                  })
+                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations.",
+                  });
                   return;
                 }
-                
+
                 // Test privilege
-                if (testPrevilage2 && testPrevilage2.active && !testPrevilage2.data.includes(testCode2)) {
+                if (
+                  testPrevilage2 &&
+                  testPrevilage2.active &&
+                  !testPrevilage2.data.includes(testCode2)
+                ) {
                   signals.onResponse({
-                    text: "You are not allowed to attempt this test."
-                  })
+                    text: "You are not allowed to attempt this test.",
+                  });
                   return;
                 }
-                
+
                 // User cannot attempt the test more than once if it is active
-                console.log(userRole2)
+                console.log(userRole2);
                 if (userRole2 && userRole2 !== "admin") {
-                  if (!isRepeatStatus2.is_repeat && testCodeList2.includes(testCode2)) {
+                  if (
+                    !isRepeatStatus2.is_repeat &&
+                    testCodeList2.includes(testCode2)
+                  ) {
                     signals.onResponse({
-                      text: "You are not allowed to attempt this interaction again."
-                    })
+                      text: "You are not allowed to attempt this interaction again.",
+                    });
                     return;
                   }
                 }
                 //end
-                
+
                 try {
                   const response = await fetch(
                     `${baseURL2}/test-attempt-sessions/`,
@@ -868,9 +1127,37 @@ loadExternalModule().then(() => {
                       }
                     }
                   } else {
-                    questionText2 =
-                      questionData2.results[0].questions[questionIndex2]
-                        .question;
+                    if (testType2 === "mcq") {
+                      questionText2 =
+                        questionData2.results[0].questions[questionIndex2]
+                          .question;
+                      questionId2 =
+                        questionData2.results[0].questions[questionIndex2].uid;
+                      const mcqOptionsStt =
+                        questionData2.results[0].questions[questionIndex2]
+                          .mcq_options;
+                      const optionNameStt = Object.keys(mcqOptionsStt);
+                      console.log(mcqOptionsStt, optionNameStt, questionData2);
+                      const option1Name = optionNameStt[0];
+                      const option2Name = optionNameStt[1];
+                      const option1Text = mcqOptionsStt[option1Name]["opt"];
+                      const option2Text = mcqOptionsStt[option2Name]["opt"];
+
+                      formRadio = `
+                      <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
+                        <div id='question-stt' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
+                        <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
+                        <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
+                        <input type="radio" id="${option2Name}" name="mcq_option_stt" value="${option2Text}" style="margin-right: 5px;">
+                        <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+                        <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                      </div>`;
+                      questionText2 = formRadio;
+                    } else {
+                      questionText2 =
+                        questionData2.results[0].questions[questionIndex2]
+                          .question;
+                    }
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
@@ -931,7 +1218,10 @@ loadExternalModule().then(() => {
                         });
                       }
                   } else {
-                    if (testType2 != 'orchestrated_conversation' && testType2 != 'dynamic_discussion_thread' ){
+                    if (
+                      testType2 != "orchestrated_conversation" &&
+                      testType2 != "dynamic_discussion_thread"
+                    ) {
                       signals.onResponse({
                         text: questionText2,
                       });
@@ -990,7 +1280,7 @@ loadExternalModule().then(() => {
                         tag: "deepchat_profile",
                         attributes: {
                           username: "web_user",
-                          email: user2 ? user2.email : "test@test.com",
+                          email: user2 ? user2.email : getAnonymousEmail(),
                         },
                       },
                     }),
@@ -1029,7 +1319,9 @@ loadExternalModule().then(() => {
                               tag: "deepchat_profile",
                               attributes: {
                                 username: "web_user",
-                                email: user2 ? user2.email : "test@test.com",
+                                email: user2
+                                  ? user2.email
+                                  : getAnonymousEmail(),
                               },
                             },
                           }),
@@ -1051,7 +1343,10 @@ loadExternalModule().then(() => {
                 }
 
                 if (resQuestionNumber2 != questionLength2) {
-                  if (testType2 === "orchestrated_conversation" || testType2 ==='dynamic_discussion_thread') {
+                  if (
+                    testType2 === "orchestrated_conversation" ||
+                    testType2 === "dynamic_discussion_thread"
+                  ) {
                     signals.onResponse({
                       text: questionText2,
                     });
@@ -1066,7 +1361,7 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber2 === questionLength2) {
                   responsesDone2 = true;
 
-                  if (!user2) {
+                  if (!window.user) {
                     signals.onResponse({
                       text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm2,
@@ -1079,7 +1374,7 @@ loadExternalModule().then(() => {
                     session_id: sessionId2,
                     interaction_id: testId2,
                   };
-    
+
                   if (is_free2) {
                     reportType2 = "summaryFeedbackReport";
                     getReportBody2 = {
@@ -1104,7 +1399,6 @@ loadExternalModule().then(() => {
                       test_attempt_session_id: sessionId2,
                     };
                   }
-    
 
                   const reportResponse = await fetch(
                     `${baseURL2}/frontend-auth/get-report-url/`,
@@ -1121,21 +1415,30 @@ loadExternalModule().then(() => {
                     }
                   );
 
-                  const reportData = await reportResponse.json();
-                  reportUrl2 = reportData.url;
-                  globalReportUrl2 = reportUrl2;
-                  if (reportData) {
+                  const reportData2 = await reportResponse.json();
+                  reportUrl2 = reportData2.url;
+                  globalReportUrl2 = reportData2.url;
+                  console.log("Report URL ===> ", reportUrl2);
+                  if (reportData2) {
                     responsesDone2 = true;
                   }
 
-                  if (user2) {
+                  if (window.user) {
+                    // sendEmail();
+                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                    appendMessage2(message);
+                    // //* send message to start new session
+
+                    signals.onResponse({
+                      text: "Please enter another access code to start a new interaction.",
+                    });
                     submitEmailAndName2();
-                    console.log('completed')
+                    return;
                   }
                 }
               }
             } catch (err) {
-              console.log(err)
+              console.log(err);
               if (!isTestcodeValid2 && body.messages[0].text !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
@@ -1149,7 +1452,7 @@ loadExternalModule().then(() => {
           }
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
         signals.onResponse({
           error:
             "Your response could not be processed due to technical reasons, please refresh the page and try again. ",
@@ -1175,6 +1478,17 @@ const openChatContainer2 = () => {
     })
     .catch((error) => console.error("Error fetching IP address:", error));
 
+  let user_name2;
+  let user_email2;
+
+  if (window.user) {
+    user_name2 = window.user.given_name;
+    user_email2 = window.user.email;
+  } else {
+    user_name2 = "coachbots_anonyoususer";
+    user_email2 = getAnonymousEmail();
+  }
+
   // 2 - account creation
   fetch(`${baseURL2}/accounts/`, {
     method: "POST",
@@ -1184,19 +1498,19 @@ const openChatContainer2 = () => {
     },
     body: JSON.stringify({
       user_context: {
-        name: user2 ? user2.given_name : "newUser-1",
+        name: user_name2,
         role: "member",
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
-            username: "web_user",
-            email: user2 ? user2.email : "test@test.com",
+            username: user_name2,
+            email: user_email2,
           },
         },
       },
       identity_context: {
         identity_type: "deepchat_unique_id",
-        value: `user_name=${user2 ? user2.given_name : ipAddress}`,
+        value: user_email2,
       },
     }),
   })
@@ -1205,7 +1519,6 @@ const openChatContainer2 = () => {
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
-      console.log(data);
     })
     .catch((err) => console.log(err));
 
