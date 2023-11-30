@@ -56,7 +56,7 @@ function createMessageNode2(message) {
 
 function appendMessage2(message2) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const messageNode = createMessageNode(message2);
+  const messageNode = createMessageNode2(message2);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
@@ -541,7 +541,7 @@ loadExternalModule().then(() => {
       <img
         class="chat-icon2"
         style="height: 100%; width: 100%; border-radius:40%;"
-        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
+        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
         alt="chat-bot-image"
       />
     </button>
@@ -554,7 +554,7 @@ loadExternalModule().then(() => {
       position: fixed;
       scale: 0;
       bottom: 6rem;
-      width: 400px;
+      width: 80vw;
       left: 6rem; 
       transition: 0.4s ease-in-out; 
       transform-origin: left bottom;
@@ -599,7 +599,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat
       id="chat-element2"
-      style="height:450px; width: 400px; border:none;"
+      style="height:450px; width: 10%; border:none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px"}}
@@ -648,6 +648,7 @@ loadExternalModule().then(() => {
   let questionData2;
   let senarioDescription2;
   let senarioTitle2;
+  let senarioMediaDescription2;
   let responsesDone2 = false;
   let userName2 = "";
   let userEmail2 = "";
@@ -851,6 +852,7 @@ loadExternalModule().then(() => {
             // responseProcessedQuestion = 0;
             senarioDescription2 = "";
             senarioTitle2 = "";
+            senarioMediaDescription2 = "";
             responsesDone2 = false;
             userName2 = "";
             userEmail2 = "";
@@ -971,6 +973,8 @@ loadExternalModule().then(() => {
               is_free2 = questionData2.results[0].is_free;
               senarioDescription2 = questionData2.results[0].description;
               senarioTitle2 = questionData2.results[0].title;
+              senarioMediaDescription2 = questionData2.results[0].description_media
+              console.log(senarioMediaDescription2)
 
               testType2 = questionData2.results[0].test_type;
               orch_details2 =
@@ -1157,10 +1161,62 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    signals.onResponse({
-                      html: questionText2,
-                      text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                    });
+                    if(senarioMediaDescription2 !== null){
+                        let embeddingUrl2 = "";
+                        if (senarioMediaDescription2.length > 0) {
+                          if (senarioMediaDescription2.includes("youtube.com")) {
+                            const videoId = senarioMediaDescription2.split("v=")[1];
+                            embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
+                          } else if (senarioMediaDescription2.includes("vimeo.com")) {
+                            const videoId = senarioMediaDescription2.split("/").pop();
+                            embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
+                          } else if (senarioMediaDescription2.includes("twitter.com")) {
+                            // console.log(tweetId);
+                            embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
+    
+                            appendMessage2(
+                              `▪ Title : ${senarioTitle2} <br><br>
+                                 ▪ Description : ${senarioDescription2} <br><br>
+                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                 ▪ Media  <iframe
+                                            style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                            src=${embeddingUrl2}
+                                            frameborder="0"
+                                            allowfullscreen
+                                          >
+                                `
+                            );
+                          }
+                          if (!senarioMediaDescription2.includes("twitter.com")) {
+                            appendMessage2(
+                              `▪ Title : ${senarioTitle2} <br><br>
+                               ▪ Description : ${senarioDescription2} <br><br>
+                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                               ▪ Media  <iframe
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl2}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                              `
+                            );
+                          }
+                        } else {
+                          appendMessage2(
+                            `▪ Title : ${senarioTitle2} <br><br>
+                             ▪ Description : ${senarioDescription2} <br><br>
+                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                          );
+                        }
+                        signals.onResponse({
+                          text: questionText2,
+                        });
+                      } else {
+                        signals.onResponse({
+                          html: questionText2,
+                          text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                        });
+                      }
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
@@ -1476,12 +1532,12 @@ const openChatContainer2 = () => {
 
   if (
     chatIcon2.src ===
-    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
   ) {
     chatIcon2.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
   } else {
     chatIcon2.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png";
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
   }
 };

@@ -353,6 +353,7 @@ async function setMcqVariables() {
 
 let queryParams;
 
+
 //*********** hit mail sending api */
 
 function sendEmail() {
@@ -363,6 +364,7 @@ function sendEmail() {
     report_url: globalReportUrl,
     is_whatsapp: false,
   });
+
 
   fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
     method: "POST",
@@ -416,7 +418,7 @@ async function submitEmailAndName() {
   )
     .then((response) => response.json())
     .then((data) => {
-      credsUpdated = data.status;
+
       console.log("name email updated, sending email");
       sendEmail();
 
@@ -430,6 +432,7 @@ async function submitEmailAndName() {
           "Please enter another access code to start a new interaction."
         );
       }
+
     })
     .catch((err) => {
       console.log(err);
@@ -622,7 +625,7 @@ loadExternalModule().then(() => {
       <img
         class="chat-icon"
         style="height: 100%; width: 100%; border-radius:40%;"
-        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
+        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
         alt="chat-bot-image"
       />
     </button>
@@ -635,7 +638,7 @@ loadExternalModule().then(() => {
       position: fixed;
       scale: 0;
       bottom: 6rem;
-      width: 400px;
+      width: 80vw;
       right: 6rem;
       transition: 0.4s ease-in-out;
       transform-origin: 100% 100%;
@@ -680,7 +683,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat 
       id="chat-element"
-      style="height:450px; width: 400px; border:none;"
+      style="height:450px; width: 10%; border:none;"
       microphone='true'
       messageStyles='{
         "default": {
@@ -729,6 +732,7 @@ loadExternalModule().then(() => {
   let senarioDescription;
   let senarioTitle;
   let responsesDone = false;
+  let senarioMediaDescription;
   let userName = "";
   let userEmail = "";
   let reportUrl;
@@ -1169,6 +1173,7 @@ loadExternalModule().then(() => {
               }
 
               if (!window.user) {
+
                 signals.onResponse({
                   text: "For obtaining your report, please submit the following details.",
                   html: credentialsForm,
@@ -1301,7 +1306,12 @@ loadExternalModule().then(() => {
             responseProcessedQuestion = 0;
             senarioDescription = "";
             senarioTitle = "";
+
+            responsesDone = false;
+            senarioMediaDescription = "";
+
             responsesDone = false; // move elsewhere
+
             userName = "";
             userEmail = "";
             reportUrl = null;
@@ -1413,12 +1423,15 @@ loadExternalModule().then(() => {
               );
 
               questionData = await response.json();
+              console.log("TESTCODE DATA :", questionData)
               questionLength = questionData.results[0].questions.length;
               testId = questionData.results[0].uid;
               interactionMode = questionData.results[0].interaction_mode;
               is_free = questionData.results[0].is_free;
               senarioDescription = questionData.results[0].description;
               senarioTitle = questionData.results[0].title;
+              senarioMediaDescription = questionData.results[0].description_media
+              console.log(senarioMediaDescription)
 
               isTestcodeValid = true;
 
@@ -1606,10 +1619,64 @@ loadExternalModule().then(() => {
                   }
 
                   if (questionIndex === 0) {
-                    signals.onResponse({
-                      html: questionText,
-                      text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                    });
+                      if(senarioMediaDescription !== null){
+                        let embeddingUrl = "";
+                        if (senarioMediaDescription.length > 0) {
+                          if (senarioMediaDescription.includes("youtube.com")) {
+                            const videoId = senarioMediaDescription.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
+                          } else if (senarioMediaDescription.includes("vimeo.com")) {
+                            const videoId = senarioMediaDescription.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
+                          } else if (senarioMediaDescription.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
+    
+                            appendMessage(
+                              `▪ Title : ${senarioTitle} <br><br>
+                                 ▪ Description : ${senarioDescription} <br><br>
+                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                 ▪ Media <br> <iframe
+                                            style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                            src=${embeddingUrl}
+                                            frameborder="0"
+                                            allowfullscreen
+                                          >
+                                `
+                            );
+                          }
+                          if (!senarioMediaDescription.includes("twitter.com")) {
+                            appendMessage(
+                              `▪ Title : ${senarioTitle} <br><br>
+                               ▪ Description : ${senarioDescription} <br><br>
+                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                               ▪ Media <br>  <iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                                src=${embeddingUrl}
+                                                frameborder="0"
+                                                allowfullscreen
+                                              >
+                              
+                              `
+                            );
+                          }
+                        } else {
+                          appendMessage(
+                            `▪ Title : ${senarioTitle} <br><br>
+                             ▪ Description : ${senarioDescription} <br><br>
+                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                          );
+                        }
+                        signals.onResponse({
+                          text: questionText,
+                        });
+                      } else {
+                        signals.onResponse({
+                          html: questionText,
+                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                        });
+                      }
+                      // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
+                      
                   } else {
                     if (
                       testType != "orchestrated_conversation" &&
@@ -1620,6 +1687,8 @@ loadExternalModule().then(() => {
                       });
                     }
                   }
+
+                  
                 }
                 if (
                   questionIndex === questionLength &&
@@ -1751,7 +1820,9 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber === questionLength) {
                   responsesDone = true;
 
+
                   if (!window.user) {
+
                     signals.onResponse({
                       text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
@@ -2001,12 +2072,12 @@ const openChatContainer = () => {
 
   if (
     chatIcon.src ===
-    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
   ) {
     chatIcon.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
   } else {
     chatIcon.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png";
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
   }
 };
