@@ -739,6 +739,8 @@ loadExternalModule().then(() => {
   let testCodeList;
   let isRepeatStatus;
   let testPrevilage;
+  let sessionStatus;
+  let isSessionExpired;
 
   const credentialsForm = `<div id="input-form">
   <div style="display: flex; flex-direction: column">
@@ -866,7 +868,107 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
-  // apis for restriction to attempt test like test previllage
+
+  // to reset all variables
+  const resetAllVariables = () => {
+    //* reset all variables : start
+    questionText = "";
+    reportType = "interactionSessionReport";
+    questionIndex = 0;
+    questionId = null;
+    userResponse = "";
+
+    testId = null;
+    resQuestionNumber = null;
+    questionLength = null;
+    questionData = null;
+    documentId = null;
+    userAudioResponse = "";
+
+    is_free = true;
+    responseProcessedQuestion = 0;
+    senarioDescription = "";
+    senarioTitle = "";
+    responsesDone = false;
+    userName = "";
+    userEmail = "";
+    reportUrl = null;
+    testCodeList = [];
+    isRepeatStatus = false;
+    testPrevilage = "";
+
+    //global variables
+    sessionId = "";
+    testCode = null;
+    optedNo = false;
+    globalReportUrl = null;
+
+    //* reset all variables : end
+    codeAvailabilityUserChoice = true;
+    mcqQustionIndex = 0;
+  };
+
+  // to check word limit
+  function isValidMessage(text) {
+    const words = text.split(" ");
+    if (words.length <= 10) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  // to cancel all active test for a user
+  const cancelTest = async (user_id) => {
+    const url = `${baseURL}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
+
+    try {
+      if (user_id){
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const responseJson = await response.json();
+      console.log(responseJson);
+    } 
+    
+    } catch (error) {
+      console.error(`Error in cancelTest: ${error}`);
+    }
+  };
+
+  // get session status
+  const getSessionStatus = async (session_id) => {
+    const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
+
+    try {
+      if (session_id){
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const responseJson = await response.json();
+      console.log(responseJson);
+
+      sessionStatus = responseJson["status"];
+      isSessionExpired = responseJson["is_expired"]
+      console.log(sessionStatus);
+    } else{
+      sessionStatus = 'inactive'
+      isSessionExpired = false
+    }
+    } catch (error) {
+      console.error(`Error in getSessionStatus: ${error}`);
+    }
+  };
+
+  // apis for restriction to attempt test like test previllage 
   const getAttemptedTestList = async (userId) => {
     const url = `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
 
@@ -1095,6 +1197,25 @@ loadExternalModule().then(() => {
       try {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
+
+          // to check session active or not
+
+          await getSessionStatus(sessionId)
+
+          if (sessionStatus != 'in_progress'){
+            signals.onResponse({
+              text: "To Start Your Session Please Enter Interaction Code.."
+            });
+            return;
+
+          } else if (sessionStatus === 'in_progress' && isSessionExpired){ // checking sessionexpiry 
+            await cancelTest(participantId);
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
+            });
+          }
+
+
           let file = audioFile;
 
           if (file.name.length === 0 || file.size === "") {
@@ -1288,48 +1409,9 @@ loadExternalModule().then(() => {
               return;
             }
 
+            await cancelTest(participantId)
             //* reset all variables : start
-            questionText = "";
-            reportType = "interactionSessionReport";
-            questionIndex = 0;
-            questionId = null;
-            userResponse = "";
-
-            testId = null;
-            resQuestionNumber = null;
-            questionLength = null;
-            questionData = null;
-            documentId = null;
-            userAudioResponse = "";
-
-            is_free = true;
-            responseProcessedQuestion = 0;
-            senarioDescription = "";
-            senarioTitle = "";
-
-            responsesDone = false;
-            senarioMediaDescription = "";
-
-            responsesDone = false; // move elsewhere
-
-            userName = "";
-            userEmail = "";
-            reportUrl = null;
-            testCodeList = [];
-            isRepeatStatus = false;
-            testPrevilage = "";
-
-            //global variables
-            sessionId = "";
-            testCode = null;
-            codeAvailabilityUserChoice = false;
-            optedNo = false;
-            globalReportUrl = null;
-
-            //* reset all variables : end
-            testCode = latestMessage;
-            codeAvailabilityUserChoice = true;
-            mcqQustionIndex = 0;
+            resetAllVariables();
           }
 
           const userAcessAvailability = body.messages[0].text;
@@ -1367,13 +1449,57 @@ loadExternalModule().then(() => {
             body.messages[0].text === "STOP" ||
             body.messages[0].text === "stop"
           ) {
-            signals.onResponse({
-              text: "Your session is terminated. The page will refresh. And then you can restart again!",
+            await cancelTest(participantId); // cancelling session
+            resetAllVariables(); //reseting variables
+            signals.onResponse({ 
+              text: "Your session is terminated. You can restart again!",
             });
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 2000);
             return;
+          }
+
+          // to check session is active or not
+          if (!isTestCode(latestMessage)){
+            await getSessionStatus(sessionId)
+
+            // getting text which is from option-button-container
+            const shadowRoot =
+                    document.getElementById("chat-element").shadowRoot;
+            const option_buttons = shadowRoot.querySelectorAll('#option-button-container button');
+
+            const buttonTextArray = [];
+            
+            option_buttons.forEach(button => {
+                const buttonText = button.textContent.trim();
+                buttonTextArray.push(buttonText);
+            });
+            //end
+
+            if (!buttonTextArray.includes(latestMessage)){
+              if (sessionStatus != 'in_progress'){
+                signals.onResponse({
+                  text: "To Start Your Session Please Enter Interaction Code.."
+                });
+                return;
+              } else if (sessionStatus === 'in_progress' && isSessionExpired){  // checking sessionexpiry
+                await cancelTest(participantId);
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
+                });
+              }
+
+              //************* check if user message is atleast 10 words */
+              if (!isValidMessage(latestMessage)) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 10 words</p>",
+                });
+                return;
+              }
+            }
+
+
           }
 
           let isTestcodeValid;
