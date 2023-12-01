@@ -1,6 +1,6 @@
 const key = "";
 const secret = "";
-const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
+const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
 
 let sessionId = "";
 let userId = "";
@@ -741,6 +741,7 @@ loadExternalModule().then(() => {
   let testPrevilage;
   let sessionStatus;
   let isSessionExpired;
+  let testType;
 
   const credentialsForm = `<div id="input-form">
   <div style="display: flex; flex-direction: column">
@@ -889,6 +890,7 @@ loadExternalModule().then(() => {
     responseProcessedQuestion = 0;
     senarioDescription = "";
     senarioTitle = "";
+    senarioMediaDescription;
     responsesDone = false;
     userName = "";
     userEmail = "";
@@ -906,6 +908,10 @@ loadExternalModule().then(() => {
     //* reset all variables : end
     codeAvailabilityUserChoice = true;
     mcqQustionIndex = 0;
+    mcqFormId;
+    globalQuestionData;
+    globalQuestionLength;
+    testType;
   };
 
   // to check word limit
@@ -1451,6 +1457,17 @@ loadExternalModule().then(() => {
           ) {
             await cancelTest(participantId); // cancelling session
             resetAllVariables(); //reseting variables
+            if (testType === 'mcq'){
+              const shadowRoot =
+                      document.getElementById("chat-element").shadowRoot;
+              const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+              // button.parentNode.removeChild(button)
+              const thankYouMessage = document.createElement('div');
+              thankYouMessage.innerHTML = '<b>Thank you!</b>'; // You can customize the message here
+              // Replace the button with the "Thank you" message
+              button.parentNode.replaceChild(thankYouMessage, button);
+            }
+
             signals.onResponse({ 
               text: "Your session is terminated. You can restart again!",
             });
@@ -1793,7 +1810,7 @@ loadExternalModule().then(() => {
                           );
                         }
                         signals.onResponse({
-                          text: questionText,
+                          html: questionText,
                         });
                       } else {
                         signals.onResponse({
@@ -2059,6 +2076,7 @@ loadExternalModule().then(() => {
           }
         }
       } catch (e) {
+        console.log(e);
         signals.onResponse({
           error:
             "Your response could not be processed due to technical reasons, please refresh the page and try again. ",

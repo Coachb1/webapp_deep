@@ -1,6 +1,6 @@
 const key2 = "";
 const secret2 = "";
-const baseURL2 = "https://coach-api-gcp.coachbots.com/api/v1";
+const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
 
 let sessionId2 = "";
 let userId2 = "";
@@ -127,7 +127,7 @@ async function setMcqVariablesStt() {
                   <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
                   <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
-
+    
     gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
       formRadioStt;
 
@@ -658,6 +658,7 @@ loadExternalModule().then(() => {
   let testPrevilage2;
   let sessionStatusStt;
   let isSessionExpiredStt;
+  let testType2
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -753,6 +754,7 @@ loadExternalModule().then(() => {
     // responseProcessedQuestion = 0;
     senarioDescription2 = "";
     senarioTitle2 = "";
+    senarioMediaDescription2;
     responsesDone2 = false;
     userName2 = "";
     userEmail2 = "";
@@ -771,6 +773,10 @@ loadExternalModule().then(() => {
     //* reset all variables : end
     codeAvailabilityUserChoice2 = true;
     mcqQustionIndexStt = 0;
+    mcqFormIdStt;
+    globalQuestionDataStt;
+    globalQuestionLengthStt;
+    testType2;
   }
 
   // to check word limit
@@ -976,6 +982,18 @@ loadExternalModule().then(() => {
             body.messages[0].text === "stop"
           ) {
             await cancelTestStt(participantId2); // cancelling session
+            if (testType2 === 'mcq'){
+              const shadowRoot =
+                      document.getElementById("chat-element2").shadowRoot;
+              const button = shadowRoot.getElementById(`mcq-option-stt-${mcqFormIdStt}`);
+              // button.parentNode.removeChild(button)
+              const thankYouMessage = document.createElement('div');
+              thankYouMessage.innerHTML = '<b>Thank you!</b>'; // You can customize the message here
+
+              // Replace the button with the "Thank you" message
+              button.parentNode.replaceChild(thankYouMessage, button);
+            }
+            
             resetAllVariablesStt(); //reseting variables
             signals.onResponse({ 
               text: "Your session is terminated. You can restart again!",
@@ -1324,7 +1342,7 @@ loadExternalModule().then(() => {
                           );
                         }
                         signals.onResponse({
-                          text: questionText2,
+                          html: questionText2,
                         });
                       } else {
                         signals.onResponse({
