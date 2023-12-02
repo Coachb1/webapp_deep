@@ -11,7 +11,7 @@ export function constructMetadata({
   title = "Coachbots - Playground",
   description = "",
   image = "/thumbnail.png",
-  icons = "../../public/favicon.ico",
+  icons = "/favicon.ico",
   noIndex = false,
 }: {
   title?: string;

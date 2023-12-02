@@ -353,7 +353,6 @@ async function setMcqVariables() {
 
 let queryParams;
 
-
 //*********** hit mail sending api */
 
 function sendEmail() {
@@ -364,7 +363,6 @@ function sendEmail() {
     report_url: globalReportUrl,
     is_whatsapp: false,
   });
-
 
   fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
     method: "POST",
@@ -418,7 +416,6 @@ async function submitEmailAndName() {
   )
     .then((response) => response.json())
     .then((data) => {
-
       console.log("name email updated, sending email");
       sendEmail();
 
@@ -432,7 +429,6 @@ async function submitEmailAndName() {
           "Please enter another access code to start a new interaction."
         );
       }
-
     })
     .catch((err) => {
       console.log(err);
@@ -674,6 +670,15 @@ loadExternalModule().then(() => {
     ">
       C
     </h1>
+    <img id="close-top" 
+      onmouseover="this.style.cursor ='pointer'"
+      onclick="closeFromTop()"
+      src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
+      style="
+      width : 30px;
+      position: absolute;
+      left : 1rem;
+    "/>
     <h3 style="
       font-size: 16px;
       font-weight: 500;
@@ -689,6 +694,9 @@ loadExternalModule().then(() => {
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px" }}
         }
+      }'
+      textInput='{
+        "placeholder": {"text": "Welcome, Please follow provided instructions."}
       }'
       demo="true"
       style="border: none"
@@ -869,7 +877,6 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
-
   // to reset all variables
   const resetAllVariables = () => {
     //* reset all variables : start
@@ -922,25 +929,24 @@ loadExternalModule().then(() => {
     } else {
       return true;
     }
-  };
+  }
 
   // to cancel all active test for a user
   const cancelTest = async (user_id) => {
     const url = `${baseURL}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
 
     try {
-      if (user_id){
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        },
-      });
+      if (user_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
 
-      const responseJson = await response.json();
-      console.log(responseJson);
-    } 
-    
+        const responseJson = await response.json();
+        console.log(responseJson);
+      }
     } catch (error) {
       console.error(`Error in cancelTest: ${error}`);
     }
@@ -951,30 +957,30 @@ loadExternalModule().then(() => {
     const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
 
     try {
-      if (session_id){
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        },
-      });
+      if (session_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
 
-      const responseJson = await response.json();
-      console.log(responseJson);
+        const responseJson = await response.json();
+        console.log(responseJson);
 
-      sessionStatus = responseJson["status"];
-      isSessionExpired = responseJson["is_expired"]
-      console.log(sessionStatus);
-    } else{
-      sessionStatus = 'inactive'
-      isSessionExpired = false
-    }
+        sessionStatus = responseJson["status"];
+        isSessionExpired = responseJson["is_expired"];
+        console.log(sessionStatus);
+      } else {
+        sessionStatus = "inactive";
+        isSessionExpired = false;
+      }
     } catch (error) {
       console.error(`Error in getSessionStatus: ${error}`);
     }
   };
 
-  // apis for restriction to attempt test like test previllage 
+  // apis for restriction to attempt test like test previllage
   const getAttemptedTestList = async (userId) => {
     const url = `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
 
@@ -1206,21 +1212,20 @@ loadExternalModule().then(() => {
 
           // to check session active or not
 
-          await getSessionStatus(sessionId)
+          await getSessionStatus(sessionId);
 
-          if (sessionStatus != 'in_progress'){
+          if (sessionStatus != "in_progress") {
             signals.onResponse({
-              text: "To Start Your Session Please Enter Interaction Code.."
+              text: "To Start Your Session Please Enter Interaction Code..",
             });
             return;
-
-          } else if (sessionStatus === 'in_progress' && isSessionExpired){ // checking sessionexpiry 
+          } else if (sessionStatus === "in_progress" && isSessionExpired) {
+            // checking sessionexpiry
             await cancelTest(participantId);
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
             });
           }
-
 
           let file = audioFile;
 
@@ -1300,7 +1305,6 @@ loadExternalModule().then(() => {
               }
 
               if (!window.user) {
-
                 signals.onResponse({
                   text: "For obtaining your report, please submit the following details.",
                   html: credentialsForm,
@@ -1415,7 +1419,7 @@ loadExternalModule().then(() => {
               return;
             }
 
-            await cancelTest(participantId)
+            await cancelTest(participantId);
             //* reset all variables : start
             resetAllVariables();
           }
@@ -1457,18 +1461,20 @@ loadExternalModule().then(() => {
           ) {
             await cancelTest(participantId); // cancelling session
             resetAllVariables(); //reseting variables
-            if (testType === 'mcq'){
+            if (testType === "mcq") {
               const shadowRoot =
-                      document.getElementById("chat-element").shadowRoot;
-              const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+                document.getElementById("chat-element").shadowRoot;
+              const button = shadowRoot.getElementById(
+                `mcq-option-${mcqFormId}`
+              );
               // button.parentNode.removeChild(button)
-              const thankYouMessage = document.createElement('div');
-              thankYouMessage.innerHTML = '<b>Thank you!</b>'; // You can customize the message here
+              const thankYouMessage = document.createElement("div");
+              thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
             }
 
-            signals.onResponse({ 
+            signals.onResponse({
               text: "Your session is terminated. You can restart again!",
             });
             // setTimeout(() => {
@@ -1478,29 +1484,32 @@ loadExternalModule().then(() => {
           }
 
           // to check session is active or not
-          if (!isTestCode(latestMessage)){
-            await getSessionStatus(sessionId)
+          if (!isTestCode(latestMessage)) {
+            await getSessionStatus(sessionId);
 
             // getting text which is from option-button-container
             const shadowRoot =
-                    document.getElementById("chat-element").shadowRoot;
-            const option_buttons = shadowRoot.querySelectorAll('#option-button-container button');
+              document.getElementById("chat-element").shadowRoot;
+            const option_buttons = shadowRoot.querySelectorAll(
+              "#option-button-container button"
+            );
 
             const buttonTextArray = [];
-            
-            option_buttons.forEach(button => {
-                const buttonText = button.textContent.trim();
-                buttonTextArray.push(buttonText);
+
+            option_buttons.forEach((button) => {
+              const buttonText = button.textContent.trim();
+              buttonTextArray.push(buttonText);
             });
             //end
 
-            if (!buttonTextArray.includes(latestMessage)){
-              if (sessionStatus != 'in_progress'){
+            if (!buttonTextArray.includes(latestMessage)) {
+              if (sessionStatus != "in_progress") {
                 signals.onResponse({
-                  text: "To Start Your Session Please Enter Interaction Code.."
+                  text: "To Start Your Session Please Enter Interaction Code..",
                 });
                 return;
-              } else if (sessionStatus === 'in_progress' && isSessionExpired){  // checking sessionexpiry
+              } else if (sessionStatus === "in_progress" && isSessionExpired) {
+                // checking sessionexpiry
                 await cancelTest(participantId);
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
@@ -1515,8 +1524,6 @@ loadExternalModule().then(() => {
                 return;
               }
             }
-
-
           }
 
           let isTestcodeValid;
@@ -1566,15 +1573,16 @@ loadExternalModule().then(() => {
               );
 
               questionData = await response.json();
-              console.log("TESTCODE DATA :", questionData)
+              console.log("TESTCODE DATA :", questionData);
               questionLength = questionData.results[0].questions.length;
               testId = questionData.results[0].uid;
               interactionMode = questionData.results[0].interaction_mode;
               is_free = questionData.results[0].is_free;
               senarioDescription = questionData.results[0].description;
               senarioTitle = questionData.results[0].title;
-              senarioMediaDescription = questionData.results[0].description_media
-              console.log(senarioMediaDescription)
+              senarioMediaDescription =
+                questionData.results[0].description_media;
+              console.log(senarioMediaDescription);
 
               isTestcodeValid = true;
 
@@ -1762,20 +1770,27 @@ loadExternalModule().then(() => {
                   }
 
                   if (questionIndex === 0) {
-                      if(senarioMediaDescription !== null){
-                        let embeddingUrl = "";
-                        if (senarioMediaDescription.length > 0) {
-                          if (senarioMediaDescription.includes("youtube.com")) {
-                            const videoId = senarioMediaDescription.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
-                          } else if (senarioMediaDescription.includes("vimeo.com")) {
-                            const videoId = senarioMediaDescription.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
-                          } else if (senarioMediaDescription.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
-    
-                            appendMessage(
-                              `▪ Title : ${senarioTitle} <br><br>
+                    if (senarioMediaDescription !== null) {
+                      let embeddingUrl = "";
+                      if (senarioMediaDescription.length > 0) {
+                        if (senarioMediaDescription.includes("youtube.com")) {
+                          const videoId =
+                            senarioMediaDescription.split("v=")[1];
+                          embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
+                        } else if (
+                          senarioMediaDescription.includes("vimeo.com")
+                        ) {
+                          const videoId = senarioMediaDescription
+                            .split("/")
+                            .pop();
+                          embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
+                        } else if (
+                          senarioMediaDescription.includes("twitter.com")
+                        ) {
+                          embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
+
+                          appendMessage(
+                            `▪ Title : ${senarioTitle} <br><br>
                                  ▪ Description : ${senarioDescription} <br><br>
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                  ▪ Media <br> <iframe
@@ -1785,11 +1800,11 @@ loadExternalModule().then(() => {
                                             allowfullscreen
                                           >
                                 `
-                            );
-                          }
-                          if (!senarioMediaDescription.includes("twitter.com")) {
-                            appendMessage(
-                              `▪ Title : ${senarioTitle} <br><br>
+                          );
+                        }
+                        if (!senarioMediaDescription.includes("twitter.com")) {
+                          appendMessage(
+                            `▪ Title : ${senarioTitle} <br><br>
                                ▪ Description : ${senarioDescription} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
                                ▪ Media <br>  <iframe
@@ -1800,26 +1815,25 @@ loadExternalModule().then(() => {
                                               >
                               
                               `
-                            );
-                          }
-                        } else {
-                          appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
-                             ▪ Description : ${senarioDescription} <br><br>
-                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
                           );
                         }
-                        signals.onResponse({
-                          html: questionText,
-                        });
                       } else {
-                        signals.onResponse({
-                          html: questionText,
-                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                        });
+                        appendMessage(
+                          `▪ Title : ${senarioTitle} <br><br>
+                             ▪ Description : ${senarioDescription} <br><br>
+                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                        );
                       }
-                      // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
-                      
+                      signals.onResponse({
+                        html: questionText,
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: questionText,
+                        text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                      });
+                    }
+                    // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
                   } else {
                     if (
                       testType != "orchestrated_conversation" &&
@@ -1830,8 +1844,6 @@ loadExternalModule().then(() => {
                       });
                     }
                   }
-
-                  
                 }
                 if (
                   questionIndex === questionLength &&
@@ -1963,9 +1975,7 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber === questionLength) {
                   responsesDone = true;
 
-
                   if (!window.user) {
-
                     signals.onResponse({
                       text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
@@ -2213,6 +2223,25 @@ const openChatContainer = () => {
     chatContainer.style.scale = 1;
     chatContainer.style["transform-origin"] = "100% 50%";
   }
+
+  if (
+    chatIcon.src ===
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+  ) {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+  } else {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+  }
+};
+
+const closeFromTop = () => {
+  let chatContainer = document.getElementsByClassName("chat-container")?.[0];
+  let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+
+  chatContainer.style.scale = 0;
+  chatContainer.style["transform-origin"] = "100% 100%";
 
   if (
     chatIcon.src ===

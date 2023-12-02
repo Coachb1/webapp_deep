@@ -31,10 +31,6 @@ const HeroAccordion = ({ tests }: testTypes) => {
           </AccordionTrigger>
           <AccordionContent className="max-sm:text-xs">
             <p> {test.description}</p>
-            <p className="mt-2">
-              <span className="font-bold">Response mode Allowed</span> :{" "}
-              {test.interaction_mode}
-            </p>
             <div className="flex justify-end mt-2">
               <CopyToClipboard textToCopy={test.test_code} />
             </div>
