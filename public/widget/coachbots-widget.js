@@ -1,6 +1,7 @@
 const key = "";
 const secret = "";
 const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+// baseURL="http://127.0.0.1:8001/api/v1" //local
 
 let sessionId = "";
 let userId = "";
@@ -353,7 +354,6 @@ async function setMcqVariables() {
 
 let queryParams;
 
-
 //*********** hit mail sending api */
 
 function sendEmail() {
@@ -364,7 +364,6 @@ function sendEmail() {
     report_url: globalReportUrl,
     is_whatsapp: false,
   });
-
 
   fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
     method: "POST",
@@ -418,7 +417,6 @@ async function submitEmailAndName() {
   )
     .then((response) => response.json())
     .then((data) => {
-
       console.log("name email updated, sending email");
       sendEmail();
 
@@ -432,7 +430,6 @@ async function submitEmailAndName() {
           "Please enter another access code to start a new interaction."
         );
       }
-
     })
     .catch((err) => {
       console.log(err);
@@ -466,43 +463,37 @@ async function submitEmailAndName() {
 //* submit email and name for report generation : end
 
 //* variables containing no-code flow data
-const optionDetail = [
-  {
-    "Integrating a New Team Member": {
-      area: "Building Credibility as the New Team Member",
-      information:
-        "Upon joining the team, the new member conscientiously familiarized themselves with the organization's mission, values, and current projects. They proactively sought opportunities to engage with team members, attending both formal meetings and informal gatherings. Demonstrating a keen understanding of their role, the new member consistently met deadlines and exceeded expectations. Their meticulous approach to tasks and open communication style fostered positive relationships within the team. By actively seeking feedback, the new member showcased a commitment to continuous improvement, solidifying their credibility as a valued team contributor.",
-    },
+const optionDetail = {
+  "Integrating a New Team Member": {
+    area: "Building Credibility as the New Team Member",
+    information:
+      "Upon joining the team, the new member conscientiously familiarized themselves with the organization's mission, values, and current projects. They proactively sought opportunities to engage with team members, attending both formal meetings and informal gatherings. Demonstrating a keen understanding of their role, the new member consistently met deadlines and exceeded expectations. Their meticulous approach to tasks and open communication style fostered positive relationships within the team. By actively seeking feedback, the new member showcased a commitment to continuous improvement, solidifying their credibility as a valued team contributor.",
   },
-  {
-    "Effective Customer Service Management": {
-      area: "Handling Impatient Customer Interactions",
-      information:
-        "During a product launch, a customer voiced impatience about delayed delivery. Responding promptly, the service representative acknowledged the concern empathetically, providing a detailed explanation of the situation and steps being taken for resolution. They assured the customer of their commitment to resolving the issue promptly, offering a personalized discount for the inconvenience. The representative's proactive communication and solution-oriented approach not only pacified the customer but also reinforced the company's dedication to customer satisfaction, effectively diffusing a potentially tense situation.",
-    },
+
+  "Effective Customer Service Management": {
+    area: "Handling Impatient Customer Interactions",
+    information:
+      "During a product launch, a customer voiced impatience about delayed delivery. Responding promptly, the service representative acknowledged the concern empathetically, providing a detailed explanation of the situation and steps being taken for resolution. They assured the customer of their commitment to resolving the issue promptly, offering a personalized discount for the inconvenience. The representative's proactive communication and solution-oriented approach not only pacified the customer but also reinforced the company's dedication to customer satisfaction, effectively diffusing a potentially tense situation.",
   },
-  {
-    "Cultivating Growth Through Feedback": {
-      area: "Personal Growth Through Feedback",
-      information:
-        "Engaged in a continuous cycle of personal development, the individual proactively sought feedback from peers and supervisors. Embracing constructive criticism, they identified areas for improvement and implemented targeted strategies for growth. Their commitment to self-reflection, coupled with a receptive attitude, propelled them to refine their skills effectively. This dedication to harnessing feedback as a catalyst for personal and professional advancement underscored their commitment to ongoing personal growth within the organizational context.",
-    },
+
+  "Cultivating Growth Through Feedback": {
+    area: "Personal Growth Through Feedback",
+    information:
+      "Engaged in a continuous cycle of personal development, the individual proactively sought feedback from peers and supervisors. Embracing constructive criticism, they identified areas for improvement and implemented targeted strategies for growth. Their commitment to self-reflection, coupled with a receptive attitude, propelled them to refine their skills effectively. This dedication to harnessing feedback as a catalyst for personal and professional advancement underscored their commitment to ongoing personal growth within the organizational context.",
   },
-  {
-    "Cultivating Team Impartiality": {
-      area: "Managing Favoritism and Bias",
-      information:
-        "The team leader, recognizing the importance of impartiality, consistently employed transparent decision-making processes. In project assignments, they carefully considered individual strengths, ensuring a fair distribution of opportunities. Regularly monitoring interactions, the leader actively discouraged favoritism and biased behavior within the team. Recognizing the potential impact on morale, they implemented inclusive practices, fostering an environment where each team member felt valued. By promoting meritocracy and addressing biases head-on, the leader contributed to a harmonious and equitable work atmosphere, reinforcing the team's commitment to professionalism and fairness.",
-    },
+
+  "Cultivating Team Impartiality": {
+    area: "Managing Favoritism and Bias",
+    information:
+      "The team leader, recognizing the importance of impartiality, consistently employed transparent decision-making processes. In project assignments, they carefully considered individual strengths, ensuring a fair distribution of opportunities. Regularly monitoring interactions, the leader actively discouraged favoritism and biased behavior within the team. Recognizing the potential impact on morale, they implemented inclusive practices, fostering an environment where each team member felt valued. By promoting meritocracy and addressing biases head-on, the leader contributed to a harmonious and equitable work atmosphere, reinforcing the team's commitment to professionalism and fairness.",
   },
-  {
-    "Managing Meeting Momentum": {
-      area: "Assertively Handling Interruptions",
-      information:
-        "During a crucial team meeting, the project lead faced multiple interruptions from team members eager to share their perspectives. With assertiveness, the project lead implemented a structured approach, acknowledging each interruption, expressing appreciation for input, and then redirecting focus to the agenda. This tactful handling of interruptions not only maintained the meeting's momentum but also ensured that all voices were heard without compromising the meeting's objectives. The project lead's ability to navigate interruptions with poise contributed to a more effective and collaborative team environment.",
-    },
+
+  "Managing Meeting Momentum": {
+    area: "Assertively Handling Interruptions",
+    information:
+      "During a crucial team meeting, the project lead faced multiple interruptions from team members eager to share their perspectives. With assertiveness, the project lead implemented a structured approach, acknowledging each interruption, expressing appreciation for input, and then redirecting focus to the agenda. This tactful handling of interruptions not only maintained the meeting's momentum but also ensured that all voices were heard without compromising the meeting's objectives. The project lead's ability to navigate interruptions with poise contributed to a more effective and collaborative team environment.",
   },
-];
+};
 
 //* function to generate buttons for no-code flow
 function generateOptionButtons() {
@@ -549,7 +540,10 @@ async function handleOptionButtonClick(labelText, area, information) {
   const params = new URLSearchParams();
   params.set("mode", "A");
   params.set("area", area);
-  params.set("information", information);
+  params.set(
+    "information",
+    JSON.stringify({ data: optionDetail[labelText], title: labelText })
+  );
   params.set(
     "url",
     "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"

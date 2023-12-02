@@ -1,6 +1,7 @@
 const key2 = "";
 const secret2 = "";
 const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
+// const baseURL2="http://127.0.0.1:8001/api/v1" //local
 
 let sessionId2 = "";
 let userId2 = "";
@@ -127,7 +128,7 @@ async function setMcqVariablesStt() {
                   <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
                   <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
-    
+
     gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
       formRadioStt;
 
@@ -467,7 +468,10 @@ async function handleOptionButtonClick2(labelText, area, information) {
   const params = new URLSearchParams();
   params.set("mode", "A");
   params.set("area", area);
-  params.set("information", information);
+  params.set(
+    "information",
+    JSON.stringify({ data: optionDetail[labelText], title: labelText })
+  );
   params.set(
     "url",
     "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
