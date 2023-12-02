@@ -2,6 +2,7 @@ const key2 = "";
 const secret2 = "";
 const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
 
+let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
 let userRole2;
@@ -509,7 +510,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {
-  let deepChatPocElement2 =
+  deepChatPocElement2 =
     document.getElementsByClassName("deep-chat-poc2")?.[0];
   deepChatPocElement2.innerHTML = `
   <div class="chat-wrapper2">
@@ -563,7 +564,7 @@ loadExternalModule().then(() => {
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
-      height: 80vh;
+      hight: 80vh;
     "
   >
     <div 
@@ -1686,6 +1687,15 @@ const openChatContainer2 = () => {
   } else {
     chatContainer2.style.scale = 1;
     chatContainer2.style["transform-origin"] = "100% 0%";
+
+    //to close other bot
+    const chatContainer = document.getElementById('chat-container')
+    chatContainer.style.scale = 0;
+    chatContainer.style["transform-origin"] = "100% 100%";
+    const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+
   }
 
   if (
