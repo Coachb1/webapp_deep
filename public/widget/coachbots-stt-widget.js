@@ -563,6 +563,7 @@ loadExternalModule().then(() => {
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
+      height: 80vh;
     "
   >
     <div 
@@ -595,11 +596,11 @@ loadExternalModule().then(() => {
       onclick="closeFromTop2()"
       src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
       style="
-      width : 30px;
+      width : 50px;
       position: absolute;
       right : 1rem;
     "/>
-    <h3 style="
+    <h3 id="chatbot-heading2" style="
       font-size: 16px;
       font-weight: 500;
       line-height: 16px;
@@ -608,7 +609,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat
       id="chat-element2"
-      style="height:450px; width: 10%; border:none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 450px; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px"}}
@@ -633,18 +634,22 @@ loadExternalModule().then(() => {
   const chatContainer2 = document.getElementById("chat-container2");
   const chatElementRef2 = document.getElementById("chat-element2");
   const chatIconContainer2 = document.getElementById("chat-icon2");
+  const chatbotHeading2 = document.getElementById("chatbot-heading2");
+  const closeFromTopp2 = document.getElementById("close-top2");
 
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer2.style.width = "80vw";
     chatContainer2.style.left = "3rem";
-    chatContainer2.style.height = "60vh";
-    chatElementRef2.style.height = "52vh";
+    chatContainer2.style.height = "70vh";
+    chatElementRef2.style.height = "500px";
     chatElementRef2.style.width = "80vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
     chatIconContainer2.style.height = "3rem";
     chatContainer2.style.position = "fixed";
+    chatbotHeading2.style.fontSize = "12px";
+    closeFromTopp2.style.display = "none";
   }
 
   let questionText2 = "";

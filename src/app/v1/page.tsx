@@ -2,7 +2,18 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
 
 import { constructMetadata } from "@/lib/utils";
-import { EQTests, Samples } from "@/lib/test";
+import {
+  EQTests,
+  Managerial,
+  oneTwoOne,
+  roundFeedback,
+  meetings,
+  Technology,
+  Reflection,
+  DecisionGames,
+  Sales,
+  serviceslashConsulting,
+} from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -25,7 +36,7 @@ const Page = async () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-[120vh] h-fit grainy max-sm:h-screen max-sm:min-h-screen pb-16">
+    <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8">
         {!user && (
           <Badge
@@ -39,7 +50,7 @@ const Page = async () => {
         <NavProfile />
       </div>
 
-      <MaxWidthWrapper className="mb-8 flex sm:pt-8 max-sm:pt-20 flex-col items-center justify-center text-center">
+      <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
             COACH
@@ -52,7 +63,7 @@ const Page = async () => {
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
           {" "}
           Welcome to our simulation playground. Feel free to try out common
-          senarios or try our <br /> EQ booster{user ? "!" : " by loggin In!"}
+          senarios or try our EQ booster{user ? "!" : " by loggin In!"}
         </p>
 
         {user && (
@@ -69,112 +80,162 @@ const Page = async () => {
           </div>
         )}
 
-        <div className="text-lg z-50">
-          <hr className="my-2 text-black" />
-          <div>
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 mr-4 hover:cursor-pointer"
-            >
-              <Link href={"#comman-senarios"}>Common senarios</Link>
-            </Button>
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-            >
-              <Link href={"#dynamic-games"}>Dynamic games</Link>
-            </Button>
+        <div className="text-lg z-50 w-[80%] max-sm:w-full">
+          <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
+            <Link href={"#managerial"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Managerial
+              </Button>
+            </Link>
+            <Link href={"#reflection"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Reflection
+              </Button>
+            </Link>
+            <Link href={"#decision-games"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Decision Games
+              </Button>
+            </Link>
+            <Link href={"#one-to-one"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                1:1 Check-ins
+              </Button>
+            </Link>
+            <Link href={"#tech"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Technology
+              </Button>
+            </Link>
+            <Link href={"#sales"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Sales
+              </Button>
+            </Link>
+            <Link href={"#service-c"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Service/Consulting
+              </Button>
+            </Link>
+            <Link href={"#360-feedback"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                360 Feedback
+              </Button>
+            </Link>
+            <Link href={"#meetings"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Meetings
+              </Button>
+            </Link>
           </div>
-          <hr className="my-2 text-black" />
         </div>
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
           {user && (
             <div>
-              {/* <p className="mb-8 w-full text-center text-xs">✨ EQ Library</p> */}
-              <div className="w-full flex justify-center">
-                <Badge
-                  variant={"secondary"}
-                  className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] z-50 text-center mb-8"
-                >
-                  ✨ EQ Library
-                </Badge>
-              </div>
-
-              <div>
-                <div className="relative isolate mx-auto" id="Eq-library">
-                  <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                        <HeroAccordion tests={EQTests} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    aria-hidden="true"
-                    className="pointer-event-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-                  >
-                    <div
-                      style={{
-                        clipPath:
-                          "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                      }}
-                      className="relative left-[calc(50%-13rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#D5ECE7] to-[#9C7ACF] opacity-30 sm:left-[calc(50%/36rem)] sm:w-[72.1.78rem]"
-                    />
-                  </div>
-                </div>
-              </div>
+              <HeroAccordion
+                badgeText="EQ Libarary"
+                user={user ? true : false}
+                tests={EQTests}
+              />
             </div>
           )}
-          <div id="comman-senarios">
-            <div
-              className={`w-full flex justify-center ${!user ? "" : "mt-10"} `}
-            >
-              <Badge
-                variant={"secondary"}
-                className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] z-50 text-center mb-8"
-              >
-                ✨ Common Senarios
-              </Badge>
-            </div>
-            <div>
-              <div className="relative isolate mx-auto">
-                <div>
-                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                      <HeroAccordion tests={Samples} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div id="managerial">
+            <HeroAccordion
+              badgeText="Managerial"
+              user={user ? true : false}
+              tests={Managerial}
+            />
+          </div>
+          <div id="reflection">
+            <HeroAccordion
+              badgeText="Reflection"
+              user={user ? true : false}
+              tests={Reflection}
+            />
+          </div>
+          <div id="decision-games">
+            <HeroAccordion
+              badgeText="Decision Games"
+              user={user ? true : false}
+              tests={DecisionGames}
+            />
+          </div>
+          <div id="one-to-one">
+            <HeroAccordion
+              badgeText="1:1 Check-ins"
+              user={user ? true : false}
+              tests={oneTwoOne}
+            />
+          </div>
+          <div id="tech">
+            <HeroAccordion
+              badgeText="Technology"
+              user={user ? true : false}
+              tests={Technology}
+            />
+          </div>
+          <div id="sales">
+            <HeroAccordion
+              badgeText="Sales"
+              user={user ? true : false}
+              tests={Sales}
+            />
+          </div>
+          <div id="service-c">
+            <HeroAccordion
+              badgeText="Service/Consulting"
+              user={user ? true : false}
+              tests={serviceslashConsulting}
+            />
+          </div>
+          <div id="360-feedback">
+            <HeroAccordion
+              badgeText="360 Feedback"
+              user={user ? true : false}
+              tests={roundFeedback}
+            />
+          </div>
+          <div id="meetings">
+            <HeroAccordion
+              badgeText="Meetings"
+              user={user ? true : false}
+              tests={meetings}
+            />
           </div>
         </div>
       </div>
 
-      {/* <div className="w-full flex justify-center pb-16 pt-8">
-        <Button>
-          View our Library <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div> */}
-      {/* <Image
-        className="fixed right-[1.5rem] bottom-32  max-sm:hidden"
-        src={"/arrowRight.svg"}
-        height={35}
-        width={125}
-        alt="arrow"
-      />
-      <Image
-        className="fixed left-[1.5rem] bottom-32  max-sm:hidden"
-        src={"/arrowLeft.svg"}
-        height={35}
-        width={125}
-        alt="arrow"
-      /> */}
-      <hr className="my-4 mt-16 max-sm:mx-8 max-sm:mt-4" />
-      <div className="h-[10vh] max-sm:h-[15vh] text-sm text-gray-700 mx-16 mb-0 max-sm:mx-8 ">
+      <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
+      <div className="h-[10vh] max-sm:h-[8vh] text-sm text-gray-700 mx-16 mb-0 max-sm:mx-8 ">
         <div className="flex flex-col items-center justify-between text-center">
           <div>
             <Link href={"https://www.coachbots.com/"}>

@@ -643,6 +643,7 @@ loadExternalModule().then(() => {
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
+      height: 80vh;
     "
   >
     <div 
@@ -675,11 +676,11 @@ loadExternalModule().then(() => {
       onclick="closeFromTop()"
       src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
       style="
-      width : 30px;
+      width : 50px;
       position: absolute;
       left : 1rem;
     "/>
-    <h3 style="
+    <h3 id="chatbot-heading" style="
       font-size: 16px;
       font-weight: 500;
       line-height: 16px;
@@ -688,7 +689,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat 
       id="chat-element"
-      style="height:450px; width: 10%; border:none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 450px; border: none;"
       microphone='true'
       messageStyles='{
         "default": {
@@ -708,18 +709,22 @@ loadExternalModule().then(() => {
   const chatContainer = document.getElementById("chat-container");
   const chatElementRef = document.getElementById("chat-element");
   const chatIcon = document.getElementById("chat-icon");
+  const chatbotHeading = document.getElementById("chatbot-heading");
+  const closeFromTopp = document.getElementById("close-top");
 
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer.style.width = "80vw";
     chatContainer.style.right = "3rem";
-    chatContainer.style.height = "60vh";
-    chatElementRef.style.height = "52vh";
+    chatContainer.style.height = "70vh";
+    chatElementRef.style.height = "500px";
     chatElementRef.style.width = "80vw";
+    chatContainer.style.position = "fixed";
     chatIcon.style.width = "3rem";
     chatIcon.style.height = "3rem";
     chatIcon.style.position = "fixed";
-    chatContainer.style.position = "fixed";
+    chatbotHeading.style.fontSize = "12px";
+    closeFromTopp.style.display = "none";
   }
 
   let questionText = "";
