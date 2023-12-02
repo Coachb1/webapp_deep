@@ -128,7 +128,7 @@ async function setMcqVariablesStt() {
                   <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
                   <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
-    
+
     gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
       formRadioStt;
 
@@ -592,7 +592,16 @@ loadExternalModule().then(() => {
     ">
       C
     </h1>
-    <h3 style="
+    <img id="close-top2" 
+      onmouseover="this.style.cursor ='pointer'"
+      onclick="closeFromTop2()"
+      src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
+      style="
+      width : 50px;
+      position: absolute;
+      right : 1rem;
+    "/>
+    <h3 id="chatbot-heading2" style="
       font-size: 16px;
       font-weight: 500;
       line-height: 16px;
@@ -601,7 +610,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat
       id="chat-element2"
-      style="height:450px; width: 10%; border:none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 450px; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px"}}
@@ -610,6 +619,9 @@ loadExternalModule().then(() => {
       displayLoadingBubble = "false";
       demo="true"
       style="border: none"
+      textInput='{
+        "placeholder": {"text": "Welcome, Please follow provided instructions."}
+      }'
       speechToText='{
         "webSpeech": true,
         "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
@@ -623,18 +635,22 @@ loadExternalModule().then(() => {
   const chatContainer2 = document.getElementById("chat-container2");
   const chatElementRef2 = document.getElementById("chat-element2");
   const chatIconContainer2 = document.getElementById("chat-icon2");
+  const chatbotHeading2 = document.getElementById("chatbot-heading2");
+  const closeFromTopp2 = document.getElementById("close-top2");
 
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer2.style.width = "80vw";
     chatContainer2.style.left = "3rem";
-    chatContainer2.style.height = "60vh";
-    chatElementRef2.style.height = "52vh";
+    chatContainer2.style.height = "70vh";
+    chatElementRef2.style.height = "500px";
     chatElementRef2.style.width = "80vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
     chatIconContainer2.style.height = "3rem";
     chatContainer2.style.position = "fixed";
+    chatbotHeading2.style.fontSize = "12px";
+    closeFromTopp2.style.display = "none";
   }
 
   let questionText2 = "";
@@ -660,7 +676,7 @@ loadExternalModule().then(() => {
   let testPrevilage2;
   let sessionStatusStt;
   let isSessionExpiredStt;
-  let testType2
+  let testType2;
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -737,7 +753,6 @@ loadExternalModule().then(() => {
     },
   };
 
-
   // to reset all variables
   const resetAllVariablesStt = () => {
     //* reset all variables : start
@@ -779,7 +794,7 @@ loadExternalModule().then(() => {
     globalQuestionDataStt;
     globalQuestionLengthStt;
     testType2;
-  }
+  };
 
   // to check word limit
   function isValidMessageStt(text) {
@@ -789,25 +804,24 @@ loadExternalModule().then(() => {
     } else {
       return true;
     }
-  };
+  }
 
   // to cancel all active test for a user
   const cancelTestStt = async (user_id) => {
     const url = `${baseURL}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
 
     try {
-      if (user_id){
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        },
-      });
+      if (user_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
 
-      const responseJson = await response.json();
-      console.log(responseJson);
-    } 
-    
+        const responseJson = await response.json();
+        console.log(responseJson);
+      }
     } catch (error) {
       console.error(`Error in cancelTest: ${error}`);
     }
@@ -818,23 +832,23 @@ loadExternalModule().then(() => {
     const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
 
     try {
-      if (session_id){
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        },
-      });
+      if (session_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
 
-      const responseJson = await response.json();
-      console.log(responseJson);
+        const responseJson = await response.json();
+        console.log(responseJson);
 
-      sessionStatusStt = responseJson["status"];
-      isSessionExpiredStt = responseJson["is_expired"]
-    } else{
-      sessionStatusStt = 'inactive'
-      isSessionExpiredStt = false
-    }
+        sessionStatusStt = responseJson["status"];
+        isSessionExpiredStt = responseJson["is_expired"];
+      } else {
+        sessionStatusStt = "inactive";
+        isSessionExpiredStt = false;
+      }
     } catch (error) {
       console.error(`Error in getSessionStatus: ${error}`);
     }
@@ -943,9 +957,9 @@ loadExternalModule().then(() => {
               });
               return;
             }
-            await cancelTestStt(participantId2); // cancelling session 
+            await cancelTestStt(participantId2); // cancelling session
             //* reset all variables : start
-            resetAllVariablesStt()// reseting session
+            resetAllVariablesStt(); // reseting session
           }
 
           const userAcessAvailability2 = body.messages[0].text;
@@ -984,20 +998,22 @@ loadExternalModule().then(() => {
             body.messages[0].text === "stop"
           ) {
             await cancelTestStt(participantId2); // cancelling session
-            if (testType2 === 'mcq'){
+            if (testType2 === "mcq") {
               const shadowRoot =
-                      document.getElementById("chat-element2").shadowRoot;
-              const button = shadowRoot.getElementById(`mcq-option-stt-${mcqFormIdStt}`);
+                document.getElementById("chat-element2").shadowRoot;
+              const button = shadowRoot.getElementById(
+                `mcq-option-stt-${mcqFormIdStt}`
+              );
               // button.parentNode.removeChild(button)
-              const thankYouMessage = document.createElement('div');
-              thankYouMessage.innerHTML = '<b>Thank you!</b>'; // You can customize the message here
+              const thankYouMessage = document.createElement("div");
+              thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
 
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
             }
-            
+
             resetAllVariablesStt(); //reseting variables
-            signals.onResponse({ 
+            signals.onResponse({
               text: "Your session is terminated. You can restart again!",
             });
             // setTimeout(() => {
@@ -1007,38 +1023,42 @@ loadExternalModule().then(() => {
           }
 
           // to check session is active or not
-          if (!isTestCode(latestMessage)){
-            await getSessionStatusStt(sessionId2)
-
+          if (!isTestCode(latestMessage)) {
+            await getSessionStatusStt(sessionId2);
 
             // getting text which is from option-button-container
             const shadowRoot =
-                    document.getElementById("chat-element2").shadowRoot;
-            const option_buttons = shadowRoot.querySelectorAll('#option-button-container button');
+              document.getElementById("chat-element2").shadowRoot;
+            const option_buttons = shadowRoot.querySelectorAll(
+              "#option-button-container button"
+            );
 
             const buttonTextArray = [];
-            
-            option_buttons.forEach(button => {
-                const buttonText = button.textContent.trim();
-                buttonTextArray.push(buttonText);
+
+            option_buttons.forEach((button) => {
+              const buttonText = button.textContent.trim();
+              buttonTextArray.push(buttonText);
             });
             //end
 
-            
-            if (!buttonTextArray.includes(latestMessage)){
-              if (sessionStatusStt != 'in_progress'){
+            if (!buttonTextArray.includes(latestMessage)) {
+              if (sessionStatusStt != "in_progress") {
                 signals.onResponse({
-                  text: "To Start Your Session Please Enter Interaction Code.."
+                  text: "To Start Your Session Please Enter Interaction Code..",
                 });
                 return;
-              } else if (sessionStatusStt === 'in_progress' && isSessionExpiredStt){  // checking sessionexpiry
+              } else if (
+                sessionStatusStt === "in_progress" &&
+                isSessionExpiredStt
+              ) {
+                // checking sessionexpiry
                 await cancelTestStt(participantId2);
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
               }
 
-                //************* check if user message is atleast 10 words */
+              //************* check if user message is atleast 10 words */
 
               if (!isValidMessageStt(latestMessage)) {
                 signals.onResponse({
@@ -1046,11 +1066,7 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
-
-              
             }
-            
-            
           }
 
           let isTestcodeValid2;
@@ -1108,8 +1124,9 @@ loadExternalModule().then(() => {
               is_free2 = questionData2.results[0].is_free;
               senarioDescription2 = questionData2.results[0].description;
               senarioTitle2 = questionData2.results[0].title;
-              senarioMediaDescription2 = questionData2.results[0].description_media
-              console.log(senarioMediaDescription2)
+              senarioMediaDescription2 =
+                questionData2.results[0].description_media;
+              console.log(senarioMediaDescription2);
 
               testType2 = questionData2.results[0].test_type;
               orch_details2 =
@@ -1296,21 +1313,28 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    if(senarioMediaDescription2 !== null){
-                        let embeddingUrl2 = "";
-                        if (senarioMediaDescription2.length > 0) {
-                          if (senarioMediaDescription2.includes("youtube.com")) {
-                            const videoId = senarioMediaDescription2.split("v=")[1];
-                            embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
-                          } else if (senarioMediaDescription2.includes("vimeo.com")) {
-                            const videoId = senarioMediaDescription2.split("/").pop();
-                            embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
-                          } else if (senarioMediaDescription2.includes("twitter.com")) {
-                            // console.log(tweetId);
-                            embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
-    
-                            appendMessage2(
-                              `▪ Title : ${senarioTitle2} <br><br>
+                    if (senarioMediaDescription2 !== null) {
+                      let embeddingUrl2 = "";
+                      if (senarioMediaDescription2.length > 0) {
+                        if (senarioMediaDescription2.includes("youtube.com")) {
+                          const videoId =
+                            senarioMediaDescription2.split("v=")[1];
+                          embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
+                        } else if (
+                          senarioMediaDescription2.includes("vimeo.com")
+                        ) {
+                          const videoId = senarioMediaDescription2
+                            .split("/")
+                            .pop();
+                          embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
+                        } else if (
+                          senarioMediaDescription2.includes("twitter.com")
+                        ) {
+                          // console.log(tweetId);
+                          embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
+
+                          appendMessage2(
+                            `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                  ▪ Media  <iframe
@@ -1320,11 +1344,11 @@ loadExternalModule().then(() => {
                                             allowfullscreen
                                           >
                                 `
-                            );
-                          }
-                          if (!senarioMediaDescription2.includes("twitter.com")) {
-                            appendMessage2(
-                              `▪ Title : ${senarioTitle2} <br><br>
+                          );
+                        }
+                        if (!senarioMediaDescription2.includes("twitter.com")) {
+                          appendMessage2(
+                            `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                ▪ Media  <iframe
@@ -1334,24 +1358,24 @@ loadExternalModule().then(() => {
                                           allowfullscreen
                                         >
                               `
-                            );
-                          }
-                        } else {
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                             ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
                           );
                         }
-                        signals.onResponse({
-                          html: questionText2,
-                        });
                       } else {
-                        signals.onResponse({
-                          html: questionText2,
-                          text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                        });
+                        appendMessage2(
+                          `▪ Title : ${senarioTitle2} <br><br>
+                             ▪ Description : ${senarioDescription2} <br><br>
+                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                        );
                       }
+                      signals.onResponse({
+                        html: questionText2,
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: questionText2,
+                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                      });
+                    }
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
@@ -1673,6 +1697,25 @@ const openChatContainer2 = () => {
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
 
   }
+
+  if (
+    chatIcon2.src ===
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+  ) {
+    chatIcon2.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+  } else {
+    chatIcon2.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+  }
+};
+
+const closeFromTop2 = () => {
+  let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
+  let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+
+  chatContainer2.style.scale = 0;
+  chatContainer2.style["transform-origin"] = "0% 100%";
 
   if (
     chatIcon2.src ===

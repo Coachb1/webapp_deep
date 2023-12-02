@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
+import { Badge } from "./ui/badge";
 const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
 
 const UserProfile = ({
@@ -14,6 +15,7 @@ const UserProfile = ({
   userEmail: string;
 }) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
+  const [testAttempedCount, setTestAttemptedCount] = useState();
 
   useEffect(() => {
     try {
@@ -37,13 +39,13 @@ const UserProfile = ({
           },
           identity_context: {
             identity_type: "deepchat_unique_id",
-            value: `user_name=${userName}`,
+            value: userEmail,
           },
         }),
       })
         .then((response) => response.json())
         .then(async (data) => {
-          console.log(data.uid);
+          const userId = data.uid;
           await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
             method: "POST",
             headers: {
@@ -57,9 +59,28 @@ const UserProfile = ({
             }),
           })
             .then((response) => response.json())
-            .then((data) => {
-              console.log(data.url);
+            .then(async (data) => {
               setCandidateReportUrl(data.url);
+              await fetch(
+                `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  setTestAttemptedCount(data["data"]["total_session"]);
+                })
+                .catch((error) => {
+                  console.error(`Error in getAttemptedTestList: ${error}`);
+                });
+            })
+            .catch((error) => {
+              console.error("Error getting report", error);
             });
         });
     } catch (error) {
@@ -86,17 +107,30 @@ const UserProfile = ({
       <hr />
       <div className="my-4 flex flex-row items-center max-sm:justify-between">
         <p className="text-lg font-mono">History</p>
-        <Button className="ml-8 ">
-          {candidateReportUrl && candidateReportUrl.length !== 0 ? (
+        <>
+          {testAttempedCount !== 0 ? (
             <>
-              <Link href={candidateReportUrl} target="_blank">
-                Interaction Report <Link2 className="h-4 w-4 ml-2 inline" />
-              </Link>
+              <Button className="ml-8 ">
+                {candidateReportUrl && candidateReportUrl.length !== 0 ? (
+                  <>
+                    <Link href={candidateReportUrl} target="_blank">
+                      Participant Report{" "}
+                      <Link2 className="h-4 w-4 ml-2 inline" />
+                    </Link>
+                  </>
+                ) : (
+                  <Loader className="h-4 w-4 animate-spin" />
+                )}
+              </Button>
             </>
           ) : (
-            <Loader className="h-4 w-4 animate-spin" />
+            <>
+              <Badge variant={"destructive"} className="ml-8">
+                Not attended any session.
+              </Badge>
+            </>
           )}
-        </Button>
+        </>
       </div>
     </>
   );

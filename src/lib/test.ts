@@ -257,3 +257,255 @@ export const EQTests: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+
+export const Managerial: Test[] = [
+  {
+    domain: "Pursuing career growth",
+    test_code: "QG8OTQR",
+    title: "Discussing the next steps in career ladder",
+    description:
+      "The team member is interested in progressing into a leadership role and has requested a meeting with their manager to discuss next steps. The manager aims to evaluate the team member's motivations, skills, and development needs to determine if they would be a good fit for a leadership position. Respond to this situation as the team member.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Handling change and uncertainty",
+    test_code: "QXA0FHL",
+    title: "Navigating uncertainty in a new role",
+    description:
+      "A recent joinee in tech industry, was excited to start his new role. However, within days of joining, a corporate restructuring led to changes in his responsibilities and team composition. This unexpected turn of events introduced complexity and apprehension. The following questions by the manager, Ajay aim to gauge the team member's ability to handle uncertainty and adapt to change. Respond as a team member to this situation.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const Reflection: Test[] = [
+  {
+    domain: "Making ethical decisions",
+    test_code: "QHZPPK1",
+    title: "Evaluating Cost vs. Sustainability in Procurement",
+    description:
+      "The team member in procurement has to choose between cheaper but eco-friendly office equipment options. While cost-cutting is a priority, environmental sustainability is also important to the organization. The decision requires the team member to weigh these conflicting priorities and determine what would create the most value. Doing a proper analysis of the options and understanding the trade-offs involved can help arrive at an optimal choice. Respond to this situation as the team member.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Managing Work Life Balance",
+    test_code: "QTTDTXG",
+    title: "Balancing Workload and Setting Boundaries Discussion",
+    description:
+      "An administrative assistant is increasingly receiving additional tasks outside of their core job responsibilities which is impacting their ability to effectively complete their primary work. Unsure of how to have a constructive conversation with their manager about setting better boundaries and priorities to support a sustainable workload, they are seeking advice on how to address this sensitive issue. Respond to this situation as the administrative assistant.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const DecisionGames: Test[] = [
+  {
+    domain: "Making time critical decisions",
+    test_code: "Q7LRADG",
+    title: "Making decision for a Critical Project Delay Under Pressure",
+    description:
+      "A project manager leading a team on a tight deadline for a critical project. The team is facing a sudden technical issue that jeopardizes the project's timeline. The client is expecting the deliverables within the week, and any delay could have significant consequences for the project's success. As the project manager, you need to make a decision to address this issue promptly.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Difficult executive decisions",
+    test_code: "QOJSU0B",
+    title: "Deciding how to deal with challenging financial times as the CFO",
+    description:
+      "An administrative assistant is increasingly receiving additional tasks outside of their core job responsibilities which is impacting their ability to effectively complete their primary work. Unsure of how to have a constructive conversation with their manager about setting better boundaries and priorities to support a sustainable workload, they are seeking advice on how to address this sensitive issue. Respond to this situation as the administrative assistant.",
+    interaction_mode: "Audio",
+  },
+];
+export const oneTwoOne: Test[] = [
+  {
+    domain: "Reassessing Ambitious Goals",
+    test_code: "Q7LRADG",
+    title: "Navigating Manufacturing Challenges",
+    description:
+      "Sarita, an engineer at a manufacturing company in India, set highly ambitious production goals for herself, with the aim of doubling her output compared to the previous year. However, as she delved into her tasks, she realized that the newly introduced manufacturing process was far more intricate and time-consuming than initially anticipated. This was exacerbated by recent changes in the industry regulations, which added further complexity to the production process. Sarita now finds herself struggling to meet her self-imposed objectives and reaches out to her manager for guidance on managing this situation effectively. Respond to this situation as her manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Conflict Resolution Discussion",
+    test_code: "QG7Y5YA",
+    title: "Balancing Production and Quality",
+    description:
+      "In a manufacturing company in Mumbai, the production supervisor, proposed increasing production targets by 20% to meet a surge in demand for their products following a major trade fair. Karan, the quality control inspector, expressed concerns about this decision, citing a recent analysis of product defects, which showed a 10% increase in defects over the past quarter. The conflict emerged due to the need to balance increased production with maintaining product quality and safety standards. The production supervisor decided to have a direct conversation with Karan to explore a compromise that would address both the production targets and quality concerns. Respond to this situation as the production supervisor.",
+    interaction_mode: "Audio",
+  },
+];
+export const Technology: Test[] = [
+  {
+    domain: "Technical training",
+    test_code: "Q5GCYW5",
+    title: "AWS Migration Strategy for Scalability",
+    description:
+      "This is the last day of your AWS training. To complete the training complete this real life customer interaction. Mr. Arjun Sharma, an experienced IT professional at a leading Indian e-commerce firm, faces challenges with the current infrastructure scalability. The company's user base has grown significantly, causing performance issues and escalating infrastructure costs. Arjun seeks to migrate to AWS to address these issues, leveraging its scalable and cost-effective solutions to optimize the e-commerce platform performance. Respond to this situation and guide Mr. Sharma through the process of implementing AWS into the existing system to enhance scalability and overall performance. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Technical discussion",
+    test_code: "QHLQLIY",
+    title: "API Integration Issues",
+    description:
+      "The manager of the IT company reached out to a software developer to address an issue where the data from the database is not visible on the frontend even though the APIs are working properly. The manager wants to understand the root cause of the issue by asking some questions to the developer. Respond as a software developer to this situation and provide appropriate support to the Manager.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const Sales: Test[] = [
+  {
+    domain: "Edtech sales",
+
+    test_code: "QUEP49K",
+    title: "Pitching a Computer Science Course",
+    description:
+      "This is the last day of your orientation training as a Education Sales Rep. As the last task complete this real life customer interaction. Mrs. Ananya Menon, a school principal, grapples with budget constraints hindering the implementation of a robust computer science curriculum. The school, with 800 students from diverse socioeconomic backgrounds, is committed to elevating digital literacy. However, financial limitations impede progress. The challenge is to present a compelling case for how this course offers a cost-effective solution, meeting the school's educational aspirations within the financial boundaries it faces. Respond as the Education Sales Rep to this situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Luxury real estate",
+
+    test_code: "Q812FEK",
+    title: "Handling a High-Profile Client",
+    description:
+      "At the end of your workshop for Luxury Real Estate selling techniques, your trainer has given you an exercise to complete this real life customer interaction simulation. Ms. Priya Deshmukh, a renowned actress, is in search of an exclusive retreat in for private getaways. She prioritizes privacy, a stunning beachfront location, and state-of-the-art security. Your role involves understanding the unique needs of a high-profile client, ensuring confidentiality, and securing a deal that aligns with her lifestyle and preferences. Respond to this situation as the real estate sales agent.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Healthcare sales",
+    test_code: "QQ6V0RH",
+
+    title: "Tailored Health Package Solution ",
+    description:
+      "This is the last day of your orientation training as a health package sales rep. To complete the orientation you need to complete this exercise of a real life customer interaction simulation. Sajeev, a young entrepreneur in the fitness industry, is seeking a health package solution for his startup's employees. With a workforce focused on physical well-being, Sajeev is interested in a package that includes coverage for sports injuries, specialized health programs, and preventive health check-ups. Your role as a Sales Rep is to showcase how your company's health package can cater to the unique needs of Sanjeev's fitness-oriented team. Respond to this situation as the Sales Rep.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Insurance Consultation",
+    test_code: "QQ6V0RH",
+    title: "Health Insurance Consultation",
+    description:
+      "Akshita Singh, a marketing professional, is considering health insurance for herself and her parents. With a history of certain pre-existing conditions in the family, she is navigating the complexities of finding a policy that offers comprehensive coverage while managing premium costs. She has called the company number to gain more information about your insurance package. Your responsibility is to analyze her family's medical history, educate her on policy inclusions and exclusions, and recommend a health insurance plan that strikes the right balance between coverage and affordability. Respond to this situation as an Insurance Sales Rep.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Skill enhancement",
+    test_code: "QK14EB2",
+    title: "Tailored Sales Pitch for Skill Enhancement with CoachBots",
+    description:
+      "Aisha, a prominent HR executive at an Indian conglomerate company, is exploring solutions to enhance employee skills while aligning with the organization's commitment to diversity and inclusion. The target employee group comprises entry-level employees within the organization. These employees exhibit competence in their designated tasks but face difficulties in navigating the intricacies of teamwork and cross-functional dynamics. The challenge stems from the need to bridge this gap and cultivate a holistic skill set that not only enhances individual contributions but also fosters a cohesive and collaborative work culture. Respond to this situation as the sales person. ",
+    interaction_mode: "Audio",
+  },
+];
+
+export const serviceslashConsulting: Test[] = [
+  {
+    domain: "Team building & Leadership",
+    test_code: "QQJPCFI",
+    title: "Teams using Agile Strategies ",
+    description:
+      "After returning from the team-building training, an operations manager receives a challenging exercise from her trainer. She must dismantle the current production team, plagued by communication gaps and delays, and build a new team for an upcoming high-stakes product launch. The textile industry demands precision, and she needs to implement agile methodologies learned during training to improve efficiency. She's meeting with the Department Head, Harish to strategize this overhaul. Respond as the operations manager in this situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Coaching Assistant",
+    test_code: "QIBY52O",
+    title: "Assertive Communication for Workplace ",
+    description:
+      "A junior manager, in a IT company specializing in e-commerce solutions, faces challenges articulating innovative ideas for a tight-deadline project involving a new payment gateway system. He seeks guidance on assertive communication strategies to facilitate clear articulation of ideas and enhance his contribution to project discussions. After the session, the trainer has given you an exercise to connect with the AI assistant to implement the strategies. Now, the AI assistant, taking the role of the senior manager, Rahul is asking specific questions about the project, encouraging the junior manager to apply assertive communication strategies for clearer expression of ideas and improved collaboration within the team. Respond as the junior manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Hotel customer service",
+    test_code: "QCW8FWO",
+    title: "Crisis Resolution in Hotel Management",
+    description:
+      "At the last day of your orientation as a Hotel Receptionist. As the last task complete this real life customer interaction where a guest is angry at a mistake the staff made. This is the situation. Mr. Rajiv Verma, a corporate guest hosting a crucial business meeting at the hotel's conference hall, discovers that the meeting room reservation has been miscalculated, leading to an overlapping schedule with another event. Rajiv expresses his displeasure, emphasizing the importance of the meeting's agenda and the inconvenience caused to his guests. Your role is to resolve this issue swiftly, ensuring minimal disruption to Mr. Verma's business plans while maintaining the hotel's professional image. Respond as the Hotel Receptionist to this situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Air Hostess Training",
+    test_code: "Q4YWWWY",
+    title: "Real-Life Customer Resolutions",
+    description:
+      "On the last day of your training as the Air hostess for a renowned airline. To complete the training you need to complete this real life customer interaction simulation. Mr. Rajat Singh, a high-profile passenger, has a strict vegan diet due to health reasons. Unfortunately, there is an oversight, and the available in-flight meal does not align with his dietary requirements. Balancing the need for a quick resolution and maintaining the airline's service standards, your challenge is to find a suitable alternative or make necessary arrangements to accommodate Mr. Singh's dietary restrictions. Respond to this situation as the Air hostess. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Bank branch situation",
+    test_code: "QD4MQJI",
+    title: "Addressing a delay in service",
+    description:
+      "This is the last day of your orientation training as a bank employee. As the last task complete this real life customer interaction simulation. Mr. Rohit Sharma, a dedicated customer of the bank for the past 15 years, encounters a delay in opening a new account due to a discrepancy in his address proof. The challenge lies in maintaining Mr. Sharma's confidence, given his long-standing relationship with the bank, while adhering to the stringent industry norms. As the employee, you are tasked with striking a balance between ensuring compliance and providing reassurance to Mr. Sharma, who expressed valid concerns about the extended procedural timelines. Respond as the bank employee to this situation. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Providing Feedback",
+    test_code: "QMHIGIF",
+    title: "Guiding an Employee as a New Manager",
+    description:
+      "A seasoned automotive professional with 7+ years of experience, has recently assumed a managerial role. In her first check-in with Riya, the project lead for a vehicle redesign initiative, she grapples with a production delay owing to a manufacturing flaw discovered in the initial prototypes. The project further faces a setback as a recent supply chain disruption, impedes the timely delivery of critical components. The new manager must provide feedback to Riya on finding swift resolution strategies, communicate efficiently with suppliers and recalibration of production timelines to mitigate project risks. Respond to this situation as the manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Healthcare counselling",
+    test_code: "QEH6YUA",
+    title: "Diabetic Patient Preoperative Counseling",
+    description:
+      "This is the last day of your orientation as a Nurse. As the last task complete this real life patient interaction. Mrs. Anvita Kapoor, a 65-year-old diabetic patient, has been admitted for a hip replacement surgery. During your orientation, you learned that she is apprehensive about postoperative care due to her diabetes. You are tasked with providing reassurance and educating her on maintaining stable blood sugar levels to facilitate a smooth recovery. Respond to this situation as the nurse.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Production units communication",
+    test_code: "QFDNH0I",
+    title: "Addressing Defective Products",
+    description:
+      "Ms. Nandini Kapoor, the quality control manager, identifies a batch of defective products during routine inspections. She raises concerns about potential production flaws that could harm the factory's reputation. The production floor manager, needs to collaborate with Nandini to isolate and rectify the root cause while maintaining production efficiency. Respond to this situation as the production floor manager. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "IT-Business Collaboration",
+    test_code: "QQZMF9B",
+    title: "Strategizing Retail Insights",
+    description:
+      "The Retail Manager, Swati met with the IT Dev Lead for optimizing the retail analytics dashboard. Swati highlights the imperative for real-time inventory tracking and customer behavior analytics. The challenge identified is the seamless integration of data from disparate sources such as point-of-sale (POS) systems and e-commerce platforms. The objective is to enhance the dashboard to provide comprehensive insights, crucial for strategic decision-making in a fiercely competitive Indian retail market. Respond to this situation as the IT Dev Lead.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const roundFeedback: Test[] = [
+  {
+    domain: "HIPO Employee Feedback",
+    test_code: "QRO4VYR",
+
+    title: "Construction Supervisor Feedback",
+    description:
+      "A construction supervisors monthly feedback check in with manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "PIP for a low performing employee",
+    test_code: "Q5YC8DA",
+
+    title: "Sales Manager Feedback",
+    description: "A sales manager's monthly feedback check in with manager.",
+    interaction_mode: "Audio",
+  },
+];
+export const meetings: Test[] = [
+  {
+    domain: "Collaborating on resource allocation",
+    test_code: "QSKUOD0",
+    title: "Resource Allocation Tensions",
+    description:
+      "There has been an unexpected surge in demand for the company's software services following a major government initiative. This surge has created resource constraints, with multiple projects competing for limited talent and infrastructure. As a result, the company is facing challenges in meeting client deadlines and managing team dynamics. As tensions rise, they must navigate the delicate balance between advocating for their needs and maintaining a cooperative team dynamic. They have a meeting to discuss how to handle this situation in a collaborative manner. These are the opening comments from Vikram, Rahul, Sakshi. Join in the discussion as a team member.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Strategizing cross functional projects",
+    test_code: "Q7E1DGY",
+    title: "Navigating cross-project challenges",
+    description:
+      "Employees from various departments of the company have gathered for an essential meeting. The primary agenda is to address cross-project challenges that have arisen due to overlapping deadlines, resource constraints, and shifting priorities. The objective of this meeting is to foster collaboration and devise strategies to navigate these challenges effectively. These are the opening comments from Anuv(Project Manager), Sahil(Project Supervisor), Sakshi(Project Accountant), Sachin(Project Specialist).  Join in the discussion as a team member.",
+    interaction_mode: "Audio",
+  },
+];
