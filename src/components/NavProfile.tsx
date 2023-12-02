@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { LoginLink, LogoutLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Loader, User, User2Icon, UserCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -91,7 +91,7 @@ const NavProfile = () => {
       ) : (
         <Button variant={"default"} className={cn("text-xs h-8 px-4")}>
           {/* <Link href={"/api/auth/login"}>Login</Link> */}
-          <LoginLink>Log in</LoginLink>
+          <RegisterLink>Login</RegisterLink>
         </Button>
       )}
     </>
