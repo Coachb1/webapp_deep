@@ -1,6 +1,7 @@
 const key2 = "";
 const secret2 = "";
 const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
+// const baseURL2="http://127.0.0.1:8001/api/v1" //local
 
 let deepChatPocElement2;
 let sessionId2 = "";
@@ -468,7 +469,10 @@ async function handleOptionButtonClick2(labelText, area, information) {
   const params = new URLSearchParams();
   params.set("mode", "A");
   params.set("area", area);
-  params.set("information", information);
+  params.set(
+    "information",
+    JSON.stringify({ data: optionDetail[labelText], title: labelText })
+  );
   params.set(
     "url",
     "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
