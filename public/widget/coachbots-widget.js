@@ -230,8 +230,9 @@ async function setMcqVariables() {
   } else {
     // decisionAnalysisReport
 
-    let credentialsForm = `<div id="input-form">
-      Please submit details to get report:
+    let credentialsForm = `
+    <b>For obtaining your report, please submit the following details.</b>
+    <div id="input-form">
       <div style="display: flex; flex-direction: column">
           <label for="name" style="margin: 4px 0">Name  </label>
           <input  
@@ -283,7 +284,7 @@ async function setMcqVariables() {
       console.log("user logged in, so sending email");
       gShadowRoot.getElementById(
         `mcq-option-${mcqFormId}`
-      ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
+      ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
     }
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
@@ -336,14 +337,17 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          gShadowRoot.getElementById(
-            `mcq-option-${mcqFormId}`
-          ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
+          appendMessage(
+            `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+          );
+          //   gShadowRoot.getElementById(
+          //     `mcq-option-${mcqFormId}`
+          //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
           //   appendMessage(message);
 
           //* send message to start new session
           appendMessage(
-            "Please enter another access code to start a new interaction."
+            "<b>Please enter another access code to start a new interaction.</b>"
           );
           submitEmailAndName();
         }
@@ -423,12 +427,12 @@ async function submitEmailAndName() {
 
       if (!window.user) {
         // append custom message to chat
-        const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+        const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
         appendMessage(message);
 
         //* send message to start new session
         appendMessage(
-          "Please enter another access code to start a new interaction."
+          "<b>Please enter another access code to start a new interaction.</b>"
         );
       }
     })
@@ -462,6 +466,44 @@ async function submitEmailAndName() {
 }
 
 //* submit email and name for report generation : end
+
+// handle surprise buton click
+function handleSurpriseMeButtonClick() {
+  challenges = [
+    "QEEG5VY",
+    "QMFMKQ4",
+    "QUPR9AO",
+    "QLDQ2IY",
+    "QKLX4V0",
+    "QULNNNE",
+    "QZ4R9QW",
+    "QJV5AEY",
+    "QEYTB3I",
+    "QYCZJDN",
+    "Q125Z1B",
+    "Q9QW1HF",
+    "QHYRLGN",
+    "QJZWYYB",
+  ];
+  console.log("surprise me! button clicked");
+
+  const randomIndex = Math.floor(Math.random() * challenges.length);
+  const randomChallenge = challenges[randomIndex];
+
+  //   console.log(randomChallenge);
+  //   testCode = randomChallenge.test_code;
+  //   codeAvailabilityUserChoice = true;
+  console.log("random challenge :==>", randomChallenge);
+
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  gShadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent = randomChallenge;
+    setTimeout(() => {
+      gShadowRoot.querySelector(".input-button").click();
+    }, 100);
+  }, 100);
+}
 
 //* variables containing no-code flow data
 const optionDetail = {
@@ -588,8 +630,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-  deepChatPocElement =
-    document.getElementsByClassName("deep-chat-poc")?.[0];
+  deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
     <button
@@ -801,7 +842,7 @@ loadExternalModule().then(() => {
 
   chatElementRef.initialMessages = [
     {
-      html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+      html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
       </p>`,
       role: "ai",
     },
@@ -1220,14 +1261,14 @@ loadExternalModule().then(() => {
 
           if (sessionStatus != "in_progress") {
             signals.onResponse({
-              text: "To Start Your Session Please Enter Interaction Code..",
+              html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
             });
             return;
           } else if (sessionStatus === "in_progress" && isSessionExpired) {
             // checking sessionexpiry
             await cancelTest(participantId);
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });
           }
 
@@ -1235,7 +1276,7 @@ loadExternalModule().then(() => {
 
           if (file.name.length === 0 || file.size === "") {
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Your audio could not be processed. Please submit again.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
             });
             return;
           }
@@ -1272,8 +1313,8 @@ loadExternalModule().then(() => {
             messageBubble.style.maxWidth = "80%";
             messageBubble.style.marginTop = "4px";
             const messageText = document.createElement("p");
-            messageText.innerHTML = `That's it! Thank you for participating in the  interaction.${
-              user ? "" : " Hang tight for next steps"
+            messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>${
+              user ? "" : "<b> Hang tight for next steps </b>"
             }`;
             messageBubble.appendChild(messageText);
             messageNode.appendChild(messageBubble);
@@ -1309,8 +1350,10 @@ loadExternalModule().then(() => {
               }
 
               if (!window.user) {
+                appendMessage(
+                  "<b>For obtaining your report, please submit the following details.</b>"
+                );
                 signals.onResponse({
-                  text: "For obtaining your report, please submit the following details.",
                   html: credentialsForm,
                 });
               }
@@ -1386,12 +1429,12 @@ loadExternalModule().then(() => {
                     //* send report message or form to collect data : start
                     if (window.user) {
                       // sendEmail();
-                      const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                      const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                       appendMessage(message);
                       // //* send message to start new session
 
                       signals.onResponse({
-                        text: "Please enter another access code to start a new interaction.",
+                        text: "<b>Please enter another access code to start a new interaction.</b>",
                       });
                       submitEmailAndName();
                       return;
@@ -1431,31 +1474,33 @@ loadExternalModule().then(() => {
           const userAcessAvailability = body.messages[0].text;
           if (userAcessAvailability === "Yes") {
             signals.onResponse({
-              text: "Please enter the access code to get started.",
+              html: "<b>Please enter the access code to get started.</b>",
             });
             return;
           } else if (userAcessAvailability === "No") {
             optedNo = true;
             signals.onResponse({
-              text: "No problem , here are a few samples you can try out (Experimental):",
-              html: `
-                              <div id="option-button-container" >
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
-                      
-                      
-                              <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-                          </div>
-                                      `,
+              html: `<div id="option-button-container" >
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Surprise  me!</button>
+                    </div>
+                    `,
             });
+            // signals.onResponse({
+            //   text: "No problem , here are a few samples you can try out (Experimental):",
+            //   html: `
+            //                   <div id="option-button-container" >
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+
+            //                   <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+            //               </div>
+            //                           `,
+            // });
             return;
           }
 
@@ -1509,7 +1554,7 @@ loadExternalModule().then(() => {
             if (!buttonTextArray.includes(latestMessage)) {
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
-                  text: "To Start Your Session Please Enter Interaction Code..",
+                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
                 });
                 return;
               } else if (sessionStatus === "in_progress" && isSessionExpired) {
@@ -1865,8 +1910,8 @@ loadExternalModule().then(() => {
                   messageBubble.style.maxWidth = "80%";
                   messageBubble.style.marginTop = "4px";
                   const messageText = document.createElement("p");
-                  messageText.innerHTML = `That's it! Thank you for participating in the  interaction. ${
-                    user ? "" : " Hang tight for next steps"
+                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+                    user ? "" : "<b> Hang tight for next steps </b>"
                   }`;
                   messageBubble.appendChild(messageText);
                   messageNode.appendChild(messageBubble);
@@ -1980,8 +2025,10 @@ loadExternalModule().then(() => {
                   responsesDone = true;
 
                   if (!window.user) {
+                    appendMessage(
+                      "<b>For obtaining your report, please submit the following details.</b>"
+                    );
                     signals.onResponse({
-                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }
@@ -2061,12 +2108,12 @@ loadExternalModule().then(() => {
                   //* send report message or form to collect data : start
                   if (window.user) {
                     // sendEmail();
-                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     appendMessage(message);
                     // //* send message to start new session
 
                     signals.onResponse({
-                      text: "Please enter another access code to start a new interaction.",
+                      html: "<b>Please enter another access code to start a new interaction.</b>",
                     });
                     submitEmailAndName();
                     return;
@@ -2079,7 +2126,7 @@ loadExternalModule().then(() => {
               console.log(err);
               if (!isTestcodeValid && body.messages[0].text !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
               } else if (body.messages[0].text !== "STOP") {
                 signals.onResponse({
