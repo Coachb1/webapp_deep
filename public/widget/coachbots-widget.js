@@ -795,6 +795,8 @@ loadExternalModule().then(() => {
   let sessionStatus;
   let isSessionExpired;
   let testType;
+  let TestUIInfo;
+  let isHindi = false;
 
   const credentialsForm = `<div id="input-form">
   <div style="display: flex; flex-direction: column">
@@ -964,6 +966,8 @@ loadExternalModule().then(() => {
     globalQuestionData;
     globalQuestionLength;
     testType;
+    isHindi = false;
+    TestUIInfo;
   };
 
   // to check word limit
@@ -1297,6 +1301,10 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
+              if (isHindi){
+                questionText = TestUIInfo[`Question ${questionIndex + 1}`]
+              }
+              
               signals.onResponse({
                 text: questionText,
               });
@@ -1534,6 +1542,12 @@ loadExternalModule().then(() => {
 
           // to check session is active or not
           if (!isTestCode(latestMessage)) {
+            if (isHindi){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>Only Audio response allowed for this interaction.</p>"
+              })
+              return;
+            }
             await getSessionStatus(sessionId);
 
             // getting text which is from option-button-container
@@ -1631,6 +1645,7 @@ loadExternalModule().then(() => {
               senarioTitle = questionData.results[0].title;
               senarioMediaDescription =
                 questionData.results[0].description_media;
+              TestUIInfo = questionData.results[0].ui_information
               console.log(senarioMediaDescription);
 
               isTestcodeValid = true;
@@ -1638,6 +1653,15 @@ loadExternalModule().then(() => {
               testType = questionData.results[0].test_type;
               orch_details =
                 questionData.results[0].orchestrated_conversation_details;
+
+              if (TestUIInfo){
+                if (Object.keys(TestUIInfo).length > 0){
+                  senarioTitle = TestUIInfo['title']
+                  senarioDescription = TestUIInfo['description'] 
+                  isHindi = true;                   
+                }
+
+              }
 
               if (testType === "mcq") {
                 globalQuestionLength = Math.log2(questionLength + 1);
@@ -1815,6 +1839,9 @@ loadExternalModule().then(() => {
                       questionText =
                         questionData.results[0].questions[questionIndex]
                           .question;
+                      if (isHindi){
+                        questionText = TestUIInfo[`Question ${questionIndex + 1}`]
+                      }
                     }
                   }
 
