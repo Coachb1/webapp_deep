@@ -317,7 +317,7 @@ export const DecisionGames: Test[] = [
 export const oneTwoOne: Test[] = [
   {
     domain: "Reassessing Ambitious Goals",
-    test_code: "Q7LRADG",
+    test_code: "QD7O1GQ",
     title: "Navigating Manufacturing Challenges",
     description:
       "Sarita, an engineer at a manufacturing company in India, set highly ambitious production goals for herself, with the aim of doubling her output compared to the previous year. However, as she delved into her tasks, she realized that the newly introduced manufacturing process was far more intricate and time-consuming than initially anticipated. This was exacerbated by recent changes in the industry regulations, which added further complexity to the production process. Sarita now finds herself struggling to meet her self-imposed objectives and reaches out to her manager for guidance on managing this situation effectively. Respond to this situation as her manager.",
@@ -385,14 +385,6 @@ export const Sales: Test[] = [
     title: "Health Insurance Consultation",
     description:
       "Akshita Singh, a marketing professional, is considering health insurance for herself and her parents. With a history of certain pre-existing conditions in the family, she is navigating the complexities of finding a policy that offers comprehensive coverage while managing premium costs. She has called the company number to gain more information about your insurance package. Your responsibility is to analyze her family's medical history, educate her on policy inclusions and exclusions, and recommend a health insurance plan that strikes the right balance between coverage and affordability. Respond to this situation as an Insurance Sales Rep.",
-    interaction_mode: "Audio",
-  },
-  {
-    domain: "Skill enhancement",
-    test_code: "QK14EB2",
-    title: "Tailored Sales Pitch for Skill Enhancement with CoachBots",
-    description:
-      "Aisha, a prominent HR executive at an Indian conglomerate company, is exploring solutions to enhance employee skills while aligning with the organization's commitment to diversity and inclusion. The target employee group comprises entry-level employees within the organization. These employees exhibit competence in their designated tasks but face difficulties in navigating the intricacies of teamwork and cross-functional dynamics. The challenge stems from the need to bridge this gap and cultivate a holistic skill set that not only enhances individual contributions but also fosters a cohesive and collaborative work culture. Respond to this situation as the sales person. ",
     interaction_mode: "Audio",
   },
 ];
@@ -491,6 +483,7 @@ export const roundFeedback: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+
 export const meetings: Test[] = [
   {
     domain: "Collaborating on resource allocation",
@@ -506,6 +499,33 @@ export const meetings: Test[] = [
     title: "Navigating cross-project challenges",
     description:
       "Employees from various departments of the company have gathered for an essential meeting. The primary agenda is to address cross-project challenges that have arisen due to overlapping deadlines, resource constraints, and shifting priorities. The objective of this meeting is to foster collaboration and devise strategies to navigate these challenges effectively. These are the opening comments from Anuv(Project Manager), Sahil(Project Supervisor), Sakshi(Project Accountant), Sachin(Project Specialist).  Join in the discussion as a team member.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const frontLineStaff: Test[] = [
+  {
+    domain: "Edtech sales",
+    test_code: "QMJLBVC",
+    title: "कंप्यूटर विज्ञान पाठ्यक्रम बेचना",
+    description:
+      "शिक्षा बिक्री प्रतिनिधि के रूप में यह आपके ओरिएंटेशन प्रशिक्षण का अंतिम दिन है। अंतिम कार्य के रूप में इस वास्तविक जीवन ग्राहक संपर्क को पूरा करें। श्रीमती अनन्या मेनन, एक स्कूल प्रिंसिपल, एक मजबूत कंप्यूटर विज्ञान पाठ्यक्रम के कार्यान्वयन में बाधा डालने वाली बजट बाधाओं से जूझ रही हैं। विविध सामाजिक-आर्थिक पृष्ठभूमि के 800 छात्रों वाला यह स्कूल डिजिटल साक्षरता को बढ़ाने के लिए प्रतिबद्ध है। हालाँकि, वित्तीय सीमाएँ प्रगति में बाधा डालती हैं। चुनौती यह है कि कैसे यह पाठ्यक्रम वित्तीय सीमाओं के भीतर स्कूल की शैक्षिक आकांक्षाओं को पूरा करते हुए एक लागत प्रभावी समाधान प्रदान करता है, इसके लिए एक सम्मोहक मामला प्रस्तुत करना है। इस स्थिति में शिक्षा बिक्री प्रतिनिधि के रूप में प्रतिक्रिया दें।",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Luxury real estate",
+    test_code: "QI5SZ8G",
+    title: "एक हाई-प्रोफाइल क्लाइंट को संभालना",
+    description:
+      "लक्ज़री रियल एस्टेट बिक्री तकनीकों के लिए आपकी कार्यशाला के अंत में, आपके प्रशिक्षक ने आपको इस वास्तविक जीवन ग्राहक संपर्क सिमुलेशन को पूरा करने के लिए एक अभ्यास दिया है। सुश्री प्रिया देशमुख, एक प्रसिद्ध अभिनेत्री, निजी अवकाश के लिए एक विशेष आश्रय की तलाश में हैं। वह गोपनीयता, एक शानदार समुद्र तट स्थान और अत्याधुनिक सुरक्षा को प्राथमिकता देती है। आपकी भूमिका में एक हाई-प्रोफाइल ग्राहक की अनूठी जरूरतों को समझना, गोपनीयता सुनिश्चित करना और उसकी जीवनशैली और प्राथमिकताओं के अनुरूप सौदा हासिल करना शामिल है। रियल एस्टेट बिक्री एजेंट के रूप में इस स्थिति पर प्रतिक्रिया दें।",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Mahindra car sales",
+    test_code: "Q367PE8",
+    title: "एक आशंकित ग्राहक के साथ सौदा करना",
+    description:
+      "महिंद्रा डीलरशिप में एक अनुभवी कार विक्रेता को एक प्रीमियम सेडान की तलाश करने वाले संभावित ग्राहक श्री कपूर के साथ एक चुनौतीपूर्ण स्थिति का सामना करना पड़ता है। पूरी तरह से शोध करने के बाद, श्री कपूर मौके पर प्रतिबद्ध होने से सावधान रहते हैं और कार की विशेषताओं, कीमत और इसके लिए भुगतान कैसे करें इसके विस्तृत विवरण की मांग करते हैं। विक्रेता को जानकारी प्रदान करने और भारी विवरण से बचने के बीच की बारीक रेखा को पार करना चाहिए, यह सुनिश्चित करते हुए कि श्री कपूर को सुना और समझा जाए। कार को प्रदर्शित करने से लेकर वित्त पर चर्चा करने और सौदे को पूरा करने तक निर्बाध रूप से बदलाव का दबाव है। विक्रेता के रूप में इस स्थिति पर प्रतिक्रिया दें।",
     interaction_mode: "Audio",
   },
 ];

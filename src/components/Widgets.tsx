@@ -14,13 +14,13 @@ const Widgets = () => {
         <Script src="../widget/coachbots-stt-widget.js"/>
 
         <div
-          className={`fixed max-sm:left-[2.5rem] left-[1rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]`}
+          className={`fixed max-sm:left-[2.5rem] left-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%]`}
         >
-          <p className="text-xs max-sm:hidden">High Performance + <br /> No speech analytics</p>
+          <p className="text-xs max-sm:hidden"><span className="font-bold">CoachScribe</span><span> is our high performance bot but speech analytics is not available.</span></p>
         </div>
 
-        <div className="fixed max-sm:right-[2.8rem] right-[1rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem]">
-          <p className="text-xs text-right max-sm:hidden">Medium Performance + <br /> Speech Analytics</p>
+        <div className="fixed max-sm:right-[2.8rem] right-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%]">
+          <p className="text-xs text-right max-sm:hidden"><span className="font-bold">CoachTalk</span><span> is our medium performance bot that includes speech analytics.</span></p>
         </div>
 
         <div
