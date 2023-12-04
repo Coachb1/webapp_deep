@@ -835,7 +835,7 @@ loadExternalModule().then(() => {
     mcqFormIdStt;
     globalQuestionDataStt;
     globalQuestionLengthStt;
-    testType2;
+    testType2 = '';
     isHindiStt = false;
     testUIInfoStt;
   };
@@ -1088,6 +1088,12 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
+              if (testType2 === 'mcq'){
+                signals.onResponse({
+                  html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+                })
+                return;
+              }
               if (sessionStatusStt != "in_progress") {
                 signals.onResponse({
                   html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
@@ -1230,7 +1236,7 @@ loadExternalModule().then(() => {
                 }
 
                 // restriction check like monthly test allowed start
-                await getAttemptedTestList2(participantId2);
+                // await getAttemptedTestList2(participantId2);
                 await getIsRepeatStatus2(participantId2);
                 await getTestPrevilage2(participantId2);
 
@@ -1256,14 +1262,14 @@ loadExternalModule().then(() => {
                 // User cannot attempt the test more than once if it is active
                 console.log(userRole2);
                 if (userRole2 && userRole2 !== "admin") {
-                  if (
-                    !isRepeatStatus2.is_repeat &&
-                    testCodeList2.includes(testCode2)
-                  ) {
-                    signals.onResponse({
-                      text: "You are not allowed to attempt this interaction again.",
-                    });
-                    return;
+                  if (!isRepeatStatus2.is_repeat){
+                    await getAttemptedTestList2(participantId2)
+                    if (testCodeList2.includes(testCode2)) {
+                      signals.onResponse({
+                        text: "You are not allowed to attempt this interaction again.",
+                      });
+                      return;
+                    }
                   }
                 }
                 //end

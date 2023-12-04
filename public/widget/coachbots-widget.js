@@ -965,7 +965,7 @@ loadExternalModule().then(() => {
     mcqFormId;
     globalQuestionData;
     globalQuestionLength;
-    testType;
+    testType='';
     isHindi = false;
     TestUIInfo;
   };
@@ -1260,6 +1260,12 @@ loadExternalModule().then(() => {
           //AUDIO RESPONSES
 
           // to check session active or not
+          if (testType === 'mcq'){
+            signals.onResponse({
+              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+            })
+            return;
+          }
 
           await getSessionStatus(sessionId);
 
@@ -1566,6 +1572,12 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
+              if (testType === 'mcq'){
+                signals.onResponse({
+                  html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+                })
+                return;
+              }
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
                   html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
@@ -1701,7 +1713,7 @@ loadExternalModule().then(() => {
                 }
 
                 // restriction check like monthly test allowed start
-                await getAttemptedTestList(participantId);
+                // await getAttemptedTestList(participantId);
                 await getIsRepeatStatus(participantId);
                 await getTestPrevilage(participantId);
 
@@ -1727,14 +1739,14 @@ loadExternalModule().then(() => {
                 // User cannot attempt the test more than once if it is active
                 console.log(userRole);
                 if (userRole && userRole !== "admin") {
-                  if (
-                    !isRepeatStatus.is_repeat &&
-                    testCodeList.includes(testCode)
-                  ) {
-                    signals.onResponse({
-                      text: "You are not allowed to attempt this interaction again.",
-                    });
-                    return;
+                  if (!isRepeatStatus.is_repeat){
+                    await getAttemptedTestList(participantId)
+                    if (testCodeList.includes(testCode)) {
+                      signals.onResponse({
+                        text: "You are not allowed to attempt this interaction again.",
+                      });
+                      return;
+                    }
                   }
                 }
                 //end
