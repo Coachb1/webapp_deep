@@ -588,7 +588,8 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-  deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
+  deepChatPocElement =
+    document.getElementsByClassName("deep-chat-poc")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
     <button
@@ -726,7 +727,6 @@ loadExternalModule().then(() => {
   }
 
   let questionText = "";
-  let questionMedia;
   let reportType = "interactionSessionReport";
   questionIndex = 0;
   let questionId;
@@ -1579,7 +1579,6 @@ loadExternalModule().then(() => {
               questionData = await response.json();
               console.log("TESTCODE DATA :", questionData);
               questionLength = questionData.results[0].questions.length;
-              questionMedia = questionData.results[0].questions[0].media_link;
               testId = questionData.results[0].uid;
               interactionMode = questionData.results[0].interaction_mode;
               is_free = questionData.results[0].is_free;
@@ -1589,7 +1588,7 @@ loadExternalModule().then(() => {
                 questionData.results[0].description_media;
               console.log(senarioMediaDescription);
 
-              isTestcodeValid = true; 
+              isTestcodeValid = true;
 
               testType = questionData.results[0].test_type;
               orch_details =
@@ -1781,14 +1780,14 @@ loadExternalModule().then(() => {
                         if (senarioMediaDescription.includes("youtube.com")) {
                           const videoId =
                             senarioMediaDescription.split("v=")[1];
-                          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
                         } else if (
                           senarioMediaDescription.includes("vimeo.com")
                         ) {
                           const videoId = senarioMediaDescription
                             .split("/")
                             .pop();
-                          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
                         } else if (
                           senarioMediaDescription.includes("twitter.com")
                         ) {
@@ -1799,7 +1798,6 @@ loadExternalModule().then(() => {
                                  ▪ Description : ${senarioDescription} <br><br>
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                  ▪ Media <br> <iframe
-                                            allow="autoplay; encrypted-media; fullscreen"
                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                             src=${embeddingUrl}
                                             frameborder="0"
@@ -1814,7 +1812,6 @@ loadExternalModule().then(() => {
                                ▪ Description : ${senarioDescription} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
                                ▪ Media <br>  <iframe
-                                                allow="autoplay; encrypted-media; fullscreen;"
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
@@ -1831,44 +1828,9 @@ loadExternalModule().then(() => {
                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
                         );
                       }
-                      
-                      if(questionMedia !== null){
-                        console.log(questionText)
-                        let embeddingUrl = "";
-                        if (questionMedia.length > 0) {
-                          if (questionMedia.includes("youtube.com")) {
-                            const videoId =
-                            questionMedia.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionMedia.includes("vimeo.com")
-                          ) {
-                            const videoId = questionMedia
-                              .split("/")
-                              .pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionMedia.includes("twitter.com")
-                          ) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
-                          }
-                          signals.onResponse({
-                            html:`▪ ${questionText} .<br><br>
-                            ▪ Media <br>  <iframe
-                                             allow="autoplay; encrypted-media; fullscreen;"
-                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                                             src=${embeddingUrl}
-                                             frameborder="0"
-                                             allowfullscreen
-                                           >
-                           ` ,
-                          });
-                        }
-                      } else {
-                        signals.onResponse({
-                          html: questionText,
-                        });
-                      }
+                      signals.onResponse({
+                        html: questionText,
+                      });
                     } else {
                       signals.onResponse({
                         html: questionText,
@@ -2257,7 +2219,7 @@ const openChatContainer = () => {
       userRole = data.role;
     })
     .catch((err) => console.log(err));
-
+  
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
     chatContainer.style["transform-origin"] = "100% 100%";
@@ -2266,13 +2228,14 @@ const openChatContainer = () => {
     chatContainer.style["transform-origin"] = "100% 50%";
 
     // close stt bot
-    const chatContainer2 = document.getElementById("chat-container2");
+    const chatContainer2 = document.getElementById('chat-container2')
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
-
+    
     const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
     chatIcon2.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+      
   }
 
   if (
