@@ -2017,7 +2017,7 @@ loadExternalModule().then(() => {
                       testType != "dynamic_discussion_thread"
                     ) {
                       signals.onResponse({
-                        text: questionText,
+                        html: questionText,
                       });
                     }
                   }
