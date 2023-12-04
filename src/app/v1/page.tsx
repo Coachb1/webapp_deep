@@ -171,7 +171,7 @@ const Page = async () => {
           {user && (
             <div>
               <HeroAccordion
-                badgeText="EQ Libarary"
+                badgeText="EQ mini course"
                 user={user ? true : false}
                 tests={EQTests}
               />
