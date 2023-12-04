@@ -1260,6 +1260,9 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
+              if (isHindi){
+                questionText = TestUIInfo[`Question ${questionIndex + 1}`]
+              }
               
               signals.onResponse({
                 text: questionText,
