@@ -1310,9 +1310,57 @@ loadExternalModule().then(() => {
               if (isHindi){
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`]
               }
+
+              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+              const is_link =linkPattern.test(questionText);
+
+              if(is_link){
+                console.log(questionText)
+                let embeddingUrl = "";
+                if (questionText.length > 0) {
+                  if (questionText.includes("youtube.com")) {
+                    const videoId =
+                    questionText.split("v=")[1];
+                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                  } else if (
+                    questionText.includes("vimeo.com")
+                  ) {
+                    const videoId = questionText
+                      .split("/")
+                      .pop();
+                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                  } else if (
+                    questionText.includes("twitter.com")
+                  ) {
+                    embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                  }
+                  // signals.onResponse({
+                  //   html:`▪ ${questionText} .<br><br>
+                  //   ▪ Media <br>  <iframe
+                  //                    allow="autoplay; encrypted-media; fullscreen;"
+                  //                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                  //                    src=${embeddingUrl}
+                  //                    frameborder="0"
+                  //                    allowfullscreen
+                  //                  >
+                  //  ` ,
+                  // });
+
+                  questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                  questionText = `▪ ${questionText} .<br><br>
+                  ▪ Media <br>  <iframe
+                                   allow="autoplay; encrypted-media; fullscreen;"
+                                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                   src=${embeddingUrl}
+                                   frameborder="0"
+                                   allowfullscreen
+                                 >
+                 ` 
+                }
+              }
               
               signals.onResponse({
-                text: questionText,
+                html: questionText,
               });
             }
           }
@@ -1362,14 +1410,16 @@ loadExternalModule().then(() => {
                   });
                 }
               }
-
-              if (!window.user) {
-                appendMessage(
-                  "<b>For obtaining your report, please submit the following details.</b>"
-                );
-                signals.onResponse({
-                  html: credentialsForm,
-                });
+              if (responsesDone){
+                if (!window.user) {
+                  // appendMessage(
+                  //   "<b>For obtaining your report, please submit the following details.</b>"
+                  // );
+                  signals.onResponse({
+                    text : "For obtaining your report, please submit the following details.",
+                    html: credentialsForm,
+                  });
+                }
               }
 
               //   if (window.user) {
@@ -1854,6 +1904,44 @@ loadExternalModule().then(() => {
                       if (isHindi){
                         questionText = TestUIInfo[`Question ${questionIndex + 1}`]
                       }
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link =linkPattern.test(questionText);
+
+                      if(is_link){
+                        console.log(questionText)
+                        let embeddingUrl = "";
+                        if (questionText.length > 0) {
+                          if (questionText.includes("youtube.com")) {
+                            const videoId =
+                            questionText.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (
+                            questionText.includes("vimeo.com")
+                          ) {
+                            const videoId = questionText
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (
+                            questionText.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                          }
+                          
+
+                          questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+
+                          questionText = `▪ ${questionText} .<br><br>
+                          ▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        ` 
+                        }
+                      }
                     }
                   }
 
@@ -1864,14 +1952,14 @@ loadExternalModule().then(() => {
                         if (senarioMediaDescription.includes("youtube.com")) {
                           const videoId =
                             senarioMediaDescription.split("v=")[1];
-                          embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
+                          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                         } else if (
                           senarioMediaDescription.includes("vimeo.com")
                         ) {
                           const videoId = senarioMediaDescription
                             .split("/")
                             .pop();
-                          embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
+                          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
                         } else if (
                           senarioMediaDescription.includes("twitter.com")
                         ) {
@@ -2064,10 +2152,11 @@ loadExternalModule().then(() => {
                   responsesDone = true;
 
                   if (!window.user) {
-                    appendMessage(
-                      "<b>For obtaining your report, please submit the following details.</b>"
-                    );
+                    // appendMessage(
+                    //   "<b>For obtaining your report, please submit the following details.</b>"
+                    // );
                     signals.onResponse({
+                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }

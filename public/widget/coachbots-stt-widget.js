@@ -1431,10 +1431,86 @@ loadExternalModule().then(() => {
                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
                         );
                       }
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link =linkPattern.test(questionText2);
+
+                      if(is_link){
+                        console.log(questionText2)
+                        let embeddingUrl = "";
+                        if (questionText2.length > 0) {
+                          if (questionText2.includes("youtube.com")) {
+                            const videoId =
+                            questionText2.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (
+                            questionText2.includes("vimeo.com")
+                          ) {
+                            const videoId = questionText2
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (
+                            questionText2.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
+                          }
+                          
+
+                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+
+                          questionText2 = `▪ ${questionText2} .<br><br>
+                          ▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        ` 
+                        }
+                      }
                       signals.onResponse({
                         html: questionText2,
                       });
                     } else {
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link =linkPattern.test(questionText2);
+
+                      if(is_link){
+                        console.log(questionText2)
+                        let embeddingUrl = "";
+                        if (questionText2.length > 0) {
+                          if (questionText2.includes("youtube.com")) {
+                            const videoId =
+                            questionText2.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (
+                            questionText2.includes("vimeo.com")
+                          ) {
+                            const videoId = questionText2
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (
+                            questionText2.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
+                          }
+                          
+
+                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+
+                          questionText2 = `▪ ${questionText2} .<br><br>
+                          ▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        ` 
+                        }
+                      }
                       signals.onResponse({
                         html: questionText2,
                         text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
@@ -1445,8 +1521,46 @@ loadExternalModule().then(() => {
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread"
                     ) {
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link =linkPattern.test(questionText2);
+
+                      if(is_link){
+                        console.log(questionText2)
+                        let embeddingUrl = "";
+                        if (questionText2.length > 0) {
+                          if (questionText2.includes("youtube.com")) {
+                            const videoId =
+                            questionText2.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (
+                            questionText2.includes("vimeo.com")
+                          ) {
+                            const videoId = questionText2
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (
+                            questionText2.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
+                          }
+                          
+
+                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+
+                          questionText2 = `▪ ${questionText2} .<br><br>
+                          ▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        ` 
+                        }
+                      }
                       signals.onResponse({
-                        text: questionText2,
+                        html: questionText2,
                       });
                     }
                   }
