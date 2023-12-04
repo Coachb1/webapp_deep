@@ -681,6 +681,8 @@ loadExternalModule().then(() => {
   let sessionStatusStt;
   let isSessionExpiredStt;
   let testType2;
+  let isHindiStt = false;
+  let testUIInfoStt;
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -798,6 +800,8 @@ loadExternalModule().then(() => {
     globalQuestionDataStt;
     globalQuestionLengthStt;
     testType2;
+    isHindiStt = false;
+    testUIInfoStt;
   };
 
   // to check word limit
@@ -1130,11 +1134,22 @@ loadExternalModule().then(() => {
               senarioTitle2 = questionData2.results[0].title;
               senarioMediaDescription2 =
                 questionData2.results[0].description_media;
+              testUIInfoStt = questionData2.results[0].ui_information;
               console.log(senarioMediaDescription2);
 
               testType2 = questionData2.results[0].test_type;
               orch_details2 =
                 questionData2.results[0].orchestrated_conversation_details;
+
+
+              if (testUIInfoStt){
+                if (Object.keys(testUIInfoStt).length > 0){
+                  senarioTitle2= testUIInfoStt['title']
+                  senarioDescription2 = testUIInfoStt['description'] 
+                  isHindiStt = true;                   
+                }
+
+              }
 
               if (testType2 === "mcq") {
                 globalQuestionLengthStt = Math.log2(questionLength2 + 1);
@@ -1313,6 +1328,9 @@ loadExternalModule().then(() => {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
+                      if (isHindiStt){
+                        questionText2 = testUIInfoStt[`Question ${questionIndex2 + 1}`]
+                      }
                     }
                   }
                   console.log(questionText2);
