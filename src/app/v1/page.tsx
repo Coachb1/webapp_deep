@@ -13,13 +13,14 @@ import {
   DecisionGames,
   Sales,
   serviceslashConsulting,
+  frontLineStaff,
 } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -41,10 +42,11 @@ const Page = async () => {
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50"
+            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
             ✨ Sign up to get EQ Insight Access{" "}
-            <ArrowRight className="ml-2 w-4 h-4 " />{" "}
+            <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
+            <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
           </Badge>
         )}
         <NavProfile />
@@ -62,8 +64,7 @@ const Page = async () => {
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
           {" "}
-          Welcome to our simulation playground. Feel free to try out common
-          senarios or try our EQ booster{user ? "!" : " by loggin In!"}
+          Toolkits and conversational coaching-learning for any scenario.
         </p>
 
         {user && (
@@ -80,14 +81,14 @@ const Page = async () => {
           </div>
         )}
 
-        <div className="text-lg z-50 w-[80%] max-sm:w-full">
+        <div className="text-lg z-50 w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
-            <Link href={"#managerial"}>
+            <Link href={"#managerplus"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Managerial
+                Manager+
               </Button>
             </Link>
             <Link href={"#reflection"}>
@@ -154,6 +155,14 @@ const Page = async () => {
                 Meetings
               </Button>
             </Link>
+            <Link href={"#frontline-staff"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Frontline Staff &#40;Hindi&#41;
+              </Button>
+            </Link>
           </div>
         </div>
       </MaxWidthWrapper>
@@ -168,9 +177,9 @@ const Page = async () => {
               />
             </div>
           )}
-          <div id="managerial">
+          <div id="managerplus">
             <HeroAccordion
-              badgeText="Managerial"
+              badgeText="Manager+"
               user={user ? true : false}
               tests={Managerial}
             />
@@ -208,6 +217,13 @@ const Page = async () => {
               badgeText="Sales"
               user={user ? true : false}
               tests={Sales}
+            />
+          </div>
+          <div id="frontline-staff">
+            <HeroAccordion
+              badgeText="Frontline Staff(Hindi)"
+              user={user ? true : false}
+              tests={frontLineStaff}
             />
           </div>
           <div id="service-c">
