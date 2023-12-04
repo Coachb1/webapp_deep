@@ -1144,9 +1144,10 @@ loadExternalModule().then(() => {
 
               if (testUIInfoStt){
                 if (Object.keys(testUIInfoStt).length > 0){
-                  senarioTitle2= testUIInfoStt['title']
-                  senarioDescription2 = testUIInfoStt['description'] 
-                  isHindiStt = true;                   
+                  signals.onResponse({
+                    html : "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot for this interaction.</p>"
+                  }) 
+                  return;               
                 }
 
               }
@@ -1328,9 +1329,6 @@ loadExternalModule().then(() => {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
-                      if (isHindiStt){
-                        questionText2 = testUIInfoStt[`Question ${questionIndex2 + 1}`]
-                      }
                     }
                   }
                   console.log(questionText2);

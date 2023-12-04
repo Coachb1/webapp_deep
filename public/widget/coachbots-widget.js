@@ -1260,9 +1260,7 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
-              if (isHindi){
-                  questionText = TestUIInfo[`Question ${questionIndex + 1}`]
-                }
+              
               signals.onResponse({
                 text: questionText,
               });
@@ -1496,6 +1494,12 @@ loadExternalModule().then(() => {
 
           // to check session is active or not
           if (!isTestCode(latestMessage)) {
+            if (isHindi){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>Only Audio response allowed for this interaction.</p>"
+              })
+              return;
+            }
             await getSessionStatus(sessionId);
 
             // getting text which is from option-button-container
