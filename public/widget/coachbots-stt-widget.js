@@ -1145,7 +1145,7 @@ loadExternalModule().then(() => {
               if (testUIInfoStt){
                 if (Object.keys(testUIInfoStt).length > 0){
                   signals.onResponse({
-                    html : "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot for this interaction.</p>"
+                    html : "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>"
                   }) 
                   return;               
                 }
