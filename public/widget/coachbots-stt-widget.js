@@ -211,7 +211,7 @@ async function setMcqVariablesStt() {
       console.log("user logged in, so sending email");
       gShadowRoot2.getElementById(
         `mcq-option-stt-${mcqFormIdStt}`
-      ).innerHTML = `That's it! Thank you for participating in the  interaction.`;
+      ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
     }
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
@@ -262,12 +262,12 @@ async function setMcqVariablesStt() {
 
         if (window.user) {
           // append custom message to chat
-          const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+          const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
           appendMessage2(message2);
 
           //* send message to start new session
           appendMessage2(
-            "Please enter another access code to start a new interaction."
+            "<b>Please enter another access code to start a new interaction.</b>"
           );
           submitEmailAndName2();
         }
@@ -343,17 +343,17 @@ async function submitEmailAndName2() {
       console.log("name email updated, sending email");
       sendEmail2();
       // append custom message to chat
-      const message2 = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+      const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
       //* send message to start new session
       if (!user2) {
         appendMessage2(message2);
         appendMessage2(
-          "Please enter another access code to start a new interaction."
+          "<b>Please enter another access code to start a new interaction.</b>"
         );
       } else {
         globalSignals.onResponse({
-          text: "Please enter another access code to start a new interaction.",
+          html: "<b>Please enter another access code to start a new interaction.</b>",
         });
       }
     })
@@ -382,6 +382,43 @@ async function submitEmailAndName2() {
   //       console.log(emailSent2)
   //     })
   //     .catch((err) => console.log(err));
+}
+
+function handleSurpriseMeButtonClick2() {
+  const challenges2 = [
+    "QEEG5VY",
+    "QMFMKQ4",
+    "QUPR9AO",
+    "QLDQ2IY",
+    "QKLX4V0",
+    "QULNNNE",
+    "QZ4R9QW",
+    "QJV5AEY",
+    "QEYTB3I",
+    "QYCZJDN",
+    "Q125Z1B",
+    "Q9QW1HF",
+    "QHYRLGN",
+    "QJZWYYB",
+  ];
+  console.log("surprise me! button clicked");
+
+  const randomIndex2 = Math.floor(Math.random() * challenges2.length);
+  const randomChallenge2 = challenges2[randomIndex2];
+
+  //   console.log(randomChallenge);
+  //   testCode = randomChallenge.test_code;
+  //   codeAvailabilityUserChoice = true;
+  console.log("random challenge :==>", randomChallenge2);
+
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = randomChallenge2;
+    setTimeout(() => {
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
 }
 
 const optionDetail2 = [
@@ -514,8 +551,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {
-  deepChatPocElement2 =
-    document.getElementsByClassName("deep-chat-poc2")?.[0];
+  deepChatPocElement2 = document.getElementsByClassName("deep-chat-poc2")?.[0];
   deepChatPocElement2.innerHTML = `
   <div class="chat-wrapper2">
     <button
@@ -728,7 +764,7 @@ loadExternalModule().then(() => {
 
   chatElementRef2.initialMessages = [
     {
-      html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+      html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
       </p>`,
       role: "ai",
     },
@@ -969,31 +1005,33 @@ loadExternalModule().then(() => {
           const userAcessAvailability2 = body.messages[0].text;
           if (userAcessAvailability2 === "Yes") {
             signals.onResponse({
-              text: "Please enter the access code to get started.",
+              html: "<b>Please enter the access code to get started.</b>",
             });
             return;
           } else if (userAcessAvailability2 === "No") {
             optedNo2 = true;
             signals.onResponse({
-              text: "No problem , here are a few samples you can try out (Experimental):",
-              html: `
-                              <div id="option-button-container" >
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2('Integrating a New Team Member')">Integrating a New Team Member</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Effective Customer Service Management')">Effective Customer Service Management</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
-                      
-                      
-                              <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
-                      
-                      
-                              <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-                          </div>
-                                      `,
+              html: `<div id="option-button-container" >
+                      <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Surprise  me!</button>
+                      </div>
+                      `,
             });
+            // signals.onResponse({
+            //   text: "No problem , here are a few samples you can try out (Experimental):",
+            //   html: `
+            //                   <div id="option-button-container" >
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2('Integrating a New Team Member')">Integrating a New Team Member</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Effective Customer Service Management')">Effective Customer Service Management</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+
+            //                   <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+            //               </div>
+            //                           `,
+            // });
             return;
           }
 
@@ -1048,7 +1086,7 @@ loadExternalModule().then(() => {
             if (!buttonTextArray.includes(latestMessage)) {
               if (sessionStatusStt != "in_progress") {
                 signals.onResponse({
-                  text: "To Start Your Session Please Enter Interaction Code..",
+                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
                 });
                 return;
               } else if (
@@ -1408,8 +1446,8 @@ loadExternalModule().then(() => {
                   messageBubble.style.maxWidth = "80%";
                   messageBubble.style.marginTop = "4px";
                   const messageText = document.createElement("p");
-                  messageText.innerHTML = `That's it! Thank you for participating in the  interaction. ${
-                    user2 ? "" : " Hang tight for next steps"
+                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+                    user2 ? "" : "<b> Hang tight for next steps</b>"
                   }`;
                   messageBubble.appendChild(messageText);
                   messageNode.appendChild(messageBubble);
@@ -1588,12 +1626,12 @@ loadExternalModule().then(() => {
 
                   if (window.user) {
                     // sendEmail();
-                    const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     appendMessage2(message);
                     // //* send message to start new session
 
                     signals.onResponse({
-                      text: "Please enter another access code to start a new interaction.",
+                      html: "<b>Please enter another access code to start a new interaction.</b>",
                     });
                     submitEmailAndName2();
                     return;
@@ -1604,11 +1642,11 @@ loadExternalModule().then(() => {
               console.log(err);
               if (!isTestcodeValid2 && body.messages[0].text !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
               } else if (body.messages[0].text !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Error Processing your response.</b></p>",
                 });
               }
             }
