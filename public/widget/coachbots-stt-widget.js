@@ -1402,6 +1402,7 @@ loadExternalModule().then(() => {
                                  ▪ Description : ${senarioDescription2} <br><br>
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                  ▪ Media  <iframe
+                                            allow="autoplay; encrypted-media; fullscreen;
                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                             src=${embeddingUrl2}
                                             frameborder="0"
