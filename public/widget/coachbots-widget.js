@@ -965,7 +965,7 @@ loadExternalModule().then(() => {
     mcqFormId;
     globalQuestionData;
     globalQuestionLength;
-    testType;
+    testType='';
     isHindi = false;
     TestUIInfo;
   };
@@ -1260,6 +1260,12 @@ loadExternalModule().then(() => {
           //AUDIO RESPONSES
 
           // to check session active or not
+          if (testType === 'mcq'){
+            signals.onResponse({
+              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+            })
+            return;
+          }
 
           await getSessionStatus(sessionId);
 
@@ -1304,9 +1310,57 @@ loadExternalModule().then(() => {
               if (isHindi){
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`]
               }
+
+              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+              const is_link =linkPattern.test(questionText);
+
+              if(is_link){
+                console.log(questionText)
+                let embeddingUrl = "";
+                if (questionText.length > 0) {
+                  if (questionText.includes("youtube.com")) {
+                    const videoId =
+                    questionText.split("v=")[1];
+                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                  } else if (
+                    questionText.includes("vimeo.com")
+                  ) {
+                    const videoId = questionText
+                      .split("/")
+                      .pop();
+                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                  } else if (
+                    questionText.includes("twitter.com")
+                  ) {
+                    embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                  }
+                  // signals.onResponse({
+                  //   html:`▪ ${questionText} .<br><br>
+                  //   ▪ Media <br>  <iframe
+                  //                    allow="autoplay; encrypted-media; fullscreen;"
+                  //                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                  //                    src=${embeddingUrl}
+                  //                    frameborder="0"
+                  //                    allowfullscreen
+                  //                  >
+                  //  ` ,
+                  // });
+
+                  questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                  questionText = `▪ ${questionText} .<br><br>
+                  ▪ Media <br>  <iframe
+                                   allow="autoplay; encrypted-media; fullscreen;"
+                                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                   src=${embeddingUrl}
+                                   frameborder="0"
+                                   allowfullscreen
+                                 >
+                 ` 
+                }
+              }
               
               signals.onResponse({
-                text: questionText,
+                html: questionText,
               });
             }
           }
@@ -1356,14 +1410,16 @@ loadExternalModule().then(() => {
                   });
                 }
               }
-
-              if (!window.user) {
-                appendMessage(
-                  "<b>For obtaining your report, please submit the following details.</b>"
-                );
-                signals.onResponse({
-                  html: credentialsForm,
-                });
+              if (responsesDone){
+                if (!window.user) {
+                  // appendMessage(
+                  //   "<b>For obtaining your report, please submit the following details.</b>"
+                  // );
+                  signals.onResponse({
+                    text : "For obtaining your report, please submit the following details.",
+                    html: credentialsForm,
+                  });
+                }
               }
 
               //   if (window.user) {
@@ -1566,6 +1622,12 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
+              if (testType === 'mcq'){
+                signals.onResponse({
+                  html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+                })
+                return;
+              }
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
                   html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
@@ -1701,7 +1763,7 @@ loadExternalModule().then(() => {
                 }
 
                 // restriction check like monthly test allowed start
-                await getAttemptedTestList(participantId);
+                // await getAttemptedTestList(participantId);
                 await getIsRepeatStatus(participantId);
                 await getTestPrevilage(participantId);
 
@@ -1727,14 +1789,14 @@ loadExternalModule().then(() => {
                 // User cannot attempt the test more than once if it is active
                 console.log(userRole);
                 if (userRole && userRole !== "admin") {
-                  if (
-                    !isRepeatStatus.is_repeat &&
-                    testCodeList.includes(testCode)
-                  ) {
-                    signals.onResponse({
-                      text: "You are not allowed to attempt this interaction again.",
-                    });
-                    return;
+                  if (!isRepeatStatus.is_repeat){
+                    await getAttemptedTestList(participantId)
+                    if (testCodeList.includes(testCode)) {
+                      signals.onResponse({
+                        text: "You are not allowed to attempt this interaction again.",
+                      });
+                      return;
+                    }
                   }
                 }
                 //end
@@ -1842,6 +1904,44 @@ loadExternalModule().then(() => {
                       if (isHindi){
                         questionText = TestUIInfo[`Question ${questionIndex + 1}`]
                       }
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link =linkPattern.test(questionText);
+
+                      if(is_link){
+                        console.log(questionText)
+                        let embeddingUrl = "";
+                        if (questionText.length > 0) {
+                          if (questionText.includes("youtube.com")) {
+                            const videoId =
+                            questionText.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (
+                            questionText.includes("vimeo.com")
+                          ) {
+                            const videoId = questionText
+                              .split("/")
+                              .pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (
+                            questionText.includes("twitter.com")
+                          ) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                          }
+                          
+
+                          questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+
+                          questionText = `▪ ${questionText} .<br><br>
+                          ▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        ` 
+                        }
+                      }
                     }
                   }
 
@@ -1852,14 +1952,14 @@ loadExternalModule().then(() => {
                         if (senarioMediaDescription.includes("youtube.com")) {
                           const videoId =
                             senarioMediaDescription.split("v=")[1];
-                          embeddingUrl = `https://www.youtube.com/embed/${videoId}`;
+                          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
                         } else if (
                           senarioMediaDescription.includes("vimeo.com")
                         ) {
                           const videoId = senarioMediaDescription
                             .split("/")
                             .pop();
-                          embeddingUrl = `https://player.vimeo.com/video/${videoId}`;
+                          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
                         } else if (
                           senarioMediaDescription.includes("twitter.com")
                         ) {
@@ -2052,10 +2152,11 @@ loadExternalModule().then(() => {
                   responsesDone = true;
 
                   if (!window.user) {
-                    appendMessage(
-                      "<b>For obtaining your report, please submit the following details.</b>"
-                    );
+                    // appendMessage(
+                    //   "<b>For obtaining your report, please submit the following details.</b>"
+                    // );
                     signals.onResponse({
+                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }
