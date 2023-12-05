@@ -15,6 +15,8 @@ import {
   serviceslashConsulting,
   frontLineStaff,
   immersive,
+  presentation,
+  caseStudy,
 } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
@@ -148,6 +150,22 @@ const Page = async () => {
                 360 Feedback
               </Button>
             </Link>
+            <Link href={"#case-study"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Case study
+              </Button>
+            </Link>
+            <Link href={"#presentation"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Presentation
+              </Button>
+            </Link>
             <Link href={"#immersive"}>
               <Button
                 variant={"secondary"}
@@ -247,6 +265,20 @@ const Page = async () => {
               badgeText="360 Feedback"
               user={user ? true : false}
               tests={roundFeedback}
+            />
+          </div>
+          <div id="case-study">
+            <HeroAccordion
+              badgeText="Case study"
+              user={user ? true : false}
+              tests={caseStudy}
+            />
+          </div>
+          <div id="presentation">
+            <HeroAccordion
+              badgeText="Presentation"
+              user={user ? true : false}
+              tests={presentation}
             />
           </div>
           <div id="immersive">

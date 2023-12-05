@@ -527,6 +527,44 @@ export const immersive: Test[] = [
   },
 ];
 
+export const presentation: Test[] = [
+  {
+    domain: "Risk Analysis Presentation ",
+    test_code: "QXG4FYR",
+    title: "Presenting a Risk Assessment for a High-Stakes Business Deal",
+    description:
+      "In a boardroom meeting, Raj, the project manager, is tasked with presenting a comprehensive risk assessment for a 80 million dollar merger with a competitor. He must outline potential financial, legal, and operational risks, as well as mitigation strategies. The board expects a structured walkthrough in under 15 minutes and understand the asks or recommendation. The manager is anxious to make a positive mark as he addresses the room and starts to run with his slides. Please respond to the structured prompts to continue.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Project Ending Presentation",
+    test_code: "Q48S46Y",
+    title: "Presenting a project closing report",
+    description:
+      "Rahul the Project manager is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes to conclude it successfully.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const caseStudy: Test[] = [
+  {
+    domain: "Strategic Decisions",
+    test_code: "QWGW7N3",
+    title: "Marketing Optimism vs. Fiscal Prudence Clash",
+    description:
+      "A technology firm aiming to launch a groundbreaking product, the leadership team grapples with divergent perspectives on the viability of their market strategy. The Chief Marketing Officer, relying on optimistic customer feedback, champions an aggressive approach. Simultaneously, the Chief Financial Officer, scrutinizing financial projections, advocates for a more conservative stance. The team faces a critical decision point: whether to invest heavily in marketing and innovation or adopt a restrained fiscal strategy. The challenge arises from the team's predisposition to favor information confirming their preconceptions, leading to potential conflict and suboptimal decisions. Reflect on the situation and answer the questions as the Chief Marketing Officer based on the article you just read. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Leadership initiatives",
+    test_code: "QE4334M",
+    title: "Balancing Creativity and Accountability in Office Dynamics",
+    description:
+      "In a dynamic marketing agency, the team is facing a productivity challenge. Traditional management practices, emphasizing strict office hours, clash with the team's diverse work styles and the nature of creative tasks. Despite having a highly skilled and motivated team, morale is plummeting due to a rigid adherence to a 9 to 5 schedule. The disconnect between management's expectations and the team's need for flexibility is hindering creativity and collaboration. The manager, caught in the tension between traditional management practices and the team's desire for autonomy, must find a way to foster a more conducive work environment without compromising productivity and accountability. Reflect on the situation and answer the questions as the manager based on the ted talk you just watched.",
+    interaction_mode: "Audio",
+  },
+];
+
 export const frontLineStaff: Test[] = [
   {
     domain: "Edtech sales",
