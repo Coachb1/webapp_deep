@@ -973,7 +973,7 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
-    if (words.length < 20) {
+    if (words.length < 15) {
       return false;
     } else {
       return true;
@@ -1637,10 +1637,10 @@ loadExternalModule().then(() => {
                 });
               }
 
-              //************* check if user message is atleast 10 words */
+              //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 20 words</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 15 words</p>",
                 });
                 return;
               }

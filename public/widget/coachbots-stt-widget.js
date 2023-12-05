@@ -843,7 +843,7 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
-    if (words.length < 20) {
+    if (words.length < 15) {
       return false;
     } else {
       return true;
@@ -1114,7 +1114,7 @@ loadExternalModule().then(() => {
 
               if (!isValidMessageStt(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 20 words</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 15 words</p>",
                 });
                 return;
               }
@@ -1398,7 +1398,7 @@ loadExternalModule().then(() => {
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
-                                 ▪ Instructions : Response should be at least 20 words. <br><br>
+                                 ▪ Instructions : Response should be at least 15 words. <br><br>
                                  ▪ Media  <iframe
                                             allow="autoplay; encrypted-media; fullscreen;
                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
@@ -1413,7 +1413,7 @@ loadExternalModule().then(() => {
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 20 words. <br><br>
+                               ▪ Instructions : Response should be at least 15 words. <br><br>
                                ▪ Media  <iframe
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl2}
@@ -1427,7 +1427,7 @@ loadExternalModule().then(() => {
                         appendMessage2(
                           `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Response should be at least 20 words.`
+                             ▪ Instructions : Response should be at least 15 words.`
                         );
                       }
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
@@ -1502,7 +1502,7 @@ loadExternalModule().then(() => {
                       }
                       signals.onResponse({
                         html: questionText2,
-                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 20 words.`,
+                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
                       });
                     }
                   } else {
