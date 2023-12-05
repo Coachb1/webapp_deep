@@ -1347,8 +1347,7 @@ loadExternalModule().then(() => {
                   // });
 
                   questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
-                  questionText = `▪ ${questionText} .<br><br>
-                  ▪ Media <br>  <iframe
+                  questionText = `▪ Media <br>  <iframe
                                    allow="autoplay; encrypted-media; fullscreen;"
                                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                    src=${embeddingUrl}
@@ -1931,8 +1930,7 @@ loadExternalModule().then(() => {
 
                           questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
 
-                          questionText = `▪ ${questionText} .<br><br>
-                          ▪ Media <br>  <iframe
+                          questionText = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl}
