@@ -965,7 +965,7 @@ loadExternalModule().then(() => {
     mcqFormId;
     globalQuestionData;
     globalQuestionLength;
-    testType='';
+    testType = "";
     isHindi = false;
     TestUIInfo;
   };
@@ -1291,6 +1291,13 @@ loadExternalModule().then(() => {
             return;
           }
 
+          if (file.size < 2600) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
+            });
+            return;
+          }
+
           const formdata = new FormData();
           formdata.append("owner_type", "user");
           formdata.append("owner_id", userId);
@@ -1541,7 +1548,7 @@ loadExternalModule().then(() => {
             optedNo = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Surprise  me!</button>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
                     </div>
                     `,
             });

@@ -1016,7 +1016,7 @@ loadExternalModule().then(() => {
             optedNo2 = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                      <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Surprise  me!</button>
+                      <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
                       </div>
                       `,
             });
