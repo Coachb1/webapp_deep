@@ -275,6 +275,14 @@ export const Managerial: Test[] = [
       "A recent joinee in tech industry, was excited to start his new role. However, within days of joining, a corporate restructuring led to changes in his responsibilities and team composition. This unexpected turn of events introduced complexity and apprehension. The following questions by the manager, Ajay aim to gauge the team member's ability to handle uncertainty and adapt to change. Respond as a team member to this situation.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Team building & Leadership",
+    test_code: "QQJPCFI",
+    title: "Teams using Agile Strategies ",
+    description:
+      "After returning from the team-building training, an operations manager receives a challenging exercise from her trainer. She must dismantle the current production team, plagued by communication gaps and delays, and build a new team for an upcoming high-stakes product launch. The textile industry demands precision, and she needs to implement agile methodologies learned during training to improve efficiency. She's meeting with the Department Head, Harish to strategize this overhaul. Respond as the operations manager in this situation.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const Reflection: Test[] = [
@@ -390,14 +398,7 @@ export const Sales: Test[] = [
 ];
 
 export const serviceslashConsulting: Test[] = [
-  {
-    domain: "Team building & Leadership",
-    test_code: "QQJPCFI",
-    title: "Teams using Agile Strategies ",
-    description:
-      "After returning from the team-building training, an operations manager receives a challenging exercise from her trainer. She must dismantle the current production team, plagued by communication gaps and delays, and build a new team for an upcoming high-stakes product launch. The textile industry demands precision, and she needs to implement agile methodologies learned during training to improve efficiency. She's meeting with the Department Head, Harish to strategize this overhaul. Respond as the operations manager in this situation.",
-    interaction_mode: "Audio",
-  },
+ 
   {
     domain: "Coaching Assistant",
     test_code: "QIBY52O",
@@ -430,14 +431,7 @@ export const serviceslashConsulting: Test[] = [
       "This is the last day of your orientation training as a bank employee. As the last task complete this real life customer interaction simulation. Mr. Rohit Sharma, a dedicated customer of the bank for the past 15 years, encounters a delay in opening a new account due to a discrepancy in his address proof. The challenge lies in maintaining Mr. Sharma's confidence, given his long-standing relationship with the bank, while adhering to the stringent industry norms. As the employee, you are tasked with striking a balance between ensuring compliance and providing reassurance to Mr. Sharma, who expressed valid concerns about the extended procedural timelines. Respond as the bank employee to this situation. ",
     interaction_mode: "Audio",
   },
-  {
-    domain: "Providing Feedback",
-    test_code: "QMHIGIF",
-    title: "Guiding an Employee as a New Manager",
-    description:
-      "A seasoned automotive professional with 7+ years of experience, has recently assumed a managerial role. In her first check-in with Riya, the project lead for a vehicle redesign initiative, she grapples with a production delay owing to a manufacturing flaw discovered in the initial prototypes. The project further faces a setback as a recent supply chain disruption, impedes the timely delivery of critical components. The new manager must provide feedback to Riya on finding swift resolution strategies, communicate efficiently with suppliers and recalibration of production timelines to mitigate project risks. Respond to this situation as the manager.",
-    interaction_mode: "Audio",
-  },
+  
   {
     domain: "Healthcare counselling",
     test_code: "QEH6YUA",
@@ -480,6 +474,14 @@ export const roundFeedback: Test[] = [
 
     title: "Sales Manager Feedback",
     description: "A sales manager's monthly feedback check in with manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Providing Feedback",
+    test_code: "QMHIGIF",
+    title: "Guiding an Employee as a New Manager",
+    description:
+      "A seasoned automotive professional with 7+ years of experience, has recently assumed a managerial role. In her first check-in with Riya, the project lead for a vehicle redesign initiative, she grapples with a production delay owing to a manufacturing flaw discovered in the initial prototypes. The project further faces a setback as a recent supply chain disruption, impedes the timely delivery of critical components. The new manager must provide feedback to Riya on finding swift resolution strategies, communicate efficiently with suppliers and recalibration of production timelines to mitigate project risks. Respond to this situation as the manager.",
     interaction_mode: "Audio",
   },
 ];

@@ -122,11 +122,18 @@ async function setMcqVariablesStt() {
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadioStt = `
-                  <div id='question-stt' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
-                  <input type="radio" id="${newOption1NameStt}" name="mcq_option_stt" value="${newOption1TextStt}" style="margin-right: 5px;">
-                  <label for="${newOption1NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption1TextStt}</label>
-                  <input type="radio" id="${newOption2NameStt}" name="mcq_option_stt" value="${newOption2TextStt}" style="margin-right: 5px;">
-                  <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
+                  <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
+                  <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                    <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                      <input type="radio" id="${newOption1NameStt}" name="mcq_option_stt" value="${newOption1TextStt}" style="margin-right: 5px;">
+                      <label for="${newOption1NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption1TextStt}</label>
+                    </div>
+                 
+                    <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                      <input type="radio" id="${newOption2NameStt}" name="mcq_option_stt" value="${newOption2TextStt}" style="margin-right: 5px;">
+                      <label for="${newOption2NameStt}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2TextStt}</label>
+                    </div>
+                   </div>
                   <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                 `;
 
@@ -650,7 +657,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 450px; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 70vh; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px"}}
@@ -1361,11 +1368,17 @@ loadExternalModule().then(() => {
 
                       formRadio = `
                       <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 400px; width: 100%; box-sizing: border-box;">
-                        <div id='question-stt' style="font-size: 18px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
-                        <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
-                        <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
-                        <input type="radio" id="${option2Name}" name="mcq_option_stt" value="${option2Text}" style="margin-right: 5px;">
-                        <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+                        <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
+                        <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
+                            <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
+                          </div>
+                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <input type="radio" id="${option2Name}" name="mcq_option_stt" value="${option2Text}" style="margin-right: 5px;">
+                            <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+                          </div>
+                        </div>
                         <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
                       </div>`;
                       questionText2 = formRadio;
