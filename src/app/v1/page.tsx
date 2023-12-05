@@ -14,6 +14,7 @@ import {
   Sales,
   serviceslashConsulting,
   frontLineStaff,
+  immersive,
 } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
@@ -147,6 +148,14 @@ const Page = async () => {
                 360 Feedback
               </Button>
             </Link>
+            <Link href={"#immersive"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Immersive
+              </Button>
+            </Link>
             <Link href={"#meetings"}>
               <Button
                 variant={"secondary"}
@@ -238,6 +247,13 @@ const Page = async () => {
               badgeText="360 Feedback"
               user={user ? true : false}
               tests={roundFeedback}
+            />
+          </div>
+          <div id="immersive">
+            <HeroAccordion
+              badgeText="Immersive"
+              user={user ? true : false}
+              tests={immersive}
             />
           </div>
           <div id="meetings">
