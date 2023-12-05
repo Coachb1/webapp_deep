@@ -159,7 +159,9 @@ async function setMcqVariablesStt() {
   } else {
     // decisionAnalysisReport
 
-    let credentialsForm2 = `<div id="input-form2">
+    let credentialsForm2 = `
+    <b>For obtaining your report, please submit the following details.</b>
+    <div id="input-form2">
     <div style="display: flex; flex-direction: column">
         <label for="name" style="margin: 4px 0">Name  </label>
         <input  
@@ -1459,8 +1461,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
 
-                          questionText2 = `▪ ${questionText2} .<br><br>
-                          ▪ Media <br>  <iframe
+                          questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl}
@@ -1501,8 +1502,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
 
-                          questionText2 = `▪ ${questionText2} .<br><br>
-                          ▪ Media <br>  <iframe
+                          questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl}
@@ -1549,8 +1549,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
 
-                          questionText2 = `▪ ${questionText2} .<br><br>
-                          ▪ Media <br>  <iframe
+                          questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl}
