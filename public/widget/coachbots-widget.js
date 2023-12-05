@@ -973,7 +973,7 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
-    if (words.length <= 10) {
+    if (words.length < 20) {
       return false;
     } else {
       return true;
@@ -1260,10 +1260,10 @@ loadExternalModule().then(() => {
           //AUDIO RESPONSES
 
           // to check session active or not
-          if (testType === 'mcq'){
+          if (testType === "mcq") {
             signals.onResponse({
-              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
-            })
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
@@ -1307,31 +1307,24 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
-              if (isHindi){
-                questionText = TestUIInfo[`Question ${questionIndex + 1}`]
+              if (isHindi) {
+                questionText = TestUIInfo[`Question ${questionIndex + 1}`];
               }
 
               const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-              const is_link =linkPattern.test(questionText);
+              const is_link = linkPattern.test(questionText);
 
-              if(is_link){
-                console.log(questionText)
+              if (is_link) {
+                console.log(questionText);
                 let embeddingUrl = "";
                 if (questionText.length > 0) {
                   if (questionText.includes("youtube.com")) {
-                    const videoId =
-                    questionText.split("v=")[1];
+                    const videoId = questionText.split("v=")[1];
                     embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                  } else if (
-                    questionText.includes("vimeo.com")
-                  ) {
-                    const videoId = questionText
-                      .split("/")
-                      .pop();
+                  } else if (questionText.includes("vimeo.com")) {
+                    const videoId = questionText.split("/").pop();
                     embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                  } else if (
-                    questionText.includes("twitter.com")
-                  ) {
+                  } else if (questionText.includes("twitter.com")) {
                     embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
                   }
                   // signals.onResponse({
@@ -1346,7 +1339,10 @@ loadExternalModule().then(() => {
                   //  ` ,
                   // });
 
-                  questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                  questionText = questionText.replace(
+                    /(http[s]?:\/\/[^\s]+)/g,
+                    ""
+                  );
                   questionText = `▪ ${questionText} .<br><br>
                   ▪ Media <br>  <iframe
                                    allow="autoplay; encrypted-media; fullscreen;"
@@ -1355,10 +1351,10 @@ loadExternalModule().then(() => {
                                    frameborder="0"
                                    allowfullscreen
                                  >
-                 ` 
+                 `;
                 }
               }
-              
+
               signals.onResponse({
                 html: questionText,
               });
@@ -1410,13 +1406,13 @@ loadExternalModule().then(() => {
                   });
                 }
               }
-              if (responsesDone){
+              if (responsesDone) {
                 if (!window.user) {
                   // appendMessage(
                   //   "<b>For obtaining your report, please submit the following details.</b>"
                   // );
                   signals.onResponse({
-                    text : "For obtaining your report, please submit the following details.",
+                    text: "For obtaining your report, please submit the following details.",
                     html: credentialsForm,
                   });
                 }
@@ -1598,10 +1594,10 @@ loadExternalModule().then(() => {
 
           // to check session is active or not
           if (!isTestCode(latestMessage)) {
-            if (isHindi){
+            if (isHindi) {
               signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>Only Audio response allowed for this interaction.</p>"
-              })
+                html: "<p style='font-size: 14px;color: #991b1b;'>Only Audio response allowed for this interaction.</p>",
+              });
               return;
             }
             await getSessionStatus(sessionId);
@@ -1622,10 +1618,10 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
-              if (testType === 'mcq'){
+              if (testType === "mcq") {
                 signals.onResponse({
-                  html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
-                })
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+                });
                 return;
               }
               if (sessionStatus != "in_progress") {
@@ -1644,7 +1640,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 10 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 10 words</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 20 words</p>",
                 });
                 return;
               }
@@ -1707,7 +1703,7 @@ loadExternalModule().then(() => {
               senarioTitle = questionData.results[0].title;
               senarioMediaDescription =
                 questionData.results[0].description_media;
-              TestUIInfo = questionData.results[0].ui_information
+              TestUIInfo = questionData.results[0].ui_information;
               console.log(senarioMediaDescription);
 
               isTestcodeValid = true;
@@ -1716,13 +1712,12 @@ loadExternalModule().then(() => {
               orch_details =
                 questionData.results[0].orchestrated_conversation_details;
 
-              if (TestUIInfo){
-                if (Object.keys(TestUIInfo).length > 0){
-                  senarioTitle = TestUIInfo['title']
-                  senarioDescription = TestUIInfo['description'] 
-                  isHindi = true;                   
+              if (TestUIInfo) {
+                if (Object.keys(TestUIInfo).length > 0) {
+                  senarioTitle = TestUIInfo["title"];
+                  senarioDescription = TestUIInfo["description"];
+                  isHindi = true;
                 }
-
               }
 
               if (testType === "mcq") {
@@ -1789,8 +1784,8 @@ loadExternalModule().then(() => {
                 // User cannot attempt the test more than once if it is active
                 console.log(userRole);
                 if (userRole && userRole !== "admin") {
-                  if (!isRepeatStatus.is_repeat){
-                    await getAttemptedTestList(participantId)
+                  if (!isRepeatStatus.is_repeat) {
+                    await getAttemptedTestList(participantId);
                     if (testCodeList.includes(testCode)) {
                       signals.onResponse({
                         text: "You are not allowed to attempt this interaction again.",
@@ -1901,35 +1896,31 @@ loadExternalModule().then(() => {
                       questionText =
                         questionData.results[0].questions[questionIndex]
                           .question;
-                      if (isHindi){
-                        questionText = TestUIInfo[`Question ${questionIndex + 1}`]
+                      if (isHindi) {
+                        questionText =
+                          TestUIInfo[`Question ${questionIndex + 1}`];
                       }
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link =linkPattern.test(questionText);
+                      const is_link = linkPattern.test(questionText);
 
-                      if(is_link){
-                        console.log(questionText)
+                      if (is_link) {
+                        console.log(questionText);
                         let embeddingUrl = "";
                         if (questionText.length > 0) {
                           if (questionText.includes("youtube.com")) {
-                            const videoId =
-                            questionText.split("v=")[1];
+                            const videoId = questionText.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionText.includes("vimeo.com")
-                          ) {
-                            const videoId = questionText
-                              .split("/")
-                              .pop();
+                          } else if (questionText.includes("vimeo.com")) {
+                            const videoId = questionText.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionText.includes("twitter.com")
-                          ) {
+                          } else if (questionText.includes("twitter.com")) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
                           }
-                          
 
-                          questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                          questionText = questionText.replace(
+                            /(http[s]?:\/\/[^\s]+)/g,
+                            ""
+                          );
 
                           questionText = `▪ ${questionText} .<br><br>
                           ▪ Media <br>  <iframe
@@ -1939,7 +1930,7 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        ` 
+                        `;
                         }
                       }
                     }

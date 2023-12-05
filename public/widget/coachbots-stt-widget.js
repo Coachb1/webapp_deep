@@ -843,7 +843,7 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
-    if (words.length <= 10) {
+    if (words.length < 20) {
       return false;
     } else {
       return true;
@@ -1088,10 +1088,10 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
-              if (testType2 === 'mcq'){
+              if (testType2 === "mcq") {
                 signals.onResponse({
-                  html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
-                })
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+                });
                 return;
               }
               if (sessionStatusStt != "in_progress") {
@@ -1114,7 +1114,7 @@ loadExternalModule().then(() => {
 
               if (!isValidMessageStt(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 10 words</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 20 words</p>",
                 });
                 return;
               }
@@ -1185,15 +1185,13 @@ loadExternalModule().then(() => {
               orch_details2 =
                 questionData2.results[0].orchestrated_conversation_details;
 
-
-              if (testUIInfoStt){
-                if (Object.keys(testUIInfoStt).length > 0){
+              if (testUIInfoStt) {
+                if (Object.keys(testUIInfoStt).length > 0) {
                   signals.onResponse({
-                    html : "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>"
-                  }) 
-                  return;               
+                    html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                  });
+                  return;
                 }
-
               }
 
               if (testType2 === "mcq") {
@@ -1262,8 +1260,8 @@ loadExternalModule().then(() => {
                 // User cannot attempt the test more than once if it is active
                 console.log(userRole2);
                 if (userRole2 && userRole2 !== "admin") {
-                  if (!isRepeatStatus2.is_repeat){
-                    await getAttemptedTestList2(participantId2)
+                  if (!isRepeatStatus2.is_repeat) {
+                    await getAttemptedTestList2(participantId2);
                     if (testCodeList2.includes(testCode2)) {
                       signals.onResponse({
                         text: "You are not allowed to attempt this interaction again.",
@@ -1400,7 +1398,7 @@ loadExternalModule().then(() => {
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                  ▪ Description : ${senarioDescription2} <br><br>
-                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                 ▪ Instructions : Response should be at least 20 words. <br><br>
                                  ▪ Media  <iframe
                                             allow="autoplay; encrypted-media; fullscreen;
                                             style="width: 100%; border-radius: 8px; min-height: 50vh;"
@@ -1415,7 +1413,7 @@ loadExternalModule().then(() => {
                           appendMessage2(
                             `▪ Title : ${senarioTitle2} <br><br>
                                ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                               ▪ Instructions : Response should be at least 20 words. <br><br>
                                ▪ Media  <iframe
                                           style="width: 100%; border-radius: 8px; min-height: 50vh;"
                                           src=${embeddingUrl2}
@@ -1429,35 +1427,30 @@ loadExternalModule().then(() => {
                         appendMessage2(
                           `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                             ▪ Instructions : Response should be at least 20 words.`
                         );
                       }
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link =linkPattern.test(questionText2);
+                      const is_link = linkPattern.test(questionText2);
 
-                      if(is_link){
-                        console.log(questionText2)
+                      if (is_link) {
+                        console.log(questionText2);
                         let embeddingUrl = "";
                         if (questionText2.length > 0) {
                           if (questionText2.includes("youtube.com")) {
-                            const videoId =
-                            questionText2.split("v=")[1];
+                            const videoId = questionText2.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionText2.includes("vimeo.com")
-                          ) {
-                            const videoId = questionText2
-                              .split("/")
-                              .pop();
+                          } else if (questionText2.includes("vimeo.com")) {
+                            const videoId = questionText2.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionText2.includes("twitter.com")
-                          ) {
+                          } else if (questionText2.includes("twitter.com")) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
                           }
-                          
 
-                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                          questionText2 = questionText2.replace(
+                            /(http[s]?:\/\/[^\s]+)/g,
+                            ""
+                          );
 
                           questionText2 = `▪ ${questionText2} .<br><br>
                           ▪ Media <br>  <iframe
@@ -1467,7 +1460,7 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        ` 
+                        `;
                         }
                       }
                       signals.onResponse({
@@ -1475,31 +1468,26 @@ loadExternalModule().then(() => {
                       });
                     } else {
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link =linkPattern.test(questionText2);
+                      const is_link = linkPattern.test(questionText2);
 
-                      if(is_link){
-                        console.log(questionText2)
+                      if (is_link) {
+                        console.log(questionText2);
                         let embeddingUrl = "";
                         if (questionText2.length > 0) {
                           if (questionText2.includes("youtube.com")) {
-                            const videoId =
-                            questionText2.split("v=")[1];
+                            const videoId = questionText2.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionText2.includes("vimeo.com")
-                          ) {
-                            const videoId = questionText2
-                              .split("/")
-                              .pop();
+                          } else if (questionText2.includes("vimeo.com")) {
+                            const videoId = questionText2.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionText2.includes("twitter.com")
-                          ) {
+                          } else if (questionText2.includes("twitter.com")) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
                           }
-                          
 
-                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                          questionText2 = questionText2.replace(
+                            /(http[s]?:\/\/[^\s]+)/g,
+                            ""
+                          );
 
                           questionText2 = `▪ ${questionText2} .<br><br>
                           ▪ Media <br>  <iframe
@@ -1509,12 +1497,12 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        ` 
+                        `;
                         }
                       }
                       signals.onResponse({
                         html: questionText2,
-                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 20 words.`,
                       });
                     }
                   } else {
@@ -1523,31 +1511,26 @@ loadExternalModule().then(() => {
                       testType2 != "dynamic_discussion_thread"
                     ) {
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link =linkPattern.test(questionText2);
+                      const is_link = linkPattern.test(questionText2);
 
-                      if(is_link){
-                        console.log(questionText2)
+                      if (is_link) {
+                        console.log(questionText2);
                         let embeddingUrl = "";
                         if (questionText2.length > 0) {
                           if (questionText2.includes("youtube.com")) {
-                            const videoId =
-                            questionText2.split("v=")[1];
+                            const videoId = questionText2.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionText2.includes("vimeo.com")
-                          ) {
-                            const videoId = questionText2
-                              .split("/")
-                              .pop();
+                          } else if (questionText2.includes("vimeo.com")) {
+                            const videoId = questionText2.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionText2.includes("twitter.com")
-                          ) {
+                          } else if (questionText2.includes("twitter.com")) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
                           }
-                          
 
-                          questionText2 = questionText2.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                          questionText2 = questionText2.replace(
+                            /(http[s]?:\/\/[^\s]+)/g,
+                            ""
+                          );
 
                           questionText2 = `▪ ${questionText2} .<br><br>
                           ▪ Media <br>  <iframe
@@ -1557,7 +1540,7 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        ` 
+                        `;
                         }
                       }
                       signals.onResponse({
