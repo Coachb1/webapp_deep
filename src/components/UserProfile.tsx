@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { useRouter } from "next/navigation";
 const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
 
 const UserProfile = ({
@@ -16,8 +17,12 @@ const UserProfile = ({
 }) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
+  const pathname = useRouter()
 
   useEffect(() => {
+    if(!userEmail){
+      pathname.push("/api/auth/login")
+    }
     try {
       fetch(`${baseURL}/accounts/`, {
         method: "POST",

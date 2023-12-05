@@ -275,6 +275,14 @@ export const Managerial: Test[] = [
       "A recent joinee in tech industry, was excited to start his new role. However, within days of joining, a corporate restructuring led to changes in his responsibilities and team composition. This unexpected turn of events introduced complexity and apprehension. The following questions by the manager, Ajay aim to gauge the team member's ability to handle uncertainty and adapt to change. Respond as a team member to this situation.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Team building & Leadership",
+    test_code: "QQJPCFI",
+    title: "Teams using Agile Strategies ",
+    description:
+      "After returning from the team-building training, an operations manager receives a challenging exercise from her trainer. She must dismantle the current production team, plagued by communication gaps and delays, and build a new team for an upcoming high-stakes product launch. The textile industry demands precision, and she needs to implement agile methodologies learned during training to improve efficiency. She's meeting with the Department Head, Harish to strategize this overhaul. Respond as the operations manager in this situation.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const Reflection: Test[] = [
@@ -307,28 +315,28 @@ export const DecisionGames: Test[] = [
   },
   {
     domain: "Difficult executive decisions",
-    test_code: "QOJSU0B",
-    title: "Deciding how to deal with challenging financial times as the CFO",
+    test_code: "Q9B086X",
+    title: "Deciding how to deal with challenging financial times as the Senior Director",
     description:
-      "An administrative assistant is increasingly receiving additional tasks outside of their core job responsibilities which is impacting their ability to effectively complete their primary work. Unsure of how to have a constructive conversation with their manager about setting better boundaries and priorities to support a sustainable workload, they are seeking advice on how to address this sensitive issue. Respond to this situation as the administrative assistant.",
+      "The candidate is a Chief Financial Officer (Senior Director) of a large multinational corporation. The company is navigating a challenging financial quarter, and a significant cost-cutting decision is required to maintain profitability. The board is looking to the Senior Director for guidance on the next steps.",
     interaction_mode: "Audio",
   },
 ];
 export const oneTwoOne: Test[] = [
   {
-    domain: "Reassessing Ambitious Goals",
-    test_code: "QD7O1GQ",
-    title: "Navigating Manufacturing Challenges",
+    domain: "Workplace Communication",
+    test_code: "QO3CBR3",
+    title: "Handling communication in team meetings as a new employee",
     description:
-      "Sarita, an engineer at a manufacturing company in India, set highly ambitious production goals for herself, with the aim of doubling her output compared to the previous year. However, as she delved into her tasks, she realized that the newly introduced manufacturing process was far more intricate and time-consuming than initially anticipated. This was exacerbated by recent changes in the industry regulations, which added further complexity to the production process. Sarita now finds herself struggling to meet her self-imposed objectives and reaches out to her manager for guidance on managing this situation effectively. Respond to this situation as her manager.",
+      "The new business analyst who had joined 3 months ago, was working on a new project. In the daily standup meetings, the manager, Neha noticed he would only speak when asked a direct question. He did not voluntarily provide updates or suggestions, even though he had good ideas that would benefit the project. The team felt that the business analyst's quiet nature was hindering collaboration. After observing this for 2 weeks, Neha decided to have a one-on-one discussion with him to better understand his perspective. Respond to this situation as the business analyst.",
     interaction_mode: "Audio",
   },
   {
-    domain: "Conflict Resolution Discussion",
-    test_code: "QG7Y5YA",
-    title: "Balancing Production and Quality",
+    domain: "Work Life Balance",
+    test_code: "Q0HP80X",
+    title: "Managing workload and addressing burnout",
     description:
-      "In a manufacturing company in Mumbai, the production supervisor, proposed increasing production targets by 20% to meet a surge in demand for their products following a major trade fair. Karan, the quality control inspector, expressed concerns about this decision, citing a recent analysis of product defects, which showed a 10% increase in defects over the past quarter. The conflict emerged due to the need to balance increased production with maintaining product quality and safety standards. The production supervisor decided to have a direct conversation with Karan to explore a compromise that would address both the production targets and quality concerns. Respond to this situation as the production supervisor.",
+      "Following a recent acquisition, the surge in project load became a prominent issue. Employees faced an increased workload, leading to difficulties in preserving a healthy work-life balance and affecting the quality of project deliverables. The overwhelming situation prompted a team member to seek a discussion with the manager, Amit to address the growing challenges in managing work-related stress and employee burnout. Respond to this situation as the team member.",
     interaction_mode: "Audio",
   },
 ];
@@ -354,7 +362,6 @@ export const Technology: Test[] = [
 export const Sales: Test[] = [
   {
     domain: "Edtech sales",
-
     test_code: "QUEP49K",
     title: "Pitching a Computer Science Course",
     description:
@@ -363,7 +370,6 @@ export const Sales: Test[] = [
   },
   {
     domain: "Luxury real estate",
-
     test_code: "Q812FEK",
     title: "Handling a High-Profile Client",
     description:
@@ -373,7 +379,6 @@ export const Sales: Test[] = [
   {
     domain: "Healthcare sales",
     test_code: "QQ6V0RH",
-
     title: "Tailored Health Package Solution ",
     description:
       "This is the last day of your orientation training as a health package sales rep. To complete the orientation you need to complete this exercise of a real life customer interaction simulation. Sajeev, a young entrepreneur in the fitness industry, is seeking a health package solution for his startup's employees. With a workforce focused on physical well-being, Sajeev is interested in a package that includes coverage for sports injuries, specialized health programs, and preventive health check-ups. Your role as a Sales Rep is to showcase how your company's health package can cater to the unique needs of Sanjeev's fitness-oriented team. Respond to this situation as the Sales Rep.",
@@ -390,14 +395,6 @@ export const Sales: Test[] = [
 ];
 
 export const serviceslashConsulting: Test[] = [
-  {
-    domain: "Team building & Leadership",
-    test_code: "QQJPCFI",
-    title: "Teams using Agile Strategies ",
-    description:
-      "After returning from the team-building training, an operations manager receives a challenging exercise from her trainer. She must dismantle the current production team, plagued by communication gaps and delays, and build a new team for an upcoming high-stakes product launch. The textile industry demands precision, and she needs to implement agile methodologies learned during training to improve efficiency. She's meeting with the Department Head, Harish to strategize this overhaul. Respond as the operations manager in this situation.",
-    interaction_mode: "Audio",
-  },
   {
     domain: "Coaching Assistant",
     test_code: "QIBY52O",
@@ -430,14 +427,7 @@ export const serviceslashConsulting: Test[] = [
       "This is the last day of your orientation training as a bank employee. As the last task complete this real life customer interaction simulation. Mr. Rohit Sharma, a dedicated customer of the bank for the past 15 years, encounters a delay in opening a new account due to a discrepancy in his address proof. The challenge lies in maintaining Mr. Sharma's confidence, given his long-standing relationship with the bank, while adhering to the stringent industry norms. As the employee, you are tasked with striking a balance between ensuring compliance and providing reassurance to Mr. Sharma, who expressed valid concerns about the extended procedural timelines. Respond as the bank employee to this situation. ",
     interaction_mode: "Audio",
   },
-  {
-    domain: "Providing Feedback",
-    test_code: "QMHIGIF",
-    title: "Guiding an Employee as a New Manager",
-    description:
-      "A seasoned automotive professional with 7+ years of experience, has recently assumed a managerial role. In her first check-in with Riya, the project lead for a vehicle redesign initiative, she grapples with a production delay owing to a manufacturing flaw discovered in the initial prototypes. The project further faces a setback as a recent supply chain disruption, impedes the timely delivery of critical components. The new manager must provide feedback to Riya on finding swift resolution strategies, communicate efficiently with suppliers and recalibration of production timelines to mitigate project risks. Respond to this situation as the manager.",
-    interaction_mode: "Audio",
-  },
+  
   {
     domain: "Healthcare counselling",
     test_code: "QEH6YUA",
@@ -462,6 +452,14 @@ export const serviceslashConsulting: Test[] = [
       "The Retail Manager, Swati met with the IT Dev Lead for optimizing the retail analytics dashboard. Swati highlights the imperative for real-time inventory tracking and customer behavior analytics. The challenge identified is the seamless integration of data from disparate sources such as point-of-sale (POS) systems and e-commerce platforms. The objective is to enhance the dashboard to provide comprehensive insights, crucial for strategic decision-making in a fiercely competitive Indian retail market. Respond to this situation as the IT Dev Lead.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Interview Dilemma",
+    test_code: "QQZMF9B",
+    title: "Balancing Skills and Formal Education",
+    description:
+      "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const roundFeedback: Test[] = [
@@ -482,6 +480,14 @@ export const roundFeedback: Test[] = [
     description: "A sales manager's monthly feedback check in with manager.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Providing Feedback",
+    test_code: "QMHIGIF",
+    title: "Guiding an Employee as a New Manager",
+    description:
+      "A seasoned automotive professional with 7+ years of experience, has recently assumed a managerial role. In her first check-in with Riya, the project lead for a vehicle redesign initiative, she grapples with a production delay owing to a manufacturing flaw discovered in the initial prototypes. The project further faces a setback as a recent supply chain disruption, impedes the timely delivery of critical components. The new manager must provide feedback to Riya on finding swift resolution strategies, communicate efficiently with suppliers and recalibration of production timelines to mitigate project risks. Respond to this situation as the manager.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const meetings: Test[] = [
@@ -499,6 +505,24 @@ export const meetings: Test[] = [
     title: "Navigating cross-project challenges",
     description:
       "Employees from various departments of the company have gathered for an essential meeting. The primary agenda is to address cross-project challenges that have arisen due to overlapping deadlines, resource constraints, and shifting priorities. The objective of this meeting is to foster collaboration and devise strategies to navigate these challenges effectively. These are the opening comments from Anuv(Project Manager), Sahil(Project Supervisor), Sakshi(Project Accountant), Sachin(Project Specialist).  Join in the discussion as a team member.",
+    interaction_mode: "Audio",
+  },
+];
+export const immersive: Test[] = [
+  {
+    domain: "Handling Project Delays",
+    test_code: "QMAYNNN",
+    title: "Addressing Project Delays Due to External Factors",
+    description:
+      "During a project execution at a construction firm, unexpected delays have arisen due to adverse weather conditions and supply chain disruptions. These delays have impacted the construction timeline, jeopardizing key milestones. A team member wants to understand how the Manager plans to handle the situation and what kind of support is required from them. Respond to this situation as the Manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Mastering Career Development Dialogues",
+    test_code: "QJXK6VY",
+    title: "Career Growth Conversation with the manager",
+    description:
+      "The team member has been performing consistently in his current role but struggles to communicate his desire for career growth to his manager. In a meeting to discuss performance and development, the manager asks questions to understand the team member's aspirations and determine next steps to support his growth. Respond as a team member to this situation.",
     interaction_mode: "Audio",
   },
 ];
