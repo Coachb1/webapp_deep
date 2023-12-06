@@ -1504,7 +1504,7 @@ loadExternalModule().then(() => {
                       // //* send message to start new session
 
                       signals.onResponse({
-                        text: "<b>Please enter another access code to start a new interaction.</b>",
+                        html: "<b>Please enter another access code to start a new interaction.</b>",
                       });
                       submitEmailAndName();
                       return;
@@ -1606,7 +1606,7 @@ loadExternalModule().then(() => {
           if (!isTestCode(latestMessage)) {
             if (isHindi) {
               signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>Only Audio response allowed for this interaction.</p>",
+                html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Audio response allowed for this interaction.</b></p>",
               });
               return;
             }
@@ -1643,14 +1643,14 @@ loadExternalModule().then(() => {
                 // checking sessionexpiry
                 await cancelTest(participantId);
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
                 });
               }
 
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Response is too short it must be minimum of 15 words</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
                 });
                 return;
               }
@@ -1750,7 +1750,7 @@ loadExternalModule().then(() => {
                   if (companyTestCode.length > 0) {
                     if (!companyTestCode.includes(testCode)) {
                       signals.onResponse({
-                        text: "You are not allowed to attempt this test.",
+                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
                     }
                   }
@@ -1761,7 +1761,7 @@ loadExternalModule().then(() => {
                   if (unSignedUserTestCode.length > 0) {
                     if (!unSignedUserTestCode.includes(testCode)) {
                       signals.onResponse({
-                        text: "You are not allowed to attempt this test.",
+                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
                     }
                   }
@@ -1774,7 +1774,7 @@ loadExternalModule().then(() => {
 
                 if (isRepeatStatus["monthly_remaining_tests"] < 1) {
                   signals.onResponse({
-                    text: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations.",
+                    html: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations.",
                   });
                   return;
                 }
@@ -1786,7 +1786,7 @@ loadExternalModule().then(() => {
                   !testPrevilage.data.includes(testCode)
                 ) {
                   signals.onResponse({
-                    text: "You are not allowed to attempt this test.",
+                    html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                   });
                   return;
                 }
@@ -1798,7 +1798,7 @@ loadExternalModule().then(() => {
                     await getAttemptedTestList(participantId);
                     if (testCodeList.includes(testCode)) {
                       signals.onResponse({
-                        text: "You are not allowed to attempt this interaction again.",
+                        html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
                       return;
                     }
