@@ -1259,7 +1259,7 @@ loadExternalModule().then(() => {
             console.log("responsesDone2", responsesDone2, questionIndex2);
             if (responsesDone2 === false && questionIndex2 > 0) {
               signals.onResponse({
-                text: "You are already in a session. Please complete the current session or  type 'STOP' to end the session.",
+                html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
               });
               return;
             }
