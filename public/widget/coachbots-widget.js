@@ -801,10 +801,10 @@ function generateOptionButtons() {
       const msg = gshadowRoot.getElementById('proceed-option')
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
-      que_msg.innerHTML = initialQuestionText; // You can customize the message here
+      que_msg.innerHTML = "Please Wait.."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      // appendMessage(initialQuestionText)
+      appendMessage(initialQuestionText)
     }else {
       resetAllVariables();
       const gshadowRoot =
@@ -812,10 +812,10 @@ function generateOptionButtons() {
       const msg = gshadowRoot.getElementById('proceed-option')
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Your session is terminated. You can restart again!"; // You can customize the message here
+      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      // appendMessage('Your session is terminated. You can restart again!')
+      appendMessage('Your session is terminated. You can restart again!')
       
     }
     
@@ -1849,7 +1849,7 @@ loadExternalModule().then(() => {
             html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
             return;
           }
-          
+
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
             console.log("responsesDone ===> ", responsesDone, questionIndex);

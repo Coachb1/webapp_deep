@@ -146,10 +146,10 @@ function appendMessage2(message2) {
       const msg = gshadowRoot.getElementById('proceed-option2')
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
-      que_msg.innerHTML = initialQuestionTextStt; // You can customize the message here
+      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      // appendMessage(initialQuestionText)
+      appendMessage2(initialQuestionTextStt)
     }else {
       resetAllVariablesStt();
       const gshadowRoot =
@@ -157,10 +157,10 @@ function appendMessage2(message2) {
       const msg = gshadowRoot.getElementById('proceed-option2')
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Your session is terminated. You can restart again!"; // You can customize the message here
+      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      // appendMessage('Your session is terminated. You can restart again!')
+      appendMessage2('Your session is terminated. You can restart again!')
       
     }
     
