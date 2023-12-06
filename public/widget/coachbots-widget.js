@@ -1297,7 +1297,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (file.size < 2600) {
+          if (file.size < 175000) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
             });
