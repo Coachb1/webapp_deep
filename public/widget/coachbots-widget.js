@@ -66,6 +66,7 @@ let testType;
 let TestUIInfo;
 let isHindi = false;
 let isProceed;
+let isSessionActive = false;
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -790,6 +791,7 @@ function generateOptionButtons() {
       isHindi = false;
       TestUIInfo;
       isProceed = '';
+      isSessionActive = false;
     };
 
   const handleProceedClick = (choice) => {
@@ -1228,52 +1230,7 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
-  // to reset all variables
-  const resetAllVariables = () => {
-    //* reset all variables : start
-    questionText = "";
-    reportType = "interactionSessionReport";
-    questionIndex = 0;
-    questionId = null;
-    userResponse = "";
-
-    testId = null;
-    resQuestionNumber = null;
-    questionLength = null;
-    questionData = null;
-    documentId = null;
-    userAudioResponse = "";
-
-    is_free = true;
-    responseProcessedQuestion = 0;
-    senarioDescription = "";
-    senarioTitle = "";
-    senarioMediaDescription;
-    responsesDone = false;
-    userName = "";
-    userEmail = "";
-    reportUrl = null;
-    testCodeList = [];
-    isRepeatStatus = false;
-    testPrevilage = "";
-
-    //global variables
-    sessionId = "";
-    testCode = null;
-    optedNo = false;
-    globalReportUrl = null;
-
-    //* reset all variables : end
-    codeAvailabilityUserChoice = true;
-    mcqQustionIndex = 0;
-    mcqFormId;
-    globalQuestionData;
-    globalQuestionLength;
-    testType = "";
-    isHindi = false;
-    TestUIInfo;
-  };
-
+  
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
@@ -1407,7 +1364,11 @@ loadExternalModule().then(() => {
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        return resp_json["data"][rule].split(",");
+        if (rule === 'my_lib'){
+          return resp_json["data"][rule]
+        }else {
+          return resp_json["data"][rule].split(",");
+        }
       } catch (error) {
         return [];
       }
@@ -1866,12 +1827,12 @@ loadExternalModule().then(() => {
           }
 
           const userAcessAvailability = body.messages[0].text;
-          if (userAcessAvailability === "Yes") {
+          if (userAcessAvailability === "Yes" && !isSessionActive) {
             signals.onResponse({
               html: "<b>Please enter the access code to get started.</b>",
             });
             return;
-          } else if (userAcessAvailability === "No") {
+          } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
@@ -2165,9 +2126,11 @@ loadExternalModule().then(() => {
 
                   const data = await response.json();
                   sessionId = data.uid;
+                  isSessionActive = true;
                   console.log(sessionId);
                 } catch (err) {
                   console.log(err);
+                  isSessionActive = false;
                 }
               }
 

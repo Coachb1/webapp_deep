@@ -61,6 +61,7 @@ let isHindiStt = false;
 let testUIInfoStt;
 let isProceedStt;
 let initialQuestionTextStt;
+let isSessionActiveStt = false;
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -135,6 +136,7 @@ function appendMessage2(message2) {
     isHindiStt = false;
     testUIInfoStt;
     isProceedStt = '';
+    isSessionActiveStt = false;
   };
 
   const handleProceedClickStt = (choice) => {
@@ -1218,7 +1220,11 @@ loadExternalModule().then(() => {
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        return resp_json["data"][rule].split(",");
+        if (rule === 'my_lib'){
+          return resp_json["data"][rule]
+        }else {
+          return resp_json["data"][rule].split(",");
+        }
       } catch (error) {
         return [];
       }
@@ -1269,12 +1275,12 @@ loadExternalModule().then(() => {
           }
 
           const userAcessAvailability2 = body.messages[0].text;
-          if (userAcessAvailability2 === "Yes") {
+          if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
             signals.onResponse({
               html: "<b>Please enter the access code to get started.</b>",
             });
             return;
-          } else if (userAcessAvailability2 === "No") {
+          } else if (userAcessAvailability2 === "No" && !isSessionActiveStt) {
             optedNo2 = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
@@ -1573,8 +1579,10 @@ loadExternalModule().then(() => {
 
                   const data = await response.json();
                   sessionId2 = data.uid;
+                  isSessionActiveStt = true;
                 } catch (err) {
                   console.log(err);
+                  isSessionActiveStt = false;
                 }
               }
 
