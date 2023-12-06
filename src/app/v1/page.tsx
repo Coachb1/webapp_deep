@@ -17,6 +17,7 @@ import {
   immersive,
   presentation,
   caseStudy,
+  DiversityPlus,
 } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
@@ -100,6 +101,14 @@ const Page = async () => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Reflection
+              </Button>
+            </Link>
+            <Link href={"#diversityPlus"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Diversity+
               </Button>
             </Link>
             <Link href={"#decision-games"}>
@@ -218,6 +227,13 @@ const Page = async () => {
               tests={Reflection}
             />
           </div>
+          <div id="diversityPlus">
+            <HeroAccordion
+              badgeText="Diversity+"
+              user={user ? true : false}
+              tests={DiversityPlus}
+            />
+          </div>
           <div id="decision-games">
             <HeroAccordion
               badgeText="Decision Games"
@@ -227,7 +243,7 @@ const Page = async () => {
           </div>
           <div id="one-to-one">
             <HeroAccordion
-              badgeText="1:1 Check-ins"
+              badgeText="1:1 Check-ins | AI Curated"
               user={user ? true : false}
               tests={oneTwoOne}
             />
@@ -269,7 +285,7 @@ const Page = async () => {
           </div>
           <div id="case-study">
             <HeroAccordion
-              badgeText="Case study"
+              badgeText="Case study | AI Curated"
               user={user ? true : false}
               tests={caseStudy}
             />
@@ -283,7 +299,7 @@ const Page = async () => {
           </div>
           <div id="immersive">
             <HeroAccordion
-              badgeText="Immersive"
+              badgeText="Immersive | AI Curated"
               user={user ? true : false}
               tests={immersive}
             />
