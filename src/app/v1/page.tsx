@@ -18,6 +18,7 @@ import {
   presentation,
   caseStudy,
   DiversityPlus,
+  onBoarding,
 } from "@/lib/test";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
@@ -143,6 +144,14 @@ const Page = async () => {
                 Sales
               </Button>
             </Link>
+            <Link href={"#frontline-staff"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Frontline Staff &#40;Hindi&#41;
+              </Button>
+            </Link>
             <Link href={"#service-c"}>
               <Button
                 variant={"secondary"}
@@ -183,20 +192,20 @@ const Page = async () => {
                 Immersive | AI Curated
               </Button>
             </Link>
+            <Link href={"#onboarding"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Onboarding
+              </Button>
+            </Link>
             <Link href={"#meetings"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Meetings
-              </Button>
-            </Link>
-            <Link href={"#frontline-staff"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Frontline Staff &#40;Hindi&#41;
               </Button>
             </Link>
           </div>
@@ -302,6 +311,13 @@ const Page = async () => {
               badgeText="Immersive | AI Curated"
               user={user ? true : false}
               tests={immersive}
+            />
+          </div>
+          <div id="onboarding">
+            <HeroAccordion
+              badgeText="Onboarding"
+              user={user ? true : false}
+              tests={onBoarding}
             />
           </div>
           <div id="meetings">
