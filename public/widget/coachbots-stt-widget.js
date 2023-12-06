@@ -523,11 +523,13 @@ function handleSurpriseMeButtonClick2() {
   //   testCode = randomChallenge.test_code;
   //   codeAvailabilityUserChoice = true;
   console.log("random challenge :==>", randomChallenge2);
+  testCode2 = randomChallenge2.trim()
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  gShadowRoot2.getElementById("surprise-button").disabled = true;
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = randomChallenge2;
+    gShadowRoot2.getElementById("text-input").textContent = sampleTestCodes[randomChallenge2];
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -1032,22 +1034,23 @@ loadExternalModule().then(() => {
           // TEXT RESPONSES
           globalSignals = signals;
           // to check session active or not
-          if (isProceedStt === 'false'){
+          
+          // get latest message
+          const latestMessage = body.messages[body.messages.length - 1].text;
+          if (isProceedStt === 'false' && latestMessage.toUpperCase() != 'STOP' ){
 
             signals.onResponse({
             html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
             return;
           }
 
-          if (testType === 'mcq'){
+          if (testType === 'mcq' && latestMessage.toUpperCase() != 'STOP'){
             signals.onResponse({
               html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
             })
             return;
           }
 
-          // get latest message
-          const latestMessage = body.messages[body.messages.length - 1].text;
           console.log("Latest Message ===> ", latestMessage);
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
@@ -1073,7 +1076,7 @@ loadExternalModule().then(() => {
             optedNo2 = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                      <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
+                      <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
                       </div>
                       `,
             });
@@ -1097,8 +1100,7 @@ loadExternalModule().then(() => {
           }
 
           if (
-            body.messages[0].text === "STOP" ||
-            body.messages[0].text === "stop"
+            body.messages[0].text.toUpperCase() === "STOP" 
           ) {
             await cancelTestStt(participantId2); // cancelling session
             if (testType2 === "mcq") {
@@ -1113,6 +1115,16 @@ loadExternalModule().then(() => {
 
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
+            }
+            if (isProceedStt === 'false'){
+              const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+                const msg = gshadowRoot.getElementById('proceed-option2')
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
             }
 
             resetAllVariablesStt(); //reseting variables
@@ -1141,6 +1153,13 @@ loadExternalModule().then(() => {
             option_buttons.forEach((button) => {
               const buttonText = button.textContent.trim();
               buttonTextArray.push(buttonText);
+            });
+
+            // adding sample test code title
+            const sampleTestCodesValues = Object.values(sampleTestCodes)
+            sampleTestCodesValues.forEach((value) => {
+              buttonTextArray.push(value.trim())
+
             });
             //end
 
@@ -1192,12 +1211,13 @@ loadExternalModule().then(() => {
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (optedNo2 === false) {
               testCode2 = body.messages[0].text;
+              appendMessage2("Please wait while we are processing ...");
             } else {
               appendMessage2("Please wait while we are processing ...");
-              //wait while test code is being processed
-              while (!codeAvailabilityUserChoice2) {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-              }
+              // //wait while test code is being processed
+              // while (!codeAvailabilityUserChoice2) {
+              //   await new Promise((resolve) => setTimeout(resolve, 500));
+              // }
             }
             codeAvailabilityUserChoice2 = true;
           }
@@ -1828,11 +1848,11 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid2 && body.messages[0].text !== "STOP") {
+              if (!isTestcodeValid2 && body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
-              } else if (body.messages[0].text !== "STOP") {
+              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Error Processing your response.</b></p>",
                 });

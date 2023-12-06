@@ -67,6 +67,24 @@ let TestUIInfo;
 let isHindi = false;
 let isProceed;
 
+// sample TEst codes
+const sampleTestCodes = {
+  "QEEG5VY": "AWS Cloud Training",
+  "QMFMKQ4": "Team Building Post Training Check In",
+  "QUPR9AO": "Education Sales Rep Selling A Diploma Course",
+  "QLDQ2IY": "Coaching Assistant In Assertive Communication",
+  "QKLX4V0": "Hotel Receptionist Handle Angry Guest",
+  "QULNNNE": "Luxury Real Estate Sales Agent",
+  "QZ4R9QW": "Cabin Crew Dealing With Angry Customer",
+  "QJV5AEY": "Bank Branch Employee Service Call",
+  "QEYTB3I": "First Time Manager Feedback In Corporate Office",
+  "QYCZJDN": "Patient Care By Nurse",
+  "Q125Z1B": "Factory Shop Floor Leadership",
+  "Q9QW1HF": "Health Package Sales Rep Discussion",
+  "QHYRLGN": "Insurance Sales Rep Call",
+  "QJZWYYB": "IT Requirements Gathering"
+}
+
 function createBasicAuthToken(key = "", secret = "") {
   const token =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -533,11 +551,13 @@ function handleSurpriseMeButtonClick() {
   //   testCode = randomChallenge.test_code;
   //   codeAvailabilityUserChoice = true;
   console.log("random challenge :==>", randomChallenge);
+  testCode = randomChallenge.trim()
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  gShadowRoot.getElementById("surprise-button").disabled = true;
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot.getElementById("text-input").textContent = randomChallenge;
+    gShadowRoot.getElementById("text-input").textContent = sampleTestCodes[randomChallenge];
     setTimeout(() => {
       gShadowRoot.querySelector(".input-button").click();
     }, 100);
@@ -1343,13 +1363,7 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
-        if (isProceed === 'false'){
-
-          signals.onResponse(
-            {html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"}
-            )
-          return;
-        }
+        
         if (body instanceof FormData) {
           //AUDIO RESPONSES
 
@@ -1358,6 +1372,14 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
+            return;
+          }
+          if (isProceed === 'false'){
+            console.log(isProceed)
+  
+            signals.onResponse(
+              {html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"}
+              )
             return;
           }
 
@@ -1614,6 +1636,12 @@ loadExternalModule().then(() => {
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
           console.log("Latest Message ===> ", latestMessage);
+          if (testType === "mcq" && latestMessage.toUpperCase() != 'STOP') {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
             console.log("responsesDone ===> ", responsesDone, questionIndex);
@@ -1639,7 +1667,7 @@ loadExternalModule().then(() => {
             optedNo = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
+                    <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
                     </div>
                     `,
             });
@@ -1663,8 +1691,7 @@ loadExternalModule().then(() => {
           }
 
           if (
-            body.messages[0].text === "STOP" ||
-            body.messages[0].text === "stop"
+            body.messages[0].text.toUpperCase() === "STOP" 
           ) {
             await cancelTest(participantId); // cancelling session
             resetAllVariables(); //reseting variables
@@ -1679,6 +1706,16 @@ loadExternalModule().then(() => {
               thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
+            }
+            if (isProceed === 'false'){
+              const gshadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+                const msg = gshadowRoot.getElementById('proceed-option')
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
             }
 
             signals.onResponse({
@@ -1713,15 +1750,17 @@ loadExternalModule().then(() => {
               const buttonText = button.textContent.trim();
               buttonTextArray.push(buttonText);
             });
+            // adding sample test code title
+            const sampleTestCodesValues = Object.values(sampleTestCodes)
+            sampleTestCodesValues.forEach((value) => {
+              buttonTextArray.push(value.trim())
+
+            });
+
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
-              if (testType === "mcq") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-                });
-                return;
-              }
+              
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
                   html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
@@ -1759,12 +1798,14 @@ loadExternalModule().then(() => {
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
             if (optedNo === false) {
               testCode = body.messages[0].text;
+              appendMessage("Please wait while we are processing ...");
+
             } else {
               appendMessage("Please wait while we are processing ...");
-              //wait while test code is being processed
-              while (!codeAvailabilityUserChoice) {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-              }
+              // //wait while test code is being processed
+              // while (!codeAvailabilityUserChoice) {
+              //   await new Promise((resolve) => setTimeout(resolve, 500));
+              // }
             }
 
             codeAvailabilityUserChoice = true;
@@ -2356,11 +2397,11 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid && body.messages[0].text !== "STOP") {
+              if (!isTestcodeValid && body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
-              } else if (body.messages[0].text !== "STOP") {
+              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
                 });
