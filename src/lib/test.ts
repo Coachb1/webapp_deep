@@ -585,6 +585,24 @@ export const caseStudy: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+export const onBoarding: Test[] = [
+  {
+    domain: "Performance Review",
+    test_code: "Q877O08",
+    title: "First Performance Review Discussion with Manager",
+    description:
+      "A recent engineering graduate, joined an IT firm as a software developer. His first performance review takes place after six months, where he is evaluated based on his project contributions and coding efficiency. The manager, Rajat, discusses his progress and suggests areas for improvement to meet industry standards. Respond to this situation as the software developer.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Project timeline",
+    test_code: "Q9SSEH3",
+    title: "Punctuality challenges due to weather issue",
+    description:
+      "Raj, a manager in a Mumbai-based company, noticed that a new joiner, consistently arrived on time during his first month. However, as the monsoon season hit, his commute time significantly increased due to waterlogged roads and public transport disruptions. This led to a gradual decline in his punctuality, with the employee frequently arriving late to the office. Raj, concerned about the impact on project timelines, decided to address this issue with him. Respond to this situation as the employee.",
+    interaction_mode: "Audio",
+  },
+];
 
 export const frontLineStaff: Test[] = [
   {
