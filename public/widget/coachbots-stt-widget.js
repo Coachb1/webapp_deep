@@ -1,6 +1,6 @@
 const key2 = "";
 const secret2 = "";
-const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
+const baseURL2 = "https://coach-api-gcp.coachbots.com/api/v1";
 // const baseURL2="http://127.0.0.1:8001/api/v1" //local
 
 let deepChatPocElement2;
@@ -34,6 +34,34 @@ let globalQuestionLengthStt;
 let mcqQustionIndexStt = 0;
 let mcqFormIdStt = 0;
 
+let questionText2 = "";
+let reportType2 = "interactionSessionReport";
+let questionId2;
+let userResponse2;
+let reportUrl2 = "";
+
+let testId2;
+let resQuestionNumber2;
+let questionLength2;
+let questionData2;
+let senarioDescription2;
+let senarioTitle2;
+let senarioMediaDescription2;
+let responsesDone2 = false;
+let userName2 = "";
+let userEmail2 = "";
+let is_free2;
+let testCodeList2;
+let isRepeatStatus2;
+let testPrevilage2;
+let sessionStatusStt;
+let isSessionExpiredStt;
+let testType2;
+let isHindiStt = false;
+let testUIInfoStt;
+let isProceedStt;
+let initialQuestionTextStt;
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -62,6 +90,82 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
+
+  // to reset all variables
+  const resetAllVariablesStt = () => {
+    //* reset all variables : start
+    questionText2 = "";
+    reportType2 = "interactionSessionReport";
+    questionIndex2 = 0;
+    questionId2 = null;
+    userResponse2 = "";
+
+    testId2 = null;
+    resQuestionNumber2 = null;
+    questionLength2 = null;
+    questionData2 = null;
+
+    is_free2 = true;
+    // responseProcessedQuestion = 0;
+    senarioDescription2 = "";
+    senarioTitle2 = "";
+    senarioMediaDescription2;
+    responsesDone2 = false;
+    userName2 = "";
+    userEmail2 = "";
+    reportUrl2 = null;
+    testCodeList2 = [];
+    isRepeatStatus2 = false;
+    testPrevilage2 = "";
+
+    //global variables
+    sessionId2 = "";
+    testCode2 = null;
+    codeAvailabilityUserChoice2 = false;
+    optedNo2 = false;
+    globalReportUrl2 = null;
+
+    //* reset all variables : end
+    codeAvailabilityUserChoice2 = true;
+    mcqQustionIndexStt = 0;
+    mcqFormIdStt;
+    globalQuestionDataStt;
+    globalQuestionLengthStt;
+    testType2 = '';
+    isHindiStt = false;
+    testUIInfoStt;
+    isProceedStt = '';
+  };
+
+  const handleProceedClickStt = (choice) => {
+
+    if (choice == 'Yes'){
+      isProceedStt = 'true'
+      const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option2')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = initialQuestionTextStt; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage(initialQuestionText)
+    }else {
+      resetAllVariablesStt();
+      const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option2')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = "Your session is terminated. You can restart again!"; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage('Your session is terminated. You can restart again!')
+      
+    }
+    
+  };
+
 
 //* handle MCQ type test : start
 async function setMcqVariablesStt() {
@@ -702,32 +806,6 @@ loadExternalModule().then(() => {
     closeFromTopp2.style.display = "none";
   }
 
-  let questionText2 = "";
-  let reportType2 = "interactionSessionReport";
-  questionIndex2 = 0;
-  let questionId2;
-  let userResponse2;
-  let reportUrl2 = "";
-
-  let testId2;
-  let resQuestionNumber2;
-  let questionLength2;
-  let questionData2;
-  let senarioDescription2;
-  let senarioTitle2;
-  let senarioMediaDescription2;
-  let responsesDone2 = false;
-  let userName2 = "";
-  let userEmail2 = "";
-  let is_free2;
-  let testCodeList2;
-  let isRepeatStatus2;
-  let testPrevilage2;
-  let sessionStatusStt;
-  let isSessionExpiredStt;
-  let testType2;
-  let isHindiStt = false;
-  let testUIInfoStt;
 
   const credentialsForm2 = `<div id="input-form2">
   <div style="display: flex; flex-direction: column">
@@ -804,51 +882,7 @@ loadExternalModule().then(() => {
     },
   };
 
-  // to reset all variables
-  const resetAllVariablesStt = () => {
-    //* reset all variables : start
-    questionText2 = "";
-    reportType2 = "interactionSessionReport";
-    questionIndex2 = 0;
-    questionId2 = null;
-    userResponse2 = "";
-
-    testId2 = null;
-    resQuestionNumber2 = null;
-    questionLength2 = null;
-    questionData2 = null;
-
-    is_free2 = true;
-    // responseProcessedQuestion = 0;
-    senarioDescription2 = "";
-    senarioTitle2 = "";
-    senarioMediaDescription2;
-    responsesDone2 = false;
-    userName2 = "";
-    userEmail2 = "";
-    reportUrl2 = null;
-    testCodeList2 = [];
-    isRepeatStatus2 = false;
-    testPrevilage2 = "";
-
-    //global variables
-    sessionId2 = "";
-    testCode2 = null;
-    codeAvailabilityUserChoice2 = false;
-    optedNo2 = false;
-    globalReportUrl2 = null;
-
-    //* reset all variables : end
-    codeAvailabilityUserChoice2 = true;
-    mcqQustionIndexStt = 0;
-    mcqFormIdStt;
-    globalQuestionDataStt;
-    globalQuestionLengthStt;
-    testType2 = '';
-    isHindiStt = false;
-    testUIInfoStt;
-  };
-
+  
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
@@ -997,6 +1031,20 @@ loadExternalModule().then(() => {
         } else {
           // TEXT RESPONSES
           globalSignals = signals;
+          // to check session active or not
+          if (isProceedStt === 'false'){
+
+            signals.onResponse({
+            html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
+            return;
+          }
+
+          if (testType === 'mcq'){
+            signals.onResponse({
+              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+            })
+            return;
+          }
 
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
@@ -1390,6 +1438,14 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
+                    initialQuestionTextStt = questionText2
+                    isProceedStt = 'false'
+                    questionText2 = `
+                    <div id="proceed-option2" >
+                    <b>Proceed ?</b>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
+                    </div>`
                     if (senarioMediaDescription2 !== null) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {

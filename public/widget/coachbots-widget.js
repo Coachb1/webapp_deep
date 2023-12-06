@@ -1,6 +1,6 @@
 const key = "";
 const secret = "";
-const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
 // baseURL="http://127.0.0.1:8001/api/v1" //local
 
 let deepChatPocElement;
@@ -33,6 +33,39 @@ let globalQuestionData;
 let globalQuestionLength;
 let mcqQustionIndex = 0;
 let mcqFormId = 0;
+let initialQuestionText;
+
+// all variable shifted here from local 
+let questionText = "";
+let reportType = "interactionSessionReport";
+let questionId;
+let userResponse;
+
+let testId;
+let resQuestionNumber;
+let questionLength;
+let questionData;
+let documentId;
+let userAudioResponse;
+
+let is_free;
+let responseProcessedQuestion = 0;
+let senarioDescription;
+let senarioTitle;
+let responsesDone = false;
+let senarioMediaDescription;
+let userName = "";
+let userEmail = "";
+let reportUrl;
+let testCodeList;
+let isRepeatStatus;
+let testPrevilage;
+let sessionStatus;
+let isSessionExpired;
+let testType;
+let TestUIInfo;
+let isHindi = false;
+let isProceed;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -571,6 +604,81 @@ function generateOptionButtons() {
   });
 }
 
+    // to reset all variables
+    const resetAllVariables = () => {
+      //* reset all variables : start
+      questionText = "";
+      reportType = "interactionSessionReport";
+      questionIndex = 0;
+      questionId = null;
+      userResponse = "";
+
+      testId = null;
+      resQuestionNumber = null;
+      questionLength = null;
+      questionData = null;
+      documentId = null;
+      userAudioResponse = "";
+
+      is_free = true;
+      responseProcessedQuestion = 0;
+      senarioDescription = "";
+      senarioTitle = "";
+      senarioMediaDescription;
+      responsesDone = false;
+      userName = "";
+      userEmail = "";
+      reportUrl = null;
+      testCodeList = [];
+      isRepeatStatus = false;
+      testPrevilage = "";
+
+      //global variables
+      sessionId = "";
+      testCode = null;
+      optedNo = false;
+      globalReportUrl = null;
+
+      //* reset all variables : end
+      codeAvailabilityUserChoice = true;
+      mcqQustionIndex = 0;
+      mcqFormId;
+      globalQuestionData;
+      globalQuestionLength;
+      testType='';
+      isHindi = false;
+      TestUIInfo;
+      isProceed = '';
+    };
+
+  const handleProceedClick = (choice) => {
+
+    if (choice == 'Yes'){
+      isProceed = 'true'
+      const gshadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = initialQuestionText; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage(initialQuestionText)
+    }else {
+      resetAllVariables();
+      const gshadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = "Your session is terminated. You can restart again!"; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage('Your session is terminated. You can restart again!')
+      
+    }
+    
+  };
 //* Function to handle button click for no-code flow : start
 async function handleOptionButtonClick(labelText, area, information) {
   console.log("button clicked", labelText, area, information);
@@ -772,37 +880,8 @@ loadExternalModule().then(() => {
     chatbotHeading.style.fontSize = "12px";
     closeFromTopp.style.display = "none";
   }
+
   
-  let questionText = "";
-  let reportType = "interactionSessionReport";
-  questionIndex = 0;
-  let questionId;
-  let userResponse;
-
-  let testId;
-  let resQuestionNumber;
-  let questionLength;
-  let questionData;
-  let documentId;
-  let userAudioResponse;
-
-  let is_free;
-  let responseProcessedQuestion = 0;
-  let senarioDescription;
-  let senarioTitle;
-  let responsesDone = false;
-  let senarioMediaDescription;
-  let userName = "";
-  let userEmail = "";
-  let reportUrl;
-  let testCodeList;
-  let isRepeatStatus;
-  let testPrevilage;
-  let sessionStatus;
-  let isSessionExpired;
-  let testType;
-  let TestUIInfo;
-  let isHindi = false;
 
   const credentialsForm = `<div id="input-form">
   <div style="display: flex; flex-direction: column">
@@ -1259,9 +1338,18 @@ loadExternalModule().then(() => {
     return resQuestionNumber;
   };
 
+  
+
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
+        if (isProceed === 'false'){
+
+          signals.onResponse(
+            {html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"}
+            )
+          return;
+        }
         if (body instanceof FormData) {
           //AUDIO RESPONSES
 
@@ -1412,7 +1500,7 @@ loadExternalModule().then(() => {
                   testType === "dynamic_discussion_thread"
                 ) {
                   signals.onResponse({
-                    text: questionText,
+                    html: questionText,
                   });
                 }
               }
@@ -1515,7 +1603,7 @@ loadExternalModule().then(() => {
               console.log(error);
               if (error) {
                 signals.onResponse({
-                  text: "<p style='font-size: 14px;color: #991b1b;'>There might be some error from our end. Please wait and try again later.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>There might be some error from our end. Please wait and try again later.</p>",
                 });
               }
             }
@@ -1952,6 +2040,15 @@ loadExternalModule().then(() => {
                   }
 
                   if (questionIndex === 0) {
+                    initialQuestionText = questionText
+                    isProceed = 'false'
+                    questionText = `
+                    <div id="proceed-option" >
+                    <b>Proceed ?</b>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
+                    </div>`
+
                     if (senarioMediaDescription !== null) {
                       let embeddingUrl = "";
                       if (senarioMediaDescription.length > 0) {
