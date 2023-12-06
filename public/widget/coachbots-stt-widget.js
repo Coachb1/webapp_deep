@@ -34,6 +34,34 @@ let globalQuestionLengthStt;
 let mcqQustionIndexStt = 0;
 let mcqFormIdStt = 0;
 
+let questionText2 = "";
+let reportType2 = "interactionSessionReport";
+let questionId2;
+let userResponse2;
+let reportUrl2 = "";
+
+let testId2;
+let resQuestionNumber2;
+let questionLength2;
+let questionData2;
+let senarioDescription2;
+let senarioTitle2;
+let senarioMediaDescription2;
+let responsesDone2 = false;
+let userName2 = "";
+let userEmail2 = "";
+let is_free2;
+let testCodeList2;
+let isRepeatStatus2;
+let testPrevilage2;
+let sessionStatusStt;
+let isSessionExpiredStt;
+let testType2;
+let isHindiStt = false;
+let testUIInfoStt;
+let isProceedStt;
+let initialQuestionTextStt;
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -62,6 +90,82 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
+
+  // to reset all variables
+  const resetAllVariablesStt = () => {
+    //* reset all variables : start
+    questionText2 = "";
+    reportType2 = "interactionSessionReport";
+    questionIndex2 = 0;
+    questionId2 = null;
+    userResponse2 = "";
+
+    testId2 = null;
+    resQuestionNumber2 = null;
+    questionLength2 = null;
+    questionData2 = null;
+
+    is_free2 = true;
+    // responseProcessedQuestion = 0;
+    senarioDescription2 = "";
+    senarioTitle2 = "";
+    senarioMediaDescription2;
+    responsesDone2 = false;
+    userName2 = "";
+    userEmail2 = "";
+    reportUrl2 = null;
+    testCodeList2 = [];
+    isRepeatStatus2 = false;
+    testPrevilage2 = "";
+
+    //global variables
+    sessionId2 = "";
+    testCode2 = null;
+    codeAvailabilityUserChoice2 = false;
+    optedNo2 = false;
+    globalReportUrl2 = null;
+
+    //* reset all variables : end
+    codeAvailabilityUserChoice2 = true;
+    mcqQustionIndexStt = 0;
+    mcqFormIdStt;
+    globalQuestionDataStt;
+    globalQuestionLengthStt;
+    testType2 = '';
+    isHindiStt = false;
+    testUIInfoStt;
+    isProceedStt = '';
+  };
+
+  const handleProceedClickStt = (choice) => {
+
+    if (choice == 'Yes'){
+      isProceedStt = 'true'
+      const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option2')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = initialQuestionTextStt; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage(initialQuestionText)
+    }else {
+      resetAllVariablesStt();
+      const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+      const msg = gshadowRoot.getElementById('proceed-option2')
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = "Your session is terminated. You can restart again!"; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+      // appendMessage('Your session is terminated. You can restart again!')
+      
+    }
+    
+  };
+
 
 //* handle MCQ type test : start
 async function setMcqVariablesStt() {
@@ -541,11 +645,13 @@ function handleSurpriseMeButtonClick2() {
   //   testCode = randomChallenge.test_code;
   //   codeAvailabilityUserChoice = true;
   console.log("random challenge :==>", randomChallenge2);
+  testCode2 = randomChallenge2.trim()
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  gShadowRoot2.getElementById("surprise-button").disabled = true;
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = randomChallenge2;
+    gShadowRoot2.getElementById("text-input").textContent = sampleTestCodes[randomChallenge2];
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -826,32 +932,6 @@ loadExternalModule().then(() => {
     closeFromTopp2.style.top = "0.2rem";
   }
 
-  let questionText2 = "";
-  let reportType2 = "interactionSessionReport";
-  questionIndex2 = 0;
-  let questionId2;
-  let userResponse2;
-  let reportUrl2 = "";
-
-  let testId2;
-  let resQuestionNumber2;
-  let questionLength2;
-  let questionData2;
-  let senarioDescription2;
-  let senarioTitle2;
-  let senarioMediaDescription2;
-  let responsesDone2 = false;
-  let userName2 = "";
-  let userEmail2 = "";
-  let is_free2;
-  let testCodeList2;
-  let isRepeatStatus2;
-  let testPrevilage2;
-  let sessionStatusStt;
-  let isSessionExpiredStt;
-  let testType2;
-  let isHindiStt = false;
-  let testUIInfoStt;
 
   let credentialsForm2;
   if (window.innerWidth > 868) {
@@ -1005,50 +1085,7 @@ loadExternalModule().then(() => {
     },
   };
 
-  // to reset all variables
-  const resetAllVariablesStt = () => {
-    //* reset all variables : start
-    questionText2 = "";
-    reportType2 = "interactionSessionReport";
-    questionIndex2 = 0;
-    questionId2 = null;
-    userResponse2 = "";
-
-    testId2 = null;
-    resQuestionNumber2 = null;
-    questionLength2 = null;
-    questionData2 = null;
-
-    is_free2 = true;
-    // responseProcessedQuestion = 0;
-    senarioDescription2 = "";
-    senarioTitle2 = "";
-    senarioMediaDescription2;
-    responsesDone2 = false;
-    userName2 = "";
-    userEmail2 = "";
-    reportUrl2 = null;
-    testCodeList2 = [];
-    isRepeatStatus2 = false;
-    testPrevilage2 = "";
-
-    //global variables
-    sessionId2 = "";
-    testCode2 = null;
-    codeAvailabilityUserChoice2 = false;
-    optedNo2 = false;
-    globalReportUrl2 = null;
-
-    //* reset all variables : end
-    codeAvailabilityUserChoice2 = true;
-    mcqQustionIndexStt = 0;
-    mcqFormIdStt;
-    globalQuestionDataStt;
-    globalQuestionLengthStt;
-    testType2 = "";
-    isHindiStt = false;
-    testUIInfoStt;
-  };
+  
 
   // to check word limit
   function isValidMessageStt(text) {
@@ -1198,9 +1235,24 @@ loadExternalModule().then(() => {
         } else {
           // TEXT RESPONSES
           globalSignals = signals;
-
+          // to check session active or not
+          
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+          if (isProceedStt === 'false' && latestMessage.toUpperCase() != 'STOP' ){
+
+            signals.onResponse({
+            html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
+            return;
+          }
+
+          if (testType === 'mcq' && latestMessage.toUpperCase() != 'STOP'){
+            signals.onResponse({
+              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
+            })
+            return;
+          }
+
           console.log("Latest Message ===> ", latestMessage);
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
@@ -1226,7 +1278,7 @@ loadExternalModule().then(() => {
             optedNo2 = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                      <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
+                      <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
                       </div>
                       `,
             });
@@ -1250,8 +1302,7 @@ loadExternalModule().then(() => {
           }
 
           if (
-            body.messages[0].text === "STOP" ||
-            body.messages[0].text === "stop"
+            body.messages[0].text.toUpperCase() === "STOP" 
           ) {
             await cancelTestStt(participantId2); // cancelling session
             if (testType2 === "mcq") {
@@ -1266,6 +1317,16 @@ loadExternalModule().then(() => {
 
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
+            }
+            if (isProceedStt === 'false'){
+              const gshadowRoot =
+                document.getElementById("chat-element2").shadowRoot;
+                const msg = gshadowRoot.getElementById('proceed-option2')
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
             }
 
             resetAllVariablesStt(); //reseting variables
@@ -1294,6 +1355,13 @@ loadExternalModule().then(() => {
             option_buttons.forEach((button) => {
               const buttonText = button.textContent.trim();
               buttonTextArray.push(buttonText);
+            });
+
+            // adding sample test code title
+            const sampleTestCodesValues = Object.values(sampleTestCodes)
+            sampleTestCodesValues.forEach((value) => {
+              buttonTextArray.push(value.trim())
+
             });
             //end
 
@@ -1345,12 +1413,13 @@ loadExternalModule().then(() => {
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (optedNo2 === false) {
               testCode2 = body.messages[0].text;
+              appendMessage2("Please wait while we are processing ...");
             } else {
               appendMessage2("Please wait while we are processing ...");
-              //wait while test code is being processed
-              while (!codeAvailabilityUserChoice2) {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-              }
+              // //wait while test code is being processed
+              // while (!codeAvailabilityUserChoice2) {
+              //   await new Promise((resolve) => setTimeout(resolve, 500));
+              // }
             }
             codeAvailabilityUserChoice2 = true;
           }
@@ -1591,6 +1660,14 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
+                    initialQuestionTextStt = questionText2
+                    isProceedStt = 'false'
+                    questionText2 = `
+                    <div id="proceed-option2" >
+                    <b>Proceed ?</b>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
+                    </div>`
                     if (senarioMediaDescription2 !== null) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
@@ -1973,11 +2050,11 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid2 && body.messages[0].text !== "STOP") {
+              if (!isTestcodeValid2 && body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
-              } else if (body.messages[0].text !== "STOP") {
+              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Error Processing your response.</b></p>",
                 });
