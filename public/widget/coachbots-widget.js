@@ -236,51 +236,172 @@ async function setMcqVariables() {
   } else {
     // decisionAnalysisReport
 
-    let credentialsForm = `
+    // let credentialsForm = `
+    // <b>For obtaining your report, please submit the following details.</b>
+    // <div id="input-form" style="width: 100%;display: flex; flex-direction: row">
+    //   <div style="display: flex; flex-direction: column;">
+    //       <label for="name" style="margin: 12px 0 4px 0;">Name  </label>
+    //       <input
+    //       type="text"
+    //       id="input-name"
+    //       style="
+    //           padding: 8px;
+    //           margin-bottom:4px;
+    //           border-radius: 4px;
+    //           border: 1px solid rgb(188, 188, 188);
+    //       "
+    //       />
+    //   </div>
+    //   <div style="display: flex; flex-direction: column; margin-top: 8px">
+    //       <label for="email" style="margin: 4px 0">Email </label>
+    //       <input
+    //       type="email"
+    //       id="input-email"
+    //       style="
+    //       padding: 8px;
+    //       margin-bottom:4px;
+    //       border-radius: 4px;
+    //       border: 1px solid rgb(188, 188, 188);
+    //       "
+    //       />
+    //       <button
+    //       style="
+    //           margin-top: 8px;
+    //           padding: 8px 12px;
+    //           width: fit-content;
+    //           border: 1px solid rgb(188, 188, 188);
+    //           border-radius: 20px;
+    //           color: white;
+    //           background-color: #1984ff;
+    //       "
+    // id="submit-btn"
+    // onclick="submitEmailAndName()"
+    //       >
+    //       Submit
+    //       </button>
+    //   </div>
+    //   </div>`;
+
+    let credentialsForm;
+    if (window.innerWidth > 868) {
+      credentialsForm = `
+    <div style="min-width: 730px;">
     <b>For obtaining your report, please submit the following details.</b>
-    <div id="input-form">
-      <div style="display: flex; flex-direction: column">
-          <label for="name" style="margin: 4px 0">Name  </label>
-          <input  
+    <div
+      id="input-form"
+      style="
+      display: flex;
+      flex-direction: row;
+      min-width: 100%;
+      gap: 1rem;
+      align-items: center;
+    "
+    >
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="name" style="margin: 12px 0 4px 0">Name</label>
+        <input
           type="text"
           id="input-name"
           style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="email" style="margin: 12px 0 4px 0">Email</label>
+        <input
+          id="input-email"
+          type="email"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <button
+        style="
+          height: fit-content;
+          width: fit-content;
+          padding: 8px;
+          margin-bottom: -1.3rem;
+          border: 1px solid rgb(188, 188, 188);
+          border-radius: 20px;
+          color: white;
+          background-color: #1984ff;
+        "
+        id="submit-btn"
+        onclick="submitEmailAndName()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+    `;
+    } else {
+      credentialsForm = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form"
+        style="
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name"
+            style="
               padding: 8px;
-              margin-bottom:4px;
+              margin-bottom: 4px;
               border-radius: 4px;
               border: 1px solid rgb(188, 188, 188);
-          "
+            "
           />
-      </div>
-      <div style="display: flex; flex-direction: column; margin-top: 8px">
-          <label for="email" style="margin: 4px 0">Email </label>
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
           <input
-          type="email"
-          id="input-email"
-          style="
-          padding: 8px;
-          margin-bottom:4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
-          "
-          />
-          <button
-          style="
-              margin-top: 8px;
-              padding: 8px 12px;
-              width: fit-content;
+            id="input-email"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
               border: 1px solid rgb(188, 188, 188);
-              border-radius: 20px;
-              color: white;
-              background-color: #1984ff;
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
           "
           id="submit-btn"
           onclick="submitEmailAndName()"
-          >
+        >
           Submit
-          </button>
+        </button>
       </div>
-      </div>`;
+    </div>
+      `;
+    }
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
@@ -770,9 +891,11 @@ loadExternalModule().then(() => {
     chatIcon.style.height = "3rem";
     chatIcon.style.position = "fixed";
     chatbotHeading.style.fontSize = "12px";
-    closeFromTopp.style.display = "none";
+    closeFromTopp.style.width = "30px";
+    closeFromTopp.style.left = "0.3rem";
+    closeFromTopp.style.top = "0.2rem";
   }
-  
+
   let questionText = "";
   let reportType = "interactionSessionReport";
   questionIndex = 0;
@@ -804,9 +927,9 @@ loadExternalModule().then(() => {
   let TestUIInfo;
   let isHindi = false;
 
-  const credentialsForm = `<div id="input-form">
+  const credentialsForm = `<div id="input-form" style="width: 100%; display: flex; flex-direction: row;">
   <div style="display: flex; flex-direction: column">
-      <label for="name" style="margin: 4px 0">Name  </label>
+      <label for="name" style="margin: 12px 0 4px 0;">Name  </label>
       <input  
       type="text"
       id="input-name"
@@ -1352,8 +1475,10 @@ loadExternalModule().then(() => {
                   //  ` ,
                   // });
 
-
-                  questionText = questionText.replace(/(http[s]?:\/\/[^\s]+)/g, '');
+                  questionText = questionText.replace(
+                    /(http[s]?:\/\/[^\s]+)/g,
+                    ""
+                  );
                   questionText = `▪ Media <br>  <iframe
                                    allow="autoplay; encrypted-media; fullscreen;"
                                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
@@ -2401,7 +2526,7 @@ const openChatContainer = () => {
       userRole = data.role;
     })
     .catch((err) => console.log(err));
-  
+
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
     chatContainer.style["transform-origin"] = "100% 100%";
@@ -2410,14 +2535,13 @@ const openChatContainer = () => {
     chatContainer.style["transform-origin"] = "100% 50%";
 
     // close stt bot
-    const chatContainer2 = document.getElementById('chat-container2')
+    const chatContainer2 = document.getElementById("chat-container2");
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
-    
+
     const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
     chatIcon2.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
-      
   }
 
   if (
