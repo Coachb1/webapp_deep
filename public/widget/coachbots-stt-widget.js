@@ -1,6 +1,6 @@
 const key2 = "";
 const secret2 = "";
-const baseURL2 = "https://coach-api-gcp.coachbots.com/api/v1";
+const baseURL2 = "https://coach-api-ovh.coachbots.com/api/v1";
 // const baseURL2="http://127.0.0.1:8001/api/v1" //local
 
 let deepChatPocElement2;
