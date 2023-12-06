@@ -927,49 +927,126 @@ loadExternalModule().then(() => {
   let TestUIInfo;
   let isHindi = false;
 
-  const credentialsForm = `<div id="input-form" style="width: 100%; display: flex; flex-direction: row;">
-  <div style="display: flex; flex-direction: column">
-      <label for="name" style="margin: 12px 0 4px 0;">Name  </label>
-      <input  
-      type="text"
-      id="input-name"
+  let credentialsForm;
+  if (window.innerWidth > 868) {
+    credentialsForm = `
+    <div style="min-width: 730px;">
+    <b>For obtaining your report, please submit the following details.</b>
+    <div
+      id="input-form"
       style="
-          padding: 8px;
-          margin-bottom:4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
-      "
-      />
-  </div>
-  <div style="display: flex; flex-direction: column; margin-top: 8px">
-      <label for="email" style="margin: 4px 0">Email </label>
-      <input
-      type="email"
-      id="input-email"
-      style="
-      padding: 8px;
-      margin-bottom:4px;
-      border-radius: 4px;
-      border: 1px solid rgb(188, 188, 188);
-      "
-      />
+      display: flex;
+      flex-direction: row;
+      min-width: 100%;
+      gap: 1rem;
+      align-items: center;
+    "
+    >
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="name" style="margin: 12px 0 4px 0">Name</label>
+        <input
+          type="text"
+          id="input-name"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="email" style="margin: 12px 0 4px 0">Email</label>
+        <input
+          id="input-email"
+          type="email"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
       <button
-      style="
-          margin-top: 8px;
-          padding: 8px 12px;
+        style="
+          height: fit-content;
           width: fit-content;
+          padding: 8px;
+          margin-bottom: -1.3rem;
           border: 1px solid rgb(188, 188, 188);
           border-radius: 20px;
           color: white;
           background-color: #1984ff;
-      "
-      id="submit-btn"
-      onclick="submitEmailAndName()"
+        "
+        id="submit-btn"
+        onclick="submitEmailAndName()"
       >
-      Submit
+        Submit
       </button>
+    </div>
   </div>
-  </div>`;
+    `;
+  } else {
+    credentialsForm = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form"
+        style="
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn"
+          onclick="submitEmailAndName()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+      `;
+  }
 
   chatElementRef.initialMessages = [
     {

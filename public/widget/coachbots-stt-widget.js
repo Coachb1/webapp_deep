@@ -853,49 +853,126 @@ loadExternalModule().then(() => {
   let isHindiStt = false;
   let testUIInfoStt;
 
-  const credentialsForm2 = `<div id="input-form" style="width: 100%; display: flex; flex-direction: row;">
-  <div style="display: flex; flex-direction: column">
-      <label for="name" style="margin: 4px 0">Name  </label>
-      <input  
-      type="text"
-      id="input-name2"
-      style="
-          padding: 8px;
-          margin-bottom:4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
+  let credentialsForm2;
+  if (window.innerWidth > 868) {
+    console.log("using des Form");
+    credentialsForm2 = `
+      <div style="min-width: 730px;">
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: row;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: center;
       "
-      />
-  </div>
-  <div style="display: flex; flex-direction: column; margin-top: 8px">
-      <label for="email" style="margin: 4px 0">Email </label>
-      <input
-      type="email"
-      id="input-email2"
-      style="
-      padding: 8px;
-      margin-bottom:4px;
-      border-radius: 4px;
-      border: 1px solid rgb(188, 188, 188);
-      "
-      />
-      <button
-      style="
-          margin-top: 8px;
-          padding: 8px 12px;
-          width: fit-content;
-          border: 1px solid rgb(188, 188, 188);
-          border-radius: 20px;
-          color: white;
-          background-color: #1984ff;
-      "
-      id="submit-btn2"
-      onclick="submitEmailAndName2()"
       >
-      Submit
-      </button>
-  </div>
-</div>`;
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1.3rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  } else {
+    console.log("NOT using des Form");
+    credentialsForm2 = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: column;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  }
 
   chatElementRef2.initialMessages = [
     {
