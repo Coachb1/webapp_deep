@@ -124,7 +124,7 @@ const Page = async () => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                1:1 Check-ins
+                1:1 Check-ins | AI Curated
               </Button>
             </Link>
             <Link href={"#tech"}>
@@ -164,7 +164,7 @@ const Page = async () => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Case study
+                Case study | AI Curated
               </Button>
             </Link>
             <Link href={"#presentation"}>
@@ -180,7 +180,7 @@ const Page = async () => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Immersive
+                Immersive | AI Curated
               </Button>
             </Link>
             <Link href={"#meetings"}>
