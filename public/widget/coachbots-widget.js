@@ -1843,6 +1843,13 @@ loadExternalModule().then(() => {
             });
             return;
           }
+          if (isProceed === 'false' && latestMessage.toUpperCase() != 'STOP' ){
+
+            signals.onResponse({
+            html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
+            return;
+          }
+          
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
             console.log("responsesDone ===> ", responsesDone, questionIndex);
