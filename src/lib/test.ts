@@ -304,6 +304,33 @@ export const Reflection: Test[] = [
   },
 ];
 
+export const DiversityPlus: Test[] = [
+  {
+    domain: "Equality in Pay",
+    test_code: "QU0BI9G",
+    title: "Gender Pay Gap Investigation",
+    description:
+      "In a prominent corporation, a diligent female employee in a mid-level management position discovers a stark gender pay gap within their organization. Through extensive research and data analysis, they notice that female colleagues in equivalent roles are consistently paid less than their male counterparts. Troubled by this inequity, the female employee decides to voice her concerns by formally submitting a written inquiry to the organization's HR department. So in response the HR manager has lined up a meeting to understand her concerns. In this case act as a manager to answer her questions.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Cultural Sensitivity",
+    test_code: "QC9OYMG",
+    title: "Addressing Workplace Cultural Insensitivity	",
+    description:
+      "Within a dynamic workplace, an employee experiences an unsettling cultural insensitivity incident. During a team meeting, a colleague makes derogatory comments about the employee's cultural background. This incident leaves the employee feeling uncomfortable and marginalized. In response, the employee decides to escalate the matter to the HR department, triggering discussions on how to rectify such DEI issues. The manager scheduled a meeting with her to understand the situation. In this case act as a manager to answer her questions.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Interview Dilemma",
+    test_code: "QQZMF9B",
+    title: "Balancing Skills and Formal Education",
+    description:
+      "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
+    interaction_mode: "Audio",
+  },
+];
+
 export const DecisionGames: Test[] = [
   {
     domain: "Making time critical decisions",
@@ -316,12 +343,14 @@ export const DecisionGames: Test[] = [
   {
     domain: "Difficult executive decisions",
     test_code: "Q9B086X",
-    title: "Deciding how to deal with challenging financial times as the Senior Director",
+    title:
+      "Deciding how to deal with challenging financial times as the Senior Director",
     description:
       "The candidate is a Chief Financial Officer (Senior Director) of a large multinational corporation. The company is navigating a challenging financial quarter, and a significant cost-cutting decision is required to maintain profitability. The board is looking to the Senior Director for guidance on the next steps.",
     interaction_mode: "Audio",
   },
 ];
+
 export const oneTwoOne: Test[] = [
   {
     domain: "Workplace Communication",
@@ -427,7 +456,7 @@ export const serviceslashConsulting: Test[] = [
       "This is the last day of your orientation training as a bank employee. As the last task complete this real life customer interaction simulation. Mr. Rohit Sharma, a dedicated customer of the bank for the past 15 years, encounters a delay in opening a new account due to a discrepancy in his address proof. The challenge lies in maintaining Mr. Sharma's confidence, given his long-standing relationship with the bank, while adhering to the stringent industry norms. As the employee, you are tasked with striking a balance between ensuring compliance and providing reassurance to Mr. Sharma, who expressed valid concerns about the extended procedural timelines. Respond as the bank employee to this situation. ",
     interaction_mode: "Audio",
   },
-  
+
   {
     domain: "Healthcare counselling",
     test_code: "QEH6YUA",
@@ -450,14 +479,6 @@ export const serviceslashConsulting: Test[] = [
     title: "Strategizing Retail Insights",
     description:
       "The Retail Manager, Swati met with the IT Dev Lead for optimizing the retail analytics dashboard. Swati highlights the imperative for real-time inventory tracking and customer behavior analytics. The challenge identified is the seamless integration of data from disparate sources such as point-of-sale (POS) systems and e-commerce platforms. The objective is to enhance the dashboard to provide comprehensive insights, crucial for strategic decision-making in a fiercely competitive Indian retail market. Respond to this situation as the IT Dev Lead.",
-    interaction_mode: "Audio",
-  },
-  {
-    domain: "Interview Dilemma",
-    test_code: "QQZMF9B",
-    title: "Balancing Skills and Formal Education",
-    description:
-      "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
     interaction_mode: "Audio",
   },
 ];
