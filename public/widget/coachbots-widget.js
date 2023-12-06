@@ -815,7 +815,9 @@ function generateOptionButtons() {
       que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      appendMessage('Your session is terminated. You can restart again!')
+      appendMessage(
+        "<b>Your session is terminated. You can restart again!</b>"
+      );
       
     }
     
@@ -1927,7 +1929,7 @@ loadExternalModule().then(() => {
             }
 
             signals.onResponse({
-              text: "Your session is terminated. You can restart again!",
+              html: "<b>Your session is terminated. You can restart again!</b>",
             });
             // setTimeout(() => {
             //   window.location.reload();
