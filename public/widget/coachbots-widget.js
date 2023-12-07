@@ -1864,8 +1864,7 @@ loadExternalModule().then(() => {
           if (
             body.messages[0].text.toUpperCase() === "STOP" 
           ) {
-            await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
+          
             if (testType === "mcq") {
               const shadowRoot =
                 document.getElementById("chat-element").shadowRoot;
@@ -1888,6 +1887,8 @@ loadExternalModule().then(() => {
                 // Replace the button with the "Thank you" message
                 msg.parentNode.replaceChild(que_msg, msg);
             }
+            await cancelTest(participantId); // cancelling session
+            resetAllVariables(); //reseting variables
 
             signals.onResponse({
               html: "<b>Your session is terminated. You can restart again!</b>",
