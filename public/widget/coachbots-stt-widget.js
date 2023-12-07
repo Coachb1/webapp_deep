@@ -652,7 +652,16 @@ function handleSurpriseMeButtonClick2() {
   testCode2 = randomChallenge2.trim()
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  gShadowRoot2.getElementById("surprise-button").disabled = true;
+  // gShadowRoot2.getElementById("surprise-button").disabled = true;
+
+  // removing button 
+  const msg = gShadowRoot2.getElementById('surprise-button')
+  // button.parentNode.removeChild(button)
+  const que_msg = document.createElement("div");
+  que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+  // Replace the button with the "Thank you" message
+  msg.parentNode.replaceChild(que_msg, msg);
+
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot2.getElementById("text-input").textContent = sampleTestCodes[randomChallenge2];
