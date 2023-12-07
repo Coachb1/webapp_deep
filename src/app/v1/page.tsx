@@ -28,18 +28,32 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
+import CreateYourOwn from "@/components/CreateYourOwn";
 export const metadata = constructMetadata();
+
+async function getData() {
+  const res = await fetch(
+    `https://coach-api-gcp.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return res.json();
+}
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();
+  const data = await getData();
   const user = await getUser();
-
-  const enterpriceEmailDomains = [
-    "@anjuman.edu.in",
-    "@google.com",
-    "@indusind.com",
+  const enterpriceEmailDomains: string[] | undefined = [
+    "falahsss900@gmail.com",
   ];
+  // console.log(enterpriceEmailDomains);
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
@@ -74,10 +88,10 @@ const Page = async () => {
 
         {user && (
           <div className="flex flex-row mt-4 z-50">
-            {enterpriceEmailDomains.some((domain) =>
-              user?.email!.endsWith(domain)
+            {enterpriceEmailDomains.includes(
+              "falahsss900@gmail.com".toLowerCase()
             ) && (
-              <Link href={""}>
+              <Link href={"library"}>
                 <Button variant={"default"} className=" mx-4">
                   My Library
                 </Button>
@@ -326,6 +340,9 @@ const Page = async () => {
               user={user ? true : false}
               tests={meetings}
             />
+          </div>
+          <div>
+            <CreateYourOwn />
           </div>
         </div>
       </div>

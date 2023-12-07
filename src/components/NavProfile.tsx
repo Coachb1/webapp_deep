@@ -34,7 +34,6 @@ const NavProfile = () => {
   useEffect(() => {
     if (user) {
       window.user = user;
-      console.log(user.picture);
     }
   });
 
