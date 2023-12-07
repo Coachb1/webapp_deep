@@ -1403,6 +1403,7 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
+                return;
               }
 
               //************* check if user message is atleast 10 words */
@@ -1993,7 +1994,6 @@ loadExternalModule().then(() => {
 
                   if (!window.user) {
                     signals.onResponse({
-                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm2,
                     });
                   }

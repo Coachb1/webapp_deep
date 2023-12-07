@@ -67,6 +67,7 @@ let TestUIInfo;
 let isHindi = false;
 let isProceed;
 let isSessionActive = false;
+let isEmailType=false;
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -800,6 +801,7 @@ function generateOptionButtons() {
       TestUIInfo;
       isProceed = '';
       isSessionActive = false;
+      isEmailType = false;
     };
 
   const handleProceedClick = (choice) => {
@@ -1566,6 +1568,14 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });
+            return;
+          }
+
+          if (isEmailType) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Text response allowed for this interaction.</b></p>",
+            });
+            return;
           }
 
           let file = audioFile;
@@ -1704,7 +1714,6 @@ loadExternalModule().then(() => {
                   //   "<b>For obtaining your report, please submit the following details.</b>"
                   // );
                   signals.onResponse({
-                    text: "For obtaining your report, please submit the following details.",
                     html: credentialsForm,
                   });
                 }
@@ -1952,6 +1961,7 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
                 });
+                return;
               }
 
               //************* check if user message is atleast 15 words */
@@ -2023,6 +2033,7 @@ loadExternalModule().then(() => {
               senarioMediaDescription =
                 questionData.results[0].description_media;
               TestUIInfo = questionData.results[0].ui_information;
+              isEmailType = questionData.results[0].is_email_type;
               console.log(senarioMediaDescription);
 
               isTestcodeValid = true;
@@ -2483,7 +2494,6 @@ loadExternalModule().then(() => {
                     //   "<b>For obtaining your report, please submit the following details.</b>"
                     // );
                     signals.onResponse({
-                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }
