@@ -331,7 +331,7 @@ export const DiversityPlus: Test[] = [
   },
 ];
 
-export const DecisionGames: Test[] = [
+export const DescoveryPlus: Test[] = [
   {
     domain: "Making time critical decisions",
     test_code: "Q7LRADG",
@@ -384,6 +384,14 @@ export const Technology: Test[] = [
     title: "API Integration Issues",
     description:
       "The manager of the IT company reached out to a software developer to address an issue where the data from the database is not visible on the frontend even though the APIs are working properly. The manager wants to understand the root cause of the issue by asking some questions to the developer. Respond as a software developer to this situation and provide appropriate support to the Manager.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Managing Data",
+    test_code: "Q1XC4XU",
+    title: "Data Integration Challenge",
+    description:
+      "The product manager is facing challenges with effectively integrating data from various sources, including databases, third-party APIs, and streaming data feeds. This integration issue has resulted in data inconsistencies, making it challenging to provide reliable analytics and reporting. In response to this issue, an employee is seeking answers from the manager, who will provide explanations and solutions to address these challenges. Respond as a manager to this situation and provide appropriate support.",
     interaction_mode: "Audio",
   },
 ];

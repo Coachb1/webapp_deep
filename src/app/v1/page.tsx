@@ -10,7 +10,7 @@ import {
   meetings,
   Technology,
   Reflection,
-  DecisionGames,
+  DescoveryPlus,
   Sales,
   serviceslashConsulting,
   frontLineStaff,
@@ -112,12 +112,12 @@ const Page = async () => {
                 Diversity+
               </Button>
             </Link>
-            <Link href={"#decision-games"}>
+            <Link href={"#discoveryPlus"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Decision Games
+                Discovery+
               </Button>
             </Link>
             <Link href={"#one-to-one"}>
@@ -243,11 +243,11 @@ const Page = async () => {
               tests={DiversityPlus}
             />
           </div>
-          <div id="decision-games">
+          <div id="discoveryPlus">
             <HeroAccordion
-              badgeText="Decision Games"
+              badgeText="Discovery+"
               user={user ? true : false}
-              tests={DecisionGames}
+              tests={DescoveryPlus}
             />
           </div>
           <div id="one-to-one">
