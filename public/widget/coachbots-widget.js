@@ -16,6 +16,7 @@ let optedNo = false;
 let questionIndex = 0;
 
 let globalReportUrl;
+let maxUploadFailed = false;
 
 //audio configs
 let display_name;
@@ -35,7 +36,7 @@ let mcqQustionIndex = 0;
 let mcqFormId = 0;
 let initialQuestionText;
 
-// all variable shifted here from local 
+// all variable shifted here from local
 let questionText = "";
 let reportType = "interactionSessionReport";
 let questionId;
@@ -70,21 +71,21 @@ let isSessionActive = false;
 
 // sample TEst codes
 const sampleTestCodes = {
-  "QEEG5VY": "AWS Cloud Training",
-  "QMFMKQ4": "Team Building Post Training Check In",
-  "QUPR9AO": "Education Sales Rep Selling A Diploma Course",
-  "QLDQ2IY": "Coaching Assistant In Assertive Communication",
-  "QKLX4V0": "Hotel Receptionist Handle Angry Guest",
-  "QULNNNE": "Luxury Real Estate Sales Agent",
-  "QZ4R9QW": "Cabin Crew Dealing With Angry Customer",
-  "QJV5AEY": "Bank Branch Employee Service Call",
-  "QEYTB3I": "First Time Manager Feedback In Corporate Office",
-  "QYCZJDN": "Patient Care By Nurse",
-  "Q125Z1B": "Factory Shop Floor Leadership",
-  "Q9QW1HF": "Health Package Sales Rep Discussion",
-  "QHYRLGN": "Insurance Sales Rep Call",
-  "QJZWYYB": "IT Requirements Gathering"
-}
+  QEEG5VY: "AWS Cloud Training",
+  QMFMKQ4: "Team Building Post Training Check In",
+  QUPR9AO: "Education Sales Rep Selling A Diploma Course",
+  QLDQ2IY: "Coaching Assistant In Assertive Communication",
+  QKLX4V0: "Hotel Receptionist Handle Angry Guest",
+  QULNNNE: "Luxury Real Estate Sales Agent",
+  QZ4R9QW: "Cabin Crew Dealing With Angry Customer",
+  QJV5AEY: "Bank Branch Employee Service Call",
+  QEYTB3I: "First Time Manager Feedback In Corporate Office",
+  QYCZJDN: "Patient Care By Nurse",
+  Q125Z1B: "Factory Shop Floor Leadership",
+  Q9QW1HF: "Health Package Sales Rep Discussion",
+  QHYRLGN: "Insurance Sales Rep Call",
+  QJZWYYB: "IT Requirements Gathering",
+};
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -673,13 +674,14 @@ function handleSurpriseMeButtonClick() {
   //   testCode = randomChallenge.test_code;
   //   codeAvailabilityUserChoice = true;
   console.log("random challenge :==>", randomChallenge);
-  testCode = randomChallenge.trim()
+  testCode = randomChallenge.trim();
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   gShadowRoot.getElementById("surprise-button").disabled = true;
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot.getElementById("text-input").textContent = sampleTestCodes[randomChallenge];
+    gShadowRoot.getElementById("text-input").textContent =
+      sampleTestCodes[randomChallenge];
     setTimeout(() => {
       gShadowRoot.querySelector(".input-button").click();
     }, 100);
@@ -746,84 +748,77 @@ function generateOptionButtons() {
   });
 }
 
-    // to reset all variables
-    const resetAllVariables = () => {
-      //* reset all variables : start
-      questionText = "";
-      reportType = "interactionSessionReport";
-      questionIndex = 0;
-      questionId = null;
-      userResponse = "";
+// to reset all variables
+const resetAllVariables = () => {
+  //* reset all variables : start
+  questionText = "";
+  reportType = "interactionSessionReport";
+  questionIndex = 0;
+  questionId = null;
+  userResponse = "";
 
-      testId = null;
-      resQuestionNumber = null;
-      questionLength = null;
-      questionData = null;
-      documentId = null;
-      userAudioResponse = "";
+  testId = null;
+  resQuestionNumber = null;
+  questionLength = null;
+  questionData = null;
+  documentId = null;
+  userAudioResponse = "";
 
-      is_free = true;
-      responseProcessedQuestion = 0;
-      senarioDescription = "";
-      senarioTitle = "";
-      senarioMediaDescription;
-      responsesDone = false;
-      userName = "";
-      userEmail = "";
-      reportUrl = null;
-      testCodeList = [];
-      isRepeatStatus = false;
-      testPrevilage = "";
+  is_free = true;
+  responseProcessedQuestion = 0;
+  senarioDescription = "";
+  senarioTitle = "";
+  senarioMediaDescription;
+  responsesDone = false;
+  userName = "";
+  userEmail = "";
+  reportUrl = null;
+  testCodeList = [];
+  isRepeatStatus = false;
+  testPrevilage = "";
 
-      //global variables
-      sessionId = "";
-      testCode = null;
-      optedNo = false;
-      globalReportUrl = null;
+  //global variables
+  sessionId = "";
+  testCode = null;
+  optedNo = false;
+  globalReportUrl = null;
 
-      //* reset all variables : end
-      codeAvailabilityUserChoice = true;
-      mcqQustionIndex = 0;
-      mcqFormId;
-      globalQuestionData;
-      globalQuestionLength;
-      testType='';
-      isHindi = false;
-      TestUIInfo;
-      isProceed = '';
-      isSessionActive = false;
-    };
+  //* reset all variables : end
+  codeAvailabilityUserChoice = true;
+  mcqQustionIndex = 0;
+  mcqFormId;
+  globalQuestionData;
+  globalQuestionLength;
+  testType = "";
+  isHindi = false;
+  TestUIInfo;
+  isProceed = "";
+  isSessionActive = false;
+};
 
-  const handleProceedClick = (choice) => {
-
-    if (choice == 'Yes'){
-      isProceed = 'true'
-      const gshadowRoot =
-                document.getElementById("chat-element").shadowRoot;
-      const msg = gshadowRoot.getElementById('proceed-option')
-      // button.parentNode.removeChild(button)
-      const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Please Wait.."; // You can customize the message here
-      // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
-      appendMessage(initialQuestionText)
-    }else {
-      resetAllVariables();
-      const gshadowRoot =
-                document.getElementById("chat-element").shadowRoot;
-      const msg = gshadowRoot.getElementById('proceed-option')
-      // button.parentNode.removeChild(button)
-      const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-      // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
-      appendMessage(
-        "<b>Your session is terminated. You can restart again!</b>"
-      );
-      
-    }
-    
-  };
+const handleProceedClick = (choice) => {
+  if (choice == "Yes") {
+    isProceed = "true";
+    const gshadowRoot = document.getElementById("chat-element").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait.."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    appendMessage(initialQuestionText);
+  } else {
+    resetAllVariables();
+    const gshadowRoot = document.getElementById("chat-element").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    appendMessage("<b>Your session is terminated. You can restart again!</b>");
+  }
+};
 //* Function to handle button click for no-code flow : start
 async function handleOptionButtonClick(labelText, area, information) {
   console.log("button clicked", labelText, area, information);
@@ -1028,7 +1023,6 @@ loadExternalModule().then(() => {
     closeFromTopp.style.top = "0.2rem";
   }
 
-
   let credentialsForm;
   if (window.innerWidth > 868) {
     credentialsForm = `
@@ -1232,7 +1226,6 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
-  
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
@@ -1366,9 +1359,9 @@ loadExternalModule().then(() => {
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        if (rule === 'my_lib'){
-          return resp_json["data"][rule]
-        }else {
+        if (rule === "my_lib") {
+          return resp_json["data"][rule];
+        } else {
           return resp_json["data"][rule].split(",");
         }
       } catch (error) {
@@ -1392,13 +1385,60 @@ loadExternalModule().then(() => {
       formdata["transcribe_file"] = true;
     }
 
-    const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-      },
-      body: formdata,
-    });
+    // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+    //   },
+    //   body: formdata,
+    // });
+
+    function uploadDoc(formdata) {
+      const basicAuthToken = createBasicAuthToken(key, secret);
+      return fetch(`${baseURL}/documents/upload/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${basicAuthToken}`,
+        },
+        body: formdata,
+      });
+    }
+
+    let uploadDocResponse = await uploadDoc(formdata);
+
+    console.log("Jiks : ", uploadDocResponse);
+
+    let documentUploadFailsCount = 0;
+
+    while (uploadDocResponse.status !== 201) {
+      console.log("error in uploading audio");
+      documentUploadFailsCount += 1;
+      if (documentUploadFailsCount > 1) {
+        console.log("document upload failed more than 1 times");
+        await cancelTest(participantId); // cancelling session
+        resetAllVariables(); //reseting variables
+        if (isProceed === "false") {
+          const gshadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+          const msg = gshadowRoot.getElementById("proceed-option");
+          // button.parentNode.removeChild(button)
+          const que_msg = document.createElement("div");
+          que_msg.innerHTML = "Thank You"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          msg.parentNode.replaceChild(que_msg, msg);
+        }
+        appendMessage(
+          "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+        );
+        maxUploadFailed = true;
+        break;
+      }
+      uploadDocResponse = await uploadDoc(formdata);
+    }
+
+    if (documentUploadFailsCount > 1) {
+      return;
+    }
 
     const uploadDocData = await uploadDocResponse.json();
     documentId = uploadDocData.uid;
@@ -1520,12 +1560,9 @@ loadExternalModule().then(() => {
     return resQuestionNumber;
   };
 
-  
-
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
-        
         if (body instanceof FormData) {
           //AUDIO RESPONSES
 
@@ -1536,12 +1573,12 @@ loadExternalModule().then(() => {
             });
             return;
           }
-          if (isProceed === 'false'){
-            console.log(isProceed)
-  
-            signals.onResponse(
-              {html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"}
-              )
+          if (isProceed === "false") {
+            console.log(isProceed);
+
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
@@ -1676,6 +1713,10 @@ loadExternalModule().then(() => {
                 questionData.results[0].questions[questionIndex - 2];
 
               await testResponseHandler(formdata, questionObj);
+              if (maxUploadFailed === true) {
+                maxUploadFailed = false;
+                return;
+              }
 
               responseProcessedQuestion++;
               responsesDone = resQuestionNumber === questionLength;
@@ -1800,16 +1841,16 @@ loadExternalModule().then(() => {
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
           console.log("Latest Message ===> ", latestMessage);
-          if (testType === "mcq" && latestMessage.toUpperCase() != 'STOP') {
+          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
             return;
           }
-          if (isProceed === 'false' && latestMessage.toUpperCase() != 'STOP' ){
-
+          if (isProceed === "false" && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
-            html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
@@ -1861,9 +1902,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (
-            body.messages[0].text.toUpperCase() === "STOP" 
-          ) {
+          if (body.messages[0].text.toUpperCase() === "STOP") {
             await cancelTest(participantId); // cancelling session
             resetAllVariables(); //reseting variables
             if (testType === "mcq") {
@@ -1878,15 +1917,15 @@ loadExternalModule().then(() => {
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
             }
-            if (isProceed === 'false'){
+            if (isProceed === "false") {
               const gshadowRoot =
                 document.getElementById("chat-element").shadowRoot;
-                const msg = gshadowRoot.getElementById('proceed-option')
-                // button.parentNode.removeChild(button)
-                const que_msg = document.createElement("div");
-                que_msg.innerHTML = "Thank You"; // You can customize the message here
-                // Replace the button with the "Thank you" message
-                msg.parentNode.replaceChild(que_msg, msg);
+              const msg = gshadowRoot.getElementById("proceed-option");
+              // button.parentNode.removeChild(button)
+              const que_msg = document.createElement("div");
+              que_msg.innerHTML = "Thank You"; // You can customize the message here
+              // Replace the button with the "Thank you" message
+              msg.parentNode.replaceChild(que_msg, msg);
             }
 
             signals.onResponse({
@@ -1922,16 +1961,14 @@ loadExternalModule().then(() => {
               buttonTextArray.push(buttonText);
             });
             // adding sample test code title
-            const sampleTestCodesValues = Object.values(sampleTestCodes)
+            const sampleTestCodesValues = Object.values(sampleTestCodes);
             sampleTestCodesValues.forEach((value) => {
-              buttonTextArray.push(value.trim())
-
+              buttonTextArray.push(value.trim());
             });
 
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
-              
               if (sessionStatus != "in_progress") {
                 signals.onResponse({
                   html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
@@ -1970,7 +2007,6 @@ loadExternalModule().then(() => {
             if (optedNo === false) {
               testCode = body.messages[0].text;
               appendMessage("Please wait while we are processing ...");
-
             } else {
               appendMessage("Please wait while we are processing ...");
               // //wait while test code is being processed
@@ -2254,14 +2290,14 @@ loadExternalModule().then(() => {
                   }
 
                   if (questionIndex === 0) {
-                    initialQuestionText = questionText
-                    isProceed = 'false'
+                    initialQuestionText = questionText;
+                    isProceed = "false";
                     questionText = `
                     <div id="proceed-option" >
                     <b>Proceed ?</b>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
-                    </div>`
+                    </div>`;
 
                     if (senarioMediaDescription !== null) {
                       let embeddingUrl = "";
@@ -2570,7 +2606,10 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid && body.messages[0].text.toUpperCase() !== "STOP") {
+              if (
+                !isTestcodeValid &&
+                body.messages[0].text.toUpperCase() !== "STOP"
+              ) {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                 });
@@ -2584,9 +2623,30 @@ loadExternalModule().then(() => {
         }
       } catch (e) {
         console.log(e);
+        await cancelTest(participantId); // cancelling session
+        resetAllVariables(); //reseting variables
+        if (testType === "mcq") {
+          const shadowRoot = document.getElementById("chat-element").shadowRoot;
+          const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+          // button.parentNode.removeChild(button)
+          const thankYouMessage = document.createElement("div");
+          thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          button.parentNode.replaceChild(thankYouMessage, button);
+        }
+        if (isProceed === "false") {
+          const gshadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+          const msg = gshadowRoot.getElementById("proceed-option");
+          // button.parentNode.removeChild(button)
+          const que_msg = document.createElement("div");
+          que_msg.innerHTML = "Thank You"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          msg.parentNode.replaceChild(que_msg, msg);
+        }
+
         signals.onResponse({
-          error:
-            "Your response could not be processed due to technical reasons, please refresh the page and try again. ",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
         });
       }
     },
