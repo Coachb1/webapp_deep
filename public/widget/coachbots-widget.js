@@ -67,6 +67,7 @@ let TestUIInfo;
 let isHindi = false;
 let isProceed;
 let isSessionActive = false;
+let isEmailType=false;
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -676,7 +677,15 @@ function handleSurpriseMeButtonClick() {
   testCode = randomChallenge.trim()
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
-  gShadowRoot.getElementById("surprise-button").disabled = true;
+  // gShadowRoot.getElementById("surprise-button").disabled = true;
+  // removing button 
+  const msg = gShadowRoot.getElementById('surprise-button')
+  // button.parentNode.removeChild(button)
+  const que_msg = document.createElement("div");
+  que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+  // Replace the button with the "Thank you" message
+  msg.parentNode.replaceChild(que_msg, msg);
+
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot.getElementById("text-input").textContent = sampleTestCodes[randomChallenge];
@@ -792,6 +801,7 @@ function generateOptionButtons() {
       TestUIInfo;
       isProceed = '';
       isSessionActive = false;
+      isEmailType = false;
     };
 
   const handleProceedClick = (choice) => {
@@ -1558,6 +1568,14 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });
+            return;
+          }
+
+          if (isEmailType) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Text response allowed for this interaction.</b></p>",
+            });
+            return;
           }
 
           let file = audioFile;
@@ -1696,7 +1714,6 @@ loadExternalModule().then(() => {
                   //   "<b>For obtaining your report, please submit the following details.</b>"
                   // );
                   signals.onResponse({
-                    text: "For obtaining your report, please submit the following details.",
                     html: credentialsForm,
                   });
                 }
@@ -1864,8 +1881,7 @@ loadExternalModule().then(() => {
           if (
             body.messages[0].text.toUpperCase() === "STOP" 
           ) {
-            await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
+          
             if (testType === "mcq") {
               const shadowRoot =
                 document.getElementById("chat-element").shadowRoot;
@@ -1888,6 +1904,8 @@ loadExternalModule().then(() => {
                 // Replace the button with the "Thank you" message
                 msg.parentNode.replaceChild(que_msg, msg);
             }
+            await cancelTest(participantId); // cancelling session
+            resetAllVariables(); //reseting variables
 
             signals.onResponse({
               html: "<b>Your session is terminated. You can restart again!</b>",
@@ -1943,6 +1961,7 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
                 });
+                return;
               }
 
               //************* check if user message is atleast 15 words */
@@ -2014,6 +2033,7 @@ loadExternalModule().then(() => {
               senarioMediaDescription =
                 questionData.results[0].description_media;
               TestUIInfo = questionData.results[0].ui_information;
+              isEmailType = questionData.results[0].is_email_type;
               console.log(senarioMediaDescription);
 
               isTestcodeValid = true;
@@ -2474,7 +2494,6 @@ loadExternalModule().then(() => {
                     //   "<b>For obtaining your report, please submit the following details.</b>"
                     // );
                     signals.onResponse({
-                      text: "For obtaining your report, please submit the following details.",
                       html: credentialsForm,
                     });
                   }
