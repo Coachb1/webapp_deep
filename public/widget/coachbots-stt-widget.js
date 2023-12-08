@@ -151,6 +151,38 @@ function appendMessage2(message2) {
       que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
+      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+      const is_link = linkPattern.test(initialQuestionTextStt);
+
+      if (is_link) {
+        console.log(initialQuestionTextStt);
+        let embeddingUrl = "";
+        if (initialQuestionTextStt.length > 0) {
+          if (initialQuestionTextStt.includes("youtube.com")) {
+            const videoId = initialQuestionTextStt.split("v=")[1];
+            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          } else if (initialQuestionTextStt.includes("vimeo.com")) {
+            const videoId = initialQuestionTextStt.split("/").pop();
+            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+          } else if (initialQuestionTextStt.includes("twitter.com")) {
+            embeddingUrl = `https://twitframe.com/show?url=${initialQuestionTextStt}`;
+          }
+
+          initialQuestionTextStt = initialQuestionTextStt.replace(
+            /(http[s]?:\/\/[^\s]+)/g,
+            ""
+          );
+
+          initialQuestionTextStt = `▪ Media <br>  <iframe
+                          allow="autoplay; encrypted-media; fullscreen;"
+                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                          src=${embeddingUrl}
+                          frameborder="0"
+                          allowfullscreen
+                        >
+        `;
+        }
+      }
       appendMessage2(initialQuestionTextStt)
     }else {
       resetAllVariablesStt();

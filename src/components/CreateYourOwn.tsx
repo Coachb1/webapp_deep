@@ -16,7 +16,7 @@ const CreateYourOwn = () => {
     setUserEnteredContext(userContextRef.current.value);
     setIsloading(true);
     const url: any = new URL(
-      `https://coach-api-gcp.coachbots.com/api/v1/tests/get_or_create_test_scenarios_by_site/`
+      `https://coach-api-ovh.coachbots.com/api/v1/tests/get_or_create_test_scenarios_by_site/`
     );
     const params = new URLSearchParams();
     params.set("mode", "A");
