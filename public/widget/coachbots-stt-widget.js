@@ -62,6 +62,36 @@ let testUIInfoStt;
 let isProceedStt;
 let initialQuestionTextStt;
 let isSessionActiveStt = false;
+let recommendationsStt = '';
+
+// sample recommendation data
+let recommendationsDataStt =  [
+  [{ title: "Pursuing career growth : Discussing the next steps in the career ladder", code: 'QG8OTQR' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Handling change and uncertainty : Navigating uncertainty in a new role", code: 'QXA0FHL' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Team building & Leadership : Teams using Agile Strategies ", code: 'QQJPCFI' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement", code: 'QHZPPK1' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion", code: 'QTTDTXG' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Collaborating on resource allocation : Resource Allocation Tensions", code: 'QSKUOD0' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Strategizing cross functional projects: Navigating cross-project challenges", code: 'Q7E1DGY' }, { title: "XXXX", code: 'XXXX' }],
+];
+
+// sample TEst codes
+const sampleTestCodesStt = {
+  QEEG5VY: "AWS Cloud Training",
+  QMFMKQ4: "Team Building Post Training Check In",
+  QUPR9AO: "Education Sales Rep Selling A Diploma Course",
+  QLDQ2IY: "Coaching Assistant In Assertive Communication",
+  QKLX4V0: "Hotel Receptionist Handle Angry Guest",
+  QULNNNE: "Luxury Real Estate Sales Agent",
+  QZ4R9QW: "Cabin Crew Dealing With Angry Customer",
+  QJV5AEY: "Bank Branch Employee Service Call",
+  QEYTB3I: "First Time Manager Feedback In Corporate Office",
+  QYCZJDN: "Patient Care By Nurse",
+  Q125Z1B: "Factory Shop Floor Leadership",
+  Q9QW1HF: "Health Package Sales Rep Discussion",
+  QHYRLGN: "Insurance Sales Rep Call",
+  QJZWYYB: "IT Requirements Gathering",
+};
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
@@ -137,7 +167,36 @@ function appendMessage2(message2) {
     testUIInfoStt;
     isProceedStt = '';
     isSessionActiveStt = false;
+    recommendationsStt="";
   };
+
+  function findRelatedItemsStt(data, targetCode) {
+    let matchingItems = [];
+    let targetTitle = '';
+
+    for (const sublist of data) {
+        for (const item of sublist) {
+            if (item.code === targetCode) {
+                targetTitle = item.title;
+            }else{
+            matchingItems.push(item);
+            }
+        }
+
+        if (matchingItems.length > 0 && targetTitle) {
+            break;
+        } else {
+            matchingItems = [];
+        }
+    }
+    console.log('mat',matchingItems,targetTitle,targetCode,data)
+    let resultDiv = "<b>System Recommendation: If you like this scenario you can try:<b> <br>"
+    matchingItems.forEach((item)=>{
+      resultDiv += `<strong>Title:</strong> ${item.title} <strong>Code:</strong> ${item.code} <br>`;
+    })
+
+    return matchingItems.length > 0 && targetTitle ? `<div>${resultDiv}</div>` : null;
+  }
 
   const handleProceedClickStt = (choice) => {
 
@@ -627,6 +686,10 @@ async function submitEmailAndName2() {
           html: "<b>Please enter another access code to start a new interaction.</b>",
         });
       }
+      const recommDiv =findRelatedItemsStt(recommendationsDataStt,testCode2)
+      if (recommDiv){
+        appendMessage2(recommDiv)
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -696,7 +759,7 @@ function handleSurpriseMeButtonClick2() {
 
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = sampleTestCodes[randomChallenge2];
+    gShadowRoot2.getElementById("text-input").textContent = sampleTestCodesStt[randomChallenge2];
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -1407,7 +1470,7 @@ loadExternalModule().then(() => {
             });
 
             // adding sample test code title
-            const sampleTestCodesValues = Object.values(sampleTestCodes)
+            const sampleTestCodesValues = Object.values(sampleTestCodesStt)
             sampleTestCodesValues.forEach((value) => {
               buttonTextArray.push(value.trim())
 

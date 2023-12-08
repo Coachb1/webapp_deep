@@ -69,6 +69,7 @@ let isHindi = false;
 let isProceed;
 let isSessionActive = false;
 let isEmailType=false;
+let recommendations = '';
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -87,6 +88,18 @@ const sampleTestCodes = {
   QHYRLGN: "Insurance Sales Rep Call",
   QJZWYYB: "IT Requirements Gathering",
 };
+
+// sample recommendation data
+let recommendationsData =  [
+  [{ title: "Pursuing career growth : Discussing the next steps in the career ladder", code: 'QG8OTQR' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Handling change and uncertainty : Navigating uncertainty in a new role", code: 'QXA0FHL' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Team building & Leadership : Teams using Agile Strategies ", code: 'QQJPCFI' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement", code: 'QHZPPK1' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion", code: 'QTTDTXG' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Collaborating on resource allocation : Resource Allocation Tensions", code: 'QSKUOD0' }, { title: "XXXX", code: 'XXXX' }],
+  [{ title: "Strategizing cross functional projects: Navigating cross-project challenges", code: 'Q7E1DGY' }, { title: "XXXX", code: 'XXXX' }],
+];
+
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -616,6 +629,11 @@ async function submitEmailAndName() {
           "<b>Please enter another access code to start a new interaction.</b>"
         );
       }
+      const recommDiv =findRelatedItems(recommendationsData,testCode)
+      if (recommDiv){
+        appendMessage(recommDiv)
+      }
+
     })
     .catch((err) => {
       console.log(err);
@@ -805,9 +823,36 @@ function generateOptionButtons() {
       isProceed = '';
       isSessionActive = false;
       isEmailType = false;
+      recommendations="";
     };
 
-
+    function findRelatedItems(data, targetCode) {
+      let matchingItems = [];
+      let targetTitle = '';
+  
+      for (const sublist of data) {
+          for (const item of sublist) {
+              if (item.code === targetCode) {
+                  targetTitle = item.title;
+              }else{
+              matchingItems.push(item);
+              }
+          }
+  
+          if (matchingItems.length > 0 && targetTitle) {
+              break;
+          } else {
+              matchingItems = [];
+          }
+      }
+      console.log('mat',matchingItems,targetTitle,targetCode,data)
+      let resultDiv = "<b>System Recommendation: If you like this scenario you can try:<b> <br>"
+      matchingItems.forEach((item)=>{
+        resultDiv += `<strong>Title:</strong> ${item.title} <strong>Code:</strong> ${item.code} <br>`;
+      })
+  
+      return matchingItems.length > 0 && targetTitle ? `<div>${resultDiv}</div>` : null;
+  }
 
 const handleProceedClick = (choice) => {
   if (choice == "Yes") {
