@@ -1688,7 +1688,7 @@ loadExternalModule().then(() => {
                   );
                   questionText = `▪ Media <br>  <iframe
                                    allow="autoplay; encrypted-media; fullscreen;"
-                                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                   style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                    src=${embeddingUrl}
                                    frameborder="0"
                                    allowfullscreen
@@ -2303,7 +2303,7 @@ loadExternalModule().then(() => {
 
                           questionText = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                           src=${embeddingUrl}
                                           frameborder="0"
                                           allowfullscreen
@@ -2349,7 +2349,7 @@ loadExternalModule().then(() => {
                                  ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
                                  ▪ Media <br> <iframe
                                             allow="autoplay; encrypted-media; fullscreen;
-                                            style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                             src=${embeddingUrl}
                                             frameborder="0"
                                             allowfullscreen
@@ -2363,7 +2363,7 @@ loadExternalModule().then(() => {
                                ▪ Description : ${senarioDescription} <br><br>
                                ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
                                ▪ Media <br>  <iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 src=${embeddingUrl}
                                                 frameborder="0"
                                                 allowfullscreen
