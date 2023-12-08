@@ -175,7 +175,7 @@ function appendMessage2(message2) {
 
           initialQuestionTextStt = `▪ Media <br>  <iframe
                           allow="autoplay; encrypted-media; fullscreen;"
-                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                           src=${embeddingUrl}
                           frameborder="0"
                           allowfullscreen
@@ -1799,7 +1799,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
                                           frameborder="0"
                                           allowfullscreen
@@ -1835,7 +1835,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
                                           frameborder="0"
                                           allowfullscreen
@@ -1877,7 +1877,7 @@ loadExternalModule().then(() => {
 
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
                                           frameborder="0"
                                           allowfullscreen
