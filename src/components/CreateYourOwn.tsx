@@ -110,9 +110,7 @@ const CreateYourOwn = () => {
                             : ""}
                         </p>
                         <div className="max-sm:text-xs my-2">
-                          <p>
-                            {/* {generatedTestData.description} DESCRIPTION HERE */}
-                          </p>
+                          <p>{generatedTestData.description}</p>
                           <div className="flex justify-end mt-2">
                             <CopyToClipboard
                               textToCopy={generatedTestData.test_code}

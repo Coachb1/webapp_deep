@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 // import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ChevronLeft, Loader } from "lucide-react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -145,9 +146,9 @@ const Page = () => {
   }
   return (
     <>
-      <Helmet>
+      <Head>
         <title>My Library</title>
-      </Helmet>
+      </Head>
       <main className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
         <div className="bg-gray-300 absolute top-[5rem] left-4 text-sm rounded-lg p-2 max-sm:hidden">
           <Link href={"v1"} className="flex items-center">
