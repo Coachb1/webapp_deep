@@ -28,18 +28,57 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
+import CreateYourOwn from "@/components/CreateYourOwn";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 export const metadata = constructMetadata();
+
+async function getData() {
+  const res = await fetch(
+    `https://coach-api-gcp.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return res.json();
+}
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const data = await getData();
+  const user: any = await getUser();
+  // console.log(enterpriceEmailDomains);
 
-  const enterpriceEmailDomains = [
-    "@anjuman.edu.in",
-    "@google.com",
-    "@indusind.com",
-  ];
+  let shouldRenderDiv;
+  if (user) {
+    const userEmail = user.email;
+    const exclusionEmails = ["bagoriarajan@gmail.com", "falahsss900@gmail.com"];
+    const restrictedEmails = ["gmail", "yahoo", "hotmail"];
+    const domain = userEmail.split("@")[1];
+    const excludedEmail = exclusionEmails.includes(userEmail);
+
+    const isrestEmail = restrictedEmails.some((restrictedDomain) =>
+      domain.includes(restrictedDomain)
+    );
+
+    if (excludedEmail && isrestEmail) {
+      shouldRenderDiv = true;
+    } else if (!excludedEmail && isrestEmail) {
+      shouldRenderDiv = false;
+    } else if (!isrestEmail && !excludedEmail) {
+      shouldRenderDiv = true;
+    }
+
+    console.log("User Email:", userEmail);
+    console.log("user domain : ", domain);
+    console.log("Exclude email : ", exclusionEmails.includes(userEmail));
+    console.log("Restricted Domain:", isrestEmail);
+    console.log("Should Render Div:", shouldRenderDiv);
+  }
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
@@ -49,7 +88,7 @@ const Page = async () => {
             variant={"secondary"}
             className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
-            ✨ Sign up to get EQ Insight Access{" "}
+            ✨ Sign up to create your own scenarios! (Workplace emails only)
             <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
             <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
           </Badge>
@@ -72,17 +111,13 @@ const Page = async () => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        {user && (
+        {shouldRenderDiv && (
           <div className="flex flex-row mt-4 z-50">
-            {enterpriceEmailDomains.some((domain) =>
-              user?.email!.endsWith(domain)
-            ) && (
-              <Link href={""}>
-                <Button variant={"default"} className=" mx-4">
-                  My Library
-                </Button>
-              </Link>
-            )}
+            <Link href={"library"}>
+              <Button variant={"default"} className=" mx-4">
+                My Library
+              </Button>
+            </Link>
           </div>
         )}
 
@@ -208,6 +243,23 @@ const Page = async () => {
                 Meetings
               </Button>
             </Link>
+            {shouldRenderDiv && (
+              <Link href={"#create-your-own"}>
+                <div className="relative group cursor-pointer">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                  <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                    <div className="space-y-2">
+                      <Button
+                        variant={"secondary"}
+                        className="border border-gray-200 h-8 hover:cursor-pointer"
+                      >
+                        Create your own
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -327,6 +379,11 @@ const Page = async () => {
               tests={meetings}
             />
           </div>
+          {shouldRenderDiv && (
+            <div id="create-your-own">
+              <CreateYourOwn />
+            </div>
+          )}
         </div>
       </div>
 
