@@ -23,7 +23,7 @@ const CreateYourOwn = () => {
     params.set(
       "information",
       JSON.stringify({
-        data: { information: userEnteredContext },
+        data: { information: userContextRef.current.value },
         title: "",
       })
     );
@@ -96,7 +96,7 @@ const CreateYourOwn = () => {
                 </div>
 
                 {generatedTestData && (
-                  <>
+                  <> 
                     <hr className="my-2 font-bold" />
                     <p className="text-[16px] font-semibold max-sm:text-xs text-gray-600 mt-2 ">
                       Below is your generated senario :
