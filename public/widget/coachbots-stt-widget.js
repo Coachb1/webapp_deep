@@ -2083,9 +2083,34 @@ loadExternalModule().then(() => {
         }
       } catch (e) {
         console.log(e);
+        await cancelTestStt(participantId2); // cancelling session
+        if (testType2 === "mcq") {
+          const shadowRoot =
+            document.getElementById("chat-element2").shadowRoot;
+          const button = shadowRoot.getElementById(
+            `mcq-option-stt-${mcqFormIdStt}`
+          );
+          // button.parentNode.removeChild(button)
+          const thankYouMessage = document.createElement("div");
+          thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+
+          // Replace the button with the "Thank you" message
+          button.parentNode.replaceChild(thankYouMessage, button);
+        }
+        if (isProceedStt === "false") {
+          const gshadowRoot =
+            document.getElementById("chat-element2").shadowRoot;
+          const msg = gshadowRoot.getElementById("proceed-option2");
+          // button.parentNode.removeChild(button)
+          const que_msg = document.createElement("div");
+          que_msg.innerHTML = "Thank You"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          msg.parentNode.replaceChild(que_msg, msg);
+        }
+
+        resetAllVariablesStt(); 
         signals.onResponse({
-          error:
-            "Your response could not be processed due to technical reasons, please refresh the page and try again. ",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
         });
       }
     },
