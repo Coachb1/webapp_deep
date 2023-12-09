@@ -56,7 +56,11 @@ const Page = async () => {
   let shouldRenderDiv;
   if (user) {
     const userEmail = user.email;
-    const exclusionEmails = ["bagoriarajan@gmail.com", "falahsss900@gmail.com"];
+    const exclusionEmails = [
+      "bagoriarajan@gmail.com",
+      "falahsss900@gmail.com",
+      "ansariaadil611@gmail.com",
+    ];
     const restrictedEmails = ["gmail", "yahoo", "hotmail"];
     const domain = userEmail.split("@")[1];
     const excludedEmail = exclusionEmails.includes(userEmail);
