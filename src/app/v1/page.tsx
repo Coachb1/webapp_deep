@@ -86,9 +86,10 @@ const Page = async () => {
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
+            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:h-10 truncate max-sm:mt-[6.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
-            ✨ Sign up to create your own scenarios! (Workplace emails only)
+            ✨ Sign up to create your own scenarios!{" "}
+            <br className="hidden max-sm:inline" /> (Workplace emails only)
             <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
             <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
           </Badge>
@@ -265,7 +266,7 @@ const Page = async () => {
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
-          {user && (
+          {shouldRenderDiv && (
             <div>
               <HeroAccordion
                 badgeText="EQ mini course"
