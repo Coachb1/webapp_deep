@@ -65,14 +65,89 @@ let isSessionActiveStt = false;
 let recommendationsStt = '';
 
 // sample recommendation data
-let recommendationsDataStt =  [
-  [{ title: "Pursuing career growth : Discussing the next steps in the career ladder", code: 'QG8OTQR' }, { title: "Pursuing professional development : Aligning career Goals with company's vision", code: 'QMWNNU5' }], // batch one
-  [{ title: "Handling change and uncertainty : Navigating uncertainty in a new role", code: 'QXA0FHL' }, { title: "Handling change and uncertainty : Seeking Guidance on Adapting to New Leadership", code: 'QTXLXON' }] // batch two
-  [{ title: "Team building & Leadership : Teams using Agile Strategies", code: 'QQJPCFI' }, { title: "Leadership initiatives : Seeking Guidance on Leading Team Through Crisis", code: 'QO269IW' }] // batch three
-  [{ title: "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement", code: 'QHZPPK1' }, { title: "Resource allocation decisions : Securing Project Resources from other teams", code: 'QDL75HD' }] // batch four
-  [{ title: "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion", code: 'QTTDTXG' }, { title: "Managing Team Conflicts : Addressing Team Conflicts Over Missed Deadline", code: 'QWN8XTF' }] // batch five
-  [{ title: "Collaborating on resource allocation : Resource Allocation Tensions", code: 'QSKUOD0' }, { title: "Navigating team dynamics: Aligning Team Direction", code: 'Q60LLMU' }] // batch six
-  [{ title: "Strategizing cross functional projects: Navigating cross-project challenges", code: 'Q7E1DGY' }, { title: "Interdepartmental collaboration : Harmonizing Data Interpretations", code: 'Q8LUY93' }] // batch seven
+let recommendationsDataStt = [
+  [
+    {
+      title:
+        "Pursuing career growth : Discussing the next steps in the career ladder",
+      code: "QG8OTQR",
+    },
+    {
+      title:
+        "Pursuing professional development : Aligning career Goals with company's vision",
+      code: "QMWNNU5",
+    },
+  ], // batch one
+  [
+    {
+      title:
+        "Handling change and uncertainty : Navigating uncertainty in a new role",
+      code: "QXA0FHL",
+    },
+    {
+      title:
+        "Handling change and uncertainty : Seeking Guidance on Adapting to New Leadership",
+      code: "QTXLXON",
+    },
+  ], // batch two
+  [
+    {
+      title: "Team building & Leadership : Teams using Agile Strategies",
+      code: "QQJPCFI",
+    },
+    {
+      title:
+        "Leadership initiatives : Seeking Guidance on Leading Team Through Crisis",
+      code: "QO269IW",
+    },
+  ], // batch three
+  [
+    {
+      title:
+        "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement",
+      code: "QHZPPK1",
+    },
+    {
+      title:
+        "Resource allocation decisions : Securing Project Resources from other teams",
+      code: "QDL75HD",
+    },
+  ], // batch four
+  [
+    {
+      title:
+        "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion",
+      code: "QTTDTXG",
+    },
+    {
+      title:
+        "Managing Team Conflicts : Addressing Team Conflicts Over Missed Deadline",
+      code: "QWN8XTF",
+    },
+  ], // batch five
+  [
+    {
+      title:
+        "Collaborating on resource allocation : Resource Allocation Tensions",
+      code: "QSKUOD0",
+    },
+    {
+      title: "Navigating team dynamics: Aligning Team Direction",
+      code: "Q60LLMU",
+    },
+  ], // batch six
+  [
+    {
+      title:
+        "Strategizing cross functional projects: Navigating cross-project challenges",
+      code: "Q7E1DGY",
+    },
+    {
+      title:
+        "Interdepartmental collaboration : Harmonizing Data Interpretations",
+      code: "Q8LUY93",
+    },
+  ], // batch seven
 ];
 
 // sample TEst codes
