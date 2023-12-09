@@ -267,7 +267,7 @@ function appendMessage2(message2) {
     console.log('mat',matchingItems,targetTitle,targetCode,data)
     let resultDiv = "<b>System Recommendation: If you like this scenario you can try:<b> <br>"
     matchingItems.forEach((item)=>{
-      resultDiv += `<strong>Title:</strong> ${item.title} <strong>Code:</strong> ${item.code} <br>`;
+      resultDiv += `<strong>Title:</strong> ${item.title} <br><strong>Code:</strong> ${item.code} <br>`;
     })
 
     return matchingItems.length > 0 && targetTitle ? `<div>${resultDiv}</div>` : null;
