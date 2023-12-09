@@ -423,7 +423,7 @@ export const Sales: Test[] = [
   },
   {
     domain: "Insurance Consultation",
-    test_code: "QQ6V0RH",
+    test_code: "QCKU3BT",
     title: "Health Insurance Consultation",
     description:
       "Akshita Singh, a marketing professional, is considering health insurance for herself and her parents. With a history of certain pre-existing conditions in the family, she is navigating the complexities of finding a policy that offers comprehensive coverage while managing premium costs. She has called the company number to gain more information about your insurance package. Your responsibility is to analyze her family's medical history, educate her on policy inclusions and exclusions, and recommend a health insurance plan that strikes the right balance between coverage and affordability. Respond to this situation as an Insurance Sales Rep.",
@@ -464,7 +464,6 @@ export const serviceslashConsulting: Test[] = [
       "This is the last day of your orientation training as a bank employee. As the last task complete this real life customer interaction simulation. Mr. Rohit Sharma, a dedicated customer of the bank for the past 15 years, encounters a delay in opening a new account due to a discrepancy in his address proof. The challenge lies in maintaining Mr. Sharma's confidence, given his long-standing relationship with the bank, while adhering to the stringent industry norms. As the employee, you are tasked with striking a balance between ensuring compliance and providing reassurance to Mr. Sharma, who expressed valid concerns about the extended procedural timelines. Respond as the bank employee to this situation. ",
     interaction_mode: "Audio",
   },
-
   {
     domain: "Healthcare counselling",
     test_code: "QEH6YUA",
@@ -493,20 +492,19 @@ export const serviceslashConsulting: Test[] = [
 
 export const roundFeedback: Test[] = [
   {
-    domain: "HIPO Employee Feedback",
-    test_code: "QRO4VYR",
-
-    title: "Construction Supervisor Feedback",
+    domain: "Performance management",
+    test_code: "QISOFJB", //
+    title: "Providing Constructive Feedback as a Manager",
     description:
-      "A construction supervisors monthly feedback check in with manager.",
+      "A team member has been working hard but feels frustrated due to lack of feedback from the manager which is hindering his growth. He scheduled a meeting to discuss this issue and get clarity on his performance and areas of improvement. Respond to this situation as the  manager.",
     interaction_mode: "Audio",
   },
   {
-    domain: "PIP for a low performing employee",
-    test_code: "Q5YC8DA",
-
-    title: "Sales Manager Feedback",
-    description: "A sales manager's monthly feedback check in with manager.",
+    domain: "Performance management",
+    test_code: "QKB2XR0", //
+    title: "Improving Performance Through Feedback",
+    description:
+      "A team member's performance has been suffering recently due to lack of proper training and growth opportunities in the organization. The team member wants to discuss this issue with the manager to understand the reasons behind it and find solutions to improve performance. Respond to this situation as the manager.",
     interaction_mode: "Audio",
   },
   {
