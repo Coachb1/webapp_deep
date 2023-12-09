@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "lucide-react";
+import { Eraser, Loader } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
@@ -10,6 +10,7 @@ const CreateYourOwn = () => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<any>();
   const [userEnteredContext, setUserEnteredContext] = useState("");
+  const [generationError, setGenerationError] = useState(false);
 
   const userContextRef = useRef<any>();
   const handleGenerateSenario = () => {
@@ -48,10 +49,17 @@ const CreateYourOwn = () => {
 
         setGeneratedTestData(data[0]);
         setIsloading(false);
+        if (!data[0].title) {
+          setGenerationError(true);
+        }
 
-        userContextRef.current.value = "";
+        // userContextRef.current.value = "";
       })
       .catch((err) => console.log(err));
+  };
+
+  const clearHanlder = () => {
+    userContextRef.current.value = "";
   };
 
   return (
@@ -76,27 +84,43 @@ const CreateYourOwn = () => {
                   <textarea
                     ref={userContextRef}
                     placeholder="Create a situation where the user needs to...... to accomplish...."
-                    rows={3}
+                    rows={5}
                     className="p-2 my-2 max-sm:p-2 max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
                   />
-                  <Button
-                    onClick={handleGenerateSenario}
-                    className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
-                  >
-                    {isLoading ? "Generating" : "Generate"}
-                    {isLoading && (
-                      <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={handleGenerateSenario}
+                      className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+                    >
+                      {isLoading ? "Generating" : "Generate"}
+                      {isLoading && (
+                        <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                      )}
+                    </Button>{" "}
+                    {!isLoading && (
+                      <Button
+                        onClick={clearHanlder}
+                        variant={"secondary"}
+                        className="max-sm:p-2 h-8 hover:brightness-105"
+                      >
+                        <Eraser className="mr-2 w-4 h-4" /> Clear
+                      </Button>
                     )}
-                  </Button>{" "}
-                  {isLoading && (
-                    <span className="text-sm max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px]">
-                      Please wait, we are generating your senario.
-                    </span>
-                  )}
+                    {isLoading && (
+                      <span className="text-sm max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px]">
+                        Please wait, we are generating your senario.
+                      </span>
+                    )}
+                    {generationError && (
+                      <span className="text-sm max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500">
+                        Error generating your senario.
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {generatedTestData && (
-                  <> 
+                {generatedTestData?.title && (
+                  <>
                     <hr className="my-2 font-bold" />
                     <p className="text-[16px] font-semibold max-sm:text-xs text-gray-600 mt-2 ">
                       Below is your generated senario :
