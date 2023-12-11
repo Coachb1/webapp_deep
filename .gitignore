@@ -37,3 +37,4 @@ yarn-error.log*
 .env
 
 manifest.yml
+.vercel

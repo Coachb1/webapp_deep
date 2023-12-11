@@ -14,13 +14,13 @@ interface testTypes {
   user: boolean;
 }
 
-const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
+const MylibraryAccordion = ({ tests, badgeText, user }: testTypes) => {
   return (
     <>
       <div className={`w-full flex justify-center`}>
         <Badge
-          variant={"secondary"}
-          className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+          variant={"default"}
+          className="bg-[#5a7eca] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
         >
           ✨ {badgeText}
         </Badge>
@@ -66,4 +66,4 @@ const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
   );
 };
 
-export default HeroAccordion;
+export default MylibraryAccordion;

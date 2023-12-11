@@ -1,15 +1,22 @@
 const key = "";
 const secret = "";
-const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
-// const baseURL = 'http://127.0.0.1:8001/api/v1'
+const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+// baseURL="http://127.0.0.1:8001/api/v1" //local
 
+let deepChatPocElement;
 let sessionId = "";
 let userId = "";
+let userRole;
 let participantId;
 let testCode;
 let ipAddress;
-let optedNo = false;
+let user;
 let codeAvailabilityUserChoice = false;
+let optedNo = false;
+let questionIndex = 0;
+
+let globalReportUrl;
+let maxUploadFailed = false;
 
 //audio configs
 let display_name;
@@ -19,252 +26,1000 @@ let audioFileSrc = "";
 
 let inputName = "";
 let inputEmail = "";
-let globalReportUrl = "";
+
 let gShadowRoot;
 
+// only for mcq type test
+let globalQuestionData;
+let globalQuestionLength;
+let mcqQustionIndex = 0;
+let mcqFormId = 0;
+let initialQuestionText;
+
+// all variable shifted here from local
+let questionText = "";
+let reportType = "interactionSessionReport";
+let questionId;
+let userResponse;
+
+let testId;
+let resQuestionNumber;
+let questionLength;
+let questionData;
+let documentId;
+let userAudioResponse;
+
+let is_free;
+let responseProcessedQuestion = 0;
+let senarioDescription;
+let senarioTitle;
+let responsesDone = false;
+let senarioMediaDescription;
+let userName = "";
+let userEmail = "";
+let reportUrl;
+let testCodeList;
+let isRepeatStatus;
+let testPrevilage;
+let sessionStatus;
+let isSessionExpired;
+let testType;
+let TestUIInfo;
+let isHindi = false;
+let isProceed;
+let isSessionActive = false;
+let isEmailType=false;
+let recommendations = '';
+
+// sample TEst codes
+const sampleTestCodes = {
+  QEEG5VY: "AWS Cloud Training",
+  QMFMKQ4: "Team Building Post Training Check In",
+  QUPR9AO: "Education Sales Rep Selling A Diploma Course",
+  QLDQ2IY: "Coaching Assistant In Assertive Communication",
+  QKLX4V0: "Hotel Receptionist Handle Angry Guest",
+  QULNNNE: "Luxury Real Estate Sales Agent",
+  QZ4R9QW: "Cabin Crew Dealing With Angry Customer",
+  QJV5AEY: "Bank Branch Employee Service Call",
+  QEYTB3I: "First Time Manager Feedback In Corporate Office",
+  QYCZJDN: "Patient Care By Nurse",
+  Q125Z1B: "Factory Shop Floor Leadership",
+  Q9QW1HF: "Health Package Sales Rep Discussion",
+  QHYRLGN: "Insurance Sales Rep Call",
+  QJZWYYB: "IT Requirements Gathering",
+};
+
+// sample recommendation data
+let recommendationsData = [
+  [
+    {
+      title:
+        "Pursuing career growth : Discussing the next steps in the career ladder",
+      code: "QG8OTQR",
+    },
+    {
+      title:
+        "Pursuing professional development : Aligning career Goals with company's vision",
+      code: "QMWNNU5",
+    },
+  ], // batch one
+  [
+    {
+      title:
+        "Handling change and uncertainty : Navigating uncertainty in a new role",
+      code: "QXA0FHL",
+    },
+    {
+      title:
+        "Handling change and uncertainty : Seeking Guidance on Adapting to New Leadership",
+      code: "QTXLXON",
+    },
+  ], // batch two
+  [
+    {
+      title: "Team building & Leadership : Teams using Agile Strategies",
+      code: "QQJPCFI",
+    },
+    {
+      title:
+        "Leadership initiatives : Seeking Guidance on Leading Team Through Crisis",
+      code: "QO269IW",
+    },
+  ], // batch three
+  [
+    {
+      title:
+        "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement",
+      code: "QHZPPK1",
+    },
+    {
+      title:
+        "Resource allocation decisions : Securing Project Resources from other teams",
+      code: "QDL75HD",
+    },
+  ], // batch four
+  [
+    {
+      title:
+        "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion",
+      code: "QTTDTXG",
+    },
+    {
+      title:
+        "Managing Team Conflicts : Addressing Team Conflicts Over Missed Deadline",
+      code: "QWN8XTF",
+    },
+  ], // batch five
+  [
+    {
+      title:
+        "Collaborating on resource allocation : Resource Allocation Tensions",
+      code: "QSKUOD0",
+    },
+    {
+      title: "Navigating team dynamics: Aligning Team Direction",
+      code: "Q60LLMU",
+    },
+  ], // batch six
+  [
+    {
+      title:
+        "Strategizing cross functional projects: Navigating cross-project challenges",
+      code: "Q7E1DGY",
+    },
+    {
+      title:
+        "Interdepartmental collaboration : Harmonizing Data Interpretations",
+      code: "Q8LUY93",
+    },
+  ], // batch seven
+];
+
+
+
 function createBasicAuthToken(key = "", secret = "") {
-    const token =
-        "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-    // const token =
-    //     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; // local
-    return token;
+  const token =
+    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  return token;
 }
+
+const basicAuthToken = createBasicAuthToken(key, secret);
 
 function createMessageNode(message) {
-    const messageNode = document.createElement("div");
-    messageNode.classList.add("inner-message-container");
+  const messageNode = document.createElement("div");
+  messageNode.classList.add("inner-message-container");
 
-    const messageBubble = document.createElement("div");
-    messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
-    messageBubble.style.marginTop = "4px";
-    const messageText = document.createElement("p");
-    messageText.innerHTML = message;
+  const messageBubble = document.createElement("div");
+  messageBubble.classList.add("message-bubble", "ai-message-text");
+  messageBubble.style.maxWidth = "80%";
+  messageBubble.style.marginTop = "4px";
+  const messageText = document.createElement("p");
+  messageText.innerHTML = message;
 
-    messageBubble.appendChild(messageText);
-    messageNode.appendChild(messageBubble);
+  messageBubble.appendChild(messageText);
+  messageNode.appendChild(messageBubble);
 
-    return messageNode;
+  return messageNode;
 }
 
+//* function to test if a text can be a test code
+function isTestCode(text) {
+  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+}
+
+//* add a custom message to chat
 function appendMessage(message) {
-    gShadowRoot = document.getElementById("chat-element").shadowRoot;
-    const messageNode = createMessageNode(message);
-    gShadowRoot.getElementById("messages").appendChild(messageNode);
-    gShadowRoot.getElementById("messages").scrollBy(0, 100);
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  const messageNode = createMessageNode(message);
+  gShadowRoot.getElementById("messages").appendChild(messageNode);
+  gShadowRoot.getElementById("messages").scrollBy(0, 100);
 }
 
+//************** session management :start */
+
+function getOrSetSessionData(name, email) {
+  const retrievedUserDataString = sessionStorage.getItem("coachbots-user-data");
+
+  if (retrievedUserDataString) {
+    const retrievedUserData = JSON.parse(retrievedUserDataString);
+    console.log(retrievedUserData.name);
+    console.log(retrievedUserData.email);
+  } else {
+    console.log("No user data found in SessionStorage. So setting it now.");
+    const userData = {
+      name: name,
+      email: email,
+    };
+
+    const userDataString = JSON.stringify(userData);
+    sessionStorage.setItem("coachbots-user-data", userDataString);
+  }
+}
+
+//************** session management : end */
+
+function getAnonymousEmail() {
+  const user_name = "coachbots_anonyoususer";
+  const user_sid = getOrSetSessionId();
+  const user_email = `${user_name}-${user_sid}@gmail.com`;
+
+  return user_email;
+}
+
+//**************get or create sessionId: start */
+function getOrSetSessionId() {
+  let generatedSessionId = "";
+  const retrievedSessionId = localStorage.getItem("coachbots-session-id");
+  if (retrievedSessionId) {
+    console.log("SessionId found in SessionStorage.");
+    generatedSessionId = retrievedSessionId;
+  } else {
+    console.log("No sessionId found in SessionStorage. So setting it now.");
+    generatedSessionId = generateSessionId();
+    localStorage.setItem("coachbots-session-id", generatedSessionId);
+  }
+  return generatedSessionId;
+}
+
+//**************get or create sessionId: end */
+
+//************* store user data in localstorage : start */
+
+//* generate unique id for user
+function generateSessionId() {
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 10);
+  return `${timestamp}-${randomString}`;
+}
+
+function setUserData(name, email) {
+  const rawUserData = {
+    name: name,
+    email: email,
+  };
+  localStorage.setItem("coachbots-user", JSON.stringify(rawUserData));
+  console.log("data set successfully");
+}
+
+function getUserData() {
+  // Get saved data from localStorage
+  const userData = localStorage.getItem("coachbots-user")
+    ? JSON.parse(localStorage.getItem("coachbots-user"))
+    : "";
+  return userData;
+}
+
+//************* store user data in localstorage : end */
+
+//* handle MCQ type test : start
+async function setMcqVariables() {
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  const responseValue = gShadowRoot.querySelector(
+    'input[name="mcq_option"]:checked'
+  );
+  sessionQuestionId = gShadowRoot
+    .getElementById("question")
+    .getAttribute("value");
+  const question_id = sessionQuestionId.split(":")[0];
+  const test_attempt_session_id = sessionQuestionId.split(":")[1];
+
+  const optionsName = gShadowRoot.querySelectorAll('[name="mcq_option"]');
+
+  const responseText = responseValue.value;
+  const responseOption = responseValue.id;
+
+  console.log("question_id", question_id, "session", test_attempt_session_id);
+  console.log(mcqQustionIndex, globalQuestionLength);
+  mcqQustionIndex++;
+
+  if (mcqQustionIndex != globalQuestionLength) {
+    // updating question
+    console.log("currentquestionidex", mcqQustionIndex);
+    console.log(`Story ${responseOption}`);
+
+    const matchingQuestions = globalQuestionData.results[0].questions.filter(
+      (question) => question.mcq_path === `Story ${responseOption}`
+    );
+
+    const qUid = matchingQuestions.map((question) => question.uid)[0];
+    const mcqOptions = matchingQuestions.map(
+      (question) => question.mcq_options
+    )[0];
+    const optionName = Object.keys(mcqOptions);
+    const questionText = matchingQuestions.map(
+      (question) => question.question
+    )[0];
+
+    const newOption1Name = optionName[0];
+    const newOption2Name = optionName[1];
+    const newOption1Text = mcqOptions[newOption1Name]["opt"];
+    const newOption2Text = mcqOptions[newOption2Name]["opt"];
+
+    console.log("newquestionid", qUid, "session", test_attempt_session_id);
+
+    formRadio = `
+                  <div id='question' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
+                  <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px;flex-wrap: wrap;">
+                    <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                      <input type="radio" id="${newOption1Name}" name="mcq_option" value="${newOption1Text}" style="margin-right: 5px;">
+                      <label for="${newOption1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption1Text}</label>
+                    </div>
+                    <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                      <input type="radio" id="${newOption2Name}" name="mcq_option" value="${newOption2Text}" style="margin-right: 5px;">
+                      <label for="${newOption2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${newOption2Text}</label>
+                    </div>
+                  </div>
+                  <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                `;
+    gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML = formRadio;
+
+    // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseText,
+        response_file: "",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user ? user.email : getAnonymousEmail(),
+          },
+        },
+      }),
+    });
+    const testResponseData = await testResponse.json();
+    console.log(testResponseData);
+  } else {
+    // decisionAnalysisReport
+
+    // let credentialsForm = `
+    // <b>For obtaining your report, please submit the following details.</b>
+    // <div id="input-form" style="width: 100%;display: flex; flex-direction: row">
+    //   <div style="display: flex; flex-direction: column;">
+    //       <label for="name" style="margin: 12px 0 4px 0;">Name  </label>
+    //       <input
+    //       type="text"
+    //       id="input-name"
+    //       style="
+    //           padding: 8px;
+    //           margin-bottom:4px;
+    //           border-radius: 4px;
+    //           border: 1px solid rgb(188, 188, 188);
+    //       "
+    //       />
+    //   </div>
+    //   <div style="display: flex; flex-direction: column; margin-top: 8px">
+    //       <label for="email" style="margin: 4px 0">Email </label>
+    //       <input
+    //       type="email"
+    //       id="input-email"
+    //       style="
+    //       padding: 8px;
+    //       margin-bottom:4px;
+    //       border-radius: 4px;
+    //       border: 1px solid rgb(188, 188, 188);
+    //       "
+    //       />
+    //       <button
+    //       style="
+    //           margin-top: 8px;
+    //           padding: 8px 12px;
+    //           width: fit-content;
+    //           border: 1px solid rgb(188, 188, 188);
+    //           border-radius: 20px;
+    //           color: white;
+    //           background-color: #1984ff;
+    //       "
+    // id="submit-btn"
+    // onclick="submitEmailAndName()"
+    //       >
+    //       Submit
+    //       </button>
+    //   </div>
+    //   </div>`;
+
+    let credentialsForm;
+    if (window.innerWidth > 868) {
+      credentialsForm = `
+    <div style="min-width: 730px;">
+    <b>For obtaining your report, please submit the following details.</b>
+    <div
+      id="input-form"
+      style="
+      display: flex;
+      flex-direction: row;
+      min-width: 100%;
+      gap: 1rem;
+      align-items: center;
+    "
+    >
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="name" style="margin: 12px 0 4px 0">Name</label>
+        <input
+          type="text"
+          id="input-name"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="email" style="margin: 12px 0 4px 0">Email</label>
+        <input
+          id="input-email"
+          type="email"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <button
+        style="
+          height: fit-content;
+          width: fit-content;
+          padding: 8px;
+          margin-bottom: -1.3rem;
+          border: 1px solid rgb(188, 188, 188);
+          border-radius: 20px;
+          color: white;
+          background-color: #1984ff;
+        "
+        id="submit-btn"
+        onclick="submitEmailAndName()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+    `;
+    } else {
+      credentialsForm = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form"
+        style="
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn"
+          onclick="submitEmailAndName()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+      `;
+    }
+
+    if (!window.user) {
+      console.log("user not logged in, so asking for credentials");
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+        credentialsForm;
+    } else {
+      console.log("user logged in, so sending email");
+      gShadowRoot.getElementById(
+        `mcq-option-${mcqFormId}`
+      ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
+    }
+    // // submitting response
+    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        test_attempt_session_id: test_attempt_session_id,
+        question_id: question_id,
+        response_text: responseText,
+        response_file: "",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user ? user.email : getAnonymousEmail(),
+          },
+        },
+      }),
+    });
+
+    const testResponseData = await testResponse.json();
+    console.log("last", testResponseData);
+
+    await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: participantId,
+        report_type: "decisionAnalysisReport",
+        session_id: test_attempt_session_id,
+        interaction_id: globalQuestionData.results[0].uid,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        reportUrl = data.url;
+        globalReportUrl = reportUrl;
+        responsesDone = true;
+        questionIndex = 0;
+        mcqFormId++;
+        // mcqQustionIndex = 0;
+
+        console.log("Report Url mcq : ", responsesDone, globalReportUrl);
+
+        if (window.user) {
+          // append custom message to chat
+          appendMessage(
+            `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+          );
+          //   gShadowRoot.getElementById(
+          //     `mcq-option-${mcqFormId}`
+          //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
+          //   appendMessage(message);
+
+          //* send message to start new session
+          appendMessage(
+            "<b>Please enter another access code to start a new interaction.</b>"
+          );
+          submitEmailAndName();
+        }
+      });
+  }
+}
+
+//* handle MCQ type test : end
+
+let queryParams;
+
+//*********** hit mail sending api */
+
+function sendEmail() {
+  // responsesDone = false;
+  console.log("sending email");
+  const queryParams2 = new URLSearchParams({
+    test_attempt_session_id: sessionId,
+    report_url: globalReportUrl,
+    is_whatsapp: false,
+  });
+
+  fetch(`${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      emailSent = data.status;
+      console.log("email sent");
+    })
+    .catch((err) => console.log(err));
+}
+
+//* submit email and name for report generation : start
 async function submitEmailAndName() {
-    gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  if (!window.user) {
     const inputNameVal = gShadowRoot.getElementById("input-name").value;
     const inputEmailVal = gShadowRoot.getElementById("input-email").value;
 
     inputName = inputNameVal;
     inputEmail = inputEmailVal;
 
-    const queryParams = new URLSearchParams({
-        participant_id: participantId,
-        email: inputEmail,
-        name: inputName,
+    //* store these values in session storage
+    // getOrSetSessionData(inputName, inputEmail);
+
+    queryParams = new URLSearchParams({
+      participant_id: participantId,
+      email: inputEmail,
+      name: inputName,
     });
-    await fetch(
-        `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                "Content-Type": "application/json",
-            },
-        }
-    )
-        .then((response) => response.json())
-        .then((data) => {
-            credsUpdated = data.status;
-
-            // append custom message to chat
-            const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
-            appendMessage(message);
-
-            // const messageNode = createMessageNode(
-            //     `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`
-            // );
-
-            // gShadowRoot.getElementById("messages").appendChild(messageNode);
-            // gShadowRoot.getElementById("messages").scrollBy(0, 100);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    const queryParams2 = new URLSearchParams({
-        test_attempt_session_id: sessionId,
-        report_url: globalReportUrl,
-        is_whatsapp: false,
+  } else {
+    queryParams = new URLSearchParams({
+      participant_id: participantId,
+      email: window.user.email,
+      name: window.user.given_name,
     });
-
-    await fetch(
-        `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                "Content-Type": "application/json",
-            },
-        }
-    )
-        .then((response) => response.json())
-        .then((data) => {
-            emailSent = data.status;
-        })
-        .catch((err) => console.log(err));
-}
-
-const optionDetail = [
+  }
+  await fetch(
+    `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
     {
-        "Integrating a New Team Member": {
-            area: "Building Credibility as the New Team Member",
-            information:
-                "Upon joining the team, the new member conscientiously familiarized themselves with the organization's mission, values, and current projects. They proactively sought opportunities to engage with team members, attending both formal meetings and informal gatherings. Demonstrating a keen understanding of their role, the new member consistently met deadlines and exceeded expectations. Their meticulous approach to tasks and open communication style fostered positive relationships within the team. By actively seeking feedback, the new member showcased a commitment to continuous improvement, solidifying their credibility as a valued team contributor.",
-        },
-    },
-    {
-        "Effective Customer Service Management": {
-            area: "Handling Impatient Customer Interactions",
-            information:
-                "During a product launch, a customer voiced impatience about delayed delivery. Responding promptly, the service representative acknowledged the concern empathetically, providing a detailed explanation of the situation and steps being taken for resolution. They assured the customer of their commitment to resolving the issue promptly, offering a personalized discount for the inconvenience. The representative's proactive communication and solution-oriented approach not only pacified the customer but also reinforced the company's dedication to customer satisfaction, effectively diffusing a potentially tense situation.",
-        },
-    },
-    {
-        "Cultivating Growth Through Feedback": {
-            area: "Personal Growth Through Feedback",
-            information:
-                "Engaged in a continuous cycle of personal development, the individual proactively sought feedback from peers and supervisors. Embracing constructive criticism, they identified areas for improvement and implemented targeted strategies for growth. Their commitment to self-reflection, coupled with a receptive attitude, propelled them to refine their skills effectively. This dedication to harnessing feedback as a catalyst for personal and professional advancement underscored their commitment to ongoing personal growth within the organizational context.",
-        },
-    },
-    {
-        "Cultivating Team Impartiality": {
-            area: "Managing Favoritism and Bias",
-            information:
-                "The team leader, recognizing the importance of impartiality, consistently employed transparent decision-making processes. In project assignments, they carefully considered individual strengths, ensuring a fair distribution of opportunities. Regularly monitoring interactions, the leader actively discouraged favoritism and biased behavior within the team. Recognizing the potential impact on morale, they implemented inclusive practices, fostering an environment where each team member felt valued. By promoting meritocracy and addressing biases head-on, the leader contributed to a harmonious and equitable work atmosphere, reinforcing the team's commitment to professionalism and fairness.",
-        },
-    },
-    {
-        "Managing Meeting Momentum": {
-            area: "Assertively Handling Interruptions",
-            information:
-                "During a crucial team meeting, the project lead faced multiple interruptions from team members eager to share their perspectives. With assertiveness, the project lead implemented a structured approach, acknowledging each interruption, expressing appreciation for input, and then redirecting focus to the agenda. This tactful handling of interruptions not only maintained the meeting's momentum but also ensured that all voices were heard without compromising the meeting's objectives. The project lead's ability to navigate interruptions with poise contributed to a more effective and collaborative team environment.",
-        },
-    },
-];
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("name email updated, sending email");
+      sendEmail();
 
-function generateOptionButtons() {
-    // Get the container element
-    var container = document.getElementById("option-button-container");
+      if (!window.user) {
+        // append custom message to chat
+        const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+        appendMessage(message);
 
-    // Iterate through the data array to create buttons dynamically
-    optionDetail.forEach(function (item) {
-        // Extract information from the dictionary
-        var buttonText = Object.keys(item)[0];
-        var area = item[buttonText]["area"];
-
-        // Create a button element
-        var button = document.createElement("button");
-        button.style.marginTop = "5px";
-        button.textContent = buttonText;
-
-        // Set the onclick attribute to call the handleOptionButtonClick function
-        button.setAttribute(
-            "onclick",
-            "handleOptionButtonClick('" + buttonText + "')"
+        //* send message to start new session
+        appendMessage(
+          "<b>Please enter another access code to start a new interaction.</b>"
         );
+      }
+      const recommDiv =findRelatedItems(recommendationsData,testCode)
+      if (recommDiv){
+        appendMessage(recommDiv)
+      }
 
-        // Append the button to the container
-        container.appendChild(button);
-    });
-}
-
-async function handleOptionButtonClick(labelText, area, information) {
-    console.log("button clicked", labelText, area, information);
-    optedNo = true;
-
-    gShadowRoot = document.getElementById("chat-element").shadowRoot;
-    gShadowRoot.getElementById("text-input").focus();
-    gShadowRoot.getElementById("text-input").textContent = labelText;
-    gShadowRoot.querySelector(".input-button").click();
-
-    const url = new URL(
-        `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
-    );
-    const params = new URLSearchParams();
-    params.set("mode", "A");
-    params.set("area", area);
-    params.set("information", information);
-    params.set(
-        "url",
-        "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
-    );
-    params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
-    url.search = params;
-
-    await fetch(url, {
-        method: "POST",
-        headers: {
-            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-            "Content-Type": "application/json",
-        },
     })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log("Dynamically created Test result", data);
-            const challenges = data;
-            const randomIndex = Math.floor(Math.random() * challenges.length);
-            const randomChallenge = challenges[randomIndex];
+    .catch((err) => {
+      console.log(err);
+    });
 
-            console.log(randomChallenge);
-            testCode = randomChallenge.test_code;
-            codeAvailabilityUserChoice = true;
+  // await sendEmail();
 
-            // gShadowRoot = document.getElementById("chat-element").shadowRoot;
-            // gShadowRoot.getElementById("text-input").focus();
-            // gShadowRoot.getElementById("text-input").textContent = labelText;
-            // gShadowRoot.querySelector(".input-button").click();
-        })
-        .catch((err) => console.log(err));
+  //   const queryParams2 = new URLSearchParams({
+  //     test_attempt_session_id: sessionId,
+  //     report_url: globalReportUrl,
+  //     is_whatsapp: false,
+  //   });
 
-    // const challenges = [
-    //     { title: "Take initiative", test_code: "QBEWUOM" },
-    //     { title: "Mentor others", test_code: "Q2GGMFP" },
-    //     { title: "Learn new skills", test_code: "QWLHI90" },
-    //     { title: "Production Issues", test_code: "Q16EWL2" },
-    //     { title: "Project timeline", test_code: "QLW2EVP" },
-    // ];
-    // const randomIndex = Math.floor(Math.random() * challenges.length);
-    // const randomChallenge = challenges[randomIndex];
-
-    // console.log(randomChallenge);
-    // testCode = randomChallenge.test_code;
-
-    // gShadowRoot = document.getElementById("chat-element").shadowRoot;
-    // gShadowRoot.getElementById("text-input").focus();
-    // gShadowRoot.getElementById("text-input").textContent = labelText;
-    // gShadowRoot.querySelector(".input-button").click();
+  //   await fetch(
+  //     `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   )
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       emailSent = data.status;
+  //     })
+  //     .catch((err) => console.log(err));
 }
+
+//* submit email and name for report generation : end
+
+// handle surprise buton click
+function handleSurpriseMeButtonClick() {
+  challenges = [
+    "QEEG5VY",
+    "QMFMKQ4",
+    "QUPR9AO",
+    "QLDQ2IY",
+    "QKLX4V0",
+    "QULNNNE",
+    "QZ4R9QW",
+    "QJV5AEY",
+    "QEYTB3I",
+    "QYCZJDN",
+    "Q125Z1B",
+    "Q9QW1HF",
+    "QHYRLGN",
+    "QJZWYYB",
+  ];
+  console.log("surprise me! button clicked");
+
+  const randomIndex = Math.floor(Math.random() * challenges.length);
+  const randomChallenge = challenges[randomIndex];
+
+  //   console.log(randomChallenge);
+  //   testCode = randomChallenge.test_code;
+  //   codeAvailabilityUserChoice = true;
+  console.log("random challenge :==>", randomChallenge);
+  testCode = randomChallenge.trim();
+
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  // gShadowRoot.getElementById("surprise-button").disabled = true;
+  // removing button 
+  const msg = gShadowRoot.getElementById('surprise-button')
+  // button.parentNode.removeChild(button)
+  const que_msg = document.createElement("div");
+  que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+  // Replace the button with the "Thank you" message
+  msg.parentNode.replaceChild(que_msg, msg);
+
+  gShadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent =
+      sampleTestCodes[randomChallenge];
+    setTimeout(() => {
+      gShadowRoot.querySelector(".input-button").click();
+    }, 100);
+  }, 100);
+}
+
+//* variables containing no-code flow data
+const optionDetail = {
+  "Integrating a New Team Member": {
+    area: "Building Credibility as the New Team Member",
+    information:
+      "Upon joining the team, the new member conscientiously familiarized themselves with the organization's mission, values, and current projects. They proactively sought opportunities to engage with team members, attending both formal meetings and informal gatherings. Demonstrating a keen understanding of their role, the new member consistently met deadlines and exceeded expectations. Their meticulous approach to tasks and open communication style fostered positive relationships within the team. By actively seeking feedback, the new member showcased a commitment to continuous improvement, solidifying their credibility as a valued team contributor.",
+  },
+
+  "Effective Customer Service Management": {
+    area: "Handling Impatient Customer Interactions",
+    information:
+      "During a product launch, a customer voiced impatience about delayed delivery. Responding promptly, the service representative acknowledged the concern empathetically, providing a detailed explanation of the situation and steps being taken for resolution. They assured the customer of their commitment to resolving the issue promptly, offering a personalized discount for the inconvenience. The representative's proactive communication and solution-oriented approach not only pacified the customer but also reinforced the company's dedication to customer satisfaction, effectively diffusing a potentially tense situation.",
+  },
+
+  "Cultivating Growth Through Feedback": {
+    area: "Personal Growth Through Feedback",
+    information:
+      "Engaged in a continuous cycle of personal development, the individual proactively sought feedback from peers and supervisors. Embracing constructive criticism, they identified areas for improvement and implemented targeted strategies for growth. Their commitment to self-reflection, coupled with a receptive attitude, propelled them to refine their skills effectively. This dedication to harnessing feedback as a catalyst for personal and professional advancement underscored their commitment to ongoing personal growth within the organizational context.",
+  },
+
+  "Cultivating Team Impartiality": {
+    area: "Managing Favoritism and Bias",
+    information:
+      "The team leader, recognizing the importance of impartiality, consistently employed transparent decision-making processes. In project assignments, they carefully considered individual strengths, ensuring a fair distribution of opportunities. Regularly monitoring interactions, the leader actively discouraged favoritism and biased behavior within the team. Recognizing the potential impact on morale, they implemented inclusive practices, fostering an environment where each team member felt valued. By promoting meritocracy and addressing biases head-on, the leader contributed to a harmonious and equitable work atmosphere, reinforcing the team's commitment to professionalism and fairness.",
+  },
+
+  "Managing Meeting Momentum": {
+    area: "Assertively Handling Interruptions",
+    information:
+      "During a crucial team meeting, the project lead faced multiple interruptions from team members eager to share their perspectives. With assertiveness, the project lead implemented a structured approach, acknowledging each interruption, expressing appreciation for input, and then redirecting focus to the agenda. This tactful handling of interruptions not only maintained the meeting's momentum but also ensured that all voices were heard without compromising the meeting's objectives. The project lead's ability to navigate interruptions with poise contributed to a more effective and collaborative team environment.",
+  },
+};
+
+//* function to generate buttons for no-code flow
+function generateOptionButtons() {
+  // Get the container element
+  var container = document.getElementById("option-button-container");
+
+  // Iterate through the data array to create buttons dynamically
+  optionDetail.forEach(function (item) {
+    // Extract information from the dictionary
+    var buttonText = Object.keys(item)[0];
+    var area = item[buttonText]["area"];
+
+    // Create a button element
+    var button = document.createElement("button");
+    button.style.marginTop = "5px";
+    button.textContent = buttonText;
+
+    // Set the onclick attribute to call the handleOptionButtonClick function
+    button.setAttribute(
+      "onclick",
+      "handleOptionButtonClick('" + buttonText + "')"
+    );
+
+    // Append the button to the container
+    container.appendChild(button);
+  });
+}
+
+
+    // to reset all variables
+    const resetAllVariables = () => {
+      //* reset all variables : start
+      questionText = "";
+      reportType = "interactionSessionReport";
+      questionIndex = 0;
+      questionId = null;
+      userResponse = "";
+
+      testId = null;
+      resQuestionNumber = null;
+      questionLength = null;
+      questionData = null;
+      documentId = null;
+      userAudioResponse = "";
+
+      is_free = true;
+      responseProcessedQuestion = 0;
+      senarioDescription = "";
+      senarioTitle = "";
+      senarioMediaDescription;
+      responsesDone = false;
+      userName = "";
+      userEmail = "";
+      reportUrl = null;
+      testCodeList = [];
+      isRepeatStatus = false;
+      testPrevilage = "";
+
+      //global variables
+      sessionId = "";
+      testCode = null;
+      optedNo = false;
+      globalReportUrl = null;
+
+      //* reset all variables : end
+      codeAvailabilityUserChoice = true;
+      mcqQustionIndex = 0;
+      mcqFormId;
+      globalQuestionData;
+      globalQuestionLength;
+      testType='';
+      isHindi = false;
+      TestUIInfo;
+      isProceed = '';
+      isSessionActive = false;
+      isEmailType = false;
+      recommendations="";
+    };
+
+    function findRelatedItems(data, targetCode) {
+      let matchingItems = [];
+      let targetTitle = '';
+  
+      for (const sublist of data) {
+          for (const item of sublist) {
+              if (item.code === targetCode) {
+                  targetTitle = item.title;
+              }else{
+              matchingItems.push(item);
+              }
+          }
+  
+          if (matchingItems.length > 0 && targetTitle) {
+              break;
+          } else {
+              matchingItems = [];
+          }
+      }
+      console.log('mat',matchingItems,targetTitle,targetCode,data)
+      let resultDiv = "<b>System Recommendation: If you like this scenario you can try:<b> <br>"
+      matchingItems.forEach((item)=>{
+        resultDiv += `<strong>Title:</strong> ${item.title}<br> <strong>Code:</strong> ${item.code} <br>`;
+      })
+  
+      return matchingItems.length > 0 && targetTitle ? `<div>${resultDiv}</div>` : null;
+  }
+
+const handleProceedClick = (choice) => {
+  if (choice == "Yes") {
+    isProceed = "true";
+    const gshadowRoot = document.getElementById("chat-element").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait.."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    appendMessage(initialQuestionText);
+  } else {
+    resetAllVariables();
+    const gshadowRoot = document.getElementById("chat-element").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    appendMessage("<b>Your session is terminated. You can restart again!</b>");
+  }
+};
+//* Function to handle button click for no-code flow : start
+async function handleOptionButtonClick(labelText, area, information) {
+  console.log("button clicked", labelText, area, information);
+  optedNo = true;
+
+  gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  gShadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent = labelText;
+    setTimeout(() => {
+      gShadowRoot.querySelector(".input-button").click();
+    }, 100);
+  }, 100);
+
+  const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
+  const params = new URLSearchParams();
+  params.set("mode", "A");
+  params.set("area", area);
+  params.set(
+    "information",
+    JSON.stringify({ data: optionDetail[labelText], title: labelText })
+  );
+  params.set(
+    "url",
+    "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
+  );
+  params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
+  url.search = params;
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamically created Test result", data);
+      const challenges = data;
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      const randomChallenge = challenges[randomIndex];
+
+      console.log(randomChallenge);
+      testCode = randomChallenge.test_code;
+      codeAvailabilityUserChoice = true;
+    })
+    .catch((err) => console.log(err));
+}
+
+//* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
-    try {
-        const { DeepChat } = await import(
-            // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
-            "https://storage.googleapis.com/aadil-devops-practice/deepchat-bundle.js"
-        );
-    } catch (error) {
-        console.error("Error loading external module:", error);
-    }
+  try {
+    const { DeepChat } = await import(
+      // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
+      "https://storage.googleapis.com/aadil-devops-practice/deepchat-bundle.js"
+    );
+  } catch (error) {
+    console.error("Error loading external module:", error);
+  }
 }
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-    let deepChatPocElement =
-        document.getElementsByClassName("deep-chat-poc")?.[0];
-    deepChatPocElement.innerHTML = `
+  deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
+  deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
     <button
       type="button"
@@ -276,7 +1031,7 @@ loadExternalModule().then(() => {
         width: 4.5rem;
         background-color: white;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        border-radius: 50%;
+        border-radius: 40%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -293,8 +1048,8 @@ loadExternalModule().then(() => {
     >
       <img
         class="chat-icon"
-        style="height: 100%; width: 100%; border-radius:50%;"
-        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
+        style="height: 100%; width: 100%; border-radius:40%;"
+        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
         alt="chat-bot-image"
       />
     </button>
@@ -307,7 +1062,7 @@ loadExternalModule().then(() => {
       position: fixed;
       scale: 0;
       bottom: 6rem;
-      width: 400px;
+      width: 80vw;
       right: 6rem;
       transition: 0.4s ease-in-out;
       transform-origin: 100% 100%;
@@ -316,6 +1071,7 @@ loadExternalModule().then(() => {
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
+      hiegth: 80vh;
     "
   >
     <div 
@@ -343,7 +1099,16 @@ loadExternalModule().then(() => {
     ">
       C
     </h1>
-    <h3 style="
+    <img id="close-top" 
+      onmouseover="this.style.cursor ='pointer'"
+      onclick="closeFromTop()"
+      src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
+      style="
+      width : 50px;
+      position: absolute;
+      left : 1rem;
+    "/>
+    <h3 id="chatbot-heading" style="
       font-size: 16px;
       font-weight: 500;
       line-height: 16px;
@@ -352,12 +1117,15 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat 
       id="chat-element"
-      style="height:450px; width: 400px; border:none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 73vh; border: none;"
       microphone='true'
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px" }}
         }
+      }'
+      textInput='{
+        "placeholder": {"text": "Welcome, Please follow provided instructions."}
       }'
       demo="true"
       style="border: none"
@@ -366,779 +1134,1834 @@ loadExternalModule().then(() => {
     </deep-chat>
   </div>
   `;
-    const chatContainer = document.getElementById("chat-container");
-    const chatElementRef = document.getElementById("chat-element");
-    const chatIcon = document.getElementById("chat-icon");
+  const chatContainer = document.getElementById("chat-container");
+  const chatElementRef = document.getElementById("chat-element");
+  const chatIcon = document.getElementById("chat-icon");
+  const chatbotHeading = document.getElementById("chatbot-heading");
+  const closeFromTopp = document.getElementById("close-top");
 
-    //responsive styles for phones
-    if (window.innerWidth < 600) {
-        chatContainer.style.width = "80vw";
-        chatContainer.style.right = "3rem";
-        chatContainer.style.height = "60vh";
-        chatElementRef.style.height = "52vh";
-        chatElementRef.style.width = "80vw";
-        chatIcon.style.width = "3rem";
-        chatIcon.style.height = "3rem";
-        chatIcon.style.position = "fixed";
-        chatContainer.style.position = "fixed";
-    }
+  //responsive styles for phones
+  if (window.innerWidth < 600) {
+    chatContainer.style.width = "80vw";
+    chatContainer.style.right = "3rem";
+    chatContainer.style.height = "70vh";
+    chatElementRef.style.height = "500px";
+    chatElementRef.style.width = "80vw";
+    chatContainer.style.position = "fixed";
+    chatIcon.style.width = "3rem";
+    chatIcon.style.height = "3rem";
+    chatIcon.style.position = "fixed";
+    chatbotHeading.style.fontSize = "12px";
+    closeFromTopp.style.width = "30px";
+    closeFromTopp.style.left = "0.3rem";
+    closeFromTopp.style.top = "0.2rem";
+  }
 
-    let question = [];
-    let questionIndex = 0;
-    let questionId;
-    let userResponse;
-    let reportUrl = "";
-    let testId;
-    let resQuestionNumber;
-    let questionLength;
-    let questionData;
-    let documentId;
-    let userAudioResponse;
-    let is_free;
-    let responseProcessedQuestion = 0;
-    let senarioDescription;
-    let senarioTitle;
-    let responsesDone = false;
-    let userName = "";
-    let userEmail = "";
-    let credsUpdated;
-
-    const credentialsForm = `<div id="input-form">
-  <div style="display: flex; flex-direction: column">
-      <label for="name" style="margin: 4px 0">Name  </label>
-      <input  
-      type="text"
-      id="input-name"
+  let credentialsForm;
+  if (window.innerWidth > 868) {
+    credentialsForm = `
+    <div style="min-width: 730px;">
+    <b>For obtaining your report, please submit the following details.</b>
+    <div
+      id="input-form"
       style="
-          padding: 8px;
-          margin-bottom:4px;
-          border-radius: 4px;
-          border: 1px solid rgb(188, 188, 188);
-      "
-      />
-  </div>
-  <div style="display: flex; flex-direction: column; margin-top: 8px">
-      <label for="email" style="margin: 4px 0">Email </label>
-      <input
-      type="email"
-      id="input-email"
-      style="
-      padding: 8px;
-      margin-bottom:4px;
-      border-radius: 4px;
-      border: 1px solid rgb(188, 188, 188);
-      "
-      />
+      display: flex;
+      flex-direction: row;
+      min-width: 100%;
+      gap: 1rem;
+      align-items: center;
+    "
+    >
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="name" style="margin: 12px 0 4px 0">Name</label>
+        <input
+          type="text"
+          id="input-name"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="email" style="margin: 12px 0 4px 0">Email</label>
+        <input
+          id="input-email"
+          type="email"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
       <button
-      style="
-          margin-top: 8px;
-          padding: 8px 12px;
+        style="
+          height: fit-content;
           width: fit-content;
+          padding: 8px;
+          margin-bottom: -1.3rem;
           border: 1px solid rgb(188, 188, 188);
           border-radius: 20px;
           color: white;
           background-color: #1984ff;
-      "
-      id="submit-btn"
-      onclick="submitEmailAndName()"
+        "
+        id="submit-btn"
+        onclick="submitEmailAndName()"
       >
-      Submit
+        Submit
       </button>
+    </div>
   </div>
-  </div>`;
+    `;
+  } else {
+    credentialsForm = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form"
+        style="
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn"
+          onclick="submitEmailAndName()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+      `;
+  }
 
-    chatElementRef.initialMessages = [
-        {
-            html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+  chatElementRef.initialMessages = [
+    {
+      html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
       </p>`,
-            role: "ai",
-        },
-        {
-            html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+      role: "ai",
+    },
+    {
+      html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
         <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-            role: "user",
+      role: "user",
+    },
+  ];
+
+  chatElementRef.htmlClassUtilities = {
+    ["deep-chat-temporary-message"]: {
+      styles: {
+        default: {},
+      },
+    },
+    ["button"]: {
+      styles: {
+        default: {
+          backgroundColor: "transparent",
         },
-    ];
-
-    chatElementRef.htmlClassUtilities = {
-        ["deep-chat-temporary-message"]: {
-            styles: {
-                default: {},
-            },
+        hover: {
+          backgroundColor: "white",
         },
-        ["button"]: {
-            styles: {
-                default: {
-                    backgroundColor: "transparent",
-                },
-                hover: {
-                    backgroundColor: "white",
-                },
-            },
+      },
+    },
+  };
+
+  // set email and name
+  //   const setNameEmail = async (inputEmail, inputName) => {
+  //     const queryParams = new URLSearchParams({
+  //       participant_id: participantId,
+  //       email: inputEmail,
+  //       name: inputName,
+  //     });
+  //     await fetch(
+  //       `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         credsUpdated = data.status;
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   };
+
+  //   // send email
+  //   const sendEmail = async () => {
+  //     const queryParams2 = new URLSearchParams({
+  //       test_attempt_session_id: sessionId,
+  //       report_url: reportUrl,
+  //       is_whatsapp: false,
+  //     });
+
+  //     await fetch(
+  //       `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     )
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         emailSent = data.status;
+  //       })
+  //       .catch((err) => console.log(err));
+  //   };
+
+  // to check word limit
+  function isValidMessage(text) {
+    const words = text.split(" ");
+    if (words.length < 15) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  // to cancel all active test for a user
+  const cancelTest = async (user_id) => {
+    const url = `${baseURL}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
+
+    try {
+      if (user_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+
+        const responseJson = await response.json();
+        console.log(responseJson);
+      }
+    } catch (error) {
+      console.error(`Error in cancelTest: ${error}`);
+    }
+  };
+
+  // get session status
+  const getSessionStatus = async (session_id) => {
+    const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
+
+    try {
+      if (session_id) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+
+        const responseJson = await response.json();
+        console.log(responseJson);
+
+        sessionStatus = responseJson["status"];
+        isSessionExpired = responseJson["is_expired"];
+        console.log(sessionStatus);
+      } else {
+        sessionStatus = "inactive";
+        isSessionExpired = false;
+      }
+    } catch (error) {
+      console.error(`Error in getSessionStatus: ${error}`);
+    }
+  };
+
+  // apis for restriction to attempt test like test previllage
+  const getAttemptedTestList = async (userId) => {
+    const url = `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
         },
-    };
+      });
 
-    // set email and name
-    const setNameEmail = async (inputEmail, inputName) => {
-        const queryParams = new URLSearchParams({
-            participant_id: participantId,
-            email: inputEmail,
-            name: inputName,
-        });
-        await fetch(
-            `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        )
-            .then((response) => response.json())
-            .then((data) => {
-                credsUpdated = data.status;
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
+      const responseJson = await response.json();
+      console.log(responseJson);
 
-    // send email
-    const sendEmail = async () => {
-        const queryParams2 = new URLSearchParams({
-            test_attempt_session_id: sessionId,
-            report_url: reportUrl,
-            is_whatsapp: false,
-        });
+      testCodeList = responseJson["data"]["codes"];
+      console.log(testCodeList);
+    } catch (error) {
+      console.error(`Error in getAttemptedTestList: ${error}`);
+    }
+  };
 
-        await fetch(
-            `${baseURL}/test-attempt-sessions/send-report-email/?${queryParams2}`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        )
-            .then((response) => response.json())
-            .then((data) => {
-                emailSent = data.status;
-            })
-            .catch((err) => console.log(err));
-    };
+  const getIsRepeatStatus = async (participantId) => {
+    const url = `${baseURL}/accounts/get_is_repeat_status/?participant_id=${participantId}`;
 
-    const testResponseHandler = async (formdata, questionObj) => {
-        const shadowRoot = document.getElementById("chat-element").shadowRoot;
-        const players = shadowRoot.querySelectorAll(".audio-player");
-        const targetPlayer = players[players.length - 1];
-        targetPlayer.src = audioFileSrc;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
 
-        const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-            },
-            body: formdata,
-        });
+      isRepeatStatus = await response.json();
+      console.log(isRepeatStatus);
+    } catch (error) {
+      console.error(`Error in getIsRepeatStatus: ${error}`);
+    }
+  };
 
-        const uploadDocData = await uploadDocResponse.json();
-        documentId = uploadDocData.uid;
+  const getTestPrevilage = async (participantId) => {
+    const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
 
-        const docUrlResponse = await fetch(
-            `${baseURL}/documents/${documentId}/url/`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                },
-            }
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      testPrevilage = await response.json();
+      console.log(testPrevilage);
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+
+  const getTestCodesByRule = async (rule) => {
+    const url = `${baseURL}/accounts/get-test-codes-for-web/`;
+
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      try {
+        if (rule === "my_lib") {
+          return resp_json["data"][rule];
+        } else {
+          return resp_json["data"][rule].split(",");
+        }
+      } catch (error) {
+        return [];
+      }
+    } catch (error) {
+      console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+
+  const testResponseHandler = async (formdata, questionObj) => {
+    const shadowRoot = document.getElementById("chat-element").shadowRoot;
+    const players = shadowRoot.querySelectorAll(".audio-player");
+    const targetPlayer = players[players.length - 1];
+    targetPlayer.src = audioFileSrc;
+    // if audio response in orch
+    if (
+      testType === "orchestrated_conversation" ||
+      interactionMode === "text"
+    ) {
+      formdata["transcribe_file"] = true;
+    }
+
+    // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+    //   },
+    //   body: formdata,
+    // });
+
+    function uploadDoc(formdata) {
+      const basicAuthToken = createBasicAuthToken(key, secret);
+      return fetch(`${baseURL}/documents/upload/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${basicAuthToken}`,
+        },
+        body: formdata,
+      });
+    }
+
+    let uploadDocResponse = await uploadDoc(formdata);
+
+    console.log("Jiks : ", uploadDocResponse);
+
+    let documentUploadFailsCount = 0;
+
+    while (uploadDocResponse.status !== 201) {
+      console.log("error in uploading audio");
+      documentUploadFailsCount += 1;
+      if (documentUploadFailsCount > 1) {
+        console.log("document upload failed more than 1 times");
+        await cancelTest(participantId); // cancelling session
+        resetAllVariables(); //reseting variables
+        if (isProceed === "false") {
+          const gshadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+          const msg = gshadowRoot.getElementById("proceed-option");
+          // button.parentNode.removeChild(button)
+          const que_msg = document.createElement("div");
+          que_msg.innerHTML = "Thank You"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          msg.parentNode.replaceChild(que_msg, msg);
+        }
+        appendMessage(
+          "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
         );
+        maxUploadFailed = true;
+        break;
+      }
+      uploadDocResponse = await uploadDoc(formdata);
+    }
 
-        const docUrlData = await docUrlResponse.json();
-        userAudioResponse = docUrlData.url;
+    if (documentUploadFailsCount > 1) {
+      return;
+    }
 
-        const testResponse = await fetch(`${baseURL}/test-responses/`, {
-            method: "POST",
-            headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                "Content-Type": "application/json",
+    const uploadDocData = await uploadDocResponse.json();
+    documentId = uploadDocData.uid;
+
+    const docUrlResponse = await fetch(
+      `${baseURL}/documents/${documentId}/url/`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      }
+    );
+
+    const docUrlData = await docUrlResponse.json();
+    userAudioResponse = docUrlData.url;
+
+    if (
+      testType === "orchestrated_conversation" ||
+      interactionMode === "text"
+    ) {
+      // handling audio response in orch
+      const usertext = uploadDocData["transcript_details"]["text"];
+      console.log(usertext);
+
+      const testResponse = await fetch(`${baseURL}/test-responses/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          test_attempt_session_id: sessionId,
+          question_id: questionObj.uid,
+          response_text: usertext,
+          response_file: "",
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              username: "web_user",
+              email: user ? user.email : getAnonymousEmail(),
             },
-            body: JSON.stringify({
-                test_attempt_session_id: sessionId,
-                question_id: questionObj.uid,
-                response_text: "",
-                response_file: userAudioResponse,
-                user_attributes: {
-                    tag: "deepchat_profile",
-                    attributes: {
-                        username: "web_user_" + ipAddress,
-                        email: "test@test.com",
-                    },
-                },
-            }),
+          },
+        }),
+      });
+      const testResponseData = await testResponse.json();
+      resQuestionNumber = testResponseData.question.question_number;
+    } else {
+      const testResponse = await fetch(`${baseURL}/test-responses/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          test_attempt_session_id: sessionId,
+          question_id: questionObj.uid,
+          response_text: "",
+          response_file: userAudioResponse,
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              username: "web_user",
+              email: user ? user.email : getAnonymousEmail(),
+            },
+          },
+        }),
+      });
+      const testResponseData = await testResponse.json();
+      console.log(testResponseData);
+      resQuestionNumber = testResponseData.question.question_number;
+    }
+
+    // for generating question for dynamic and group meeting test type
+    if (questionIndex < questionLength) {
+      if (
+        testType === "dynamic_discussion_thread" ||
+        testType === "orchestrated_conversation"
+      ) {
+        questionIndex += 1;
+        responseProcessedQuestion++;
+        console.log(questionIndex);
+        const response_text = await fetch(`${baseURL}/test-responses/`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            test_attempt_session_id: sessionId,
+            question_id:
+              questionData.results[0].questions[questionIndex - 2].uid,
+            response_text: "",
+            response_file: "",
+            user_attributes: {
+              tag: "deepchat_profile",
+              attributes: {
+                username: "web_user",
+                email: user ? user.email : getAnonymousEmail(),
+              },
+            },
+          }),
         });
 
-        const testResponseData = await testResponse.json();
-        resQuestionNumber = testResponseData.question.question_number;
+        const testResponseText = await response_text.json();
+        questionText = testResponseText.response_text;
 
-        return resQuestionNumber;
-    };
+        // checking if botname is present or not
+        const responder_name = testResponseText.responder_display_name;
+        if (!questionText.includes(responder_name)) {
+          questionText = responder_name + " : " + questionText;
+        }
 
-    chatElementRef.request = {
-        handler: async (body, signals) => {
-            try {
-                if (body instanceof FormData) {
-                    //AUDIO RESPONSES
-                    // let file = body.get("files");
-                    let file = audioFile;
+        console.log(testResponseText);
+        console.log(questionText);
+      }
+    }
 
-                    if (file.name.length === 0 || file.size === "") {
-                        signals.onResponse({
-                            html: "<p style='font-size: 14px;color: #991b1b;'>Your audio could not be processed. Please submit again.</p>",
-                        });
-                        return;
-                    }
+    return resQuestionNumber;
+  };
 
-                    const formdata = new FormData();
-                    formdata.append("owner_type", "user");
-                    formdata.append("owner_id", userId);
-                    formdata.append("display_name", file.name);
-                    formdata.append("doc_type", "AUDIO_ANSWER");
-                    formdata.append("file", file, file.name);
-                    formdata.append("actions_pipeline[0]action", "transcribe");
-                    formdata.append("actions_pipeline[0]context", "null");
+  chatElementRef.request = {
+    handler: async (body, signals) => {
+      try {
+        if (body instanceof FormData) {
+          //AUDIO RESPONSES
 
-                    if (questionIndex < questionLength) {
-                        question.push(
-                            questionData.results[0].questions[questionIndex]
-                                .question
-                        );
+          // to check session active or not
+          if (testType === "mcq") {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
+          if (isProceed === "false") {
+            console.log(isProceed);
 
-                        signals.onResponse({
-                            text: question[questionIndex],
-                        });
-                    }
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
 
-                    if (questionIndex === questionLength) {
-                        const shadowRoot =
-                            document.getElementById("chat-element").shadowRoot;
-                        const messageNode = document.createElement("div");
-                        messageNode.classList.add("inner-message-container");
-                        const messageBubble = document.createElement("div");
-                        messageBubble.classList.add(
-                            "message-bubble",
-                            "ai-message-text"
-                        );
-                        messageBubble.style.maxWidth = "80%";
-                        messageBubble.style.marginTop = "4px";
-                        const messageText = document.createElement("p");
-                        messageText.innerHTML = `That's it! Thank you for participating in the  interaction. Hang tight for next steps`;
-                        messageBubble.appendChild(messageText);
-                        messageNode.appendChild(messageBubble);
-                        shadowRoot
-                            .getElementById("messages")
-                            .appendChild(messageNode);
-                        shadowRoot.getElementById("messages").scrollBy(0, 100);
-                    }
+          await getSessionStatus(sessionId);
 
-                    file = "";
-                    if (questionIndex <= questionLength) {
-                        questionIndex++;
+          if (sessionStatus != "in_progress") {
+            signals.onResponse({
+              html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+            });
+            return;
+          } else if (sessionStatus === "in_progress" && isSessionExpired) {
+            // checking sessionexpiry
+            await cancelTest(participantId);
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
+            });
+            return;
+          }
 
-                        try {
-                            questionId =
-                                questionData.results[0].questions[
-                                    questionIndex - 2
-                                ].uid;
+          if (isEmailType) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Text response allowed for this interaction.</b></p>",
+            });
+            return;
+          }
 
-                            const questionObj =
-                                questionData.results[0].questions[
-                                    questionIndex - 2
-                                ];
+          let file = audioFile;
 
-                            // const resQuestionNumber =
-                            await testResponseHandler(formdata, questionObj);
+          if (file.name.length === 0 || file.size === "") {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
+            });
+            return;
+          }
 
-                            responseProcessedQuestion++;
-                            responsesDone =
-                                responseProcessedQuestion === questionLength;
+          if (file.size < 175000) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
+            });
+            return;
+          }
 
-                            signals.onResponse({
-                                text: "Thank you for participating. For obtaining your report, please submit the following details.",
-                                html: credentialsForm,
-                            });
+          const formdata = new FormData();
+          formdata.append("owner_type", "user");
+          formdata.append("owner_id", userId);
+          formdata.append("display_name", file.name);
+          formdata.append("doc_type", "AUDIO_ANSWER");
+          formdata.append("file", file, file.name);
+          formdata.append("actions_pipeline[0]action", "transcribe");
+          formdata.append("actions_pipeline[0]context", "null");
 
-                            if (responseProcessedQuestion === questionLength) {
-                                await fetch(
-                                    `${baseURL}/frontend-auth/get-report-url/`,
-                                    {
-                                        method: "POST",
-                                        headers: {
-                                            Authorization: `Basic ${createBasicAuthToken(
-                                                key,
-                                                secret
-                                            )}`,
-                                            "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify({
-                                            user_id: participantId,
-                                            report_type: is_free
-                                                ? "summaryFeedbackReport"
-                                                : "interactionSessionReport",
-                                            session_id: sessionId,
-                                            interaction_id: testId,
-                                        }),
-                                    }
-                                )
-                                    .then((response) => response.json())
-                                    .then((data) => {
-                                        reportUrl = data.url;
-                                        globalReportUrl = reportUrl;
-                                    });
-                            }
-                        } catch (error) {
-                            console.log(error);
-                            if (error) {
-                                signals.onResponse({
-                                    text: "<p style='font-size: 14px;color: #991b1b;'>There might be some error from our end. Please wait and try again later.</p>",
-                                });
-                            }
-                        }
-                    }
-                } else {
-                    // TEXT RESPONSES
-                    const userAcessAvailability = body.messages[0].text;
-                    if (userAcessAvailability === "Yes") {
-                        signals.onResponse({
-                            text: "Please enter the access code to get started.",
-                        });
-                    } else if (userAcessAvailability === "No") {
-                        optedNo = true;
-                        signals.onResponse({
-                            text: "No problem , here are a few samples you can try out (Experimental):",
-                            html: `
-                            <div id="option-button-container" >
-                            <button style="margin-top:5px" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
-                    
-                    
-                            <button style="margin-top:5px" onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
-                    
-                    
-                            <button style="margin-top:5px" onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
-                    
-                    
-                            <button style="margin-top:5px" onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
-                    
-                    
-                            <button style="margin-top:5px" onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-                        </div>
-                                    `,
-                        });
-                        return;
-                    }
+          if (questionIndex < questionLength) {
+            if (
+              testType != "dynamic_discussion_thread" &&
+              testType != "orchestrated_conversation"
+            ) {
+              questionText =
+                questionData.results[0].questions[questionIndex].question;
+              if (isHindi) {
+                questionText = TestUIInfo[`Question ${questionIndex + 1}`];
+              }
 
-                    if (
-                        body.messages[0].text === "STOP" ||
-                        body.messages[0].text === "stop"
-                    ) {
-                        signals.onResponse({
-                            text: "Your session is terminated. The page will refresh. And then you can restart again!",
-                        });
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
-                        return;
-                    }
+              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+              const is_link = linkPattern.test(questionText);
 
-                    let isTestcodeValid = true;
-                    // const validTestCodes = [
-                    //     "QU7G2X3",
-                    //     "QPN48NO",
-                    //     "QLW2EVP",
-                    //     "Q16EWL2",
-                    //     "QWLHI90",
-                    //     "Q2GGMFP",
-                    //     "QJ3RTFF",
-                    //     "QBEWUOM",
-                    // ];
-                    if (
-                        questionIndex === 0 &&
-                        userAcessAvailability.length !== 0
-                    ) {
-                        if (optedNo === false) {
-                            testCode = body.messages[0].text;
-                        } else {
-                            appendMessage(
-                                "Please wait while we are processing ..."
-                            );
-                            //wait while test code is being processed
-                            while (!codeAvailabilityUserChoice) {
-                                await new Promise((resolve) =>
-                                    setTimeout(resolve, 500)
-                                );
-                            }
-                        }
+              if (is_link) {
+                console.log(questionText);
+                let embeddingUrl = "";
+                if (questionText.length > 0) {
+                  if (questionText.includes("youtube.com")) {
+                    const videoId = questionText.split("v=")[1];
+                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                  } else if (questionText.includes("vimeo.com")) {
+                    const videoId = questionText.split("/").pop();
+                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                  } else if (questionText.includes("twitter.com")) {
+                    embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                  }
+                  // signals.onResponse({
+                  //   html:`▪ ${questionText} .<br><br>
+                  //   ▪ Media <br>  <iframe
+                  //                    allow="autoplay; encrypted-media; fullscreen;"
+                  //                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
+                  //                    src=${embeddingUrl}
+                  //                    frameborder="0"
+                  //                    allowfullscreen
+                  //                  >
+                  //  ` ,
+                  // });
 
-                        codeAvailabilityUserChoice = true;
-
-                        // isTestcodeValid = validTestCodes.find(
-                        //     (code) => code === testCode
-                        // );
-                    }
-
-                    if (questionIndex > 0 && !responsesDone) {
-                        userResponse = body.messages[0].text;
-                    }
-
-                    if (
-                        !responsesDone &&
-                        userName.length === 0 &&
-                        userEmail.length === 0 &&
-                        codeAvailabilityUserChoice
-                    ) {
-                        try {
-                            console.log("Test Code ==========>", testCode);
-                            const response = await fetch(
-                                `${baseURL}/tests/?test_code=${testCode}`,
-                                {
-                                    method: "GET",
-                                    headers: {
-                                        Authorization: `Basic ${createBasicAuthToken(
-                                            key,
-                                            secret
-                                        )}`,
-                                    },
-                                }
-                            );
-
-                            questionData = await response.json();
-                            console.log(
-                                "Question Data ==========>",
-                                questionData
-                            );
-                            if (questionData.results.length === 0) {
-                                isTestcodeValid = false;
-                                signals.onResponse({
-                                    html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
-                                });
-                            }
-                            questionLength =
-                                questionData.results[0].questions.length;
-                            testId = questionData.results[0].uid;
-                            interactionMode =
-                                questionData.results[0].interaction_mode;
-                            is_free = questionData.results[0].is_free;
-                            senarioDescription =
-                                questionData.results[0].description;
-                            senarioTitle = questionData.results[0].title;
-
-                            if (questionIndex === 0) {
-                                try {
-                                    const response = await fetch(
-                                        `${baseURL}/test-attempt-sessions/`,
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                Authorization: `Basic ${createBasicAuthToken(
-                                                    key,
-                                                    secret
-                                                )}`,
-                                                "Content-Type":
-                                                    "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                participant_id: participantId,
-                                                ordering: "-id",
-                                                test_id: testId,
-                                            }),
-                                        }
-                                    );
-
-                                    const data = await response.json();
-                                    sessionId = data.uid;
-                                } catch (err) {
-                                    console.log(err);
-                                }
-                            }
-
-                            if (questionIndex <= questionLength) {
-                                if (questionIndex < questionLength) {
-                                    question.push(
-                                        questionData.results[0].questions[
-                                            questionIndex
-                                        ].question
-                                    );
-
-                                    if (questionIndex === 0) {
-                                        signals.onResponse({
-                                            html: question[questionIndex],
-                                            text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                                        });
-                                    } else {
-                                        signals.onResponse({
-                                            text: question[questionIndex],
-                                        });
-                                    }
-                                }
-                                console.log(questionIndex === questionLength);
-                                if (
-                                    questionIndex === questionLength &&
-                                    userResponse.length > 0
-                                ) {
-                                    const shadowRoot =
-                                        document.getElementById(
-                                            "chat-element"
-                                        ).shadowRoot;
-                                    const messageNode =
-                                        document.createElement("div");
-                                    messageNode.classList.add(
-                                        "inner-message-container"
-                                    );
-                                    const messageBubble =
-                                        document.createElement("div");
-                                    messageBubble.classList.add(
-                                        "message-bubble",
-                                        "ai-message-text"
-                                    );
-                                    messageBubble.style.maxWidth = "80%";
-                                    messageBubble.style.marginTop = "4px";
-                                    const messageText =
-                                        document.createElement("p");
-                                    messageText.innerHTML = `That's it! Thank you for participating in the  interaction. Hang tight for next steps`;
-                                    messageBubble.appendChild(messageText);
-                                    messageNode.appendChild(messageBubble);
-                                    shadowRoot
-                                        .getElementById("messages")
-                                        .appendChild(messageNode);
-                                    shadowRoot
-                                        .getElementById("messages")
-                                        .scrollBy(0, 100);
-                                }
-
-                                if (questionIndex > 0) {
-                                    questionId =
-                                        questionData.results[0].questions[
-                                            questionIndex - 1
-                                        ].uid;
-
-                                    questionIndex++;
-
-                                    const response = await fetch(
-                                        `${baseURL}/test-responses/`,
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                Authorization: `Basic ${createBasicAuthToken(
-                                                    key,
-                                                    secret
-                                                )}`,
-                                                "Content-Type":
-                                                    "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                test_attempt_session_id:
-                                                    sessionId,
-                                                question_id: questionId,
-                                                response_text: userResponse,
-                                                response_file: "",
-                                                user_attributes: {
-                                                    tag: "deepchat_profile",
-                                                    attributes: {
-                                                        username: "falah",
-                                                        email: "test@test.com",
-                                                    },
-                                                },
-                                            }),
-                                        }
-                                    );
-                                    const responseData = await response.json();
-                                    resQuestionNumber =
-                                        responseData.question.question_number;
-                                }
-
-                                userResponse = "";
-
-                                if (questionIndex === 0) {
-                                    questionIndex++;
-                                }
-
-                                if (resQuestionNumber === questionLength) {
-                                    responsesDone = true;
-
-                                    signals.onResponse({
-                                        text: "For obtaining your report, please submit the following details.",
-                                        html: credentialsForm,
-                                    });
-
-                                    const reportResponse = await fetch(
-                                        `${baseURL}/frontend-auth/get-report-url/`,
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                Authorization: `Basic ${createBasicAuthToken(
-                                                    key,
-                                                    secret
-                                                )}`,
-                                                "Content-Type":
-                                                    "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                user_id: participantId, //need to change this
-                                                report_type:
-                                                    "interactionSessionReport",
-                                                session_id: sessionId,
-                                                interaction_id: testId,
-                                            }),
-                                        }
-                                    );
-
-                                    const reportData =
-                                        await reportResponse.json();
-                                    reportUrl = reportData.url;
-                                    globalReportUrl = reportUrl;
-                                }
-                            }
-                        } catch (err) {
-                            if (
-                                !isTestcodeValid &&
-                                body.messages[0].text !== "STOP"
-                            ) {
-                                signals.onResponse({
-                                    html: "<p style='font-size: 14px;color: #991b1b;'>Code is Invalid. Please enter a valid code.</p>",
-                                });
-                            } else if (body.messages[0].text !== "STOP") {
-                                signals.onResponse({
-                                    html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
-                                });
-                            }
-                        }
-                    }
+                  questionText = questionText.replace(
+                    /(http[s]?:\/\/[^\s]+)/g,
+                    ""
+                  );
+                  questionText = `▪ Media <br>  <iframe
+                                   allow="autoplay; encrypted-media; fullscreen;"
+                                   style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                   src=${embeddingUrl}
+                                   frameborder="0"
+                                   allowfullscreen
+                                 >
+                 `;
                 }
-            } catch (e) {
-                console.log("!!!!!!!!!!!1Error Occured", e);
-                signals.onResponse({
-                    error: "Your response could not be processed due to technical reasons, please refresh the page and try again. ",
-                });
+              }
+
+              signals.onResponse({
+                html: questionText,
+              });
             }
-        },
-    };
+          }
+
+          if (questionIndex === questionLength) {
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
+            const messageNode = document.createElement("div");
+            messageNode.classList.add("inner-message-container");
+            const messageBubble = document.createElement("div");
+            messageBubble.classList.add("message-bubble", "ai-message-text");
+            messageBubble.style.maxWidth = "80%";
+            messageBubble.style.marginTop = "4px";
+            const messageText = document.createElement("p");
+            messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>${
+              user ? "" : "<b> Hang tight for next steps </b>"
+            }`;
+            messageBubble.appendChild(messageText);
+            messageNode.appendChild(messageBubble);
+            shadowRoot.getElementById("messages").appendChild(messageNode);
+            shadowRoot.getElementById("messages").scrollBy(0, 100);
+          }
+
+          file = "";
+          if (questionIndex <= questionLength) {
+            questionIndex++;
+
+            try {
+              questionId =
+                questionData.results[0].questions[questionIndex - 2].uid;
+
+              const questionObj =
+                questionData.results[0].questions[questionIndex - 2];
+
+              await testResponseHandler(formdata, questionObj);
+              if (maxUploadFailed === true) {
+                maxUploadFailed = false;
+                return;
+              }
+
+              responseProcessedQuestion++;
+              responsesDone = resQuestionNumber === questionLength;
+
+              if (!responsesDone) {
+                if (
+                  testType === "orchestrated_conversation" ||
+                  testType === "dynamic_discussion_thread"
+                ) {
+                  signals.onResponse({
+                    html: questionText,
+                  });
+                }
+              }
+              if (responsesDone) {
+                if (!window.user) {
+                  // appendMessage(
+                  //   "<b>For obtaining your report, please submit the following details.</b>"
+                  // );
+                  signals.onResponse({
+                    html: credentialsForm,
+                  });
+                }
+              }
+
+              //   if (window.user) {
+              //     console.log("calling send email");
+              //     sendEmail();
+              //     console.log("sendEmail completed");
+              //     const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+              //     appendMessage(message);
+              //     //* send message to start new session
+              //     signals.onResponse({
+              //       text: "Please enter another access code to start a new interaction.",
+              //     });
+              //     return;
+              //   } else {
+              //     //* else show the form to collect the data
+              //     signals.onResponse({
+              //       text: "For obtaining your report, please submit the following details.",
+              //       html: credentialsForm,
+              //     });
+              //   }
+
+              console.log(sessionId);
+
+              let getReportBody = {
+                user_id: participantId,
+                report_type: reportType,
+                session_id: sessionId,
+                interaction_id: testId,
+              };
+
+              if (is_free) {
+                reportType = "summaryFeedbackReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  session_id: sessionId,
+                  interaction_id: testId,
+                };
+              } else if (testType === "dynamic_discussion_thread") {
+                reportType = "dynamicDiscussionReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                  interaction_id: testId,
+                };
+              } else if (testType === "orchestrated_conversation") {
+                reportType = "meetingAnalysisReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                };
+              }
+
+              if (responsesDone) {
+                await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(getReportBody),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    reportUrl = data.url;
+                    globalReportUrl = reportUrl;
+                    console.log("Report Url : ", reportUrl, globalReportUrl);
+
+                    //* send report message or form to collect data : start
+                    if (window.user) {
+                      // sendEmail();
+                      const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      appendMessage(message);
+                      // //* send message to start new session
+
+                      signals.onResponse({
+                        html: "<b>Please enter another access code to start a new interaction.</b>",
+                      });
+                      submitEmailAndName();
+                      return;
+                    }
+                  });
+              }
+            } catch (error) {
+              console.log(error);
+              if (error) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'>There might be some error from our end. Please wait and try again later.</p>",
+                });
+              }
+            }
+          }
+        } else {
+          // TEXT RESPONSES
+
+          // get latest message
+          const latestMessage = body.messages[body.messages.length - 1].text;
+          console.log("Latest Message ===> ", latestMessage);
+          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
+          if (isProceed === "false" && latestMessage.toUpperCase() != "STOP") {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
+
+          if (isTestCode(latestMessage)) {
+            //* check if a session is already running
+            console.log("responsesDone ===> ", responsesDone, questionIndex);
+            if (responsesDone === false && questionIndex > 0) {
+              signals.onResponse({
+                html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
+              });
+              return;
+            }
+
+            await cancelTest(participantId);
+            //* reset all variables : start
+            resetAllVariables();
+          }
+
+          const userAcessAvailability = body.messages[0].text;
+          if (userAcessAvailability === "Yes" && !isSessionActive) {
+            signals.onResponse({
+              html: "<b>Please enter the access code to get started.</b>",
+            });
+            return;
+          } else if (userAcessAvailability === "No" && !isSessionActive) {
+            optedNo = true;
+            signals.onResponse({
+              html: `<div id="option-button-container" >
+                    <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
+                    </div>
+                    `,
+            });
+            // signals.onResponse({
+            //   text: "No problem , here are a few samples you can try out (Experimental):",
+            //   html: `
+            //                   <div id="option-button-container" >
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+
+            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+
+            //                   <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+            //               </div>
+            //                           `,
+            // });
+            return;
+          }
+
+
+          if (
+            body.messages[0].text.toUpperCase() === "STOP" 
+          ) {
+            if (testType === "mcq") {
+              const shadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+              const button = shadowRoot.getElementById(
+                `mcq-option-${mcqFormId}`
+              );
+              // button.parentNode.removeChild(button)
+              const thankYouMessage = document.createElement("div");
+              thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+              // Replace the button with the "Thank you" message
+              button.parentNode.replaceChild(thankYouMessage, button);
+            }
+            if (isProceed === "false") {
+              const gshadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+              const msg = gshadowRoot.getElementById("proceed-option");
+              // button.parentNode.removeChild(button)
+              const que_msg = document.createElement("div");
+              que_msg.innerHTML = "Thank You"; // You can customize the message here
+              // Replace the button with the "Thank you" message
+              msg.parentNode.replaceChild(que_msg, msg);
+            }
+            await cancelTest(participantId); // cancelling session
+            resetAllVariables(); //reseting variables
+
+            signals.onResponse({
+              html: "<b>Your session is terminated. You can restart again!</b>",
+            });
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 2000);
+            return;
+          }
+
+          // to check session is active or not
+          if (!isTestCode(latestMessage)) {
+            if (isHindi) {
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'><b>Only Audio response allowed for this interaction.</b></p>",
+              });
+              return;
+            }
+            await getSessionStatus(sessionId);
+
+            // getting text which is from option-button-container
+            const shadowRoot =
+              document.getElementById("chat-element").shadowRoot;
+            const option_buttons = shadowRoot.querySelectorAll(
+              "#option-button-container button"
+            );
+
+            const buttonTextArray = [];
+
+            option_buttons.forEach((button) => {
+              const buttonText = button.textContent.trim();
+              buttonTextArray.push(buttonText);
+            });
+            // adding sample test code title
+            const sampleTestCodesValues = Object.values(sampleTestCodes);
+            sampleTestCodesValues.forEach((value) => {
+              buttonTextArray.push(value.trim());
+            });
+
+            //end
+
+            if (!buttonTextArray.includes(latestMessage)) {
+              if (sessionStatus != "in_progress") {
+                signals.onResponse({
+                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+                });
+                return;
+              } else if (sessionStatus === "in_progress" && isSessionExpired) {
+                // checking sessionexpiry
+                await cancelTest(participantId);
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
+                });
+                return;
+              }
+
+              //************* check if user message is atleast 15 words */
+              if (!isValidMessage(latestMessage)) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+                });
+                return;
+              }
+            }
+          }
+
+          let isTestcodeValid;
+          const validTestCodes = [
+            "QU7G2X3",
+            "QPN48NO",
+            "QLW2EVP",
+            "Q16EWL2",
+            "QWLHI90",
+            "Q2GGMFP",
+            "QJ3RTFF",
+            "QBEWUOM",
+          ];
+          if (questionIndex === 0 && userAcessAvailability.length !== 0) {
+            if (optedNo === false) {
+              testCode = body.messages[0].text;
+              appendMessage("Please wait while we are processing ...");
+            } else {
+              appendMessage("Please wait while we are processing ...");
+              // //wait while test code is being processed
+              // while (!codeAvailabilityUserChoice) {
+              //   await new Promise((resolve) => setTimeout(resolve, 500));
+              // }
+            }
+
+            codeAvailabilityUserChoice = true;
+          }
+
+          if (questionIndex > 0 && !responsesDone) {
+            userResponse = body.messages[0].text;
+          }
+
+          if (
+            !responsesDone &&
+            userName.length === 0 &&
+            userEmail.length === 0 &&
+            codeAvailabilityUserChoice
+          ) {
+            try {
+              const response = await fetch(
+                `${baseURL}/tests/?test_code=${testCode}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                  },
+                }
+              );
+
+              questionData = await response.json();
+              console.log("TESTCODE DATA :", questionData);
+              questionLength = questionData.results[0].questions.length;
+              testId = questionData.results[0].uid;
+              interactionMode = questionData.results[0].interaction_mode;
+              is_free = questionData.results[0].is_free;
+              senarioDescription = questionData.results[0].description;
+              senarioTitle = questionData.results[0].title;
+              senarioMediaDescription =
+                questionData.results[0].description_media;
+              TestUIInfo = questionData.results[0].ui_information;
+              isEmailType = questionData.results[0].is_email_type;
+              console.log(senarioMediaDescription);
+
+              isTestcodeValid = true;
+
+              testType = questionData.results[0].test_type;
+              orch_details =
+                questionData.results[0].orchestrated_conversation_details;
+
+              if (TestUIInfo) {
+                if (Object.keys(TestUIInfo).length > 0) {
+                  senarioTitle = TestUIInfo["title"];
+                  senarioDescription = TestUIInfo["description"];
+                  isHindi = true;
+                }
+              }
+
+              if (testType === "mcq") {
+                globalQuestionLength = Math.log2(questionLength + 1);
+                globalQuestionData = questionData;
+              }
+
+              if (questionIndex === 0) {
+                //signed user rules
+
+                if (user) {
+                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
+                  // if (!signedUserTestCode.includes(testCode) ){
+                  //   signals.onResponse({
+                  //     text: 'not allowed'
+                  //   })
+                  const companyName = user.email.split("@")[1].split(".")[0];
+                  const companyTestCode = await getTestCodesByRule(companyName);
+                  console.log(companyName);
+                  if (companyTestCode.length > 0) {
+                    if (!companyTestCode.includes(testCode)) {
+                      signals.onResponse({
+                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      });
+                    }
+                  }
+                } else {
+                  const unSignedUserTestCode = await getTestCodesByRule(
+                    "unsigned_user"
+                  );
+                  if (unSignedUserTestCode.length > 0) {
+                    if (!unSignedUserTestCode.includes(testCode)) {
+                      signals.onResponse({
+                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      });
+                    }
+                  }
+                }
+
+                // restriction check like monthly test allowed start
+                // await getAttemptedTestList(participantId);
+                await getIsRepeatStatus(participantId);
+                await getTestPrevilage(participantId);
+
+                if (isRepeatStatus["monthly_remaining_tests"] < 1) {
+                  signals.onResponse({
+                    html: "You have reached your monthly limit. Please contact your coach/administrator to get more simulations.",
+                  });
+                  return;
+                }
+
+                // Test privilege
+                if (
+                  testPrevilage &&
+                  testPrevilage.active &&
+                  !testPrevilage.data.includes(testCode)
+                ) {
+                  signals.onResponse({
+                    html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                  });
+                  return;
+                }
+
+                // User cannot attempt the test more than once if it is active
+                console.log(userRole);
+                if (userRole && userRole !== "admin") {
+                  if (!isRepeatStatus.is_repeat) {
+                    await getAttemptedTestList(participantId);
+                    if (testCodeList.includes(testCode)) {
+                      signals.onResponse({
+                        html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                      });
+                      return;
+                    }
+                  }
+                }
+                //end
+
+                try {
+                  const response = await fetch(
+                    `${baseURL}/test-attempt-sessions/`,
+                    {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Basic ${createBasicAuthToken(
+                          key,
+                          secret
+                        )}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        participant_id: participantId,
+                        ordering: "-id",
+                        test_id: testId,
+                      }),
+                    }
+                  );
+
+                  const data = await response.json();
+                  sessionId = data.uid;
+                  isSessionActive = true;
+                  console.log(sessionId);
+                } catch (err) {
+                  console.log(err);
+                  isSessionActive = false;
+                }
+              }
+
+              if (questionIndex <= questionLength) {
+                if (questionIndex < questionLength) {
+                  if (
+                    testType === "dynamic_discussion_thread" ||
+                    testType === "orchestrated_conversation"
+                  ) {
+                    if (questionIndex === 0) {
+                      let initial_msg = orch_details["initial_messages"];
+                      let start_with_user =
+                        orch_details["start_with_user"] ?? "none";
+
+                      if (start_with_user != "none") {
+                        if (start_with_user === "manager-team") {
+                          questionText =
+                            "Start the discussion as a manager to support the team member.";
+                        } else if (start_with_user === "team-manager") {
+                          questionText =
+                            "Start the discussion as a team member and engage with your manager.";
+                        } else if (start_with_user === "sales-customer") {
+                          questionText =
+                            "Start the discussion as a sales and service manager to interact with the customer.";
+                        } else if (start_with_user === "customer-sales") {
+                          questionText =
+                            "Start the discussion as a customer to interact with the sales & service manager.";
+                        } else {
+                          questionText =
+                            "Start the discussion by commenting your thoughts on this.";
+                        }
+                      } else {
+                        let resultString = "";
+
+                        for (let i = 0; i < initial_msg.length; i++) {
+                          resultString += "<p>" + initial_msg[i] + "</p>";
+
+                          if (i < initial_msg.length - 1) {
+                            resultString += "<br>";
+                          }
+                        }
+                        questionText = resultString;
+                      }
+                    }
+                  } else {
+                    if (testType === "mcq") {
+                      questionText =
+                        questionData.results[0].questions[questionIndex]
+                          .question;
+                      questionId =
+                        questionData.results[0].questions[questionIndex].uid;
+                      const mcqOptions =
+                        questionData.results[0].questions[questionIndex]
+                          .mcq_options;
+                      const optionName = Object.keys(mcqOptions);
+                      console.log(mcqOptions, optionName, questionData);
+                      const option1Name = optionName[0];
+                      const option2Name = optionName[1];
+                      const option1Text = mcqOptions[option1Name]["opt"];
+                      const option2Text = mcqOptions[option2Name]["opt"];
+
+                      formRadio = `
+                      <div id='mcq-option-${mcqFormId}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
+                        <div id='question' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${questionId}:${sessionId}"><b>Q. </b>${questionText}</div>
+                        <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <input type="radio" id="${option1Name}" name="mcq_option" value="${option1Text}" style="margin-right: 5px;">
+                            <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
+                          </div>
+                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
+                            <input type="radio" id="${option2Name}" name="mcq_option" value="${option2Text}" style="margin-right: 5px;">
+                            <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+                          </div>
+                        </div>
+                        <button id="submit-btn" onclick="setMcqVariables()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+                      </div>`;
+                      questionText = formRadio;
+                    } else {
+                      questionText =
+                        questionData.results[0].questions[questionIndex]
+                          .question;
+                      if (isHindi) {
+                        questionText =
+                          TestUIInfo[`Question ${questionIndex + 1}`];
+                      }
+                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                      const is_link = linkPattern.test(questionText);
+
+                      if (is_link) {
+                        console.log(questionText);
+                        let embeddingUrl = "";
+                        if (questionText.length > 0) {
+                          if (questionText.includes("youtube.com")) {
+                            const videoId = questionText.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (questionText.includes("vimeo.com")) {
+                            const videoId = questionText.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (questionText.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                          }
+
+                          questionText = questionText.replace(
+                            /(http[s]?:\/\/[^\s]+)/g,
+                            ""
+                          );
+
+                          questionText = `▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                        `;
+                        }
+                      }
+                    }
+                  }
+
+                  if (questionIndex === 0) {
+                    initialQuestionText = questionText;
+                    isProceed = "false";
+                    questionText = `
+                    <div id="proceed-option" >
+                    <b>Proceed ?</b>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
+                    </div>`;
+
+                    if (senarioMediaDescription !== null) {
+                      let embeddingUrl = "";
+                      if (senarioMediaDescription.length > 0) {
+                        if (senarioMediaDescription.includes("youtube.com")) {
+                          const videoId =
+                            senarioMediaDescription.split("v=")[1];
+                          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                        } else if (
+                          senarioMediaDescription.includes("vimeo.com")
+                        ) {
+                          const videoId = senarioMediaDescription
+                            .split("/")
+                            .pop();
+                          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                        } else if (
+                          senarioMediaDescription.includes("twitter.com")
+                        ) {
+                          embeddingUrl = `https://twitframe.com/show?url=${senarioMediaDescription}`;
+
+                          appendMessage(
+                            `▪ Title : ${senarioTitle} <br><br>
+                                 ▪ Description : ${senarioDescription} <br><br>
+                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                 ▪ Media <br> <iframe
+                                            allow="autoplay; encrypted-media; fullscreen;
+                                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                            src=${embeddingUrl}
+                                            frameborder="0"
+                                            allowfullscreen
+                                          >
+                                `
+                          );
+                        }
+                        if (!senarioMediaDescription.includes("twitter.com")) {
+                          appendMessage(
+                            `▪ Title : ${senarioTitle} <br><br>
+                               ▪ Description : ${senarioDescription} <br><br>
+                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                               ▪ Media <br>  <iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                src=${embeddingUrl}
+                                                frameborder="0"
+                                                allowfullscreen
+                                              >
+                              
+                              `
+                          );
+                        }
+                      } else {
+                        appendMessage(
+                          `▪ Title : ${senarioTitle} <br><br>
+                             ▪ Description : ${senarioDescription} <br><br>
+                             ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`
+                        );
+                      }
+                      signals.onResponse({
+                        html: questionText,
+                      });
+                    } else {
+                      signals.onResponse({
+                        html: questionText,
+                        text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                      });
+                    }
+                    // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
+                  } else {
+                    if (
+                      testType != "orchestrated_conversation" &&
+                      testType != "dynamic_discussion_thread"
+                    ) {
+                      signals.onResponse({
+                        html: questionText,
+                      });
+                    }
+                  }
+                }
+                if (
+                  questionIndex === questionLength &&
+                  userResponse.length > 0
+                ) {
+                  const shadowRoot =
+                    document.getElementById("chat-element").shadowRoot;
+                  const messageNode = document.createElement("div");
+                  messageNode.classList.add("inner-message-container");
+                  const messageBubble = document.createElement("div");
+                  messageBubble.classList.add(
+                    "message-bubble",
+                    "ai-message-text"
+                  );
+                  messageBubble.style.maxWidth = "80%";
+                  messageBubble.style.marginTop = "4px";
+                  const messageText = document.createElement("p");
+                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+                    user ? "" : "<b> Hang tight for next steps </b>"
+                  }`;
+                  messageBubble.appendChild(messageText);
+                  messageNode.appendChild(messageBubble);
+                  shadowRoot
+                    .getElementById("messages")
+                    .appendChild(messageNode);
+                  shadowRoot.getElementById("messages").scrollBy(0, 100);
+                }
+                if (questionIndex > 0) {
+                  questionId =
+                    questionData.results[0].questions[questionIndex - 1].uid;
+
+                  questionIndex++;
+
+                  const response = await fetch(`${baseURL}/test-responses/`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken(
+                        key,
+                        secret
+                      )}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      test_attempt_session_id: sessionId,
+                      question_id: questionId,
+                      response_text: userResponse,
+                      response_file: "",
+                      user_attributes: {
+                        tag: "deepchat_profile",
+                        attributes: {
+                          username: "web_user",
+                          email: user ? user.email : getAnonymousEmail(),
+                        },
+                      },
+                    }),
+                  });
+                  const responseData = await response.json();
+                  console.log("Response from submit response : ", responseData);
+                  resQuestionNumber = responseData.question.question_number;
+
+                  if (questionIndex < questionLength) {
+                    if (
+                      testType === "dynamic_discussion_thread" ||
+                      testType === "orchestrated_conversation"
+                    ) {
+                      questionId =
+                        questionData.results[0].questions[questionIndex - 1]
+                          .uid;
+
+                      questionIndex++;
+
+                      const questionResponse = await fetch(
+                        `${baseURL}/test-responses/`,
+                        {
+                          method: "POST",
+                          headers: {
+                            Authorization: `Basic ${createBasicAuthToken(
+                              key,
+                              secret
+                            )}`,
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            test_attempt_session_id: sessionId,
+                            question_id: questionId,
+                            response_text: "",
+                            response_file: "",
+                            user_attributes: {
+                              tag: "deepchat_profile",
+                              attributes: {
+                                username: "web_user",
+                                email: user ? user.email : getAnonymousEmail(),
+                              },
+                            },
+                          }),
+                        }
+                      );
+
+                      const qRespnse = await questionResponse.json();
+                      questionText = qRespnse["response_text"];
+
+                      // checking if botname is present or not
+                      const responder_name = qRespnse.responder_display_name;
+                      if (!questionText.includes(responder_name)) {
+                        questionText = responder_name + " : " + questionText;
+                      }
+                      console.log(questionText);
+                      resQuestionNumber = qRespnse.question.question_number;
+                    }
+                  }
+                }
+
+                if (resQuestionNumber != questionLength) {
+                  if (
+                    testType === "orchestrated_conversation" ||
+                    testType === "dynamic_discussion_thread"
+                  ) {
+                    signals.onResponse({
+                      text: questionText,
+                    });
+                  }
+                }
+                userResponse = "";
+
+                if (questionIndex === 0) {
+                  questionIndex++;
+                }
+
+                if (resQuestionNumber === questionLength) {
+                  responsesDone = true;
+
+                  if (!window.user) {
+                    // appendMessage(
+                    //   "<b>For obtaining your report, please submit the following details.</b>"
+                    // );
+                    signals.onResponse({
+                      html: credentialsForm,
+                    });
+                  }
+
+                  //   if (window.user) {
+                  //     sendEmail();
+                  //     const message = `It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.`;
+                  //     appendMessage(message);
+                  //     // //* send message to start new session
+
+                  //     signals.onResponse({
+                  //       text: "Please enter another access code to start a new interaction.",
+                  //     });
+                  //     return;
+                  //   } else {
+                  //     //* else show the form to collect the data
+                  //     signals.onResponse({
+                  //       text: "For obtaining your report, please submit the following details.",
+                  //       html: credentialsForm,
+                  //     });
+                  //   }
+
+                  let getReportBody = {
+                    user_id: participantId,
+                    report_type: reportType,
+                    session_id: sessionId,
+                    interaction_id: testId,
+                  };
+
+                  if (is_free) {
+                    reportType = "summaryFeedbackReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      session_id: sessionId,
+                      interaction_id: testId,
+                    };
+                  } else if (testType === "dynamic_discussion_thread") {
+                    reportType = "dynamicDiscussionReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      test_attempt_session_id: sessionId,
+                      interaction_id: testId,
+                    };
+                  } else if (testType === "orchestrated_conversation") {
+                    reportType = "meetingAnalysisReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      test_attempt_session_id: sessionId,
+                    };
+                  }
+
+                  console.log(sessionId);
+                  const reportResponse = await fetch(
+                    `${baseURL}/frontend-auth/get-report-url/`,
+                    {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Basic ${createBasicAuthToken(
+                          key,
+                          secret
+                        )}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify(getReportBody),
+                    }
+                  );
+
+                  const reportData = await reportResponse.json();
+                  reportUrl = reportData.url;
+                  globalReportUrl = reportUrl;
+
+                  console.log("Report Url : ", reportUrl, globalReportUrl);
+
+                  //* send report message or form to collect data : start
+                  if (window.user) {
+                    // sendEmail();
+                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    appendMessage(message);
+                    // //* send message to start new session
+
+                    signals.onResponse({
+                      html: "<b>Please enter another access code to start a new interaction.</b>",
+                    });
+                    submitEmailAndName();
+                    return;
+                  }
+
+                  //* send report message or form to collect data : end
+                }
+              }
+            } catch (err) {
+              console.log(err);
+              if (
+                !isTestcodeValid &&
+                body.messages[0].text.toUpperCase() !== "STOP"
+              ) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
+                });
+              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
+                });
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.log(e);
+        await cancelTest(participantId); // cancelling session
+        resetAllVariables(); //reseting variables
+        if (testType === "mcq") {
+          const shadowRoot = document.getElementById("chat-element").shadowRoot;
+          const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+          // button.parentNode.removeChild(button)
+          const thankYouMessage = document.createElement("div");
+          thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          button.parentNode.replaceChild(thankYouMessage, button);
+        }
+        if (isProceed === "false") {
+          const gshadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+          const msg = gshadowRoot.getElementById("proceed-option");
+          // button.parentNode.removeChild(button)
+          const que_msg = document.createElement("div");
+          que_msg.innerHTML = "Thank You"; // You can customize the message here
+          // Replace the button with the "Thank you" message
+          msg.parentNode.replaceChild(que_msg, msg);
+        }
+
+        signals.onResponse({
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+        });
+      }
+    },
+  };
 });
 
 const openChatContainer = () => {
-    let chatContainer = document.getElementsByClassName("chat-container")?.[0];
-    let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+  let chatContainer = document.getElementsByClassName("chat-container")?.[0];
+  let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
 
-    const chatE = document.getElementById("chat-element");
-    micButton = chatE.shadowRoot.getElementById("microphone-button");
-    const sendBtn = chatE.shadowRoot.querySelector(".input-button");
+  const chatE = document.getElementById("chat-element");
+  micButton = chatE.shadowRoot.getElementById("microphone-button");
+  const sendBtn = chatE.shadowRoot.querySelector(".input-button");
+  let mediaRecorder;
+  let audioChunks = [];
 
-    let mediaRecorder;
-    let audioChunks = [];
+  user = window.user;
+  console.log(" User details ", user);
+  console.log(user === undefined);
 
-    async function startRecording() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-            });
-            mediaRecorder = new MediaRecorder(stream);
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      mediaRecorder = new MediaRecorder(stream);
 
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunks.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-
-                audioFile = new File([audioBlob], "user-audio", {
-                    type: audioBlob.type,
-                });
-                audioChunks.length = 0;
-
-                const fileUrl = window.URL.createObjectURL(audioFile);
-                audioFileSrc = fileUrl;
-            };
-
-            mediaRecorder.start();
-        } catch (error) {
-            console.error("Error accessing microphone:", error);
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
         }
-    }
-    if (micButton) {
-        micButton.addEventListener("click", () => {
-            startRecording();
+      };
+
+      mediaRecorder.onstop = () => {
+        let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+        audioFile = new File([audioBlob], "user-audio", {
+          type: audioBlob.type,
         });
+        audioChunks.length = 0;
+
+        const fileUrl = window.URL.createObjectURL(audioFile);
+        audioFileSrc = fileUrl;
+      };
+
+      mediaRecorder.start();
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
     }
+  }
+  if (micButton) {
+    micButton.addEventListener("click", () => {
+      startRecording();
+    });
+  }
 
-    if (sendBtn) {
-        sendBtn.addEventListener("click", () => {
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-            }
-        });
-    }
+  if (sendBtn) {
+    sendBtn.addEventListener("click", () => {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
+    });
+  }
 
-    const basicAuthToken = createBasicAuthToken(key, secret);
-
-    // Using the ipinfo.io API
-    fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-        .then((response) => response.json())
-        .then((data) => {
-            ipAddress = data.ip;
-        })
-        .catch((error) => console.error("Error fetching IP address:", error));
-
-    // 2 - account creation
-    fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-            Authorization: `Basic ${basicAuthToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_context: {
-                name: "newUser-1",
-                role: "member",
-                user_attributes: {
-                    tag: "deepchat_profile",
-                    attributes: {
-                        username: "web_user_" + ipAddress,
-                        email: "test@test.com",
-                    },
-                },
-            },
-            identity_context: {
-                identity_type: "deepchat_unique_id",
-                value: `user_${ipAddress}`,
-            },
-        }),
+  // Using the ipinfo.io API
+  fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
+    .then((response) => response.json())
+    .then((data) => {
+      ipAddress = data.ip;
     })
-        .then((response) => response.json())
-        .then((data) => {
-            participantId = data.uid;
-            userId = data.uid;
-        })
-        .catch((err) => console.log(err));
+    .catch((error) => console.error("Error fetching IP address:", error));
 
-    if (chatContainer.style.scale === "1") {
-        chatContainer.style.scale = 0;
-        chatContainer.style["transform-origin"] = "100% 100%";
-    } else {
-        chatContainer.style.scale = 1;
-        chatContainer.style["transform-origin"] = "100% 50%";
-    }
+  //   const user_data = getUserData();
 
-    if (
-        chatIcon.src ===
-        "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png"
-    ) {
-        chatIcon.src =
-            "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
-    } else {
-        chatIcon.src =
-            "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbots-logo-bot.png";
-    }
+  //   if (user_data) {
+  //     user_name = user_data.name;
+  //     user_email = user_data.email;
+  //   } else {
+  //     user_name = "coachbots_anonyoususer";
+  //     user_sid = generateSessionId();
+  //     user_email = `${user_name}-${sid}@gmail.com`;
+  //   }
+
+  let user_name;
+  let user_email;
+
+  if (user) {
+    user_name = user.given_name;
+    user_email = user.email;
+  } else {
+    user_name = "coachbots_anonyoususer";
+    user_email = getAnonymousEmail();
+  }
+
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: user_name,
+            email: user_email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
+    })
+    .catch((err) => console.log(err));
+
+  if (chatContainer.style.scale === "1") {
+    chatContainer.style.scale = 0;
+    chatContainer.style["transform-origin"] = "100% 100%";
+  } else {
+    chatContainer.style.scale = 1;
+    chatContainer.style["transform-origin"] = "100% 50%";
+
+    // close stt bot
+    const chatContainer2 = document.getElementById("chat-container2");
+    chatContainer2.style.scale = 0;
+    chatContainer2.style["transform-origin"] = "100% 100%";
+
+    const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+    chatIcon2.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+  }
+
+  if (
+    chatIcon.src ===
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+  ) {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+  } else {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+  }
+};
+
+const closeFromTop = () => {
+  let chatContainer = document.getElementsByClassName("chat-container")?.[0];
+  let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+
+  chatContainer.style.scale = 0;
+  chatContainer.style["transform-origin"] = "100% 100%";
+
+  if (
+    chatIcon.src ===
+    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+  ) {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+  } else {
+    chatIcon.src =
+      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+  }
 };
