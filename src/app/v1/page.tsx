@@ -76,12 +76,6 @@ const Page = async () => {
     } else if (!isrestEmail && !excludedEmail) {
       shouldRenderDiv = true;
     }
-
-    console.log("User Email:", userEmail);
-    console.log("user domain : ", domain);
-    console.log("Exclude email : ", exclusionEmails.includes(userEmail));
-    console.log("Restricted Domain:", isrestEmail);
-    console.log("Should Render Div:", shouldRenderDiv);
   }
 
   return (
@@ -92,7 +86,7 @@ const Page = async () => {
             variant={"secondary"}
             className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:h-10 truncate max-sm:mt-[6.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
-            ✨ Sign up to create your own scenarios!{" "}
+            ✨ Sign up to get the EQ Acess{" "}
             <br className="hidden max-sm:inline" /> (Workplace emails only)
             <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
             <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
@@ -248,7 +242,7 @@ const Page = async () => {
                 Meetings
               </Button>
             </Link>
-            {shouldRenderDiv && (
+            {/* {shouldRenderDiv && (
               <Link href={"#create-your-own"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -264,7 +258,7 @@ const Page = async () => {
                   </div>
                 </div>
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -384,11 +378,11 @@ const Page = async () => {
               tests={meetings}
             />
           </div>
-          {shouldRenderDiv && (
+          {/* {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
