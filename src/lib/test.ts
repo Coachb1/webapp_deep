@@ -323,7 +323,7 @@ export const DiversityPlus: Test[] = [
   },
   {
     domain: "Interview Dilemma",
-    test_code: "QQZMF9B",
+    test_code: "QICGX1I",
     title: "Balancing Skills and Formal Education",
     description:
       "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
@@ -353,7 +353,7 @@ export const DescoveryPlus: Test[] = [
 
 export const oneTwoOne: Test[] = [
   {
-    domain: "Workplace Communication",
+    domain: "Contribute effectively in team settings",
     test_code: "QO3CBR3",
     title: "Handling communication in team meetings as a new employee",
     description:
@@ -361,7 +361,7 @@ export const oneTwoOne: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Work Life Balance",
+    domain: "Work Life Balance Discussion",
     test_code: "Q0HP80X",
     title: "Managing workload and addressing burnout",
     description:
@@ -601,7 +601,7 @@ export const onBoarding: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Project timeline",
+    domain: "Managing Project Timeline",
     test_code: "Q9SSEH3",
     title: "Punctuality challenges due to weather issue",
     description:
