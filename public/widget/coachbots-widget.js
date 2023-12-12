@@ -2182,54 +2182,62 @@ loadExternalModule().then(() => {
             codeAvailabilityUserChoice
           ) {
             try {
-              const response = await fetch(
-                `${baseURL}/tests/?test_code=${testCode}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                  },
-                }
-              );
-
-              questionData = await response.json();
-              console.log("TESTCODE DATA :", questionData);
-              questionLength = questionData.results[0].questions.length;
-              testId = questionData.results[0].uid;
-              interactionMode = questionData.results[0].interaction_mode;
-              is_free = questionData.results[0].is_free;
-              senarioDescription = questionData.results[0].description;
-              senarioTitle = questionData.results[0].title;
-              senarioMediaDescription =
-                questionData.results[0].description_media;
-              TestUIInfo = questionData.results[0].ui_information;
-              isEmailType = questionData.results[0].is_email_type;
-              console.log(senarioMediaDescription);
-              clientName = questionData.results[0].client_name;
-              isTestSignedIn = questionData.results[0].is_logged_in;
-
-              isTestcodeValid = true;
-
-              testType = questionData.results[0].test_type;
-              orch_details =
-                questionData.results[0].orchestrated_conversation_details;
-
-              if (TestUIInfo) {
-                if (Object.keys(TestUIInfo).length > 0) {
-                  senarioTitle = TestUIInfo["title"];
-                  senarioDescription = TestUIInfo["description"];
-                  isHindi = true;
-                }
-              }
-
-              if (testType === "mcq") {
-                globalQuestionLength = Math.log2(questionLength + 1);
-                globalQuestionData = questionData;
-              }
-
+              
               if (questionIndex === 0) {
-                //signed user rules
+                const response = await fetch(
+                  `${baseURL}/tests/?test_code=${testCode}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                    },
+                  }
+                );
+  
+                questionData = await response.json();
 
+                if ((questionData.results).length === 0){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
+                  });
+                  return;
+                }
+                console.log("TESTCODE DATA :", questionData);
+                questionLength = questionData.results[0].questions.length;
+                testId = questionData.results[0].uid;
+                interactionMode = questionData.results[0].interaction_mode;
+                is_free = questionData.results[0].is_free;
+                senarioDescription = questionData.results[0].description;
+                senarioTitle = questionData.results[0].title;
+                senarioMediaDescription =
+                  questionData.results[0].description_media;
+                TestUIInfo = questionData.results[0].ui_information;
+                isEmailType = questionData.results[0].is_email_type;
+                console.log(senarioMediaDescription);
+                clientName = questionData.results[0].client_name;
+                isTestSignedIn = questionData.results[0].is_logged_in;
+  
+                isTestcodeValid = true;
+  
+                testType = questionData.results[0].test_type;
+                orch_details =
+                  questionData.results[0].orchestrated_conversation_details;
+  
+                if (TestUIInfo) {
+                  if (Object.keys(TestUIInfo).length > 0) {
+                    senarioTitle = TestUIInfo["title"];
+                    senarioDescription = TestUIInfo["description"];
+                    isHindi = true;
+                  }
+                }
+  
+                if (testType === "mcq") {
+                  globalQuestionLength = Math.log2(questionLength + 1);
+                  globalQuestionData = questionData;
+                }
+                
+                //signed user rules
+  
                 if (user) {
                   const group_list = ['Demo','free','Free']
                   const my_lib = await getTestCodesByRule('my_lib');
@@ -2757,16 +2765,30 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (
-                !isTestcodeValid &&
-                body.messages[0].text.toUpperCase() !== "STOP"
-              ) {
+              if (testType === "mcq") {
+                const shadowRoot = document.getElementById("chat-element").shadowRoot;
+                const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+                // button.parentNode.removeChild(button)
+                const thankYouMessage = document.createElement("div");
+                thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                button.parentNode.replaceChild(thankYouMessage, button);
+              }
+              if (isProceed === "false") {
+                const gshadowRoot =
+                  document.getElementById("chat-element").shadowRoot;
+                const msg = gshadowRoot.getElementById("proceed-option");
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
+              }
+              resetAllVariables(); //reseting variables
+      
+              if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
-                });
-              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                 });
               }
             }
@@ -2775,7 +2797,6 @@ loadExternalModule().then(() => {
       } catch (e) {
         console.log(e);
         await cancelTest(participantId); // cancelling session
-        resetAllVariables(); //reseting variables
         if (testType === "mcq") {
           const shadowRoot = document.getElementById("chat-element").shadowRoot;
           const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
@@ -2795,6 +2816,7 @@ loadExternalModule().then(() => {
           // Replace the button with the "Thank you" message
           msg.parentNode.replaceChild(que_msg, msg);
         }
+        resetAllVariables(); //reseting variables
 
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
