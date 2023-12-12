@@ -70,6 +70,8 @@ let isProceed;
 let isSessionActive = false;
 let isEmailType=false;
 let recommendations = '';
+let isTestSignedIn;
+let clientName;
 
 let audioDuration;
 
@@ -902,6 +904,8 @@ function generateOptionButtons() {
       isSessionActive = false;
       isEmailType = false;
       recommendations="";
+      isTestSignedIn;
+      clientName = "";
     };
 
     function findRelatedItems(data, targetCode) {
@@ -1504,7 +1508,7 @@ loadExternalModule().then(() => {
         return [];
       }
     } catch (error) {
-      console.error(`Error in getTestPrevilage: ${error}`);
+      console.error(`Error in getTestCodesByRule: ${error}`);
     }
   };
 
@@ -2201,6 +2205,8 @@ loadExternalModule().then(() => {
               TestUIInfo = questionData.results[0].ui_information;
               isEmailType = questionData.results[0].is_email_type;
               console.log(senarioMediaDescription);
+              clientName = questionData.results[0].client_name;
+              isTestSignedIn = questionData.results[0].is_logged_in;
 
               isTestcodeValid = true;
 
@@ -2225,31 +2231,27 @@ loadExternalModule().then(() => {
                 //signed user rules
 
                 if (user) {
-                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
-                  // if (!signedUserTestCode.includes(testCode) ){
-                  //   signals.onResponse({
-                  //     text: 'not allowed'
-                  //   })
-                  const companyName = user.email.split("@")[1].split(".")[0];
-                  const companyTestCode = await getTestCodesByRule(companyName);
-                  console.log(companyName);
-                  if (companyTestCode.length > 0) {
-                    if (!companyTestCode.includes(testCode)) {
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
+                  const group_list = ['Demo','free','Free']
+                  const my_lib = await getTestCodesByRule('my_lib');
+                  for (const item of my_lib) {
+                    if (item.emails.includes(user.email)) {
+                        group_list.push(item.group);
                     }
                   }
-                } else {
-                  const unSignedUserTestCode = await getTestCodesByRule(
-                    "unsigned_user"
-                  );
-                  if (unSignedUserTestCode.length > 0) {
-                    if (!unSignedUserTestCode.includes(testCode)) {
+
+                  if (!group_list.includes(clientName)){  // clientName Demo means Free type test
                       signals.onResponse({
                         html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
+                      return;
                     }
+                } else {
+                  console.log('signedin',isTestSignedIn)
+                  if (isTestSignedIn){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
                   }
                 }
 
