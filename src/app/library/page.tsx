@@ -106,12 +106,22 @@ const Page = () => {
       .then((response) => response.json())
       .then(async (data) => {
         // console.log(data.data.my_lib[0].codes);
-        const testcodes = data.data.my_lib[0].codes.join(",");
+        // const testcodes = data.data.my_lib[0].codes.join(",");
+
+        const group_list = []
+        for (const item of data.data.my_lib) {
+          if (item.emails.includes(user?.email)) {
+              group_list.push(item.group);
+          }
+        }
+        const group1 = group_list[0]
+        const group2 = group_list[1]  // groups which is assigned to a email
 
         // console.log(string);
+        // for group 1  NOTE: show my library if group_list length >0
 
         await fetch(
-          `${baseURL}/accounts/get-my-lib-data/?test_codes=${testcodes}`,
+          `${baseURL}/accounts/get-my-lib-data/?group=${group1}`,
           {
             method: "GET",
             headers: {
