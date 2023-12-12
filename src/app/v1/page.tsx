@@ -53,6 +53,13 @@ const Page = async () => {
   const user: any = await getUser();
   // console.log(enterpriceEmailDomains);
 
+  const group_list = [];
+  for (const item of data.data.my_lib) {
+    if (item.emails.includes(user?.email)) {
+      group_list.push(item.group);
+    }
+  }
+
   let shouldRenderDiv;
   if (user) {
     const userEmail = user.email;
@@ -110,7 +117,7 @@ const Page = async () => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        {shouldRenderDiv && (
+        {group_list.length > 0 && (
           <div className="flex flex-row mt-4 z-50">
             <Link href={"library"}>
               <Button variant={"default"} className=" mx-4">
