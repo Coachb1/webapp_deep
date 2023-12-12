@@ -55,7 +55,7 @@ const Page = async () => {
 
   const group_list = [];
   for (const item of data.data.my_lib) {
-    if (item.emails.includes("bandana@lntecc.com")) {
+    if (item.emails.includes(user?.email)) {
       group_list.push(item.group);
     }
   }
