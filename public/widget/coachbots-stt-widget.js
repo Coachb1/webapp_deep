@@ -63,6 +63,8 @@ let isProceedStt;
 let initialQuestionTextStt;
 let isSessionActiveStt = false;
 let recommendationsStt = '';
+let isTestSignedInStt;
+let clientNameStt;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -243,6 +245,9 @@ function appendMessage2(message2) {
     isProceedStt = '';
     isSessionActiveStt = false;
     recommendationsStt="";
+    isTestSignedInStt;
+    clientNameStt = "";
+
   };
 
   function findRelatedItemsStt(data, targetCode) {
@@ -1651,6 +1656,8 @@ loadExternalModule().then(() => {
               testType2 = questionData2.results[0].test_type;
               orch_details2 =
                 questionData2.results[0].orchestrated_conversation_details;
+              clientNameStt = questionData2.results[0].client_name;
+              isTestSignedInStt = questionData2.results[0].is_logged_in;
 
               if (testUIInfoStt) {
                 if (Object.keys(testUIInfoStt).length > 0) {
@@ -1675,28 +1682,50 @@ loadExternalModule().then(() => {
                   //   signals.onResponse({
                   //     text: 'not allowed'
                   //   })
-                  const companyName = user2.email.split("@")[1].split(".")[0];
-                  const companyTestCode = await getTestCodesByRule2(
-                    companyName
-                  );
-                  console.log(companyName);
-                  if (companyTestCode.length > 0) {
-                    if (!companyTestCode.includes(testCode2)) {
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
+                  // const companyName = user2.email.split("@")[1].split(".")[0];
+                  // const companyTestCode = await getTestCodesByRule2(
+                  //   companyName
+                  // );
+                  // console.log(companyName);
+                  // if (companyTestCode.length > 0) {
+                  //   if (!companyTestCode.includes(testCode2)) {
+                  //     signals.onResponse({
+                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                  //     });
+                  //     return;
+                  //   }
+
+                  const group_list = ['Demo','free','Free']
+                  const my_lib = await getTestCodesByRule2('my_lib');
+                  for (const item of my_lib) {
+                    if (item.emails.includes(user2.email)) {
+                        group_list.push(item.group);
                     }
                   }
-                } else {
-                  const unSignedUserTestCode = await getTestCodesByRule2(
-                    "unsigned_user"
-                  );
-                  if (unSignedUserTestCode.length > 0) {
-                    if (!unSignedUserTestCode.includes(testCode2)) {
+
+                  if (!group_list.includes(clientNameStt)){  // clientName Demo means Free type test
                       signals.onResponse({
                         html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
+                      return;
                     }
+                } else {
+                  // const unSignedUserTestCode = await getTestCodesByRule2(
+                  //   "unsigned_user"
+                  // );
+                  // if (unSignedUserTestCode.length > 0) {
+                  //   if (!unSignedUserTestCode.includes(testCode2)) {
+                  //     signals.onResponse({
+                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                  //     });
+                  //   }
+                  // }
+
+                  if (isTestSignedInStt){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
                   }
                 }
 
