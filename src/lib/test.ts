@@ -560,7 +560,7 @@ export const presentation: Test[] = [
     test_code: "QXG4FYR",
     title: "Presenting a Risk Assessment for a High-Stakes Business Deal",
     description:
-      "In a boardroom meeting, Raj, the project manager, is tasked with presenting a comprehensive risk assessment for a 80 million dollar merger with a competitor. He must outline potential financial, legal, and operational risks, as well as mitigation strategies. The board expects a structured walkthrough in under 15 minutes and understand the asks or recommendation. The manager is anxious to make a positive mark as he addresses the room and starts to run with his slides. Please respond to the structured prompts to continue.",
+      "In a boardroom meeting, Raj, the project manager, is tasked with presenting a comprehensive risk assessment for an 80-million-dollar merger with a competitor. He must outline potential financial, legal, and operational risks and mitigation strategies. The board expects a structured walkthrough in under 15 minutes and understand the asks or recommendation. The manager is anxious to make a positive mark as he addresses the room and starts to run with his slides. Please respond to the structured prompts to continue.",
     interaction_mode: "Audio",
   },
   {
@@ -628,7 +628,7 @@ export const frontLineStaff: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Mahindra car sales",
+    domain: "Car sales",
     test_code: "Q367PE8",
     title: "एक आशंकित ग्राहक के साथ सौदा करना",
     description:
