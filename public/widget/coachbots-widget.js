@@ -71,6 +71,8 @@ let isSessionActive = false;
 let isEmailType=false;
 let recommendations = '';
 
+let audioDuration;
+
 // sample TEst codes
 const sampleTestCodes = {
   QEEG5VY: "AWS Cloud Training",
@@ -1748,7 +1750,9 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (file.size < 175000) {
+          
+          // console.log("GROOT UP - Audio duration:", audioDuration);
+          if (audioDuration < 10.00) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
             });
@@ -2825,8 +2829,13 @@ const openChatContainer = () => {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      const audioContext = new window.AudioContext();
+      mediaRecorder.onstop = async () => {
         let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+        const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
+        audioDuration = audioBuffer.duration;
+        // console.log("ROOT - Audio duration:", audioDuration);
 
         audioFile = new File([audioBlob], "user-audio", {
           type: audioBlob.type,
