@@ -1628,52 +1628,59 @@ loadExternalModule().then(() => {
             codeAvailabilityUserChoice2
           ) {
             try {
-              const response = await fetch(
-                `${baseURL2}/tests/?test_code=${testCode2}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                  },
-                }
-              );
-
-              questionData2 = await response.json();
-              questionLength2 = questionData2.results[0].questions.length;
-              testId2 = questionData2.results[0].uid;
-              interactionMode2 = questionData2.results[0].interaction_mode;
-              is_free2 = questionData2.results[0].is_free;
-              senarioDescription2 = questionData2.results[0].description;
-              senarioTitle2 = questionData2.results[0].title;
-              senarioMediaDescription2 =
-                questionData2.results[0].description_media;
-              testUIInfoStt = questionData2.results[0].ui_information;
-              console.log(senarioMediaDescription2);
-
-              testType2 = questionData2.results[0].test_type;
-              orch_details2 =
-                questionData2.results[0].orchestrated_conversation_details;
-              clientNameStt = questionData2.results[0].client_name;
-              isTestSignedInStt = questionData2.results[0].is_logged_in;
-
-              if (testUIInfoStt) {
-                if (Object.keys(testUIInfoStt).length > 0) {
+              
+              if (questionIndex2 === 0) {
+                const response = await fetch(
+                  `${baseURL2}/tests/?test_code=${testCode2}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(
+                        key2,
+                        secret2
+                      )}`,
+                    },
+                  }
+                );
+  
+                questionData2 = await response.json();
+                if ((questionData2.results).length === 0){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                   });
                   return;
                 }
-              }
-
-              if (testType2 === "mcq") {
-                globalQuestionLengthStt = Math.log2(questionLength2 + 1);
-                globalQuestionDataStt = questionData2;
-              }
-
-              if (questionIndex2 === 0) {
+                questionLength2 = questionData2.results[0].questions.length;
+                testId2 = questionData2.results[0].uid;
+                interactionMode2 = questionData2.results[0].interaction_mode;
+                is_free2 = questionData2.results[0].is_free;
+                senarioDescription2 = questionData2.results[0].description;
+                senarioTitle2 = questionData2.results[0].title;
+                senarioMediaDescription2 =
+                  questionData2.results[0].description_media;
+                testUIInfoStt = questionData2.results[0].ui_information;
+                console.log(senarioMediaDescription2);
+  
+                testType2 = questionData2.results[0].test_type;
+                orch_details2 =
+                  questionData2.results[0].orchestrated_conversation_details;
+                clientNameStt = questionData2.results[0].client_name;
+                isTestSignedInStt = questionData2.results[0].is_logged_in;
+  
+                if (testUIInfoStt) {
+                  if (Object.keys(testUIInfoStt).length > 0) {
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                    });
+                    return;
+                  }
+                }
+  
+                if (testType2 === "mcq") {
+                  globalQuestionLengthStt = Math.log2(questionLength2 + 1);
+                  globalQuestionDataStt = questionData2;
+                }
+  
                 //signed user rules
 
                 if (user2) {
@@ -2268,13 +2275,35 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid2 && body.messages[0].text.toUpperCase() !== "STOP") {
+              if (testType2 === "mcq") {
+                const shadowRoot =
+                  document.getElementById("chat-element2").shadowRoot;
+                const button = shadowRoot.getElementById(
+                  `mcq-option-stt-${mcqFormIdStt}`
+                );
+                // button.parentNode.removeChild(button)
+                const thankYouMessage = document.createElement("div");
+                thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+      
+                // Replace the button with the "Thank you" message
+                button.parentNode.replaceChild(thankYouMessage, button);
+              }
+              if (isProceedStt === "false") {
+                const gshadowRoot =
+                  document.getElementById("chat-element2").shadowRoot;
+                const msg = gshadowRoot.getElementById("proceed-option2");
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
+              }
+      
+              resetAllVariablesStt();
+              
+              if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
-                });
-              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Error Processing your response.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                 });
               }
             }
