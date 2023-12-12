@@ -1755,7 +1755,7 @@ loadExternalModule().then(() => {
           }
 
           
-          // console.log("GROOT UP - Audio duration:", audioDuration);
+          console.log("At execution - Audio duration:", audioDuration);
           if (audioDuration < 10.00) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>The response length detected is below the recommended limit. Please try again.</b></p>",
@@ -2837,7 +2837,7 @@ const openChatContainer = () => {
 
         const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
         audioDuration = audioBuffer.duration;
-        // console.log("ROOT - Audio duration:", audioDuration);
+        console.log("at INIT - Audio duration:", audioDuration);
 
         audioFile = new File([audioBlob], "user-audio", {
           type: audioBlob.type,
