@@ -116,7 +116,7 @@ const MyLibrary = () => {
         // const testcodes = data.data.my_lib[0].codes.join(",");
         const group_list: string[] = [];
         for (const item of data.data.my_lib) {
-          if (item.emails.includes(user?.email)) {
+          if (item.emails.includes("user?.email")) {
             group_list.push(item.group);
           }
         }
@@ -187,7 +187,7 @@ const MyLibrary = () => {
 
             <div className="max-sm:pb-10 min-h-[50vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                <div className="flex gap-2 flex-wrap mb-4 bg-red">
+                <div className="flex gap-2 flex-wrap mb-4 bg-red justify-center items-center">
                   {groupList.length > 0 && (
                     <>
                       {groupList.map((item, i) => (
@@ -249,21 +249,20 @@ const MyLibrary = () => {
                             <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
                               <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
                                 {testbyCategory.tests.some(
-                                  (test) => test.is_micro === true
+                                  (test) => test.is_micro === false
                                 ) && (
-                                  <p className="w-full text-center text-gray-500 max-sm:text-sm">
-                                    Micro
+                                  <p className="w-fit text-center text-gray-500 max-sm:text-sm mt-2 bg-accent mx-auto px-2 rounded-lg">
+                                    Regular learning
                                   </p>
                                 )}
-
                                 <Accordion
                                   type="single"
                                   collapsible
-                                  className="w-full text-gray-500 max-sm:p-2 bg-white px-4 pt-2 "
+                                  className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
                                 >
                                   {testbyCategory.tests.map((test, i) => (
                                     <>
-                                      {test.is_micro && (
+                                      {!test.is_micro && (
                                         <AccordionItem
                                           key={i}
                                           value={`item-${i + 1}`}
@@ -292,22 +291,21 @@ const MyLibrary = () => {
                                     </>
                                   ))}
                                 </Accordion>
-                                {/* <hr className="my-2" /> */}
                                 {testbyCategory.tests.some(
-                                  (test) => test.is_micro === false
+                                  (test) => test.is_micro === true
                                 ) && (
-                                  <p className="w-full text-center text-gray-500 max-sm:text-sm mt-2">
-                                    Non Micro
+                                  <p className="w-fit rounded-lg text-center mt-2 bg-accent mx-auto px-2 text-gray-500 max-sm:text-sm">
+                                    Micro learning
                                   </p>
                                 )}
                                 <Accordion
                                   type="single"
                                   collapsible
-                                  className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                  className="w-full text-gray-500 max-sm:p-2 bg-white px-4 pt-2 "
                                 >
                                   {testbyCategory.tests.map((test, i) => (
                                     <>
-                                      {!test.is_micro && (
+                                      {test.is_micro && (
                                         <AccordionItem
                                           key={i}
                                           value={`item-${i + 1}`}
