@@ -1758,7 +1758,7 @@ loadExternalModule().then(() => {
           // console.log("GROOT UP - Audio duration:", audioDuration);
           if (audioDuration < 10.00) {
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>The response length detected is below the recommended limit. Please try again.</b></p>",
             });
             return;
           }
