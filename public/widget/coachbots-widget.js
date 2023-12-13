@@ -1124,7 +1124,10 @@ loadExternalModule().then(() => {
     <deep-chat 
       id="chat-element"
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 73vh; border: none;"
-      microphone='true'
+      microphone='{
+        "files": {"format": "mp3", "maxNumberOfFiles": 1},
+        "button": {"position": "outside-right"}
+      }'
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px" }}
@@ -2892,6 +2895,8 @@ const openChatContainer = () => {
     micButton.addEventListener("click", () => {
       if(!isRecording){
         startRecording();
+      } else{
+        sendBtn.click()
       }
     });
   }
