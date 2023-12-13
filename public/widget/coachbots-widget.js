@@ -2895,8 +2895,6 @@ const openChatContainer = () => {
     micButton.addEventListener("click", () => {
       if(!isRecording){
         startRecording();
-      } else{
-        sendBtn.click()
       }
     });
   }
