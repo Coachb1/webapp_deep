@@ -20,7 +20,6 @@ import {
   DiversityPlus,
   onBoarding,
 } from "@/lib/test";
-import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -28,8 +27,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import CreateYourOwn from "@/components/CreateYourOwn";
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 export const metadata = constructMetadata();
 
 async function getData() {
@@ -426,7 +423,7 @@ const Page = async () => {
           <p>&copy; 2023 Coachbots™. All Rights Reserved.</p>
         </div>
       </div>
-      <Widgets />
+      {/* <Widgets /> */}
     </div>
   );
 };
