@@ -2935,6 +2935,12 @@ const openChatContainer = () => {
     user_email = getAnonymousEmail();
   }
 
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email, {
+      name: user_name,
+      email: user_email,
+    });
+  }
   fetch(`${baseURL}/accounts/`, {
     method: "POST",
     headers: {

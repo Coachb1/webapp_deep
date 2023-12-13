@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { UserContextProvider } from "@/lib/UserContext";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="bg-gray-100 grainy">
+      <head>
+      <Script src="https://cdn.intake-lr.com/LogRocket.min.js" crossOrigin="anonymous"></Script>
+      <Script>window.LogRocket && window.LogRocket.init('irkulq/coachbots');</Script>
+      <Script>window.LogRocket && window.user && window.LogRocket.identify(window.user.email);</Script>
+      </head>
+      
       <UserContextProvider>
         <body className={inter.className} suppressHydrationWarning>
           <>
