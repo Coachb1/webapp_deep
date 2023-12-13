@@ -165,7 +165,7 @@ const MyLibrary = ({ user }: any) => {
         <title>My Library</title>
       </Head>
       <main className="bg-gray-100 min-h-[100vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div className="bg-gray-300 absolute top-[5rem] left-4 text-sm rounded-lg p-2 max-sm:hidden">
+        <div className=" text-blue-500 absolute top-[5rem] left-4 text-sm rounded-lg p-2 max-sm:hidden">
           <Link href={"v1"} className="flex items-center">
             <ChevronLeft className="h-4 w-4 mr-1 inline" /> <span>Home</span>
           </Link>
