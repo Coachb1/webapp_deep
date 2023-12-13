@@ -2380,6 +2380,13 @@ const openChatContainer2 = () => {
     user_email2 = getAnonymousEmail();
   }
 
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email2, {
+      name: user_name2,
+      email: user_email2,
+    });
+  }
+
   // 2 - account creation
   fetch(`${baseURL2}/accounts/`, {
     method: "POST",
