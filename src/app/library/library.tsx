@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-// import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { ChevronLeft, Library, Loader } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
@@ -63,8 +63,7 @@ const convertToJsonArray = (input: Category): StateType[] => {
   return resultArray;
 };
 
-const MyLibrary = () => {
-  const { user } = useKindeBrowserClient();
+const MyLibrary = ({ user }: any) => {
   const [tests, setTests] = useState<StateType[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,9 +88,7 @@ const MyLibrary = () => {
         .then((response) => response.json())
         .then(async (data) => {
           setIsLoading(false);
-          console.log(data);
           const convertedTests = convertToJsonArray(data.data);
-          console.log(convertedTests);
           setTests(convertedTests);
           setIsPageLoading(false);
         })
@@ -102,21 +99,24 @@ const MyLibrary = () => {
   };
 
   useEffect(() => {
-    fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
-      method: "GET",
-      headers: {
-        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `https://coach-api-ovh.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((response) => response.json())
       .then(async (data) => {
-        console.log(data);
         // console.log(data.data.my_lib[0].codes);
         // const testcodes = data.data.my_lib[0].codes.join(",");
+
         const group_list: string[] = [];
         for (const item of data.data.my_lib) {
-          if (item.emails.includes("user?.email")) {
+          if (item.emails.includes(user?.email)) {
             group_list.push(item.group);
           }
         }
@@ -133,10 +133,9 @@ const MyLibrary = () => {
         )
           .then((response) => response.json())
           .then(async (data) => {
+            setCurrentActiveGroup(group_list[0]);
             setIsLoading(false);
-            console.log(data);
             const convertedTests = convertToJsonArray(data.data);
-            console.log(convertedTests);
             setTests(convertedTests);
             setIsPageLoading(false);
           })
@@ -144,8 +143,6 @@ const MyLibrary = () => {
         if (group_list.length === 0) {
           pathname.push("/");
         }
-
-        console.log(group_list[0]);
       })
       .catch((err) => console.error("Cannot retrive test codes", err));
   }, []);

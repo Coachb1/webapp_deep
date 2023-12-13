@@ -34,7 +34,7 @@ export const metadata = constructMetadata();
 
 async function getData() {
   const res = await fetch(
-    `https://coach-api-gcp.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
+    `https://coach-api-ovh.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
     {
       method: "GET",
       headers: {
