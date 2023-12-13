@@ -1732,6 +1732,7 @@ loadExternalModule().then(() => {
           } else if (sessionStatus === "in_progress" && isSessionExpired) {
             // checking sessionexpiry
             await cancelTest(participantId);
+            resetAllVariables();
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });

@@ -1575,6 +1575,7 @@ loadExternalModule().then(() => {
               ) {
                 // checking sessionexpiry
                 await cancelTestStt(participantId2);
+                resetAllVariablesStt();
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
