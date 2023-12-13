@@ -89,6 +89,7 @@ const MyLibrary = ({ user }: any) => {
         .then(async (data) => {
           setIsLoading(false);
           const convertedTests = convertToJsonArray(data.data);
+
           setTests(convertedTests);
           setIsPageLoading(false);
         })
@@ -182,7 +183,7 @@ const MyLibrary = ({ user }: any) => {
               </p>
             </div>
 
-            <div className="max-sm:pb-10 min-h-[50vh] max-sm:min-h-[60vh]">
+            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                 <div className="flex gap-2 flex-wrap mb-4 bg-red justify-center items-center">
                   {groupList.length > 0 && (
@@ -190,6 +191,7 @@ const MyLibrary = ({ user }: any) => {
                       {groupList.map((item, i) => (
                         <Button
                           onClick={() => getTestsByGroup(item)}
+                          disabled={item === currentActiveGroup}
                           className={`max-sm:p-2 h-8 ${
                             item === currentActiveGroup ? "ring-1" : ""
                           }`}
@@ -222,6 +224,9 @@ const MyLibrary = ({ user }: any) => {
                       ))}
                     </div>
                   </div>
+                )}
+                {tests.length === 0 && !isLoading && (
+                  <div>Sorry, there's no data yet.</div>
                 )}
               </MaxWidthWrapper>
               {!isLoading && (

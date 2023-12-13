@@ -1,9 +1,14 @@
+"use client"
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { UserContextProvider } from "@/lib/UserContext";
 import Script from "next/script";
+import Widgets from "@/components/Widgets";
+import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +22,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname()
   return (
     <html lang="en" className="bg-gray-100 grainy">
       <head>
@@ -26,7 +32,7 @@ export default function RootLayout({
       </head>
       
       <UserContextProvider>
-        <body className={inter.className} suppressHydrationWarning>
+        <body className={inter.className} suppressHydrationWarning={true}>
           <>
             <ThemeProvider
               attribute="class"
@@ -39,6 +45,7 @@ export default function RootLayout({
               {children}
             </ThemeProvider>
           </>
+        {pathname === "/profile" ? null : <Widgets />}
         </body>
       </UserContextProvider>
     </html>
