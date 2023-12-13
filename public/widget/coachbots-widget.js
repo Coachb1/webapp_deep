@@ -2842,6 +2842,7 @@ const openChatContainer = () => {
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   const sendBtn = chatE.shadowRoot.querySelector(".input-button");
   let mediaRecorder;
+  let isRecording = false;
   let audioChunks = [];
 
   user = window.user;
@@ -2854,7 +2855,8 @@ const openChatContainer = () => {
         audio: true,
       });
       mediaRecorder = new MediaRecorder(stream);
-
+      isRecording = true;
+      console.log("IS RECORDING ", isRecording)
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.push(event.data);
@@ -2883,9 +2885,13 @@ const openChatContainer = () => {
       console.error("Error accessing microphone:", error);
     }
   }
+  
+  console.log("IS RECORDING ", isRecording)
   if (micButton) {
     micButton.addEventListener("click", () => {
-      startRecording();
+      if(!isRecording){
+        startRecording();
+      }
     });
   }
 
@@ -2893,6 +2899,7 @@ const openChatContainer = () => {
     sendBtn.addEventListener("click", () => {
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
+        isRecording = false
       }
     });
   }
