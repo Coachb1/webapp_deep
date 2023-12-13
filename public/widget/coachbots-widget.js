@@ -2261,6 +2261,14 @@ loadExternalModule().then(() => {
                     });
                     return;
                   }
+
+                  const group_list = ['Demo','free','Free']
+                  if (!group_list.includes(clientName)){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
+                  }
                 }
 
                 // restriction check like monthly test allowed start
