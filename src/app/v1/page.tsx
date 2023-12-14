@@ -10,7 +10,7 @@ const Page = async () => {
 
   return (
     <div>
-      <VersionOne />
+      <VersionOne user={user} />
     </div>
   );
 };
