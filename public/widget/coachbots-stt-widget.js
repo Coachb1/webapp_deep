@@ -972,7 +972,7 @@ async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
       // "https://unpkg.com/deep-chat@1.4.0/dist/deepChat.bundle.js"
-      "https://storage.googleapis.com/aadil-devops-practice/deepchat-bundle.js"
+      "https://storage.googleapis.com/coachbots-simulator/deepchat-bundle.js"
     );
   } catch (error) {
     console.error("Error loading external module:", error);
