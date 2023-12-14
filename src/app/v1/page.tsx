@@ -4,13 +4,10 @@ import VersionOne from "./VersionOne";
 
 export const metadata = constructMetadata();
 
-const Page = async () => {
-  const { getUser } = getKindeServerSession();
-  const user: any = await getUser();
-
+const Page = () => {
   return (
     <div>
-      <VersionOne user={user} />
+      <VersionOne />
     </div>
   );
 };
