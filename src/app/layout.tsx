@@ -10,6 +10,10 @@ import Widgets from "@/components/Widgets";
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
 import Head from "next/head";
+import LogRocket from "logrocket";
+import setupLogRocketReact from "logrocket-react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,22 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user } = useKindeBrowserClient();
+  const [loggedInUser, setLoggedInUser] = useState<any>();
+
+  useEffect(() => {
+    if (user) {
+      setLoggedInUser(user);
+    }
+  }, [user]);
   return (
     <html lang="en" className="bg-gray-100 grainy">
-      <Head>
-        <script
-          src="https://cdn.intake-lr.com/LogRocket.min.js"
-          crossOrigin="anonymous"
-        ></script>
-        <script>
-          window.LogRocket && window.LogRocket.init('irkulq/coachbots');
-        </script>
-        <script>
-          window.LogRocket && window.user &&
-          window.LogRocket.identify(window.user.email);
-        </script>
-      </Head>
-
       <UserContextProvider>
         <body className={inter.className} suppressHydrationWarning={true}>
           <>
@@ -53,6 +51,18 @@ export default function RootLayout({
               <div className="deep-chat-poc2"></div>
               {children}
             </ThemeProvider>
+            {loggedInUser && (
+              <Script
+                src="https://cdn.intake-lr.com/LogRocket.min.js"
+                crossOrigin="anonymous"
+                onLoad={() => {
+                  if (typeof window !== "undefined") {
+                    LogRocket.init("irkulq/coachbots");
+                    setupLogRocketReact(LogRocket);
+                  }
+                }}
+              ></Script>
+            )}
           </>
           {pathname === "/profile" ? null : <Widgets />}
         </body>
