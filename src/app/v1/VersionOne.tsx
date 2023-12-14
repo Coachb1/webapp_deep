@@ -62,7 +62,7 @@ const VersionOne = async () => {
       "falahsss900@gmail.com",
       "ansariaadil611@gmail.com",
       "testingweb22222@gmail.com",
-      "testingweb11111@gmail.com",
+      // "testingweb11111@gmail.com",
     ];
     const restrictedEmails = ["gmail", "yahoo", "hotmail"];
     const domain = userEmail.split("@")[1];
