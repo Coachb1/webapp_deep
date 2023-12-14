@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const subdomain = window.location.hostname.split('.')[0];
+const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === 'playground' ? devUrl : prodUrl;
