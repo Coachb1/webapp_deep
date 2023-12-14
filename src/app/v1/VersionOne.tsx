@@ -30,7 +30,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+
+
+const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
+const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
+const baseURL = subdomain === 'playground' ? devUrl : prodUrl;
 
 const VersionOne = () => {
   const { user } = useKindeBrowserClient();
