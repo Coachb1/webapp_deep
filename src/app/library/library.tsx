@@ -18,7 +18,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+
+const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
+const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
+const baseURL = subdomain === 'playground' ? devUrl : prodUrl;
 interface Test {
   title: string;
   description: string;
@@ -100,16 +104,13 @@ const MyLibrary = ({ user }: any) => {
   };
 
   useEffect(() => {
-    fetch(
-      `https://coach-api-ovh.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .then(async (data) => {
         // console.log(data.data.my_lib[0].codes);
