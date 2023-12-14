@@ -1,3 +1,5 @@
+"use client";
+
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
 
@@ -26,33 +28,30 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
 
-async function getData() {
-  const res = await fetch(
-    `https://coach-api-ovh.coachbots.com/api/v1/accounts/get-test-codes-for-web/`,
-    {
+const VersionOne = ({ user }: any) => {
+  const [groupList, setGroupList] = useState<string[]>([]);
+  useEffect(() => {
+    fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
       method: "GET",
       headers: {
         Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
         "Content-Type": "application/json",
       },
-    }
-  );
-
-  return res.json();
-}
-
-const VersionOne = async () => {
-  const { getUser } = getKindeServerSession();
-  const data = await getData();
-  const user: any = await getUser();
-
-  const group_list = [];
-  for (const item of data.data.my_lib) {
-    if (item.emails.includes(user?.email)) {
-      group_list.push(item.group);
-    }
-  }
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        const group_list = [];
+        for (const item of data.data.my_lib) {
+          if (item.emails.includes(user?.email)) {
+            group_list.push(item.group);
+          }
+        }
+        setGroupList(group_list);
+      });
+  });
 
   let shouldRenderDiv;
   if (user) {
@@ -113,7 +112,7 @@ const VersionOne = async () => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        {group_list.length > 0 && (
+        {groupList.length > 0 && (
           <div className="flex flex-row mt-4 z-50">
             <Link href={"library"}>
               <Button variant={"default"} className=" mx-4">
