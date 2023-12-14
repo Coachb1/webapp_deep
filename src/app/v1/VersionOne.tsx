@@ -29,11 +29,14 @@ import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
 
-const VersionOne = ({ user }: any) => {
+const VersionOne = () => {
+  const { user } = useKindeBrowserClient();
   const [groupList, setGroupList] = useState<string[]>([]);
   useEffect(() => {
+    console.log(user);
     fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
       method: "GET",
       headers: {
@@ -51,11 +54,11 @@ const VersionOne = ({ user }: any) => {
         }
         setGroupList(group_list);
       });
-  });
+  }, [user]);
 
   let shouldRenderDiv;
   if (user) {
-    const userEmail = user.email;
+    const userEmail = user?.email;
     const exclusionEmails = [
       "bagoriarajan@gmail.com",
       "falahsss900@gmail.com",
@@ -64,11 +67,11 @@ const VersionOne = ({ user }: any) => {
       // "testingweb11111@gmail.com",
     ];
     const restrictedEmails = ["gmail", "yahoo", "hotmail"];
-    const domain = userEmail.split("@")[1];
-    const excludedEmail = exclusionEmails.includes(userEmail);
+    const domain = userEmail?.split("@")[1];
+    const excludedEmail = exclusionEmails.includes(userEmail!);
 
     const isrestEmail = restrictedEmails.some((restrictedDomain) =>
-      domain.includes(restrictedDomain)
+      domain?.includes(restrictedDomain)
     );
 
     if (excludedEmail && isrestEmail) {
