@@ -1,6 +1,10 @@
 const key = "";
 const secret = "";
-const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
+const subdomain = window.location.hostname.split(".")[0];
+const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
+const baseURL = subdomain === "playground" ? devUrl : prodUrl;
+
 // baseURL="http://127.0.0.1:8001/api/v1" //local
 
 let deepChatPocElement;
