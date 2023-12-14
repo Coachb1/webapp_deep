@@ -63,6 +63,8 @@ let isProceedStt;
 let initialQuestionTextStt;
 let isSessionActiveStt = false;
 let recommendationsStt = '';
+let isTestSignedInStt;
+let clientNameStt;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -243,6 +245,9 @@ function appendMessage2(message2) {
     isProceedStt = '';
     isSessionActiveStt = false;
     recommendationsStt="";
+    isTestSignedInStt;
+    clientNameStt = "";
+
   };
 
   function findRelatedItemsStt(data, targetCode) {
@@ -1570,6 +1575,7 @@ loadExternalModule().then(() => {
               ) {
                 // checking sessionexpiry
                 await cancelTestStt(participantId2);
+                resetAllVariablesStt();
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
                 });
@@ -1623,50 +1629,59 @@ loadExternalModule().then(() => {
             codeAvailabilityUserChoice2
           ) {
             try {
-              const response = await fetch(
-                `${baseURL2}/tests/?test_code=${testCode2}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                  },
-                }
-              );
-
-              questionData2 = await response.json();
-              questionLength2 = questionData2.results[0].questions.length;
-              testId2 = questionData2.results[0].uid;
-              interactionMode2 = questionData2.results[0].interaction_mode;
-              is_free2 = questionData2.results[0].is_free;
-              senarioDescription2 = questionData2.results[0].description;
-              senarioTitle2 = questionData2.results[0].title;
-              senarioMediaDescription2 =
-                questionData2.results[0].description_media;
-              testUIInfoStt = questionData2.results[0].ui_information;
-              console.log(senarioMediaDescription2);
-
-              testType2 = questionData2.results[0].test_type;
-              orch_details2 =
-                questionData2.results[0].orchestrated_conversation_details;
-
-              if (testUIInfoStt) {
-                if (Object.keys(testUIInfoStt).length > 0) {
+              
+              if (questionIndex2 === 0) {
+                const response = await fetch(
+                  `${baseURL2}/tests/?test_code=${testCode2}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(
+                        key2,
+                        secret2
+                      )}`,
+                    },
+                  }
+                );
+  
+                questionData2 = await response.json();
+                if ((questionData2.results).length === 0){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                   });
                   return;
                 }
-              }
-
-              if (testType2 === "mcq") {
-                globalQuestionLengthStt = Math.log2(questionLength2 + 1);
-                globalQuestionDataStt = questionData2;
-              }
-
-              if (questionIndex2 === 0) {
+                questionLength2 = questionData2.results[0].questions.length;
+                testId2 = questionData2.results[0].uid;
+                interactionMode2 = questionData2.results[0].interaction_mode;
+                is_free2 = questionData2.results[0].is_free;
+                senarioDescription2 = questionData2.results[0].description;
+                senarioTitle2 = questionData2.results[0].title;
+                senarioMediaDescription2 =
+                  questionData2.results[0].description_media;
+                testUIInfoStt = questionData2.results[0].ui_information;
+                console.log(senarioMediaDescription2);
+  
+                testType2 = questionData2.results[0].test_type;
+                orch_details2 =
+                  questionData2.results[0].orchestrated_conversation_details;
+                clientNameStt = questionData2.results[0].client_name;
+                isTestSignedInStt = questionData2.results[0].is_logged_in;
+  
+                if (testUIInfoStt) {
+                  if (Object.keys(testUIInfoStt).length > 0) {
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+                    });
+                    return;
+                  }
+                }
+  
+                if (testType2 === "mcq") {
+                  globalQuestionLengthStt = Math.log2(questionLength2 + 1);
+                  globalQuestionDataStt = questionData2;
+                }
+  
                 //signed user rules
 
                 if (user2) {
@@ -1675,28 +1690,57 @@ loadExternalModule().then(() => {
                   //   signals.onResponse({
                   //     text: 'not allowed'
                   //   })
-                  const companyName = user2.email.split("@")[1].split(".")[0];
-                  const companyTestCode = await getTestCodesByRule2(
-                    companyName
-                  );
-                  console.log(companyName);
-                  if (companyTestCode.length > 0) {
-                    if (!companyTestCode.includes(testCode2)) {
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
+                  // const companyName = user2.email.split("@")[1].split(".")[0];
+                  // const companyTestCode = await getTestCodesByRule2(
+                  //   companyName
+                  // );
+                  // console.log(companyName);
+                  // if (companyTestCode.length > 0) {
+                  //   if (!companyTestCode.includes(testCode2)) {
+                  //     signals.onResponse({
+                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                  //     });
+                  //     return;
+                  //   }
+
+                  const group_list = ['Demo','free','Free']
+                  const my_lib = await getTestCodesByRule2('my_lib');
+                  for (const item of my_lib) {
+                    if (item.emails.includes(user2.email)) {
+                        group_list.push(item.group);
                     }
                   }
-                } else {
-                  const unSignedUserTestCode = await getTestCodesByRule2(
-                    "unsigned_user"
-                  );
-                  if (unSignedUserTestCode.length > 0) {
-                    if (!unSignedUserTestCode.includes(testCode2)) {
+
+                  if (!group_list.includes(clientNameStt)){  // clientName Demo means Free type test
                       signals.onResponse({
                         html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
+                      return;
                     }
+                } else {
+                  // const unSignedUserTestCode = await getTestCodesByRule2(
+                  //   "unsigned_user"
+                  // );
+                  // if (unSignedUserTestCode.length > 0) {
+                  //   if (!unSignedUserTestCode.includes(testCode2)) {
+                  //     signals.onResponse({
+                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                  //     });
+                  //   }
+                  // }
+
+                  if (isTestSignedInStt){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
+                  }
+                  const group_list = ['Demo','free','Free']
+                  if (!group_list.includes(clientNameStt)){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
                   }
                 }
 
@@ -2239,13 +2283,35 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (!isTestcodeValid2 && body.messages[0].text.toUpperCase() !== "STOP") {
+              if (testType2 === "mcq") {
+                const shadowRoot =
+                  document.getElementById("chat-element2").shadowRoot;
+                const button = shadowRoot.getElementById(
+                  `mcq-option-stt-${mcqFormIdStt}`
+                );
+                // button.parentNode.removeChild(button)
+                const thankYouMessage = document.createElement("div");
+                thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+      
+                // Replace the button with the "Thank you" message
+                button.parentNode.replaceChild(thankYouMessage, button);
+              }
+              if (isProceedStt === "false") {
+                const gshadowRoot =
+                  document.getElementById("chat-element2").shadowRoot;
+                const msg = gshadowRoot.getElementById("proceed-option2");
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
+              }
+      
+              resetAllVariablesStt();
+              
+              if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
-                });
-              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Error Processing your response.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                 });
               }
             }
@@ -2312,6 +2378,13 @@ const openChatContainer2 = () => {
   } else {
     user_name2 = "coachbots_anonyoususer";
     user_email2 = getAnonymousEmail();
+  }
+
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email2, {
+      name: user_name2,
+      email: user_email2,
+    });
   }
 
   // 2 - account creation

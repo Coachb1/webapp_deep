@@ -70,6 +70,8 @@ let isProceed;
 let isSessionActive = false;
 let isEmailType=false;
 let recommendations = '';
+let isTestSignedIn;
+let clientName;
 
 let audioDuration;
 
@@ -902,6 +904,8 @@ function generateOptionButtons() {
       isSessionActive = false;
       isEmailType = false;
       recommendations="";
+      isTestSignedIn;
+      clientName = "";
     };
 
     function findRelatedItems(data, targetCode) {
@@ -1120,7 +1124,10 @@ loadExternalModule().then(() => {
     <deep-chat 
       id="chat-element"
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 73vh; border: none;"
-      microphone='true'
+      microphone='{
+        "files": {"format": "mp3", "maxNumberOfFiles": 1},
+        "button": {"position": "outside-right"}
+      }'
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px" }}
@@ -1504,7 +1511,7 @@ loadExternalModule().then(() => {
         return [];
       }
     } catch (error) {
-      console.error(`Error in getTestPrevilage: ${error}`);
+      console.error(`Error in getTestCodesByRule: ${error}`);
     }
   };
 
@@ -1728,6 +1735,7 @@ loadExternalModule().then(() => {
           } else if (sessionStatus === "in_progress" && isSessionExpired) {
             // checking sessionexpiry
             await cancelTest(participantId);
+            resetAllVariables();
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });
@@ -1751,10 +1759,10 @@ loadExternalModule().then(() => {
           }
 
           
-          // console.log("GROOT UP - Audio duration:", audioDuration);
+          console.log("At execution - Audio duration:", audioDuration);
           if (audioDuration < 10.00) {
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'><b>Audio should be atleast 10 seconds.  Please submit again.</b></p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>The response length detected is below the recommended limit. Please try again.</b></p>",
             });
             return;
           }
@@ -2178,78 +2186,92 @@ loadExternalModule().then(() => {
             codeAvailabilityUserChoice
           ) {
             try {
-              const response = await fetch(
-                `${baseURL}/tests/?test_code=${testCode}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                  },
-                }
-              );
-
-              questionData = await response.json();
-              console.log("TESTCODE DATA :", questionData);
-              questionLength = questionData.results[0].questions.length;
-              testId = questionData.results[0].uid;
-              interactionMode = questionData.results[0].interaction_mode;
-              is_free = questionData.results[0].is_free;
-              senarioDescription = questionData.results[0].description;
-              senarioTitle = questionData.results[0].title;
-              senarioMediaDescription =
-                questionData.results[0].description_media;
-              TestUIInfo = questionData.results[0].ui_information;
-              isEmailType = questionData.results[0].is_email_type;
-              console.log(senarioMediaDescription);
-
-              isTestcodeValid = true;
-
-              testType = questionData.results[0].test_type;
-              orch_details =
-                questionData.results[0].orchestrated_conversation_details;
-
-              if (TestUIInfo) {
-                if (Object.keys(TestUIInfo).length > 0) {
-                  senarioTitle = TestUIInfo["title"];
-                  senarioDescription = TestUIInfo["description"];
-                  isHindi = true;
-                }
-              }
-
-              if (testType === "mcq") {
-                globalQuestionLength = Math.log2(questionLength + 1);
-                globalQuestionData = questionData;
-              }
-
+              
               if (questionIndex === 0) {
-                //signed user rules
+                const response = await fetch(
+                  `${baseURL}/tests/?test_code=${testCode}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                    },
+                  }
+                );
+  
+                questionData = await response.json();
 
+                if ((questionData.results).length === 0){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
+                  });
+                  return;
+                }
+                console.log("TESTCODE DATA :", questionData);
+                questionLength = questionData.results[0].questions.length;
+                testId = questionData.results[0].uid;
+                interactionMode = questionData.results[0].interaction_mode;
+                is_free = questionData.results[0].is_free;
+                senarioDescription = questionData.results[0].description;
+                senarioTitle = questionData.results[0].title;
+                senarioMediaDescription =
+                  questionData.results[0].description_media;
+                TestUIInfo = questionData.results[0].ui_information;
+                isEmailType = questionData.results[0].is_email_type;
+                console.log(senarioMediaDescription);
+                clientName = questionData.results[0].client_name;
+                isTestSignedIn = questionData.results[0].is_logged_in;
+  
+                isTestcodeValid = true;
+  
+                testType = questionData.results[0].test_type;
+                orch_details =
+                  questionData.results[0].orchestrated_conversation_details;
+  
+                if (TestUIInfo) {
+                  if (Object.keys(TestUIInfo).length > 0) {
+                    senarioTitle = TestUIInfo["title"];
+                    senarioDescription = TestUIInfo["description"];
+                    isHindi = true;
+                  }
+                }
+  
+                if (testType === "mcq") {
+                  globalQuestionLength = Math.log2(questionLength + 1);
+                  globalQuestionData = questionData;
+                }
+                
+                //signed user rules
+  
                 if (user) {
-                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
-                  // if (!signedUserTestCode.includes(testCode) ){
-                  //   signals.onResponse({
-                  //     text: 'not allowed'
-                  //   })
-                  const companyName = user.email.split("@")[1].split(".")[0];
-                  const companyTestCode = await getTestCodesByRule(companyName);
-                  console.log(companyName);
-                  if (companyTestCode.length > 0) {
-                    if (!companyTestCode.includes(testCode)) {
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
+                  const group_list = ['Demo','free','Free']
+                  const my_lib = await getTestCodesByRule('my_lib');
+                  for (const item of my_lib) {
+                    if (item.emails.includes(user.email)) {
+                        group_list.push(item.group);
                     }
                   }
-                } else {
-                  const unSignedUserTestCode = await getTestCodesByRule(
-                    "unsigned_user"
-                  );
-                  if (unSignedUserTestCode.length > 0) {
-                    if (!unSignedUserTestCode.includes(testCode)) {
+
+                  if (!group_list.includes(clientName)){  // clientName Demo means Free type test
                       signals.onResponse({
                         html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                       });
+                      return;
                     }
+                } else {
+                  console.log('signedin',isTestSignedIn)
+                  if (isTestSignedIn){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
+                  }
+
+                  const group_list = ['Demo','free','Free']
+                  if (!group_list.includes(clientName)){
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
                   }
                 }
 
@@ -2755,16 +2777,30 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (
-                !isTestcodeValid &&
-                body.messages[0].text.toUpperCase() !== "STOP"
-              ) {
+              if (testType === "mcq") {
+                const shadowRoot = document.getElementById("chat-element").shadowRoot;
+                const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+                // button.parentNode.removeChild(button)
+                const thankYouMessage = document.createElement("div");
+                thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                button.parentNode.replaceChild(thankYouMessage, button);
+              }
+              if (isProceed === "false") {
+                const gshadowRoot =
+                  document.getElementById("chat-element").shadowRoot;
+                const msg = gshadowRoot.getElementById("proceed-option");
+                // button.parentNode.removeChild(button)
+                const que_msg = document.createElement("div");
+                que_msg.innerHTML = "Thank You"; // You can customize the message here
+                // Replace the button with the "Thank you" message
+                msg.parentNode.replaceChild(que_msg, msg);
+              }
+              resetAllVariables(); //reseting variables
+      
+              if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
-                });
-              } else if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Error Processing your response.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                 });
               }
             }
@@ -2773,7 +2809,6 @@ loadExternalModule().then(() => {
       } catch (e) {
         console.log(e);
         await cancelTest(participantId); // cancelling session
-        resetAllVariables(); //reseting variables
         if (testType === "mcq") {
           const shadowRoot = document.getElementById("chat-element").shadowRoot;
           const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
@@ -2793,6 +2828,7 @@ loadExternalModule().then(() => {
           // Replace the button with the "Thank you" message
           msg.parentNode.replaceChild(que_msg, msg);
         }
+        resetAllVariables(); //reseting variables
 
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
@@ -2810,6 +2846,7 @@ const openChatContainer = () => {
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   const sendBtn = chatE.shadowRoot.querySelector(".input-button");
   let mediaRecorder;
+  let isRecording = false;
   let audioChunks = [];
 
   user = window.user;
@@ -2822,7 +2859,8 @@ const openChatContainer = () => {
         audio: true,
       });
       mediaRecorder = new MediaRecorder(stream);
-
+      isRecording = true;
+      console.log("IS RECORDING ", isRecording)
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.push(event.data);
@@ -2835,7 +2873,7 @@ const openChatContainer = () => {
 
         const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
         audioDuration = audioBuffer.duration;
-        // console.log("ROOT - Audio duration:", audioDuration);
+        console.log("at INIT - Audio duration:", audioDuration);
 
         audioFile = new File([audioBlob], "user-audio", {
           type: audioBlob.type,
@@ -2851,9 +2889,13 @@ const openChatContainer = () => {
       console.error("Error accessing microphone:", error);
     }
   }
+  
+  console.log("IS RECORDING ", isRecording)
   if (micButton) {
     micButton.addEventListener("click", () => {
-      startRecording();
+      if(!isRecording){
+        startRecording();
+      }
     });
   }
 
@@ -2861,6 +2903,7 @@ const openChatContainer = () => {
     sendBtn.addEventListener("click", () => {
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
+        isRecording = false
       }
     });
   }
@@ -2895,6 +2938,12 @@ const openChatContainer = () => {
     user_email = getAnonymousEmail();
   }
 
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email, {
+      name: user_name,
+      email: user_email,
+    });
+  }
   fetch(`${baseURL}/accounts/`, {
     method: "POST",
     headers: {

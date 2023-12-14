@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
-const baseURL = "https://coach-api-gcp.coachbots.com/api/v1";
+const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
 
 const UserProfile = ({
   userName,

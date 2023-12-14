@@ -1,7 +1,24 @@
 "use client";
 
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import Script from "next/script";
+import { useEffect } from "react";
+
+//GLOBAL USER - *.js
+interface CustomWindow extends Window {
+  user?: any;
+}
+
+declare let window: CustomWindow;
 const Widgets = () => {
+  const { user } = useKindeBrowserClient();
+
+  useEffect(() => {
+    if (user) {
+      window.user = user;
+    }
+  });
+
   return (
     <div>
       <>

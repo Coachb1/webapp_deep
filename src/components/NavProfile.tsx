@@ -21,21 +21,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import Image from "next/image";
 
-//GLOBAL USER - *.js
-interface CustomWindow extends Window {
-  user?: any;
-}
-
-declare let window: CustomWindow;
-
 const NavProfile = () => {
   const { user, isLoading } = useKindeBrowserClient();
-
-  useEffect(() => {
-    if (user) {
-      window.user = user;
-    }
-  });
 
   if (isLoading) {
     return <Loader className="h-4 w-4 animate-spin" />;
