@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -9,6 +9,7 @@ import Script from "next/script";
 import Widgets from "@/components/Widgets";
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,15 +23,23 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   return (
     <html lang="en" className="bg-gray-100 grainy">
-      <head>
-      <Script src="https://cdn.intake-lr.com/LogRocket.min.js" crossOrigin="anonymous"></Script>
-      <Script>window.LogRocket && window.LogRocket.init('irkulq/coachbots');</Script>
-      <Script>window.LogRocket && window.user && window.LogRocket.identify(window.user.email);</Script>
-      </head>
-      
+      <Head>
+        <script
+          src="https://cdn.intake-lr.com/LogRocket.min.js"
+          crossOrigin="anonymous"
+        ></script>
+        <script>
+          window.LogRocket && window.LogRocket.init('irkulq/coachbots');
+        </script>
+        <script>
+          window.LogRocket && window.user &&
+          window.LogRocket.identify(window.user.email);
+        </script>
+      </Head>
+
       <UserContextProvider>
         <body className={inter.className} suppressHydrationWarning={true}>
           <>
@@ -45,7 +54,7 @@ export default function RootLayout({
               {children}
             </ThemeProvider>
           </>
-        {pathname === "/profile" ? null : <Widgets />}
+          {pathname === "/profile" ? null : <Widgets />}
         </body>
       </UserContextProvider>
     </html>
