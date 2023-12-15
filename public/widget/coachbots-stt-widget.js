@@ -7,7 +7,7 @@ const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "playground" ? devUrlStt : prodUrlStt;
 
-// const baseURL2="http://127.0.0.1:8001/api/v1" //local
+// const baseURL2="https://coach-api-ovh.coachbots.com/api/v1" //local
 
 let deepChatPocElement2;
 let sessionId2 = "";
@@ -619,16 +619,12 @@ async function setMcqVariablesStt() {
     </div>`;
     }
 
-    if (!window.user) {
-      console.log("user not logged in, so asking for credentials");
-      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
-        credentialsForm2;
-    } else {
-      console.log("user logged in, so sending email");
-      gShadowRoot2.getElementById(
-        `mcq-option-stt-${mcqFormIdStt}`
-      ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
-    }
+     
+    console.log("user logged in, so sending email");
+    gShadowRoot2.getElementById(
+      `mcq-option-stt-${mcqFormIdStt}`
+    ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
+    
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
       method: "POST",
@@ -653,11 +649,62 @@ async function setMcqVariablesStt() {
 
     const testResponseData = await testResponse.json();
     console.log("last", testResponseData);
+    const res = await fetch(`${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${test_attempt_session_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const isCheck = await res.json()
+    console.log(isCheck)
+
+    if (!isCheck.check){
+      console.log('failed to save session data', isCheck)
+      if (testType2 === "mcq") {
+        const shadowRoot =
+          document.getElementById("chat-element2").shadowRoot;
+        const button = shadowRoot.getElementById(
+          `mcq-option-stt-${mcqFormIdStt}`
+        );
+        // button.parentNode.removeChild(button)
+        const thankYouMessage = document.createElement("div");
+        thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+
+        // Replace the button with the "Thank you" message
+        button.parentNode.replaceChild(thankYouMessage, button);
+      }
+      if (isProceedStt === "false") {
+        const gshadowRoot =
+          document.getElementById("chat-element2").shadowRoot;
+        const msg = gshadowRoot.getElementById("proceed-option2");
+        // button.parentNode.removeChild(button)
+        const que_msg = document.createElement("div");
+        que_msg.innerHTML = "Thank You"; // You can customize the message here
+        // Replace the button with the "Thank you" message
+        msg.parentNode.replaceChild(que_msg, msg);
+      }
+
+      resetAllVariablesStt();
+      
+      appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>")
+      
+      return;
+    }
+
+    if (!window.user) {
+      console.log("user not logged in, so asking for credentials");
+      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+        credentialsForm2;
+    }
+
+    
 
     await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -688,6 +735,16 @@ async function setMcqVariablesStt() {
           submitEmailAndName2();
         }
       });
+
+      const urlObject = new URL(reportUrl2);
+      const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+
+      const resp = await fetch(baseurl)
+      if (!resp.ok){
+        appendMessage2(
+          "<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>"
+        )
+      }
   }
 }
 
@@ -1293,14 +1350,14 @@ loadExternalModule().then(() => {
 
   // to cancel all active test for a user
   const cancelTestStt = async (user_id) => {
-    const url = `${baseURL}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
+    const url = `${baseURL2}/test-attempt-sessions/cancel-test-sessions/?user_id=${user_id}`;
 
     try {
       if (user_id) {
         const response = await fetch(url, {
           method: "GET",
           headers: {
-            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           },
         });
 
@@ -1314,14 +1371,14 @@ loadExternalModule().then(() => {
 
   // get session status
   const getSessionStatusStt = async (session_id) => {
-    const url = `${baseURL}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
+    const url = `${baseURL2}/test-attempt-sessions/get-session-status/?session_id=${session_id}`;
 
     try {
       if (session_id) {
         const response = await fetch(url, {
           method: "GET",
           headers: {
-            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           },
         });
 
@@ -1422,6 +1479,29 @@ loadExternalModule().then(() => {
       }
     } catch (error) {
       console.error(`Error in getTestPrevilage: ${error}`);
+    }
+  };
+
+  const SessionCheckStt = async (session_id) => {
+    const url = `${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
+
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      return resp_json.check
+      
+      
+    } catch (error) {
+      console.error(`Error in SessionCheckStt: ${error}`);
     }
   };
 
@@ -1817,7 +1897,7 @@ loadExternalModule().then(() => {
                   isSessionActiveStt = false;
                 }
               }
-
+            
               if (questionIndex2 <= questionLength2) {
                 if (questionIndex2 < questionLength2) {
                   if (
@@ -2212,6 +2292,41 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber2 === questionLength2) {
                   responsesDone2 = true;
 
+                  const isCheckStt = await SessionCheckStt(sessionId2)
+                  if (!isCheckStt){
+                    console.log('failed to populate session data', isCheckStt)
+                    if (testType2 === "mcq") {
+                      const shadowRoot =
+                        document.getElementById("chat-element2").shadowRoot;
+                      const button = shadowRoot.getElementById(
+                        `mcq-option-stt-${mcqFormIdStt}`
+                      );
+                      // button.parentNode.removeChild(button)
+                      const thankYouMessage = document.createElement("div");
+                      thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+            
+                      // Replace the button with the "Thank you" message
+                      button.parentNode.replaceChild(thankYouMessage, button);
+                    }
+                    if (isProceedStt === "false") {
+                      const gshadowRoot =
+                        document.getElementById("chat-element2").shadowRoot;
+                      const msg = gshadowRoot.getElementById("proceed-option2");
+                      // button.parentNode.removeChild(button)
+                      const que_msg = document.createElement("div");
+                      que_msg.innerHTML = "Thank You"; // You can customize the message here
+                      // Replace the button with the "Thank you" message
+                      msg.parentNode.replaceChild(que_msg, msg);
+                    }
+            
+                    resetAllVariablesStt();
+                    
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                    });
+                    return;
+                  }
+
                   if (!window.user) {
                     signals.onResponse({
                       html: credentialsForm2,
@@ -2272,6 +2387,20 @@ loadExternalModule().then(() => {
                   if (reportData2) {
                     responsesDone2 = true;
                   }
+
+                  const urlObject = new URL(reportUrl2);
+                  const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+                  console.log(baseurl)
+
+                  const resp = await fetch(baseurl)
+                  console.log(resp)
+                  if (!resp.ok){
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+                    })
+                  }
+                    
+
 
                   if (window.user) {
                     // sendEmail();
