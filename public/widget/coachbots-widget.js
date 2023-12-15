@@ -669,15 +669,15 @@ async function setMcqVariables() {
         }
       });
 
-      const urlObject = new URL(reportUrl);
-      const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+      // const urlObject = new URL(reportUrl);
+      // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
 
-      const resp = await fetch(baseurl)
-      console.log(resp)
-      if (!resp.ok){
-        appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+      // const resp = await fetch(baseurl)
+      // console.log(resp)
+      // if (!resp.ok){
+      //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
         
-      }
+      // }
   }
 }
 
@@ -2081,13 +2081,13 @@ loadExternalModule().then(() => {
                       return;
                     }
                   });
-                  const urlObject = new URL(reportUrl);
-                  const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+                  // const urlObject = new URL(reportUrl);
+                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
 
-                  const resp = await fetch(baseurl)
-                  if (!resp.ok){
-                    appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
-                  }
+                  // const resp = await fetch(baseurl)
+                  // if (!resp.ok){
+                  //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+                  // }
               }
             } catch (error) {
               console.log(error);
@@ -2895,13 +2895,13 @@ loadExternalModule().then(() => {
                   globalReportUrl = reportUrl;
 
                   console.log("Report Url : ", reportUrl, globalReportUrl);
-                  const urlObject = new URL(reportUrl);
-                  const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+                  // const urlObject = new URL(reportUrl);
+                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
 
-                  const resp = await fetch(baseurl)
-                  if (!resp.ok){
-                    appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
-                  }
+                  // const resp = await fetch(baseurl)
+                  // if (!resp.ok){
+                  //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+                  // }
 
                   //* send report message or form to collect data : start
                   if (window.user) {
