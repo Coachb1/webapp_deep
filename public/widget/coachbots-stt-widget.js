@@ -736,15 +736,15 @@ async function setMcqVariablesStt() {
         }
       });
 
-      const urlObject = new URL(reportUrl2);
-      const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+      // const urlObject = new URL(reportUrl2);
+      // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
 
-      const resp = await fetch(baseurl)
-      if (!resp.ok){
-        appendMessage2(
-          "<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>"
-        )
-      }
+      // const resp = await fetch(baseurl)
+      // if (!resp.ok){
+      //   appendMessage2(
+      //     "<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>"
+      //   )
+      // }
   }
 }
 
@@ -2388,17 +2388,17 @@ loadExternalModule().then(() => {
                     responsesDone2 = true;
                   }
 
-                  const urlObject = new URL(reportUrl2);
-                  const baseurl = `${urlObject.protocol}//${urlObject.host}`;
-                  console.log(baseurl)
+                  // const urlObject = new URL(reportUrl2);
+                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+                  // console.log(baseurl)
 
-                  const resp = await fetch(baseurl)
-                  console.log(resp)
-                  if (!resp.ok){
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
-                    })
-                  }
+                  // const resp = await fetch(baseurl)
+                  // console.log(resp)
+                  // if (!resp.ok){
+                  //   signals.onResponse({
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+                  //   })
+                  // }
                     
 
 
