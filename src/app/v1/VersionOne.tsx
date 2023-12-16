@@ -31,36 +31,19 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
-
-const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
+const subdomain =
+  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
+// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+const baseURL = subdomain === "playground" ? devUrl : prodUrl;
 
-const VersionOne = () => {
-  const { user } = useKindeBrowserClient();
+const VersionOne = ({ user, groups }: any) => {
+  // const { user } = useKindeBrowserClient();
   const [groupList, setGroupList] = useState<string[]>([]);
   useEffect(() => {
-    console.log(user);
-    fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
-      method: "GET",
-      headers: {
-        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        const group_list = [];
-        for (const item of data.data.my_lib) {
-          if (item.emails.includes(user?.email)) {
-            group_list.push(item.group);
-          }
-        }
-        setGroupList(group_list);
-      });
-  }, [user]);
+    setGroupList(groups);
+  }, []);
 
   let shouldRenderDiv;
   if (user) {
@@ -103,7 +86,7 @@ const VersionOne = () => {
             <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
           </Badge>
         )}
-        <NavProfile />
+        <NavProfile user={user} />
       </div>
 
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
