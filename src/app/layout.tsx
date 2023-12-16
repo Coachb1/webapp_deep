@@ -12,6 +12,7 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
+const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
 
 export default function RootLayout({
   children,
@@ -47,7 +48,9 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <div className="deep-chat-poc"></div>
+              {/* <div className="deep-chat-poc" ></div> */}
+
+              { subdomain === "platform" ? <div className="deep-chat-poc hidden" ></div> : <div className="deep-chat-poc"></div> }
               <div className="deep-chat-poc2"></div>
               {children}
             </ThemeProvider>
