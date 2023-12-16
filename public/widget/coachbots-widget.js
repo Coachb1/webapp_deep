@@ -1,11 +1,12 @@
 const key = "";
 const secret = "";
 const subdomain = window.location.hostname.split(".")[0];
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "playground" ? devUrl : prodUrl;
+const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
-// baseURL="http://127.0.0.1:8001/api/v1" //local
+// const baseURL="https://coach-api-ovh.coachbots.com/api/v1" //local
 
 let deepChatPocElement;
 let sessionId = "";
@@ -554,16 +555,11 @@ async function setMcqVariables() {
       `;
     }
 
-    if (!window.user) {
-      console.log("user not logged in, so asking for credentials");
-      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
-        credentialsForm;
-    } else {
-      console.log("user logged in, so sending email");
-      gShadowRoot.getElementById(
-        `mcq-option-${mcqFormId}`
-      ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
-    }
+    
+    console.log("user logged in, so sending email");
+    gShadowRoot.getElementById(
+      `mcq-option-${mcqFormId}`
+    ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
       method: "POST",
@@ -588,6 +584,48 @@ async function setMcqVariables() {
 
     const testResponseData = await testResponse.json();
     console.log("last", testResponseData);
+    const res = await fetch(`${baseURL}/test-attempt-sessions/check-session-data-exist/?session_id=${test_attempt_session_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const isCheck = await res.json()
+    console.log(isCheck)
+    if (!isCheck.check){
+      if (testType === "mcq") {
+        const shadowRoot = document.getElementById("chat-element").shadowRoot;
+        const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+        // button.parentNode.removeChild(button)
+        const thankYouMessage = document.createElement("div");
+        thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+        // Replace the button with the "Thank you" message
+        button.parentNode.replaceChild(thankYouMessage, button);
+      }
+      if (isProceed === "false") {
+        const gshadowRoot =
+          document.getElementById("chat-element").shadowRoot;
+        const msg = gshadowRoot.getElementById("proceed-option");
+        // button.parentNode.removeChild(button)
+        const que_msg = document.createElement("div");
+        que_msg.innerHTML = "Thank You"; // You can customize the message here
+        // Replace the button with the "Thank you" message
+        msg.parentNode.replaceChild(que_msg, msg);
+      }
+      resetAllVariables(); //reseting variables
+
+      appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>")
+      return;
+    }
+
+
+    if (!window.user) {
+      console.log("user not logged in, so asking for credentials");
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+        credentialsForm;
+    } 
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
       method: "POST",
@@ -630,6 +668,16 @@ async function setMcqVariables() {
           submitEmailAndName();
         }
       });
+
+      // const urlObject = new URL(reportUrl);
+      // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+
+      // const resp = await fetch(baseurl)
+      // console.log(resp)
+      // if (!resp.ok){
+      //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+        
+      // }
   }
 }
 
@@ -1519,6 +1567,29 @@ loadExternalModule().then(() => {
     }
   };
 
+  const SesseionCheck = async (session_id) => {
+    const url = `${baseURL}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
+
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      return resp_json.check
+      
+      
+    } catch (error) {
+      console.error(`Error in SesseionCheck: ${error}`);
+    }
+  };
+
   const testResponseHandler = async (formdata, questionObj) => {
     const shadowRoot = document.getElementById("chat-element").shadowRoot;
     const players = shadowRoot.querySelectorAll(".audio-player");
@@ -1890,6 +1961,34 @@ loadExternalModule().then(() => {
                 }
               }
               if (responsesDone) {
+                const isCheck = await SesseionCheck(sessionId)
+                if (!isCheck){
+                  if (testType === "mcq") {
+                    const shadowRoot = document.getElementById("chat-element").shadowRoot;
+                    const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+                    // button.parentNode.removeChild(button)
+                    const thankYouMessage = document.createElement("div");
+                    thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+                    // Replace the button with the "Thank you" message
+                    button.parentNode.replaceChild(thankYouMessage, button);
+                  }
+                  if (isProceed === "false") {
+                    const gshadowRoot =
+                      document.getElementById("chat-element").shadowRoot;
+                    const msg = gshadowRoot.getElementById("proceed-option");
+                    // button.parentNode.removeChild(button)
+                    const que_msg = document.createElement("div");
+                    que_msg.innerHTML = "Thank You"; // You can customize the message here
+                    // Replace the button with the "Thank you" message
+                    msg.parentNode.replaceChild(que_msg, msg);
+                  }
+                  resetAllVariables(); //reseting variables
+          
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                  });
+                  return;
+                }
                 if (!window.user) {
                   // appendMessage(
                   //   "<b>For obtaining your report, please submit the following details.</b>"
@@ -1982,6 +2081,13 @@ loadExternalModule().then(() => {
                       return;
                     }
                   });
+                  // const urlObject = new URL(reportUrl);
+                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+
+                  // const resp = await fetch(baseurl)
+                  // if (!resp.ok){
+                  //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+                  // }
               }
             } catch (error) {
               console.log(error);
@@ -2680,6 +2786,34 @@ loadExternalModule().then(() => {
 
                 if (resQuestionNumber === questionLength) {
                   responsesDone = true;
+                  const isCheck = await SesseionCheck(sessionId)
+                  if (!isCheck){
+                    if (testType === "mcq") {
+                      const shadowRoot = document.getElementById("chat-element").shadowRoot;
+                      const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
+                      // button.parentNode.removeChild(button)
+                      const thankYouMessage = document.createElement("div");
+                      thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+                      // Replace the button with the "Thank you" message
+                      button.parentNode.replaceChild(thankYouMessage, button);
+                    }
+                    if (isProceed === "false") {
+                      const gshadowRoot =
+                        document.getElementById("chat-element").shadowRoot;
+                      const msg = gshadowRoot.getElementById("proceed-option");
+                      // button.parentNode.removeChild(button)
+                      const que_msg = document.createElement("div");
+                      que_msg.innerHTML = "Thank You"; // You can customize the message here
+                      // Replace the button with the "Thank you" message
+                      msg.parentNode.replaceChild(que_msg, msg);
+                    }
+                    resetAllVariables(); //reseting variables
+            
+                    signals.onResponse({
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                    });
+                    return;
+                  }
 
                   if (!window.user) {
                     // appendMessage(
@@ -2761,6 +2895,13 @@ loadExternalModule().then(() => {
                   globalReportUrl = reportUrl;
 
                   console.log("Report Url : ", reportUrl, globalReportUrl);
+                  // const urlObject = new URL(reportUrl);
+                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+
+                  // const resp = await fetch(baseurl)
+                  // if (!resp.ok){
+                  //   appendMessage("<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>")
+                  // }
 
                   //* send report message or form to collect data : start
                   if (window.user) {
