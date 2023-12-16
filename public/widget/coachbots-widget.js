@@ -1,10 +1,10 @@
 const key = "";
 const secret = "";
 const subdomain = window.location.hostname.split(".")[0];
-// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
+const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "playground" ? devUrl : prodUrl;
+const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
 // const baseURL="https://coach-api-ovh.coachbots.com/api/v1" //local
 
@@ -1190,7 +1190,15 @@ loadExternalModule().then(() => {
       }'
       demo="true"
       style="border: none"
+
       displayLoadingBubble="true"
+
+      displayLoadingBubble="false"
+      errorMessages='{
+        "overrides": {
+          "default": "System Error. But please continue and/or retry."
+        }
+      }'
       >
     </deep-chat>
   </div>

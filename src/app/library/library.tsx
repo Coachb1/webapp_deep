@@ -20,10 +20,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
-// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
+const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === 'playground' ? devUrl : prodUrl;
+const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 interface Test {
   title: string;
   description: string;
