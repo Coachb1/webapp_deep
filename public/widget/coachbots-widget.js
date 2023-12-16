@@ -1190,6 +1190,9 @@ loadExternalModule().then(() => {
       }'
       demo="true"
       style="border: none"
+
+      displayLoadingBubble="true"
+
       displayLoadingBubble="false"
       errorMessages='{
         "overrides": {
@@ -1909,7 +1912,7 @@ loadExternalModule().then(() => {
                  `;
                 }
               }
-
+              
               signals.onResponse({
                 html: questionText,
               });
@@ -2563,14 +2566,14 @@ loadExternalModule().then(() => {
                             ""
                           );
 
-                          questionText = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                        `;
+                            questionText = `▪ Media <br>  <iframe
+                                   allow="autoplay; encrypted-media; fullscreen;"
+                                   style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                   src=${embeddingUrl}
+                                   frameborder="0"
+                                   allowfullscreen
+                                 >
+                               `;
                         }
                       }
                     }
@@ -2593,6 +2596,20 @@ loadExternalModule().then(() => {
                           const videoId =
                             senarioMediaDescription.split("v=")[1];
                           embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+                           appendMessage(
+                             `▪ Title : ${senarioTitle} <br><br>
+                               ▪ Description : ${senarioDescription} <br><br>
+                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                               ▪ Media <br>  <iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                src=${embeddingUrl}
+                                                frameborder="0"
+                                                allowfullscreen
+                                              >
+                              
+                              `
+                           );
                         } else if (
                           senarioMediaDescription.includes("vimeo.com")
                         ) {
@@ -2600,6 +2617,20 @@ loadExternalModule().then(() => {
                             .split("/")
                             .pop();
                           embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+
+                           appendMessage(
+                             `▪ Title : ${senarioTitle} <br><br>
+                               ▪ Description : ${senarioDescription} <br><br>
+                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                               ▪ Media <br>  <iframe
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                src=${embeddingUrl}
+                                                frameborder="0"
+                                                allowfullscreen
+                                              >
+                              
+                              `
+                           );
                         } else if (
                           senarioMediaDescription.includes("twitter.com")
                         ) {
@@ -2618,22 +2649,30 @@ loadExternalModule().then(() => {
                                           >
                                 `
                           );
+                        } else {
+                           appendMessage(
+                             `▪ Title : ${senarioTitle} <br><br>
+                                 ▪ Description : ${senarioDescription} <br><br>
+                                 ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                 ▪ Media : <a href="${senarioMediaDescription}" target="_blank">Click here to read the article.</a>
+                                `
+                           );
                         }
-                        if (!senarioMediaDescription.includes("twitter.com")) {
-                          appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
-                               ▪ Description : ${senarioDescription} <br><br>
-                               ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
-                               ▪ Media <br>  <iframe
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                src=${embeddingUrl}
-                                                frameborder="0"
-                                                allowfullscreen
-                                              >
+                        // if (!senarioMediaDescription.includes("twitter.com")) {
+                        //   appendMessage(
+                        //     `▪ Title : ${senarioTitle} <br><br>
+                        //        ▪ Description : ${senarioDescription} <br><br>
+                        //        ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.<br><br>
+                        //        ▪ Media <br>  <iframe
+                        //                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                        //                         src=${embeddingUrl}
+                        //                         frameborder="0"
+                        //                         allowfullscreen
+                        //                       >
                               
-                              `
-                          );
-                        }
+                        //       `
+                        //   );
+                        // }
                       } else {
                         appendMessage(
                           `▪ Title : ${senarioTitle} <br><br>
