@@ -5,7 +5,7 @@ const subdomainStt = window.location.hostname.split(".")[0];
 // const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
 const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL2 = subdomainStt === "playground" ? devUrlStt : prodUrlStt;
+const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
 
 // const baseURL2="https://coach-api-ovh.coachbots.com/api/v1" //local
 
