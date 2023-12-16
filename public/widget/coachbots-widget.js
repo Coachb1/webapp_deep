@@ -1191,6 +1191,11 @@ loadExternalModule().then(() => {
       demo="true"
       style="border: none"
       displayLoadingBubble="false"
+      errorMessages='{
+        "overrides": {
+          "default": "System Error. But please continue and/or retry."
+        }
+      }'
       >
     </deep-chat>
   </div>

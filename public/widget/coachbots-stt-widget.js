@@ -1155,6 +1155,11 @@ loadExternalModule().then(() => {
         "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
         "button": {"position": "outside-left"}
       }'
+      errorMessages='{
+        "overrides": {
+          "default": "System Error. But please continue and/or retry."
+        }
+      }'
       >
     </deep-chat>
   </div>
