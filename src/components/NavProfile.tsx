@@ -1,6 +1,5 @@
 "use client";
 
-import { AvatarFallback, AvatarImage, Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,22 +10,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
-  LoginLink,
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { Loader, User, User2Icon, UserCircle2 } from "lucide-react";
+import { UserCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
-import Image from "next/image";
 
-const NavProfile = () => {
-  const { user, isLoading } = useKindeBrowserClient();
+const NavProfile = ({user} : any) => {
+  // const { user } = useKindeBrowserClient();
 
-  if (isLoading) {
-    return <Loader className="h-4 w-4 animate-spin" />;
-  }
+  // if (isLoading) {
+  //   return <Loader className="h-4 w-4 animate-spin" />;
+  // }
 
   return (
     <>
