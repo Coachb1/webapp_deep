@@ -11,7 +11,7 @@ const subdomain =
 // const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
 const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "playground" ? devUrl : prodUrl;
+const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
 const CreateYourOwn = () => {
   const [isLoading, setIsloading] = useState(false);
@@ -29,7 +29,7 @@ const CreateYourOwn = () => {
     } else {
       setIsloading(true);
       const url: any = new URL(
-        `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+        `${prodUrl}/tests/get_or_create_test_scenarios_by_site/`
       );
       const params = new URLSearchParams();
       params.set("mode", "A");
@@ -165,7 +165,7 @@ const CreateYourOwn = () => {
                     </div>
                   </>
                 )}
-                {generationError && (
+                {generationError && !isLoading && (
                   <>
                     <hr className="my-2" />
                     <p className="text-sm text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
