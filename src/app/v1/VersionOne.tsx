@@ -373,7 +373,7 @@ const VersionOne = ({ user, groups }: any) => {
               tests={meetings}
             />
           </div>
-          {true && (
+          {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
