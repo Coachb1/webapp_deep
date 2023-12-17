@@ -1196,7 +1196,8 @@ loadExternalModule().then(() => {
           "default": "System Error. But please continue and/or retry."
         }
       }'
-      >
+      attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
+    >
     </deep-chat>
   </div>
   `;
