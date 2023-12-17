@@ -2689,7 +2689,7 @@ const closeFromTop2 = () => {
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
 
   chatContainer2.style.scale = 0;
-  chatContainer2.style["transform-origin"] = "0% 100%";
+  chatContainer2.style["transform-origin"] = "100% 100%";
 
   if (
     chatIcon2.src ===
