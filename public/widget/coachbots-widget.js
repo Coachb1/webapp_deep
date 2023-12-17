@@ -1094,7 +1094,7 @@ loadExternalModule().then(() => {
         justify-content: center;
         align-items: center;
         position: fixed;
-        right: 2rem;
+        left: 2rem;
         bottom: 2rem;
         cursor: pointer;
         border-top-width: 0px;
@@ -1121,11 +1121,11 @@ loadExternalModule().then(() => {
       scale: 0;
       bottom: 6rem;
       width: 80vw;
-      right: 6rem;
+      left: 6rem;
       transition: 0.4s ease-in-out;
-      transform-origin: 100% 100%;
+      transform-origin: left bottom;
       padding-bottom: 0.8rem;
-      border-radius: 1rem 1rem 0rem 1rem;
+      border-radius: 1rem 1rem 1rem 0rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
@@ -1164,7 +1164,7 @@ loadExternalModule().then(() => {
       style="
       width : 50px;
       position: absolute;
-      left : 1rem;
+      right : 1rem;
     "/>
     <h3 id="chatbot-heading" style="
       font-size: 16px;
@@ -1190,10 +1190,7 @@ loadExternalModule().then(() => {
       }'
       demo="true"
       style="border: none"
-
       displayLoadingBubble="true"
-
-      displayLoadingBubble="false"
       errorMessages='{
         "overrides": {
           "default": "System Error. But please continue and/or retry."
@@ -3167,10 +3164,10 @@ const openChatContainer = () => {
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
-    chatContainer.style["transform-origin"] = "100% 100%";
+    chatContainer.style["transform-origin"] = "0% 100%";
   } else {
     chatContainer.style.scale = 1;
-    chatContainer.style["transform-origin"] = "100% 50%";
+    chatContainer.style["transform-origin"] = "100% 0%";
 
     // close stt bot
     const chatContainer2 = document.getElementById("chat-container2");
@@ -3199,7 +3196,7 @@ const closeFromTop = () => {
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
 
   chatContainer.style.scale = 0;
-  chatContainer.style["transform-origin"] = "100% 100%";
+  chatContainer.style["transform-origin"] = "0% 100%";
 
   if (
     chatIcon.src ===
