@@ -30,6 +30,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import CreateYourOwn from "@/components/CreateYourOwn";
 
 const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
@@ -236,7 +237,7 @@ const VersionOne = ({ user, groups }: any) => {
                 Meetings
               </Button>
             </Link>
-            {/* {shouldRenderDiv && (
+            {shouldRenderDiv && (
               <Link href={"#create-your-own"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -252,7 +253,7 @@ const VersionOne = ({ user, groups }: any) => {
                   </div>
                 </div>
               </Link>
-            )} */}
+            )}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -372,11 +373,11 @@ const VersionOne = ({ user, groups }: any) => {
               tests={meetings}
             />
           </div>
-          {/* {shouldRenderDiv && (
+          {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
-          )} */}
+          )}
         </div>
       </div>
 
