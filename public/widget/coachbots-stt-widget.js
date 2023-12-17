@@ -1057,7 +1057,7 @@ loadExternalModule().then(() => {
         justify-content: center;
         align-items: center;
         position: fixed;
-        left: 2rem;
+        right: 2rem;
         bottom: 2rem;
         cursor: pointer;
         border-top-width: 0px;
@@ -1084,11 +1084,11 @@ loadExternalModule().then(() => {
       scale: 0;
       bottom: 6rem;
       width: 80vw;
-      left: 6rem; 
+      right: 6rem; 
       transition: 0.4s ease-in-out; 
-      transform-origin: left bottom;
+      transform-origin: right bottom;
       padding-bottom: 0.8rem;
-      border-radius: 1rem 1rem 1rem 0rem;
+      border-radius: 1rem 1rem 0rem 1rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999;
@@ -1127,7 +1127,7 @@ loadExternalModule().then(() => {
       style="
       width : 50px;
       position: absolute;
-      right : 1rem;
+      left : 1rem;
     "/>
     <h3 id="chatbot-heading2" style="
       font-size: 16px;
@@ -1163,15 +1163,15 @@ loadExternalModule().then(() => {
              "svg": {
               "styles": {
                 "default": {
-                 "padding-top": "4px",
-                  "padding-bottom": "4px",
+                 "padding-top": "8px",
+                  "padding-bottom": "8px",
                   "filter":
                     "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
                 }
               },
-               "content" : ${JSON.stringify(
-                 '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/></svg>'
-               )}
+                "content" : ${JSON.stringify(
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
+                )}
 
           }
           },
@@ -1184,18 +1184,17 @@ loadExternalModule().then(() => {
               "styles": {
                 "default": {
                   "padding-top": "4px",
-                  "padding-bottom": "4px",
+                  "padding-bottom": "8px",
                   "filter":
                     "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
                 }
               },
-              "content" : ${JSON.stringify(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
-              )}
+               "content" : ${JSON.stringify(
+                 '<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><g fill="#232629"><path d="m3 9v2c0 2.419003 1.7176959 4.43717 4 4.900391v2.099609h-2v1h6v-1h-2v-2.099609c2.282304-.463221 4-2.481388 4-4.900391v-2h-1v2c0 2.209139-1.790861 4-4 4s-4-1.790861-4-4v-2zm5-6c-1.656854 0-3 1.343146-3 3v5c0 1.656854 1.343146 3 3 3s3-1.343146 3-3v-5c0-1.656854-1.343146-3-3-3z"/><path d="m14.279297 3.828125-.451172.892578.447266.226563c1.111155.560919 2.066402 1.437981 2.71875 2.498046.652348 1.060066 1.005859 2.30998 1.005859 3.554688s-.353511 2.494622-1.005859 3.554688c-.652348 1.060065-1.607595 1.937127-2.71875 2.498046l-.447266.226563.451172.892578.445312-.224609c1.279348-.645825 2.370002-1.648617 3.121094-2.869141s1.154297-2.64501 1.154297-4.078125-.403205-2.857601-1.154297-4.078125-1.841746-2.223316-3.121094-2.869141z"/><path d="m13.21875 6.550781-.4375.898438c.659004.321264 1.230576.835327 1.619141 1.457031.388564.621704.599609 1.360608.599609 2.09375s-.211045 1.472047-.599609 2.09375c-.388565.621703-.960137 1.135767-1.619141 1.457031l.4375.898438c.830592-.404914 1.53956-1.042593 2.029297-1.826172s.751953-1.699013.751953-2.623047-.262216-1.839468-.751953-2.623047-1.198705-1.421258-2.029297-1.826172z"/></g></svg>'
+               )}
           }
         }
       }}'
-
       errorMessages='{
         "overrides": {
           "default": "System Error. But please continue and/or retry."
@@ -1558,22 +1557,47 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           // TEXT RESPONSES
+
+           //change mic state active to default on send
+           var chatElement = document.getElementById("chat-element2");
+
+           if (chatElement) {
+             var shadowRootMic = chatElement.shadowRoot;
+
+             if (shadowRootMic) {
+               var microphoneButton =
+                 shadowRootMic.querySelector("#microphone-button");
+               if (
+                 microphoneButton
+                   .querySelector("svg")
+                   .classList.contains("active-microphone-icon")
+               ) {
+                 const clickEvent = new Event("click");
+                 microphoneButton.dispatchEvent(clickEvent);
+               }
+             }
+           }
+         
+
           globalSignals = signals;
           // to check session active or not
-          
+
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
-          if (isProceedStt === 'false' && latestMessage.toUpperCase() != 'STOP' ){
-
+          if (
+            isProceedStt === "false" &&
+            latestMessage.toUpperCase() != "STOP"
+          ) {
             signals.onResponse({
-            html:"<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"})
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
-          if (testType === 'mcq' && latestMessage.toUpperCase() != 'STOP'){
+          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
-              html : "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>"
-            })
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
@@ -1682,10 +1706,9 @@ loadExternalModule().then(() => {
             });
 
             // adding sample test code title
-            const sampleTestCodesValues = Object.values(sampleTestCodesStt)
+            const sampleTestCodesValues = Object.values(sampleTestCodesStt);
             sampleTestCodesValues.forEach((value) => {
-              buttonTextArray.push(value.trim())
-
+              buttonTextArray.push(value.trim());
             });
             //end
 
@@ -1761,7 +1784,6 @@ loadExternalModule().then(() => {
             codeAvailabilityUserChoice2
           ) {
             try {
-              
               if (questionIndex2 === 0) {
                 const response = await fetch(
                   `${baseURL2}/tests/?test_code=${testCode2}`,
@@ -1775,9 +1797,9 @@ loadExternalModule().then(() => {
                     },
                   }
                 );
-  
+
                 questionData2 = await response.json();
-                if ((questionData2.results).length === 0){
+                if (questionData2.results.length === 0) {
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
                   });
@@ -1793,13 +1815,13 @@ loadExternalModule().then(() => {
                   questionData2.results[0].description_media;
                 testUIInfoStt = questionData2.results[0].ui_information;
                 console.log(senarioMediaDescription2);
-  
+
                 testType2 = questionData2.results[0].test_type;
                 orch_details2 =
                   questionData2.results[0].orchestrated_conversation_details;
                 clientNameStt = questionData2.results[0].client_name;
                 isTestSignedInStt = questionData2.results[0].is_logged_in;
-  
+
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
                     signals.onResponse({
@@ -1808,7 +1830,7 @@ loadExternalModule().then(() => {
                     return;
                   }
                 }
-  
+
                 if (testType2 === "mcq") {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
                   globalQuestionDataStt = questionData2;
@@ -1835,11 +1857,11 @@ loadExternalModule().then(() => {
                   //     return;
                   //   }
 
-                  const group_list = ['Demo','free','Free']
-                  const my_lib = await getTestCodesByRule2('my_lib');
+                  const group_list = ["Demo", "free", "Free"];
+                  const my_lib = await getTestCodesByRule2("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user2.email)) {
-                        group_list.push(item.group);
+                      group_list.push(item.group);
                     }
                   }
 
@@ -1943,7 +1965,7 @@ loadExternalModule().then(() => {
                   isSessionActiveStt = false;
                 }
               }
-            
+
               if (questionIndex2 <= questionLength2) {
                 if (questionIndex2 < questionLength2) {
                   if (
@@ -2026,18 +2048,18 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    initialQuestionTextStt = questionText2
-                    isProceedStt = 'false'
+                    initialQuestionTextStt = questionText2;
+                    isProceedStt = "false";
                     questionText2 = `
                     <div id="proceed-option2" >
                     <b>Proceed ?</b>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
-                    </div>`
+                    </div>`;
                     if (senarioMediaDescription2 !== null) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
-                        console.log(senarioMediaDescription2)
+                        console.log(senarioMediaDescription2);
                         if (senarioMediaDescription2.includes("youtube.com")) {
                           const videoId =
                             senarioMediaDescription2.split("v=")[1];
@@ -2145,7 +2167,7 @@ loadExternalModule().then(() => {
                             /(http[s]?:\/\/[^\s]+)/g,
                             ""
                           );
-                          
+
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -2373,9 +2395,9 @@ loadExternalModule().then(() => {
                 if (resQuestionNumber2 === questionLength2) {
                   responsesDone2 = true;
 
-                  const isCheckStt = await SessionCheckStt(sessionId2)
-                  if (!isCheckStt){
-                    console.log('failed to populate session data', isCheckStt)
+                  const isCheckStt = await SessionCheckStt(sessionId2);
+                  if (!isCheckStt) {
+                    console.log("failed to populate session data", isCheckStt);
                     if (testType2 === "mcq") {
                       const shadowRoot =
                         document.getElementById("chat-element2").shadowRoot;
@@ -2385,7 +2407,7 @@ loadExternalModule().then(() => {
                       // button.parentNode.removeChild(button)
                       const thankYouMessage = document.createElement("div");
                       thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
-            
+
                       // Replace the button with the "Thank you" message
                       button.parentNode.replaceChild(thankYouMessage, button);
                     }
@@ -2399,9 +2421,9 @@ loadExternalModule().then(() => {
                       // Replace the button with the "Thank you" message
                       msg.parentNode.replaceChild(que_msg, msg);
                     }
-            
+
                     resetAllVariablesStt();
-                    
+
                     signals.onResponse({
                       html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                     });
@@ -2480,8 +2502,6 @@ loadExternalModule().then(() => {
                   //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
                   //   })
                   // }
-                    
-
 
                   if (window.user) {
                     // sendEmail();
@@ -2508,7 +2528,7 @@ loadExternalModule().then(() => {
                 // button.parentNode.removeChild(button)
                 const thankYouMessage = document.createElement("div");
                 thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
-      
+
                 // Replace the button with the "Thank you" message
                 button.parentNode.replaceChild(thankYouMessage, button);
               }
@@ -2522,9 +2542,9 @@ loadExternalModule().then(() => {
                 // Replace the button with the "Thank you" message
                 msg.parentNode.replaceChild(que_msg, msg);
               }
-      
+
               resetAllVariablesStt();
-              
+
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
@@ -2638,10 +2658,10 @@ const openChatContainer2 = () => {
 
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
-    chatContainer2.style["transform-origin"] = "0% 100%";
+    chatContainer2.style["transform-origin"] = "100% 100%";
   } else {
     chatContainer2.style.scale = 1;
-    chatContainer2.style["transform-origin"] = "100% 0%";
+    chatContainer2.style["transform-origin"] = "100% 50%";
 
     //to close other bot
     const chatContainer = document.getElementById("chat-container");
