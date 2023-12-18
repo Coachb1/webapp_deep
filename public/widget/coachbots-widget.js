@@ -77,8 +77,11 @@ let isEmailType=false;
 let recommendations = '';
 let isTestSignedIn;
 let clientName;
-
+let audioFileSrcMap={};  // maping response to resquestionNumber
+let audioFileMap = {}
 let audioDuration;
+let isRecordingGlobal= false;
+
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -1734,6 +1737,7 @@ loadExternalModule().then(() => {
       const testResponseData = await testResponse.json();
       console.log(testResponseData);
       resQuestionNumber = testResponseData.question.question_number;
+      console.log('que-num', resQuestionNumber)
     }
 
     // for generating question for dynamic and group meeting test type
@@ -1831,6 +1835,11 @@ loadExternalModule().then(() => {
           }
 
           let file = audioFile;
+          console.log("isRecordingGlobal", isRecordingGlobal)
+          while (isRecordingGlobal) {
+            console.log("isrecordingglobal",isRecordingGlobal)
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+          }
 
           if (file.name.length === 0 || file.size === "") {
             signals.onResponse({
@@ -3047,7 +3056,9 @@ const openChatContainer = () => {
       });
       mediaRecorder = new MediaRecorder(stream);
       isRecording = true;
-      console.log("IS RECORDING ", isRecording)
+      isRecordingGlobal = true;
+      console.log("IS RECORDING ", isRecording,isRecordingGlobal)
+      audioChunks = [];
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.push(event.data);
@@ -3067,8 +3078,12 @@ const openChatContainer = () => {
         });
         audioChunks.length = 0;
 
+        // audioFileMap[`${questionIndex}`] = audioFile
         const fileUrl = window.URL.createObjectURL(audioFile);
         audioFileSrc = fileUrl;
+        // audioFileSrcMap[`${questionIndex}`] = fileUrl;
+        isRecordingGlobal = false;
+        console.log('glrecor',isRecordingGlobal)
       };
 
       mediaRecorder.start();
