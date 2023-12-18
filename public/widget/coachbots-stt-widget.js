@@ -2117,13 +2117,57 @@ loadExternalModule().then(() => {
                                 `
                           );
                         } else {
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+                          const urlList = senarioMediaDescription2.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
+                                ▪ Description : ${senarioDescription2} <br><br>
+                                ▪ Instructions : Response should be at least 15 words. <br><br>`)
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                appendMessage2(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                appendMessage2(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (senarioMediaDescription2.includes('docs.google.com')){
+                              let url = senarioMediaDescription2.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              appendMessage2(
+                                `▪ Title : ${senarioTitle2} <br><br>
+                              ▪ Description : ${senarioDescription2} <br><br>
+                              ▪ Instructions : Response should be at least 15 words. <br><br>
                               `
-                          );
+                              )
+                              appendMessage2(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }else{
+                              appendMessage2(
+                                `▪ Title : ${senarioTitle2} <br><br>
+                                    ▪ Description : ${senarioDescription2} <br><br>
+                                    ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                    ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+                                    `
+                              );
+                            }
+                          }
                         }
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
