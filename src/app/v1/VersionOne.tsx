@@ -20,6 +20,7 @@ import {
   caseStudy,
   DiversityPlus,
   onBoarding,
+  ijp,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -123,6 +124,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Manager+
+              </Button>
+            </Link>
+            <Link href={"#ijp"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                IJP/Succession
               </Button>
             </Link>
             <Link href={"#reflection"}>
@@ -237,6 +246,7 @@ const VersionOne = ({ user, groups }: any) => {
                 Meetings
               </Button>
             </Link>
+
             {shouldRenderDiv && (
               <Link href={"#create-your-own"}>
                 <div className="relative group cursor-pointer">
@@ -273,6 +283,13 @@ const VersionOne = ({ user, groups }: any) => {
               badgeText="Manager+"
               user={user ? true : false}
               tests={Managerial}
+            />
+          </div>
+          <div id="ijp">
+            <HeroAccordion
+              badgeText="IJP/Succession"
+              user={user ? true : false}
+              tests={ijp}
             />
           </div>
           <div id="reflection">

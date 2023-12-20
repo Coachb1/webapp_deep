@@ -304,6 +304,25 @@ export const Reflection: Test[] = [
   },
 ];
 
+export const ijp: Test[] = [
+  {
+    domain: "Pursuing professional development",
+    test_code: "QA61J85",
+    title: "Leadership Aptitude Interview for Project Lead Promotion",
+    description:
+      "A proactive team member in an Indian IT firm seeks internal promotion to a project lead role. The HR Manager, Mr. Rao, conducts an interview to assess the candidate's leadership potential. Despite strong technical proficiency, Mr. Rao focuses on evaluating the candidate's leadership style and communication skills, recognizing their significance in the prospective role. The context underscores the critical need for effective stakeholder communication and leadership skills. The interview aims to gauge the candidate's aptitude for managing projects and fostering collaboration in a culturally specific professional environment. Respond to this situation as the team member. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Interview for Managerial Role",
+    test_code: "QMP4OXU",
+    title: "Team Lead's Managerial Potential Assessment",
+    description:
+      "A skilled Team Lead expressed interest in a managerial role through the Internal Job Posting (IJP). Aarav, the HR manager, conducted an interview to assess her leadership capabilities. The company, a prominent player in the Indian IT sector, had recently expanded its project portfolio. The need for effective team management and inspiration became crucial to meet heightened client expectations. Aarav aimed to gauge the Team Lead's potential to navigate this growth, ensuring seamless collaboration among team members and fostering a motivational work environment. Respond to this situation as the Team Lead.",
+    interaction_mode: "Audio",
+  },
+];
+
 export const DiversityPlus: Test[] = [
   {
     domain: "Equality in Pay",
