@@ -71,6 +71,10 @@ let isSessionActiveStt = false;
 let recommendationsStt = '';
 let isTestSignedInStt;
 let clientNameStt;
+let questionMediaLinkStt;
+let isImmersiveStt = false;
+let mediaPropsStt;
+let questionImageDataStt;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -296,39 +300,79 @@ function appendMessage2(message2) {
       que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-      const is_link = linkPattern.test(initialQuestionTextStt);
-
-      if (is_link) {
-        console.log(initialQuestionTextStt);
+            
+      if (isImmersiveStt && questionMediaLinkStt && testType2 != 'mcq') {
+        console.log(questionMediaLinkStt);
         let embeddingUrl = "";
-        if (initialQuestionTextStt.length > 0) {
-          if (initialQuestionTextStt.includes("youtube.com")) {
-            const videoId = initialQuestionTextStt.split("v=")[1];
+        
+        if (questionMediaLinkStt.length > 0) {
+          if (questionMediaLinkStt.includes("youtube.com")) {
+            const videoId = questionMediaLinkStt.split("v=")[1];
             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-          } else if (initialQuestionTextStt.includes("vimeo.com")) {
-            const videoId = initialQuestionTextStt.split("/").pop();
+          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+            const videoId = questionMediaLinkStt.split("/").pop();
             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-          } else if (initialQuestionTextStt.includes("twitter.com")) {
-            embeddingUrl = `https://twitframe.com/show?url=${initialQuestionTextStt}`;
+          } else if (questionMediaLinkStt.includes("twitter.com")) {
+            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
           }
+          
+          if (embeddingUrl){
+              appendMessage2(`▪ Media <br>  <iframe
+                            allow="autoplay; encrypted-media; fullscreen;"
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            src=${embeddingUrl}
+                            frameborder="0"
+                            allowfullscreen
+                          >
+                    `)
+            }
 
-          initialQuestionTextStt = initialQuestionTextStt.replace(
-            /(http[s]?:\/\/[^\s]+)/g,
-            ""
-          );
-
-          initialQuestionTextStt = `▪ Media <br>  <iframe
-                          allow="autoplay; encrypted-media; fullscreen;"
-                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                          src=${embeddingUrl}
-                          frameborder="0"
-                          allowfullscreen
-                        >
-        `;
+          const urlList = questionMediaLinkStt.split(',')
+          console.log("list",urlList)
+          if (urlList.length > 1){
+            urlList.forEach(element => {
+              element = element.trim()
+              if (element.includes('docs.google.com')){
+                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                console.log(url)
+                appendMessage2(`<iframe src=${url}
+                                frameborder="0" 
+                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                allowfullscreen="true" 
+                                mozallowfullscreen="true" 
+                                webkitallowfullscreen="true"
+                                ></iframe>`)
+              }
+              else{
+                console.log(element)
+                appendMessage2(`<audio src=${element} controls autoplay>`)
+              }
+            });
+          }else {
+            if (questionMediaLinkStt.includes('docs.google.com')){
+              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url)
+              appendMessage2(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+          }
         }
+        
+        if (initialQuestionTextStt){
+          const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+          const is_link = linkPattern.test(initialQuestionTextStt);
+          if (!is_link){
+            appendMessage2(initialQuestionTextStt)
+          }
+        }
+      } else{
+        appendMessage2(initialQuestionTextStt)
       }
-      appendMessage2(initialQuestionTextStt)
     }else {
       resetAllVariablesStt();
       const gshadowRoot =
@@ -388,9 +432,19 @@ async function setMcqVariablesStt() {
       (question) => question.mcq_options
     )[0];
     const optionName = Object.keys(mcqOptionsStt);
-    const questionText = matchingQuestionsStt.map(
+    let questionText;
+    questionText = matchingQuestionsStt.map(
       (question) => question.question
     )[0];
+
+    const questionMedia = matchingQuestionsStt.map(
+      (question) => question.media_link
+    )[0];
+    
+    let queImageData;
+    if (mediaPropsStt && mediaPropsStt[`question_image ${responseOptionStt}`]){
+      queImageData = [mediaPropsStt[`question_image ${responseOptionStt}`],mediaPropsStt[`question_image_mobile ${responseOptionStt}`]]
+    }
 
     const newOption1NameStt = optionName[0];
     const newOption2NameStt = optionName[1];
@@ -403,6 +457,70 @@ async function setMcqVariablesStt() {
       newOption1TextStt,
       newOption2TextStt
     );
+    if (isImmersiveStt && questionMedia) {
+      let embeddingUrl = "";
+      if (questionMedia.length > 0) {
+        if (questionMedia.includes("youtube.com")) {
+          const videoId = questionMedia.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMedia.includes("vimeo.com")) {
+          const videoId = questionMedia.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMedia.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
+        }
+
+        if (embeddingUrl){
+        questionText = `▪ Media <br>  <iframe
+                        allow="autoplay; encrypted-media; fullscreen;"
+                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                        src=${embeddingUrl}
+                        frameborder="0"
+                        allowfullscreen
+                      >
+        `;
+        }
+        const urlList = questionMedia.split(',')
+        console.log("list",urlList)
+        if (urlList.length > 1){
+          urlList.forEach(element => {
+            element = element.trim()
+            if (element.includes('docs.google.com')){
+              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url,"googelsheet")
+              questionText = questionText + '\n' +(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+            else{
+              console.log('audio',element)
+              questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
+            }
+          });
+        }else {
+          if (questionMedia.includes('docs.google.com')){
+            let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+            console.log(url,'google')
+            questionText = questionText + '\n' +(`<iframe src=${url}
+                            frameborder="0" 
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                            allowfullscreen="true" 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true"
+                            ></iframe>`)
+          }
+        }
+        }
+      }
+    
+
+    if (isImmersiveStt && queImageData){
+      // show here hover Image for question and add it to questionText
+    }
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -1550,6 +1668,30 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getTTSUrl = async (text) =>{
+
+      const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const blob = await response.blob();
+      console.log('respnse', blob);
+
+      const objectUrl = URL.createObjectURL(blob);
+      
+      console.log(objectUrl,'url')
+      const audioCont = `<audio controls autoplay>
+      <source src=${objectUrl} type="audio/mpeg" />
+      Your browser does not support the audio element.
+      </audio>`
+
+      return audioCont
+  }
+
   //No condition STT pending
   chatElementRef2.request = {
     handler: async (body, signals) => {
@@ -1805,6 +1947,7 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                console.log('test-data = >', questionData2)
                 questionLength2 = questionData2.results[0].questions.length;
                 testId2 = questionData2.results[0].uid;
                 interactionMode2 = questionData2.results[0].interaction_mode;
@@ -1821,6 +1964,11 @@ loadExternalModule().then(() => {
                   questionData2.results[0].orchestrated_conversation_details;
                 clientNameStt = questionData2.results[0].client_name;
                 isTestSignedInStt = questionData2.results[0].is_logged_in;
+                isImmersiveStt = questionData2.results[0].is_immersive;
+                mediaPropsStt = questionData2.results[0].media_props;
+                console.log(mediaPropsStt,"props")
+                
+
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -2012,6 +2160,16 @@ loadExternalModule().then(() => {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
+
+                      questionMediaLinkStt =questionData2.results[0].questions[questionIndex2].media_link;
+
+                      if (mediaPropsStt && isImmersiveStt){
+                        console.log(questionIndex2)
+                        if(mediaPropsStt[`question_image ${questionIndex2}`]){
+                          questionImageDataStt = [mediaPropsStt[`question_image ${questionIndex2}`],mediaPropsStt[`question_image_mobile ${questionIndex2}`]]
+                        }
+
+                      }
                       questionId2 =
                         questionData2.results[0].questions[questionIndex2].uid;
                       const mcqOptionsStt =
@@ -2023,6 +2181,71 @@ loadExternalModule().then(() => {
                       const option2Name = optionNameStt[1];
                       const option1Text = mcqOptionsStt[option1Name]["opt"];
                       const option2Text = mcqOptionsStt[option2Name]["opt"];
+
+                      if (isImmersiveStt && questionMediaLinkStt) {
+                        let embeddingUrl = "";
+                        if (questionMediaLinkStt.length > 0) {
+                          if (questionMediaLinkStt.includes("youtube.com")) {
+                            const videoId = questionMediaLinkStt.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+                            const videoId = questionMediaLinkStt.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+                          }
+                  
+                          if (embeddingUrl){
+                          questionText2 = `▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                          `;
+                          }
+                          const urlList = questionMediaLinkStt.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                questionText2 = questionText2 + '\n' +(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                questionText2 = questionText2 + '\n' +(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLinkStt.includes('docs.google.com')){
+                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              questionText2 = questionText2 + '\n' +(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
+                        }
+                      
+                  
+                      if (isImmersiveStt && questionImageDataStt){
+                        // show here hover Image for question and add it to questionText2
+                      }
 
                       formRadio = `
                       <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
@@ -2044,6 +2267,15 @@ loadExternalModule().then(() => {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
+                      questionMediaLinkStt = questionData2.results[0].questions[questionIndex2].media_link;
+
+                      if (mediaPropsStt && isImmersiveStt){
+                        console.log(questionIndex2)
+                        if(mediaPropsStt[`question_image ${questionIndex2}`]){
+                          questionImageDataStt = [mediaPropsStt[`question_image ${questionIndex2}`],mediaPropsStt[`question_image_mobile ${questionIndex2}`]]
+                        }
+
+                      }
                     }
                   }
                   console.log(questionText2);
@@ -2056,7 +2288,8 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
-                    if (senarioMediaDescription2 !== null) {
+                    console.log(senarioMediaDescription2,'mediadesc')
+                    if (senarioMediaDescription2) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
                         console.log(senarioMediaDescription2);
@@ -2169,6 +2402,8 @@ loadExternalModule().then(() => {
                             }
                           }
                         }
+
+                        
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
                         //      `▪ Title : ${senarioTitle2} <br><br>
@@ -2190,106 +2425,48 @@ loadExternalModule().then(() => {
                              ▪ Instructions : Response should be at least 15 words.`
                         );
                       }
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
-
-                      if (is_link) {
-                        console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
-                          }
-
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
-                          questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                        `;
-                        }
-                      }
+                      // proceed buttion will show 
                       signals.onResponse({
                         html: questionText2,
                       });
                     } else {
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
-
-                      if (is_link) {
-                        console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
-                          }
-
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
-                          questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                        `;
-                        }
-                      }
+                      // proceed buttion will show 
                       signals.onResponse({
                         html: questionText2,
                         text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
                       });
+                    }
+                    
+
+                    if (isImmersiveStt && mediaPropsStt ){
+                      if (mediaPropsStt['test_image']){
+
+                        ///use hover image of test here (not question)
+                      }
+                      
                     }
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread"
                     ) {
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
+                      // if immersive then show media
 
-                      if (is_link) {
+                      if (isImmersiveStt && questionMediaLinkStt) {
                         console.log(questionText2);
                         let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
+                        if (questionMediaLinkStt.length > 0) {
+                          if (questionMediaLinkStt.includes("youtube.com")) {
+                            const videoId = questionMediaLinkStt.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
+                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+                            const videoId = questionMediaLinkStt.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
+                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
 
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
+                          if (embeddingUrl){
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -2297,12 +2474,53 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        `;
+                          `;
+                          }
+                          const urlList = questionMediaLinkStt.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                appendMessage2(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                appendMessage2(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLinkStt.includes('docs.google.com')){
+                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              appendMessage2(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
                         }
+                      if (questionText2){
+                        signals.onResponse({
+                          html: questionText2,
+                        });
                       }
-                      signals.onResponse({
-                        html: questionText2,
-                      });
+
+                      if (isImmersiveStt && questionImageDataStt){
+                        // show here hover Image for question
+                      }
                     }
                   }
                 }
@@ -2413,7 +2631,12 @@ loadExternalModule().then(() => {
                       const responder_name2 = qRespnse2.responder_display_name;
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
+                      } 
+
+                      if (isImmersiveStt){
+                        questionText2 = questionText2.replace(`${responder_name2}`,"")
                       }
+                      
 
                       resQuestionNumber2 = qRespnse2.question.question_number;
                     }
@@ -2425,8 +2648,13 @@ loadExternalModule().then(() => {
                     testType2 === "orchestrated_conversation" ||
                     testType2 === "dynamic_discussion_thread"
                   ) {
+                    console.log('ismmersive',isImmersiveStt,questionText2)
+
+                    if (isImmersiveStt && questionIndex2 != 0){
+                      questionText2 = await getTTSUrl(questionText2);
+                    }
                     signals.onResponse({
-                      text: questionText2,
+                      html: questionText2,
                     });
                   }
                 }
