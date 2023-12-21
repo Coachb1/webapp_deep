@@ -23,6 +23,7 @@ let questionIndex = 0;
 
 let globalReportUrl;
 let maxUploadFailed = false;
+let testResponseHandlerFailed = false;
 let conversation_id;
 
 //audio configs
@@ -1678,216 +1679,239 @@ loadExternalModule().then(() => {
   };
 
   const testResponseHandler = async (formdata, questionObj) => {
-    const shadowRoot = document.getElementById("chat-element").shadowRoot;
-    const players = shadowRoot.querySelectorAll(".audio-player");
-    const targetPlayer = players[players.length - 1];
-    targetPlayer.src = audioFileSrc;
-    // if audio response in orch
-    if (
-      testType === "orchestrated_conversation" ||
-      interactionMode === "text"
-    ) {
-      formdata["transcribe_file"] = true;
-    }
-
-    // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-    //   },
-    //   body: formdata,
-    // });
-
-    function uploadDoc(formdata) {
-      const basicAuthToken = createBasicAuthToken(key, secret);
-      return fetch(`${baseURL}/documents/upload/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${basicAuthToken}`,
-        },
-        body: formdata,
-      });
-    }
-
-    let uploadDocResponse = await uploadDoc(formdata);
-
-    console.log("Jiks : ", uploadDocResponse);
-
-    let documentUploadFailsCount = 0;
-
-    while (uploadDocResponse.status !== 201) {
-      console.log("error in uploading audio");
-      documentUploadFailsCount += 1;
-      if (documentUploadFailsCount > 1) {
-        console.log("document upload failed more than 1 times");
-        await cancelTest(participantId); // cancelling session
-        resetAllVariables(); //reseting variables
-        if (isProceed === "false") {
-          const gshadowRoot =
-            document.getElementById("chat-element").shadowRoot;
-          const msg = gshadowRoot.getElementById("proceed-option");
-          // button.parentNode.removeChild(button)
-          const que_msg = document.createElement("div");
-          que_msg.innerHTML = "Thank You"; // You can customize the message here
-          // Replace the button with the "Thank you" message
-          msg.parentNode.replaceChild(que_msg, msg);
+    try{
+        const shadowRoot = document.getElementById("chat-element").shadowRoot;
+        const players = shadowRoot.querySelectorAll(".audio-player");
+        const targetPlayer = players[players.length - 1];
+        targetPlayer.src = audioFileSrc;
+        // if audio response in orch
+        if (
+        testType === "orchestrated_conversation" ||
+        interactionMode === "text"
+        ) {
+        formdata["transcribe_file"] = true;
         }
-        appendMessage(
-          "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
-        );
-        maxUploadFailed = true;
-        break;
-      }
-      uploadDocResponse = await uploadDoc(formdata);
-    }
 
-    if (documentUploadFailsCount > 1) {
-      return;
-    }
+        // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
+        //   method: "POST",
+        //   headers: {
+        //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        //   },
+        //   body: formdata,
+        // });
 
-    const uploadDocData = await uploadDocResponse.json();
-    documentId = uploadDocData.uid;
+        function uploadDoc(formdata) {
+        const basicAuthToken = createBasicAuthToken(key, secret);
+        try{
+            return fetch(`${baseURL}/documents/upload/`, {
+            method: "POST",
+            headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+            },
+            body: formdata,
+        });
+        } catch (error) {
+            console.log("error in uploading audio(try)", error);
+            return fetch(`${baseURL}/documents/upload/`, {
+                method: "POST",
+                headers: {
+                Authorization: `Basic ${basicAuthToken}`,
+                },
+                body: formdata,
+            });
+        }
+        
+        }
 
-    const docUrlResponse = await fetch(
-      `${baseURL}/documents/${documentId}/url/`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        },
-      }
-    );
+        let uploadDocResponse = await uploadDoc(formdata);
 
-    const docUrlData = await docUrlResponse.json();
-    userAudioResponse = docUrlData.url;
+        console.log("Jiks : ", uploadDocResponse);
 
-    if (testType === "coaching") {
-      const response = await fetch(
-        `${baseURL}/coaching-conversations/${conversation_id}/reply/`,
+        let documentUploadFailsCount = 0;
+
+        while (uploadDocResponse.status !== 201) {
+        console.log("error in uploading audio");
+        documentUploadFailsCount += 1;
+        if (documentUploadFailsCount > 1) {
+            console.log("document upload failed more than 1 times");
+            await cancelTest(participantId); // cancelling session
+            resetAllVariables(); //reseting variables
+            if (isProceed === "false") {
+            const gshadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+            const msg = gshadowRoot.getElementById("proceed-option");
+            // button.parentNode.removeChild(button)
+            const que_msg = document.createElement("div");
+            que_msg.innerHTML = "Thank You"; // You can customize the message here
+            // Replace the button with the "Thank you" message
+            msg.parentNode.replaceChild(que_msg, msg);
+            }
+            appendMessage(
+            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+            );
+            maxUploadFailed = true;
+            break;
+        }
+        uploadDocResponse = await uploadDoc(formdata);
+        }
+
+        if (documentUploadFailsCount > 1) {
+        return;
+        }
+
+        const uploadDocData = await uploadDocResponse.json();
+        documentId = uploadDocData.uid;
+
+        const docUrlResponse = await fetch(
+        `${baseURL}/documents/${documentId}/url/`,
         {
-          method: "POST",
-          headers: {
+            method: "GET",
+            headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            participant_message_text: "",
-            participant_message_url: userAudioResponse,
-          }),
+            },
         }
-      );
-      const responseData = await response.json();
-      console.log("Response from Coaching submit response : ", responseData);
+        );
 
-      questionText = responseData["coach_message_text"];
-      conversation_id = responseData["uid"];
-      console.log("coaching question Text: ", questionText);
+        const docUrlData = await docUrlResponse.json();
+        userAudioResponse = docUrlData.url;
 
-      console.log(questionData);
-      return;
-    } else if (
-      testType === "orchestrated_conversation" ||
-      interactionMode === "text"
-    ) {
-      // handling audio response in orch
-      const usertext = uploadDocData["transcript_details"]["text"];
-      console.log(usertext);
-
-      const testResponse = await fetch(`${baseURL}/test-responses/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          test_attempt_session_id: sessionId,
-          question_id: questionObj.uid,
-          response_text: usertext,
-          response_file: "",
-          user_attributes: {
-            tag: "deepchat_profile",
-            attributes: {
-              username: "web_user",
-              email: user ? user.email : getAnonymousEmail(),
+        if (testType === "coaching") {
+        const response = await fetch(
+            `${baseURL}/coaching-conversations/${conversation_id}/reply/`,
+            {
+            method: "POST",
+            headers: {
+                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                "Content-Type": "application/json",
             },
-          },
-        }),
-      });
-      const testResponseData = await testResponse.json();
-      resQuestionNumber = testResponseData.question.question_number;
-    } else {
-      const testResponse = await fetch(`${baseURL}/test-responses/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          test_attempt_session_id: sessionId,
-          question_id: questionObj.uid,
-          response_text: "",
-          response_file: userAudioResponse,
-          user_attributes: {
-            tag: "deepchat_profile",
-            attributes: {
-              username: "web_user",
-              email: user ? user.email : getAnonymousEmail(),
-            },
-          },
-        }),
-      });
-      const testResponseData = await testResponse.json();
-      console.log(testResponseData);
-      resQuestionNumber = testResponseData.question.question_number;
-      console.log("que-num", resQuestionNumber);
-    }
+            body: JSON.stringify({
+                participant_message_text: "",
+                participant_message_url: userAudioResponse,
+            }),
+            }
+        );
+        const responseData = await response.json();
+        console.log("Response from Coaching submit response : ", responseData);
 
-    // for generating question for dynamic and group meeting test type
-    if (questionIndex < questionLength) {
-      if (
-        testType === "dynamic_discussion_thread" ||
-        testType === "orchestrated_conversation"
-      ) {
-        questionIndex += 1;
-        responseProcessedQuestion++;
-        console.log(questionIndex);
-        const response_text = await fetch(`${baseURL}/test-responses/`, {
-          method: "POST",
-          headers: {
+        questionText = responseData["coach_message_text"];
+        conversation_id = responseData["uid"];
+        console.log("coaching question Text: ", questionText);
+
+        console.log(questionData);
+        return;
+        } else if (
+        testType === "orchestrated_conversation" ||
+        interactionMode === "text"
+        ) {
+        // handling audio response in orch
+        const usertext = uploadDocData["transcript_details"]["text"];
+        console.log(usertext);
+
+        const testResponse = await fetch(`${baseURL}/test-responses/`, {
+            method: "POST",
+            headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+            },
+            body: JSON.stringify({
             test_attempt_session_id: sessionId,
-            question_id:
-              questionData.results[0].questions[questionIndex - 2].uid,
-            response_text: "",
+            question_id: questionObj.uid,
+            response_text: usertext,
             response_file: "",
             user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
+                tag: "deepchat_profile",
+                attributes: {
                 username: "web_user",
                 email: user ? user.email : getAnonymousEmail(),
-              },
+                },
             },
-          }),
+            }),
         });
-
-        const testResponseText = await response_text.json();
-        questionText = testResponseText.response_text;
-
-        // checking if botname is present or not
-        const responder_name = testResponseText.responder_display_name;
-        if (!questionText.includes(responder_name)) {
-          questionText = responder_name + " : " + questionText;
+        const testResponseData = await testResponse.json();
+        resQuestionNumber = testResponseData.question.question_number;
+        } else {
+        const testResponse = await fetch(`${baseURL}/test-responses/`, {
+            method: "POST",
+            headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            test_attempt_session_id: sessionId,
+            question_id: questionObj.uid,
+            response_text: "",
+            response_file: userAudioResponse,
+            user_attributes: {
+                tag: "deepchat_profile",
+                attributes: {
+                username: "web_user",
+                email: user ? user.email : getAnonymousEmail(),
+                },
+            },
+            }),
+        });
+        const testResponseData = await testResponse.json();
+        console.log(testResponseData);
+        resQuestionNumber = testResponseData.question.question_number;
+        console.log("que-num", resQuestionNumber);
         }
 
-        console.log(testResponseText);
-        console.log(questionText);
-      }
-    }
+        // for generating question for dynamic and group meeting test type
+        if (questionIndex < questionLength) {
+        if (
+            testType === "dynamic_discussion_thread" ||
+            testType === "orchestrated_conversation"
+        ) {
+            questionIndex += 1;
+            responseProcessedQuestion++;
+            console.log(questionIndex);
+            const response_text = await fetch(`${baseURL}/test-responses/`, {
+            method: "POST",
+            headers: {
+                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                test_attempt_session_id: sessionId,
+                question_id:
+                questionData.results[0].questions[questionIndex - 2].uid,
+                response_text: "",
+                response_file: "",
+                user_attributes: {
+                tag: "deepchat_profile",
+                attributes: {
+                    username: "web_user",
+                    email: user ? user.email : getAnonymousEmail(),
+                },
+                },
+            }),
+            });
 
-    return resQuestionNumber;
+            const testResponseText = await response_text.json();
+            questionText = testResponseText.response_text;
+
+            // checking if botname is present or not
+            const responder_name = testResponseText.responder_display_name;
+            if (!questionText.includes(responder_name)) {
+            questionText = responder_name + " : " + questionText;
+            }
+
+            console.log(testResponseText);
+            console.log(questionText);
+        }
+        }
+
+        return resQuestionNumber;
+    } catch (error) {
+        console.log("error in testResponseHandler", error);
+        setTimeout(() => {
+            appendMessage(
+                "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+                );
+        }, 200);
+        testResponseHandlerFailed = true;
+        return;
+    }
   };
 
   chatElementRef.request = {
@@ -2062,8 +2086,10 @@ loadExternalModule().then(() => {
               console.log("going to call testResponseHandler()");
               await testResponseHandler(formdata, questionObj);
               console.log("call to testResponseHandler() done");
-              if (maxUploadFailed === true) {
+              if (maxUploadFailed === true || testResponseHandlerFailed === true) {
                 maxUploadFailed = false;
+                testResponseHandlerFailed = false;
+                resetAllVariables();
                 return;
               }
 
