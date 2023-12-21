@@ -734,6 +734,7 @@ function sendEmail() {
     .then((data) => {
       emailSent = data.status;
       console.log("email sent");
+      resetAllVariables();
     })
     .catch((err) => console.log(err));
 }
@@ -784,7 +785,6 @@ async function submitEmailAndName() {
         appendMessage(message);
 
         //* send message to start new session
-        resetAllVariables();
         appendMessage(
           "<b>Please enter another access code to start a new interaction.</b>"
         );

@@ -341,7 +341,7 @@ const handleEndCoachingClick2 = async (randomId) => {
   const response = await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
     method: "POST",
     headers: {
-      Authorization: `Basic ${createBasicAuthToken(key2, secret2)}`,
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -374,7 +374,7 @@ const handleEndCoachingClick2 = async (randomId) => {
     );
     submitEmailAndName2();
   } else {
-    appendMessage2(getCredentialsForm());
+    appendMessage2(getCredentialsForm2());
   }
 };
 
@@ -1015,6 +1015,7 @@ async function submitEmailAndName2() {
           html: "<b>Please enter another access code to start a new interaction.</b>",
         });
       }
+      resetAllVariablesStt();
       const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
       if (recommDiv) {
         appendMessage2(recommDiv);
@@ -2361,8 +2362,9 @@ loadExternalModule().then(() => {
                         questionText2 =
                           questionData2.results[0].questions[questionIndex2]
                             .question;
+                        questionMediaLinkStt = questionData2.results[0].questions[questionIndex2].media_link;
                       }
-                      questionMediaLinkStt = questionData2.results[0].questions[questionIndex2].media_link;
+                      
 
                       if (mediaPropsStt && isImmersiveStt){
                         console.log(questionIndex2)
