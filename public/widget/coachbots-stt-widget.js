@@ -2371,6 +2371,7 @@ loadExternalModule().then(() => {
                         }
 
                       
+                      }
                     }
                   }
                   console.log(questionText2);
@@ -2628,6 +2629,7 @@ loadExternalModule().then(() => {
                       }
                     }
                   }
+                
                 }
 
                 if (
@@ -2935,6 +2937,7 @@ loadExternalModule().then(() => {
                   }
                 }
               }
+              
             } catch (err) {
               console.log(err);
               if (testType2 === "mcq") {
