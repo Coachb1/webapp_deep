@@ -483,7 +483,7 @@ function findRelatedItemsStt(data, targetCode) {
     : null;
 }
       
-const handleProceedClickStt = (choice) => {
+const handleProceedClickStt = async (choice) => {
   if (choice == 'Yes'){
       isProceedStt = 'true'
       const gshadowRoot =
@@ -565,8 +565,126 @@ const handleProceedClickStt = (choice) => {
           }
         }
       } else{
-        appendMessage2(initialQuestionTextStt)
-      }
+        if(isImmersiveStt && !questionMediaLinkStt && testType2 != "orchestrated_conversation" && testType2 != 'mcq'){
+          let responderName;
+          
+          if (testType2 === 'dynamic_discussion_thread'){
+            if (initialQuestionTextStt.includes(":")){
+              initialQuestionTextStt = initialQuestionTextStt.replace(/<\/?p>/g, '');
+              const strList = initialQuestionTextStt.split(":",2)
+              responderName = `<b>${strList[0]}:</b><br>`
+              initialQuestionTextStt = strList[1]
+            } else{
+              responderName = `<b>System:</b><br>`
+
+            }
+          } else{
+            let strLIst = initialQuestionTextStt.replaceAll("*","").split(":",2)
+            if(strLIst.length>1){
+              initialQuestionTextStt = strLIst[1]
+              responderName = `<b>${strLIst[0]}:</b><br>`
+            }
+          }
+          console.log('dyna',initialQuestionTextStt)
+          const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          initialQuestionTextStt = `<audio controls autoplay>
+                                  <source src=${objectUrl} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio>`
+
+          if (responderName){
+            initialQuestionTextStt = responderName + initialQuestionTextStt
+          }
+
+          appendMessage2(initialQuestionTextStt)
+          
+        } else if (testType2 === "orchestrated_conversation"){
+          const regex = /<p>(.*?)<\/p>/g;
+
+          // Extracting text between <p> and </p> tags
+          const matches = Array.from(initialQuestionTextStt.matchAll(regex), match => match[1].trim());
+
+          console.log('matches',matches)
+          // Separating each extracted text by ":"
+          const separatedText = matches.map(match => match.split(':',2));
+          console.log('speratedTExt',separatedText)
+
+          // Displaying the separated text
+          if (isImmersiveStt){
+            const audioPromises = separatedText.map(async entry => {
+
+              const responderName = `<b>${entry[0]}:</b><br>`
+              console.log(entry)
+              const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`
+
+              const response = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+              });
+      
+              const blob = await response.blob();
+              console.log('respnse', blob);
+        
+              const objectUrl = URL.createObjectURL(blob);
+              
+              console.log(objectUrl,'url')
+              let audioCont = `<audio controls >
+                                      <source src=${objectUrl} type="audio/mpeg" />
+                                      Your browser does not support the audio element.
+                                      </audio>`
+              if (responderName){
+                audioCont = responderName + audioCont
+              }
+
+              return audioCont;
+              });
+
+            console.log(audioPromises,'audioPromises')
+
+            const audioContents = await Promise.all(audioPromises);
+
+            audioContents.forEach(content => {
+                appendMessage2(content);
+            });
+          } else{
+            separatedText.forEach(entry => {
+              const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`
+              appendMessage2(container)
+
+            })
+
+
+          }
+
+        } else{
+
+          if(testType2 != 'mcq'){
+            let strList = initialQuestionTextStt.replaceAll("*","")
+          strList = strList.split(":",2)
+          if (strList.length >1){
+            initialQuestionTextStt = strList[1]
+            initialQuestionTextStt = `<b>${strList[0]}:</b><br>` +`<p>${initialQuestionTextStt}</p>`
+          }}
+          appendMessage2(initialQuestionTextStt)
+        }
+      } 
+      
+
   } else {
     resetAllVariablesStt();
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
@@ -1733,7 +1851,7 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getTTSUrl = async (text) =>{
+  const TTSContainerSTT = async (text) =>{
 
       const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`
       const response = await fetch(url, {
@@ -1800,7 +1918,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
+          if (testType2 === "mcq" && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -2621,6 +2739,20 @@ loadExternalModule().then(() => {
                           }
                         }
                       if (questionText2){
+                        if(isImmersiveStt && !questionMediaLinkStt){
+                          let responderName;
+                          let strList = questionText2.replaceAll("*","").split(":")
+                          if (strList.length > 1){
+                            questionText2 = strList[1]
+                            responderName = `<b>${strList[0]}:</b><br>`
+                            
+                          }
+                          questionText2 = await TTSContainerSTT(questionText2)
+
+                          if (responderName){
+                            questionText2 = responderName + questionText2
+                          }
+                        }
                         signals.onResponse({
                           html: questionText2,
                         });
@@ -2697,6 +2829,19 @@ loadExternalModule().then(() => {
                     questionText2 = responseData["coach_message_text"];
                     conversation_id2 = responseData["uid"];
                     console.log("coaching question Text: ", questionText2);
+                    if(isImmersive && !questionMediaLink){
+                      let responderName;
+                      const strList = questionText2.split(":",2)
+                      if (strList.length > 1){
+                      responderName = `<b>${strList[0]}:</b><br>`
+                      questionText2 = strList[1]
+                      }
+                      questionText = await TTSContainer(questionText)
+
+                      if (responderName){
+                        questionText2 = responderName + questionText2
+                      }
+                    }
                     const dataToShow2 = getCoachingQuestionData2(questionText2);
                     signals.onResponse({
                       html: dataToShow2,
@@ -2785,6 +2930,9 @@ loadExternalModule().then(() => {
 
                       if (isImmersiveStt){
                         questionText2 = questionText2.replace(`${responder_name2}`,"")
+                        questionText2 = questionText2.replace(`:`,"")
+                        questionText2 = responder_name2 + " : " + questionText2;
+
                       }
                       
 
@@ -2801,7 +2949,12 @@ loadExternalModule().then(() => {
                     console.log('ismmersive',isImmersiveStt,questionText2)
 
                     if (isImmersiveStt && questionIndex2 != 0){
-                      questionText2 = await getTTSUrl(questionText2);
+                      const stringList = questionText2.split(':', 2)
+                      console.log(stringList)
+                      questionText2 = stringList[1]
+                      const responderName = `<b>${stringList[0]}:</b><br>`
+                      questionText2 = await TTSContainerSTT(questionText2);
+                      questionText2 = responderName + questionText2
                     }
                     signals.onResponse({
                       html: questionText2,

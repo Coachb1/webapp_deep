@@ -84,6 +84,10 @@ let audioFileSrcMap={};  // maping response to resquestionNumber
 let audioFileMap = {}
 let audioDuration;
 let isRecordingGlobal= false;
+let questionMediaLink;
+let isImmersive = false;
+let mediaProps;
+let questionImageData;
 
 
 // sample TEst codes
@@ -479,15 +483,89 @@ async function setMcqVariables() {
       (question) => question.mcq_options
     )[0];
     const optionName = Object.keys(mcqOptions);
-    const questionText = matchingQuestions.map(
+    let questionText;
+    questionText = matchingQuestions.map(
       (question) => question.question
     )[0];
+
+    const questionMedia = matchingQuestions.map(
+      (question) => question.media_link
+    )[0];
+
+    let queImageData;
+    if (mediaProps && mediaProps[`question_image ${responseOption}`]){
+      queImageData = [mediaProps[`question_image ${responseOption}`],mediaProps[`question_image_mobile ${responseOption}`]]
+    }
 
     const newOption1Name = optionName[0];
     const newOption2Name = optionName[1];
     const newOption1Text = mcqOptions[newOption1Name]["opt"];
     const newOption2Text = mcqOptions[newOption2Name]["opt"];
 
+    if (isImmersive && questionMedia) {
+      let embeddingUrl = "";
+      if (questionMedia.length > 0) {
+        if (questionMedia.includes("youtube.com")) {
+          const videoId = questionMedia.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMedia.includes("vimeo.com")) {
+          const videoId = questionMedia.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMedia.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
+        }
+
+        if (embeddingUrl){
+        questionText = `▪ Media <br>  <iframe
+                        allow="autoplay; encrypted-media; fullscreen;"
+                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                        src=${embeddingUrl}
+                        frameborder="0"
+                        allowfullscreen
+                      >
+        `;
+        }
+        const urlList = questionMedia.split(',')
+        console.log("list",urlList)
+        if (urlList.length > 1){
+          urlList.forEach(element => {
+            element = element.trim()
+            if (element.includes('docs.google.com')){
+              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url,"googelsheet")
+              questionText = questionText + '\n' +(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+            else{
+              console.log('audio',element)
+              questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
+            }
+          });
+        }else {
+          if (questionMedia.includes('docs.google.com')){
+            let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+            console.log(url,'google')
+            questionText = questionText + '\n' +(`<iframe src=${url}
+                            frameborder="0" 
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                            allowfullscreen="true" 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true"
+                            ></iframe>`)
+          }
+        }
+        }
+      }
+    
+
+    if (isImmersive && queImageData){
+      // show here hover Image for question and add it to questionText
+    }
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadio = `
@@ -1072,7 +1150,7 @@ const handleEndCoachingClick = async (randomId) => {
   }
 };
 
-const handleProceedClick = (choice) => {
+const handleProceedClick = async (choice) => {
   if (choice == "Yes") {
     isProceed = "true";
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -1082,7 +1160,188 @@ const handleProceedClick = (choice) => {
     que_msg.innerHTML = "Please Wait.."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    appendMessage(initialQuestionText);
+    if(isImmersive && questionMediaLink && testType != 'mcq'){
+      console.log(questionMediaLink);
+      let embeddingUrl = "";
+      
+      if (questionMediaLink.length > 0) {
+        if (questionMediaLink.includes("youtube.com")) {
+          const videoId = questionMediaLink.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMediaLink.includes("vimeo.com")) {
+          const videoId = questionMediaLink.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMediaLink.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+        }
+        
+        if (embeddingUrl){
+            appendMessage(`▪ Media <br>  <iframe
+                          allow="autoplay; encrypted-media; fullscreen;"
+                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                          src=${embeddingUrl}
+                          frameborder="0"
+                          allowfullscreen
+                        >
+                  `)
+          }
+
+        const urlList = questionMediaLink.split(',')
+        console.log("list",urlList)
+        if (urlList.length > 1){
+          urlList.forEach(element => {
+            element = element.trim()
+            if (element.includes('docs.google.com')){
+              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url)
+              appendMessage(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+            else{
+              console.log(element)
+              appendMessage(`<audio src=${element} controls autoplay>`)
+            }
+          });
+        }else {
+          if (questionMediaLink.includes('docs.google.com')){
+            let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+            console.log(url)
+            appendMessage(`<iframe src=${url}
+                            frameborder="0" 
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                            allowfullscreen="true" 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true"
+                            ></iframe>`)
+          }
+        }
+      }
+      
+      if (initialQuestionText){
+        const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+        const is_link = linkPattern.test(initialQuestionText);
+        if (!is_link){
+          appendMessage(initialQuestionText)
+        }
+      }
+    } else{
+      if(isImmersive && !questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq'){
+        let responderName;
+        if (testType === 'dynamic_discussion_thread'){
+          if (initialQuestionText.includes(":")){
+            initialQuestionText = initialQuestionText.replace(/<\/?p>/g, '');
+            const strList = initialQuestionText.split(":",2)
+            responderName = `<b>${strList[0]}:</b><br>`
+            initialQuestionText = strList[1]
+          } else{
+            responderName = `<b>System:</b><br>`
+
+          }
+        }else{
+          let strLIst = initialQuestionText.replaceAll("*","").split(":",2)
+          if(strLIst.length>1){
+            initialQuestionText = strLIst[1]
+            responderName = `<b>${strLIst[0]}:</b><br>`
+          }
+        }
+        const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+  
+        const blob = await response.blob();
+        console.log('respnse', blob);
+  
+        const objectUrl = URL.createObjectURL(blob);
+        
+        console.log(objectUrl,'url')
+        initialQuestionText = `<audio controls autoplay>
+                                <source src=${objectUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio>`
+
+        if (responderName){
+          initialQuestionText = responderName + initialQuestionText
+        }
+
+        appendMessage(initialQuestionText)
+        
+      } else if (testType === "orchestrated_conversation"){
+        console.log(initialQuestionText)
+        const regex = /<p>(.*?)<\/p>/g;
+
+        // Extracting text between <p> and </p> tags
+        const matches = Array.from(initialQuestionText.matchAll(regex), match => match[1].trim());
+
+        console.log('matches',matches)
+        // Separating each extracted text by ":"
+        const separatedText = matches.map(match => match.split(':',2));
+        console.log('speratedTExt',separatedText)
+
+        // Displaying the separated text
+        if (isImmersive){
+          const audioPromises = separatedText.map(async entry => {
+
+            const responderName = `<b>${entry[0]}:</b><br>`
+            console.log(entry)
+            const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`
+
+            const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            },
+            });
+    
+            const blob = await response.blob();
+            console.log('respnse', blob);
+      
+            const objectUrl = URL.createObjectURL(blob);
+            
+            console.log(objectUrl,'url')
+            let audioCont = `<audio controls >
+                                    <source src=${objectUrl} type="audio/mpeg" />
+                                    Your browser does not support the audio element.
+                                    </audio>`
+            if (responderName){
+              audioCont = responderName + audioCont
+            }
+
+            return audioCont;
+            });
+
+          console.log(audioPromises,'audioPromises')
+
+          const audioContents = await Promise.all(audioPromises);
+
+          audioContents.forEach(content => {
+              appendMessage(content);
+          });
+        } else{
+          separatedText.forEach(entry => {
+            const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`
+            appendMessage(container)
+
+          })
+        }
+      } else{
+          if(testType != 'mcq'){let strList = initialQuestionText.replaceAll("*","")
+          strList = strList.split(":",2)
+          if (strList.length >1){
+            initialQuestionText = strList[1]
+            initialQuestionText = `<b>${strList[0]}:</b><br>` +`<p>${initialQuestionText}</p>`
+          }}
+        appendMessage(initialQuestionText)
+      }
+    }
   } else {
     resetAllVariables();
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -1678,6 +1937,30 @@ loadExternalModule().then(() => {
     }
   };
 
+  const TTSContainer = async (text) =>{
+
+    const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      },
+    });
+
+    const blob = await response.blob();
+    console.log('respnse', blob);
+
+    const objectUrl = URL.createObjectURL(blob);
+    
+    console.log(objectUrl,'url')
+    const audioCont = `<audio controls autoplay>
+    <source src=${objectUrl} type="audio/mpeg" />
+    Your browser does not support the audio element.
+    </audio>`
+
+    return audioCont
+  };
+
   const testResponseHandler = async (formdata, questionObj) => {
     try{
         const shadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -1895,6 +2178,12 @@ loadExternalModule().then(() => {
             if (!questionText.includes(responder_name)) {
             questionText = responder_name + " : " + questionText;
             }
+            if (isImmersive){
+              questionText = questionText.replace(`${responder_name}`,"")
+              questionText = questionText.replace(`:`,"")
+              questionText = responder_name + " : " + questionText;
+    
+            }
 
             console.log(testResponseText);
             console.log(questionText);
@@ -1960,13 +2249,12 @@ loadExternalModule().then(() => {
             return;
           }
 
-          let file = audioFile;
           console.log("isRecordingGlobal", isRecordingGlobal);
           while (isRecordingGlobal) {
             console.log("isrecordingglobal", isRecordingGlobal);
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
-
+          let file = audioFile;
           if (file.name.length === 0 || file.size === "") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
@@ -1999,50 +2287,86 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
-              if (isHindi) {
-                questionText = TestUIInfo[`Question ${questionIndex + 1}`];
-              }
+                questionMediaLink = questionData.results[0].questions[questionIndex].media_link;
+                if (isHindi) {
+                  questionText = TestUIInfo[`Question ${questionIndex + 1}`];
+                }
+                if(isImmersive && !questionMediaLink){
+                  let responderName;
+                  let strList = questionText.replaceAll("*","").split(":")
+                  if (strList.length > 1){
+                    questionText = strList[1]
+                    responderName = `<b>${strList[0]}:</b><br>`
+                    
+                  }
+                  questionText = await TTSContainer(questionText)
+  
+                  if (responderName){
+                    questionText = responderName + questionText
+                  }
+                }
 
               const linkPattern = /(http[s]?:\/\/[^\s]+)/;
               const is_link = linkPattern.test(questionText);
 
-              if (is_link) {
+              if (isImmersive && questionMediaLink) {
                 console.log(questionText);
                 let embeddingUrl = "";
-                if (questionText.length > 0) {
-                  if (questionText.includes("youtube.com")) {
-                    const videoId = questionText.split("v=")[1];
+                if (questionMediaLink.length > 0) {
+                  if (questionMediaLink.includes("youtube.com")) {
+                    const videoId = questionMediaLink.split("v=")[1];
                     embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                  } else if (questionText.includes("vimeo.com")) {
-                    const videoId = questionText.split("/").pop();
+                  } else if (questionMediaLink.includes("vimeo.com")) {
+                    const videoId = questionMediaLink.split("/").pop();
                     embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                  } else if (questionText.includes("twitter.com")) {
-                    embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
+                  } else if (questionMediaLink.includes("twitter.com")) {
+                    embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
                   }
-                  // signals.onResponse({
-                  //   html:`▪ ${questionText} .<br><br>
-                  //   ▪ Media <br>  <iframe
-                  //                    allow="autoplay; encrypted-media; fullscreen;"
-                  //                    style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                  //                    src=${embeddingUrl}
-                  //                    frameborder="0"
-                  //                    allowfullscreen
-                  //                  >
-                  //  ` ,
-                  // });
 
-                  questionText = questionText.replace(
-                    /(http[s]?:\/\/[^\s]+)/g,
-                    ""
-                  );
+                  if (embeddingUrl){
                   questionText = `▪ Media <br>  <iframe
-                                   allow="autoplay; encrypted-media; fullscreen;"
-                                   style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                   src=${embeddingUrl}
-                                   frameborder="0"
-                                   allowfullscreen
-                                 >
-                 `;
+                           allow="autoplay; encrypted-media; fullscreen;"
+                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                           src=${embeddingUrl}
+                           frameborder="0"
+                           allowfullscreen
+                         >
+                       `;
+                  }
+                  const urlList = questionMediaLink.split(',')
+                  console.log("list",urlList)
+                  if (urlList.length > 1){
+                    urlList.forEach(element => {
+                      element = element.trim()
+                      if (element.includes('docs.google.com')){
+                        let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                        console.log(url)
+                        appendMessage(`<iframe src=${url}
+                                        frameborder="0" 
+                                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                        allowfullscreen="true" 
+                                        mozallowfullscreen="true" 
+                                        webkitallowfullscreen="true"
+                                        ></iframe>`)
+                      }
+                      else{
+                        console.log(element)
+                        appendMessage(`<audio src=${element} controls autoplay>`)
+                      }
+                    });
+                  }else {
+                    if (questionMediaLink.includes('docs.google.com')){
+                      let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                      console.log(url)
+                      appendMessage(`<iframe src=${url}
+                                      frameborder="0" 
+                                      style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                      allowfullscreen="true" 
+                                      mozallowfullscreen="true" 
+                                      webkitallowfullscreen="true"
+                                      ></iframe>`)
+                    }
+                  }
                 }
               }
 
@@ -2094,6 +2418,19 @@ loadExternalModule().then(() => {
               }
 
               if (testType === "coaching") {
+                if(isImmersive && !questionMediaLink){
+                  let responderName;
+                  const strList = questionText.split(":",)
+                  if (strList.length > 1){
+                  responderName = `<b>${strList[0]}:</b><br>`
+                  questionText = strList[1]
+                  }
+                  questionText = await TTSContainer(questionText)
+                  
+                  if (responderName){
+                    questionText = responderName + questionText
+                  }
+                }
                 const dataToShow = getCoachingQuestionData(questionText);
                 signals.onResponse({
                   html: dataToShow,
@@ -2108,6 +2445,14 @@ loadExternalModule().then(() => {
                   testType === "orchestrated_conversation" ||
                   testType === "dynamic_discussion_thread"
                 ) {
+                  if (isImmersive && questionIndex != 0){
+                    const stringList = questionText.split(':', 2)
+                    console.log(stringList)
+                    questionText = stringList[1]
+                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    questionText = await TTSContainer(questionText);
+                    questionText = responderName + questionText
+                  }
                   signals.onResponse({
                     html: questionText,
                   });
@@ -2485,6 +2830,9 @@ loadExternalModule().then(() => {
                 console.log(senarioMediaDescription);
                 clientName = questionData.results[0].client_name;
                 isTestSignedIn = questionData.results[0].is_logged_in;
+                isImmersive = questionData.results[0].is_immersive;
+                mediaProps = questionData.results[0].media_props;
+                console.log(mediaProps,"props")
 
                 isTestcodeValid = true;
 
@@ -2686,6 +3034,15 @@ loadExternalModule().then(() => {
                       questionText =
                         questionData.results[0].questions[questionIndex]
                           .question;
+                      questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
+
+                      if (mediaProps && isImmersive){
+                        console.log(questionIndex)
+                        if(mediaProps[`question_image ${questionIndex}`]){
+                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
+                        }
+
+                      }
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
                       const mcqOptions =
@@ -2697,6 +3054,71 @@ loadExternalModule().then(() => {
                       const option2Name = optionName[1];
                       const option1Text = mcqOptions[option1Name]["opt"];
                       const option2Text = mcqOptions[option2Name]["opt"];
+                      if (isImmersive && questionMediaLink) {
+                        let embeddingUrl = "";
+                        if (questionMediaLink.length > 0) {
+                          if (questionMediaLink.includes("youtube.com")) {
+                            const videoId = questionMediaLink.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (questionMediaLink.includes("vimeo.com")) {
+                            const videoId = questionMediaLink.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (questionMediaLink.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+                          }
+                  
+                          if (embeddingUrl){
+                          questionText = `▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                          `;
+                          }
+                          const urlList = questionMediaLink.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                questionText = questionText + '\n' +(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLink.includes('docs.google.com')){
+                              let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              questionText = questionText + '\n' +(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
+                        }
+                      
+                  
+                      if (isImmersive && questionImageData){
+                        // show here hover Image for question and add it to questionText
+                      }
+
 
                       formRadio = `
                       <div id='mcq-option-${mcqFormId}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
@@ -2719,6 +3141,15 @@ loadExternalModule().then(() => {
                         questionText =
                           questionData.results[0].questions[questionIndex]
                             .question;
+                        questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
+
+                      }
+                      if (mediaProps && isImmersive){
+                        console.log(questionIndex)
+                        if(mediaProps[`question_image ${questionIndex}`]){
+                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
+                        }
+
                       }
                       if (isHindi) {
                         questionText =
@@ -2727,35 +3158,7 @@ loadExternalModule().then(() => {
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
                       const is_link = linkPattern.test(questionText);
 
-                      if (is_link) {
-                        console.log(questionText);
-                        let embeddingUrl = "";
-                        if (questionText.length > 0) {
-                          if (questionText.includes("youtube.com")) {
-                            const videoId = questionText.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText.includes("vimeo.com")) {
-                            const videoId = questionText.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText}`;
-                          }
-
-                          questionText = questionText.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
-                          questionText = `▪ Media <br>  <iframe
-                                   allow="autoplay; encrypted-media; fullscreen;"
-                                   style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                   src=${embeddingUrl}
-                                   frameborder="0"
-                                   allowfullscreen
-                                 >
-                               `;
-                        }
-                      }
+                      
                     }
                   }
 
@@ -2932,9 +3335,90 @@ loadExternalModule().then(() => {
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
                     ) {
-                      signals.onResponse({
-                        html: questionText,
-                      });
+                      
+                      if (isImmersive && questionMediaLink) {
+                        console.log(questionText);
+                        let embeddingUrl = "";
+                        if (questionMediaLink.length > 0) {
+                          if (questionMediaLink.includes("youtube.com")) {
+                            const videoId = questionMediaLink.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (questionMediaLink.includes("vimeo.com")) {
+                            const videoId = questionMediaLink.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (questionMediaLink.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+                          }
+
+                          if (embeddingUrl){
+                          questionText = `▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                          `;
+                          }
+                          const urlList = questionMediaLink.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                appendMessage(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                appendMessage(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLink.includes('docs.google.com')){
+                              let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              appendMessage(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
+                        }
+                      if (questionText){
+                        if(isImmersive && !questionMediaLink){
+                          let responderName;
+                          let strList = questionText.replaceAll("*","").split(":")
+                          if (strList.length > 1){
+                            questionText = strList[1]
+                            responderName = `<b>${strList[0]}:</b><br>`
+                            
+                          }
+                          questionText = await TTSContainer(questionText)
+
+                          if (responderName){
+                            questionText = responderName + questionText
+                          }
+                        }
+                        signals.onResponse({
+                          html: questionText,
+                        });
+                      }
+
+                      if (isImmersive && questionImageData){
+                        // show here hover Image for question
+                      }
                     }
                   }
                 }
@@ -2998,6 +3482,19 @@ loadExternalModule().then(() => {
                     questionText = responseData["coach_message_text"];
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
+                    if(isImmersive && !questionMediaLink){
+                      let responderName;
+                      const strList = questionText.split(":",)
+                      if (strList.length > 1){
+                      responderName = `<b>${strList[0]}:</b><br>`
+                      questionText = strList[1]
+                      }
+                      questionText = await TTSContainer(questionText)
+                      
+                      if (responderName){
+                        questionText = responderName + questionText
+                      }
+                    }
                     const dataToShow = getCoachingQuestionData(questionText);
                     signals.onResponse({
                       html: dataToShow,
@@ -3081,6 +3578,12 @@ loadExternalModule().then(() => {
                       if (!questionText.includes(responder_name)) {
                         questionText = responder_name + " : " + questionText;
                       }
+                      if (isImmersive){
+                        questionText = questionText.replace(`${responder_name}`,"")
+                        questionText = questionText.replace(`:`,"")
+                        questionText = responder_name + " : " + questionText;
+
+                      }
                       console.log(questionText);
                       resQuestionNumber = qRespnse.question.question_number;
                     }
@@ -3092,8 +3595,16 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
+                    if (isImmersive && questionIndex != 0){
+                      const stringList = questionText.split(':', )
+                      console.log(stringList)
+                      questionText = stringList[1]
+                      const responderName = `<b>${stringList[0]}:</b><br>`
+                      questionText = await TTSContainer(questionText);
+                      questionText = responderName + questionText
+                    }
                     signals.onResponse({
-                      text: questionText,
+                      html: questionText,
                     });
                   }
                 }
