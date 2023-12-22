@@ -334,6 +334,8 @@ function getCredentialsForm() {
 function getCoachingQuestionData(questionText) {
   let randomId = Math.floor(Math.random() * 1000000);
   randomId = `coaching-question-${randomId}`;
+  let parts = questionText.split(':');
+  questionText = parts.length > 1 ? parts[1].trim() : questionText;
   return `
           ${questionText}
           <div id="${randomId}">
