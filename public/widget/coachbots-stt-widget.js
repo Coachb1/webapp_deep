@@ -451,6 +451,98 @@ const tooltipStt =
 }
 //image hover handlers - end
 
+const  setHoverPoints = (coordsStt, imageIdStt, imageMapNameStt) => {
+  //hover configs
+  const shadowRootForImageStt =
+  document.getElementById("chat-element2").shadowRoot;
+const descriptionMediaImageStt =
+  shadowRootForImageStt.getElementById(imageIdStt);
+
+// -map element
+const mapElementStt = document.createElement("map");
+mapElementStt.setAttribute("name", imageMapNameStt);
+shadowRootForImageStt.appendChild(mapElementStt);
+
+// -overlay element
+const overlayElementStt = document.createElement("div");
+overlayElementStt.setAttribute(
+  "class",
+  "image-overlayStt"
+);
+shadowRootForImageStt.appendChild(overlayElementStt);
+
+// -tooltip
+const tooltipELementStt = document.createElement("div");
+tooltipELementStt.setAttribute("id", "tooltipStt");
+tooltipELementStt.setAttribute(
+  "class",
+  "custom-tooltipStt"
+);
+tooltipELementStt.style.position = "absolute";
+tooltipELementStt.style.backgroundColor = "#333";
+tooltipELementStt.style.color = "#fff";
+tooltipELementStt.style.padding = "5px";
+tooltipELementStt.style.borderRadius = "5px";
+tooltipELementStt.style.display = "none";
+shadowRootForImageStt.appendChild(tooltipELementStt);
+
+const imageLeftPaddingStt = getComputedStyle(
+  descriptionMediaImageStt
+).paddingLeft.replace("px", "");
+
+const imageTopPaddingStt = getComputedStyle(
+  descriptionMediaImageStt
+).paddingTop.replace("px", "");
+
+console.log(imageLeftPaddingStt, imageTopPaddingStt);
+
+const imageTopFreeSpaceStt =
+  descriptionMediaImageStt.getBoundingClientRect()
+    .bottom - descriptionMediaImageStt.offsetHeight;
+const imageLeftFreeSpaceStt =
+  descriptionMediaImageStt.getBoundingClientRect().left;
+console.log(
+  "Free space :",
+  imageTopFreeSpaceStt,
+  imageLeftFreeSpaceStt
+);
+
+coordsStt.map((item) => {
+  let coord;
+  if(window.innerWidth < 768){
+    coord = item.coord
+    .split("|")[1].replace(/\./g, ',').split(",");
+  } else {
+    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
+  }
+
+  const areaElementStt = document.createElement("area");
+  areaElementStt.setAttribute("coords", coord);
+  areaElementStt.setAttribute("shape", "circle");
+  // areaElementStt.setAttribute("title", item.title);
+
+  mapElementStt.appendChild(areaElementStt);
+
+  areaElementStt.addEventListener(
+    "mouseover",
+    (event) => {
+      showTooltip(item.title, event);
+    }
+  );
+
+  areaElementStt.addEventListener(
+    "mousemove",
+    (event) => {
+      updateTooltipPositionStt(event);
+    }
+  );
+
+  areaElementStt.addEventListener("mouseout", () => {
+    hideTooltip();
+  });
+});
+}
+
 // to reset all variables
 const resetAllVariablesStt = () => {
   //* reset all variables : start
@@ -2710,141 +2802,38 @@ loadExternalModule().then(() => {
                       //   mediaPropsStt.test_image
                       // )[0];
                       const testImage = {
-                        image : "https://c8.alamy.com/comp/2kenrmb/manual-pressure-gauge-indicatorpressure-indicatorfuid-pressure-gaugepressure-gaugeisolating-valve-2kenrmb.jpg",
-                        coords : [
-                          {
-                            coord: "146,96,47|146,96,47",
-                            title: "Fluid pressure gauge",
-                          },
-                          {
-                            coord: "289,101,49|289,101,49",
-                            title: "Air Pressure Gauge",
-                          },
-                          {
-                            coord: "322,234,36|322,234,36",
-                            title: "Isolating Valve",
-                          },
-                          {
-                            coord: "133,223,33|133,223,33",
-                            title: "Check Valve",
-                          },
-                          {
-                            coord: "822,641,0|822,641,0",
-                            title: "Butterfly valve",
-                          },
+                        image: "https://www.dhvindustries.com/wp-content/uploads/2015/12/Gate-Valve.jpg",
+                        coords: [
+                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
+                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
                         ],
-                        narration : "Here is a Gate Valve, essential for full open or full close operations. Remember, no partial openings. Rotate the hand wheel clockwise to close and counter-clockwise to open. The stem's projection indicates the valve position. Do not use for flow regulation, and ensure proper handling during transportation. For storage, keep it dust-free, elevated, and avoid direct floor contact. The gear unit aids operation; clockwise for closing, counterclockwise for opening. Never lift the valve by the hand wheel, and always clean before installation."
-                     }
+                        narration: "Here is a Gate Valve, essential for full open or full close operations. Remember, no partial openings. Rotate the hand wheel clockwise to close and counter-clockwise to open. The stem's projection indicates the valve position. Do not use for flow regulation, and ensure proper handling during transportation. For storage, keep it dust-free, elevated, and avoid direct floor contact. The gear unit aids operation; clockwise for closing, counterclockwise for opening. Never lift the valve by the hand wheel, and always clean before installation."
+                      }
                      console.log(testImage)
                      const imageUrlStt = testImage.image
                      const coordsStt = testImage.coords
                      const narrationStt = testImage.narration
 
                       const ttsNarration = await TTSContainerSTT(narrationStt)
+                      const imageIdStt = "mediaImageStt"
+                      const imageMapNameStt = "image-mapStt"
 
                       appendMessage2(
                         `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#image-mapStt" id="mediaImageStt" style="border-radius: 8px;" /> <br><br>
+                             ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                              ▪ Narration : <br> ${ttsNarration}` 
                       );
                       signals.onResponse({
                         html: questionText2,
                       });
 
-                      //hover configs
-                      const shadowRootForImageStt =
-                        document.getElementById("chat-element2").shadowRoot;
-                      const descriptionMediaImageStt =
-                        shadowRootForImageStt.getElementById("mediaImageStt");
-
-                      // -map element
-                      const mapElementStt = document.createElement("map");
-                      mapElementStt.setAttribute("name", "image-mapStt");
-                      shadowRootForImageStt.appendChild(mapElementStt);
-
-                      // -overlay element
-                      const overlayElementStt = document.createElement("div");
-                      overlayElementStt.setAttribute(
-                        "class",
-                        "image-overlayStt"
-                      );
-                      shadowRootForImageStt.appendChild(overlayElementStt);
-
-                      // -tooltip
-                      const tooltipELementStt = document.createElement("div");
-                      tooltipELementStt.setAttribute("id", "tooltipStt");
-                      tooltipELementStt.setAttribute(
-                        "class",
-                        "custom-tooltipStt"
-                      );
-                      tooltipELementStt.style.position = "absolute";
-                      tooltipELementStt.style.backgroundColor = "#333";
-                      tooltipELementStt.style.color = "#fff";
-                      tooltipELementStt.style.padding = "5px";
-                      tooltipELementStt.style.borderRadius = "5px";
-                      tooltipELementStt.style.display = "none";
-                      shadowRootForImageStt.appendChild(tooltipELementStt);
-
-                      const imageLeftPaddingStt = getComputedStyle(
-                        descriptionMediaImageStt
-                      ).paddingLeft.replace("px", "");
-
-                      const imageTopPaddingStt = getComputedStyle(
-                        descriptionMediaImageStt
-                      ).paddingTop.replace("px", "");
-
-                      console.log(imageLeftPaddingStt, imageTopPaddingStt);
-
-                      const imageTopFreeSpaceStt =
-                        descriptionMediaImageStt.getBoundingClientRect()
-                          .bottom - descriptionMediaImageStt.offsetHeight;
-                      const imageLeftFreeSpaceStt =
-                        descriptionMediaImageStt.getBoundingClientRect().left;
-                      console.log(
-                        "Free space :",
-                        imageTopFreeSpaceStt,
-                        imageLeftFreeSpaceStt
-                      );
-
-                      coordsStt.map((item) => {
-                        const areaElementStt = document.createElement("area");
-                        areaElementStt.setAttribute("coords", item.coord);
-                        areaElementStt.setAttribute("shape", "circle");
-                        // areaElementStt.setAttribute("title", item.title);
-
-                        mapElementStt.appendChild(areaElementStt);
-
-                        const coordsStt = item.coord.split("|")[0].split(",");
-
-                        const coordPhoneStt = item.coord
-                          .split("|")[1]
-                          .split(",");
-
-                        const speechBubbleStt = document.createElement("img");
-                        speechBubbleStt.src =
-                          "https://cdn.statically.io/gh/falahh6/coachbots/main/hotspot-2.png";
-                        speechBubbleStt.style.position = "absolute";
-
-                        areaElementStt.addEventListener(
-                          "mouseover",
-                          (event) => {
-                            showTooltip(item.title, event);
-                          }
-                        );
-
-                        areaElementStt.addEventListener(
-                          "mousemove",
-                          (event) => {
-                            updateTooltipPositionStt(event);
-                          }
-                        );
-
-                        areaElementStt.addEventListener("mouseout", () => {
-                          hideTooltip();
-                        });
-                      });
+                      // pass - coords, imagemap-name, 
+                      setHoverPoints(coordsStt, imageIdStt, imageMapNameStt)
+                      console.log("IMAGE MAPPED WITH COORDS")
+                      
                     } else {
                       // proceed buttion will show 
                       signals.onResponse({
