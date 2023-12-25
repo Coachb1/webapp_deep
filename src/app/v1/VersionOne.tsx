@@ -21,6 +21,7 @@ import {
   DiversityPlus,
   onBoarding,
   ijp,
+  questionPro,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -148,6 +149,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Diversity+
+              </Button>
+            </Link>
+            <Link href={"#qp"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Questions Pro
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -304,6 +313,13 @@ const VersionOne = ({ user, groups }: any) => {
               badgeText="Diversity+"
               user={user ? true : false}
               tests={DiversityPlus}
+            />
+          </div>
+          <div id="qp">
+            <HeroAccordion
+              badgeText="Questions Pro"
+              user={user ? true : false}
+              tests={questionPro}
             />
           </div>
           <div id="discoveryPlus">
