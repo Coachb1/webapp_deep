@@ -636,6 +636,32 @@ export const onBoarding: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+export const questionPro: Test[] = [
+  {
+    domain: "Navigating Operational Challenges",
+    test_code: "QO0WRWA",
+    title: "Assessing Impact of Cost-Cutting Measures in Manufacturing",
+    description:
+      "Diya, the operations executive, is dealing with a mandate to cut costs in a manufacturing company. The company recently faced a substantial increase in raw material prices due to global supply chain disruptions. To offset these rising costs, Diya implemented a cost-cutting strategy affecting various departments, including procurement, maintenance, and manpower. The ground-level teams are now experiencing challenges, particularly in meeting production targets due to delayed procurement processes and reduced maintenance schedules. The team lead wants to understand how these strategic decisions are translating into operational hurdles, impacting workforce efficiency and day-to-day functions on the shop floor. Respond as the team lead and ask questions to understand the situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Uncovering Production Challenges",
+    test_code: "QJHZKWJ",
+    title: "Operational Impact of Raw Material Shortage",
+    description:
+      "A team lead in the production department, is investigating the repercussions of a sudden shortage of key raw materials in a manufacturing company. The scarcity is affecting the procurement timelines, causing delays in production schedules and impacting the overall operational efficiency. The team lead seeking clarity, is probing a senior leader, Ravi about the specific challenges faced by various functions such as production, quality control, and inventory management due to the shortage. The team lead's goal is to uncover the root cause behind the material shortage and understand how it trickles down to affect day-to-day operations at the ground level. Respond as the team lead and ask questions to understand the situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Understanding Causes and Solutions",
+    test_code: "QRUB1AK",
+    title: "Bug Surge Analysis Meeting",
+    description:
+      "The project manager, is leading a software development team facing a surge in bug reports. Two developers, Aarav and Priya, are grappling with the increased number of reported issues affecting the application's stability and user experience. The manager calls a meeting to delve into the specifics, seeking insights on the root causes, possible patterns, and any challenges hindering the debugging process. The project manager aims to grasp the nuanced impact on their workflow and the end-user experience to devise targeted solutions and streamline the development process. Respond as the project manager and ask questions to understand the situation.",
+    interaction_mode: "Audio",
+  },
+];
 
 export const frontLineStaff: Test[] = [
   {
