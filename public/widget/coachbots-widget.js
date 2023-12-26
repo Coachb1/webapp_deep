@@ -769,7 +769,7 @@ async function setMcqVariables() {
           //   appendMessage(message);
 
           //* send message to start new session
-          resetAllVariables();
+          
           appendMessage(
             "<b>Please enter another access code to start a new interaction.</b>"
           );
@@ -2829,7 +2829,6 @@ loadExternalModule().then(() => {
                       const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                       appendMessage(message);
                       // //* send message to start new session
-                      resetAllVariables();
                       signals.onResponse({
                         html: "<b>Please enter another access code to start a new interaction.</b>",
                       });
@@ -4077,7 +4076,7 @@ loadExternalModule().then(() => {
                     const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     appendMessage(message);
                     // //* send message to start new session
-                    resetAllVariables();
+                    
                     signals.onResponse({
                       html: "<b>Please enter another access code to start a new interaction.</b>",
                     });

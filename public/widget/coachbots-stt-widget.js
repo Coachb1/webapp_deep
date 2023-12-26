@@ -1285,6 +1285,8 @@ function sendEmail2() {
     .then((data) => {
       emailSent2 = data.status;
       console.log("email sent");
+      resetAllVariablesStt();
+
     })
     .catch((err) => console.log(err));
 }
@@ -1339,7 +1341,6 @@ async function submitEmailAndName2() {
           html: "<b>Please enter another access code to start a new interaction.</b>",
         });
       }
-      resetAllVariablesStt();
       const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
       if (recommDiv) {
         appendMessage2(recommDiv);
