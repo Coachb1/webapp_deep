@@ -505,7 +505,7 @@ async function setMcqVariables() {
     const newOption1Text = mcqOptions[newOption1Name]["opt"];
     const newOption2Text = mcqOptions[newOption2Name]["opt"];
 
-    if (isImmersive && questionMedia) {
+    if (questionMedia) {
       let embeddingUrl = "";
       if (questionMedia.length > 0) {
         if (questionMedia.includes("youtube.com")) {
@@ -566,9 +566,7 @@ async function setMcqVariables() {
       }
     
 
-    if (isImmersive && queImageData){
-      // show here hover Image for question and add it to questionText
-    }
+    
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadio = `
@@ -1306,7 +1304,7 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait.."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    if(isImmersive && questionMediaLink && testType != 'mcq'){
+    if(questionMediaLink && testType != 'mcq'){
       console.log(questionMediaLink);
       let embeddingUrl = "";
       
@@ -1376,7 +1374,7 @@ const handleProceedClick = async (choice) => {
         }
       }
     } else{
-      if(isImmersive && !questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq'){
+      if(!questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq'){
         let responderName;
         if (testType === 'dynamic_discussion_thread'){
           if (initialQuestionText.includes(":")){
@@ -1395,25 +1393,26 @@ const handleProceedClick = async (choice) => {
             responderName = `<b>${strLIst[0]}:</b><br>`
           }
         }
-        const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-          },
-        });
-  
-        const blob = await response.blob();
-        console.log('respnse', blob);
-  
-        const objectUrl = URL.createObjectURL(blob);
-        
-        console.log(objectUrl,'url')
-        initialQuestionText = `<audio controls autoplay>
-                                <source src=${objectUrl} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio>`
-
+        if(isImmersive){
+          const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          initialQuestionText = `<audio controls autoplay>
+                                  <source src=${objectUrl} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio>`
+        }
         if (responderName){
           initialQuestionText = responderName + initialQuestionText
         }
@@ -2493,19 +2492,19 @@ loadExternalModule().then(() => {
                 if (isHindi) {
                   questionText = TestUIInfo[`Question ${questionIndex + 1}`];
                 }
-                if(isImmersive && !questionMediaLink){
-                  let responderName;
-                  let strList = questionText.replaceAll("*","").split(":")
-                  if (strList.length > 1){
-                    questionText = strList[1]
-                    responderName = `<b>${strList[0]}:</b><br>`
-                    
-                  }
+                let responderName;
+                let strList = questionText.replaceAll("*","").split(":")
+                if (strList.length > 1){
+                  questionText = strList[1]
+                  responderName = `<b>${strList[0]}:</b><br>`
+                  
+                }
+                if(isImmersive){
                   questionText = await TTSContainer(questionText)
+                }
   
-                  if (responderName){
-                    questionText = responderName + questionText
-                  }
+                if (responderName){
+                  questionText = responderName + questionText
                 }
 
                 const linkPattern = /(http[s]?:\/\/[^\s]+)/;
@@ -2661,18 +2660,18 @@ loadExternalModule().then(() => {
               }
 
               if (testType === "coaching") {
-                if(isImmersive && !questionMediaLink){
-                  let responderName;
-                  const strList = questionText.split(":",)
-                  if (strList.length > 1){
+                let responderName;
+                const strList = questionText.split(":",)
+                if (strList.length > 1){
                   responderName = `<b>${strList[0]}:</b><br>`
                   questionText = strList[1]
-                  }
+                }
+                if(isImmersive){
                   questionText = await TTSContainer(questionText)
+                }
                   
-                  if (responderName){
-                    questionText = responderName + questionText
-                  }
+                if (responderName){
+                  questionText = responderName + questionText
                 }
                 const dataToShow = getCoachingQuestionData(questionText);
                 signals.onResponse({
@@ -2688,12 +2687,14 @@ loadExternalModule().then(() => {
                   testType === "orchestrated_conversation" ||
                   testType === "dynamic_discussion_thread"
                 ) {
+                  const stringList = questionText.split(':', 2)
+                  console.log(stringList)
+                  questionText = stringList[1]
+                  const responderName = `<b>${stringList[0]}:</b><br>`
                   if (isImmersive && questionIndex != 0){
-                    const stringList = questionText.split(':', 2)
-                    console.log(stringList)
-                    questionText = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
                     questionText = await TTSContainer(questionText);
+                  }
+                  if(responderName){
                     questionText = responderName + questionText
                   }
                   signals.onResponse({
@@ -3293,13 +3294,7 @@ loadExternalModule().then(() => {
                           .question;
                       questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
 
-                      if (mediaProps && isImmersive){
-                        console.log(questionIndex)
-                        if(mediaProps[`question_image ${questionIndex}`]){
-                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
-                        }
-
-                      }
+                      
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
                       const mcqOptions =
@@ -3311,7 +3306,7 @@ loadExternalModule().then(() => {
                       const option2Name = optionName[1];
                       const option1Text = mcqOptions[option1Name]["opt"];
                       const option2Text = mcqOptions[option2Name]["opt"];
-                      if (isImmersive && questionMediaLink) {
+                      if (questionMediaLink) {
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
                           if (questionMediaLink.includes("youtube.com")) {
@@ -3372,9 +3367,7 @@ loadExternalModule().then(() => {
                         }
                       
                   
-                      if (isImmersive && questionImageData){
-                        // show here hover Image for question and add it to questionText
-                      }
+                      
 
 
                       formRadio = `
@@ -3401,13 +3394,7 @@ loadExternalModule().then(() => {
                         questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
 
                       }
-                      if (mediaProps && isImmersive){
-                        console.log(questionIndex)
-                        if(mediaProps[`question_image ${questionIndex}`]){
-                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
-                        }
-
-                      }
+                      
                       if (isHindi) {
                         questionText =
                           TestUIInfo[`Question ${questionIndex + 1}`];
@@ -3631,7 +3618,7 @@ loadExternalModule().then(() => {
                       testType != "coaching"
                     ) {
                       
-                      if (isImmersive && questionMediaLink) {
+                      if (questionMediaLink) {
                         console.log(questionText);
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
@@ -3692,19 +3679,19 @@ loadExternalModule().then(() => {
                           }
                         }
                       if (questionText){
-                        if(isImmersive && !questionMediaLink){
-                          let responderName;
-                          let strList = questionText.replaceAll("*","").split(":")
-                          if (strList.length > 1){
-                            questionText = strList[1]
-                            responderName = `<b>${strList[0]}:</b><br>`
-                            
-                          }
-                          questionText = await TTSContainer(questionText)
+                        let responderName;
+                        let strList = questionText.replaceAll("*","").split(":")
+                        if (strList.length > 1){
+                          questionText = strList[1]
+                          responderName = `<b>${strList[0]}:</b><br>`
+                          
+                        }
+                        if(isImmersive){
+                        questionText = await TTSContainer(questionText)
+                        }
 
-                          if (responderName){
-                            questionText = responderName + questionText
-                          }
+                        if (responderName){
+                          questionText = responderName + questionText
                         }
 
                         console.log(`que_image ${questionIndex + 1}`)
@@ -3756,9 +3743,7 @@ loadExternalModule().then(() => {
                         }
                       }
 
-                      if (isImmersive && questionImageData){
-                        // show here hover Image for question
-                      }
+                      
                     }
                   }
                 }
@@ -3822,18 +3807,18 @@ loadExternalModule().then(() => {
                     questionText = responseData["coach_message_text"];
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
-                    if(isImmersive && !questionMediaLink){
-                      let responderName;
-                      const strList = questionText.split(":",)
-                      if (strList.length > 1){
+                    let responderName;
+                    const strList = questionText.split(":",)
+                    if (strList.length > 1){
                       responderName = `<b>${strList[0]}:</b><br>`
                       questionText = strList[1]
-                      }
+                    }
+                    if(isImmersive){
                       questionText = await TTSContainer(questionText)
+                    }
                       
-                      if (responderName){
-                        questionText = responderName + questionText
-                      }
+                    if (responderName){
+                      questionText = responderName + questionText
                     }
                     const dataToShow = getCoachingQuestionData(questionText);
                     signals.onResponse({
@@ -3935,14 +3920,14 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
+                    const stringList = questionText.split(':', )
+                    console.log(stringList)
+                    questionText = stringList[1]
+                    const responderName = `<b>${stringList[0]}:</b><br>`
                     if (isImmersive && questionIndex != 0){
-                      const stringList = questionText.split(':', )
-                      console.log(stringList)
-                      questionText = stringList[1]
-                      const responderName = `<b>${stringList[0]}:</b><br>`
                       questionText = await TTSContainer(questionText);
-                      questionText = responderName + questionText
                     }
+                    questionText = responderName + questionText
                     signals.onResponse({
                       html: questionText,
                     });
