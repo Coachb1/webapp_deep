@@ -61,6 +61,7 @@ let is_free;
 let responseProcessedQuestion = 0;
 let senarioDescription;
 let senarioTitle;
+let senarioCase;
 let responsesDone = false;
 let senarioMediaDescription;
 let userName = "";
@@ -749,6 +750,7 @@ async function setMcqVariables() {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("REPORT 1")
         reportUrl = data.url;
         globalReportUrl = reportUrl;
         responsesDone = true;
@@ -1035,6 +1037,7 @@ const resetAllVariables = () => {
   responseProcessedQuestion = 0;
   senarioDescription = "";
   senarioTitle = "";
+  senarioCase = "";
   senarioMediaDescription;
   responsesDone = false;
   userName = "";
@@ -2553,7 +2556,16 @@ loadExternalModule().then(() => {
                   report_type: reportType,
                   test_attempt_session_id: sessionId,
                 };
+              } else if (senarioCase === "process_training") {
+                reportType = "processTrainingReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                };
               }
+
+              console.log(getReportBody, senarioCase)
 
               if (responsesDone) {
                 await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -2566,6 +2578,8 @@ loadExternalModule().then(() => {
                 })
                   .then((response) => response.json())
                   .then((data) => {
+                    console.log("REPORT 2")
+
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
                     console.log("Report Url : ", reportUrl, globalReportUrl);
@@ -2825,6 +2839,7 @@ loadExternalModule().then(() => {
                 is_free = questionData.results[0].is_free;
                 senarioDescription = questionData.results[0].description;
                 senarioTitle = questionData.results[0].title;
+                senarioCase = questionData.results[0].scenario_case;
                 senarioMediaDescription =
                   questionData.results[0].description_media;
                 TestUIInfo = questionData.results[0].ui_information;
@@ -2834,6 +2849,8 @@ loadExternalModule().then(() => {
                 isTestSignedIn = questionData.results[0].is_logged_in;
                 isImmersive = questionData.results[0].is_immersive;
                 mediaProps = questionData.results[0].media_props;
+
+
                 console.log(mediaProps,"props")
 
                 isTestcodeValid = true;
@@ -3707,7 +3724,17 @@ loadExternalModule().then(() => {
                       report_type: reportType,
                       test_attempt_session_id: sessionId,
                     };
+                  } else if (senarioCase === "process_training"){
+                      reportType = "processTrainingReport";
+                      getReportBody = {
+                        user_id: participantId,
+                        report_type: reportType,
+                        session_id: sessionId,
+                        interaction_id: testId,
+                      };
                   }
+
+                  console.log(getReportBody, senarioCase)
 
                   console.log(sessionId);
                   const reportResponse = await fetch(
@@ -3728,7 +3755,7 @@ loadExternalModule().then(() => {
                   const reportData = await reportResponse.json();
                   reportUrl = reportData.url;
                   globalReportUrl = reportUrl;
-
+                  console.log("REPORT 3")
                   console.log("Report Url : ", reportUrl, globalReportUrl);
                   // const urlObject = new URL(reportUrl);
                   // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
