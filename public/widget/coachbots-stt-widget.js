@@ -406,7 +406,7 @@ function appendMessage2(message2) {
 
 //image hover handlers - start
 function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
-  console.log(tooltipIdStt)
+  // console.log(tooltipIdStt)
   const shadowRootStt =
   document.getElementById("chat-element2").shadowRoot;
   const tooltipStt =
@@ -417,7 +417,7 @@ function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
   }
 
 function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
-  console.log('update',tooltipIdStt)
+  // console.log('update',tooltipIdStt)
 
   const shadowRootStt =
     document.getElementById("chat-element2").shadowRoot;
@@ -439,13 +439,13 @@ function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
     tooltipStt.style.left = mouseX + xOffset - 120 + "px";
     tooltipStt.style.top = mouseY + yOffset - 80 + "px";
   } else {
-    tooltipStt.style.left = mouseX + xOffset - 120 + "px";
-    tooltipStt.style.top = mouseY + yOffset - 170 + "px";
+    tooltipStt.style.left = event.clientX // mouseX // + xOffset - 120 + "px";
+    tooltipStt.style.top = event.clientY //mouseY //+ yOffset - 170 + "px";
   }
 }
 
 function hideTooltipStt(tooltipIdStt) {
-  console.log('hide',tooltipIdStt)
+  // console.log('hide',tooltipIdStt)
 
   const shadowRootStt =
   document.getElementById("chat-element2").shadowRoot;
@@ -524,27 +524,29 @@ coordsStt.map((item) => {
   const areaElementStt = document.createElement("area");
   areaElementStt.setAttribute("coords", coord);
   areaElementStt.setAttribute("shape", "circle");
-  // areaElementStt.setAttribute("title", item.title);
+  areaElementStt.setAttribute("title", item.title);
+
+  // console.log(areaElementStt.addEventListener())
 
   mapElementStt.appendChild(areaElementStt);
 
-  areaElementStt.addEventListener(
-    "mouseover",
-    (event) => {
-      showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
-    }
-  );
+  // areaElementStt.addEventListener(
+  //   "mouseover",
+  //   (event) => {
+  //     showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
+  //   }
+  // );
 
-  areaElementStt.addEventListener(
-    "mousemove",
-    (event) => {
-      updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
-    }
-  );
+  // areaElementStt.addEventListener(
+  //   "mousemove",
+  //   (event) => {
+  //     updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+  //   }
+  // );
 
-  areaElementStt.addEventListener("mouseout", () => {
-    hideTooltipStt(tooltipIdStt);
-  });
+  // areaElementStt.addEventListener("mouseout", () => {
+  //   hideTooltipStt(tooltipIdStt);
+  // });
 });
 }
 
@@ -2880,9 +2882,14 @@ loadExternalModule().then(() => {
                         coords: coords,
                         narration: narration
                       }
+
                      console.log(testImage)
                      const imageUrlStt = testImage.image
-                     const coordsStt = testImage.coords
+                     const coordsStt = [
+                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
+                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
+                        ]
                      const narrationStt = testImage.narration
 
                       const ttsNarration = await TTSContainerSTT(narrationStt)
@@ -3041,7 +3048,7 @@ loadExternalModule().then(() => {
                             html: questionText2,
                           });
                           setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
-                          console.log("IMAGE MAPPED WITH COORDS")
+                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {questionIndex2})
 
 
                           // questionText2 = questionText2 + imageDiv 

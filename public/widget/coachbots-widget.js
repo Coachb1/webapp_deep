@@ -1119,6 +1119,7 @@ console.log(
 );
 
 coords.map((item) => {
+  console.log(item)
   let coord;
   if(window.innerWidth < 768){
     coord = item.coord
@@ -1130,27 +1131,27 @@ coords.map((item) => {
   const areaElement = document.createElement("area");
   areaElement.setAttribute("coords", coord);
   areaElement.setAttribute("shape", "circle");
-  // areaElement.setAttribute("title", item.title);
+  areaElement.setAttribute("title", item.title);
 
   mapElement.appendChild(areaElement);
 
-  areaElement.addEventListener(
-    "mouseover",
-    (event) => {
-      showTooltip(item.title, event, tooltipId,imageMapName);
-    }
-  );
+  // areaElement.addEventListener(
+  //   "mouseover",
+  //   (event) => {
+  //     showTooltip(item.title, event, tooltipId,imageMapName);
+  //   }
+  // );
 
-  areaElement.addEventListener(
-    "mousemove",
-    (event) => {
-      updateTooltipPosition(event, imageMapName, tooltipId);
-    }
-  );
+  // areaElement.addEventListener(
+  //   "mousemove",
+  //   (event) => {
+  //     updateTooltipPosition(event, imageMapName, tooltipId);
+  //   }
+  // );
 
-  areaElement.addEventListener("mouseout", () => {
-    hideTooltip(tooltipId);
-  });
+  // areaElement.addEventListener("mouseout", () => {
+  //   hideTooltip(tooltipId);
+  // });
 });
 }
 
