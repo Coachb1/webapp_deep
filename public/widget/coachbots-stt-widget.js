@@ -54,6 +54,7 @@ let questionLength2;
 let questionData2;
 let senarioDescription2;
 let senarioTitle2;
+let senarioCase2;
 let senarioMediaDescription2;
 let responsesDone2 = false;
 let userName2 = "";
@@ -421,6 +422,7 @@ const resetAllVariablesStt = () => {
   is_free2 = true;
   // responseProcessedQuestion = 0;
   senarioDescription2 = "";
+  senarioCase2 = "";
   senarioTitle2 = "";
   senarioMediaDescription2;
   responsesDone2 = false;
@@ -2136,6 +2138,7 @@ loadExternalModule().then(() => {
                 is_free2 = questionData2.results[0].is_free;
                 senarioDescription2 = questionData2.results[0].description;
                 senarioTitle2 = questionData2.results[0].title;
+                senarioCase2 = questionData2.results[0].scenario_case;
                 senarioMediaDescription2 =
                   questionData2.results[0].description_media;
                 testUIInfoStt = questionData2.results[0].ui_information;
@@ -3043,7 +3046,16 @@ loadExternalModule().then(() => {
                       report_type: reportType2,
                       test_attempt_session_id: sessionId2,
                     };
+                  } else if (senarioCase2 === "process_training") {
+                    reportType2 = "processTrainingReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
                   }
+                  console.log(senarioCase2, getReportBody2)
 
                   const reportResponse = await fetch(
                     `${baseURL2}/frontend-auth/get-report-url/`,
