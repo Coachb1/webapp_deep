@@ -1017,6 +1017,147 @@ function generateOptionButtons() {
   });
 }
 
+//image hover handlers - start
+function showTooltip(content, event, tooltipId,imageMapName) {
+  const shadowRoot =
+  document.getElementById("chat-element").shadowRoot;
+  const tooltip =
+    shadowRoot.getElementById(tooltipId);
+  tooltip.innerHTML = content;
+  updateTooltipPosition(event, imageMapName, tooltipId);
+  tooltip.style.display = "block";
+  }
+
+function updateTooltipPosition(event, imageMapName, tooltipId) {
+  const shadowRoot =
+    document.getElementById("chat-element").shadowRoot;
+  const tooltip =
+    shadowRoot.getElementById(tooltipId);
+
+  const xOffset = 0;
+  const yOffset = 0;
+
+  const image = shadowRoot.querySelector(
+    `img[usemap='#${imageMapName}']`
+  );
+  const imageRect = image.getBoundingClientRect();
+
+  const mouseX = event.clientX + window.pageXOffset;
+  const mouseY = event.clientY + window.pageYOffset;
+
+  if (window.innerWidth > 760) {
+    tooltip.style.left = mouseX + xOffset - 120 + "px";
+    tooltip.style.top = mouseY + yOffset - 80 + "px";
+  } else {
+    tooltip.style.left = mouseX + xOffset - 120 + "px";
+    tooltip.style.top = mouseY + yOffset - 170 + "px";
+  }
+}
+
+function hideTooltip(tooltipId) {
+  const shadowRoot =
+  document.getElementById("chat-element").shadowRoot;
+const tooltip =
+  shadowRoot.getElementById(tooltipId);
+  // console.log(tooltip)
+  tooltip.style.display = "none";
+}
+//image hover handlers - end
+
+const setHoverPoints = (coords, imageId, imageMapName, tooltipId) => {
+  //hover configs
+  const shadowRootForImage =
+  document.getElementById("chat-element").shadowRoot;
+const descriptionMediaImage =
+  shadowRootForImage.getElementById(imageId);
+
+// -map element
+const mapElement = document.createElement("map");
+mapElement.setAttribute("name", imageMapName);
+shadowRootForImage.appendChild(mapElement);
+
+// -overlay element
+const overlayElement = document.createElement("div");
+overlayElement.setAttribute(
+  "class",
+  "image-overlay"
+);
+shadowRootForImage.appendChild(overlayElement);
+
+// -tooltip
+const tooltipELement = document.createElement("div");
+tooltipELement.setAttribute("id", tooltipId);
+tooltipELement.setAttribute(
+  "class",
+  "custom-tooltip"
+);
+tooltipELement.style.position = "absolute";
+tooltipELement.style.backgroundColor = "#333";
+tooltipELement.style.color = "#fff";
+tooltipELement.style.padding = "5px";
+tooltipELement.style.borderRadius = "5px";
+tooltipELement.style.display = "none";
+shadowRootForImage.appendChild(tooltipELement);
+
+const imageLeftPadding = getComputedStyle(
+  descriptionMediaImage
+).paddingLeft.replace("px", "");
+
+const imageTopPadding = getComputedStyle(
+  descriptionMediaImage
+).paddingTop.replace("px", "");
+
+console.log(imageLeftPadding, imageTopPadding);
+
+const imageTopFreeSpace =
+  descriptionMediaImage.getBoundingClientRect()
+    .bottom - descriptionMediaImage.offsetHeight;
+const imageLeftFreeSpace =
+  descriptionMediaImage.getBoundingClientRect().left;
+console.log(
+  "Free space :",
+  imageTopFreeSpace,
+  imageLeftFreeSpace
+);
+
+coords.map((item) => {
+  console.log(item)
+  let coord;
+  if(window.innerWidth < 768){
+    coord = item.coord
+    .split("|")[1].replace(/\./g, ',').split(",");
+  } else {
+    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
+  }
+
+  const areaElement = document.createElement("area");
+  areaElement.setAttribute("coords", coord);
+  areaElement.setAttribute("shape", "circle");
+  areaElement.setAttribute("title", item.title);
+
+  mapElement.appendChild(areaElement);
+
+  // areaElement.addEventListener(
+  //   "mouseover",
+  //   (event) => {
+  //     showTooltip(item.title, event, tooltipId,imageMapName);
+  //   }
+  // );
+
+  // areaElement.addEventListener(
+  //   "mousemove",
+  //   (event) => {
+  //     updateTooltipPosition(event, imageMapName, tooltipId);
+  //   }
+  // );
+
+  // areaElement.addEventListener("mouseout", () => {
+  //   hideTooltip(tooltipId);
+  // });
+});
+}
+
+
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
@@ -1337,7 +1478,63 @@ const handleProceedClick = async (choice) => {
 
           })
         }
-      } else{
+      }else if(mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+        const questionpropName = `que_image ${questionIndex + 1}`
+
+        const url = Object.keys(mediaProps[questionpropName])[0];
+        let narration;
+        let coords = []
+        const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+        coordAndTitleNarrationList.forEach(element =>{
+          if (typeof element === 'string'){
+            narration = element
+          } else{
+            coords.push(element)
+          }
+        })
+
+        const testImage = {
+          image: url,
+          coords: coords,
+          narration: narration
+        }
+        console.log(testImage)
+        const imageUrl = url
+        
+
+        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${narration}`
+        const response = await fetch(urltts, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+  
+        const blob = await response.blob();
+        console.log('respnse', blob);
+  
+        const objectUrl = URL.createObjectURL(blob);
+        
+        console.log(objectUrl,'url')
+        const ttsNarration = `<audio controls autoplay>
+                                <source src=${objectUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio>`
+        const imageId = `mediaImage${questionIndex}`
+        const imageMapName = `image-map${questionIndex}`
+        const imageTooltipId = `tooltip-${questionIndex}`
+
+           
+        appendMessage(`▪ Question : <br> ${initialQuestionText}<br><br>
+                        ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                        ▪ Narration : <br> ${ttsNarration}`)
+        setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+        console.log("IMAGE MAPPED WITH COORDS")
+
+        // questionText2 = questionText2 + imageDiv 
+      } 
+      else{
           if(testType != 'mcq'){let strList = initialQuestionText.replaceAll("*","")
           strList = strList.split(":",2)
           if (strList.length >1){
@@ -2311,73 +2508,114 @@ loadExternalModule().then(() => {
                   }
                 }
 
-              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-              const is_link = linkPattern.test(questionText);
+                const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                const is_link = linkPattern.test(questionText);
 
-              if (isImmersive && questionMediaLink) {
-                console.log(questionText);
-                let embeddingUrl = "";
-                if (questionMediaLink.length > 0) {
-                  if (questionMediaLink.includes("youtube.com")) {
-                    const videoId = questionMediaLink.split("v=")[1];
-                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                  } else if (questionMediaLink.includes("vimeo.com")) {
-                    const videoId = questionMediaLink.split("/").pop();
-                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                  } else if (questionMediaLink.includes("twitter.com")) {
-                    embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
-                  }
+                if (isImmersive && questionMediaLink) {
+                  console.log(questionText);
+                  let embeddingUrl = "";
+                  if (questionMediaLink.length > 0) {
+                    if (questionMediaLink.includes("youtube.com")) {
+                      const videoId = questionMediaLink.split("v=")[1];
+                      embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    } else if (questionMediaLink.includes("vimeo.com")) {
+                      const videoId = questionMediaLink.split("/").pop();
+                      embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                    } else if (questionMediaLink.includes("twitter.com")) {
+                      embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+                    }
 
-                  if (embeddingUrl){
-                  questionText = `▪ Media <br>  <iframe
-                           allow="autoplay; encrypted-media; fullscreen;"
-                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                           src=${embeddingUrl}
-                           frameborder="0"
-                           allowfullscreen
-                         >
-                       `;
-                  }
-                  const urlList = questionMediaLink.split(',')
-                  console.log("list",urlList)
-                  if (urlList.length > 1){
-                    urlList.forEach(element => {
-                      element = element.trim()
-                      if (element.includes('docs.google.com')){
-                        let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                    if (embeddingUrl){
+                    questionText = `▪ Media <br>  <iframe
+                            allow="autoplay; encrypted-media; fullscreen;"
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            src=${embeddingUrl}
+                            frameborder="0"
+                            allowfullscreen
+                          >
+                        `;
+                    }
+                    const urlList = questionMediaLink.split(',')
+                    console.log("list",urlList)
+                    if (urlList.length > 1){
+                      urlList.forEach(element => {
+                        element = element.trim()
+                        if (element.includes('docs.google.com')){
+                          let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                          console.log(url)
+                          appendMessage(`<iframe src=${url}
+                                          frameborder="0" 
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          allowfullscreen="true" 
+                                          mozallowfullscreen="true" 
+                                          webkitallowfullscreen="true"
+                                          ></iframe>`)
+                        }
+                        else{
+                          console.log(element)
+                          appendMessage(`<audio src=${element} controls autoplay>`)
+                        }
+                      });
+                    }else {
+                      if (questionMediaLink.includes('docs.google.com')){
+                        let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
                         console.log(url)
                         appendMessage(`<iframe src=${url}
                                         frameborder="0" 
-                                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                         allowfullscreen="true" 
                                         mozallowfullscreen="true" 
                                         webkitallowfullscreen="true"
                                         ></iframe>`)
                       }
-                      else{
-                        console.log(element)
-                        appendMessage(`<audio src=${element} controls autoplay>`)
-                      }
-                    });
-                  }else {
-                    if (questionMediaLink.includes('docs.google.com')){
-                      let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                      console.log(url)
-                      appendMessage(`<iframe src=${url}
-                                      frameborder="0" 
-                                      style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                      allowfullscreen="true" 
-                                      mozallowfullscreen="true" 
-                                      webkitallowfullscreen="true"
-                                      ></iframe>`)
                     }
                   }
                 }
-              }
+              
+                console.log(`que_image ${questionIndex + 1}`)
+                if(mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+                  const questionpropName = `que_image ${questionIndex + 1}`
 
-              signals.onResponse({
-                html: questionText,
-              });
+                  const url = Object.keys(mediaProps[questionpropName])[0];
+                  let narration;
+                  let coords = []
+                  const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+                  coordAndTitleNarrationList.forEach(element =>{
+                    if (typeof element === 'string'){
+                      narration = element
+                    } else{
+                      coords.push(element)
+                    }
+                  })
+
+                  
+                  const imageUrl = url
+                  
+
+                  const ttsNarration = await TTSContainer(narration)
+                  const imageId = `mediaImage${questionIndex}`
+                  const imageMapName = `image-map${questionIndex}`
+                  const imageTooltipId = `tooltip-${questionIndex}`
+
+
+                     
+                  questionText = (`▪ Question : <br> ${questionText}<br><br>
+                                  ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                  ▪ Narration : <br> ${ttsNarration}
+                                  `)
+
+                  signals.onResponse({
+                    html: questionText,
+                  });
+                  setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                  console.log("IMAGE MAPPED WITH COORDS")
+
+                }else{
+                  signals.onResponse({
+                    html: questionText,
+                  });
+                  }
             }
           }
 
@@ -3193,7 +3431,7 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
 
-                    if (senarioMediaDescription !== null) {
+                    if (senarioMediaDescription) {
                       let embeddingUrl = "";
                       if (senarioMediaDescription.length > 0) {
                         if (senarioMediaDescription.includes("youtube.com")) {
@@ -3341,7 +3579,45 @@ loadExternalModule().then(() => {
                         html: questionText,
                       });
                       //   }
-                    } else {
+                    } else if (mediaProps && Object.keys(mediaProps).includes('test_image')){
+                      console.log("Media props here", mediaProps)
+                      console.log("SHOW MEDIA PROPS here", mediaProps);
+                      // const [imageUrl, coords] = Object.entries(
+                      //   mediaProps.test_image
+                      // )[0];
+                      const imageUrl = Object.keys(mediaProps["test_image"])[0];
+                      let narration;
+                      let coords = []
+                      const coordAndTitleNarrationList = mediaProps["test_image"][imageUrl];
+
+                      coordAndTitleNarrationList.forEach(element =>{
+                        if (typeof element === 'string'){
+                          narration = element
+                        } else{
+                          coords.push(element)
+                        }
+                      })
+                      const ttsNarration = await TTSContainer(narration)
+                      const imageId = "mediaImage"
+                      const imageMapName = "image-map"
+                      const imageTooltipId = "tooltip"
+
+                      appendMessage(
+                        `▪ Title : ${senarioTitle} <br><br>
+                             ▪ Description : ${senarioDescription} <br><br>
+                             ▪ Instructions : Response should be at least 15 words. <br><br>
+                             ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ Narration : <br> ${ttsNarration}` 
+                      );
+                      signals.onResponse({
+                        html: questionText,
+                      });
+
+                      // pass - coords, imagemap-name, 
+                      setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                      console.log("IMAGE MAPPED WITH COORDS")
+                    }
+                    else {
                       signals.onResponse({
                         html: questionText,
                         text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
@@ -3430,9 +3706,54 @@ loadExternalModule().then(() => {
                             questionText = responderName + questionText
                           }
                         }
-                        signals.onResponse({
-                          html: questionText,
-                        });
+
+                        console.log(`que_image ${questionIndex + 1}`)
+                        if( mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+                          const questionpropName = `que_image ${questionIndex + 1}`
+
+                          const url = Object.keys(mediaProps[questionpropName])[0];
+                          let narration;
+                          let coords = []
+                          const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+                          coordAndTitleNarrationList.forEach(element =>{
+                            if (typeof element === 'string'){
+                              narration = element
+                            } else{
+                              coords.push(element)
+                            }
+                          })
+
+                          
+                          const imageUrl = url
+                          
+
+                          const ttsNarration = await TTSContainer(narration)
+                          const imageId = `mediaImage${questionIndex}`
+                          const imageMapName = `image-map${questionIndex}`
+                          const imageTooltipId = `tooltip-${questionIndex}`
+
+
+                             
+                          questionText = (`▪ Question : <br> ${questionText}<br><br>
+                                          ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                          ▪ Narration : <br> ${ttsNarration}
+                                          `)
+
+                          signals.onResponse({
+                            html: questionText,
+                          });
+                          setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                          console.log("IMAGE MAPPED WITH COORDS")
+
+
+                          // questionText2 = questionText2 + imageDiv 
+                        }else{
+                          console.l
+                          signals.onResponse({
+                            html: questionText,
+                          });
+                        }
                       }
 
                       if (isImmersive && questionImageData){

@@ -405,6 +405,152 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
 
+//image hover handlers - start
+function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
+  // console.log(tooltipIdStt)
+  const shadowRootStt =
+  document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt =
+    shadowRootStt.getElementById(tooltipIdStt);
+  tooltipStt.innerHTML = content;
+  updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+  tooltipStt.style.display = "block";
+  }
+
+function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
+  // console.log('update',tooltipIdStt)
+
+  const shadowRootStt =
+    document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt =
+    shadowRootStt.getElementById(tooltipIdStt);
+
+  const xOffset = 0;
+  const yOffset = 0;
+
+  // const image = shadowRootStt.querySelector(
+  //   `img[usemap='#${imageMapNameStt}']`
+  // );
+  // const imageRect = image.getBoundingClientRect();
+
+  const mouseX = event.clientX + window.pageXOffset;
+  const mouseY = event.clientY + window.pageYOffset;
+
+  if (window.innerWidth > 760) {
+    tooltipStt.style.left = mouseX + xOffset - 120 + "px";
+    tooltipStt.style.top = mouseY + yOffset - 80 + "px";
+  } else {
+    tooltipStt.style.left = event.clientX // mouseX // + xOffset - 120 + "px";
+    tooltipStt.style.top = event.clientY //mouseY //+ yOffset - 170 + "px";
+  }
+}
+
+function hideTooltipStt(tooltipIdStt) {
+  // console.log('hide',tooltipIdStt)
+
+  const shadowRootStt =
+  document.getElementById("chat-element2").shadowRoot;
+const tooltipStt =
+  shadowRootStt.getElementById(tooltipIdStt);
+  // console.log(tooltipStt)
+  tooltipStt.style.display = "none";
+}
+//image hover handlers - end
+
+const setHoverPointsStt = (coordsStt, imageIdStt, imageMapNameStt, tooltipIdStt) => {
+  //hover configs
+  const shadowRootForImageStt =
+  document.getElementById("chat-element2").shadowRoot;
+const descriptionMediaImageStt =
+  shadowRootForImageStt.getElementById(imageIdStt);
+
+// -map element
+const mapElementStt = document.createElement("map");
+mapElementStt.setAttribute("name", imageMapNameStt);
+shadowRootForImageStt.appendChild(mapElementStt);
+
+// -overlay element
+const overlayElementStt = document.createElement("div");
+overlayElementStt.setAttribute(
+  "class",
+  "image-overlayStt"
+);
+shadowRootForImageStt.appendChild(overlayElementStt);
+
+// -tooltip
+const tooltipELementStt = document.createElement("div");
+tooltipELementStt.setAttribute("id", tooltipIdStt);
+tooltipELementStt.setAttribute(
+  "class",
+  "custom-tooltipStt"
+);
+tooltipELementStt.style.position = "absolute";
+tooltipELementStt.style.backgroundColor = "#333";
+tooltipELementStt.style.color = "#fff";
+tooltipELementStt.style.padding = "5px";
+tooltipELementStt.style.borderRadius = "5px";
+tooltipELementStt.style.display = "none";
+shadowRootForImageStt.appendChild(tooltipELementStt);
+
+const imageLeftPaddingStt = getComputedStyle(
+  descriptionMediaImageStt
+).paddingLeft.replace("px", "");
+
+const imageTopPaddingStt = getComputedStyle(
+  descriptionMediaImageStt
+).paddingTop.replace("px", "");
+
+console.log(imageLeftPaddingStt, imageTopPaddingStt);
+
+const imageTopFreeSpaceStt =
+  descriptionMediaImageStt.getBoundingClientRect()
+    .bottom - descriptionMediaImageStt.offsetHeight;
+const imageLeftFreeSpaceStt =
+  descriptionMediaImageStt.getBoundingClientRect().left;
+console.log(
+  "Free space :",
+  imageTopFreeSpaceStt,
+  imageLeftFreeSpaceStt
+);
+
+coordsStt.map((item) => {
+  let coord;
+  if(window.innerWidth < 768){
+    coord = item.coord
+    .split("|")[1].replace(/\./g, ',').split(",");
+  } else {
+    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
+  }
+
+  const areaElementStt = document.createElement("area");
+  areaElementStt.setAttribute("coords", coord);
+  areaElementStt.setAttribute("shape", "circle");
+  areaElementStt.setAttribute("title", item.title);
+
+  // console.log(areaElementStt.addEventListener())
+
+  mapElementStt.appendChild(areaElementStt);
+
+  // areaElementStt.addEventListener(
+  //   "mouseover",
+  //   (event) => {
+  //     showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
+  //   }
+  // );
+
+  // areaElementStt.addEventListener(
+  //   "mousemove",
+  //   (event) => {
+  //     updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+  //   }
+  // );
+
+  // areaElementStt.addEventListener("mouseout", () => {
+  //   hideTooltipStt(tooltipIdStt);
+  // });
+});
+}
+
 // to reset all variables
 const resetAllVariablesStt = () => {
   //* reset all variables : start
@@ -675,7 +821,63 @@ const handleProceedClickStt = async (choice) => {
 
           }
 
-        } else{
+        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
+          const questionpropName = `que_image ${questionIndex2 + 1}`
+
+          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+          let narration;
+          let coords = []
+          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+          coordAndTitleNarrationList.forEach(element =>{
+            if (typeof element === 'string'){
+              narration = element
+            } else{
+              coords.push(element)
+            }
+          })
+
+          const testImage = {
+            image: url,
+            coords: coords,
+            narration: narration
+          }
+          console.log(testImage)
+          const imageUrlStt = testImage.image
+          const coordsStt = testImage.coords
+          const narrationStt = testImage.narration
+
+          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${narrationStt}`
+          const response = await fetch(urltts, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          const ttsNarration = `<audio controls autoplay>
+                                  <source src=${objectUrl} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio>`
+          const imageIdStt = `mediaImageStt${questionIndex2}`
+          const imageMapNameStt = `image-mapStt${questionIndex2}`
+          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+
+             
+          appendMessage2(`▪ Question : <br> ${initialQuestionTextStt}<br><br>
+                          ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          ▪ Narration : <br> ${ttsNarration}`)
+          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+          console.log("IMAGE MAPPED WITH COORDS")
+
+          // questionText2 = questionText2 + imageDiv 
+        }else{
 
           if(testType2 != 'mcq'){
             let strList = initialQuestionTextStt.replaceAll("*","")
@@ -2659,6 +2861,60 @@ loadExternalModule().then(() => {
                       signals.onResponse({
                         html: questionText2,
                       });
+                    } else if (mediaPropsStt && Object.keys(mediaPropsStt).includes('test_image')){
+                      console.log("Media props here", mediaPropsStt)
+                      console.log("SHOW MEDIA PROPS here", mediaPropsStt);
+                      // const [imageUrlStt, coords] = Object.entries(
+                      //   mediaPropsStt.test_image
+                      // )[0];
+                      const url = Object.keys(mediaPropsStt["test_image"])[0];
+                      let narration;
+                      let coords = []
+                      const coordAndTitleNarrationList = mediaPropsStt["test_image"][url];
+
+                      coordAndTitleNarrationList.forEach(element =>{
+                        if (typeof element === 'string'){
+                          narration = element
+                        } else{
+                          coords.push(element)
+                        }
+                      })
+
+                      const testImage = {
+                        image: url,
+                        coords: coords,
+                        narration: narration
+                      }
+
+                     console.log(testImage)
+                     const imageUrlStt = testImage.image
+                     const coordsStt = [
+                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
+                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
+                        ]
+                     const narrationStt = testImage.narration
+
+                      const ttsNarration = await TTSContainerSTT(narrationStt)
+                      const imageIdStt = "mediaImageStt"
+                      const imageMapNameStt = "image-mapStt"
+                      const imageTooltipIdStt = 'tooltip-stt'
+
+                      appendMessage2(
+                        `▪ Title : ${senarioTitle2} <br><br>
+                             ▪ Description : ${senarioDescription2} <br><br>
+                             ▪ Instructions : Response should be at least 15 words. <br><br>
+                             ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ Narration : <br> ${ttsNarration}` 
+                      );
+                      signals.onResponse({
+                        html: questionText2,
+                      });
+
+                      // pass - coords, imagemap-name, 
+                      setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+                      console.log("IMAGE MAPPED WITH COORDS")
+                      
                     } else {
                       // proceed buttion will show 
                       signals.onResponse({
@@ -2668,13 +2924,7 @@ loadExternalModule().then(() => {
                     }
                     
 
-                    if (isImmersiveStt && mediaPropsStt ){
-                      if (mediaPropsStt['test_image']){
-
-                        ///use hover image of test here (not question)
-                      }
-                      
-                    }
+                  
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
@@ -2758,14 +3008,63 @@ loadExternalModule().then(() => {
                             questionText2 = responderName + questionText2
                           }
                         }
+                        console.log(`que_image ${questionIndex2 + 1}`)
+                        if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
+                          const questionpropName = `que_image ${questionIndex2 + 1}`
+
+                          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+                          let narration;
+                          let coords = []
+                          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+                          coordAndTitleNarrationList.forEach(element =>{
+                            if (typeof element === 'string'){
+                              narration = element
+                            } else{
+                              coords.push(element)
+                            }
+                          })
+
+                          const testImage = {
+                            image: url,
+                            coords: coords,
+                            narration: narration
+                          }
+                          console.log(testImage)
+                          const imageUrlStt = testImage.image
+                          const coordsStt = testImage.coords
+                          const narrationStt = testImage.narration
+
+                          const ttsNarration = await TTSContainerSTT(narrationStt)
+                          const imageIdStt = `mediaImageStt${questionIndex2}`
+                          const imageMapNameStt = `image-mapStt${questionIndex2}`
+                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+
+
+                             
+                          questionText2 = (`▪ Question : <br> ${questionText2}<br><br>
+                                          ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                          ▪ Narration : <br> ${ttsNarration}
+                                          `)
+
+                          signals.onResponse({
+                            html: questionText2,
+                          });
+                          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {questionIndex2})
+
+
+                          // questionText2 = questionText2 + imageDiv 
+                        }else{
                         signals.onResponse({
                           html: questionText2,
                         });
+
+                        }
+                        
                       }
 
-                      if (isImmersiveStt && questionImageDataStt){
-                        // show here hover Image for question
-                      }
+                      
                     }
                   }
                 
