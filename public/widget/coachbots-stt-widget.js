@@ -405,29 +405,32 @@ function appendMessage2(message2) {
 }
 
 //image hover handlers - start
-function showTooltip(content, event) {
+function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
+  console.log(tooltipIdStt)
   const shadowRootStt =
   document.getElementById("chat-element2").shadowRoot;
-const tooltipStt =
-  shadowRootStt.getElementById("tooltipStt");
+  const tooltipStt =
+    shadowRootStt.getElementById(tooltipIdStt);
   tooltipStt.innerHTML = content;
-  updateTooltipPositionStt(event);
+  updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
   tooltipStt.style.display = "block";
-}
+  }
 
-function updateTooltipPositionStt(event) {
+function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
+  console.log('update',tooltipIdStt)
+
   const shadowRootStt =
     document.getElementById("chat-element2").shadowRoot;
   const tooltipStt =
-    shadowRootStt.getElementById("tooltipStt");
+    shadowRootStt.getElementById(tooltipIdStt);
 
   const xOffset = 0;
   const yOffset = 0;
 
-  const image = shadowRootStt.querySelector(
-    "img[usemap='#image-mapStt']"
-  );
-  const imageRect = image.getBoundingClientRect();
+  // const image = shadowRootStt.querySelector(
+  //   `img[usemap='#${imageMapNameStt}']`
+  // );
+  // const imageRect = image.getBoundingClientRect();
 
   const mouseX = event.clientX + window.pageXOffset;
   const mouseY = event.clientY + window.pageYOffset;
@@ -441,17 +444,19 @@ function updateTooltipPositionStt(event) {
   }
 }
 
-function hideTooltip() {
+function hideTooltipStt(tooltipIdStt) {
+  console.log('hide',tooltipIdStt)
+
   const shadowRootStt =
   document.getElementById("chat-element2").shadowRoot;
 const tooltipStt =
-  shadowRootStt.getElementById("tooltipStt");
+  shadowRootStt.getElementById(tooltipIdStt);
   // console.log(tooltipStt)
   tooltipStt.style.display = "none";
 }
 //image hover handlers - end
 
-const  setHoverPoints = (coordsStt, imageIdStt, imageMapNameStt) => {
+const setHoverPointsStt = (coordsStt, imageIdStt, imageMapNameStt, tooltipIdStt) => {
   //hover configs
   const shadowRootForImageStt =
   document.getElementById("chat-element2").shadowRoot;
@@ -473,7 +478,7 @@ shadowRootForImageStt.appendChild(overlayElementStt);
 
 // -tooltip
 const tooltipELementStt = document.createElement("div");
-tooltipELementStt.setAttribute("id", "tooltipStt");
+tooltipELementStt.setAttribute("id", tooltipIdStt);
 tooltipELementStt.setAttribute(
   "class",
   "custom-tooltipStt"
@@ -526,19 +531,19 @@ coordsStt.map((item) => {
   areaElementStt.addEventListener(
     "mouseover",
     (event) => {
-      showTooltip(item.title, event);
+      showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
     }
   );
 
   areaElementStt.addEventListener(
     "mousemove",
     (event) => {
-      updateTooltipPositionStt(event);
+      updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
     }
   );
 
   areaElementStt.addEventListener("mouseout", () => {
-    hideTooltip();
+    hideTooltipStt(tooltipIdStt);
   });
 });
 }
@@ -812,7 +817,63 @@ const handleProceedClickStt = async (choice) => {
 
           }
 
-        } else{
+        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
+          const questionpropName = `que_image ${questionIndex2 + 1}`
+
+          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+          let narration;
+          let coords = []
+          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+          coordAndTitleNarrationList.forEach(element =>{
+            if (typeof element === 'string'){
+              narration = element
+            } else{
+              coords.push(element)
+            }
+          })
+
+          const testImage = {
+            image: url,
+            coords: coords,
+            narration: narration
+          }
+          console.log(testImage)
+          const imageUrlStt = testImage.image
+          const coordsStt = testImage.coords
+          const narrationStt = testImage.narration
+
+          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${narrationStt}`
+          const response = await fetch(urltts, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          const ttsNarration = `<audio controls autoplay>
+                                  <source src=${objectUrl} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio>`
+          const imageIdStt = `mediaImageStt${questionIndex2}`
+          const imageMapNameStt = `image-mapStt${questionIndex2}`
+          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+
+             
+          appendMessage2(`▪ Question : <br> ${initialQuestionTextStt}<br><br>
+                          ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          ▪ Narration : <br> ${ttsNarration}`)
+          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+          console.log("IMAGE MAPPED WITH COORDS")
+
+          // questionText2 = questionText2 + imageDiv 
+        }else{
 
           if(testType2 != 'mcq'){
             let strList = initialQuestionTextStt.replaceAll("*","")
@@ -2795,20 +2856,29 @@ loadExternalModule().then(() => {
                       signals.onResponse({
                         html: questionText2,
                       });
-                    } else if (mediaPropsStt){
+                    } else if (mediaPropsStt && Object.keys(mediaPropsStt).includes('test_image')){
                       console.log("Media props here", mediaPropsStt)
                       console.log("SHOW MEDIA PROPS here", mediaPropsStt);
                       // const [imageUrlStt, coords] = Object.entries(
                       //   mediaPropsStt.test_image
                       // )[0];
+                      const url = Object.keys(mediaPropsStt["test_image"])[0];
+                      let narration;
+                      let coords = []
+                      const coordAndTitleNarrationList = mediaPropsStt["test_image"][url];
+
+                      coordAndTitleNarrationList.forEach(element =>{
+                        if (typeof element === 'string'){
+                          narration = element
+                        } else{
+                          coords.push(element)
+                        }
+                      })
+
                       const testImage = {
-                        image: "https://www.dhvindustries.com/wp-content/uploads/2015/12/Gate-Valve.jpg",
-                        coords: [
-                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
-                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
-                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
-                        ],
-                        narration: "Here is a Gate Valve, essential for full open or full close operations. Remember, no partial openings. Rotate the hand wheel clockwise to close and counter-clockwise to open. The stem's projection indicates the valve position. Do not use for flow regulation, and ensure proper handling during transportation. For storage, keep it dust-free, elevated, and avoid direct floor contact. The gear unit aids operation; clockwise for closing, counterclockwise for opening. Never lift the valve by the hand wheel, and always clean before installation."
+                        image: url,
+                        coords: coords,
+                        narration: narration
                       }
                      console.log(testImage)
                      const imageUrlStt = testImage.image
@@ -2818,6 +2888,7 @@ loadExternalModule().then(() => {
                       const ttsNarration = await TTSContainerSTT(narrationStt)
                       const imageIdStt = "mediaImageStt"
                       const imageMapNameStt = "image-mapStt"
+                      const imageTooltipIdStt = 'tooltip-stt'
 
                       appendMessage2(
                         `▪ Title : ${senarioTitle2} <br><br>
@@ -2831,7 +2902,7 @@ loadExternalModule().then(() => {
                       });
 
                       // pass - coords, imagemap-name, 
-                      setHoverPoints(coordsStt, imageIdStt, imageMapNameStt)
+                      setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
                       console.log("IMAGE MAPPED WITH COORDS")
                       
                     } else {
@@ -2843,11 +2914,7 @@ loadExternalModule().then(() => {
                     }
                     
 
-                    if (isImmersiveStt && mediaPropsStt ){
-                     
-                      //use hover image for test (not question)
-                      
-                    }
+                  
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
@@ -2931,14 +2998,63 @@ loadExternalModule().then(() => {
                             questionText2 = responderName + questionText2
                           }
                         }
+                        console.log(`que_image ${questionIndex2 + 1}`)
+                        if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
+                          const questionpropName = `que_image ${questionIndex2 + 1}`
+
+                          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+                          let narration;
+                          let coords = []
+                          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+                          coordAndTitleNarrationList.forEach(element =>{
+                            if (typeof element === 'string'){
+                              narration = element
+                            } else{
+                              coords.push(element)
+                            }
+                          })
+
+                          const testImage = {
+                            image: url,
+                            coords: coords,
+                            narration: narration
+                          }
+                          console.log(testImage)
+                          const imageUrlStt = testImage.image
+                          const coordsStt = testImage.coords
+                          const narrationStt = testImage.narration
+
+                          const ttsNarration = await TTSContainerSTT(narrationStt)
+                          const imageIdStt = `mediaImageStt${questionIndex2}`
+                          const imageMapNameStt = `image-mapStt${questionIndex2}`
+                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+
+
+                             
+                          questionText2 = (`▪ Question : <br> ${questionText2}<br><br>
+                                          ▪ Media : <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                          ▪ Narration : <br> ${ttsNarration}
+                                          `)
+
+                          signals.onResponse({
+                            html: questionText2,
+                          });
+                          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+                          console.log("IMAGE MAPPED WITH COORDS")
+
+
+                          // questionText2 = questionText2 + imageDiv 
+                        }else{
                         signals.onResponse({
                           html: questionText2,
                         });
+
+                        }
+                        
                       }
 
-                      if (isImmersiveStt && questionImageDataStt){
-                        // show here hover Image for question
-                      }
+                      
                     }
                   }
                 
