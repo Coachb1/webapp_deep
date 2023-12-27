@@ -2632,7 +2632,7 @@ loadExternalModule().then(() => {
                 const linkPattern = /(http[s]?:\/\/[^\s]+)/;
                 const is_link = linkPattern.test(questionText);
 
-                if (isImmersive && questionMediaLink) {
+                if (questionMediaLink) {
                   console.log(questionText);
                   let embeddingUrl = "";
                   if (questionMediaLink.length > 0) {
@@ -3920,7 +3920,7 @@ loadExternalModule().then(() => {
 
                           // questionText2 = questionText2 + imageDiv 
                         }else{
-                          console.l
+                          console.log("resp",questionText)
                           signals.onResponse({
                             html: questionText,
                           });
