@@ -22,6 +22,7 @@ import {
   onBoarding,
   ijp,
   questionPro,
+  coachingPlus,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -157,6 +158,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Questions Pro
+              </Button>
+            </Link>
+            <Link href={"#coachingplus"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Coaching+
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -320,6 +329,13 @@ const VersionOne = ({ user, groups }: any) => {
               badgeText="Questions Pro"
               user={user ? true : false}
               tests={questionPro}
+            />
+          </div>
+          <div id="coachingplus">
+            <HeroAccordion
+              badgeText="Coaching +"
+              user={user ? true : false}
+              tests={coachingPlus}
             />
           </div>
           <div id="discoveryPlus">

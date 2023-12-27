@@ -449,13 +449,32 @@ export const Sales: Test[] = [
     interaction_mode: "Audio",
   },
   {
-  domain: "Luxury real estate",
-  test_code: "QX1W8IG",
-  title: "Handling a High-Profile Client",
-  description:
-    "A successful entrepreneur, Mr. Jaideep, seeks a residence that seamlessly blends modern luxury with classic charm. His emphasis is on spacious interiors, a well-appointed kitchen, and a private garden for family gatherings. Your task is to showcase properties that meet his criteria, highlighting features that complement his sophisticated taste and desire for a comfortable yet elegant living space. Engage in a conversation that addresses his lifestyle aspirations and guides him towards a property that resonates with his vision. Respond to this situation as the real estate sales agent.",
-  interaction_mode: "Audio",
-},
+    domain: "Luxury real estate",
+    test_code: "QX1W8IG",
+    title: "Handling a High-Profile Client",
+    description:
+      "A successful entrepreneur, Mr. Jaideep, seeks a residence that seamlessly blends modern luxury with classic charm. His emphasis is on spacious interiors, a well-appointed kitchen, and a private garden for family gatherings. Your task is to showcase properties that meet his criteria, highlighting features that complement his sophisticated taste and desire for a comfortable yet elegant living space. Engage in a conversation that addresses his lifestyle aspirations and guides him towards a property that resonates with his vision. Respond to this situation as the real estate sales agent.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const coachingPlus: Test[] = [
+  {
+    domain: "Sales Coaching",
+    test_code: "QPON191",
+    title: "Coaching session on sales performance",
+    description:
+      "A sales rep engages in a coaching session with a sales coach to address his recent performance. The rep is seeking constructive feedback on their sales techniques, presentation skills, and client interactions, aiming to identify specific areas for improvement and enhance overall sales effectiveness. Respond as the sales rep in this coaching session.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Life Coaching",
+    test_code: "QFN8OWT",
+    title: "Counselling session for stress management.",
+    description:
+      "A manager schedules a coaching conversation with a life coach to navigate work-related stress and improve work-life balance. The coaching session aims to provide personalized guidance for stress management, fostering resilience and promoting a healthier work environment. Respond as the manager in this coaching session.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const serviceslashConsulting: Test[] = [
