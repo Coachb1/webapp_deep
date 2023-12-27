@@ -610,7 +610,7 @@ async function setMcqVariables() {
           }
           }
       }
-      
+    }
 
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
