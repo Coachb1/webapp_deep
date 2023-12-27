@@ -468,7 +468,7 @@ export const coachingPlus: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Life Coaching",
+    domain: "Manager Coaching",
     test_code: "QFN8OWT",
     title: "Counselling session for stress management.",
     description:
