@@ -61,6 +61,7 @@ let is_free;
 let responseProcessedQuestion = 0;
 let senarioDescription;
 let senarioTitle;
+let senarioCase;
 let responsesDone = false;
 let senarioMediaDescription;
 let userName = "";
@@ -549,7 +550,8 @@ async function setMcqVariables() {
       newOption1Text = mcqOptions[newOption1Name]["opt"];
       newOption2Text = mcqOptions[newOption2Name]["opt"];
 
-      if (isImmersive && questionMedia) {
+
+    if (questionMedia) {
       let embeddingUrl = "";
       if (questionMedia.length > 0) {
           if (questionMedia.includes("youtube.com")) {
@@ -610,10 +612,7 @@ async function setMcqVariables() {
       }
       
 
-      if (isImmersive && queImageData){
-      // show here hover Image for question and add it to questionText
-      }
-  }
+
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadio = `
@@ -795,6 +794,7 @@ async function setMcqVariables() {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("REPORT 1")
         reportUrl = data.url;
         globalReportUrl = reportUrl;
         responsesDone = true;
@@ -815,7 +815,7 @@ async function setMcqVariables() {
           //   appendMessage(message);
 
           //* send message to start new session
-          resetAllVariables();
+          
           appendMessage(
             "<b>Please enter another access code to start a new interaction.</b>"
           );
@@ -1061,6 +1061,147 @@ function generateOptionButtons() {
   });
 }
 
+//image hover handlers - start
+function showTooltip(content, event, tooltipId,imageMapName) {
+  const shadowRoot =
+  document.getElementById("chat-element").shadowRoot;
+  const tooltip =
+    shadowRoot.getElementById(tooltipId);
+  tooltip.innerHTML = content;
+  updateTooltipPosition(event, imageMapName, tooltipId);
+  tooltip.style.display = "block";
+  }
+
+function updateTooltipPosition(event, imageMapName, tooltipId) {
+  const shadowRoot =
+    document.getElementById("chat-element").shadowRoot;
+  const tooltip =
+    shadowRoot.getElementById(tooltipId);
+
+  const xOffset = 0;
+  const yOffset = 0;
+
+  const image = shadowRoot.querySelector(
+    `img[usemap='#${imageMapName}']`
+  );
+  const imageRect = image.getBoundingClientRect();
+
+  const mouseX = event.clientX + window.pageXOffset;
+  const mouseY = event.clientY + window.pageYOffset;
+
+  if (window.innerWidth > 760) {
+    tooltip.style.left = event.clientX - 120 + "px";
+    tooltip.style.top = event.clientY - 60  + "px"
+  } else {
+    tooltip.style.left =  event.clientX - 90 + "px" 
+    tooltip.style.top = event.clientY - 180  + "px" 
+  }
+}
+
+function hideTooltip(tooltipId) {
+  const shadowRoot =
+  document.getElementById("chat-element").shadowRoot;
+const tooltip =
+  shadowRoot.getElementById(tooltipId);
+  // console.log(tooltip)
+  tooltip.style.display = "none";
+}
+//image hover handlers - end
+
+const setHoverPoints = (coords, imageId, imageMapName, tooltipId) => {
+  //hover configs
+  const shadowRootForImage =
+  document.getElementById("chat-element").shadowRoot;
+const descriptionMediaImage =
+  shadowRootForImage.getElementById(imageId);
+
+// -map element
+const mapElement = document.createElement("map");
+mapElement.setAttribute("name", imageMapName);
+shadowRootForImage.appendChild(mapElement);
+
+// -overlay element
+const overlayElement = document.createElement("div");
+overlayElement.setAttribute(
+  "class",
+  "image-overlay"
+);
+shadowRootForImage.appendChild(overlayElement);
+
+// -tooltip
+const tooltipELement = document.createElement("div");
+tooltipELement.setAttribute("id", tooltipId);
+tooltipELement.setAttribute(
+  "class",
+  "custom-tooltip"
+);
+tooltipELement.style.position = "absolute";
+tooltipELement.style.backgroundColor = "#333";
+tooltipELement.style.color = "#fff";
+tooltipELement.style.padding = "5px";
+tooltipELement.style.borderRadius = "5px";
+tooltipELement.style.display = "none";
+shadowRootForImage.appendChild(tooltipELement);
+
+const imageLeftPadding = getComputedStyle(
+  descriptionMediaImage
+).paddingLeft.replace("px", "");
+
+const imageTopPadding = getComputedStyle(
+  descriptionMediaImage
+).paddingTop.replace("px", "");
+
+console.log(imageLeftPadding, imageTopPadding);
+
+const imageTopFreeSpace =
+  descriptionMediaImage.getBoundingClientRect()
+    .bottom - descriptionMediaImage.offsetHeight;
+const imageLeftFreeSpace =
+  descriptionMediaImage.getBoundingClientRect().left;
+console.log(
+  "Free space :",
+  imageTopFreeSpace,
+  imageLeftFreeSpace
+);
+
+coords.map((item) => {
+  console.log(item)
+  let coord;
+  if(window.innerWidth < 768){
+    coord = item.coord
+    .split("|")[1].replace(/\./g, ',').split(",");
+  } else {
+    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
+  }
+
+  const areaElement = document.createElement("area");
+  areaElement.setAttribute("coords", coord);
+  areaElement.setAttribute("shape", "circle");
+  // areaElement.setAttribute("title", item.title);
+
+  mapElement.appendChild(areaElement);
+
+  areaElement.addEventListener(
+    "mouseover",
+    (event) => {
+      showTooltip(item.title, event, tooltipId,imageMapName);
+    }
+  );
+
+  areaElement.addEventListener(
+    "mousemove",
+    (event) => {
+      updateTooltipPosition(event, imageMapName, tooltipId);
+    }
+  );
+
+  areaElement.addEventListener("mouseout", () => {
+    hideTooltip(tooltipId);
+  });
+});
+}
+
+
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
@@ -1081,6 +1222,7 @@ const resetAllVariables = () => {
   responseProcessedQuestion = 0;
   senarioDescription = "";
   senarioTitle = "";
+  senarioCase = "";
   senarioMediaDescription;
   responsesDone = false;
   userName = "";
@@ -1208,7 +1350,8 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait.."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    if(isImmersive && questionMediaLink && (testType != 'mcq' && testType != 'dynamic_mcq' )){
+
+    if(questionMediaLink && (testType != 'mcq' && testType != 'dynamic_mcq' )){
       console.log(questionMediaLink);
       let embeddingUrl = "";
       
@@ -1278,7 +1421,8 @@ const handleProceedClick = async (choice) => {
         }
       }
     } else{
-      if(isImmersive && !questionMediaLink && testType != "orchestrated_conversation" && (testType != 'mcq' && testType != 'dynamic_mcq' )){
+
+      if(!questionMediaLink && testType != "orchestrated_conversation" && (testType != 'mcq' && testType != 'dynamic_mcq' ) && senarioCase != "process_training"){
         let responderName;
         if (testType === 'dynamic_discussion_thread'){
           if (initialQuestionText.includes(":")){
@@ -1297,25 +1441,26 @@ const handleProceedClick = async (choice) => {
             responderName = `<b>${strLIst[0]}:</b><br>`
           }
         }
-        const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-          },
-        });
-  
-        const blob = await response.blob();
-        console.log('respnse', blob);
-  
-        const objectUrl = URL.createObjectURL(blob);
-        
-        console.log(objectUrl,'url')
-        initialQuestionText = `<audio controls autoplay>
-                                <source src=${objectUrl} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio>`
-
+        if(isImmersive){
+          const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          initialQuestionText = `<div ><audio style="width: 100%;" controls >
+          <source src=${objectUrl} type="audio/mpeg" />
+          Your browser does not support the audio element.
+          </audio></div>`
+        }
         if (responderName){
           initialQuestionText = responderName + initialQuestionText
         }
@@ -1355,10 +1500,10 @@ const handleProceedClick = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            let audioCont = `<audio controls >
-                                    <source src=${objectUrl} type="audio/mpeg" />
-                                    Your browser does not support the audio element.
-                                    </audio>`
+            let audioCont = `<div ><audio style="width: 100%;" controls >
+            <source src=${objectUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+            </audio></div>`
             if (responderName){
               audioCont = responderName + audioCont
             }
@@ -1380,8 +1525,66 @@ const handleProceedClick = async (choice) => {
 
           })
         }
-      } else{
-          if(testType != 'mcq' && testType != 'dynamic_mcq'){let strList = initialQuestionText.replaceAll("*","")
+
+      }else if(mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+        const questionpropName = `que_image ${questionIndex + 1}`
+
+        const url = Object.keys(mediaProps[questionpropName])[0];
+        let narration;
+        let coords = []
+        const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+        coordAndTitleNarrationList.forEach(element =>{
+          if (typeof element === 'string'){
+            narration = element
+          } else{
+            coords.push(element)
+          }
+        })
+
+        const testImage = {
+          image: url,
+          coords: coords,
+          narration: narration
+        }
+        console.log(testImage)
+        const imageUrl = url
+        
+
+        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${narration}`
+        const response = await fetch(urltts, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+  
+        const blob = await response.blob();
+        console.log('respnse', blob);
+  
+        const objectUrl = URL.createObjectURL(blob);
+        
+        console.log(objectUrl,'url')
+        const ttsNarration = `<div ><audio style="width: 100%;" controls >
+        <source src=${objectUrl} type="audio/mpeg" />
+        Your browser does not support the audio element.
+        </audio></div>`
+        const imageId = `mediaImage${questionIndex}`
+        const imageMapName = `image-map${questionIndex}`
+        const imageTooltipId = `tooltip-${questionIndex}`
+
+           
+        appendMessage(`▪ Question : <br> ${initialQuestionText}<br><br>
+                        ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                        ▪ Narration : <br> ${ttsNarration}`)
+        setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+        console.log("IMAGE MAPPED WITH COORDS")
+
+        // questionText2 = questionText2 + imageDiv 
+      } 
+      else{
+          if(testType != 'mcq' && testType != 'dynamic_mcq'){
+            let strList = initialQuestionText.replaceAll("*","")
           strList = strList.split(":",2)
           if (strList.length >1){
             initialQuestionText = strList[1]
@@ -2001,10 +2204,10 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
     
     console.log(objectUrl,'url')
-    const audioCont = `<audio controls autoplay>
+    const audioCont = `<div ><audio style="width: 100%;" controls >
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
-    </audio>`
+    </audio></div>`
 
     return audioCont
   };
@@ -2339,88 +2542,129 @@ loadExternalModule().then(() => {
                 if (isHindi) {
                   questionText = TestUIInfo[`Question ${questionIndex + 1}`];
                 }
-                if(isImmersive && !questionMediaLink){
-                  let responderName;
-                  let strList = questionText.replaceAll("*","").split(":")
-                  if (strList.length > 1){
-                    questionText = strList[1]
-                    responderName = `<b>${strList[0]}:</b><br>`
-                    
-                  }
+                let responderName;
+                let strList = questionText.replaceAll("*","").split(":")
+                if (strList.length > 1){
+                  questionText = strList[1]
+                  responderName = `<b>${strList[0]}:</b><br>`
+                  
+                }
+                if(isImmersive){
                   questionText = await TTSContainer(questionText)
+                }
   
-                  if (responderName){
-                    questionText = responderName + questionText
-                  }
+                if (responderName){
+                  questionText = responderName + questionText
                 }
 
-              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-              const is_link = linkPattern.test(questionText);
+                const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+                const is_link = linkPattern.test(questionText);
 
-              if (isImmersive && questionMediaLink) {
-                console.log(questionText);
-                let embeddingUrl = "";
-                if (questionMediaLink.length > 0) {
-                  if (questionMediaLink.includes("youtube.com")) {
-                    const videoId = questionMediaLink.split("v=")[1];
-                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                  } else if (questionMediaLink.includes("vimeo.com")) {
-                    const videoId = questionMediaLink.split("/").pop();
-                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                  } else if (questionMediaLink.includes("twitter.com")) {
-                    embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
-                  }
+                if (isImmersive && questionMediaLink) {
+                  console.log(questionText);
+                  let embeddingUrl = "";
+                  if (questionMediaLink.length > 0) {
+                    if (questionMediaLink.includes("youtube.com")) {
+                      const videoId = questionMediaLink.split("v=")[1];
+                      embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    } else if (questionMediaLink.includes("vimeo.com")) {
+                      const videoId = questionMediaLink.split("/").pop();
+                      embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                    } else if (questionMediaLink.includes("twitter.com")) {
+                      embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+                    }
 
-                  if (embeddingUrl){
-                  questionText = `▪ Media <br>  <iframe
-                           allow="autoplay; encrypted-media; fullscreen;"
-                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                           src=${embeddingUrl}
-                           frameborder="0"
-                           allowfullscreen
-                         >
-                       `;
-                  }
-                  const urlList = questionMediaLink.split(',')
-                  console.log("list",urlList)
-                  if (urlList.length > 1){
-                    urlList.forEach(element => {
-                      element = element.trim()
-                      if (element.includes('docs.google.com')){
-                        let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                    if (embeddingUrl){
+                    questionText = `▪ Media <br>  <iframe
+                            allow="autoplay; encrypted-media; fullscreen;"
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            src=${embeddingUrl}
+                            frameborder="0"
+                            allowfullscreen
+                          >
+                        `;
+                    }
+                    const urlList = questionMediaLink.split(',')
+                    console.log("list",urlList)
+                    if (urlList.length > 1){
+                      urlList.forEach(element => {
+                        element = element.trim()
+                        if (element.includes('docs.google.com')){
+                          let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                          console.log(url)
+                          appendMessage(`<iframe src=${url}
+                                          frameborder="0" 
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          allowfullscreen="true" 
+                                          mozallowfullscreen="true" 
+                                          webkitallowfullscreen="true"
+                                          ></iframe>`)
+                        }
+                        else{
+                          console.log(element)
+                          appendMessage(`<audio src=${element} controls autoplay>`)
+                        }
+                      });
+                    }else {
+                      if (questionMediaLink.includes('docs.google.com')){
+                        let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
                         console.log(url)
                         appendMessage(`<iframe src=${url}
                                         frameborder="0" 
-                                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                         allowfullscreen="true" 
                                         mozallowfullscreen="true" 
                                         webkitallowfullscreen="true"
                                         ></iframe>`)
                       }
-                      else{
-                        console.log(element)
-                        appendMessage(`<audio src=${element} controls autoplay>`)
-                      }
-                    });
-                  }else {
-                    if (questionMediaLink.includes('docs.google.com')){
-                      let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                      console.log(url)
-                      appendMessage(`<iframe src=${url}
-                                      frameborder="0" 
-                                      style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                      allowfullscreen="true" 
-                                      mozallowfullscreen="true" 
-                                      webkitallowfullscreen="true"
-                                      ></iframe>`)
                     }
                   }
                 }
-              }
+              
+                console.log(`que_image ${questionIndex + 1}`)
+                if(mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+                  const questionpropName = `que_image ${questionIndex + 1}`
 
-              signals.onResponse({
-                html: questionText,
-              });
+                  const url = Object.keys(mediaProps[questionpropName])[0];
+                  let narration;
+                  let coords = []
+                  const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+                  coordAndTitleNarrationList.forEach(element =>{
+                    if (typeof element === 'string'){
+                      narration = element
+                    } else{
+                      coords.push(element)
+                    }
+                  })
+
+                  
+                  const imageUrl = url
+                  
+
+                  const ttsNarration = await TTSContainer(narration)
+                  const imageId = `mediaImage${questionIndex}`
+                  const imageMapName = `image-map${questionIndex}`
+                  const imageTooltipId = `tooltip-${questionIndex}`
+
+
+                     
+                  questionText = (`▪ Question : <br> ${questionText}<br><br>
+                                  ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                  ▪ Narration : <br> ${ttsNarration}
+                                  `)
+
+                  signals.onResponse({
+                    html: questionText,
+                  });
+                  setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                  console.log("IMAGE MAPPED WITH COORDS")
+
+                }else{
+                  signals.onResponse({
+                    html: questionText,
+                  });
+                  }
             }
           }
 
@@ -2466,18 +2710,18 @@ loadExternalModule().then(() => {
               }
 
               if (testType === "coaching") {
-                if(isImmersive && !questionMediaLink){
-                  let responderName;
-                  const strList = questionText.split(":",)
-                  if (strList.length > 1){
+                let responderName;
+                const strList = questionText.split(":",)
+                if (strList.length > 1){
                   responderName = `<b>${strList[0]}:</b><br>`
                   questionText = strList[1]
-                  }
+                }
+                if(isImmersive){
                   questionText = await TTSContainer(questionText)
+                }
                   
-                  if (responderName){
-                    questionText = responderName + questionText
-                  }
+                if (responderName){
+                  questionText = responderName + questionText
                 }
                 const dataToShow = getCoachingQuestionData(questionText);
                 signals.onResponse({
@@ -2493,12 +2737,14 @@ loadExternalModule().then(() => {
                   testType === "orchestrated_conversation" ||
                   testType === "dynamic_discussion_thread"
                 ) {
+                  const stringList = questionText.split(':', 2)
+                  console.log(stringList)
+                  questionText = stringList[1]
+                  const responderName = `<b>${stringList[0]}:</b><br>`
                   if (isImmersive && questionIndex != 0){
-                    const stringList = questionText.split(':', 2)
-                    console.log(stringList)
-                    questionText = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
                     questionText = await TTSContainer(questionText);
+                  }
+                  if(responderName){
                     questionText = responderName + questionText
                   }
                   signals.onResponse({
@@ -2599,7 +2845,16 @@ loadExternalModule().then(() => {
                   report_type: reportType,
                   test_attempt_session_id: sessionId,
                 };
+              } else if (senarioCase === "process_training") {
+                reportType = "processTrainingReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  test_attempt_session_id: sessionId,
+                };
               }
+
+              console.log(getReportBody, senarioCase)
 
               if (responsesDone) {
                 await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -2612,6 +2867,8 @@ loadExternalModule().then(() => {
                 })
                   .then((response) => response.json())
                   .then((data) => {
+                    console.log("REPORT 2")
+
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
                     console.log("Report Url : ", reportUrl, globalReportUrl);
@@ -2622,7 +2879,6 @@ loadExternalModule().then(() => {
                       const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                       appendMessage(message);
                       // //* send message to start new session
-                      resetAllVariables();
                       signals.onResponse({
                         html: "<b>Please enter another access code to start a new interaction.</b>",
                       });
@@ -2871,6 +3127,7 @@ loadExternalModule().then(() => {
                 is_free = questionData.results[0].is_free;
                 senarioDescription = questionData.results[0].description;
                 senarioTitle = questionData.results[0].title;
+                senarioCase = questionData.results[0].scenario_case;
                 senarioMediaDescription =
                   questionData.results[0].description_media;
                 TestUIInfo = questionData.results[0].ui_information;
@@ -2880,6 +3137,8 @@ loadExternalModule().then(() => {
                 isTestSignedIn = questionData.results[0].is_logged_in;
                 isImmersive = questionData.results[0].is_immersive;
                 mediaProps = questionData.results[0].media_props;
+
+
                 console.log(mediaProps,"props")
 
                 isTestcodeValid = true;
@@ -3091,13 +3350,7 @@ loadExternalModule().then(() => {
                           .question;
                       questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
 
-                      if (mediaProps && isImmersive){
-                        console.log(questionIndex)
-                        if(mediaProps[`question_image ${questionIndex}`]){
-                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
-                        }
-
-                      }
+                      
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
                       const mcqOptions =
@@ -3109,7 +3362,7 @@ loadExternalModule().then(() => {
                       const option2Name = optionName[1];
                       const option1Text = mcqOptions[option1Name]["opt"];
                       const option2Text = mcqOptions[option2Name]["opt"];
-                      if (isImmersive && questionMediaLink) {
+                      if (questionMediaLink) {
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
                           if (questionMediaLink.includes("youtube.com")) {
@@ -3170,9 +3423,7 @@ loadExternalModule().then(() => {
                         }
                       
                   
-                      if (isImmersive && questionImageData){
-                        // show here hover Image for question and add it to questionText
-                      }
+                      
 
 
                       formRadio = `
@@ -3199,13 +3450,7 @@ loadExternalModule().then(() => {
                         questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
 
                       }
-                      if (mediaProps && isImmersive){
-                        console.log(questionIndex)
-                        if(mediaProps[`question_image ${questionIndex}`]){
-                          questionImageData = [mediaProps[`question_image ${questionIndex}`],mediaProps[`question_image_mobile ${questionIndex}`]]
-                        }
-
-                      }
+                      
                       if (isHindi) {
                         questionText =
                           TestUIInfo[`Question ${questionIndex + 1}`];
@@ -3229,7 +3474,7 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
 
-                    if (senarioMediaDescription !== null) {
+                    if (senarioMediaDescription) {
                       let embeddingUrl = "";
                       if (senarioMediaDescription.length > 0) {
                         if (senarioMediaDescription.includes("youtube.com")) {
@@ -3377,7 +3622,45 @@ loadExternalModule().then(() => {
                         html: questionText,
                       });
                       //   }
-                    } else {
+                    } else if (mediaProps && Object.keys(mediaProps).includes('test_image')){
+                      console.log("Media props here", mediaProps)
+                      console.log("SHOW MEDIA PROPS here", mediaProps);
+                      // const [imageUrl, coords] = Object.entries(
+                      //   mediaProps.test_image
+                      // )[0];
+                      const imageUrl = Object.keys(mediaProps["test_image"])[0];
+                      let narration;
+                      let coords = []
+                      const coordAndTitleNarrationList = mediaProps["test_image"][imageUrl];
+
+                      coordAndTitleNarrationList.forEach(element =>{
+                        if (typeof element === 'string'){
+                          narration = element
+                        } else{
+                          coords.push(element)
+                        }
+                      })
+                      const ttsNarration = await TTSContainer(narration)
+                      const imageId = "mediaImage"
+                      const imageMapName = "image-map"
+                      const imageTooltipId = "tooltip"
+
+                      appendMessage(
+                        `▪ Title : ${senarioTitle} <br><br>
+                             ▪ Description : ${senarioDescription} <br><br>
+                             ▪ Instructions : Response should be at least 15 words. <br><br>
+                             ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ Narration : <br> ${ttsNarration}` 
+                      );
+                      signals.onResponse({
+                        html: questionText,
+                      });
+
+                      // pass - coords, imagemap-name, 
+                      setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                      console.log("IMAGE MAPPED WITH COORDS")
+                    }
+                    else {
                       signals.onResponse({
                         html: questionText,
                         text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
@@ -3391,7 +3674,7 @@ loadExternalModule().then(() => {
                       testType != "coaching"
                     ) {
                       
-                      if (isImmersive && questionMediaLink) {
+                      if (questionMediaLink) {
                         console.log(questionText);
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
@@ -3452,28 +3735,71 @@ loadExternalModule().then(() => {
                           }
                         }
                       if (questionText){
-                        if(isImmersive && !questionMediaLink){
-                          let responderName;
-                          let strList = questionText.replaceAll("*","").split(":")
-                          if (strList.length > 1){
-                            questionText = strList[1]
-                            responderName = `<b>${strList[0]}:</b><br>`
-                            
-                          }
-                          questionText = await TTSContainer(questionText)
-
-                          if (responderName){
-                            questionText = responderName + questionText
-                          }
+                        let responderName;
+                        let strList = questionText.replaceAll("*","").split(":")
+                        if (strList.length > 1){
+                          questionText = strList[1]
+                          responderName = `<b>${strList[0]}:</b><br>`
+                          
                         }
-                        signals.onResponse({
-                          html: questionText,
-                        });
+                        if(isImmersive){
+                        questionText = await TTSContainer(questionText)
+                        }
+
+                        if (responderName){
+                          questionText = responderName + questionText
+                        }
+
+                        console.log(`que_image ${questionIndex + 1}`)
+                        if( mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
+                          const questionpropName = `que_image ${questionIndex + 1}`
+
+                          const url = Object.keys(mediaProps[questionpropName])[0];
+                          let narration;
+                          let coords = []
+                          const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+
+                          coordAndTitleNarrationList.forEach(element =>{
+                            if (typeof element === 'string'){
+                              narration = element
+                            } else{
+                              coords.push(element)
+                            }
+                          })
+
+                          
+                          const imageUrl = url
+                          
+
+                          const ttsNarration = await TTSContainer(narration)
+                          const imageId = `mediaImage${questionIndex}`
+                          const imageMapName = `image-map${questionIndex}`
+                          const imageTooltipId = `tooltip-${questionIndex}`
+
+
+                             
+                          questionText = (`▪ Question : <br> ${questionText}<br><br>
+                                          ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                          ▪ Narration : <br> ${ttsNarration}
+                                          `)
+
+                          signals.onResponse({
+                            html: questionText,
+                          });
+                          setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
+                          console.log("IMAGE MAPPED WITH COORDS")
+
+
+                          // questionText2 = questionText2 + imageDiv 
+                        }else{
+                          console.l
+                          signals.onResponse({
+                            html: questionText,
+                          });
+                        }
                       }
 
-                      if (isImmersive && questionImageData){
-                        // show here hover Image for question
-                      }
+                      
                     }
                   }
                 }
@@ -3537,18 +3863,18 @@ loadExternalModule().then(() => {
                     questionText = responseData["coach_message_text"];
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
-                    if(isImmersive && !questionMediaLink){
-                      let responderName;
-                      const strList = questionText.split(":",)
-                      if (strList.length > 1){
+                    let responderName;
+                    const strList = questionText.split(":",)
+                    if (strList.length > 1){
                       responderName = `<b>${strList[0]}:</b><br>`
                       questionText = strList[1]
-                      }
+                    }
+                    if(isImmersive){
                       questionText = await TTSContainer(questionText)
+                    }
                       
-                      if (responderName){
-                        questionText = responderName + questionText
-                      }
+                    if (responderName){
+                      questionText = responderName + questionText
                     }
                     const dataToShow = getCoachingQuestionData(questionText);
                     signals.onResponse({
@@ -3650,14 +3976,14 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
+                    const stringList = questionText.split(':', )
+                    console.log(stringList)
+                    questionText = stringList[1]
+                    const responderName = `<b>${stringList[0]}:</b><br>`
                     if (isImmersive && questionIndex != 0){
-                      const stringList = questionText.split(':', )
-                      console.log(stringList)
-                      questionText = stringList[1]
-                      const responderName = `<b>${stringList[0]}:</b><br>`
                       questionText = await TTSContainer(questionText);
-                      questionText = responderName + questionText
                     }
+                    questionText = responderName + questionText
                     signals.onResponse({
                       html: questionText,
                     });
@@ -3760,7 +4086,17 @@ loadExternalModule().then(() => {
                       report_type: reportType,
                       test_attempt_session_id: sessionId,
                     };
+                  } else if (senarioCase === "process_training"){
+                      reportType = "processTrainingReport";
+                      getReportBody = {
+                        user_id: participantId,
+                        report_type: reportType,
+                        session_id: sessionId,
+                        interaction_id: testId,
+                      };
                   }
+
+                  console.log(getReportBody, senarioCase)
 
                   console.log(sessionId);
                   const reportResponse = await fetch(
@@ -3781,7 +4117,7 @@ loadExternalModule().then(() => {
                   const reportData = await reportResponse.json();
                   reportUrl = reportData.url;
                   globalReportUrl = reportUrl;
-
+                  console.log("REPORT 3")
                   console.log("Report Url : ", reportUrl, globalReportUrl);
                   // const urlObject = new URL(reportUrl);
                   // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
@@ -3797,7 +4133,7 @@ loadExternalModule().then(() => {
                     const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     appendMessage(message);
                     // //* send message to start new session
-                    resetAllVariables();
+                    
                     signals.onResponse({
                       html: "<b>Please enter another access code to start a new interaction.</b>",
                     });

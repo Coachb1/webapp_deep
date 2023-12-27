@@ -449,13 +449,32 @@ export const Sales: Test[] = [
     interaction_mode: "Audio",
   },
   {
-  domain: "Luxury real estate",
-  test_code: "QX1W8IG",
-  title: "Handling a High-Profile Client",
-  description:
-    "A successful entrepreneur, Mr. Jaideep, seeks a residence that seamlessly blends modern luxury with classic charm. His emphasis is on spacious interiors, a well-appointed kitchen, and a private garden for family gatherings. Your task is to showcase properties that meet his criteria, highlighting features that complement his sophisticated taste and desire for a comfortable yet elegant living space. Engage in a conversation that addresses his lifestyle aspirations and guides him towards a property that resonates with his vision. Respond to this situation as the real estate sales agent.",
-  interaction_mode: "Audio",
-},
+    domain: "Luxury real estate",
+    test_code: "QX1W8IG",
+    title: "Handling a High-Profile Client",
+    description:
+      "A successful entrepreneur, Mr. Jaideep, seeks a residence that seamlessly blends modern luxury with classic charm. His emphasis is on spacious interiors, a well-appointed kitchen, and a private garden for family gatherings. Your task is to showcase properties that meet his criteria, highlighting features that complement his sophisticated taste and desire for a comfortable yet elegant living space. Engage in a conversation that addresses his lifestyle aspirations and guides him towards a property that resonates with his vision. Respond to this situation as the real estate sales agent.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const coachingPlus: Test[] = [
+  {
+    domain: "Sales Coaching",
+    test_code: "QPON191",
+    title: "Coaching session on sales performance",
+    description:
+      "A sales rep engages in a coaching session with a sales coach to address his recent performance. The rep is seeking constructive feedback on their sales techniques, presentation skills, and client interactions, aiming to identify specific areas for improvement and enhance overall sales effectiveness. Respond as the sales rep in this coaching session.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Life Coaching",
+    test_code: "QFN8OWT",
+    title: "Counselling session for stress management.",
+    description:
+      "A manager schedules a coaching conversation with a life coach to navigate work-related stress and improve work-life balance. The coaching session aims to provide personalized guidance for stress management, fostering resilience and promoting a healthier work environment. Respond as the manager in this coaching session.",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const serviceslashConsulting: Test[] = [
@@ -633,6 +652,32 @@ export const onBoarding: Test[] = [
     title: "Punctuality challenges due to weather issue",
     description:
       "Raj, a manager in a Mumbai-based company, noticed that a new joiner, consistently arrived on time during his first month. However, as the monsoon season hit, his commute time significantly increased due to waterlogged roads and public transport disruptions. This led to a gradual decline in his punctuality, with the employee frequently arriving late to the office. Raj, concerned about the impact on project timelines, decided to address this issue with him. Respond to this situation as the employee.",
+    interaction_mode: "Audio",
+  },
+];
+export const questionPro: Test[] = [
+  {
+    domain: "Navigating Operational Challenges",
+    test_code: "QO0WRWA",
+    title: "Assessing Impact of Cost-Cutting Measures in Manufacturing",
+    description:
+      "Diya, the operations executive, is dealing with a mandate to cut costs in a manufacturing company. The company recently faced a substantial increase in raw material prices due to global supply chain disruptions. To offset these rising costs, Diya implemented a cost-cutting strategy affecting various departments, including procurement, maintenance, and manpower. The ground-level teams are now experiencing challenges, particularly in meeting production targets due to delayed procurement processes and reduced maintenance schedules. The team lead wants to understand how these strategic decisions are translating into operational hurdles, impacting workforce efficiency and day-to-day functions on the shop floor. Respond as the team lead and ask questions to understand the situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Uncovering Production Challenges",
+    test_code: "QJHZKWJ",
+    title: "Operational Impact of Raw Material Shortage",
+    description:
+      "A team lead in the production department, is investigating the repercussions of a sudden shortage of key raw materials in a manufacturing company. The scarcity is affecting the procurement timelines, causing delays in production schedules and impacting the overall operational efficiency. The team lead seeking clarity, is probing a senior leader, Ravi about the specific challenges faced by various functions such as production, quality control, and inventory management due to the shortage. The team lead's goal is to uncover the root cause behind the material shortage and understand how it trickles down to affect day-to-day operations at the ground level. Respond as the team lead and ask questions to understand the situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Understanding Causes and Solutions",
+    test_code: "QRUB1AK",
+    title: "Bug Surge Analysis Meeting",
+    description:
+      "The project manager, is leading a software development team facing a surge in bug reports. Two developers, Aarav and Priya, are grappling with the increased number of reported issues affecting the application's stability and user experience. The manager calls a meeting to delve into the specifics, seeking insights on the root causes, possible patterns, and any challenges hindering the debugging process. The project manager aims to grasp the nuanced impact on their workflow and the end-user experience to devise targeted solutions and streamline the development process. Respond as the project manager and ask questions to understand the situation.",
     interaction_mode: "Audio",
   },
 ];
