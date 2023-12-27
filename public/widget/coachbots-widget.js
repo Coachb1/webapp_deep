@@ -2276,7 +2276,7 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
     
     console.log(objectUrl,'url')
-    const audioCont = `<div ><audio style="width: 100%;" controls >
+    const audioCont = `<div ><audio style="width: 100%;" controls autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
     </audio></div>`
