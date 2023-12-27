@@ -600,7 +600,33 @@ async function setMcqVariables() {
           if (questionMedia.includes('docs.google.com')){
               let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
               console.log(url,'google')
-              questionText = questionText + '\n' +(`<iframe src=${url}
+              if(isImmersive){
+                questionText = questionText.replaceAll(":","")
+                console.log('first', questionText)
+  
+                
+                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+                const response = await fetch(urltts, {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                  },
+                });
+          
+                const blob = await response.blob();
+                console.log('respnse', blob);
+          
+                const objectUrl = URL.createObjectURL(blob);
+                
+                console.log(objectUrl,'url')
+                questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                        <source src=${objectUrl} type="audio/mpeg" />
+                                        Your browser does not support the audio element.
+                                        </audio></div>`
+                console.log(questionText)
+  
+              }
+              questionText = questionText +(`<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                               allowfullscreen="true" 
@@ -611,8 +637,37 @@ async function setMcqVariables() {
           }
           }
       }
+      if(isImmersive && !questionMedia){
+        questionText = questionText.replaceAll(":","")
+        console.log('first', questionText)
+  
+        
+        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+        const response = await fetch(urltts, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          },
+        });
+  
+        const blob = await response.blob();
+        console.log('respnse', blob);
+  
+        const objectUrl = URL.createObjectURL(blob);
+        
+        console.log(objectUrl,'url')
+        questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                <source src=${objectUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`
+        console.log(questionText)
+  
+        
+      }
+
     }
 
+    
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -1398,8 +1453,45 @@ const handleProceedClick = async (choice) => {
         const linkPattern = /(http[s]?:\/\/[^\s]+)/;
         const is_link = linkPattern.test(initialQuestionText);
         if (!is_link){
-          appendMessage(initialQuestionText)
-        }
+            let strList = initialQuestionText.replaceAll("*","")
+        
+            strList = strList.split(":",2)
+            let responderName;
+            if (strList.length >1){
+              initialQuestionText = strList[1]
+              responderName = strList[0]
+            }
+            if(isImmersive){
+              console.log(initialQuestionText)
+              const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
+              const response = await fetch(urltts, {
+                method: "GET",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                },
+              });
+        
+              const blob = await response.blob();
+              console.log('respnse', blob);
+        
+              const objectUrl = URL.createObjectURL(blob);
+              
+              console.log(objectUrl,'url')
+              initialQuestionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                      <source src=${objectUrl} type="audio/mpeg" />
+                                      Your browser does not support the audio element.
+                                      </audio></div>`
+              console.log(initialQuestionText)
+
+            }
+            console.log("last",initialQuestionText)
+            if (responderName){
+              initialQuestionText = `<b>${responderName}:</b><br>` +`<p>${initialQuestionText}</p>`
+              
+            }
+
+            appendMessage(initialQuestionText)
+          }
       }
     } else{
 
@@ -1554,9 +1646,9 @@ const handleProceedClick = async (choice) => {
         const imageTooltipId = `tooltip-${initialIndex}`
 
            
-        appendMessage(`▪ Question : <br> ${initialQuestionText}<br><br>
-                        ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                        ▪ Narration : <br> ${ttsNarration}`)
+        appendMessage(`▪ ${ttsNarration}<br><br>
+                        ▪ <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                        ▪ Question : <br> ${initialQuestionText}<br><br>`)
         setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
         console.log("IMAGE MAPPED WITH COORDS")
 
@@ -2629,9 +2721,9 @@ loadExternalModule().then(() => {
 
 
                      
-                  questionText = (`▪ Question : <br> ${questionText}<br><br>
-                                  ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                                  ▪ Narration : <br> ${ttsNarration}
+                  questionText = (`▪ ${ttsNarration}<br><br>
+                                  ▪ <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                  ▪ Question : <br> ${questionText}
                                   `)
 
                   signals.onResponse({
@@ -3390,6 +3482,33 @@ loadExternalModule().then(() => {
                             if (questionMediaLink.includes('docs.google.com')){
                               let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
                               console.log(url)
+                              questionText = questionText.replaceAll(":","")
+                              if(isImmersive){
+                                console.log(questionText)
+                                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+                                const response = await fetch(urltts, {
+                                  method: "GET",
+                                  headers: {
+                                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                                  },
+                                });
+                          
+                                const blob = await response.blob();
+                                console.log('respnse', blob);
+                          
+                                const objectUrl = URL.createObjectURL(blob);
+                                
+                                console.log(objectUrl,'url')
+                                questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                                        <source src=${objectUrl} type="audio/mpeg" />
+                                                        Your browser does not support the audio element.
+                                                        </audio></div>`
+                                console.log(questionText)
+
+                              }
+                              console.log("last",questionText)
+                              
+
                               questionText = questionText + '\n' +(`<iframe src=${url}
                                               frameborder="0" 
                                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
@@ -3400,6 +3519,34 @@ loadExternalModule().then(() => {
                             }
                           }
                           }
+                        }
+
+                        if(isImmersive && !questionMediaLink){
+                          questionText = questionText.replaceAll(":","")
+                          console.log('first', questionText)
+
+                          
+                          const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+                          const response = await fetch(urltts, {
+                            method: "GET",
+                            headers: {
+                              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                            },
+                          });
+                    
+                          const blob = await response.blob();
+                          console.log('respnse', blob);
+                    
+                          const objectUrl = URL.createObjectURL(blob);
+                          
+                          console.log(objectUrl,'url')
+                          questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                                  <source src=${objectUrl} type="audio/mpeg" />
+                                                  Your browser does not support the audio element.
+                                                  </audio></div>`
+                          console.log(questionText)
+
+                          
                         }
                       
                   
@@ -3627,11 +3774,11 @@ loadExternalModule().then(() => {
                       const imageTooltipId = "tooltip"
 
                       appendMessage(
-                        `▪ Title : ${senarioTitle} <br><br>
+                            `▪ Title : ${senarioTitle} <br><br>
                              ▪ Description : ${senarioDescription} <br><br>
                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                             ▪ Narration : <br> ${ttsNarration}` 
+                             ▪  <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ ${ttsNarration}` 
                       );
                       signals.onResponse({
                         html: questionText,
@@ -3759,9 +3906,9 @@ loadExternalModule().then(() => {
 
 
                              
-                          questionText = (`▪ Question : <br> ${questionText}<br><br>
-                                          ▪ Media : <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                                          ▪ Narration : <br> ${ttsNarration}
+                          questionText = (`▪  ${ttsNarration}<br><br>
+                                          ▪ <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                          ▪ Question : <br> ${questionText}
                                           `)
 
                           signals.onResponse({
