@@ -485,26 +485,6 @@ tooltipELementStt.style.borderRadius = "5px";
 tooltipELementStt.style.display = "none";
 shadowRootForImageStt.appendChild(tooltipELementStt);
 
-const imageLeftPaddingStt = getComputedStyle(
-  descriptionMediaImageStt
-).paddingLeft.replace("px", "");
-
-const imageTopPaddingStt = getComputedStyle(
-  descriptionMediaImageStt
-).paddingTop.replace("px", "");
-
-console.log(imageLeftPaddingStt, imageTopPaddingStt);
-
-const imageTopFreeSpaceStt =
-  descriptionMediaImageStt.getBoundingClientRect()
-    .bottom - descriptionMediaImageStt.offsetHeight;
-const imageLeftFreeSpaceStt =
-  descriptionMediaImageStt.getBoundingClientRect().left;
-console.log(
-  "Free space :",
-  imageTopFreeSpaceStt,
-  imageLeftFreeSpaceStt
-);
 
 coordsStt.map((item) => {
   console.log(item)
@@ -518,7 +498,7 @@ coordsStt.map((item) => {
 
   const areaElementStt = document.createElement("area");
   areaElementStt.setAttribute("coords", coord);
-  areaElementStt.setAttribute("shape", "circle");
+  areaElementStt.setAttribute("shape", "rect");
   // areaElementStt.setAttribute("title", item.title);
 
   // console.log(areaElementStt.addEventListener())

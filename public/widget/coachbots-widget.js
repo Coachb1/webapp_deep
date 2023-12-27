@@ -1144,26 +1144,6 @@ tooltipELement.style.borderRadius = "5px";
 tooltipELement.style.display = "none";
 shadowRootForImage.appendChild(tooltipELement);
 
-const imageLeftPadding = getComputedStyle(
-  descriptionMediaImage
-).paddingLeft.replace("px", "");
-
-const imageTopPadding = getComputedStyle(
-  descriptionMediaImage
-).paddingTop.replace("px", "");
-
-console.log(imageLeftPadding, imageTopPadding);
-
-const imageTopFreeSpace =
-  descriptionMediaImage.getBoundingClientRect()
-    .bottom - descriptionMediaImage.offsetHeight;
-const imageLeftFreeSpace =
-  descriptionMediaImage.getBoundingClientRect().left;
-console.log(
-  "Free space :",
-  imageTopFreeSpace,
-  imageLeftFreeSpace
-);
 
 coords.map((item) => {
   console.log(item)
@@ -1177,7 +1157,7 @@ coords.map((item) => {
 
   const areaElement = document.createElement("area");
   areaElement.setAttribute("coords", coord);
-  areaElement.setAttribute("shape", "circle");
+  areaElement.setAttribute("shape", "rect");
   // areaElement.setAttribute("title", item.title);
 
   mapElement.appendChild(areaElement);
