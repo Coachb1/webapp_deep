@@ -425,23 +425,15 @@ function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
   const tooltipStt =
     shadowRootStt.getElementById(tooltipIdStt);
 
-  const xOffset = 0;
-  const yOffset = 0;
-
-  // const image = shadowRootStt.querySelector(
-  //   `img[usemap='#${imageMapNameStt}']`
-  // );
-  // const imageRect = image.getBoundingClientRect();
-
   const mouseX = event.clientX + window.pageXOffset;
   const mouseY = event.clientY + window.pageYOffset;
 
   if (window.innerWidth > 760) {
-    tooltipStt.style.left = mouseX + xOffset - 120 + "px";
-    tooltipStt.style.top = mouseY + yOffset - 80 + "px";
+    tooltipStt.style.left = event.clientX - 120 + "px" // mouseX - 120 + "px" //event.clientX //  // + xOffset - 120 + "px";
+    tooltipStt.style.top = event.clientY - 80  + "px" //mouseY - 80 + "px" //event.clientY // //+ yOffset - 170 + "px";
   } else {
-    tooltipStt.style.left = event.clientX // mouseX // + xOffset - 120 + "px";
-    tooltipStt.style.top = event.clientY //mouseY //+ yOffset - 170 + "px";
+    tooltipStt.style.left = event.clientX - 90 + "px" 
+    tooltipStt.style.top = event.clientY - 180  + "px" 
   }
 }
 
@@ -526,29 +518,29 @@ coordsStt.map((item) => {
   const areaElementStt = document.createElement("area");
   areaElementStt.setAttribute("coords", coord);
   areaElementStt.setAttribute("shape", "circle");
-  areaElementStt.setAttribute("title", item.title);
+  // areaElementStt.setAttribute("title", item.title);
 
   // console.log(areaElementStt.addEventListener())
 
   mapElementStt.appendChild(areaElementStt);
 
-  // areaElementStt.addEventListener(
-  //   "mouseover",
-  //   (event) => {
-  //     showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
-  //   }
-  // );
+  areaElementStt.addEventListener(
+    "mouseover",
+    (event) => {
+      showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
+    }
+  );
 
-  // areaElementStt.addEventListener(
-  //   "mousemove",
-  //   (event) => {
-  //     updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
-  //   }
-  // );
+  areaElementStt.addEventListener(
+    "mousemove",
+    (event) => {
+      updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+    }
+  );
 
-  // areaElementStt.addEventListener("mouseout", () => {
-  //   hideTooltipStt(tooltipIdStt);
-  // });
+  areaElementStt.addEventListener("mouseout", () => {
+    hideTooltipStt(tooltipIdStt);
+  });
 });
 }
 
@@ -752,10 +744,10 @@ const handleProceedClickStt = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            initialQuestionTextStt = `<audio controls autoplay>
+            initialQuestionTextStt = `<div ><audio style="width: 100%;" controls >
                                     <source src=${objectUrl} type="audio/mpeg" />
                                     Your browser does not support the audio element.
-                                    </audio>`
+                                    </audio></div>`
           }
 
           if (responderName){
@@ -796,10 +788,10 @@ const handleProceedClickStt = async (choice) => {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              let audioCont = `<audio controls >
+              let audioCont = `<div ><audio style="width: 100%;" controls >
                                       <source src=${objectUrl} type="audio/mpeg" />
                                       Your browser does not support the audio element.
-                                      </audio>`
+                                      </audio></div>`
               if (responderName){
                 audioCont = responderName + audioCont
               }
@@ -864,10 +856,10 @@ const handleProceedClickStt = async (choice) => {
           const objectUrl = URL.createObjectURL(blob);
           
           console.log(objectUrl,'url')
-          const ttsNarration = `<audio controls autoplay>
+          const ttsNarration = `<div ><audio style="width: 100%;" controls autoplay>
                                   <source src=${objectUrl} type="audio/mpeg" />
                                   Your browser does not support the audio element.
-                                  </audio>`
+                                  </audio></div>`
           const imageIdStt = `mediaImageStt${questionIndex2}`
           const imageMapNameStt = `image-mapStt${questionIndex2}`
           const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
@@ -2075,10 +2067,10 @@ loadExternalModule().then(() => {
       const objectUrl = URL.createObjectURL(blob);
       
       console.log(objectUrl,'url')
-      const audioCont = `<audio controls autoplay>
+      const audioCont = `<div><audio style="width: 100%;" controls autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
-      </audio>`
+      </audio> </div>`
 
       return audioCont
   }
