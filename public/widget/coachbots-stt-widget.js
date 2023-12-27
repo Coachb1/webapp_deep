@@ -78,6 +78,7 @@ let questionMediaLinkStt;
 let isImmersiveStt = false;
 let mediaPropsStt;
 let questionImageDataStt;
+let initialIndexStt;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -816,8 +817,8 @@ const handleProceedClickStt = async (choice) => {
 
           }
 
-        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
-          const questionpropName = `que_image ${questionIndex2 + 1}`
+        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${initialIndexStt}`)){
+          const questionpropName = `que_image ${initialIndexStt}`
 
           const url = Object.keys(mediaPropsStt[questionpropName])[0];
           let narration;
@@ -860,9 +861,9 @@ const handleProceedClickStt = async (choice) => {
                                   <source src=${objectUrl} type="audio/mpeg" />
                                   Your browser does not support the audio element.
                                   </audio></div>`
-          const imageIdStt = `mediaImageStt${questionIndex2}`
-          const imageMapNameStt = `image-mapStt${questionIndex2}`
-          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+          const imageIdStt = `mediaImageStt${initialIndexStt}`
+          const imageMapNameStt = `image-mapStt${initialIndexStt}`
+          const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`
 
              
           appendMessage2(`▪ Question : <br> ${initialQuestionTextStt}<br><br>
@@ -2683,6 +2684,7 @@ loadExternalModule().then(() => {
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
                     initialQuestionTextStt = questionText2;
+                    initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
                     questionText2 = `
                     <div id="proceed-option2" >
