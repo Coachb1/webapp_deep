@@ -514,6 +514,7 @@ console.log(
 );
 
 coordsStt.map((item) => {
+  console.log(item)
   let coord;
   if(window.innerWidth < 768){
     coord = item.coord
@@ -715,7 +716,7 @@ const handleProceedClickStt = async (choice) => {
           }
         }
       } else{
-        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && testType2 != 'mcq'){
+        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && testType2 != 'mcq' && senarioCase2 != "process_training" ){
           let responderName;
           
           if (testType2 === 'dynamic_discussion_thread'){

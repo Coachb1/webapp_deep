@@ -1374,7 +1374,7 @@ const handleProceedClick = async (choice) => {
         }
       }
     } else{
-      if(!questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq'){
+      if(!questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq' && senarioCase != "process_training"){
         let responderName;
         if (testType === 'dynamic_discussion_thread'){
           if (initialQuestionText.includes(":")){
