@@ -199,8 +199,8 @@ let recommendationsData = [
 function createBasicAuthToken(key = "", secret = "") {
   const token =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  //   const token =
-  //     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+  // const token =
+  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token;
 }
 
@@ -471,68 +471,113 @@ async function setMcqVariables() {
   console.log(mcqQustionIndex, globalQuestionLength);
   mcqQustionIndex++;
 
+  let qUid;
+  let newOption1Name;
+  let newOption2Name;
+  let newOption1Text;
+  let newOption2Text;
+
   if (mcqQustionIndex != globalQuestionLength) {
     // updating question
-    console.log("currentquestionidex", mcqQustionIndex);
-    console.log(`Story ${responseOption}`);
 
-    const matchingQuestions = globalQuestionData.results[0].questions.filter(
+    if( testType === "dynamic_mcq") {
+
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML = 'Processing ...'
+    
+        queryParams = new URLSearchParams({
+            description: senarioDescription,
+            situation: mcqQustionIndex == 1 ? globalQuestionData.results[0].questions[mcqQustionIndex - 1].question : questionText,
+            option_a: optionsName[0].defaultValue,
+            option_b: optionsName[0].defaultValue,
+            option_selected: responseText,
+            test_attempt_session_id: test_attempt_session_id,
+        });
+    
+        await fetch(
+        `${baseURL}/test-attempt-sessions/get_next_mcq_question_options/?${queryParams}`,
+        {
+            method: "GET",
+            headers: {
+            Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+            "Content-Type": "application/json",
+            },
+        }
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Dynamic mcq response : ", data);
+            console.log(data.options_data)
+            questionText = data.options_data.next_situation;
+            newOption1Name = data.options_data.option_a;
+            newOption2Name = data.options_data.option_b;
+            newOption1Text = data.options_data.option_a;
+            newOption2Text = data.options_data.option_b;
+            // qUid = data.options_data.next_situation;
+            qUid = globalQuestionData.results[0].questions[mcqQustionIndex].uid;
+        })
+
+    } else {
+      console.log("currentquestionidex", mcqQustionIndex);
+      console.log(`Story ${responseOption}`);
+
+      const matchingQuestions = globalQuestionData.results[0].questions.filter(
       (question) => question.mcq_path === `Story ${responseOption}`
-    );
+      );
 
-    const qUid = matchingQuestions.map((question) => question.uid)[0];
-    const mcqOptions = matchingQuestions.map(
+      qUid = matchingQuestions.map((question) => question.uid)[0];
+      const mcqOptions = matchingQuestions.map(
       (question) => question.mcq_options
-    )[0];
-    const optionName = Object.keys(mcqOptions);
-    let questionText;
-    questionText = matchingQuestions.map(
+      )[0];
+      const optionName = Object.keys(mcqOptions);
+      questionText = matchingQuestions.map(
       (question) => question.question
-    )[0];
+      )[0];
 
-    const questionMedia = matchingQuestions.map(
+      console.log("questionText :", questionText);
+
+      const questionMedia = matchingQuestions.map(
       (question) => question.media_link
-    )[0];
+      )[0];
 
-    let queImageData;
-    if (mediaProps && mediaProps[`question_image ${responseOption}`]){
+      let queImageData;
+      if (mediaProps && mediaProps[`question_image ${responseOption}`]){
       queImageData = [mediaProps[`question_image ${responseOption}`],mediaProps[`question_image_mobile ${responseOption}`]]
-    }
+      }
 
-    const newOption1Name = optionName[0];
-    const newOption2Name = optionName[1];
-    const newOption1Text = mcqOptions[newOption1Name]["opt"];
-    const newOption2Text = mcqOptions[newOption2Name]["opt"];
+      newOption1Name = optionName[0];
+      newOption2Name = optionName[1];
+      newOption1Text = mcqOptions[newOption1Name]["opt"];
+      newOption2Text = mcqOptions[newOption2Name]["opt"];
 
-    if (isImmersive && questionMedia) {
+      if (isImmersive && questionMedia) {
       let embeddingUrl = "";
       if (questionMedia.length > 0) {
-        if (questionMedia.includes("youtube.com")) {
+          if (questionMedia.includes("youtube.com")) {
           const videoId = questionMedia.split("v=")[1];
           embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else if (questionMedia.includes("vimeo.com")) {
+          } else if (questionMedia.includes("vimeo.com")) {
           const videoId = questionMedia.split("/").pop();
           embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-        } else if (questionMedia.includes("twitter.com")) {
+          } else if (questionMedia.includes("twitter.com")) {
           embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
-        }
+          }
 
-        if (embeddingUrl){
-        questionText = `▪ Media <br>  <iframe
-                        allow="autoplay; encrypted-media; fullscreen;"
-                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                        src=${embeddingUrl}
-                        frameborder="0"
-                        allowfullscreen
+          if (embeddingUrl){
+          questionText = `▪ Media <br>  <iframe
+                          allow="autoplay; encrypted-media; fullscreen;"
+                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                          src=${embeddingUrl}
+                          frameborder="0"
+                          allowfullscreen
                       >
-        `;
-        }
-        const urlList = questionMedia.split(',')
-        console.log("list",urlList)
-        if (urlList.length > 1){
+          `;
+          }
+          const urlList = questionMedia.split(',')
+          console.log("list",urlList)
+          if (urlList.length > 1){
           urlList.forEach(element => {
-            element = element.trim()
-            if (element.includes('docs.google.com')){
+              element = element.trim()
+              if (element.includes('docs.google.com')){
               let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
               console.log(url,"googelsheet")
               questionText = questionText + '\n' +(`<iframe src=${url}
@@ -542,32 +587,33 @@ async function setMcqVariables() {
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
                               ></iframe>`)
-            }
-            else{
+              }
+              else{
               console.log('audio',element)
               questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
-            }
+              }
           });
-        }else {
+          }else {
           if (questionMedia.includes('docs.google.com')){
-            let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-            console.log(url,'google')
-            questionText = questionText + '\n' +(`<iframe src=${url}
-                            frameborder="0" 
-                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                            allowfullscreen="true" 
-                            mozallowfullscreen="true" 
-                            webkitallowfullscreen="true"
-                            ></iframe>`)
+              let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url,'google')
+              questionText = questionText + '\n' +(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
           }
-        }
-        }
+          }
+          }
       }
-    
+      
 
-    if (isImmersive && queImageData){
+      if (isImmersive && queImageData){
       // show here hover Image for question and add it to questionText
-    }
+      }
+  }
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadio = `
@@ -702,7 +748,7 @@ async function setMcqVariables() {
     const isCheck = await res.json();
     console.log(isCheck);
     if (!isCheck.check) {
-      if (testType === "mcq") {
+      if (testType === "mcq" || testType === "dynamic_mcq") {
         const shadowRoot = document.getElementById("chat-element").shadowRoot;
         const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
         // button.parentNode.removeChild(button)
@@ -1162,7 +1208,7 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait.."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    if(isImmersive && questionMediaLink && testType != 'mcq'){
+    if(isImmersive && questionMediaLink && (testType != 'mcq' && testType != 'dynamic_mcq' )){
       console.log(questionMediaLink);
       let embeddingUrl = "";
       
@@ -1232,7 +1278,7 @@ const handleProceedClick = async (choice) => {
         }
       }
     } else{
-      if(isImmersive && !questionMediaLink && testType != "orchestrated_conversation" && testType != 'mcq'){
+      if(isImmersive && !questionMediaLink && testType != "orchestrated_conversation" && (testType != 'mcq' && testType != 'dynamic_mcq' )){
         let responderName;
         if (testType === 'dynamic_discussion_thread'){
           if (initialQuestionText.includes(":")){
@@ -1335,7 +1381,7 @@ const handleProceedClick = async (choice) => {
           })
         }
       } else{
-          if(testType != 'mcq'){let strList = initialQuestionText.replaceAll("*","")
+          if(testType != 'mcq' && testType != 'dynamic_mcq'){let strList = initialQuestionText.replaceAll("*","")
           strList = strList.split(":",2)
           if (strList.length >1){
             initialQuestionText = strList[1]
@@ -2212,7 +2258,7 @@ loadExternalModule().then(() => {
           //AUDIO RESPONSES
 
           // to check session active or not
-          if (testType === "mcq") {
+          if (testType === "mcq" || testType === "dynamic_mcq") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -2463,7 +2509,7 @@ loadExternalModule().then(() => {
               if (responsesDone) {
                 const isCheck = await SesseionCheck(sessionId);
                 if (!isCheck) {
-                  if (testType === "mcq") {
+                  if (testType === "mcq" || testType === "dynamic_mcq") {
                     const shadowRoot =
                       document.getElementById("chat-element").shadowRoot;
                     const button = shadowRoot.getElementById(
@@ -2607,7 +2653,7 @@ loadExternalModule().then(() => {
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
           console.log("Latest Message ===> ", latestMessage);
-          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
+          if ((testType === "mcq" || testType === "dynamic_mcq") && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -2669,7 +2715,7 @@ loadExternalModule().then(() => {
           }
 
           if (body.messages[0].text.toUpperCase() === "STOP") {
-            if (testType === "mcq") {
+            if (testType === "mcq" || testType === "dynamic_mcq") {
               const shadowRoot =
                 document.getElementById("chat-element").shadowRoot;
               const button = shadowRoot.getElementById(
@@ -2855,6 +2901,11 @@ loadExternalModule().then(() => {
                   globalQuestionData = questionData;
                 }
 
+                if (testType === "dynamic_mcq") {
+                  globalQuestionLength = questionLength;
+                  globalQuestionData = questionData;
+                }
+
                 //signed user rules
 
                 if (user) {
@@ -2992,6 +3043,7 @@ loadExternalModule().then(() => {
 
               if (questionIndex <= questionLength) {
                 if (questionIndex < questionLength) {
+                  console.log("TEST TYPE: ", testType);
                   if (
                     testType === "dynamic_discussion_thread" ||
                     testType === "orchestrated_conversation"
@@ -3032,7 +3084,8 @@ loadExternalModule().then(() => {
                       }
                     }
                   } else {
-                    if (testType === "mcq") {
+                    if (testType === "mcq" || testType === "dynamic_mcq") {
+                      console.log("mcq or dynamic mcq : YES")
                       questionText =
                         questionData.results[0].questions[questionIndex]
                           .question;
@@ -3620,7 +3673,7 @@ loadExternalModule().then(() => {
                   responsesDone = true;
                   const isCheck = await SesseionCheck(sessionId);
                   if (!isCheck) {
-                    if (testType === "mcq") {
+                    if (testType === "mcq" || testType === "dynamic_mcq") {
                       const shadowRoot =
                         document.getElementById("chat-element").shadowRoot;
                       const button = shadowRoot.getElementById(
@@ -3757,7 +3810,7 @@ loadExternalModule().then(() => {
               }
             } catch (err) {
               console.log(err);
-              if (testType === "mcq") {
+              if (testType === "mcq" || testType === "dynamic_mcq") {
                 const shadowRoot =
                   document.getElementById("chat-element").shadowRoot;
                 const button = shadowRoot.getElementById(
@@ -3792,7 +3845,7 @@ loadExternalModule().then(() => {
       } catch (e) {
         console.log(e);
         await cancelTest(participantId); // cancelling session
-        if (testType === "mcq") {
+        if (testType === "mcq" || testType === "dynamic_mcq") {
           const shadowRoot = document.getElementById("chat-element").shadowRoot;
           const button = shadowRoot.getElementById(`mcq-option-${mcqFormId}`);
           // button.parentNode.removeChild(button)

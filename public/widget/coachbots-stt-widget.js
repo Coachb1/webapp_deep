@@ -852,10 +852,10 @@ async function setMcqVariablesStt() {
       formRadioStt;
 
     // // submitting response
-    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+    const testResponse = await fetch(`${baseURL2}/test-responses/`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -931,10 +931,10 @@ async function setMcqVariablesStt() {
     ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
 
     // // submitting response
-    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+    const testResponse = await fetch(`${baseURL2}/test-responses/`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -1072,7 +1072,7 @@ function sendEmail2() {
     {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
     }
@@ -2810,7 +2810,7 @@ loadExternalModule().then(() => {
                       {
                         method: "POST",
                         headers: {
-                          Authorization: `Basic ${createBasicAuthToken(
+                          Authorization: `Basic ${createBasicAuthToken2(
                             key2,
                             secret2
                           )}`,
@@ -2897,7 +2897,7 @@ loadExternalModule().then(() => {
                         {
                           method: "POST",
                           headers: {
-                            Authorization: `Basic ${createBasicAuthToken(
+                            Authorization: `Basic ${createBasicAuthToken2(
                               key2,
                               secret2
                             )}`,
