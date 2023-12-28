@@ -545,6 +545,7 @@ const resetAllVariablesStt = () => {
   senarioCase2 = "";
   senarioTitle2 = "";
   senarioMediaDescription2;
+  questionMediaLinkStt = null;
   responsesDone2 = false;
   userName2 = "";
   userEmail2 = "";
@@ -663,7 +664,10 @@ const handleProceedClickStt = async (choice) => {
               }
               else{
                 console.log(element)
-                appendMessage2(`<audio src=${element} controls autoplay>`)
+                appendMessage2(`<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                <source src=${element} type="audio/mpeg" />
+                Your browser does not support the audio element.
+                </audio></div>`)
               }
             });
           }else {
@@ -709,10 +713,10 @@ const handleProceedClickStt = async (choice) => {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              initialQuestionTextStt = `<div ><audio style="width: 100%;" controls autoplay>
-                                      <source src=${objectUrl} type="audio/mpeg" />
-                                      Your browser does not support the audio element.
-                                      </audio></div>`
+              initialQuestionTextStt = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+              <source src=${objectUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio></div>`
               console.log(initialQuestionTextStt)
 
             }
@@ -762,10 +766,10 @@ const handleProceedClickStt = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            initialQuestionTextStt = `<div ><audio style="width: 100%;" controls >
-                                    <source src=${objectUrl} type="audio/mpeg" />
-                                    Your browser does not support the audio element.
-                                    </audio></div>`
+            initialQuestionTextStt = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+            <source src=${objectUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+            </audio></div>`
           }
 
           if (responderName){
@@ -806,10 +810,10 @@ const handleProceedClickStt = async (choice) => {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              let audioCont = `<div ><audio style="width: 100%;" controls >
-                                      <source src=${objectUrl} type="audio/mpeg" />
-                                      Your browser does not support the audio element.
-                                      </audio></div>`
+              let audioCont = `<div ><audio style="min-width: 50vw !important;" controls>
+              <source src=${objectUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio></div>`
               if (responderName){
                 audioCont = responderName + audioCont
               }
@@ -874,10 +878,10 @@ const handleProceedClickStt = async (choice) => {
           const objectUrl = URL.createObjectURL(blob);
           
           console.log(objectUrl,'url')
-          const ttsNarration = `<div ><audio style="width: 100%;" controls autoplay>
-                                  <source src=${objectUrl} type="audio/mpeg" />
-                                  Your browser does not support the audio element.
-                                  </audio></div>`
+          const ttsNarration = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+          <source src=${objectUrl} type="audio/mpeg" />
+          Your browser does not support the audio element.
+          </audio></div>`
           const imageIdStt = `mediaImageStt${initialIndexStt}`
           const imageMapNameStt = `image-mapStt${initialIndexStt}`
           const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`
@@ -1024,7 +1028,10 @@ async function setMcqVariablesStt() {
             }
             else{
               console.log('audio',element)
-              questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
+              questionText = questionText + '\n' +(`<div ><audio style="min-width: 50vw !important;" controls autoplay>
+              <source src=${element} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio></div>`)
             }
           });
         }else {
@@ -1050,10 +1057,10 @@ async function setMcqVariablesStt() {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              questionText = `<div ><audio style="width: 100%;" controls autoplay>
-                                      <source src=${objectUrl} type="audio/mpeg" />
-                                      Your browser does not support the audio element.
-                                      </audio></div>`
+              questionText = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+              <source src=${objectUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+              </audio></div>`
               console.log(questionText)
 
             }
@@ -1088,10 +1095,10 @@ async function setMcqVariablesStt() {
         const objectUrl = URL.createObjectURL(blob);
         
         console.log(objectUrl,'url')
-        questionText = `<div ><audio style="width: 100%;" controls autoplay>
-                                <source src=${objectUrl} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`
+        questionText = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+        <source src=${objectUrl} type="audio/mpeg" />
+        Your browser does not support the audio element.
+        </audio></div>`
         console.log(questionText)
 
         
@@ -2139,10 +2146,10 @@ loadExternalModule().then(() => {
       const objectUrl = URL.createObjectURL(blob);
       
       console.log(objectUrl,'url')
-      const audioCont = `<div><audio style="width: 100%;" controls autoplay>
+      const audioCont = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
-      </audio> </div>`
+      </audio></div>`
 
       return audioCont
   }
@@ -2702,7 +2709,10 @@ loadExternalModule().then(() => {
                               }
                               else{
                                 console.log(element)
-                                questionText2 = questionText2 + '\n' +(`<audio src=${element} controls autoplay>`)
+                                questionText2 = questionText2 + '\n' +(`<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                                <source src=${element} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`)
                               }
                             });
                           }else {
@@ -2726,10 +2736,10 @@ loadExternalModule().then(() => {
                                 const objectUrl = URL.createObjectURL(blob);
                                 
                                 console.log(objectUrl,'url')
-                                questionText2 = `<div ><audio style="width: 100%;" controls autoplay>
-                                                        <source src=${objectUrl} type="audio/mpeg" />
-                                                        Your browser does not support the audio element.
-                                                        </audio></div>`
+                                questionText2 = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                                <source src=${objectUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`
                                 console.log(questionText2)
 
                               }
@@ -2768,10 +2778,10 @@ loadExternalModule().then(() => {
                           const objectUrl = URL.createObjectURL(blob);
                           
                           console.log(objectUrl,'url')
-                          questionText2 = `<div ><audio style="width: 100%;" controls autoplay>
-                                                  <source src=${objectUrl} type="audio/mpeg" />
-                                                  Your browser does not support the audio element.
-                                                  </audio></div>`
+                          questionText2 = `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                          <source src=${objectUrl} type="audio/mpeg" />
+                          Your browser does not support the audio element.
+                          </audio></div>`
                           console.log(questionText2)
 
                           
@@ -2905,7 +2915,10 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage2(
-                                  `<audio src=${element} controls autoplay>`
+                                  `<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                                  <source src=${element} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio></div>`
                                 );
                               }
                             });
@@ -3083,7 +3096,10 @@ loadExternalModule().then(() => {
                               }
                               else{
                                 console.log(element)
-                                appendMessage2(`<audio src=${element} controls autoplay>`)
+                                appendMessage2(`<div ><audio style="min-width: 50vw !important;" controls autoplay>
+                                <source src=${element} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`)
                               }
                             });
                           }else {
