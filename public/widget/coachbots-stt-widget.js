@@ -3052,7 +3052,20 @@ loadExternalModule().then(() => {
                       testType2 != "dynamic_discussion_thread" &&
                       testType2 != "coaching"
                     ) {
+                      let responderName;
+                      let strList = questionText2.replaceAll("*","").split(":")
+                      if (strList.length > 1){
+                        questionText2 = strList[1]
+                        responderName = `<b>${strList[0]}:</b><br>`
+                        
+                      }
+                      if(isImmersiveStt){
+                        questionText2 = await TTSContainerSTT(questionText2)
+                      }
 
+                      if (responderName){
+                        questionText2 = responderName + questionText2
+                      }
                       if (questionMediaLinkStt) {
                         console.log(questionText2);
                         let embeddingUrl = "";
@@ -3118,20 +3131,7 @@ loadExternalModule().then(() => {
                         }
                       if (questionText2){
 
-                        let responderName;
-                        let strList = questionText2.replaceAll("*","").split(":")
-                        if (strList.length > 1){
-                          questionText2 = strList[1]
-                          responderName = `<b>${strList[0]}:</b><br>`
-                          
-                        }
-                        if(isImmersiveStt){
-                          questionText2 = await TTSContainerSTT(questionText2)
-                        }
-
-                        if (responderName){
-                          questionText2 = responderName + questionText2
-                        }
+                        
                         console.log(`que_image ${questionIndex2 + 1}`)
                         if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
                           const questionpropName = `que_image ${questionIndex2 + 1}`

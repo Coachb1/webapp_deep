@@ -3817,7 +3817,21 @@ loadExternalModule().then(() => {
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
                     ) {
-                      
+                      let responderName;
+                      let strList = questionText.replaceAll("*","").split(":")
+                      if (strList.length > 1){
+                        questionText = strList[1]
+                        responderName = `<b>${strList[0]}:</b><br>`
+                        
+                      }
+                      if(isImmersive){
+                      questionText = await TTSContainer(questionText)
+                      }
+
+                      if (responderName){
+                        questionText = responderName + questionText
+                      }
+
                       if (questionMediaLink) {
                         console.log(questionText);
                         let embeddingUrl = "";
@@ -3882,21 +3896,7 @@ loadExternalModule().then(() => {
                           }
                         }
                       if (questionText){
-                        let responderName;
-                        let strList = questionText.replaceAll("*","").split(":")
-                        if (strList.length > 1){
-                          questionText = strList[1]
-                          responderName = `<b>${strList[0]}:</b><br>`
-                          
-                        }
-                        if(isImmersive){
-                        questionText = await TTSContainer(questionText)
-                        }
-
-                        if (responderName){
-                          questionText = responderName + questionText
-                        }
-
+                        
                         console.log(`que_image ${questionIndex + 1}`)
                         if( mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
                           const questionpropName = `que_image ${questionIndex + 1}`
