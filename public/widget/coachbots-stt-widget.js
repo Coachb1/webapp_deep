@@ -889,7 +889,6 @@ const handleProceedClickStt = async (choice) => {
              
           appendMessage2(`▪  ${ttsNarration}<br><br>
                           ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                          ▪  ${ttsNarration}
                           ▪ Question : <br> ${initialQuestionTextStt}`)
           setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
           console.log("IMAGE MAPPED WITH COORDS")
