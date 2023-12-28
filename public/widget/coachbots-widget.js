@@ -179,7 +179,7 @@ let recommendationsData = [
     },
     {
       title: "Navigating team dynamics: Aligning Team Direction",
-      code: "Q60LLMU",
+      code: "QKN7VPO",
     },
   ], // batch six
   [
@@ -191,7 +191,7 @@ let recommendationsData = [
     {
       title:
         "Interdepartmental collaboration : Harmonizing Data Interpretations",
-      code: "Q8LUY93",
+      code: "QP22B9R",
     },
   ], // batch seven
 ];
