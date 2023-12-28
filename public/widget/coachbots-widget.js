@@ -1244,6 +1244,7 @@ coords.map((item) => {
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
+  console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
   questionIndex = 0;
@@ -2560,6 +2561,7 @@ loadExternalModule().then(() => {
           await getSessionStatus(sessionId);
 
           if (sessionStatus != "in_progress") {
+            console.log('sessionStatus',sessionStatus,sessionId)
             signals.onResponse({
               html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
             });
