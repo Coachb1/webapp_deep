@@ -1883,7 +1883,7 @@ loadExternalModule().then(() => {
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer.style.width = "80vw";
-    chatContainer.style.right = "3rem";
+    chatContainer.style.left = "3rem";
     chatContainer.style.height = "70vh";
     chatElementRef.style.height = "500px";
     chatElementRef.style.width = "80vw";
