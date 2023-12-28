@@ -1380,12 +1380,12 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
-function sendEmail2() {
+function sendEmail2(session_id,reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams22 = new URLSearchParams({
-    test_attempt_session_id: sessionId2,
-    report_url: globalReportUrl2,
+    test_attempt_session_id: session_id,
+    report_url: reportUrl,
     is_whatsapp: false,
   });
 
@@ -1403,7 +1403,7 @@ function sendEmail2() {
     .then((data) => {
       emailSent2 = data.status;
       console.log("email sent");
-      resetAllVariablesStt();
+      // resetAllVariablesStt();
 
     })
     .catch((err) => console.log(err));
@@ -1444,7 +1444,7 @@ async function submitEmailAndName2() {
     .then((data) => {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
-      sendEmail2();
+      sendEmail2(sessionId2,globalReportUrl2);
       // append custom message to chat
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
@@ -1463,6 +1463,7 @@ async function submitEmailAndName2() {
       if (recommDiv) {
         appendMessage2(recommDiv);
       }
+      resetAllVariablesStt();
     })
     .catch((err) => {
       console.log(err);
