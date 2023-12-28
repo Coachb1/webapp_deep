@@ -4369,6 +4369,7 @@ const openChatContainer = () => {
   let mediaRecorder;
   let isRecording = false;
   let audioChunks = [];
+  let stream;
 
   user = window.user;
   console.log(" User details ", user);
@@ -4376,7 +4377,7 @@ const openChatContainer = () => {
 
   async function startRecording() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
       mediaRecorder = new MediaRecorder(stream);
@@ -4428,6 +4429,7 @@ const openChatContainer = () => {
 
   if (sendBtn) {
     sendBtn.addEventListener("click", () => {
+      stream.getTracks().forEach(track => track.stop())
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
         isRecording = false
