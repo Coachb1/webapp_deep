@@ -3,6 +3,7 @@ const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
 const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -23,6 +24,7 @@ let questionIndex2 = 0;
 
 let gShadowRoot2;
 let globalReportUrl2 = "";
+let conversation_id2;
 
 //audio configs
 let display_name2;
@@ -52,6 +54,7 @@ let questionLength2;
 let questionData2;
 let senarioDescription2;
 let senarioTitle2;
+let senarioCase2;
 let senarioMediaDescription2;
 let responsesDone2 = false;
 let userName2 = "";
@@ -71,6 +74,11 @@ let isSessionActiveStt = false;
 let recommendationsStt = '';
 let isTestSignedInStt;
 let clientNameStt;
+let questionMediaLinkStt;
+let isImmersiveStt = false;
+let mediaPropsStt;
+let questionImageDataStt;
+let initialIndexStt;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -177,10 +185,203 @@ const sampleTestCodesStt = {
 };
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
-  const token2 =
-    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+    const token2 =
+      "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+//   const token2 =
+//     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
+
+function getCredentialsForm2() {
+  let credentialsForm2;
+
+  if (window.innerWidth > 868) {
+    console.log("using des Form");
+    credentialsForm2 = `
+      <div style="min-width: 730px;">
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: row;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: center;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 45%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1.3rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  } else {
+    console.log("NOT using des Form");
+    credentialsForm2 = `
+      <div>
+      <b>For obtaining your report, please submit the following details.</b>
+      <div
+        id="input-form2"
+        style="
+        display: flex;
+        flex-direction: column;
+        min-width: 100%;
+        gap: 1rem;
+        align-items: flex-start;
+      "
+      >
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="name" style="margin: 12px 0 4px 0">Name</label>
+          <input
+            type="text"
+            id="input-name2"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; width: 100%;">
+          <label for="email" style="margin: 12px 0 4px 0">Email</label>
+          <input
+            id="input-email2"
+            type="email"
+            style="
+              padding: 8px;
+              margin-bottom: 4px;
+              border-radius: 4px;
+              border: 1px solid rgb(188, 188, 188);
+            "
+          />
+        </div>
+        <button
+          style="
+            height: fit-content;
+            width: fit-content;
+            padding: 8px;
+            margin-bottom: -1rem;
+            border: 1px solid rgb(188, 188, 188);
+            border-radius: 20px;
+            color: white;
+            background-color: #1984ff;
+          "
+          id="submit-btn2"
+          onclick="submitEmailAndName2()"
+        >
+          Submit
+        </button>
+      </div>
+    </div>`;
+  }
+  return credentialsForm2;
+}
+
+//* generate a component for coaching question
+function getCoachingQuestionData2(questionText) {
+  let randomId2 = Math.floor(Math.random() * 1000000);
+  randomId2 = `coaching-question-${randomId2}`;
+  let parts = questionText.split(':');
+  questionText = parts.length > 1 ? parts[1].trim() : questionText;
+  return `
+            ${questionText}
+            <div id="${randomId2}">
+              <button style="margin-top:5px; color:white; width:45%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:green;" onclick="handleContinueCoachingClick2('${randomId2}')">Continue</button>
+              <button style="margin-top:5px; width:45%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndCoachingClick2('${randomId2}')">End Session</button>
+            </div>`;
+}
+
+const handleContinueCoachingClick2 = async (randomId) => {
+  console.log("continue coaching button clicked", randomId);
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const target = gShadowRoot2.getElementById(randomId);
+  target.innerHTML = "";
+};
+
+//* handle end coaching button click
+const handleEndCoachingClick2 = async (randomId) => {
+  console.log("end coaching button clicked");
+
+  const response = await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: participantId2,
+      report_type: "coachingSessionReport",
+      test_attempt_session_id: sessionId2,
+    }),
+  });
+  const responseData = await response.json();
+  globalReportUrl2 = responseData.url;
+  console.log("Response from Coaching Report : ", globalReportUrl2);
+
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const target = gShadowRoot2.getElementById(randomId);
+  target.innerHTML = "";
+
+  if (window.user) {
+    // append custom message to chat
+    appendMessage2(
+      `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+    );
+    //   gShadowRoot.getElementById(
+    //     `mcq-option-${mcqFormId}`
+    //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
+    //   appendMessage(message);
+
+    //* send message to start new session
+    appendMessage2(
+      "<b>Please enter another access code to start a new interaction.</b>"
+    );
+    submitEmailAndName2();
+  } else {
+    appendMessage2(getCredentialsForm2());
+  }
+};
+
 function createMessageNode2(message) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
@@ -205,88 +406,209 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 100);
 }
 
-  // to reset all variables
-  const resetAllVariablesStt = () => {
-    //* reset all variables : start
-    questionText2 = "";
-    reportType2 = "interactionSessionReport";
-    questionIndex2 = 0;
-    questionId2 = null;
-    userResponse2 = "";
-
-    testId2 = null;
-    resQuestionNumber2 = null;
-    questionLength2 = null;
-    questionData2 = null;
-
-    is_free2 = true;
-    // responseProcessedQuestion = 0;
-    senarioDescription2 = "";
-    senarioTitle2 = "";
-    senarioMediaDescription2;
-    responsesDone2 = false;
-    userName2 = "";
-    userEmail2 = "";
-    reportUrl2 = null;
-    testCodeList2 = [];
-    isRepeatStatus2 = false;
-    testPrevilage2 = "";
-
-    //global variables
-    sessionId2 = "";
-    testCode2 = null;
-    codeAvailabilityUserChoice2 = false;
-    optedNo2 = false;
-    globalReportUrl2 = null;
-
-    //* reset all variables : end
-    codeAvailabilityUserChoice2 = true;
-    mcqQustionIndexStt = 0;
-    mcqFormIdStt;
-    globalQuestionDataStt;
-    globalQuestionLengthStt;
-    testType2 = '';
-    isHindiStt = false;
-    testUIInfoStt;
-    isProceedStt = '';
-    isSessionActiveStt = false;
-    recommendationsStt="";
-    isTestSignedInStt;
-    clientNameStt = "";
-
-  };
-
-  function findRelatedItemsStt(data, targetCode) {
-    let matchingItems = [];
-    let targetTitle = '';
-
-    for (const sublist of data) {
-        for (const item of sublist) {
-            if (item.code === targetCode) {
-                targetTitle = item.title;
-            }else{
-            matchingItems.push(item);
-            }
-        }
-
-        if (matchingItems.length > 0 && targetTitle) {
-            break;
-        } else {
-            matchingItems = [];
-        }
-    }
-    console.log('mat',matchingItems,targetTitle,targetCode,data)
-    let resultDiv = "<b>System Recommendation: If you like this scenario you can try:<b> <br>"
-    matchingItems.forEach((item)=>{
-      resultDiv += `<strong>Title:</strong> ${item.title} <br><strong>Code:</strong> ${item.code} <br>`;
-    })
-
-    return matchingItems.length > 0 && targetTitle ? `<div>${resultDiv}</div>` : null;
+//image hover handlers - start
+function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
+  // console.log(tooltipIdStt)
+  const shadowRootStt =
+  document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt =
+    shadowRootStt.getElementById(tooltipIdStt);
+  tooltipStt.innerHTML = content;
+  updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+  tooltipStt.style.display = "block";
   }
 
-  const handleProceedClickStt = (choice) => {
+function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
+  // console.log('update',tooltipIdStt)
 
-    if (choice == 'Yes'){
+  const shadowRootStt =
+    document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt =
+    shadowRootStt.getElementById(tooltipIdStt);
+
+  const mouseX = event.clientX + window.pageXOffset;
+  const mouseY = event.clientY + window.pageYOffset;
+
+  if (window.innerWidth > 760) {
+    tooltipStt.style.left = event.clientX - 120 + "px" // mouseX - 120 + "px" //event.clientX //  // + xOffset - 120 + "px";
+    tooltipStt.style.top = event.clientY - 80  + "px" //mouseY - 80 + "px" //event.clientY // //+ yOffset - 170 + "px";
+  } else {
+    tooltipStt.style.left = event.clientX - 90 + "px" 
+    tooltipStt.style.top = event.clientY - 180  + "px" 
+  }
+}
+
+function hideTooltipStt(tooltipIdStt) {
+  // console.log('hide',tooltipIdStt)
+
+  const shadowRootStt =
+  document.getElementById("chat-element2").shadowRoot;
+const tooltipStt =
+  shadowRootStt.getElementById(tooltipIdStt);
+  // console.log(tooltipStt)
+  tooltipStt.style.display = "none";
+}
+//image hover handlers - end
+
+const setHoverPointsStt = (coordsStt, imageIdStt, imageMapNameStt, tooltipIdStt) => {
+  //hover configs
+  const shadowRootForImageStt =
+  document.getElementById("chat-element2").shadowRoot;
+const descriptionMediaImageStt =
+  shadowRootForImageStt.getElementById(imageIdStt);
+
+// -map element
+const mapElementStt = document.createElement("map");
+mapElementStt.setAttribute("name", imageMapNameStt);
+shadowRootForImageStt.appendChild(mapElementStt);
+
+// -overlay element
+const overlayElementStt = document.createElement("div");
+overlayElementStt.setAttribute(
+  "class",
+  "image-overlayStt"
+);
+shadowRootForImageStt.appendChild(overlayElementStt);
+
+// -tooltip
+const tooltipELementStt = document.createElement("div");
+tooltipELementStt.setAttribute("id", tooltipIdStt);
+tooltipELementStt.setAttribute(
+  "class",
+  "custom-tooltipStt"
+);
+tooltipELementStt.style.position = "absolute";
+tooltipELementStt.style.backgroundColor = "#333";
+tooltipELementStt.style.color = "#fff";
+tooltipELementStt.style.padding = "5px";
+tooltipELementStt.style.borderRadius = "5px";
+tooltipELementStt.style.display = "none";
+shadowRootForImageStt.appendChild(tooltipELementStt);
+
+
+coordsStt.map((item) => {
+  console.log(item)
+  let coord;
+  if(window.innerWidth < 768){
+    coord = item.coord
+    .split("|")[1].replace(/\./g, ',').split(",");
+  } else {
+    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
+  }
+
+  const areaElementStt = document.createElement("area");
+  areaElementStt.setAttribute("coords", coord);
+  areaElementStt.setAttribute("shape", "rect");
+  // areaElementStt.setAttribute("title", item.title);
+
+  // console.log(areaElementStt.addEventListener())
+
+  mapElementStt.appendChild(areaElementStt);
+
+  areaElementStt.addEventListener(
+    "mouseover",
+    (event) => {
+      showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
+    }
+  );
+
+  areaElementStt.addEventListener(
+    "mousemove",
+    (event) => {
+      updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
+    }
+  );
+
+  areaElementStt.addEventListener("mouseout", () => {
+    hideTooltipStt(tooltipIdStt);
+  });
+});
+}
+
+// to reset all variables
+const resetAllVariablesStt = () => {
+  //* reset all variables : start
+  questionText2 = "";
+  reportType2 = "interactionSessionReport";
+  questionIndex2 = 0;
+  questionId2 = null;
+  userResponse2 = "";
+
+  testId2 = null;
+  resQuestionNumber2 = null;
+  questionLength2 = null;
+  questionData2 = null;
+
+  is_free2 = true;
+  // responseProcessedQuestion = 0;
+  senarioDescription2 = "";
+  senarioCase2 = "";
+  senarioTitle2 = "";
+  senarioMediaDescription2;
+  responsesDone2 = false;
+  userName2 = "";
+  userEmail2 = "";
+  reportUrl2 = null;
+  testCodeList2 = [];
+  isRepeatStatus2 = false;
+  testPrevilage2 = "";
+
+  //global variables
+  sessionId2 = "";
+  testCode2 = null;
+  codeAvailabilityUserChoice2 = false;
+  optedNo2 = false;
+  globalReportUrl2 = null;
+
+  //* reset all variables : end
+  codeAvailabilityUserChoice2 = true;
+  mcqQustionIndexStt = 0;
+  mcqFormIdStt;
+  globalQuestionDataStt;
+  globalQuestionLengthStt;
+  testType2 = "";
+  isHindiStt = false;
+  testUIInfoStt;
+  isProceedStt = "";
+  isSessionActiveStt = false;
+  recommendationsStt = "";
+  isTestSignedInStt;
+  clientNameStt = "";
+};
+
+function findRelatedItemsStt(data, targetCode) {
+  let matchingItems = [];
+  let targetTitle = "";
+
+  for (const sublist of data) {
+    for (const item of sublist) {
+      if (item.code === targetCode) {
+        targetTitle = item.title;
+      } else {
+        matchingItems.push(item);
+      }
+    }
+
+    if (matchingItems.length > 0 && targetTitle) {
+      break;
+    } else {
+      matchingItems = [];
+    }
+  }
+  console.log("mat", matchingItems, targetTitle, targetCode, data);
+  let resultDiv =
+    "<b>System Recommendation: If you like this scenario you can try:<b> <br>";
+  matchingItems.forEach((item) => {
+    resultDiv += `<strong>Title:</strong> ${item.title} <br><strong>Code:</strong> ${item.code} <br>`;
+  });
+
+  return matchingItems.length > 0 && targetTitle
+    ? `<div>${resultDiv}</div>`
+    : null;
+}
+      
+const handleProceedClickStt = async (choice) => {
+  if (choice == 'Yes'){
       isProceedStt = 'true'
       const gshadowRoot =
                 document.getElementById("chat-element2").shadowRoot;
@@ -296,57 +618,305 @@ function appendMessage2(message2) {
       que_msg.innerHTML = "Please Wait..."; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
-      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-      const is_link = linkPattern.test(initialQuestionTextStt);
-
-      if (is_link) {
-        console.log(initialQuestionTextStt);
+            
+      if (questionMediaLinkStt && testType2 != 'mcq') {
+        console.log(questionMediaLinkStt);
         let embeddingUrl = "";
-        if (initialQuestionTextStt.length > 0) {
-          if (initialQuestionTextStt.includes("youtube.com")) {
-            const videoId = initialQuestionTextStt.split("v=")[1];
+        
+        if (questionMediaLinkStt.length > 0) {
+          if (questionMediaLinkStt.includes("youtube.com")) {
+            const videoId = questionMediaLinkStt.split("v=")[1];
             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-          } else if (initialQuestionTextStt.includes("vimeo.com")) {
-            const videoId = initialQuestionTextStt.split("/").pop();
+          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+            const videoId = questionMediaLinkStt.split("/").pop();
             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-          } else if (initialQuestionTextStt.includes("twitter.com")) {
-            embeddingUrl = `https://twitframe.com/show?url=${initialQuestionTextStt}`;
+          } else if (questionMediaLinkStt.includes("twitter.com")) {
+            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+          }
+          
+          if (embeddingUrl){
+              appendMessage2(`▪ Media <br>  <iframe
+                            allow="autoplay; encrypted-media; fullscreen;"
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                            src=${embeddingUrl}
+                            frameborder="0"
+                            allowfullscreen
+                          >
+                    `)
+            }
+
+          const urlList = questionMediaLinkStt.split(',')
+          console.log("list",urlList)
+          if (urlList.length > 1){
+            urlList.forEach(element => {
+              element = element.trim()
+              if (element.includes('docs.google.com')){
+                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                console.log(url)
+                appendMessage2(`<iframe src=${url}
+                                frameborder="0" 
+                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                allowfullscreen="true" 
+                                mozallowfullscreen="true" 
+                                webkitallowfullscreen="true"
+                                ></iframe>`)
+              }
+              else{
+                console.log(element)
+                appendMessage2(`<audio src=${element} controls autoplay>`)
+              }
+            });
+          }else {
+            if (questionMediaLinkStt.includes('docs.google.com')){
+              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url)
+              appendMessage2(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+          }
+        }
+        
+        if (initialQuestionTextStt){
+          const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+          const is_link = linkPattern.test(initialQuestionTextStt);
+          if (!is_link){
+            let strList = initialQuestionTextStt.replaceAll("*","")
+        
+            strList = strList.split(":",2)
+            let responderName;
+            if (strList.length >1){
+              initialQuestionTextStt = strList[1]
+              responderName = strList[0]
+            }
+            if(isImmersiveStt){
+              console.log(initialQuestionTextStt)
+              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
+              const response = await fetch(urltts, {
+                method: "GET",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                },
+              });
+        
+              const blob = await response.blob();
+              console.log('respnse', blob);
+        
+              const objectUrl = URL.createObjectURL(blob);
+              
+              console.log(objectUrl,'url')
+              initialQuestionTextStt = `<div ><audio style="width: 100%;" controls autoplay>
+                                      <source src=${objectUrl} type="audio/mpeg" />
+                                      Your browser does not support the audio element.
+                                      </audio></div>`
+              console.log(initialQuestionTextStt)
+
+            }
+            console.log("last",initialQuestionTextStt)
+            if (responderName){
+              initialQuestionTextStt = `<b>${responderName}:</b><br>` +`${initialQuestionTextStt}`
+              
+            }
+
+            appendMessage2(initialQuestionTextStt)
+          }
+        }
+      } else{
+        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && testType2 != 'mcq' && senarioCase2 != "process_training" ){
+          let responderName;
+          
+          if (testType2 === 'dynamic_discussion_thread'){
+            if (initialQuestionTextStt.includes(":")){
+              initialQuestionTextStt = initialQuestionTextStt.replace(/<\/?p>/g, '');
+              const strList = initialQuestionTextStt.split(":",2)
+              responderName = `<b>${strList[0]}:</b><br>`
+              initialQuestionTextStt = strList[1]
+            } else{
+              responderName = `<b>System:</b><br>`
+
+            }
+          } else{
+            let strLIst = initialQuestionTextStt.replaceAll("*","").split(":",2)
+            if(strLIst.length>1){
+              initialQuestionTextStt = strLIst[1]
+              responderName = `<b>${strLIst[0]}:</b><br>`
+            }
+          }
+          if(isImmersiveStt){
+            console.log('dyna',initialQuestionTextStt)
+            const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
+            const response = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+            });
+      
+            const blob = await response.blob();
+            console.log('respnse', blob);
+      
+            const objectUrl = URL.createObjectURL(blob);
+            
+            console.log(objectUrl,'url')
+            initialQuestionTextStt = `<div ><audio style="width: 100%;" controls >
+                                    <source src=${objectUrl} type="audio/mpeg" />
+                                    Your browser does not support the audio element.
+                                    </audio></div>`
           }
 
-          initialQuestionTextStt = initialQuestionTextStt.replace(
-            /(http[s]?:\/\/[^\s]+)/g,
-            ""
-          );
+          if (responderName){
+            initialQuestionTextStt = responderName + initialQuestionTextStt
+          }
 
-          initialQuestionTextStt = `▪ Media <br>  <iframe
-                          allow="autoplay; encrypted-media; fullscreen;"
-                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                          src=${embeddingUrl}
-                          frameborder="0"
-                          allowfullscreen
-                        >
-        `;
-        }
-      }
-      appendMessage2(initialQuestionTextStt)
-    }else {
-      resetAllVariablesStt();
-      const gshadowRoot =
-                document.getElementById("chat-element2").shadowRoot;
-      const msg = gshadowRoot.getElementById('proceed-option2')
-      // button.parentNode.removeChild(button)
-      const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-      // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
-      appendMessage2(
-        "<b>Your session is terminated. You can restart again!</b>"
-      );
+          appendMessage2(initialQuestionTextStt)
+          
+        } else if (testType2 === "orchestrated_conversation"){
+          const regex = /<p>(.*?)<\/p>/g;
+
+          // Extracting text between <p> and </p> tags
+          const matches = Array.from(initialQuestionTextStt.matchAll(regex), match => match[1].trim());
+
+          console.log('matches',matches)
+          // Separating each extracted text by ":"
+          const separatedText = matches.map(match => match.split(':',2));
+          console.log('speratedTExt',separatedText)
+
+          // Displaying the separated text
+          if (isImmersiveStt){
+            const audioPromises = separatedText.map(async entry => {
+
+              const responderName = `<b>${entry[0]}:</b><br>`
+              console.log(entry)
+              const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`
+
+              const response = await fetch(url, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+              });
       
-    }
-    
-  };
+              const blob = await response.blob();
+              console.log('respnse', blob);
+        
+              const objectUrl = URL.createObjectURL(blob);
+              
+              console.log(objectUrl,'url')
+              let audioCont = `<div ><audio style="width: 100%;" controls >
+                                      <source src=${objectUrl} type="audio/mpeg" />
+                                      Your browser does not support the audio element.
+                                      </audio></div>`
+              if (responderName){
+                audioCont = responderName + audioCont
+              }
 
+              return audioCont;
+              });
+
+            console.log(audioPromises,'audioPromises')
+
+            const audioContents = await Promise.all(audioPromises);
+
+            audioContents.forEach(content => {
+                appendMessage2(content);
+            });
+          } else{
+            separatedText.forEach(entry => {
+              const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`
+              appendMessage2(container)
+
+            })
+
+
+          }
+
+        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${initialIndexStt}`)){
+          const questionpropName = `que_image ${initialIndexStt}`
+
+          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+          let narration;
+          let coords = []
+          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+          coordAndTitleNarrationList.forEach(element =>{
+            if (typeof element === 'string'){
+              narration = element
+            } else{
+              coords.push(element)
+            }
+          })
+
+          const testImage = {
+            image: url,
+            coords: coords,
+            narration: narration
+          }
+          console.log(testImage)
+          const imageUrlStt = testImage.image
+          const coordsStt = testImage.coords
+          const narrationStt = testImage.narration
+
+          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${narrationStt}`
+          const response = await fetch(urltts, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            },
+          });
+    
+          const blob = await response.blob();
+          console.log('respnse', blob);
+    
+          const objectUrl = URL.createObjectURL(blob);
+          
+          console.log(objectUrl,'url')
+          const ttsNarration = `<div ><audio style="width: 100%;" controls autoplay>
+                                  <source src=${objectUrl} type="audio/mpeg" />
+                                  Your browser does not support the audio element.
+                                  </audio></div>`
+          const imageIdStt = `mediaImageStt${initialIndexStt}`
+          const imageMapNameStt = `image-mapStt${initialIndexStt}`
+          const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`
+
+             
+          appendMessage2(`▪  ${ttsNarration}<br><br>
+                          ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          ▪  ${ttsNarration}
+                          ▪ Question : <br> ${initialQuestionTextStt}`)
+          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+          console.log("IMAGE MAPPED WITH COORDS")
+
+          // questionText2 = questionText2 + imageDiv 
+        }else{
+
+          if(testType2 != 'mcq'){
+            let strList = initialQuestionTextStt.replaceAll("*","")
+          strList = strList.split(":",2)
+          if (strList.length >1){
+            initialQuestionTextStt = strList[1]
+            initialQuestionTextStt = `<b>${strList[0]}:</b><br>` +`<p>${initialQuestionTextStt}</p>`
+          }}
+          appendMessage2(initialQuestionTextStt)
+        }
+      } 
+      
+
+  } else {
+    resetAllVariablesStt();
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    appendMessage2("<b>Your session is terminated. You can restart again!</b>");
+  }
+};
 
 //* handle MCQ type test : start
 async function setMcqVariablesStt() {
@@ -388,9 +958,19 @@ async function setMcqVariablesStt() {
       (question) => question.mcq_options
     )[0];
     const optionName = Object.keys(mcqOptionsStt);
-    const questionText = matchingQuestionsStt.map(
+    let questionText;
+    questionText = matchingQuestionsStt.map(
       (question) => question.question
     )[0];
+
+    const questionMedia = matchingQuestionsStt.map(
+      (question) => question.media_link
+    )[0];
+    
+    let queImageData;
+    if (mediaPropsStt && mediaPropsStt[`question_image ${responseOptionStt}`]){
+      queImageData = [mediaPropsStt[`question_image ${responseOptionStt}`],mediaPropsStt[`question_image_mobile ${responseOptionStt}`]]
+    }
 
     const newOption1NameStt = optionName[0];
     const newOption2NameStt = optionName[1];
@@ -403,6 +983,121 @@ async function setMcqVariablesStt() {
       newOption1TextStt,
       newOption2TextStt
     );
+    if (questionMedia) {
+      let embeddingUrl = "";
+      if (questionMedia.length > 0) {
+        if (questionMedia.includes("youtube.com")) {
+          const videoId = questionMedia.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMedia.includes("vimeo.com")) {
+          const videoId = questionMedia.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMedia.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
+        }
+
+        if (embeddingUrl){
+        questionText = `▪ Media <br>  <iframe
+                        allow="autoplay; encrypted-media; fullscreen;"
+                        style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                        src=${embeddingUrl}
+                        frameborder="0"
+                        allowfullscreen
+                      >
+        `;
+        }
+        const urlList = questionMedia.split(',')
+        console.log("list",urlList)
+        if (urlList.length > 1){
+          urlList.forEach(element => {
+            element = element.trim()
+            if (element.includes('docs.google.com')){
+              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+              console.log(url,"googelsheet")
+              questionText = questionText + '\n' +(`<iframe src=${url}
+                              frameborder="0" 
+                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                              allowfullscreen="true" 
+                              mozallowfullscreen="true" 
+                              webkitallowfullscreen="true"
+                              ></iframe>`)
+            }
+            else{
+              console.log('audio',element)
+              questionText = questionText + '\n' +(`<audio src=${element} controls autoplay>`)
+            }
+          });
+        }else {
+          if (questionMedia.includes('docs.google.com')){
+            let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+            console.log(url,'google')
+            if(isImmersiveStt){
+              questionText = questionText.replaceAll(":","")
+              console.log('first', questionText)
+
+              
+              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText}`
+              const response = await fetch(urltts, {
+                method: "GET",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                },
+              });
+        
+              const blob = await response.blob();
+              console.log('respnse', blob);
+        
+              const objectUrl = URL.createObjectURL(blob);
+              
+              console.log(objectUrl,'url')
+              questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                      <source src=${objectUrl} type="audio/mpeg" />
+                                      Your browser does not support the audio element.
+                                      </audio></div>`
+              console.log(questionText)
+
+            }
+            questionText = questionText +(`<iframe src=${url}
+                            frameborder="0" 
+                            style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                            allowfullscreen="true" 
+                            mozallowfullscreen="true" 
+                            webkitallowfullscreen="true"
+                            ></iframe>`)
+          }
+        }
+        }
+      }
+    
+      if(isImmersiveStt && !questionMedia){
+        questionText = questionText.replaceAll(":","")
+        console.log('first', questionText)
+
+        
+        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText}`
+        const response = await fetch(urltts, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
+        });
+  
+        const blob = await response.blob();
+        console.log('respnse', blob);
+  
+        const objectUrl = URL.createObjectURL(blob);
+        
+        console.log(objectUrl,'url')
+        questionText = `<div ><audio style="width: 100%;" controls autoplay>
+                                <source src=${objectUrl} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                                </audio></div>`
+        console.log(questionText)
+
+        
+      }
+
+    
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -426,10 +1121,10 @@ async function setMcqVariablesStt() {
       formRadioStt;
 
     // // submitting response
-    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+    const testResponse = await fetch(`${baseURL2}/test-responses/`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -497,139 +1192,18 @@ async function setMcqVariablesStt() {
     //   </div>
     // </div>`;
 
-    let credentialsForm2;
+    let credentialsForm2 = getCredentialsForm2();
 
-    if (window.innerWidth > 868) {
-      console.log("using des Form");
-      credentialsForm2 = `
-      <div style="min-width: 730px;">
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: row;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: center;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 45%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            margin-bottom: -1.3rem;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-    } else {
-      console.log("NOT using des Form");
-      credentialsForm2 = `
-      <div>
-      <b>For obtaining your report, please submit the following details.</b>
-      <div
-        id="input-form2"
-        style="
-        display: flex;
-        flex-direction: column;
-        min-width: 100%;
-        gap: 1rem;
-        align-items: flex-start;
-      "
-      >
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="name" style="margin: 12px 0 4px 0">Name</label>
-          <input
-            type="text"
-            id="input-name2"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <div style="display: flex; flex-direction: column; width: 100%;">
-          <label for="email" style="margin: 12px 0 4px 0">Email</label>
-          <input
-            id="input-email2"
-            type="email"
-            style="
-              padding: 8px;
-              margin-bottom: 4px;
-              border-radius: 4px;
-              border: 1px solid rgb(188, 188, 188);
-            "
-          />
-        </div>
-        <button
-          style="
-            height: fit-content;
-            width: fit-content;
-            padding: 8px;
-            margin-bottom: -1rem;
-            border: 1px solid rgb(188, 188, 188);
-            border-radius: 20px;
-            color: white;
-            background-color: #1984ff;
-          "
-          id="submit-btn2"
-          onclick="submitEmailAndName2()"
-        >
-          Submit
-        </button>
-      </div>
-    </div>`;
-    }
-
-     
     console.log("user logged in, so sending email");
     gShadowRoot2.getElementById(
       `mcq-option-stt-${mcqFormIdStt}`
     ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
-    
+
     // // submitting response
-    const testResponse = await fetch(`${baseURL}/test-responses/`, {
+    const testResponse = await fetch(`${baseURL2}/test-responses/`, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -649,22 +1223,24 @@ async function setMcqVariablesStt() {
 
     const testResponseData = await testResponse.json();
     console.log("last", testResponseData);
-    const res = await fetch(`${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${test_attempt_session_id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${test_attempt_session_id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const isCheck = await res.json()
-    console.log(isCheck)
+    const isCheck = await res.json();
+    console.log(isCheck);
 
-    if (!isCheck.check){
-      console.log('failed to save session data', isCheck)
+    if (!isCheck.check) {
+      console.log("failed to save session data", isCheck);
       if (testType2 === "mcq") {
-        const shadowRoot =
-          document.getElementById("chat-element2").shadowRoot;
+        const shadowRoot = document.getElementById("chat-element2").shadowRoot;
         const button = shadowRoot.getElementById(
           `mcq-option-stt-${mcqFormIdStt}`
         );
@@ -676,8 +1252,7 @@ async function setMcqVariablesStt() {
         button.parentNode.replaceChild(thankYouMessage, button);
       }
       if (isProceedStt === "false") {
-        const gshadowRoot =
-          document.getElementById("chat-element2").shadowRoot;
+        const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
         const msg = gshadowRoot.getElementById("proceed-option2");
         // button.parentNode.removeChild(button)
         const que_msg = document.createElement("div");
@@ -687,9 +1262,11 @@ async function setMcqVariablesStt() {
       }
 
       resetAllVariablesStt();
-      
-      appendMessage2("<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>")
-      
+
+      appendMessage2(
+        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+      );
+
       return;
     }
 
@@ -698,8 +1275,6 @@ async function setMcqVariablesStt() {
       gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
         credentialsForm2;
     }
-
-    
 
     await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
       method: "POST",
@@ -736,15 +1311,15 @@ async function setMcqVariablesStt() {
         }
       });
 
-      // const urlObject = new URL(reportUrl2);
-      // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+    // const urlObject = new URL(reportUrl2);
+    // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
 
-      // const resp = await fetch(baseurl)
-      // if (!resp.ok){
-      //   appendMessage2(
-      //     "<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>"
-      //   )
-      // }
+    // const resp = await fetch(baseurl)
+    // if (!resp.ok){
+    //   appendMessage2(
+    //     "<p style='font-size: 14px;color: #991b1b;'><b>Our report server is currently down. Please try again.</b>.</p>"
+    //   )
+    // }
   }
 }
 
@@ -766,7 +1341,7 @@ function sendEmail2() {
     {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
         "Content-Type": "application/json",
       },
     }
@@ -775,6 +1350,8 @@ function sendEmail2() {
     .then((data) => {
       emailSent2 = data.status;
       console.log("email sent");
+      resetAllVariablesStt();
+
     })
     .catch((err) => console.log(err));
 }
@@ -829,9 +1406,9 @@ async function submitEmailAndName2() {
           html: "<b>Please enter another access code to start a new interaction.</b>",
         });
       }
-      const recommDiv =findRelatedItemsStt(recommendationsDataStt,testCode2)
-      if (recommDiv){
-        appendMessage2(recommDiv)
+      const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
+      if (recommDiv) {
+        appendMessage2(recommDiv);
       }
     })
     .catch((err) => {
@@ -887,13 +1464,13 @@ function handleSurpriseMeButtonClick2() {
   //   testCode = randomChallenge.test_code;
   //   codeAvailabilityUserChoice = true;
   console.log("random challenge :==>", randomChallenge2);
-  testCode2 = randomChallenge2.trim()
+  testCode2 = randomChallenge2.trim();
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   // gShadowRoot2.getElementById("surprise-button").disabled = true;
 
-  // removing button 
-  const msg = gShadowRoot2.getElementById('surprise-button')
+  // removing button
+  const msg = gShadowRoot2.getElementById("surprise-button");
   // button.parentNode.removeChild(button)
   const que_msg = document.createElement("div");
   que_msg.innerHTML = "Please Wait..."; // You can customize the message here
@@ -902,7 +1479,8 @@ function handleSurpriseMeButtonClick2() {
 
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = sampleTestCodesStt[randomChallenge2];
+    gShadowRoot2.getElementById("text-input").textContent =
+      sampleTestCodesStt[randomChallenge2];
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -1228,7 +1806,6 @@ loadExternalModule().then(() => {
     closeFromTopp2.style.top = "0.2rem";
   }
 
-
   let credentialsForm2;
   if (window.innerWidth > 868) {
     console.log("using des Form");
@@ -1381,8 +1958,6 @@ loadExternalModule().then(() => {
     },
   };
 
-  
-
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
@@ -1514,9 +2089,9 @@ loadExternalModule().then(() => {
       const resp_json = await response.json();
       console.log(resp_json);
       try {
-        if (rule === 'my_lib'){
-          return resp_json["data"][rule]
-        }else {
+        if (rule === "my_lib") {
+          return resp_json["data"][rule];
+        } else {
           return resp_json["data"][rule].split(",");
         }
       } catch (error) {
@@ -1542,13 +2117,35 @@ loadExternalModule().then(() => {
 
       const resp_json = await response.json();
       console.log(resp_json);
-      return resp_json.check
-      
-      
+      return resp_json.check;
     } catch (error) {
       console.error(`Error in SessionCheckStt: ${error}`);
     }
   };
+
+  const TTSContainerSTT = async (text) =>{
+
+      const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const blob = await response.blob();
+      console.log('respnse', blob);
+
+      const objectUrl = URL.createObjectURL(blob);
+      
+      console.log(objectUrl,'url')
+      const audioCont = `<div><audio style="width: 100%;" controls autoplay>
+      <source src=${objectUrl} type="audio/mpeg" />
+      Your browser does not support the audio element.
+      </audio> </div>`
+
+      return audioCont
+  }
 
   //No condition STT pending
   chatElementRef2.request = {
@@ -1558,26 +2155,25 @@ loadExternalModule().then(() => {
         } else {
           // TEXT RESPONSES
 
-           //change mic state active to default on send
-           var chatElement = document.getElementById("chat-element2");
+          //change mic state active to default on send
+          var chatElement = document.getElementById("chat-element2");
 
-           if (chatElement) {
-             var shadowRootMic = chatElement.shadowRoot;
+          if (chatElement) {
+            var shadowRootMic = chatElement.shadowRoot;
 
-             if (shadowRootMic) {
-               var microphoneButton =
-                 shadowRootMic.querySelector("#microphone-button");
-               if (
-                 microphoneButton
-                   .querySelector("svg")
-                   .classList.contains("active-microphone-icon")
-               ) {
-                 const clickEvent = new Event("click");
-                 microphoneButton.dispatchEvent(clickEvent);
-               }
-             }
-           }
-         
+            if (shadowRootMic) {
+              var microphoneButton =
+                shadowRootMic.querySelector("#microphone-button");
+              if (
+                microphoneButton
+                  .querySelector("svg")
+                  .classList.contains("active-microphone-icon")
+              ) {
+                const clickEvent = new Event("click");
+                microphoneButton.dispatchEvent(clickEvent);
+              }
+            }
+          }
 
           globalSignals = signals;
           // to check session active or not
@@ -1594,7 +2190,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (testType === "mcq" && latestMessage.toUpperCase() != "STOP") {
+          if (testType2 === "mcq" && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -1649,9 +2245,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (
-            body.messages[0].text.toUpperCase() === "STOP" 
-          ) {
+          if (body.messages[0].text.toUpperCase() === "STOP") {
             await cancelTestStt(participantId2); // cancelling session
             if (testType2 === "mcq") {
               const shadowRoot =
@@ -1666,15 +2260,15 @@ loadExternalModule().then(() => {
               // Replace the button with the "Thank you" message
               button.parentNode.replaceChild(thankYouMessage, button);
             }
-            if (isProceedStt === 'false'){
+            if (isProceedStt === "false") {
               const gshadowRoot =
                 document.getElementById("chat-element2").shadowRoot;
-                const msg = gshadowRoot.getElementById('proceed-option2')
-                // button.parentNode.removeChild(button)
-                const que_msg = document.createElement("div");
-                que_msg.innerHTML = "Thank You"; // You can customize the message here
-                // Replace the button with the "Thank you" message
-                msg.parentNode.replaceChild(que_msg, msg);
+              const msg = gshadowRoot.getElementById("proceed-option2");
+              // button.parentNode.removeChild(button)
+              const que_msg = document.createElement("div");
+              que_msg.innerHTML = "Thank You"; // You can customize the message here
+              // Replace the button with the "Thank you" message
+              msg.parentNode.replaceChild(que_msg, msg);
             }
 
             resetAllVariablesStt(); //reseting variables
@@ -1805,12 +2399,14 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                console.log('test-data = >', questionData2)
                 questionLength2 = questionData2.results[0].questions.length;
                 testId2 = questionData2.results[0].uid;
                 interactionMode2 = questionData2.results[0].interaction_mode;
                 is_free2 = questionData2.results[0].is_free;
                 senarioDescription2 = questionData2.results[0].description;
                 senarioTitle2 = questionData2.results[0].title;
+                senarioCase2 = questionData2.results[0].scenario_case;
                 senarioMediaDescription2 =
                   questionData2.results[0].description_media;
                 testUIInfoStt = questionData2.results[0].ui_information;
@@ -1821,6 +2417,11 @@ loadExternalModule().then(() => {
                   questionData2.results[0].orchestrated_conversation_details;
                 clientNameStt = questionData2.results[0].client_name;
                 isTestSignedInStt = questionData2.results[0].is_logged_in;
+                isImmersiveStt = questionData2.results[0].is_immersive;
+                mediaPropsStt = questionData2.results[0].media_props;
+                console.log(mediaPropsStt,"props")
+                
+
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -1835,7 +2436,7 @@ loadExternalModule().then(() => {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
                   globalQuestionDataStt = questionData2;
                 }
-  
+
                 //signed user rules
 
                 if (user2) {
@@ -1865,12 +2466,13 @@ loadExternalModule().then(() => {
                     }
                   }
 
-                  if (!group_list.includes(clientNameStt)){  // clientName Demo means Free type test
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
-                      return;
-                    }
+                  if (!group_list.includes(clientNameStt)) {
+                    // clientName Demo means Free type test
+                    signals.onResponse({
+                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+                    });
+                    return;
+                  }
                 } else {
                   // const unSignedUserTestCode = await getTestCodesByRule2(
                   //   "unsigned_user"
@@ -1883,14 +2485,14 @@ loadExternalModule().then(() => {
                   //   }
                   // }
 
-                  if (isTestSignedInStt){
+                  if (isTestSignedInStt) {
                     signals.onResponse({
                       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                     });
                     return;
                   }
-                  const group_list = ['Demo','free','Free']
-                  if (!group_list.includes(clientNameStt)){
+                  const group_list = ["Demo", "free", "Free"];
+                  if (!group_list.includes(clientNameStt)) {
                     signals.onResponse({
                       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
                     });
@@ -1960,6 +2562,37 @@ loadExternalModule().then(() => {
                   const data = await response.json();
                   sessionId2 = data.uid;
                   isSessionActiveStt = true;
+                  console.log("Session Created => ", sessionId2);
+                  // initialize coaching conversation if test is coaching type
+                  try {
+                    if (testType2 === "coaching") {
+                      const response = await fetch(
+                        `${baseURL2}/coaching-conversations/initialize/`,
+                        {
+                          method: "POST",
+                          headers: {
+                            Authorization: `Basic ${createBasicAuthToken2(
+                              key2,
+                              secret2
+                            )}`,
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            test_attempt_session_id: sessionId2,
+                          }),
+                        }
+                      );
+
+                      const data = await response.json();
+                      console.log("Coaching Conversation Created => ", data);
+                      conversation_id2 = data.uid;
+                      questionLength2 = 999;
+                      console.log("conversation_id", conversation_id2);
+                    }
+                  } catch (err) {
+                    console.log("Error while creating session : ", err);
+                    isSessionActiveStt = false;
+                  }
                 } catch (err) {
                   console.log(err);
                   isSessionActiveStt = false;
@@ -2012,6 +2645,10 @@ loadExternalModule().then(() => {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
+
+                      questionMediaLinkStt =questionData2.results[0].questions[questionIndex2].media_link;
+
+                      
                       questionId2 =
                         questionData2.results[0].questions[questionIndex2].uid;
                       const mcqOptionsStt =
@@ -2023,6 +2660,126 @@ loadExternalModule().then(() => {
                       const option2Name = optionNameStt[1];
                       const option1Text = mcqOptionsStt[option1Name]["opt"];
                       const option2Text = mcqOptionsStt[option2Name]["opt"];
+
+                      if (questionMediaLinkStt) {
+                        let embeddingUrl = "";
+                        if (questionMediaLinkStt.length > 0) {
+                          if (questionMediaLinkStt.includes("youtube.com")) {
+                            const videoId = questionMediaLinkStt.split("v=")[1];
+                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+                            const videoId = questionMediaLinkStt.split("/").pop();
+                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+                          }
+                  
+                          if (embeddingUrl){
+                          questionText2 = `▪ Media <br>  <iframe
+                                          allow="autoplay; encrypted-media; fullscreen;"
+                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                          src=${embeddingUrl}
+                                          frameborder="0"
+                                          allowfullscreen
+                                        >
+                          `;
+                          }
+                          const urlList = questionMediaLinkStt.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                questionText2 = questionText2 + '\n' +(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                questionText2 = questionText2 + '\n' +(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLinkStt.includes('docs.google.com')){
+                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              questionText2 = questionText2.replaceAll(":","")
+                              if(isImmersiveStt){
+                                console.log(questionText2)
+                                const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
+                                const response = await fetch(urltts, {
+                                  method: "GET",
+                                  headers: {
+                                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                                  },
+                                });
+                          
+                                const blob = await response.blob();
+                                console.log('respnse', blob);
+                          
+                                const objectUrl = URL.createObjectURL(blob);
+                                
+                                console.log(objectUrl,'url')
+                                questionText2 = `<div ><audio style="width: 100%;" controls autoplay>
+                                                        <source src=${objectUrl} type="audio/mpeg" />
+                                                        Your browser does not support the audio element.
+                                                        </audio></div>`
+                                console.log(questionText2)
+
+                              }
+                              console.log("last",questionText2)
+                              
+
+                              questionText2 = questionText2 +(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
+                        }
+
+                        
+                        if(isImmersiveStt && !questionMediaLinkStt){
+                          questionText2 = questionText2.replaceAll(":","")
+                          console.log('first', questionText2)
+
+                          
+                          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
+                          const response = await fetch(urltts, {
+                            method: "GET",
+                            headers: {
+                              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                            },
+                          });
+                    
+                          const blob = await response.blob();
+                          console.log('respnse', blob);
+                    
+                          const objectUrl = URL.createObjectURL(blob);
+                          
+                          console.log(objectUrl,'url')
+                          questionText2 = `<div ><audio style="width: 100%;" controls autoplay>
+                                                  <source src=${objectUrl} type="audio/mpeg" />
+                                                  Your browser does not support the audio element.
+                                                  </audio></div>`
+                          console.log(questionText2)
+
+                          
+                        }
+                        console.log("last",questionText2)
+                      
+                  
+                      
 
                       formRadio = `
                       <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
@@ -2041,14 +2798,21 @@ loadExternalModule().then(() => {
                       </div>`;
                       questionText2 = formRadio;
                     } else {
-                      questionText2 =
-                        questionData2.results[0].questions[questionIndex2]
-                          .question;
+                      if (testType2 != "coaching" || questionIndex2 == 0) {
+                        questionText2 =
+                          questionData2.results[0].questions[questionIndex2]
+                            .question;
+                        questionMediaLinkStt = questionData2.results[0].questions[questionIndex2].media_link;
+                      }
+                      
+
+                      
                     }
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
                     initialQuestionTextStt = questionText2;
+                    initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
                     questionText2 = `
                     <div id="proceed-option2" >
@@ -2056,7 +2820,8 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
-                    if (senarioMediaDescription2 !== null) {
+                    console.log(senarioMediaDescription2,'mediadesc')
+                    if (senarioMediaDescription2) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
                         console.log(senarioMediaDescription2);
@@ -2117,14 +2882,69 @@ loadExternalModule().then(() => {
                                 `
                           );
                         } else {
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+                          const urlList = senarioMediaDescription2.split(",");
+                          console.log("list", urlList);
+                          if (urlList.length > 1) {
+                            appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
+                                ▪ Description : ${senarioDescription2} <br><br>
+                                ▪ Instructions : Response should be at least 15 words. <br><br>`);
+                            urlList.forEach((element) => {
+                              element = element.trim();
+                              if (element.includes("docs.google.com")) {
+                                let url =
+                                  element.split("edit?")[0] +
+                                  "embed?start=true&loop=true&delayms=3000";
+                                console.log(url);
+                                appendMessage2(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`);
+                              } else {
+                                console.log(element);
+                                appendMessage2(
+                                  `<audio src=${element} controls autoplay>`
+                                );
+                              }
+                            });
+                          } else {
+                            if (
+                              senarioMediaDescription2.includes(
+                                "docs.google.com"
+                              )
+                            ) {
+                              let url =
+                                senarioMediaDescription2.split("edit?")[0] +
+                                "embed?start=true&loop=true&delayms=3000";
+                              console.log(url);
+                              appendMessage2(
+                                `▪ Title : ${senarioTitle2} <br><br>
+                              ▪ Description : ${senarioDescription2} <br><br>
+                              ▪ Instructions : Response should be at least 15 words. <br><br>
                               `
-                          );
+                              );
+                              appendMessage2(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`);
+                            } else {
+                              appendMessage2(
+                                `▪ Title : ${senarioTitle2} <br><br>
+                                    ▪ Description : ${senarioDescription2} <br><br>
+                                    ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                    ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+                                    `
+                              );
+                            }
+                          }
                         }
+
+                        
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
                         //      `▪ Title : ${senarioTitle2} <br><br>
@@ -2146,106 +2966,96 @@ loadExternalModule().then(() => {
                              ▪ Instructions : Response should be at least 15 words.`
                         );
                       }
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
-
-                      if (is_link) {
-                        console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
-                          }
-
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
-                          questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                        `;
-                        }
-                      }
+                      // proceed buttion will show 
                       signals.onResponse({
                         html: questionText2,
                       });
-                    } else {
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
+                    } else if (mediaPropsStt && Object.keys(mediaPropsStt).includes('test_image')){
+                      console.log("Media props here", mediaPropsStt)
+                      console.log("SHOW MEDIA PROPS here", mediaPropsStt);
+                      // const [imageUrlStt, coords] = Object.entries(
+                      //   mediaPropsStt.test_image
+                      // )[0];
+                      const url = Object.keys(mediaPropsStt["test_image"])[0];
+                      let narration;
+                      let coords = []
+                      const coordAndTitleNarrationList = mediaPropsStt["test_image"][url];
 
-                      if (is_link) {
-                        console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
-                          }
-
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
-                          questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                        `;
+                      coordAndTitleNarrationList.forEach(element =>{
+                        if (typeof element === 'string'){
+                          narration = element
+                        } else{
+                          coords.push(element)
                         }
+                      })
+
+                      const testImage = {
+                        image: url,
+                        coords: coords,
+                        narration: narration
                       }
+
+                     console.log(testImage)
+                     const imageUrlStt = testImage.image
+                     const coordsStt = [
+                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
+                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
+                        ]
+                     const narrationStt = testImage.narration
+
+                      const ttsNarration = await TTSContainerSTT(narrationStt)
+                      const imageIdStt = "mediaImageStt"
+                      const imageMapNameStt = "image-mapStt"
+                      const imageTooltipIdStt = 'tooltip-stt'
+
+                      appendMessage2(
+                        `▪ Title : ${senarioTitle2} <br><br>
+                             ▪ Description : ${senarioDescription2} <br><br>
+                             ▪ Instructions : Response should be at least 15 words. <br><br>
+                             ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ ${ttsNarration}` 
+                      );
+                      signals.onResponse({
+                        html: questionText2,
+                      });
+
+                      // pass - coords, imagemap-name, 
+                      setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+                      console.log("IMAGE MAPPED WITH COORDS")
+                      
+                    } else {
+                      // proceed buttion will show 
                       signals.onResponse({
                         html: questionText2,
                         text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
                       });
                     }
+                    
+
+                  
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
-                      testType2 != "dynamic_discussion_thread"
+                      testType2 != "dynamic_discussion_thread" &&
+                      testType2 != "coaching"
                     ) {
-                      const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                      const is_link = linkPattern.test(questionText2);
 
-                      if (is_link) {
+                      if (questionMediaLinkStt) {
                         console.log(questionText2);
                         let embeddingUrl = "";
-                        if (questionText2.length > 0) {
-                          if (questionText2.includes("youtube.com")) {
-                            const videoId = questionText2.split("v=")[1];
+                        if (questionMediaLinkStt.length > 0) {
+                          if (questionMediaLinkStt.includes("youtube.com")) {
+                            const videoId = questionMediaLinkStt.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionText2.includes("vimeo.com")) {
-                            const videoId = questionText2.split("/").pop();
+                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
+                            const videoId = questionMediaLinkStt.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionText2.includes("twitter.com")) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionText2}`;
+                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
 
-                          questionText2 = questionText2.replace(
-                            /(http[s]?:\/\/[^\s]+)/g,
-                            ""
-                          );
-
+                          if (embeddingUrl){
                           questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -2253,14 +3063,120 @@ loadExternalModule().then(() => {
                                           frameborder="0"
                                           allowfullscreen
                                         >
-                        `;
+                          `;
+                          }
+                          const urlList = questionMediaLinkStt.split(',')
+                          console.log("list",urlList)
+                          if (urlList.length > 1){
+                            urlList.forEach(element => {
+                              element = element.trim()
+                              if (element.includes('docs.google.com')){
+                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                                console.log(url)
+                                appendMessage2(`<iframe src=${url}
+                                                frameborder="0" 
+                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+                                                allowfullscreen="true" 
+                                                mozallowfullscreen="true" 
+                                                webkitallowfullscreen="true"
+                                                ></iframe>`)
+                              }
+                              else{
+                                console.log(element)
+                                appendMessage2(`<audio src=${element} controls autoplay>`)
+                              }
+                            });
+                          }else {
+                            if (questionMediaLinkStt.includes('docs.google.com')){
+                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
+                              console.log(url)
+                              appendMessage2(`<iframe src=${url}
+                                              frameborder="0" 
+                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
+                                              allowfullscreen="true" 
+                                              mozallowfullscreen="true" 
+                                              webkitallowfullscreen="true"
+                                              ></iframe>`)
+                            }
+                          }
+                          }
                         }
+                      if (questionText2){
+
+                        let responderName;
+                        let strList = questionText2.replaceAll("*","").split(":")
+                        if (strList.length > 1){
+                          questionText2 = strList[1]
+                          responderName = `<b>${strList[0]}:</b><br>`
+                          
+                        }
+                        if(isImmersiveStt){
+                          questionText2 = await TTSContainerSTT(questionText2)
+                        }
+
+                        if (responderName){
+                          questionText2 = responderName + questionText2
+                        }
+                        console.log(`que_image ${questionIndex2 + 1}`)
+                        if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
+                          const questionpropName = `que_image ${questionIndex2 + 1}`
+
+                          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+                          let narration;
+                          let coords = []
+                          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+                          coordAndTitleNarrationList.forEach(element =>{
+                            if (typeof element === 'string'){
+                              narration = element
+                            } else{
+                              coords.push(element)
+                            }
+                          })
+
+                          const testImage = {
+                            image: url,
+                            coords: coords,
+                            narration: narration
+                          }
+                          console.log(testImage)
+                          const imageUrlStt = testImage.image
+                          const coordsStt = testImage.coords
+                          const narrationStt = testImage.narration
+
+                          const ttsNarration = await TTSContainerSTT(narrationStt)
+                          const imageIdStt = `mediaImageStt${questionIndex2}`
+                          const imageMapNameStt = `image-mapStt${questionIndex2}`
+                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+
+
+                             
+                          questionText2 = (`▪ ${ttsNarration}<br><br>
+                                           <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                            ▪ Question : <br> ${questionText2}
+                                          `)
+
+                          signals.onResponse({
+                            html: questionText2,
+                          });
+                          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
+                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {questionIndex2})
+
+
+                          // questionText2 = questionText2 + imageDiv 
+                        }else{
+                        signals.onResponse({
+                          html: questionText2,
+                        });
+
+                        }
+                        
                       }
-                      signals.onResponse({
-                        html: questionText2,
-                      });
+
+                      
                     }
                   }
+                
                 }
 
                 if (
@@ -2291,36 +3207,91 @@ loadExternalModule().then(() => {
                 }
 
                 if (questionIndex2 > 0) {
-                  questionId2 =
-                    questionData2.results[0].questions[questionIndex2 - 1].uid;
+                  if (testType2 != "coaching" || questionIndex2 == 0) {
+                    questionId2 =
+                      questionData2.results[0].questions[questionIndex2 - 1]
+                        .uid;
+                  }
 
                   questionIndex2++;
 
-                  const response = await fetch(`${baseURL2}/test-responses/`, {
-                    method: "POST",
-                    headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(
-                        key2,
-                        secret2
-                      )}`,
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      test_attempt_session_id: sessionId2,
-                      question_id: questionId2,
-                      response_text: userResponse2,
-                      response_file: "",
-                      user_attributes: {
-                        tag: "deepchat_profile",
-                        attributes: {
-                          username: "web_user",
-                          email: user2 ? user2.email : getAnonymousEmail(),
+                  if (testType2 === "coaching") {
+                    const response = await fetch(
+                      `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Basic ${createBasicAuthToken2(
+                            key2,
+                            secret2
+                          )}`,
+                          "Content-Type": "application/json",
                         },
-                      },
-                    }),
-                  });
-                  const responseData = await response.json();
-                  resQuestionNumber2 = responseData.question.question_number;
+                        body: JSON.stringify({
+                          participant_message_text: userResponse2,
+                          participant_message_url: "",
+                        }),
+                      }
+                    );
+                    const responseData = await response.json();
+                    console.log(
+                      "Response from Coaching submit response : ",
+                      responseData
+                    );
+
+                    questionText2 = responseData["coach_message_text"];
+                    conversation_id2 = responseData["uid"];
+                    console.log("coaching question Text: ", questionText2);
+
+                    let responderName;
+                    const strList = questionText2.split(":",2)
+                    if (strList.length > 1){
+                      responderName = `<b>${strList[0]}:</b><br>`
+                      questionText2 = strList[1]
+                    }
+                    if(isImmersiveStt){
+                      questionText2 = await TTSContainerStt(questionText2)
+                    }
+
+                    if (responderName){
+                      questionText2 = responderName + questionText2
+                    }
+                    const dataToShow2 = getCoachingQuestionData2(questionText2);
+                    signals.onResponse({
+                      html: dataToShow2,
+                    });
+                    console.log(questionData2);
+                  } else {
+                    const response = await fetch(
+                      `${baseURL2}/test-responses/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Basic ${createBasicAuthToken2(
+                            key2,
+                            secret2
+                          )}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          test_attempt_session_id: sessionId2,
+                          question_id: questionId2,
+                          response_text: userResponse2,
+                          response_file: "",
+                          user_attributes: {
+                            tag: "deepchat_profile",
+                            attributes: {
+                              username: "web_user",
+                              email: user2 ? user2.email : getAnonymousEmail(),
+                            },
+                          },
+                        }),
+                      }
+                    );
+
+                    const responseData = await response.json();
+                    resQuestionNumber2 = responseData.question.question_number;
+                  }
 
                   if (questionIndex2 < questionLength2) {
                     if (
@@ -2334,13 +3305,13 @@ loadExternalModule().then(() => {
                       questionIndex2++;
 
                       const questionResponse2 = await fetch(
-                        `${baseURL}/test-responses/`,
+                        `${baseURL2}/test-responses/`,
                         {
                           method: "POST",
                           headers: {
-                            Authorization: `Basic ${createBasicAuthToken(
-                              key,
-                              secret
+                            Authorization: `Basic ${createBasicAuthToken2(
+                              key2,
+                              secret2
                             )}`,
                             "Content-Type": "application/json",
                           },
@@ -2369,7 +3340,15 @@ loadExternalModule().then(() => {
                       const responder_name2 = qRespnse2.responder_display_name;
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
+                      } 
+
+                      if (isImmersiveStt){
+                        questionText2 = questionText2.replace(`${responder_name2}`,"")
+                        questionText2 = questionText2.replace(`:`,"")
+                        questionText2 = responder_name2 + " : " + questionText2;
+
                       }
+                      
 
                       resQuestionNumber2 = qRespnse2.question.question_number;
                     }
@@ -2381,8 +3360,20 @@ loadExternalModule().then(() => {
                     testType2 === "orchestrated_conversation" ||
                     testType2 === "dynamic_discussion_thread"
                   ) {
+                    console.log('ismmersive',isImmersiveStt,questionText2)
+
+                    const stringList = questionText2.split(':', 2)
+                    console.log(stringList)
+                    questionText2 = stringList[1]
+                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    if (isImmersiveStt && questionIndex2 != 0){
+                      questionText2 = await TTSContainerSTT(questionText2);
+                    }
+                    if(responderName){
+                      questionText2 = responderName + questionText2
+                    }
                     signals.onResponse({
-                      text: questionText2,
+                      html: questionText2,
                     });
                   }
                 }
@@ -2466,7 +3457,16 @@ loadExternalModule().then(() => {
                       report_type: reportType2,
                       test_attempt_session_id: sessionId2,
                     };
+                  } else if (senarioCase2 === "process_training") {
+                    reportType2 = "processTrainingReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
                   }
+                  console.log(senarioCase2, getReportBody2)
 
                   const reportResponse = await fetch(
                     `${baseURL2}/frontend-auth/get-report-url/`,
@@ -2517,6 +3517,7 @@ loadExternalModule().then(() => {
                   }
                 }
               }
+              
             } catch (err) {
               console.log(err);
               if (testType2 === "mcq") {
@@ -2580,7 +3581,7 @@ loadExternalModule().then(() => {
           msg.parentNode.replaceChild(que_msg, msg);
         }
 
-        resetAllVariablesStt(); 
+        resetAllVariablesStt();
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
         });
@@ -2689,7 +3690,7 @@ const closeFromTop2 = () => {
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
 
   chatContainer2.style.scale = 0;
-  chatContainer2.style["transform-origin"] = "0% 100%";
+  chatContainer2.style["transform-origin"] = "100% 100%";
 
   if (
     chatIcon2.src ===

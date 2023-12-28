@@ -6,61 +6,78 @@ import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
 import { useRef, useState } from "react";
 
+const subdomain =
+  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
+// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
+const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
+const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+
 const CreateYourOwn = () => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<any>();
   const [userEnteredContext, setUserEnteredContext] = useState("");
   const [generationError, setGenerationError] = useState(false);
+  const [inputError, setInputError] = useState(false)
 
   const userContextRef = useRef<any>();
   const handleGenerateSenario = () => {
     setUserEnteredContext(userContextRef.current.value);
-    setIsloading(true);
-    const url: any = new URL(
-      `https://coach-api-ovh.coachbots.com/api/v1/tests/get_or_create_test_scenarios_by_site/`
-    );
-    const params = new URLSearchParams();
-    params.set("mode", "A");
-    params.set(
-      "information",
-      JSON.stringify({
-        data: { information: userContextRef.current.value },
-        title: "",
+    if(userContextRef.current.value.split(" ").length < 20){
+      console.log("to small")
+      setInputError(true)
+    } else {
+      setIsloading(true);
+      const url: any = new URL(
+        `${prodUrl}/tests/get_or_create_test_scenarios_by_site/`
+      );
+      const params = new URLSearchParams();
+      params.set("mode", "A");
+      params.set(
+        "information",
+        JSON.stringify({
+          data: { information: userContextRef.current.value },
+          title: "",
+        })
+      );
+      params.set("url", "");
+      params.set(
+        "access_token",
+        `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`
+      );
+      url.search = params;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+          "Content-Type": "application/json",
+        },
       })
-    );
-    params.set("url", "");
-    params.set(
-      "access_token",
-      `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`
-    );
-    url.search = params;
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Dynamically created Test result", data);
+          console.log(data[0]);
 
-    fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Dynamically created Test result", data);
-        console.log(data[0]);
+          console.log(data);
 
-        setGeneratedTestData(data[0]);
-        setIsloading(false);
-        if (!data[0].title) {
-          setGenerationError(true);
-        }
+          setGeneratedTestData(data[0]);
+          setIsloading(false);
+          if (!data[0].title) {
+            setGenerationError(true);
+          }
 
-        // userContextRef.current.value = "";
-      })
-      .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   const clearHanlder = () => {
     userContextRef.current.value = "";
+    setGeneratedTestData(null)
+    setGenerationError(false)
   };
+
 
   return (
     <div>
@@ -83,10 +100,18 @@ const CreateYourOwn = () => {
                   </p>
                   <textarea
                     ref={userContextRef}
+                    onKeyDown={() => {
+                      setInputError(false);
+                    }}
                     placeholder="Create a situation where the user needs to...... to accomplish...."
                     rows={5}
-                    className="p-2 my-2 max-sm:p-2 max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
                   />
+                  {inputError && (
+                    <p className="text-red-500 text-sm max-sm:text-xs mb-1.5">
+                      Please describe your situation in atleast 20 words.
+                    </p>
+                  )}
                   <div className="flex items-center gap-2">
                     <Button
                       onClick={handleGenerateSenario}
@@ -107,13 +132,8 @@ const CreateYourOwn = () => {
                       </Button>
                     )}
                     {isLoading && (
-                      <span className="text-sm max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px]">
+                      <span className="text-sm max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
                         Please wait, we are generating your senario.
-                      </span>
-                    )}
-                    {generationError && (
-                      <span className="text-sm max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500">
-                        Error generating your senario.
                       </span>
                     )}
                   </div>
@@ -143,6 +163,15 @@ const CreateYourOwn = () => {
                         </div>
                       </div>
                     </div>
+                  </>
+                )}
+                {generationError && !isLoading && (
+                  <>
+                    <hr className="my-2" />
+                    <p className="text-sm text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
+                      We are unable to generate the scenario at this time. Please
+                      restate the context and try again.
+                    </p>
                   </>
                 )}
               </div>

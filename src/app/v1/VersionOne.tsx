@@ -20,6 +20,9 @@ import {
   caseStudy,
   DiversityPlus,
   onBoarding,
+  ijp,
+  questionPro,
+  coachingPlus,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -30,6 +33,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import CreateYourOwn from "@/components/CreateYourOwn";
 
 const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
@@ -124,6 +128,14 @@ const VersionOne = ({ user, groups }: any) => {
                 Manager+
               </Button>
             </Link>
+            <Link href={"#ijp"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                IJP/Succession
+              </Button>
+            </Link>
             <Link href={"#reflection"}>
               <Button
                 variant={"secondary"}
@@ -138,6 +150,22 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Diversity+
+              </Button>
+            </Link>
+            <Link href={"#qp"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Questions Pro
+              </Button>
+            </Link>
+            <Link href={"#coachingplus"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Coaching+
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -236,7 +264,8 @@ const VersionOne = ({ user, groups }: any) => {
                 Meetings
               </Button>
             </Link>
-            {/* {shouldRenderDiv && (
+
+            {shouldRenderDiv && (
               <Link href={"#create-your-own"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -252,7 +281,7 @@ const VersionOne = ({ user, groups }: any) => {
                   </div>
                 </div>
               </Link>
-            )} */}
+            )}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -274,6 +303,13 @@ const VersionOne = ({ user, groups }: any) => {
               tests={Managerial}
             />
           </div>
+          <div id="ijp">
+            <HeroAccordion
+              badgeText="IJP/Succession"
+              user={user ? true : false}
+              tests={ijp}
+            />
+          </div>
           <div id="reflection">
             <HeroAccordion
               badgeText="Reflection"
@@ -286,6 +322,20 @@ const VersionOne = ({ user, groups }: any) => {
               badgeText="Diversity+"
               user={user ? true : false}
               tests={DiversityPlus}
+            />
+          </div>
+          <div id="qp">
+            <HeroAccordion
+              badgeText="Questions Pro"
+              user={user ? true : false}
+              tests={questionPro}
+            />
+          </div>
+          <div id="coachingplus">
+            <HeroAccordion
+              badgeText="Coaching +"
+              user={user ? true : false}
+              tests={coachingPlus}
             />
           </div>
           <div id="discoveryPlus">
@@ -372,11 +422,11 @@ const VersionOne = ({ user, groups }: any) => {
               tests={meetings}
             />
           </div>
-          {/* {shouldRenderDiv && (
+          {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
-          )} */}
+          )}
         </div>
       </div>
 
