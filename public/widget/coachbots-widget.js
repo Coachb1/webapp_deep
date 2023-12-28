@@ -900,12 +900,12 @@ let queryParams;
 
 //*********** hit mail sending api */
 
-function sendEmail() {
+function sendEmail(session_id,reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams2 = new URLSearchParams({
-    test_attempt_session_id: sessionId,
-    report_url: globalReportUrl,
+    test_attempt_session_id: session_id,
+    report_url: reportUrl,
     is_whatsapp: false,
   });
 
@@ -920,7 +920,7 @@ function sendEmail() {
     .then((data) => {
       emailSent = data.status;
       console.log("email sent");
-      resetAllVariables();
+      // resetAllVariables();
     })
     .catch((err) => console.log(err));
 }
@@ -963,7 +963,7 @@ async function submitEmailAndName() {
     .then((response) => response.json())
     .then((data) => {
       console.log("name email updated, sending email");
-      sendEmail();
+      sendEmail(sessionId,globalReportUrl);
 
       if (!window.user) {
         // append custom message to chat
@@ -979,6 +979,7 @@ async function submitEmailAndName() {
       if (recommDiv) {
         appendMessage(recommDiv);
       }
+      resetAllVariables();
     })
     .catch((err) => {
       console.log(err);
@@ -1244,6 +1245,7 @@ coords.map((item) => {
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
+  console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
   questionIndex = 0;
@@ -2540,7 +2542,7 @@ loadExternalModule().then(() => {
       try {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
-
+          
           // to check session active or not
           if (testType === "mcq" || testType === "dynamic_mcq") {
             signals.onResponse({
@@ -2560,6 +2562,7 @@ loadExternalModule().then(() => {
           await getSessionStatus(sessionId);
 
           if (sessionStatus != "in_progress") {
+            console.log('sessionStatus',sessionStatus,sessionId,responsesDone)
             signals.onResponse({
               html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
             });
