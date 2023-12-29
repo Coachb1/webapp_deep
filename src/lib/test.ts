@@ -475,6 +475,49 @@ export const coachingPlus: Test[] = [
       "A manager schedules a coaching conversation with a life coach to navigate work-related stress and improve work-life balance. The coaching session aims to provide personalized guidance for stress management, fostering resilience and promoting a healthier work environment. Respond as the manager in this coaching session.",
     interaction_mode: "Audio",
   },
+  {
+    domain: "Development Coaching",
+    test_code: "QJQOPMO",
+    title: "Enhancing Leadership and Team Collaboration",
+    description:
+      "A team member participates in a coaching session with his ICF coach. The session focuses on refining the team member's leadership skills, strategic thinking, and team collaboration. The team member seeks guidance on handling challenging team dynamics and improving communication within his team. Respond as the team member in this coaching session.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "GROW Model Intake",
+    test_code: "QIQHBZ7",
+    title: "",
+    description:
+      "In this session, you're presented with a list of questions from the GROW Model seeking your input towards your goal. Provide concise and thoughtful responses to these questions. ",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "ABCDE Model Intake",
+    test_code: "QQTJD7G",
+    title: "",
+    description:
+      "In this session, you're presented with a list of questions from the ABCDE Model seeking your input. Provide concise and thoughtful responses to these questions. ",
+    interaction_mode: "Audio",
+  },
+];
+
+export const pms: Test[] = [
+  {
+    domain: "Develop communication and interpersonal skills",
+    test_code: "QQHHC29",
+    title: "Addressing Aggressive Communication Style",
+    description:
+      "The situation revolves around a team member's aggressive communication style, which has led to conflicts and discomfort among coworkers. To address this problem, the team leader, Vijay has scheduled a meeting with the team member to provide constructive feedback and work on improving his communication skills. Respond to this situation as the team member.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Performace Management",
+    test_code: "QNN0SML",
+    title: "Feedback Implementation and Professional Development Discussion",
+    description:
+      "Alok, the manager has observed that you struggle to effectively implement the constructive feedback provided to improve his work skills and career growth. To address this, the manager schedules a follow-up meeting to ask targeted questions that assess your challenges in applying feedback and provide guidance on optimizing his professional development. Respond to this situation as the team member..",
+    interaction_mode: "Audio",
+  },
 ];
 
 export const serviceslashConsulting: Test[] = [

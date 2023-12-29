@@ -23,6 +23,7 @@ import {
   ijp,
   questionPro,
   coachingPlus,
+  pms,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -158,6 +159,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Questions Pro
+              </Button>
+            </Link>
+            <Link href={"#pms"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                PMS enabled
               </Button>
             </Link>
             <Link href={"#coachingplus"}>
@@ -329,6 +338,13 @@ const VersionOne = ({ user, groups }: any) => {
               badgeText="Questions Pro"
               user={user ? true : false}
               tests={questionPro}
+            />
+          </div>
+          <div id="pms">
+            <HeroAccordion
+              badgeText="PMS Enabled"
+              user={user ? true : false}
+              tests={pms}
             />
           </div>
           <div id="coachingplus">
