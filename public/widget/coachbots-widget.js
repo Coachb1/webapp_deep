@@ -90,6 +90,7 @@ let isImmersive = false;
 let mediaProps;
 let questionImageData;
 let initialIndex;
+let isTranscriptOnly= false;
 
 
 // sample TEst codes
@@ -900,12 +901,12 @@ let queryParams;
 
 //*********** hit mail sending api */
 
-function sendEmail() {
+function sendEmail(session_id,reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams2 = new URLSearchParams({
-    test_attempt_session_id: sessionId,
-    report_url: globalReportUrl,
+    test_attempt_session_id: session_id,
+    report_url: reportUrl,
     is_whatsapp: false,
   });
 
@@ -920,7 +921,7 @@ function sendEmail() {
     .then((data) => {
       emailSent = data.status;
       console.log("email sent");
-      resetAllVariables();
+      // resetAllVariables();
     })
     .catch((err) => console.log(err));
 }
@@ -963,7 +964,7 @@ async function submitEmailAndName() {
     .then((response) => response.json())
     .then((data) => {
       console.log("name email updated, sending email");
-      sendEmail();
+      sendEmail(sessionId,globalReportUrl);
 
       if (!window.user) {
         // append custom message to chat
@@ -979,6 +980,7 @@ async function submitEmailAndName() {
       if (recommDiv) {
         appendMessage(recommDiv);
       }
+      resetAllVariables();
     })
     .catch((err) => {
       console.log(err);
@@ -1244,6 +1246,7 @@ coords.map((item) => {
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
+  console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
   questionIndex = 0;
@@ -1293,6 +1296,7 @@ const resetAllVariables = () => {
   recommendations = "";
   isTestSignedIn;
   clientName = "";
+  isTranscriptOnly = false;
 };
 
 function findRelatedItems(data, targetCode) {
@@ -2105,6 +2109,10 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
+    let uppercaseArray = words.map(element => element.toUpperCase());
+    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnly || testType === 'coaching')){
+      return true;
+    }
     if (words.length < 15) {
       return false;
     } else {
@@ -2307,6 +2315,11 @@ loadExternalModule().then(() => {
         formdata["transcribe_file"] = true;
         }
 
+        // trrow a error randomly
+        // if ( 3 > 2 |  questionObj.uid == 'd3240961-93f7-4ec5-bf1f-a479c5d3f7bc') {
+        //   throw new Error("Random error");
+        // }
+
         // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
         //   method: "POST",
         //   headers: {
@@ -2361,9 +2374,12 @@ loadExternalModule().then(() => {
             // Replace the button with the "Thank you" message
             msg.parentNode.replaceChild(que_msg, msg);
             }
+
+            if( questionIndex <= questionLength) {
             appendMessage(
             "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
             );
+            }
             maxUploadFailed = true;
             break;
         }
@@ -2525,11 +2541,13 @@ loadExternalModule().then(() => {
         return resQuestionNumber;
     } catch (error) {
         console.log("error in testResponseHandler", error);
+        if( questionIndex <= questionLength) {
         setTimeout(() => {
             appendMessage(
                 "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
                 );
         }, 200);
+        }
         testResponseHandlerFailed = true;
         return;
     }
@@ -2540,7 +2558,7 @@ loadExternalModule().then(() => {
       try {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
-
+          
           // to check session active or not
           if (testType === "mcq" || testType === "dynamic_mcq") {
             signals.onResponse({
@@ -2560,6 +2578,7 @@ loadExternalModule().then(() => {
           await getSessionStatus(sessionId);
 
           if (sessionStatus != "in_progress") {
+            console.log('sessionStatus',sessionStatus,sessionId,responsesDone)
             signals.onResponse({
               html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
             });
@@ -2790,6 +2809,9 @@ loadExternalModule().then(() => {
                 maxUploadFailed = false;
                 testResponseHandlerFailed = false;
                 resetAllVariables();
+                signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                });
                 return;
               }
 
@@ -2823,8 +2845,11 @@ loadExternalModule().then(() => {
                 ) {
                   const stringList = questionText.split(':', 2)
                   console.log(stringList)
-                  questionText = stringList[1]
-                  const responderName = `<b>${stringList[0]}:</b><br>`
+                  let responderName;
+                  if (stringList.length > 1){
+                    questionText = stringList[1]
+                    responderName = `<b>${stringList[0]}:</b><br>`
+                  }
                   if (isImmersive && questionIndex != 0){
                     questionText = await TTSContainer(questionText);
                   }
@@ -3221,6 +3246,8 @@ loadExternalModule().then(() => {
                 isTestSignedIn = questionData.results[0].is_logged_in;
                 isImmersive = questionData.results[0].is_immersive;
                 mediaProps = questionData.results[0].media_props;
+                isTranscriptOnly = questionData.results[0].is_transcript_only;
+
 
 
                 console.log(mediaProps,"props")
@@ -4127,12 +4154,17 @@ loadExternalModule().then(() => {
                   ) {
                     const stringList = questionText.split(':', )
                     console.log(stringList)
-                    questionText = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    let responderName;
+                    if (stringList.length > 1){
+                      questionText = stringList[1]
+                      responderName = `<b>${stringList[0]}:</b><br>`
+                    }
                     if (isImmersive && questionIndex != 0){
                       questionText = await TTSContainer(questionText);
                     }
-                    questionText = responderName + questionText
+                    if(responderName){
+                      questionText = responderName + questionText
+                    }
                     signals.onResponse({
                       html: questionText,
                     });
@@ -4369,6 +4401,7 @@ const openChatContainer = () => {
   let mediaRecorder;
   let isRecording = false;
   let audioChunks = [];
+  let stream;
 
   user = window.user;
   console.log(" User details ", user);
@@ -4376,7 +4409,7 @@ const openChatContainer = () => {
 
   async function startRecording() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
       mediaRecorder = new MediaRecorder(stream);
@@ -4428,6 +4461,7 @@ const openChatContainer = () => {
 
   if (sendBtn) {
     sendBtn.addEventListener("click", () => {
+      stream.getTracks().forEach(track => track.stop())
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
         isRecording = false

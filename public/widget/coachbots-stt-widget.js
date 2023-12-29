@@ -79,6 +79,7 @@ let isImmersiveStt = false;
 let mediaPropsStt;
 let questionImageDataStt;
 let initialIndexStt;
+let isTranscriptOnlyStt = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -528,6 +529,7 @@ coordsStt.map((item) => {
 // to reset all variables
 const resetAllVariablesStt = () => {
   //* reset all variables : start
+  console.log("resetingvariables")
   questionText2 = "";
   reportType2 = "interactionSessionReport";
   questionIndex2 = 0;
@@ -575,6 +577,7 @@ const resetAllVariablesStt = () => {
   recommendationsStt = "";
   isTestSignedInStt;
   clientNameStt = "";
+  isTranscriptOnlyStt = false;
 };
 
 function findRelatedItemsStt(data, targetCode) {
@@ -620,7 +623,7 @@ const handleProceedClickStt = async (choice) => {
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
             
-      if (questionMediaLinkStt && testType2 != 'mcq') {
+      if (questionMediaLinkStt && (testType2 != 'mcq' &&  testType2 != 'dynamic_mcq')) {
         console.log(questionMediaLinkStt);
         let embeddingUrl = "";
         
@@ -733,7 +736,7 @@ const handleProceedClickStt = async (choice) => {
           }
         }
       } else{
-        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && testType2 != 'mcq' && senarioCase2 != "process_training" ){
+        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && (testType2 != 'mcq' && testType2 != "dynamic_mcq") && senarioCase2 != "process_training" ){
           let responderName;
           
           if (testType2 === 'dynamic_discussion_thread'){
@@ -899,7 +902,7 @@ const handleProceedClickStt = async (choice) => {
           // questionText2 = questionText2 + imageDiv 
         }else{
 
-          if(testType2 != 'mcq'){
+          if (testType2 != 'mcq' && testType2 != "dynamic_mcq"){
             let strList = initialQuestionTextStt.replaceAll("*","")
           strList = strList.split(":",2)
           if (strList.length >1){
@@ -949,7 +952,50 @@ async function setMcqVariablesStt() {
   console.log(mcqQustionIndexStt, globalQuestionLengthStt);
   mcqQustionIndexStt++;
 
+  let qUid;
+  let newOption1NameStt;
+  let newOption2NameStt;
+  let newOption1TextStt;
+  let newOption2TextStt;
+
   if (mcqQustionIndexStt != globalQuestionLengthStt) {
+    if( testType2 === "dynamic_mcq") {
+
+      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML = 'Processing ...'
+      console.log(questionText2,'q')
+        queryParams2 = new URLSearchParams({
+            description: senarioDescription2,
+            situation: mcqQustionIndexStt == 1 ? globalQuestionDataStt.results[0].questions[mcqQustionIndexStt - 1].question : questionText2,
+            option_a: optionsNameStt[0].defaultValue,
+            option_b: optionsNameStt[0].defaultValue,
+            option_selected: responseTextStt,
+            test_attempt_session_id: test_attempt_session_id,
+        });
+    
+        await fetch(
+        `${baseURL2}/test-attempt-sessions/get_next_mcq_question_options/?${queryParams2}`,
+        {
+            method: "GET",
+            headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+            },
+        }
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Dynamic mcq response : ", data);
+            console.log(data.options_data)
+            questionText2 = data.options_data.next_situation;
+            newOption1NameStt = data.options_data.option_a;
+            newOption2NameStt = data.options_data.option_b;
+            newOption1TextStt = data.options_data.option_a;
+            newOption2TextStt = data.options_data.option_b;
+            // qUid = data.options_data.next_situation;
+            qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
+        })
+
+    } else {
     // updating question
     console.log("currentquestionidex", mcqQustionIndexStt);
     console.log(`Story ${responseOptionStt}`);
@@ -959,13 +1005,12 @@ async function setMcqVariablesStt() {
         (question) => question.mcq_path === `Story ${responseOptionStt}`
       );
 
-    const qUid = matchingQuestionsStt.map((question) => question.uid)[0];
+    qUid = matchingQuestionsStt.map((question) => question.uid)[0];
     const mcqOptionsStt = matchingQuestionsStt.map(
       (question) => question.mcq_options
     )[0];
     const optionName = Object.keys(mcqOptionsStt);
-    let questionText;
-    questionText = matchingQuestionsStt.map(
+    questionText2 = matchingQuestionsStt.map(
       (question) => question.question
     )[0];
 
@@ -978,10 +1023,10 @@ async function setMcqVariablesStt() {
       queImageData = [mediaPropsStt[`question_image ${responseOptionStt}`],mediaPropsStt[`question_image_mobile ${responseOptionStt}`]]
     }
 
-    const newOption1NameStt = optionName[0];
-    const newOption2NameStt = optionName[1];
-    const newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
-    const newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
+    newOption1NameStt = optionName[0];
+    newOption2NameStt = optionName[1];
+    newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
+    newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
 
     console.log(
       newOption1NameStt,
@@ -1003,7 +1048,7 @@ async function setMcqVariablesStt() {
         }
 
         if (embeddingUrl){
-        questionText = `▪ Media <br>  <iframe
+        questionText2 = `▪ Media <br>  <iframe
                         allow="autoplay; encrypted-media; fullscreen;"
                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                         src=${embeddingUrl}
@@ -1020,7 +1065,7 @@ async function setMcqVariablesStt() {
             if (element.includes('docs.google.com')){
               let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
               console.log(url,"googelsheet")
-              questionText = questionText + '\n' +(`<iframe src=${url}
+              questionText2 = questionText2 + '\n' +(`<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                               allowfullscreen="true" 
@@ -1030,7 +1075,7 @@ async function setMcqVariablesStt() {
             }
             else{
               console.log('audio',element)
-              questionText = questionText + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+              questionText2 = questionText2 + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`)
@@ -1041,11 +1086,11 @@ async function setMcqVariablesStt() {
             let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
             console.log(url,'google')
             if(isImmersiveStt){
-              questionText = questionText.replaceAll(":","")
-              console.log('first', questionText)
+              questionText2 = questionText2.replaceAll(":","")
+              console.log('first', questionText2)
 
               
-              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText}`
+              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
               const response = await fetch(urltts, {
                 method: "GET",
                 headers: {
@@ -1059,14 +1104,14 @@ async function setMcqVariablesStt() {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+              questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`
-              console.log(questionText)
+              console.log(questionText2)
 
             }
-            questionText = questionText +(`<iframe src=${url}
+            questionText2 = questionText2 +(`<iframe src=${url}
                             frameborder="0" 
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                             allowfullscreen="true" 
@@ -1079,11 +1124,11 @@ async function setMcqVariablesStt() {
       }
     
       if(isImmersiveStt && !questionMedia){
-        questionText = questionText.replaceAll(":","")
-        console.log('first', questionText)
+        questionText2 = questionText2.replaceAll(":","")
+        console.log('first', questionText2)
 
         
-        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText}`
+        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
         const response = await fetch(urltts, {
           method: "GET",
           headers: {
@@ -1097,21 +1142,22 @@ async function setMcqVariablesStt() {
         const objectUrl = URL.createObjectURL(blob);
         
         console.log(objectUrl,'url')
-        questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+        questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
         </audio></div>`
-        console.log(questionText)
+        console.log(questionText2)
 
         
       }
+    }
 
     
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
     formRadioStt = `
-                  <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText}</div>
+                  <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${qUid}:${test_attempt_session_id}"><b>Q. </b>${questionText2}</div>
                   <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
                     <div style="display: flex; flex-direction: row; align-items: flex-start;">
                       <input type="radio" id="${newOption1NameStt}" name="mcq_option_stt" value="${newOption1TextStt}" style="margin-right: 5px;">
@@ -1248,7 +1294,7 @@ async function setMcqVariablesStt() {
 
     if (!isCheck.check) {
       console.log("failed to save session data", isCheck);
-      if (testType2 === "mcq") {
+      if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
         const shadowRoot = document.getElementById("chat-element2").shadowRoot;
         const button = shadowRoot.getElementById(
           `mcq-option-stt-${mcqFormIdStt}`
@@ -1336,12 +1382,12 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
-function sendEmail2() {
+function sendEmail2(session_id,reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams22 = new URLSearchParams({
-    test_attempt_session_id: sessionId2,
-    report_url: globalReportUrl2,
+    test_attempt_session_id: session_id,
+    report_url: reportUrl,
     is_whatsapp: false,
   });
 
@@ -1359,7 +1405,7 @@ function sendEmail2() {
     .then((data) => {
       emailSent2 = data.status;
       console.log("email sent");
-      resetAllVariablesStt();
+      // resetAllVariablesStt();
 
     })
     .catch((err) => console.log(err));
@@ -1400,7 +1446,7 @@ async function submitEmailAndName2() {
     .then((data) => {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
-      sendEmail2();
+      sendEmail2(sessionId2,globalReportUrl2);
       // append custom message to chat
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
@@ -1419,6 +1465,7 @@ async function submitEmailAndName2() {
       if (recommDiv) {
         appendMessage2(recommDiv);
       }
+      resetAllVariablesStt();
     })
     .catch((err) => {
       console.log(err);
@@ -1970,6 +2017,10 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
+    let uppercaseArray = words.map(element => element.toUpperCase());
+    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnlyStt || testType2 === 'coaching')){
+      return true;
+    }
     if (words.length < 15) {
       return false;
     } else {
@@ -2199,7 +2250,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (testType2 === "mcq" && latestMessage.toUpperCase() != "STOP") {
+          if ((testType2 === "mcq" || testType2 === 'dynamic_mcq') && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -2256,7 +2307,7 @@ loadExternalModule().then(() => {
 
           if (body.messages[0].text.toUpperCase() === "STOP") {
             await cancelTestStt(participantId2); // cancelling session
-            if (testType2 === "mcq") {
+            if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
               const shadowRoot =
                 document.getElementById("chat-element2").shadowRoot;
               const button = shadowRoot.getElementById(
@@ -2316,7 +2367,7 @@ loadExternalModule().then(() => {
             //end
 
             if (!buttonTextArray.includes(latestMessage)) {
-              if (testType2 === "mcq") {
+              if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Not allowed! choose option to continue. </b></p>",
                 });
@@ -2429,6 +2480,7 @@ loadExternalModule().then(() => {
                 isImmersiveStt = questionData2.results[0].is_immersive;
                 mediaPropsStt = questionData2.results[0].media_props;
                 console.log(mediaPropsStt,"props")
+                isTranscriptOnlyStt = questionData2.results[0].is_transcript_only;
                 
 
 
@@ -2443,6 +2495,11 @@ loadExternalModule().then(() => {
 
                 if (testType2 === "mcq") {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
+                  globalQuestionDataStt = questionData2;
+                }
+
+                if (testType2 === "dynamic_mcq") {
+                  globalQuestionLengthStt = questionLength2;
                   globalQuestionDataStt = questionData2;
                 }
 
@@ -2650,7 +2707,7 @@ loadExternalModule().then(() => {
                       }
                     }
                   } else {
-                    if (testType2 === "mcq") {
+                    if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
                       questionText2 =
                         questionData2.results[0].questions[questionIndex2]
                           .question;
@@ -3382,8 +3439,11 @@ loadExternalModule().then(() => {
 
                     const stringList = questionText2.split(':', 2)
                     console.log(stringList)
-                    questionText2 = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    let responderName;
+                    if(stringList.length > 1){
+                      questionText2 = stringList[1]
+                      responderName = `<b>${stringList[0]}:</b><br>`
+                    }
                     if (isImmersiveStt && questionIndex2 != 0){
                       questionText2 = await TTSContainerSTT(questionText2);
                     }
@@ -3407,7 +3467,7 @@ loadExternalModule().then(() => {
                   const isCheckStt = await SessionCheckStt(sessionId2);
                   if (!isCheckStt) {
                     console.log("failed to populate session data", isCheckStt);
-                    if (testType2 === "mcq") {
+                    if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
                       const shadowRoot =
                         document.getElementById("chat-element2").shadowRoot;
                       const button = shadowRoot.getElementById(
@@ -3538,7 +3598,7 @@ loadExternalModule().then(() => {
               
             } catch (err) {
               console.log(err);
-              if (testType2 === "mcq") {
+              if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
                 const shadowRoot =
                   document.getElementById("chat-element2").shadowRoot;
                 const button = shadowRoot.getElementById(
@@ -3575,7 +3635,7 @@ loadExternalModule().then(() => {
       } catch (e) {
         console.log(e);
         await cancelTestStt(participantId2); // cancelling session
-        if (testType2 === "mcq") {
+        if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
           const shadowRoot =
             document.getElementById("chat-element2").shadowRoot;
           const button = shadowRoot.getElementById(
