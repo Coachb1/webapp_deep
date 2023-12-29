@@ -90,6 +90,7 @@ let isImmersive = false;
 let mediaProps;
 let questionImageData;
 let initialIndex;
+let isTranscriptOnly= false;
 
 
 // sample TEst codes
@@ -1295,6 +1296,7 @@ const resetAllVariables = () => {
   recommendations = "";
   isTestSignedIn;
   clientName = "";
+  isTranscriptOnly = false;
 };
 
 function findRelatedItems(data, targetCode) {
@@ -2107,6 +2109,10 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
+    let uppercaseArray = words.map(element => element.toUpperCase());
+    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnly || testType === 'coaching')){
+      return true;
+    }
     if (words.length < 15) {
       return false;
     } else {
@@ -3224,6 +3230,8 @@ loadExternalModule().then(() => {
                 isTestSignedIn = questionData.results[0].is_logged_in;
                 isImmersive = questionData.results[0].is_immersive;
                 mediaProps = questionData.results[0].media_props;
+                isTranscriptOnly = questionData.results[0].is_transcript_only;
+
 
 
                 console.log(mediaProps,"props")

@@ -79,6 +79,7 @@ let isImmersiveStt = false;
 let mediaPropsStt;
 let questionImageDataStt;
 let initialIndexStt;
+let isTranscriptOnlyStt = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -576,6 +577,7 @@ const resetAllVariablesStt = () => {
   recommendationsStt = "";
   isTestSignedInStt;
   clientNameStt = "";
+  isTranscriptOnlyStt = false;
 };
 
 function findRelatedItemsStt(data, targetCode) {
@@ -2015,6 +2017,10 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
+    let uppercaseArray = words.map(element => element.toUpperCase());
+    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnlyStt || testType2 === 'coaching')){
+      return true;
+    }
     if (words.length < 15) {
       return false;
     } else {
@@ -2474,6 +2480,7 @@ loadExternalModule().then(() => {
                 isImmersiveStt = questionData2.results[0].is_immersive;
                 mediaPropsStt = questionData2.results[0].media_props;
                 console.log(mediaPropsStt,"props")
+                isTranscriptOnlyStt = questionData2.results[0].is_transcript_only;
                 
 
 
