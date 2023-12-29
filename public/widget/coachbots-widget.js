@@ -2832,8 +2832,11 @@ loadExternalModule().then(() => {
                 ) {
                   const stringList = questionText.split(':', 2)
                   console.log(stringList)
-                  questionText = stringList[1]
-                  const responderName = `<b>${stringList[0]}:</b><br>`
+                  let responderName;
+                  if (stringList.length > 1){
+                    questionText = stringList[1]
+                    responderName = `<b>${stringList[0]}:</b><br>`
+                  }
                   if (isImmersive && questionIndex != 0){
                     questionText = await TTSContainer(questionText);
                   }
@@ -4138,12 +4141,17 @@ loadExternalModule().then(() => {
                   ) {
                     const stringList = questionText.split(':', )
                     console.log(stringList)
-                    questionText = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    let responderName;
+                    if (stringList.length > 1){
+                      questionText = stringList[1]
+                      responderName = `<b>${stringList[0]}:</b><br>`
+                    }
                     if (isImmersive && questionIndex != 0){
                       questionText = await TTSContainer(questionText);
                     }
-                    questionText = responderName + questionText
+                    if(responderName){
+                      questionText = responderName + questionText
+                    }
                     signals.onResponse({
                       html: questionText,
                     });
