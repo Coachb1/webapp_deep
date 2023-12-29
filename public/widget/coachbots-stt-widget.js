@@ -3439,8 +3439,11 @@ loadExternalModule().then(() => {
 
                     const stringList = questionText2.split(':', 2)
                     console.log(stringList)
-                    questionText2 = stringList[1]
-                    const responderName = `<b>${stringList[0]}:</b><br>`
+                    let responderName;
+                    if(stringList.length > 1){
+                      questionText2 = stringList[1]
+                      responderName = `<b>${stringList[0]}:</b><br>`
+                    }
                     if (isImmersiveStt && questionIndex2 != 0){
                       questionText2 = await TTSContainerSTT(questionText2);
                     }
