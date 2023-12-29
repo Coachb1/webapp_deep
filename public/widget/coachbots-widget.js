@@ -2315,6 +2315,11 @@ loadExternalModule().then(() => {
         formdata["transcribe_file"] = true;
         }
 
+        // trrow a error randomly
+        // if ( 3 > 2 |  questionObj.uid == 'd3240961-93f7-4ec5-bf1f-a479c5d3f7bc') {
+        //   throw new Error("Random error");
+        // }
+
         // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
         //   method: "POST",
         //   headers: {
@@ -2369,9 +2374,12 @@ loadExternalModule().then(() => {
             // Replace the button with the "Thank you" message
             msg.parentNode.replaceChild(que_msg, msg);
             }
+
+            if( questionIndex <= questionLength) {
             appendMessage(
             "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
             );
+            }
             maxUploadFailed = true;
             break;
         }
@@ -2533,11 +2541,13 @@ loadExternalModule().then(() => {
         return resQuestionNumber;
     } catch (error) {
         console.log("error in testResponseHandler", error);
+        if( questionIndex <= questionLength) {
         setTimeout(() => {
             appendMessage(
                 "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
                 );
         }, 200);
+        }
         testResponseHandlerFailed = true;
         return;
     }
@@ -2799,6 +2809,9 @@ loadExternalModule().then(() => {
                 maxUploadFailed = false;
                 testResponseHandlerFailed = false;
                 resetAllVariables();
+                signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                });
                 return;
               }
 
