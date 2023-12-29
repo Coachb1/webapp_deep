@@ -45,7 +45,13 @@ const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
                     >
                       <AccordionTrigger className="text-left max-sm:text-xs">
                         <div>
-                          <b>{test.domain}</b> - {test.title}
+                          {test.title === "" ? (
+                            <b>{test.domain}</b>
+                          ) : (
+                            <>
+                              <b>{test.domain}</b> - {test.title}
+                            </>
+                          )}
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="max-sm:text-xs">
