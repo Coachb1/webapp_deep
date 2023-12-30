@@ -315,7 +315,6 @@ function getCredentialsForm() {
             height: fit-content;
             width: fit-content;
             padding: 8px;
-            margin-bottom: -1rem;
             border: 1px solid rgb(188, 188, 188);
             border-radius: 20px;
             color: white;
@@ -1780,7 +1779,7 @@ loadExternalModule().then(() => {
         border-right-width: 0px;
         border-bottom-width: 0px;
         border-left-width: 0px;
-        z-index: 999;
+        z-index: 4;
       "
     >
       <img
@@ -1798,7 +1797,7 @@ loadExternalModule().then(() => {
     style="
       position: fixed;
       scale: 0;
-      bottom: 6rem;
+      bottom: 15vh;
       width: 80vw;
       left: 6rem;
       transition: 0.4s ease-in-out;
@@ -1807,7 +1806,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 1rem 0rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999;
+      z-index: 999 !important;
       hiegth: 80vh;
     "
   >
@@ -1889,8 +1888,9 @@ loadExternalModule().then(() => {
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer.style.width = "80vw";
-    chatContainer.style.left = "3rem";
+    chatContainer.style.left = "10vw";
     chatContainer.style.height = "70vh";
+    chatContainer.style.bottom = "12vh";
     chatElementRef.style.height = "500px";
     chatElementRef.style.width = "80vw";
     chatContainer.style.position = "fixed";
@@ -2008,7 +2008,6 @@ loadExternalModule().then(() => {
             height: fit-content;
             width: fit-content;
             padding: 8px;
-            margin-bottom: -1rem;
             border: 1px solid rgb(188, 188, 188);
             border-radius: 20px;
             color: white;
