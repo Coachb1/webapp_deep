@@ -520,6 +520,25 @@ export const pms: Test[] = [
   },
 ];
 
+export const pitch: Test[] = [
+  {
+    domain: "Investors' Pitch Mastery",
+    test_code: "Q7FLWU4",
+    title: "Tech-Driven Food Waste Solution",
+    description:
+      "A entrepreneur stands before a diverse group of potential investors. She pitches her innovative startup idea for a sustainable, tech-driven solution to reduce food waste. She aims to convey the unique value proposition of her tech-based solution, emphasizing its market relevance, scalability, and revenue potential. The investors, known for their discerning scrutiny, expect a concise yet compelling presentation that addresses key aspects: market research, competitive analysis, monetization strategy, and a clear roadmap. Present the pitch as the entrepreneur in this situation.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Pitching Coaching Program",
+    test_code: "QOP6PXE",
+    title: "Elevating Skills and Engagement",
+    description:
+      "An L&D manager stands confidently in front of the Head of HR, presenting a proposal for an enterprise-wide coaching program. The manager highlights the program's potential to enhance employee skills, foster leadership development, and boost overall team performance. The pitch emphasizes the program's scalability and adaptability to diverse roles within the organization. The L&D manager stresses the positive impact on employee engagement and retention, aligning the coaching initiative with strategic HR goals. The presentation includes a detailed plan, incorporating feedback mechanisms and measurable outcomes, to ensure the program's effectiveness and long-term success. Present the pitch as the L&D manager in this situation.",
+    interaction_mode: "Audio",
+  },
+];
+
 export const serviceslashConsulting: Test[] = [
   {
     domain: "Coaching Assistant",

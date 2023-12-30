@@ -301,7 +301,6 @@ function getCredentialsForm2() {
             height: fit-content;
             width: fit-content;
             padding: 8px;
-            margin-bottom: -1rem;
             border: 1px solid rgb(188, 188, 188);
             border-radius: 20px;
             color: white;
@@ -1711,12 +1710,12 @@ loadExternalModule().then(() => {
   </div>
   
   <div
-    class="chat-container2" 
+    class="chat-container2 " 
     id="chat-container2"
     style="
       position: fixed;
       scale: 0;
-      bottom: 6rem;
+      bottom: 15vh;
       width: 80vw;
       right: 6rem; 
       transition: 0.4s ease-in-out; 
@@ -1725,7 +1724,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 0rem 1rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999;
+      z-index: 999 !important;
       hight: 80vh;
     "
   >
@@ -1848,9 +1847,10 @@ loadExternalModule().then(() => {
   //responsive styles for phones
   if (window.innerWidth < 600) {
     chatContainer2.style.width = "80vw";
-    chatContainer2.style.left = "3rem";
+    chatContainer2.style.right = "10vw";
     chatContainer2.style.height = "70vh";
-    chatElementRef2.style.height = "500px";
+    chatContainer2.style.bottom = "12vh";
+    chatElementRef2.style.height = "60vh";
     chatElementRef2.style.width = "80vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
@@ -1968,7 +1968,6 @@ loadExternalModule().then(() => {
             height: fit-content;
             width: fit-content;
             padding: 8px;
-            margin-bottom: -1rem;
             border: 1px solid rgb(188, 188, 188);
             border-radius: 20px;
             color: white;

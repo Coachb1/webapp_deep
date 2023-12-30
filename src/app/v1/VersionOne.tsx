@@ -24,6 +24,7 @@ import {
   questionPro,
   coachingPlus,
   pms,
+  pitch,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -60,7 +61,7 @@ const VersionOne = ({ user, groups }: any) => {
       "testingweb22222@gmail.com",
       // "testingweb11111@gmail.com",
     ];
-    const restrictedEmails = ["gmail", "yahoo", "hotmail"];
+    const restrictedEmails = ["gmail", "yahoo", "hotmail", "outlook"];
     const domain = userEmail?.split("@")[1];
     const excludedEmail = exclusionEmails.includes(userEmail!);
 
@@ -79,11 +80,11 @@ const VersionOne = ({ user, groups }: any) => {
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[12px] max-sm:h-10 truncate max-sm:mt-[6.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
+            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate max-sm:mt-[5.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
             ✨ Sign up to get the EQ Acess{" "}
             <br className="hidden max-sm:inline" /> (Workplace emails only)
@@ -119,7 +120,7 @@ const VersionOne = ({ user, groups }: any) => {
           </div>
         )}
 
-        <div className="text-lg z-50 w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
+        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Link href={"#managerplus"}>
               <Button
@@ -175,6 +176,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Coaching+
+              </Button>
+            </Link>
+            <Link href={"#pitch"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Pitch+
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -349,9 +358,16 @@ const VersionOne = ({ user, groups }: any) => {
           </div>
           <div id="coachingplus">
             <HeroAccordion
-              badgeText="Coaching +"
+              badgeText="Coaching+"
               user={user ? true : false}
               tests={coachingPlus}
+            />
+          </div>
+          <div id="pitch">
+            <HeroAccordion
+              badgeText="Pitch+"
+              user={user ? true : false}
+              tests={pitch}
             />
           </div>
           <div id="discoveryPlus">
