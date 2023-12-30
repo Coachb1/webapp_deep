@@ -2541,7 +2541,8 @@ loadExternalModule().then(() => {
         return resQuestionNumber;
     } catch (error) {
         console.log("error in testResponseHandler", error);
-        if( questionIndex <= questionLength) {
+        console.log("questionIndex: ", questionIndex, "questionLength: ", questionLength, "testType: ", testType);
+        if( questionIndex <= questionLength && testType != "coaching") {
         setTimeout(() => {
             appendMessage(
                 "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
