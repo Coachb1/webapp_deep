@@ -183,7 +183,7 @@ const VersionOne = ({ user, groups }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Pitch
+                Pitch+
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -365,7 +365,7 @@ const VersionOne = ({ user, groups }: any) => {
           </div>
           <div id="pitch">
             <HeroAccordion
-              badgeText="Pitch"
+              badgeText="Pitch+"
               user={user ? true : false}
               tests={pitch}
             />
