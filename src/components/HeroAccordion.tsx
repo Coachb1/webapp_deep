@@ -14,13 +14,14 @@ interface testTypes {
   user: boolean;
 }
 
+
 const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
   return (
     <>
       <div className={`w-full flex justify-center`}>
         <Badge
           variant={"secondary"}
-          className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+          className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
         >
           ✨ {badgeText}
         </Badge>
@@ -28,12 +29,12 @@ const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
       <div>
         <div className="relative isolate mx-auto">
           <div>
-            <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+            <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%]">
               <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
                 <Accordion
                   type="single"
                   collapsible
-                  className="w-full text-gray-500 max-sm:p-4 "
+                  className="w-full text-gray-500 max-sm:p-4"
                 >
                   {tests.map((test, i) => (
                     <AccordionItem
