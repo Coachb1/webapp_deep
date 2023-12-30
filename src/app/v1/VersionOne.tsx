@@ -24,6 +24,7 @@ import {
   questionPro,
   coachingPlus,
   pms,
+  pitch,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
@@ -60,7 +61,7 @@ const VersionOne = ({ user, groups }: any) => {
       "testingweb22222@gmail.com",
       // "testingweb11111@gmail.com",
     ];
-    const restrictedEmails = ["gmail", "yahoo", "hotmail"];
+    const restrictedEmails = ["gmail", "yahoo", "hotmail", "outlook"];
     const domain = userEmail?.split("@")[1];
     const excludedEmail = exclusionEmails.includes(userEmail!);
 
@@ -175,6 +176,14 @@ const VersionOne = ({ user, groups }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Coaching+
+              </Button>
+            </Link>
+            <Link href={"#pitch"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Pitch
               </Button>
             </Link>
             <Link href={"#discoveryPlus"}>
@@ -349,9 +358,16 @@ const VersionOne = ({ user, groups }: any) => {
           </div>
           <div id="coachingplus">
             <HeroAccordion
-              badgeText="Coaching +"
+              badgeText="Coaching+"
               user={user ? true : false}
               tests={coachingPlus}
+            />
+          </div>
+          <div id="pitch">
+            <HeroAccordion
+              badgeText="Pitch"
+              user={user ? true : false}
+              tests={pitch}
             />
           </div>
           <div id="discoveryPlus">
