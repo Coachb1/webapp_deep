@@ -9,10 +9,12 @@ import { usePathname } from "next/navigation";
 import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
-const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
+const subdomain =
+  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
 
 export default function RootLayout({
   children,
@@ -37,6 +39,18 @@ export default function RootLayout({
     console.log("LOG SESSION STARTED");
   }
 
+  useEffect(() => {
+    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
+    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    if (pathname === "/profile") {
+      coachtalk.setAttribute("style", "display: none;");
+      coachScribe.setAttribute("style", "display: none;");
+    } else {
+      coachtalk.removeAttribute("style");
+      coachScribe.removeAttribute("style");
+    }
+  }, [pathname]);
+
   return (
     <html lang="en" className="bg-gray-100 grainy">
       <UserContextProvider>
@@ -50,12 +64,17 @@ export default function RootLayout({
             >
               {/* <div className="deep-chat-poc" ></div> */}
 
-              { subdomain === "platform" ? <div className="deep-chat-poc hidden" ></div> : <div className="deep-chat-poc"></div> }
+              {subdomain === "platform" ? (
+                <div className="deep-chat-poc hidden"></div>
+              ) : (
+                <div className="deep-chat-poc"></div>
+              )}
               <div className="deep-chat-poc2"></div>
               {children}
             </ThemeProvider>
           </>
           {pathname === "/profile" ? null : <Widgets />}
+          <Toaster theme="light" richColors position="top-right" />
         </body>
       </UserContextProvider>
     </html>
