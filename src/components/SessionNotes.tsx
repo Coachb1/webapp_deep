@@ -48,7 +48,7 @@ const SessionNotes = ({ user }: any) => {
     context: string;
     date: string;
     recommendations: string;
-    mentee_email: string;
+    mentee_email_id: string;
   }
   // const commentsGivenData = [];
   const [commentsGiven, setCommentsGiven] = useState<givenCommentType[]>([]);
@@ -319,7 +319,7 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentee_email}
+                              <b>Email</b> : {comment.mentee_email_id}
                             </p>
                             {/* <input
                       type="text"
@@ -369,7 +369,7 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentee_email}
+                              <b>Email</b> : {comment.mentee_email_id}
                             </p>
                             {/* <input
                       type="text"
