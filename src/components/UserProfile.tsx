@@ -7,12 +7,12 @@ import { Link2, Loader } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
 
-const subdomain = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : null;
+const subdomain =
+  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === "platform" ? prodUrl : devUrl;
-
 
 const UserProfile = ({
   userName,
@@ -23,11 +23,13 @@ const UserProfile = ({
 }) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
-  const pathname = useRouter()
+  const pathname = useRouter();
+
+  // window.location.reload();
 
   useEffect(() => {
-    if(!userEmail){
-      pathname.push("/api/auth/login")
+    if (!userEmail) {
+      pathname.push("/api/auth/login");
     }
     try {
       fetch(`${baseURL}/accounts/`, {
@@ -100,50 +102,53 @@ const UserProfile = ({
   }, []);
 
   return (
-    <>
-      <div className="mt-4 mb-4">
-        <div className="flex flex-row items-center">
-          <p className="text-lg font-mono max-sm:text-base">Name </p>
-          <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-7">
-            {userName}
-          </p>
+    <div className="bg-accent p-2 mt-2 rounded-md">
+      <div className="pl-4 max-sm:pl-2 pt-2">Account Information</div>
+      <div className="text-sm px-4 max-sm:px-2">
+        <div className="mt-4 mb-4">
+          <div className="flex flex-row items-center">
+            <p className="text-md font-mono ">Name </p>
+            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-7 border">
+              {userName}
+            </p>
+          </div>
+          <div className="flex flex-row items-center mt-4">
+            <p className="text-sm font-mono">Email </p>
+            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
+              {userEmail}
+            </p>
+          </div>
         </div>
-        <div className="flex flex-row items-center mt-4">
-          <p className="text-lg font-mono max-sm:text-base">Email </p>
-          <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4">
-            {userEmail}
-          </p>
+        <hr />
+        <div className="my-4 flex flex-row items-center max-sm:justify-between">
+          <p className="text-sm font-mono">History</p>
+          <>
+            {testAttempedCount !== 0 ? (
+              <>
+                <Button className="ml-8 ">
+                  {candidateReportUrl && candidateReportUrl.length !== 0 ? (
+                    <>
+                      <Link href={candidateReportUrl} target="_blank">
+                        Participant Report{" "}
+                        <Link2 className="h-4 w-4 ml-2 inline" />
+                      </Link>
+                    </>
+                  ) : (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  )}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Badge variant={"destructive"} className="ml-8">
+                  Not attended any session.
+                </Badge>
+              </>
+            )}
+          </>
         </div>
       </div>
-      <hr />
-      <div className="my-4 flex flex-row items-center max-sm:justify-between">
-        <p className="text-lg font-mono">History</p>
-        <>
-          {testAttempedCount !== 0 ? (
-            <>
-              <Button className="ml-8 ">
-                {candidateReportUrl && candidateReportUrl.length !== 0 ? (
-                  <>
-                    <Link href={candidateReportUrl} target="_blank">
-                      Participant Report{" "}
-                      <Link2 className="h-4 w-4 ml-2 inline" />
-                    </Link>
-                  </>
-                ) : (
-                  <Loader className="h-4 w-4 animate-spin" />
-                )}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Badge variant={"destructive"} className="ml-8">
-                Not attended any session.
-              </Badge>
-            </>
-          )}
-        </>
-      </div>
-    </>
+    </div>
   );
 };
 
