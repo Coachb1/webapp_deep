@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrlStt = "http://127.0.0.1:8001/api/v1"
+// const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -80,6 +80,9 @@ let mediaPropsStt;
 let questionImageDataStt;
 let initialIndexStt;
 let isTranscriptOnlyStt = false;
+let isBotInitialized = false;
+let globalBotDetails;
+let faqHtmlData = '';
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -186,12 +189,183 @@ const sampleTestCodesStt = {
 };
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
-    const token2 =
-      "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-//   const token2 =
-//     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+    // const token2 =
+    //   "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  const token2 =
+    "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
+
+
+function isTestCode(text) {
+  return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+}
+
+function getAnonymousEmail() {
+    const user_name = "coachbots_anonyoususer";
+    const user_sid = getOrSetSessionId();
+    const user_email = `${user_name}-${user_sid}@gmail.com`;
+  
+    return user_email;
+  }
+
+
+  function getOrSetSessionId() {
+    let generatedSessionId = "";
+    const retrievedSessionId = localStorage.getItem("coachbots-session-id");
+    if (retrievedSessionId) {
+      console.log("SessionId found in SessionStorage.");
+      generatedSessionId = retrievedSessionId;
+    } else {
+      console.log("No sessionId found in SessionStorage. So setting it now.");
+      generatedSessionId = generateSessionId();
+      localStorage.setItem("coachbots-session-id", generatedSessionId);
+    }
+    return generatedSessionId;
+  }
+
+
+    const getBotDetails2 = async (botId) => {
+    const url = `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const botDetails = await response.json();
+      console.log("Bot Details : ", botDetails);
+      console.log("FAQS => ",botDetails.data.faqs)
+      globalBotDetails = botDetails;
+
+      let faqs = Object.keys(botDetails.data.faqs)
+      let buttons = ''
+      faqs.forEach(title => {
+          buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
+      })
+
+      console.log("buttons : ",buttons)
+
+      faqHtmlData = `<div id="option-button-container" >
+                      ${buttons}
+                      </div>`
+
+      appendMessage2(faqHtmlData)
+
+
+    //   appendMessage2('jiks')
+    //   const faqs = botDetails.faq;
+      return botDetails;
+    } catch (error) {
+      console.error(`Error in getBotDetails: ${error}`);
+    }
+  };
+
+ 
+
+function handleFaqButtonClick(question) {
+  console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
+  appendMessage2(globalBotDetails.data.faqs[question])
+  appendMessage2(faqHtmlData)
+}
+
+
+function sendBotTranscript2() {
+  const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+
+  if (!window.user) {
+    const userEmail = shadowRoot2.getElementById("input-email2").value;
+    console.log("User email : ", userEmail);
+
+    queryParams2 = new URLSearchParams({
+        submitted_email: userEmail,
+        test_attempt_session_id: sessionId2,
+    });
+    
+    fetch(
+      `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParams2}`,
+      {
+          method: "GET",
+          headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+          },
+      }
+      )
+      .then((response) => response.json())
+      .then((data) => {
+          console.log("Dynamic mcq response : ", data);
+          console.log(data.options_data)
+          questionText2 = data.options_data.next_situation;
+          newOption1NameStt = data.options_data.option_a;
+          newOption2NameStt = data.options_data.option_b;
+          newOption1TextStt = data.options_data.option_a;
+          newOption2TextStt = data.options_data.option_b;
+          // qUid = data.options_data.next_situation;
+          qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
+      })
+  }
+}
+
+function handleEndConversation() {
+  console.log("end conversation clicked");
+  appendMessage2(
+    "<b>Thanks for interacting with me. Have a great day!</b>"
+  );
+  const emailForm = `<div style="min-width: 730px;">
+  <b>Please Enter your email</b>
+  <div
+    id="input-form2"
+    style="
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+    gap: 1rem;
+    align-items: center;
+  "
+  >
+    <div style="display: flex; flex-direction: column; width: 45%;">
+      <label for="email" style="margin: 12px 0 4px 0">Email</label>
+      <input
+        id="input-email2"
+        type="email"
+        style="
+          padding: 8px;
+          margin-bottom: 4px;
+          border-radius: 4px;
+          border: 1px solid rgb(188, 188, 188);
+        "
+      />
+    </div>
+    <button
+      style="
+        height: fit-content;
+        width: fit-content;
+        padding: 8px;
+        margin-bottom: -1.3rem;
+        border: 1px solid rgb(188, 188, 188);
+        border-radius: 20px;
+        color: white;
+        background-color: #1984ff;
+      "
+      id="submit-btn2"
+      onclick="sendBotTranscript2()"
+    >
+      Submit
+    </button>
+  </div>
+</div>`;
+  if( ! window.user){
+  appendMessage2(emailForm);
+  }
+  else {
+    sendBotTranscript2()
+  }
+}
+
 
 function getCredentialsForm2() {
   let credentialsForm2;
@@ -1835,6 +2009,7 @@ loadExternalModule().then(() => {
       }'
       >
     </deep-chat>
+    <p style="font-size: 15px; width: 100%; text-align: center; padding: 0 10%; height:20px">please click on 'end' to record this conversation</p>
   </div>
   `;
 
@@ -1843,6 +2018,21 @@ loadExternalModule().then(() => {
   const chatIconContainer2 = document.getElementById("chat-icon2");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
+  const botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+
+  const _ =  getBotDetails2(botId);
+
+//   appendMessage2(`<div id="option-button-container" >
+//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
+
+//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
+
+//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+
+//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+
+//                     <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+//                 </div>`)
 
   //responsive styles for phones
   if (window.innerWidth < 600) {
@@ -1981,19 +2171,46 @@ loadExternalModule().then(() => {
       </div>
     </div>`;
   }
+  // if botid is null or notdefined show other message
 
   chatElementRef2.initialMessages = [
     {
-      html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
-      </p>`,
+      html:  botId == undefined ? `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
+      </p>` : "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all! ",
       role: "ai",
     },
-    {
-      html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-      role: "user",
-    },
+
   ];
+
+  if( botId == undefined) {
+    chatElementRef2.initialMessages.push(
+      {
+        html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+        role: "user",
+      }
+    );
+  } else {
+    // faqs = Object.keys(globalBotDetails.data.faqs)
+    // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
+    // let buttons = ''
+    // faqs.forEach(title => {
+    //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
+    // })
+
+    // console.log("buttons : ",buttons)
+
+    // let htmlData = `<div id="option-button-container" >
+    //                 ${buttons}
+    //                 </div>`
+
+    // chatElementRef2.initialMessages.push(
+    //   {
+    //     html:htmlData,
+    //     role: "user",
+    //   }
+    // );
+  }
 
   chatElementRef2.htmlClassUtilities = {
     ["deep-chat-temporary-message"]: {
@@ -2216,6 +2433,9 @@ loadExternalModule().then(() => {
 
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
+        //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
+
+          console.log("Bot ID: ",botId);
 
           if (chatElement) {
             var shadowRootMic = chatElement.shadowRoot;
@@ -2237,8 +2457,155 @@ loadExternalModule().then(() => {
           globalSignals = signals;
           // to check session active or not
 
-          // get latest message
+           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+
+          if( botId != undefined) {
+
+            
+            
+            try {
+              const response = await fetch(
+                `${baseURL2}/test-attempt-sessions/`,
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(
+                      key2,
+                      secret2
+                    )}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    participant_id: participantId2,
+                    ordering: "-id",
+                    test_id: botId,
+                    is_signature_bot: true,
+                  }),
+                }
+              );
+
+              const data = await response.json();
+              sessionId2 = data.uid;
+              isSessionActiveStt = true;
+              console.log("Session Created => ", sessionId2);
+
+              if( isBotInitialized == false ) {
+              // initialize coaching conversation 
+                try {
+    
+                    const response = await fetch(
+                      `${baseURL2}/coaching-conversations/initialize/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Basic ${createBasicAuthToken2(
+                            key2,
+                            secret2
+                          )}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          test_attempt_session_id: sessionId2,
+                          is_signature_bot: true,
+                        }),
+                      }
+                    );
+
+                    const data = await response.json();
+                    console.log("Coaching Conversation Created => ", data);
+                    conversation_id2 = data.uid;
+                    questionLength2 = 999;
+                    console.log("conversation_id", conversation_id2);
+                    isBotInitialized = true;
+
+
+                  //   const replyResponse = await fetch(
+                  //   `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
+                  //   {
+                  //     method: "POST",
+                  //     headers: {
+                  //       Authorization: `Basic ${createBasicAuthToken2(
+                  //         key2,
+                  //         secret2
+                  //       )}`,
+                  //       "Content-Type": "application/json",
+                  //     },
+                  //     body: JSON.stringify({
+                  //       participant_message_text: latestMessage,
+                  //       participant_message_url: "",
+                  //       is_signature_bot: true,
+                  //     }),
+                  //   }
+                  // );
+                  // const responseData = await replyResponse.json();
+                  // console.log(
+                  //   "Response from Coaching submit response : ",
+                  //   responseData
+                  // );
+
+                  // conversation_id2 = responseData["uid"];
+
+                  // signals.onResponse({
+                  //   text: responseData["coach_message_text"],
+                  // });
+               
+              } catch (err) {
+                console.log("Error while creating session : ", err);
+                isSessionActiveStt = false;
+              }
+            }
+            } catch (err) {
+              console.log(err);
+              isSessionActiveStt = false;
+            }
+
+            if( isBotInitialized == true) {
+            const response = await fetch(
+                `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(
+                      key2,
+                      secret2
+                    )}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    participant_message_text: latestMessage,
+                    participant_message_url: "",
+                    is_signature_bot: true,
+                  }),
+                }
+              );
+              const responseData = await response.json();
+              console.log(
+                "Response from Coaching submit response : ",
+                responseData
+              );
+
+              conversation_id2 = responseData["uid"];
+
+              signals.onResponse({
+                text: responseData["coach_message_text"],
+              });
+              setTimeout(() => {
+                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndConversation()">End</button>`)
+              }, 200);
+            }
+
+          }
+          
+          if( botId != undefined) {
+            // wait infinitely for bot to initialize
+            return;
+
+
+          }
+
+
+
           if (
             isProceedStt === "false" &&
             latestMessage.toUpperCase() != "STOP"
