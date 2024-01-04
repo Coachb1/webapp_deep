@@ -82,3 +82,20 @@
 .scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
   border-radius: 7px;
 }
+
+.shadow-custom {
+  position: relative;
+}
+
+.shadow-custom::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: linear-gradient(220.55deg, #8fff85 0%, #39a0ff 100%);
+  filter: blur(20px);
+  opacity: 0.8;
+  z-index: -1;
+}

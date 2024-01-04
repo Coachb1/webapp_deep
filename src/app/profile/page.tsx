@@ -18,7 +18,7 @@ const Page = async () => {
       <div>
         <div className="pb-6 flex flex-row items-center">
           {" "}
-          <Link href={"/v1"}>
+          <Link href={"/content-library"}>
             <ChevronLeft className="h-6 w-6 mr-2 max-sm:h-4 max-sm:w-4" />
           </Link>
           <h3 className="text-2xl font-mono font-semibold max-sm:text-lg">
