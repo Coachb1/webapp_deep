@@ -40,11 +40,14 @@ export default function RootLayout({
   }
 
   useEffect(() => {
+    console.log(pathname);
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
-    if (pathname === "/profile") {
+    if (pathname === "/profile" || pathname.includes("/coach")) {
       coachtalk.setAttribute("style", "display: none;");
       coachScribe.setAttribute("style", "display: none;");
+    } else if (pathname === "/") {
+      coachtalk.setAttribute("style", "display: none;");
     } else {
       coachtalk.removeAttribute("style");
       coachScribe.removeAttribute("style");
@@ -73,7 +76,11 @@ export default function RootLayout({
               {children}
             </ThemeProvider>
           </>
-          {pathname === "/profile" ? null : <Widgets />}
+          {/* {pathname === "/profile" ||
+          pathname.includes("coach") ||
+          pathname === "/" ? null : (
+            <Widgets />
+          )} */}
           <Toaster theme="light" richColors position="top-right" />
         </body>
       </UserContextProvider>

@@ -13,10 +13,12 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { UserCircle2 } from "lucide-react";
+import { LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const NavProfile = ({user} : any) => {
+const NavProfile = ({ user }: any) => {
+  const pathname = usePathname();
   // const { user } = useKindeBrowserClient();
 
   // if (isLoading) {
@@ -42,7 +44,7 @@ const NavProfile = ({user} : any) => {
                 </AvatarFallback>
               )}
             </Avatar> */}
-             <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+            <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="flex items-center justify-center gap-2 p-2">
@@ -63,12 +65,28 @@ const NavProfile = ({user} : any) => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <Link href={"/profile"}>Your profile</Link>
+              <Link href={"/profile"}>
+                {" "}
+                <User className="h-4 w-4 mr-2" /> Your profile
+              </Link>
             </DropdownMenuItem>
+            {pathname !== "/content-library" && (
+              <DropdownMenuItem asChild>
+                <Link href={"/content-library"}> ⚡️ Content Library</Link>
+              </DropdownMenuItem>
+            )}
+            {pathname !== "/" && (
+              <DropdownMenuItem asChild>
+                <Link href={"/"}>Coach</Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <LogoutLink>Logout</LogoutLink>
+              <LogoutLink>
+                {" "}
+                <LogOut className="h-4 w-4 mr-2" /> Logout
+              </LogoutLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
