@@ -11,7 +11,7 @@
 
 
 
-FROM node:18-alpine AS deps
+FROM 0b742944.c1.de1.container-registry.ovh.net/library/node:18-alpine AS deps
 RUN apk add --no-cache curl \
     && curl -L https://unpkg.com/@pnpm/self-installer | node
 RUN apk add --no-cache libc6-compat
@@ -22,7 +22,7 @@ RUN  pnpm install
 
 COPY public ./public
 
-FROM node:18-alpine AS builder
+FROM 0b742944.c1.de1.container-registry.ovh.net/library/node:18-alpine AS builder
 RUN apk add --no-cache curl \
     && curl -L https://unpkg.com/@pnpm/self-installer | node
 WORKDIR /app
@@ -34,7 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN pnpm build
 
-FROM node:18-alpine AS runner
+FROM 0b742944.c1.de1.container-registry.ovh.net/library/node:18-alpine AS runner
 RUN apk add --no-cache curl \
     && curl -L https://unpkg.com/@pnpm/self-installer | node
 WORKDIR /app
