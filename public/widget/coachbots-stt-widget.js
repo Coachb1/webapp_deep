@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-// const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrlStt = "http://127.0.0.1:8001/api/v1"
+const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -189,10 +189,10 @@ const sampleTestCodesStt = {
 };
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
-    // const token2 =
-    //   "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  const token2 =
-    "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+    const token2 =
+      "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // const token2 =
+  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
 
@@ -2009,7 +2009,7 @@ loadExternalModule().then(() => {
       }'
       >
     </deep-chat>
-    <p style="font-size: 15px; width: 100%; text-align: center; padding: 0 10%; height:20px">please click on 'end' to record this conversation</p>
+    <p style="font-size: ${window.innerWidth < 768 ? "10px" : "15px" }; width: 100%; text-align: center; padding: 0 10%; height:20px">please click on 'end' to record this conversation</p>
   </div>
   `;
 
