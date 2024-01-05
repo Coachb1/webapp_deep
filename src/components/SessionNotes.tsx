@@ -297,7 +297,7 @@ const SessionNotes = ({ user }: any) => {
 
           <TabsContent value="c-given">
             {commentsGiven.length > 0 && (
-              <div className="text-xs  text-orange-400 flex flex-row items-center">
+              <div className="text-xs max-sm:text-[11px] text-orange-400 flex flex-row items-center">
                 {" "}
                 <Info className="h-3 w-3 mr-1 " />
                 <b>
@@ -511,7 +511,7 @@ const SessionNotes = ({ user }: any) => {
           </TabsContent>
           <TabsContent value="c-recieved">
             {commentsRecieved.length > 0 && (
-              <div className="text-xs  text-orange-400 flex flex-row items-center">
+              <div className="text-xs max-sm:text-[11px]  text-orange-400 flex flex-row items-center">
                 {" "}
                 <Info className="h-3 w-3 mr-1 " />
                 <b>

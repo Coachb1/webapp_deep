@@ -1,40 +1,33 @@
-"use client";
-
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { constructMetadata } from "@/lib/utils";
 import Coach from "../Coach";
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
-const basicAuth =
-  "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+import Widgets from "@/components/Widgets";
+import Script from "next/script";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-const Page = () => {
-  const pathname = usePathname();
-  const bot_id = "d54cd7a4-59d2-483a-baf7-70cd28cdf884";
+export const metadata = constructMetadata({
+  title: "Coach",
+});
 
-  useEffect(() => {
-    fetch(`${baseURL}/accounts/get-bot-details/?bot_id=${bot_id}`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+const Page = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
   return (
     <div>
-      {/* dynamic Handling here */}
-      <Coach />
+      <Coach user={user} renderType="dynamic" />
+      <Widgets from="coachDynamic" />
+      <Script src="../widget/coachbots-stt-widget.js" />
+      {/* <div className="fixed max-sm:right-[1.6rem] right-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%]">
+        <p className="text-xs text-right">
+          <span className="font-bold max-sm:text-[10px] max-sm:relative max-sm:-bottom-20  max-sm:p-1 rounded-lg max-sm:bg-[#35DDB8] w-fit ">
+            CoachScribe{" "}
+          </span>
+          <span className="max-sm:hidden">
+            {" "}
+            is our high performance bot but speech analytics is not available.
+          </span>
+        </p>
+      </div> */}
     </div>
   );
 };

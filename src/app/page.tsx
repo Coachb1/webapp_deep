@@ -7,7 +7,7 @@ export const metadata = constructMetadata({
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  return <Coach user={user} />;
+  return <Coach renderType="static" user={user} />;
 };
 
 export default Page;
