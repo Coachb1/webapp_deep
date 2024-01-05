@@ -51,7 +51,7 @@ const Page = async () => {
         defer
       />
       <VersionOne user={user} groups={group_list} />
-      <Widgets />
+      <Widgets from="content-library" />
       <div
         className="elfsight-app-a2ca2565-f013-4a6a-9ad8-3ff1f7eadf9a"
         data-elfsight-app-lazy

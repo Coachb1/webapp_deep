@@ -13,37 +13,17 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { LogOut, User, UserCircle2 } from "lucide-react";
+import { LogIn, LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NavProfile = ({ user }: any) => {
   const pathname = usePathname();
-  // const { user } = useKindeBrowserClient();
-
-  // if (isLoading) {
-  //   return <Loader className="h-4 w-4 animate-spin" />;
-  // }
-
   return (
     <>
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
-            {/* <Avatar className="relative hover:cursor-pointer">
-              {user.picture ? (
-                <AvatarImage
-                  src={user.picture}
-                  alt="profile picture"
-                  className="h-8 w-8 rounded-full"
-                />
-              ) : (
-                <AvatarFallback>
-                  <span className="">{user.given_name}</span>
-                  <User className="h-6 w-4 text-zinc-900" />
-                </AvatarFallback>
-              )}
-            </Avatar> */}
             <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -75,11 +55,11 @@ const NavProfile = ({ user }: any) => {
                 <Link href={"/content-library"}> ⚡️ Content Library</Link>
               </DropdownMenuItem>
             )}
-            {pathname !== "/" && (
+            {/* {pathname !== "/" && (
               <DropdownMenuItem asChild>
-                <Link href={"/"}>Coach</Link>
+                <Link href={"/"}> <span className="mr-2">👩‍🏫</span> Coach</Link>
               </DropdownMenuItem>
-            )}
+            )} */}
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
