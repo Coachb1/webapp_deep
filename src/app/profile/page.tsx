@@ -1,3 +1,4 @@
+import Conversations from "@/components/Conversations";
 import SessionNotes from "@/components/SessionNotes";
 import UserProfile from "@/components/UserProfile";
 import { constructMetadata } from "@/lib/utils";
@@ -14,7 +15,7 @@ const Page = async () => {
   const user = await getUser();
 
   return (
-    <div className="h-full bg-white min-h-screen px-44 py-24 max-sm:px-8 max-sm:pb-5 max-sm:pt-24">
+    <div className="h-full bg-white min-h-screen px-44 max-md:px-8 max-lg:px-16 py-24 max-sm:px-8 max-sm:pb-5 max-sm:pt-24">
       <div>
         <div className="pb-6 flex flex-row items-center">
           {" "}
@@ -29,6 +30,8 @@ const Page = async () => {
         <UserProfile userName={user?.given_name!} userEmail={user?.email!} />
         <hr className="my-2" />
         <SessionNotes user={user} />
+        <hr className="my-2" />
+        <Conversations />
       </div>
     </div>
   );

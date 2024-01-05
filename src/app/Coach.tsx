@@ -1,19 +1,17 @@
 "use client";
 
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import NavProfile from "@/components/NavProfile";
 import {
+  AlertTriangle,
   BookmarkCheck,
   FileClock,
   LibraryBig,
   Loader,
   MailPlus,
-  PiIcon,
   Workflow,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import Script from "next/script";
 import { useEffect, useState } from "react";
 
 const subdomain =
@@ -26,11 +24,13 @@ const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
 
 const Coach = ({ user, renderType }: any) => {
-  const pathname: any = usePathname();
+  const pathname = usePathname();
 
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const [invalidId, setInValidCoach] = useState(false);
 
   useEffect(() => {
     if (renderType === "dynamic") {
@@ -46,12 +46,20 @@ const Coach = ({ user, renderType }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log("DYNAMIC COACH DATA ", data);
+          const coachScribe =
+            document.getElementsByClassName("deep-chat-poc2")[0];
+          console.log(coachScribe);
+          if (data.error) {
+            coachScribe.setAttribute("style", "display: none;");
+            setInValidCoach(true);
+          }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
           setIsLoading(false);
         })
         .catch((err) => {
           console.error(err);
+          setInValidCoach(true);
         });
     } else {
       setIsLoading(false);
@@ -64,7 +72,15 @@ const Coach = ({ user, renderType }: any) => {
         <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
           <div className="p-2 bg-gray-300 rounded-md text-sm">
             <Loader className="h-4 w-4 mr-2 animate-spin inline" />
-            Please wait while we prepare your coach.{" "}
+            Please wait while we prepare your coach.
+          </div>
+        </div>
+      )}
+      {invalidId && renderType === "dynamic" && (
+        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+          <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+            <AlertTriangle className="h-4 w-4 mr-2 inline" />
+            We have encountered an error. Please try again.{" "}
           </div>
         </div>
       )}
