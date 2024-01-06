@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-// const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrlStt = "http://127.0.0.1:8001/api/v1"
+const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+// const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -83,6 +83,10 @@ let isTranscriptOnlyStt = false;
 let isBotInitialized = false;
 let globalBotDetails;
 let faqHtmlData = '';
+let fitmentAnalysisInProgress = false;
+let fitmentAnalysisIndex = 1;
+let fitmentAnalysisQuestions;
+let fitmentAnalysisQnA = {}
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -188,11 +192,35 @@ const sampleTestCodesStt = {
   QJZWYYB: "IT Requirements Gathering",
 };
 
+
+
+
+const fitment_analysis = {
+        "coaching_intake": {
+            "1": "Can you share a bit about your background and the specific goals you hope to achieve?",
+            "2": "What do you expect to gain from these sessions?",
+            "3": "How do you learn best?",
+            "4": "What are the three biggest changes you'd like to make in your life within the near future?",
+            "5": "How do you prefer to communicate and receive feedback?",
+            "6": "Are there any specific values that are important to you, and that you would like your coach to be aware of?",
+            "7": "What challenges or obstacles do you anticipate in achieving your goals, and how do you envision the coach supporting you in overcoming them?"
+        },
+        "mentoring_intake": {
+            "1": "What are your career goals and how can I help support you in working towards them?",
+            "2": "What strengths do you hope to enhance through this mentorship?",
+            "3": "How do you best learn new information or skills?",
+            "4": "What challenges are you currently facing that you'd like advice on?",
+            "5": "Are there specific milestones or achievements you're aiming for?",
+            "6": "How often would you like to meet and what's the best way to communicate between sessions?",
+            "7": "What motivated you to seek out a mentorship relationship?"
+        }
+    }
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
-    // const token2 =
-    //   "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  const token2 =
-    "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+    const token2 =
+      "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // const token2 =
+  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
 
@@ -247,6 +275,9 @@ function getAnonymousEmail() {
           buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
       })
 
+      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitness Analysis</button>`
+      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">something else ?</button>`
+
       console.log("buttons : ",buttons)
 
       faqHtmlData = `<div id="option-button-container" >
@@ -263,13 +294,37 @@ function getAnonymousEmail() {
       console.error(`Error in getBotDetails: ${error}`);
     }
   };
+  
 
  
+function handleFitmentAnalysis(type) {
+    console.log("type : ", type)
+    fitmentAnalysisQuestions = fitment_analysis[type]
+    console.log("fitmentQuestions : ",fitmentAnalysisQuestions)
+    appendMessage2(fitmentAnalysisQuestions[1])
+    fitmentAnalysisInProgress = true;
+    fitmentAnalysisIndex = 1;
+
+}
 
 function handleFaqButtonClick(question) {
   console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
-  appendMessage2(globalBotDetails.data.faqs[question])
-  appendMessage2(faqHtmlData)
+
+  if( question == 'fitness_analysis') {
+    // console.log("fitness analysis clicked :",fitment_analysis[])
+    let buttons = '';
+    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('coaching_intake')">Coachig Intake</button>`
+    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('mentoring_intake')">Mentoring Intake</button>`
+    appendMessage2(buttons);
+  } else {
+    if( question == 'something_else') {
+        appendMessage2('Please ask your question in chat box')
+        return;
+    }
+    appendMessage2(globalBotDetails.data.faqs[question])
+    appendMessage2(faqHtmlData)
+  }
+  
 }
 
 
@@ -577,7 +632,7 @@ function appendMessage2(message2) {
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const messageNode = createMessageNode2(message2);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
-  gShadowRoot2.getElementById("messages").scrollBy(0, 100);
+  gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
 //image hover handlers - start
@@ -2461,8 +2516,68 @@ loadExternalModule().then(() => {
           const latestMessage = body.messages[body.messages.length - 1].text;
 
           if( botId != undefined) {
+            if( fitmentAnalysisInProgress == true) {
+                fitmentAnalysisQnA[fitmentAnalysisIndex] = {
+                    "coach": fitmentAnalysisQuestions[fitmentAnalysisIndex],
+                    "cochee": latestMessage
+                }
+                fitmentAnalysisIndex += 1;
+                console.log("fitmentAnalysisIndex : ", fitmentAnalysisIndex, Object.keys(fitmentAnalysisQuestions).length)
+                if( fitmentAnalysisIndex <=  Object.keys(fitmentAnalysisQuestions).length ) {
+                    console.log("Answer : ",latestMessage)
+                    console.log("fitment question : ", fitmentAnalysisQuestions[fitmentAnalysisIndex])
+                    signals.onResponse({
+                        html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+                    });
+                    return;
+                } else {
+                    fitmentAnalysisInProgress = false;
+                    fitmentAnalysisIndex = 0;
+                    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA)
 
-            
+                    try {
+                        const response = await fetch(
+                          `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+                          {
+                            method: "POST",
+                            headers: {
+                              Authorization: `Basic ${createBasicAuthToken2(
+                                key2,
+                                secret2
+                              )}`,
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              participant_id: participantId2,
+                              bot_id: botId,
+                              is_signature_bot: true,
+                              fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
+                            }),
+                          }
+                        );
+          
+                        const data = await response.json();
+                        console.log("Fitness Analysis Score => ", data); 
+                        score = ' {"Fitment score":"3"}'
+                        signals.onResponse({
+                            html: `<b >Fitment score is : ${data.data['Fitment score']} </b>`,
+                         });
+                        setTimeout(() => {
+                          appendMessage2(faqHtmlData);
+                        }, 200);
+                         
+                        } catch (err) {
+                            signals.onResponse({
+                                html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
+                             });
+                        }
+                   
+                    
+                    return;
+                }
+            }
+
+            console.log("Yes OMG control is reaching here") 
             
             try {
               const response = await fetch(
