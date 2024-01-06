@@ -331,8 +331,12 @@ function handleFaqButtonClick(question) {
 function sendBotTranscript2() {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
+  let userEmail = "";
   if (!window.user) {
-    const userEmail = shadowRoot2.getElementById("input-email2").value;
+    userEmail = shadowRoot2.getElementById("input-email2").value;
+  } else {
+    userEmail = window.user.email;
+  }
     console.log("User email : ", userEmail);
 
    
@@ -386,7 +390,6 @@ function sendBotTranscript2() {
 
     })
 
-  }
   return;
 }
 
