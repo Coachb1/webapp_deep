@@ -14,6 +14,13 @@ import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
+//GLOBAL USER - *.js
+interface CustomWindow extends Window {
+  user?: any;
+}
+declare let window: CustomWindow;
+
+
 const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
@@ -41,6 +48,7 @@ export default function RootLayout({
         email: user?.email!,
       });
       console.log("USER SET");
+      window.user = user;
     }
     setupLogRocketReact(LogRocket);
     setLogSessionStarted(true);

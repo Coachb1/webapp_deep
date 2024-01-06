@@ -4159,6 +4159,7 @@ const openChatContainer2 = () => {
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
 
   user2 = window.user;
+  console.log(user2)
 
   const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
 
