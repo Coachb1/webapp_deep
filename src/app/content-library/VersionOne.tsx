@@ -102,7 +102,7 @@ const VersionOne = ({ user, groups }: any) => {
           </span>
           BOTS
         </h1>
-        <h1 className="text-5xl font-bold md:text-6xl lg:text-4xl text-black max-sm:text-3xl max-sm:px-4">
+        <h1 className="text-5xl font-bold md:text-6xl lg:text-4xl text-black max-sm:text-3xl max-sm:px-4  bg-gradient-to-br from-gray-700 to-gray-400 bg-clip-text text-transparent">
           Learning Simulations Playground
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">

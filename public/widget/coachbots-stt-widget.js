@@ -4108,13 +4108,16 @@ const openChatContainer2 = () => {
     chatContainer2.style.scale = 1;
     chatContainer2.style["transform-origin"] = "100% 50%";
 
-    //to close other bot
-    const chatContainer = document.getElementById("chat-container");
-    chatContainer.style.scale = 0;
-    chatContainer.style["transform-origin"] = "100% 100%";
-    const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-    chatIcon.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+   //to close other bot
+   const botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+   if(!botId){
+     const chatContainer = document.getElementById("chat-container");
+     chatContainer.style.scale = 0;
+     chatContainer.style["transform-origin"] = "100% 100%";
+     const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+     chatIcon.src =
+       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+   }
   }
 
   if (
