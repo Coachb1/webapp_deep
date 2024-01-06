@@ -2092,7 +2092,7 @@ loadExternalModule().then(() => {
       }'
       >
     </deep-chat>
-    <p style="font-size: ${window.innerWidth < 768 ? "10px" : "15px" }; width: 100%; text-align: center; padding: 0 10%; height:20px">please click on 'end' to record this conversation</p>
+    <p style="font-size: ${window.innerWidth < 768 ? "10px" : "15px" }; width: 100%; text-align: left; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
   </div>
   `;
 
@@ -2711,7 +2711,7 @@ loadExternalModule().then(() => {
                 text: coachResponse,
               });
               setTimeout(() => {
-                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndConversation()">End</button>`)
+                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">Done</button>`)
               }, 200);
             }
 
