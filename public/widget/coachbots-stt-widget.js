@@ -2705,7 +2705,7 @@ loadExternalModule().then(() => {
               }
 
               signals.onResponse({
-                text: responseData["coach_message_text"].split(':').slice(1).join(':').trim(),
+                text: coachResponse,
               });
               setTimeout(() => {
                 appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndConversation()">End</button>`)
