@@ -170,14 +170,14 @@ const VersionOne = ({ user, groups }: any) => {
                 PMS enabled
               </Button>
             </Link>
-            <Link href={"#coachingplus"}>
+            {/* <Link href={"#coachingplus"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Coaching+
               </Button>
-            </Link>
+            </Link> */}
             <Link href={"#pitch"}>
               <Button
                 variant={"secondary"}
@@ -356,13 +356,13 @@ const VersionOne = ({ user, groups }: any) => {
               tests={pms}
             />
           </div>
-          <div id="coachingplus">
+          {/* <div id="coachingplus">
             <HeroAccordion
               badgeText="Coaching+"
               user={user ? true : false}
               tests={coachingPlus}
             />
-          </div>
+          </div> */}
           <div id="pitch">
             <HeroAccordion
               badgeText="Pitch+"
