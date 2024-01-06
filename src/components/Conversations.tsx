@@ -140,9 +140,11 @@ const Conversations = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("FOR ADMIN : ", data);
-              const convertedData: ConvertedConversation[] =
-                convertJsonToExpectedFormat(data);
-              setConvertsationDataAdmin(convertedData);
+              if (data[0] != 'Bot not Found'){
+                const convertedData: ConvertedConversation[] =
+                  convertJsonToExpectedFormat(data);
+                setConvertsationDataAdmin(convertedData);
+              }
               //   setLoading(false);
             })
             .catch((err) => {
