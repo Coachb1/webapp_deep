@@ -31,7 +31,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const { user, isLoading } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
-  const [botId, setBotId] = useState<string>("");
+  const [botId, setBotId] = useState<string>("coach-d54cd-aravsharma");
 
   if (!isLoading && !logSessionStarted) {
     LogRocket.init("irkulq/coachbots");
@@ -56,7 +56,7 @@ export default function RootLayout({
       coachScribe.setAttribute("style", "display: none;");
     } else if (pathname === "/") {
       coachtalk.setAttribute("style", "display: none;");
-      coachScribe.setAttribute("style", "display: none;");
+      // coachScribe.setAttribute("style", "display: none;");s
     } else {
       coachtalk.removeAttribute("style");
       coachScribe.removeAttribute("style");
@@ -68,21 +68,7 @@ export default function RootLayout({
       pathname !== "/"
     ) {
       console.log("BOT ID : ", pathname.split("/")[1]);
-      const bot_id = pathname.split("/")[1];
       setBotId(pathname.split("/")[1]);
-      // fetch(`${baseURL}/accounts/get-bot-details/?bot_id=${bot_id}`, {
-      //   method: "GET",
-      //   headers: {
-      //     Authorization: basicAuth,
-      //   },
-      // })
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     console.log(data);
-      //   })
-      //   .catch((err) => {
-      //     console.error(err);
-      //   });
     }
   }, [pathname]);
 
