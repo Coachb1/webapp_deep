@@ -219,8 +219,8 @@ const fitment_analysis = {
 function createBasicAuthToken2(key2 = "", secret2 = "") {
     const token2 =
       "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  // const token2 =
-  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+//   const token2 =
+//     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
 
@@ -335,13 +335,34 @@ function sendBotTranscript2() {
     const userEmail = shadowRoot2.getElementById("input-email2").value;
     console.log("User email : ", userEmail);
 
+   
     queryParams2 = new URLSearchParams({
+      participant_id: participantId2,
+      email: userEmail,
+    });
+  
+  fetch(
+    `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      credsUpdated2 = data.status;
+      console.log("name email updated, sending email");
+
+      const queryParamsEmail2 = new URLSearchParams({
         submitted_email: userEmail,
         test_attempt_session_id: sessionId2,
     });
-    
+
     fetch(
-      `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParams2}`,
+      `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
       {
           method: "GET",
           headers: {
@@ -362,7 +383,11 @@ function sendBotTranscript2() {
           // qUid = data.options_data.next_situation;
           qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
       })
+
+    })
+
   }
+  return;
 }
 
 function handleEndConversation() {
@@ -2635,35 +2660,7 @@ loadExternalModule().then(() => {
                     isBotInitialized = true;
 
 
-                  //   const replyResponse = await fetch(
-                  //   `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
-                  //   {
-                  //     method: "POST",
-                  //     headers: {
-                  //       Authorization: `Basic ${createBasicAuthToken2(
-                  //         key2,
-                  //         secret2
-                  //       )}`,
-                  //       "Content-Type": "application/json",
-                  //     },
-                  //     body: JSON.stringify({
-                  //       participant_message_text: latestMessage,
-                  //       participant_message_url: "",
-                  //       is_signature_bot: true,
-                  //     }),
-                  //   }
-                  // );
-                  // const responseData = await replyResponse.json();
-                  // console.log(
-                  //   "Response from Coaching submit response : ",
-                  //   responseData
-                  // );
-
-                  // conversation_id2 = responseData["uid"];
-
-                  // signals.onResponse({
-                  //   text: responseData["coach_message_text"],
-                  // });
+                 
                
               } catch (err) {
                 console.log("Error while creating session : ", err);
@@ -2701,9 +2698,14 @@ loadExternalModule().then(() => {
               );
 
               conversation_id2 = responseData["uid"];
+              let coachResponse =  responseData["coach_message_text"]
+
+              if(coachResponse.split(':').length > 1 ) {
+                coachResponse = coachResponse.split(':').slice(1).join(':').trim()
+              }
 
               signals.onResponse({
-                text: responseData["coach_message_text"],
+                text: responseData["coach_message_text"].split(':').slice(1).join(':').trim(),
               });
               setTimeout(() => {
                 appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndConversation()">End</button>`)
