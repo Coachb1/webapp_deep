@@ -242,18 +242,6 @@ const SessionNotes = ({ user }: any) => {
     }
   };
 
-  // const searchItemsHandlerRecived = (e: any) => {
-  //   const filteredData = filterByValue(commentsRecieved, e.target.value);
-  //   setCommmentsRecieved(filteredData);
-  //   if (e.target.value === "") {
-  //     setSearchTriggered(false);
-  //     getCommentsRecieved();
-  //   } else {
-  //     setFilteredRecievedItems(filteredData);
-  //     setSearchTriggered(true);
-  //   }
-  // };
-
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Session notes</div>
