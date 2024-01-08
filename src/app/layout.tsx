@@ -17,8 +17,11 @@ const inter = Inter({ subsets: ["latin"] });
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
   user?: any;
+  locallStorage? : Storage
+  locationn? : Location
 }
 declare let window: CustomWindow;
+
 
 
 const subdomain =
@@ -39,6 +42,7 @@ export default function RootLayout({
   const { user, isLoading } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("coach-d54cd-aravsharma");
+  const [showCoachBot, setShowCoachBot] = useState(false);
 
   if (!isLoading && !logSessionStarted) {
     LogRocket.init("irkulq/coachbots");
@@ -54,6 +58,34 @@ export default function RootLayout({
     setLogSessionStarted(true);
     console.log("LOG SESSION STARTED");
   }
+  
+
+  //auto refresh and conditional coach(aravsharma) bot display
+  const hasVisitedContentLibrary = typeof window !== 'undefined' ? window.localStorage.getItem("visitedContentLibrary") : null;
+const hasVisitedCoach = typeof window !== 'undefined' ? window.localStorage.getItem("visitedCoach") : null;
+  useEffect(() => {
+    if (botId && pathname !== "/content-library") {
+      setShowCoachBot(true);
+      if (!hasVisitedCoach) {
+        window.location.reload();
+        window.localStorage.setItem("visitedCoach", "true");
+      }
+    } else if (pathname === "/content-library") {
+      if (!hasVisitedContentLibrary) {
+        window.location.reload();
+        window.localStorage.setItem("visitedContentLibrary", "true");
+      }
+      setShowCoachBot(false);
+    }
+    if (pathname !== "/content-library") {
+      window.localStorage.removeItem("visitedContentLibrary");
+    }
+    if (pathname !== "/") {
+      window.localStorage.removeItem("visitedCoach");
+    }
+    console.log(document.getElementsByClassName("deep-chat-poc2")[0]);
+  }, [pathname]);
+
 
   useEffect(() => {
     console.log(pathname);
@@ -64,7 +96,7 @@ export default function RootLayout({
       coachScribe.setAttribute("style", "display: none;");
     } else if (pathname === "/") {
       coachtalk.setAttribute("style", "display: none;");
-      // coachScribe.setAttribute("style", "display: none;");s
+      // coachScribe.setAttribute("style", "display: none;");
     } else {
       coachtalk.removeAttribute("style");
       coachScribe.removeAttribute("style");
@@ -96,7 +128,7 @@ export default function RootLayout({
               ) : (
                 <div className="deep-chat-poc"></div>
               )}
-              {botId ? (
+              {pathname === "/" ? (
                 <div data-bot-id={botId} className="deep-chat-poc2"></div>
               ) : (
                 <div className="deep-chat-poc2"></div>
