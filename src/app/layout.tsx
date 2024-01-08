@@ -111,6 +111,7 @@ export default function RootLayout({
     ) {
       console.log("BOT ID : ", pathname.split("/")[1]);
       setBotId(pathname.split("/")[1]);
+      setShowCoachBot(true);
     }
   }, [pathname]);
 
