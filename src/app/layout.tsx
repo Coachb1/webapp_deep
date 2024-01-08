@@ -17,12 +17,10 @@ const inter = Inter({ subsets: ["latin"] });
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
   user?: any;
-  locallStorage? : Storage
-  locationn? : Location
+  locallStorage?: Storage;
+  locationn?: Location;
 }
 declare let window: CustomWindow;
-
-
 
 const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
@@ -58,13 +56,18 @@ export default function RootLayout({
     setLogSessionStarted(true);
     console.log("LOG SESSION STARTED");
   }
-  
 
   //auto refresh and conditional coach(aravsharma) bot display
-  const hasVisitedContentLibrary = typeof window !== 'undefined' ? window.localStorage.getItem("visitedContentLibrary") : null;
-const hasVisitedCoach = typeof window !== 'undefined' ? window.localStorage.getItem("visitedCoach") : null;
+  const hasVisitedContentLibrary =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedContentLibrary")
+      : null;
+  const hasVisitedCoach =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedCoach")
+      : null;
   useEffect(() => {
-    if (botId && pathname !== "/content-library") {
+    if (botId && pathname === "/") {
       setShowCoachBot(true);
       if (!hasVisitedCoach) {
         window.location.reload();
@@ -85,7 +88,6 @@ const hasVisitedCoach = typeof window !== 'undefined' ? window.localStorage.getI
     }
     console.log(document.getElementsByClassName("deep-chat-poc2")[0]);
   }, [pathname]);
-
 
   useEffect(() => {
     console.log(pathname);
