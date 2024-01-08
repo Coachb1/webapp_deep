@@ -385,14 +385,15 @@ function sendBotTranscript2() {
       .then((response) => response.json())
       .then((data) => {
           console.log("Dynamic mcq response : ", data);
-          console.log(data.options_data)
-          questionText2 = data.options_data.next_situation;
-          newOption1NameStt = data.options_data.option_a;
-          newOption2NameStt = data.options_data.option_b;
-          newOption1TextStt = data.options_data.option_a;
-          newOption2TextStt = data.options_data.option_b;
-          // qUid = data.options_data.next_situation;
-          qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
+          appendMessage2(faqHtmlData)
+          // console.log(data.options_data)
+          // questionText2 = data.options_data.next_situation;
+          // newOption1NameStt = data.options_data.option_a;
+          // newOption2NameStt = data.options_data.option_b;
+          // newOption1TextStt = data.options_data.option_a;
+          // newOption2TextStt = data.options_data.option_b;
+          // // qUid = data.options_data.next_situation;
+          // qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
       })
 
     })
@@ -841,6 +842,8 @@ const resetAllVariablesStt = () => {
   isTestSignedInStt;
   clientNameStt = "";
   isTranscriptOnlyStt = false;
+  allowRecommendationTestCode = false;
+  recommendationClicked = false;
 };
 
 function findRelatedItemsStt(data, targetCode) {
@@ -1727,6 +1730,10 @@ async function submitEmailAndName2() {
       const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
       if (recommDiv) {
         appendMessage2(recommDiv);
+      }
+
+      if (recommendationClicked){
+        appendMessage2(faqHtmlData);
       }
       resetAllVariablesStt();
     })
@@ -2655,7 +2662,7 @@ loadExternalModule().then(() => {
                     `,
                     });
                 console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-                recommendationClicked = false;
+                // recommendationClicked = false;
               } catch (error) {
                 console.error(`Error in get recommendation tests: ${error}`);
               }
