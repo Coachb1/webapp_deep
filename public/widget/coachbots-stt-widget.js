@@ -398,19 +398,67 @@ function handleEndConversation() {
   appendMessage2(
     "<b>Thanks for interacting with me. Have a great day!</b>"
   );
-  const emailForm = `<div style="min-width: 730px;">
+
+  let emailForm;
+  if(window.innerWidth > 768) {
+    emailForm = `<div style="min-width: 730px;">
+    <b>Please Enter your email</b>
+    <div
+      id="input-form2"
+      style="
+      display: flex;
+      flex-direction: row;
+      min-width: 100%;
+      gap: 1rem;
+      align-items: center;
+    "
+    >
+      <div style="display: flex; flex-direction: column; width: 45%;">
+        <label for="email" style="margin: 12px 0 4px 0">Email</label>
+        <input
+          id="input-email2"
+          type="email"
+          style="
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid rgb(188, 188, 188);
+          "
+        />
+      </div>
+      <button
+        style="
+          height: fit-content;
+          width: fit-content;
+          padding: 8px;
+          margin-bottom: -1.3rem;
+          border: 1px solid rgb(188, 188, 188);
+          border-radius: 20px;
+          color: white;
+          background-color: #1984ff;
+        "
+        id="submit-btn2"
+        onclick="sendBotTranscript2()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>`;
+  } else {
+    emailForm = `<div style="min-width: 200px;">
   <b>Please Enter your email</b>
   <div
     id="input-form2"
     style="
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     min-width: 100%;
-    gap: 1rem;
-    align-items: center;
+    gap: 8px;
+    align-items: flex-start;
+    justify-content: flex-start;
   "
   >
-    <div style="display: flex; flex-direction: column; width: 45%;">
+    <div style="display: flex; flex-direction: column; width: 100%;">
       <label for="email" style="margin: 12px 0 4px 0">Email</label>
       <input
         id="input-email2"
@@ -428,7 +476,6 @@ function handleEndConversation() {
         height: fit-content;
         width: fit-content;
         padding: 8px;
-        margin-bottom: -1.3rem;
         border: 1px solid rgb(188, 188, 188);
         border-radius: 20px;
         color: white;
@@ -441,6 +488,7 @@ function handleEndConversation() {
     </button>
   </div>
 </div>`;
+  }
   if( ! window.user){
   appendMessage2(emailForm);
   }
@@ -2092,7 +2140,7 @@ loadExternalModule().then(() => {
       }'
       >
     </deep-chat>
-    <p style="font-size: ${window.innerWidth < 768 ? "10px" : "15px" }; width: 100%; text-align: left; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
+    <p style="font-size: ${window.innerWidth < 768 ? "8px" : "12px" }; width: 100%; text-align: center; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
   </div>
   `;
 
@@ -2121,9 +2169,9 @@ loadExternalModule().then(() => {
   if (window.innerWidth < 600) {
     chatContainer2.style.width = "80vw";
     chatContainer2.style.right = "10vw";
-    chatContainer2.style.height = "70vh";
+    chatContainer2.style.height = "78vh";
     chatContainer2.style.bottom = "12vh";
-    chatElementRef2.style.height = "60vh";
+    chatElementRef2.style.height = "65vh";
     chatElementRef2.style.width = "80vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
@@ -2196,7 +2244,6 @@ loadExternalModule().then(() => {
       </div>
     </div>`;
   } else {
-    console.log("NOT using des Form");
     credentialsForm2 = `
       <div>
       <b>For obtaining your report, please submit the following details.</b>
