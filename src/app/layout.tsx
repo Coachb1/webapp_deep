@@ -128,7 +128,7 @@ const hasVisitedCoach = typeof window !== 'undefined' ? window.localStorage.getI
               ) : (
                 <div className="deep-chat-poc"></div>
               )}
-              {pathname === "/" ? (
+              {showCoachBot ? (
                 <div data-bot-id={botId} className="deep-chat-poc2"></div>
               ) : (
                 <div className="deep-chat-poc2"></div>
