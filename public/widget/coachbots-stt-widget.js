@@ -87,6 +87,8 @@ let fitmentAnalysisInProgress = false;
 let fitmentAnalysisIndex = 1;
 let fitmentAnalysisQuestions;
 let fitmentAnalysisQnA = {}
+let recommendationClicked = false;
+let allowRecommendationTestCode = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -254,10 +256,9 @@ function getAnonymousEmail() {
 
 
     const getBotDetails2 = async (botId) => {
-    const url = `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`, {
         method: "GET",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
@@ -275,6 +276,7 @@ function getAnonymousEmail() {
           buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
       })
 
+      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">something else ?</button>`
 
@@ -319,6 +321,11 @@ function handleFaqButtonClick(question) {
   } else {
     if( question == 'something_else') {
         appendMessage2('Please ask your question in chat box')
+        return;
+    }
+    if( question == 'recommendations') {
+        appendMessage2('please provide a context for recommendations in the chatbox')
+        recommendationClicked = true;
         return;
     }
     appendMessage2(globalBotDetails.data.faqs[question])
@@ -378,14 +385,15 @@ function sendBotTranscript2() {
       .then((response) => response.json())
       .then((data) => {
           console.log("Dynamic mcq response : ", data);
-          console.log(data.options_data)
-          questionText2 = data.options_data.next_situation;
-          newOption1NameStt = data.options_data.option_a;
-          newOption2NameStt = data.options_data.option_b;
-          newOption1TextStt = data.options_data.option_a;
-          newOption2TextStt = data.options_data.option_b;
-          // qUid = data.options_data.next_situation;
-          qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
+          appendMessage2(faqHtmlData)
+          // console.log(data.options_data)
+          // questionText2 = data.options_data.next_situation;
+          // newOption1NameStt = data.options_data.option_a;
+          // newOption2NameStt = data.options_data.option_b;
+          // newOption1TextStt = data.options_data.option_a;
+          // newOption2TextStt = data.options_data.option_b;
+          // // qUid = data.options_data.next_situation;
+          // qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
       })
 
     })
@@ -882,6 +890,8 @@ const resetAllVariablesStt = () => {
   isTestSignedInStt;
   clientNameStt = "";
   isTranscriptOnlyStt = false;
+  allowRecommendationTestCode = false;
+  recommendationClicked = false;
 };
 
 function findRelatedItemsStt(data, targetCode) {
@@ -1700,7 +1710,7 @@ function sendEmail2(session_id,reportUrl) {
     {
       method: "POST",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key, secret)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
     }
@@ -1769,6 +1779,10 @@ async function submitEmailAndName2() {
       if (recommDiv) {
         appendMessage2(recommDiv);
       }
+
+      if (recommendationClicked){
+        appendMessage2(faqHtmlData);
+      }
       resetAllVariablesStt();
     })
     .catch((err) => {
@@ -1798,7 +1812,7 @@ async function submitEmailAndName2() {
   //     .catch((err) => console.log(err));
 }
 
-function handleSurpriseMeButtonClick2() {
+function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title) {
   const challenges2 = [
     "QEEG5VY",
     "QMFMKQ4",
@@ -1815,32 +1829,46 @@ function handleSurpriseMeButtonClick2() {
     "QHYRLGN",
     "QJZWYYB",
   ];
-  console.log("surprise me! button clicked");
+  console.log("surprise me! button clicked", "recommendation code : ", recommendation_code, "recommendation title : ", recommendation_title);
 
-  const randomIndex2 = Math.floor(Math.random() * challenges2.length);
-  const randomChallenge2 = challenges2[randomIndex2];
+  let tempTestTitle = ""
 
-  //   console.log(randomChallenge);
-  //   testCode = randomChallenge.test_code;
-  //   codeAvailabilityUserChoice = true;
-  console.log("random challenge :==>", randomChallenge2);
-  testCode2 = randomChallenge2.trim();
+  if( recommendation_code == undefined || recommendation_code == null || recommendation_code == ""){
+    const randomIndex2 = Math.floor(Math.random() * challenges2.length);
+    const randomChallenge2 = challenges2[randomIndex2];
 
-  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  // gShadowRoot2.getElementById("surprise-button").disabled = true;
+    //   console.log(randomChallenge);
+    //   testCode = randomChallenge.test_code;
+    //   codeAvailabilityUserChoice = true;
+    console.log("random challenge :==>", randomChallenge2);
+    testCode2 = randomChallenge2.trim();
 
-  // removing button
-  const msg = gShadowRoot2.getElementById("surprise-button");
-  // button.parentNode.removeChild(button)
-  const que_msg = document.createElement("div");
-  que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-  // Replace the button with the "Thank you" message
-  msg.parentNode.replaceChild(que_msg, msg);
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    // gShadowRoot2.getElementById("surprise-button").disabled = true;
+
+    // removing button
+    const msg = gShadowRoot2.getElementById("surprise-button");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    tempTestTitle = sampleTestCodesStt[randomChallenge2]
+  } else {
+    console.log("handling recommendation in surprise me")
+    testCode2 = recommendation_code;
+    tempTestTitle = recommendation_title;
+    allowRecommendationTestCode = true;
+    testCodeAvailability2 = true;
+    codeAvailabilityUserChoice2 = "No";
+    optedNo2 = true;
+    userAcessAvailability2 = true;
+  }
 
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot2.getElementById("text-input").textContent =
-      sampleTestCodesStt[randomChallenge2];
+      tempTestTitle;
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -2590,7 +2618,7 @@ loadExternalModule().then(() => {
            // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
 
-          if( botId != undefined) {
+          if( botId != undefined && allowRecommendationTestCode == false) {
             if( fitmentAnalysisInProgress == true) {
                 fitmentAnalysisQnA[fitmentAnalysisIndex] = {
                     "coach": fitmentAnalysisQuestions[fitmentAnalysisIndex],
@@ -2650,6 +2678,44 @@ loadExternalModule().then(() => {
                     
                     return;
                 }
+            }
+
+            if( recommendationClicked == true) {
+              appendMessage2("please wait ... while we are getting some recommendations for you")
+
+                  
+    
+              try {
+                const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}`, {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  },
+                });
+          
+                const recommendation_tests_data = await response.json();
+
+                const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
+                const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
+
+                const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
+                const created_test = recommendation_tests_data.created_scenario[created_test_code]
+                console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
+
+                signals.onResponse({
+                    html: `<b >Here are some recommendations for you : </b> <br>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    `,
+                    });
+                console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
+                // recommendationClicked = false;
+              } catch (error) {
+                console.error(`Error in get recommendation tests: ${error}`);
+              }
+
+
+              return;
             }
 
             console.log("Yes OMG control is reaching here") 
@@ -2764,8 +2830,9 @@ loadExternalModule().then(() => {
 
           }
           
-          if( botId != undefined) {
+          if( botId != undefined && allowRecommendationTestCode == false ) {
             // wait infinitely for bot to initialize
+            console.log("returning from here (bot logic)")
             return;
 
 
@@ -2899,7 +2966,7 @@ loadExternalModule().then(() => {
             });
             //end
 
-            if (!buttonTextArray.includes(latestMessage)) {
+            if (!buttonTextArray.includes(latestMessage) && allowRecommendationTestCode == false) {
               if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Not allowed! choose option to continue. </b></p>",
@@ -2946,6 +3013,8 @@ loadExternalModule().then(() => {
             "QJ3RTFF",
             "QBEWUOM",
           ];
+
+          console.log("questionIndex2", questionIndex2, "userAcessAvailability2", userAcessAvailability2);
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (optedNo2 === false) {
               testCode2 = body.messages[0].text;
