@@ -87,6 +87,13 @@ let fitmentAnalysisInProgress = false;
 let fitmentAnalysisIndex = 1;
 let fitmentAnalysisQuestions;
 let fitmentAnalysisQnA = {}
+let feedbackBotIndex = 1;
+let feedbackBotQuestions;
+let feedbackBotQnA = {};
+let isFeedbackConvEnd= false;
+let FeedbackUserEmail;
+let botId;
+let botType;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 
@@ -221,6 +228,7 @@ const fitment_analysis = {
 function createBasicAuthToken2(key2 = "", secret2 = "") {
     const token2 =
       "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+      // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
 //   const token2 =
 //     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
@@ -254,7 +262,288 @@ function getAnonymousEmail() {
     return generatedSessionId;
   }
 
+  const getUserOrAnonymousDetails = (choice)=>{
+    console.log(choice)
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("anonymous");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+    if (choice === 'No'){
+      if (!window.user){
+        let emailForm;
+        if(window.innerWidth > 768) {
+          emailForm = `<div style="min-width: 730px; id="feedback_email_form">
+          <b>Please Enter your email</b>
+          <div
+            id="feedback-email-input"
+            style="
+            display: flex;
+            flex-direction: row;
+            min-width: 100%;
+            gap: 1rem;
+            align-items: center;
+          "
+          >
+            <div style="display: flex; flex-direction: column; width: 45%;">
+              <label for="email" style="margin: 12px 0 4px 0">Email</label>
+              <input
+                id="feedback-email-input2"
+                type="email"
+                style="
+                  padding: 8px;
+                  margin-bottom: 4px;
+                  border-radius: 4px;
+                  border: 1px solid rgb(188, 188, 188);
+                "
+              />
+            </div>
+            <button
+              style="
+                height: fit-content;
+                width: fit-content;
+                padding: 8px;
+                margin-bottom: -1.3rem;
+                border: 1px solid rgb(188, 188, 188);
+                border-radius: 20px;
+                color: white;
+                background-color: #1984ff;
+              "
+              id="submit-btn2"
+              onclick="feedbackBotInitialFlow('save_email')"
+            >
+              Submit
+            </button>
+          </div>
+        </div>`;
+        } else {
+          emailForm = `<div style="min-width: 200px;" id = "feedback_email_form">
+        <b>Please Enter your email</b>
+        <div
+          id="feedback-email-input"
+          style="
+          display: flex;
+          flex-direction: column;
+          min-width: 100%;
+          gap: 8px;
+          align-items: flex-start;
+          justify-content: flex-start;
+        "
+        >
+          <div style="display: flex; flex-direction: column; width: 100%;">
+            <label for="email" style="margin: 12px 0 4px 0">Email</label>
+            <input
+              id="feedback-email-input2"
+              type="email"
+              style="
+                padding: 8px;
+                margin-bottom: 4px;
+                border-radius: 4px;
+                border: 1px solid rgb(188, 188, 188);
+              "
+            />
+          </div>
+          <button
+            style="
+              height: fit-content;
+              width: fit-content;
+              padding: 8px;
+              border: 1px solid rgb(188, 188, 188);
+              border-radius: 20px;
+              color: white;
+              background-color: #1984ff;
+            "
+            id="submit-btn2"
+            onclick="onclick="feedbackBotInitialFlow('save_email')""
+          >
+            Submit
+          </button>
+        </div>
+      </div>`;
+        }
+        appendMessage2(emailForm)
 
+      } else{
+        FeedbackUserEmail = user.email
+        feedbackBotInitialFlow('save_email')
+      }
+    } else if (choice === "Yes"){
+      FeedbackUserEmail = 'Anonymous User'
+      feedbackBotInitialFlow('save_email')
+
+    }
+  }
+  const handleEndFeedback = async () =>{
+    if (isFeedbackConvEnd){
+      return;
+    }
+    isFeedbackConvEnd = true;
+    appendMessage2("<p> That's it Thank you for your feedback.")
+    const queryparams = new URLSearchParams({
+      conversation: JSON.stringify(feedbackBotQnA),
+      bot_id: botId,
+      type_of_email: "feedback_conv",
+      user_email: FeedbackUserEmail
+  });
+
+    // sending feedback conversation to bot owner
+    const response = await fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+          method: "GET",
+          headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+          },
+      }
+      )
+      .then((response) => response.json())
+      .then((data) => {
+          console.log("Dynamic mcq response : ", data);
+          
+      })
+
+    // resetAllVariablesStt()
+    appendMessage2("please wait while we are getting some recommendations for you...")
+
+                  
+    
+    try {
+      const params = new URLSearchParams({
+        context: JSON.stringify(feedbackBotQnA),
+        for : 'feedback_bot'
+      })
+      const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?${params}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const recommendation_tests_data = await response.json();
+
+      const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
+      const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
+
+      const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
+      const created_test = recommendation_tests_data.created_scenario[created_test_code]
+      console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
+
+      appendMessage2(
+          `<b >Here are some recommendations for you : </b> <br>
+          <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
+          <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+          `
+          );
+      console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
+      // recommendationClicked = false;
+      isFeedbackConvEnd = true;
+    } catch (error) {
+      console.error(`Error in get recommendation tests: ${error}`);
+    }
+
+
+
+
+  }
+
+  const feedbackBotQnAFlow = (flow)=>{
+    if (flow === 'up'){
+      const queryparams = new URLSearchParams({
+                conversation: "",
+                bot_id: botId,
+                type_of_email: "like_or_dislike",
+                user_email: FeedbackUserEmail
+            });
+      const response = fetch(
+        `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+        {
+            method: "GET",
+            headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+            },
+        }
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Dynamic mcq response : ", data);
+            
+        })
+          
+      console.log("sent email");
+      feedbackBotIndex += 1
+      appendMessage2(feedbackBotQuestions[feedbackBotIndex])
+      setTimeout(() => {
+        appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
+      }, 200);
+
+    } else if (flow === 'down'){
+      feedbackBotIndex += 1
+      appendMessage2(feedbackBotQuestions[feedbackBotIndex])
+      setTimeout(() => {
+        appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
+      }, 200);
+    }
+
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("thumbsup-down");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+
+
+
+
+  }
+
+    const feedbackBotInitialFlow = async (flow)=>{
+
+      if (flow === 'initial'){
+        const anonymous_text = `<div id="anonymous" >
+        <b>want to continoue as Anonymous?</b>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
+        </div>`;
+        appendMessage2(anonymous_text)
+      } else if (flow === 'save_email'){
+        if (!window.user && FeedbackUserEmail != 'Anonymous User'){
+        const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+        FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
+
+        const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+        const msg = gshadowRoot.getElementById("feedback_email_form");
+        // button.parentNode.removeChild(button)
+        const que_msg = document.createElement("div");
+        que_msg.innerHTML = "Thank You"; // You can customize the message here
+        // Replace the button with the "Thank you" message
+        msg.parentNode.replaceChild(que_msg, msg);
+
+        }
+        feedbackBotIndex = 0
+        const div_cont = `<div id="thumbsup-down" >
+        
+        <b>What do you think of our bot?</b>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+          </svg>
+          </i></button>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('down')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
+            <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.38 1.38 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51q.205.03.443.051c.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.9 1.9 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2 2 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.2 3.2 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.8 4.8 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591"/>
+          </svg>
+          </button>
+        </div>`;
+        appendMessage2(div_cont)
+        
+      }
+
+
+
+    }
     const getBotDetails2 = async (botId) => {
 
     try {
@@ -269,6 +558,8 @@ function getAnonymousEmail() {
       console.log("Bot Details : ", botDetails);
       console.log("FAQS => ",botDetails.data.faqs)
       globalBotDetails = botDetails;
+      botType = botDetails.data.bot_type;
+      console.log(botType)
 
       let faqs = Object.keys(botDetails.data.faqs)
       let buttons = ''
@@ -285,8 +576,12 @@ function getAnonymousEmail() {
       faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
                       </div>`
-
-      appendMessage2(faqHtmlData)
+      if(botType != 'feedback_bot'){
+        appendMessage2(faqHtmlData)
+      } else{
+        feedbackBotInitialFlow('initial')
+        feedbackBotQuestions = botDetails.data.faqs;
+      }
 
 
     //   appendMessage2('jiks')
@@ -2177,7 +2472,7 @@ loadExternalModule().then(() => {
   const chatIconContainer2 = document.getElementById("chat-icon2");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
-  const botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+  botId = document.querySelector('.deep-chat-poc2').dataset.botId;
 
   const _ =  getBotDetails2(botId);
 
@@ -2333,8 +2628,11 @@ loadExternalModule().then(() => {
 
   chatElementRef2.initialMessages = [
     {
-      html:  botId == undefined ? `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
-      </p>` : "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all! ",
+      html:  (botId === undefined) 
+      ? `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>` 
+      : (botId && !botId.includes('feedback')) 
+        ? "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!"
+        : "Welcome to My feedback bot..",
       role: "ai",
     },
 
@@ -2617,6 +2915,98 @@ loadExternalModule().then(() => {
 
            // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+
+          if (botType === 'feedback_bot' && !isFeedbackConvEnd){
+            feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] = latestMessage
+            const que_length = Object.keys(feedbackBotQuestions).length
+
+            feedbackBotIndex += 1
+            const is_last = que_length + 1  === feedbackBotIndex;
+            if (is_last){
+
+              appendMessage2(
+                "<b> Thank you for your feedback.</b>"
+              )
+              const queryparams = new URLSearchParams({
+                conversation: JSON.stringify(feedbackBotQnA),
+                bot_id: botId,
+                type_of_email: "feedback_conv",
+                user_email: FeedbackUserEmail
+            });
+
+              // sending feedback conversation to bot owner
+              const response = await fetch(
+                `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+                {
+                    method: "GET",
+                    headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+                    "Content-Type": "application/json",
+                    },
+                }
+                )
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("Dynamic mcq response : ", data);
+                    
+                })
+          
+              
+
+
+              // resetAllVariablesStt()
+              appendMessage2("please wait while we are getting some recommendations for you...")
+
+                  
+    
+              try {
+                const params = new URLSearchParams({
+                  context: JSON.stringify(feedbackBotQnA),
+                  for : 'feedback_bot'
+                })
+                const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?${params}`, {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  },
+                });
+          
+                const recommendation_tests_data = await response.json();
+
+                const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
+                const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
+
+                const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
+                const created_test = recommendation_tests_data.created_scenario[created_test_code]
+                console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
+
+                signals.onResponse({
+                    html: `<b >Here are some recommendations for you : </b> <br>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    `,
+                    });
+                console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
+                // recommendationClicked = false;
+                isFeedbackConvEnd = true;
+              } catch (error) {
+                console.error(`Error in get recommendation tests: ${error}`);
+              }
+
+
+              return;
+
+            } else{
+
+              signals.onResponse({
+                html: feedbackBotQuestions[feedbackBotIndex]
+              })
+              setTimeout(() => {
+                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
+              }, 200);
+          }
+            return;
+          }
 
           if( botId != undefined && allowRecommendationTestCode == false) {
             if( fitmentAnalysisInProgress == true) {
@@ -4346,7 +4736,7 @@ const openChatContainer2 = () => {
     chatContainer2.style["transform-origin"] = "100% 50%";
 
    //to close other bot
-   const botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+   botId = document.querySelector('.deep-chat-poc2').dataset.botId;
    if(!botId){
      const chatContainer = document.getElementById("chat-container");
      chatContainer.style.scale = 0;
