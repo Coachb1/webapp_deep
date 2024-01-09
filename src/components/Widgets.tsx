@@ -26,7 +26,7 @@ const Widgets = ({ from }: any) => {
 
   return (
     <div>
-      {from !== "coachDynamic" && (
+      {from !== "coachDynamic" && from !== "feedbackDynamic" && (
         <>
           <Script src="../widget/coachbots-widget.js" />
           <Script src="../widget/coachbots-stt-widget.js" />

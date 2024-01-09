@@ -39,7 +39,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const { user, isLoading } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
-  const [botId, setBotId] = useState<string>("coach-d54cd-aravsharma");
+  const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
 
   if (!isLoading && !logSessionStarted) {
@@ -66,31 +66,64 @@ export default function RootLayout({
     typeof window !== "undefined"
       ? window.localStorage.getItem("visitedCoach")
       : null;
+
+  const hasVisitedFeedback =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedFeedback")
+      : null;
+
   useEffect(() => {
-    if (botId && pathname === "/") {
+    //ADD LOCALSTORAGE ITEM after user
+    if (pathname === "/" || pathname.includes("/coach")) {
       setShowCoachBot(true);
       if (!hasVisitedCoach) {
         window.location.reload();
-        window.localStorage.setItem("visitedCoach", "true");
+        window.localStorage.setItem("visitedCoach", "true"); //1 - visits / or /[id] and page refreshes
+      }
+      if (pathname === "/") {
+        setBotId("coach-d54cd-aravsharma");
+      } else {
+        const bot_id = pathname.split("/")[1];
+        setBotId(bot_id);
+      }
+    } else if (
+      pathname === "/feedback" ||
+      pathname.includes("/feedback/feedback")
+    ) {
+      setShowCoachBot(true);
+      if (!hasVisitedFeedback) {
+        window.location.reload();
+        window.localStorage.setItem("visitedFeedback", "true"); //2 - visits /feedback or /feedback/[id] and page refreshes
+      }
+      if (pathname === "/feedback") {
+        setBotId("feedback-d55cd-aravsharma");
+      } else {
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
       }
     } else if (pathname === "/content-library") {
       if (!hasVisitedContentLibrary) {
         window.location.reload();
-        window.localStorage.setItem("visitedContentLibrary", "true");
+        window.localStorage.setItem("visitedContentLibrary", "true"); //3 - visits /content-library and page refreshes
       }
       setShowCoachBot(false);
     }
+
+    //REMOVE LOCALSTORAGE ITEM after user
     if (pathname !== "/content-library") {
-      window.localStorage.removeItem("visitedContentLibrary");
+      window.localStorage.removeItem("visitedContentLibrary"); // 1 - leaves /content-library page
     }
-    if (pathname !== "/") {
-      window.localStorage.removeItem("visitedCoach");
+
+    if (pathname !== "/" && !pathname.includes("/coach")) {
+      window.localStorage.removeItem("visitedCoach"); // 2 - leaves / and /[id] page
     }
-    console.log(document.getElementsByClassName("deep-chat-poc2")[0]);
+
+    if (pathname !== "/feedback" && !pathname.includes("/feedback/feedback")) {
+      window.localStorage.removeItem("visitedFeedback"); // 3 - leaves when /feedback and /feedback/[id] page
+    }
   }, [pathname]);
 
   useEffect(() => {
-    console.log(pathname);
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
     if (pathname === "/profile") {
@@ -102,16 +135,6 @@ export default function RootLayout({
     } else {
       coachtalk.removeAttribute("style");
       coachScribe.removeAttribute("style");
-    }
-
-    if (
-      pathname !== "/profile" &&
-      pathname !== "/content-library" &&
-      pathname !== "/"
-    ) {
-      console.log("BOT ID : ", pathname.split("/")[1]);
-      setBotId(pathname.split("/")[1]);
-      setShowCoachBot(true);
     }
   }, [pathname]);
 
