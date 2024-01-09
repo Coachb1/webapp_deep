@@ -10,17 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AlertTriangle,
-  BookmarkCheck,
-  CornerDownRight,
-  FileClock,
-  LibraryBig,
-  Loader,
-  MailPlus,
-  Workflow,
-} from "lucide-react";
-import Image from "next/image";
+import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -76,7 +66,7 @@ const benefitsData = [
   },
 ];
 
-const Coach = ({ user, renderType }: any) => {
+const Feedback = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
   const [coachName, setCoachName] = useState<string>("");
@@ -92,7 +82,7 @@ const Coach = ({ user, renderType }: any) => {
   useEffect(() => {
     if (renderType === "dynamic") {
       setIsLoading(true);
-      const bot_id = pathname.split("/")[1];
+      const bot_id = pathname.split("/")[2];
       console.log(bot_id);
       fetch(`${baseURL}/accounts/get-bot-details/?bot_id=${bot_id}`, {
         method: "GET",
@@ -160,11 +150,11 @@ const Coach = ({ user, renderType }: any) => {
         </div>
       )}
       <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+        <div>
           {/* <NavProfile user={user} /> */}
           <BotsNavigation />
         </div>
-        <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+        <div className="flex pt-[10rem] flex-col items-center justify-center text-center px-24 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
             <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
               COACH
@@ -173,23 +163,28 @@ const Coach = ({ user, renderType }: any) => {
           </h1>
           <div>
             <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-              {renderType === "dynamic"
+              {/* {renderType === "dynamic"
                 ? `Welcome to ${coachName}'s Avatar🚀`
-                : "Welcome to the Coach, Mentor Avatar!🚀"}
+                : "Welcome to the Coach, Mentor Avatar!🚀"} */}
+              We love to hear your feedback
             </h1>
             <p className="my-4 max-sm:text-xs text-[#2f2323]">
               <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                 {" "}
-                This is your coach/mentor’s personalized bot. Here, you would
-                typically find a detailed description of your
-                coach/mentor—highlighting their expertise, approach, and unique
-                coaching/mentoring style. Dive into the detailed sections to
-                explore the benefits and learn how it works. Our bot is trained
-                on the coach/ mentor’s style, ideologies, and coaching/mentoring
-                style, ensuring a tailored and effective coaching experience.{" "}
+                Thank you for taking the time! Your feedback is invaluable to
+                us. Please take a moment to share your experience by selecting
+                either a thumbs up or thumbs down. If you choose thumbs up,
+                we'll be notified, and your positive feedback is greatly
+                appreciated. We have a few additional questions to gather more
+                details about your experience. Please share your honest answers
+                to the questions. Upon completing the feedback process, you have
+                the option to share your responses with us, and you can choose
+                to remain anonymous by skipping the email submission. Your input
+                helps us improve, and we genuinely appreciate your time and
+                insights.
               </div>
             </p>
-            {renderType !== "dynamic" && (
+            {/* {renderType !== "dynamic" && (
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
                 This is where you will see the summary information of the
                 particular coach avatar. The bot on this page demonstrates a
@@ -213,9 +208,9 @@ const Coach = ({ user, renderType }: any) => {
                 sustainable leadership development in the dynamic corporate
                 landscape.
               </p>
-            )}
+            )} */}
           </div>
-          <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
+          {/* <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
             <Link target="_blank" href={coachProfileLink}>
               <div className="relative group cursor-pointer">
                 <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -371,11 +366,11 @@ const Coach = ({ user, renderType }: any) => {
               effectiveness of coaching/mentoring is subjective. The coach can
               override the discussion via email.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
   );
 };
 
-export default Coach;
+export default Feedback;

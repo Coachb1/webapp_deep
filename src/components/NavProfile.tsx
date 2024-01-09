@@ -13,7 +13,14 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { LogIn, LogOut, User, UserCircle2 } from "lucide-react";
+import {
+  LogIn,
+  LogOut,
+  MessageSquareDashed,
+  MessageSquarePlusIcon,
+  User,
+  UserCircle2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,7 +31,9 @@ const NavProfile = ({ user }: any) => {
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
-            <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+            <div className=" p-[4px]">
+              <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="flex items-center justify-center gap-2 p-2">
@@ -50,14 +59,26 @@ const NavProfile = ({ user }: any) => {
                 <User className="h-4 w-4 mr-2" /> Your profile
               </Link>
             </DropdownMenuItem>
-            {pathname !== "/content-library" && (
+            {/* {pathname !== "/content-library" && (
               <DropdownMenuItem asChild>
                 <Link href={"/content-library"}> ⚡️ Content Library</Link>
               </DropdownMenuItem>
             )}
-            {/* {pathname !== "/" && (
+            {pathname !== "/feedback" &&
+              !pathname.includes("/feedback/feedback") && (
+                <DropdownMenuItem asChild>
+                  <Link href={"/feedback"}>
+                    {" "}
+                    <MessageSquarePlusIcon className="h-4 w-4 mr-2" /> Feedback
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            {pathname !== "/" && !pathname.includes("/coach") && (
               <DropdownMenuItem asChild>
-                <Link href={"/"}> <span className="mr-2">👩‍🏫</span> Coach</Link>
+                <Link href={"/"}>
+                  {" "}
+                  <span className="mr-2">👩‍🏫</span> Coach
+                </Link>
               </DropdownMenuItem>
             )} */}
             <DropdownMenuSeparator />

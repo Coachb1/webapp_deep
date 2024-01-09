@@ -36,6 +36,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import CreateYourOwn from "@/components/CreateYourOwn";
+import BotsNavigation from "@/components/BotsNavigation";
 
 const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
@@ -84,15 +85,18 @@ const VersionOne = ({ user, groups }: any) => {
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate max-sm:mt-[5.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
+            className="bg-[#2DC092] h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
           >
             ✨ Sign up to get the EQ Acess{" "}
             <br className="hidden max-sm:inline" /> (Workplace emails only)
-            <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
-            <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
+            {/* <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "} */}
+            <ArrowUp className="ml-2 w-4 h-4" />
           </Badge>
         )}
-        <NavProfile user={user} />
+        <>
+          <BotsNavigation user={user} />
+          <NavProfile user={user} />
+        </>
       </div>
 
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
