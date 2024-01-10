@@ -276,7 +276,7 @@ function getAnonymousEmail() {
       if (!window.user){
         let emailForm;
         if(window.innerWidth > 768) {
-          emailForm = `<div style="min-width: 730px; id="feedback_email_form">
+          emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
           <b>Please Enter your email</b>
           <div
             id="feedback-email-input"
@@ -320,7 +320,7 @@ function getAnonymousEmail() {
           </div>
         </div>`;
         } else {
-          emailForm = `<div style="min-width: 200px;" id = "feedback_email_form">
+          emailForm = `<div if = "feedback-email-form" style="min-width: 200px;">
         <b>Please Enter your email</b>
         <div
           id="feedback-email-input"
@@ -517,7 +517,7 @@ function getAnonymousEmail() {
         FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
 
         const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-        const msg = gshadowRoot.getElementById("feedback_email_form");
+        const msg = gshadowRoot.getElementById("feedback-email-form");
         // button.parentNode.removeChild(button)
         const que_msg = document.createElement("div");
         que_msg.innerHTML = "Thank You"; // You can customize the message here
