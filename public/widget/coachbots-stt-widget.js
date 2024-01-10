@@ -506,7 +506,7 @@ function getAnonymousEmail() {
 
       if (flow === 'initial'){
         const anonymous_text = `<div id="anonymous" >
-        <b>want to continoue as Anonymous?</b>
+        <b>Want to continue as Anonymous?</b>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
         </div>`;
@@ -562,11 +562,15 @@ function getAnonymousEmail() {
       botType = botDetails.data.bot_type;
       console.log(botType)
 
-      let faqs = Object.keys(botDetails.data.faqs)
       let buttons = ''
-      faqs.forEach(title => {
-          buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
-      })
+      if (botDetails.data.faqs){
+        let faqs = Object.keys(botDetails.data.faqs)
+        if (faqs.length > 0){
+          faqs.forEach(title => {
+              buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
+          })
+        }
+      }
 
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
@@ -690,9 +694,9 @@ const handleFitmentAnalysis = async ()=> {
         msg.parentNode.replaceChild(que_msg, msg);
         
 
-        setTimeout(() => {
-          appendMessage2(faqHtmlData);
-        }, 200);
+        // setTimeout(() => {
+        //   appendMessage2(faqHtmlData);
+        // }, 200);
          
         } catch (err) {
             signals.onResponse({
@@ -754,7 +758,7 @@ function handleFaqButtonClick(question) {
         return;
     }
     appendMessage2(globalBotDetails.data.faqs[question])
-    appendMessage2(faqHtmlData)
+    // appendMessage2(faqHtmlData)
   }
   
 }
@@ -810,7 +814,11 @@ function sendBotTranscript2() {
       .then((response) => response.json())
       .then((data) => {
           console.log("Dynamic mcq response : ", data);
+          if (!window.user) {
+            deleteAndReplaceContainerStt("bot-transcript-email", faqHtmlData)
+          } else{
           appendMessage2(faqHtmlData)
+          }
           // console.log(data.options_data)
           // questionText2 = data.options_data.next_situation;
           // newOption1NameStt = data.options_data.option_a;
@@ -834,7 +842,7 @@ function handleEndConversation() {
 
   let emailForm;
   if(window.innerWidth > 768) {
-    emailForm = `<div style="min-width: 730px;">
+    emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
     <b>Please Enter your email</b>
     <div
       id="input-form2"
@@ -878,7 +886,7 @@ function handleEndConversation() {
     </div>
   </div>`;
   } else {
-    emailForm = `<div style="min-width: 200px;">
+    emailForm = `<div id="bot-transcript-email" style="min-width: 200px;">
   <b>Please Enter your email</b>
   <div
     id="input-form2"
@@ -1142,6 +1150,17 @@ function appendMessage2(message2) {
   const messageNode = createMessageNode2(message2);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+}
+
+function deleteAndReplaceContainerStt(old,new_cont){
+  const gshadowRoot =
+            document.getElementById("chat-element2").shadowRoot;
+  const msg = gshadowRoot.getElementById(`${old}`)
+  // button.parentNode.removeChild(button)
+  const que_msg = document.createElement("div");
+  que_msg.innerHTML = `${new_cont}`; // You can customize the message here
+  // Replace the button with the "Thank you" message
+  msg.parentNode.replaceChild(que_msg, msg);
 }
 
 //image hover handlers - start
@@ -2205,9 +2224,9 @@ async function submitEmailAndName2() {
         appendMessage2(recommDiv);
       }
 
-      if (recommendationClicked){
-        appendMessage2(faqHtmlData);
-      }
+      // if (recommendationClicked){
+      //   appendMessage2(faqHtmlData);
+      // }
       resetAllVariablesStt();
     })
     .catch((err) => {
