@@ -3060,6 +3060,13 @@ loadExternalModule().then(() => {
           }
 
           globalSignals = signals;
+
+          if (fitmentAnalysisInProgress){
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            })
+            return;
+          }
           // to check session active or not
 
            // get latest message
