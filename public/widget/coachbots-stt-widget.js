@@ -96,6 +96,7 @@ let botId;
 let botType;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
+let fitmentAnalysisOptions;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -577,10 +578,12 @@ function getAnonymousEmail() {
                       ${buttons}
                       </div>`
       if(botType != 'feedback_bot'){
+        fitmentAnalysisQuestions = botDetails.data.fitment_qna
+        fitmentAnalysisOptions = botDetails.data.fitment_options
         appendMessage2(faqHtmlData)
       } else{
         feedbackBotInitialFlow('initial')
-        feedbackBotQuestions = botDetails.data.faqs;
+        feedbackBotQuestions = botDetails.data.feedback_qna;
       }
 
 
@@ -594,13 +597,115 @@ function getAnonymousEmail() {
   
 
  
-function handleFitmentAnalysis(type) {
-    console.log("type : ", type)
-    fitmentAnalysisQuestions = fitment_analysis[type]
-    console.log("fitmentQuestions : ",fitmentAnalysisQuestions)
-    appendMessage2(fitmentAnalysisQuestions[1])
-    fitmentAnalysisInProgress = true;
-    fitmentAnalysisIndex = 1;
+const handleFitmentAnalysis = async ()=> {
+  console.log(fitmentAnalysisIndex,Object.keys(fitmentAnalysisQuestions).length)
+  if( fitmentAnalysisIndex <  Object.keys(fitmentAnalysisQuestions).length ) {
+    // console.log("Answer : ",latestMessage)
+    // console.log("fitment question : ", fitmentAnalysisQuestions[fitmentAnalysisIndex])
+    // signals.onResponse({
+    //     html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+    // });
+    // console.log("fitmentQuestions : ",fitmentAnalysisQuestions)
+    
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    const responseValue = gShadowRoot2.querySelector(
+      'input[name="fitment_option"]:checked'
+    ).getAttribute("value");
+    console.log(responseValue)
+
+    let fitmentQueIndex = parseInt(gShadowRoot2.getElementById("question-fitment").getAttribute("value"));
+    fitmentAnalysisQnA[fitmentQueIndex] = {
+      "coach": fitmentAnalysisQuestions[fitmentQueIndex],
+      "cochee": responseValue
+    }
+    fitmentQueIndex = fitmentQueIndex + 1;
+    const questiontext = fitmentAnalysisQuestions[fitmentQueIndex]
+    const questionoptins = fitmentAnalysisOptions[fitmentQueIndex]
+    let optioncont = ''
+    questionoptins.forEach((item,index) =>{
+      optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
+      <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
+      <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
+    </div>`
+    })
+    formRadio = `
+                <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentQueIndex}"><b>Q. </b>${questiontext}</div>
+                <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                  ${optioncont}
+                </div>
+                <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+              `;
+    // appendMessage2(formRadio)
+    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML =
+      formRadio;
+    fitmentAnalysisIndex = fitmentQueIndex;
+    return;
+  } else {
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    const responseValue = gShadowRoot2.querySelector(
+      'input[name="fitment_option"]:checked'
+    ).getAttribute("value");
+
+    let fitmentQueIndex = parseInt(gShadowRoot2.getElementById("question-fitment").getAttribute("value"));
+    fitmentAnalysisQnA[fitmentQueIndex] = {
+      "coach": fitmentAnalysisQuestions[fitmentQueIndex],
+      "cochee": responseValue
+    }
+
+    fitmentAnalysisInProgress = false;
+    fitmentAnalysisIndex = 0;
+    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA)
+    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML = "<b>Please Wait...</b>"
+    
+    
+
+    try {
+        const response = await fetch(
+          `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(
+                key2,
+                secret2
+              )}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              participant_id: participantId2,
+              bot_id: botId,
+              is_signature_bot: true,
+              fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
+            }),
+          }
+        );
+
+        const data = await response.json();
+        console.log("Fitness Analysis Score => ", data); 
+        const msg = gShadowRoot2.getElementById('fitment-analysis')
+        // button.parentNode.removeChild(button)
+        const que_msg = document.createElement("div");
+        que_msg.innerHTML = `<b>Fitness Analysis Result:</b> <p>${data.message}</p>`; // You can customize the message here
+        // Replace the button with the "Thank you" message
+        msg.parentNode.replaceChild(que_msg, msg);
+        
+
+        setTimeout(() => {
+          appendMessage2(faqHtmlData);
+        }, 200);
+         
+        } catch (err) {
+            signals.onResponse({
+                html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
+             });
+        }
+   
+    
+    return;
+}
+    // fitmentAnalysisQuestions = fitment_analysis[type]
+    
+    
 
 }
 
@@ -609,10 +714,35 @@ function handleFaqButtonClick(question) {
 
   if( question == 'fitness_analysis') {
     // console.log("fitness analysis clicked :",fitment_analysis[])
-    let buttons = '';
-    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('coaching_intake')">Coachig Intake</button>`
-    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('mentoring_intake')">Mentoring Intake</button>`
-    appendMessage2(buttons);
+    // let buttons = '';
+    // buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('coaching_intake')">Coachig Intake</button>`
+    // buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('mentoring_intake')">Mentoring Intake</button>`
+    // appendMessage2(buttons);
+    // handleFitmentAnalysis()
+    fitmentAnalysisInProgress = true;
+    fitmentAnalysisIndex = 1;
+    console.log(fitmentAnalysisQuestions,fitmentAnalysisIndex)
+    const questiontext = fitmentAnalysisQuestions[fitmentAnalysisIndex]
+    const questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex]
+    let optioncont = ''
+    questionoptins.forEach((item,index) =>{
+      optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
+      <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
+      <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
+    </div>`
+    })
+    formRadio = `
+              <div id='fitment-analysis' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
+              <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentAnalysisIndex}"><b>Q. </b>${questiontext}</div>
+                <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                  ${optioncont}
+                </div>
+                <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+              </div>`;
+
+    appendMessage2(formRadio)
+    
+
   } else {
     if( question == 'something_else') {
         appendMessage2('Please ask your question in chat box')
