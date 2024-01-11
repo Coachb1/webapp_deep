@@ -2,6 +2,7 @@
 
 import BotsNavigation from "@/components/BotsNavigation";
 import NavProfile from "@/components/NavProfile";
+import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
   AccordionContent,
@@ -231,6 +232,14 @@ const Coach = ({ user, renderType }: any) => {
                 </div>
               </div>
             </Link>
+            <Link href={"#wtu"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                Where to use
+              </Button>
+            </Link>
             <Link href={"#howItWorks"}>
               <Button
                 variant={"secondary"}
@@ -263,7 +272,9 @@ const Coach = ({ user, renderType }: any) => {
               </div>
             </Link>
           </div>
-
+          <div id="wtu">
+            <WhereToUse />
+          </div>
           <div className="w-full" id="howItWorks">
             <div className={`w-full flex justify-center`}>
               <Badge

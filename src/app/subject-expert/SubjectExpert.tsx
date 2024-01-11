@@ -1,8 +1,8 @@
 "use client";
 
 import BotsNavigation from "@/components/BotsNavigation";
-import KudosWall from "@/components/KudosWall";
 import NavProfile from "@/components/NavProfile";
+import PageFooter from "@/components/PageFooter";
 import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
@@ -29,51 +29,41 @@ const basicAuth =
 
 const howItWorks = [
   {
-    heading: "Thumbs Up or Thumbs Down",
+    heading: "Vetted data sources trained",
     description:
-      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback. Thumbs Down maintains privacy, with no email notification to allow internal resolution.",
+      "The Avatar is trained on high quality vetted data sources like research papers, well known website articles, scientific journals, published books, widely used study materials and educational videos by industry experts. Further, it is tested extensively to ensure the reliability of the responses.",
   },
   {
-    heading: "Follow-up Questions",
+    heading: "Simulated scenarios",
     description:
-      "Users who thumbs up can answer additional customized questions, providing more detailed, meaningful feedback to drive insights.",
+      "The Avatar goes beyond general advice by providing customized stress management simulations and scenarios. These customized scenarios allow for hands-on practice focusing on real world application, boosting engagement through individualized application that targets specific pain points and goals.",
   },
   {
-    heading: "Optional Anonymity",
+    heading: "Easy integration to any page",
     description:
-      "After completing the feedback process, clients can choose to submit their feedback along with their email address or remain anonymous.",
-  },
-  {
-    heading: "Email Summaries",
-    description:
-      "At the end of the feedback process both parties receive an email with a feedback summary, promoting transparency and accountability.",
+      "The Avatar can be seamlessly integrated into any website or learning management system (LMS), ensuring assistance is easily accessible anywhere at any time.",
   },
 ];
 
 const benefitsData = [
   {
-    heading: "Real-time Recognition",
+    heading: "Accuracy & reliability",
     description:
-      "The bot owner and the user receive instant email notifications the moment a user selects thumbs-up, to celebrate positive feedback right away. This enables a culture of recognition and motivation.",
+      "The exhaustive vetting process for the Avatar's training data ensures every recommendation is backed by scientific consensus and evidence-based best practices, resulting in accurate and reliably helpful guidance users can trust.",
   },
   {
-    heading: "Enhanced Team Relations",
+    heading: "Skills & Culture Discovery",
     description:
-      "Regular feedback fosters strong team relationships, helping you understand their needs better and improving overall satisfaction. It can be also used to gather feedback from external stakeholders like vendors, clients as well.",
+      " The customized simulations empower users to actively understand the real world application of the techniques and guidance that they gain from the conversation. Further, by completing these scenarios the users can get an insight into their skills in the particular topic and understand their cultural orientation at the same time.",
   },
   {
-    heading: "Improved Accountability",
+    heading: "Ease of adoption",
     description:
-      "Email summaries create transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
-  },
-  {
-    heading: "PMS Integration",
-    description:
-      "Seamless integration with performance management systems sends feedback data automatically, minimizing manual processes.",
+      "The seamless integration with existing digital touchpoints makes adoption incredibly easy and frictionless for users, allowing them to conveniently access the Avatar in a familiar environment.",
   },
 ];
 
-const Feedback = ({ user, renderType }: any) => {
+const SubjectExpert = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
   const [coachName, setCoachName] = useState<string>("");
@@ -158,7 +148,6 @@ const Feedback = ({ user, renderType }: any) => {
       )}
       <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
-          {/* <NavProfile user={user} /> */}
           <BotsNavigation />
         </div>
         <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
@@ -170,40 +159,30 @@ const Feedback = ({ user, renderType }: any) => {
           </h1>
           <div>
             <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-              Love to hear your feedback
+              Welcome to our Subject Expert Avatars
             </h1>
 
             {renderType !== "dynamic" && (
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                This section is about the user profile who is looking to get
-                feedback.
+                This section is about the subject matter of the bot, in this
+                case, stress management.
               </p>
             )}
             {renderType === "dynamic" ? (
               coachDescription
             ) : (
               <p className="max-sm:text-xs text-[#2f2323]">
-                <b>Sample : </b>Hi, I am Amit Trivedi, a results-driven senior
-                manager with over 15 years of experience leading
-                cross-functional teams across India. I hold an MBA from IIM
-                Ahmedabad and PMP certification. Currently, I lead the software
-                development division, managing a team of 35 engineers across
-                cloud architecture, QA, and agile delivery functions. I value
-                candid feedback and strive for continuous improvement at both a
-                personal and organizational level.
+                <b>Sample : </b> This is a Stress Management Avatar created to
+                provide users with personalized strategies and resources to help
+                manage stress and anxiety. With extensive knowledge on
+                techniques like mindfulness, meditation, deep breathing, and
+                cognitive restructuring, this Avatar offers evidence-based
+                recommendations tailored to each user's unique needs. The Avatar
+                is grounded in techniques recommended by experts in the field,
+                so the users can take control of their stress and start living a
+                more relaxed, positive life.
               </p>
             )}
-            <div className="my-4 max-sm:text-xs text-[#2f2323]">
-              <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
-                {" "}
-                Thank you for taking the time! Your feedback is invaluable to
-                me. Please take a moment to share your experience by selecting
-                either a thumbs up or thumbs down. I have a few additional
-                questions to gather more details about your experience. Please
-                share your honest answers to the questions. Your input helps me
-                improve, and I genuinely appreciate your time and insights.
-              </p>
-            </div>
           </div>
           <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
             {/* <Link target="_blank" href={coachProfileLink}>
@@ -356,31 +335,7 @@ const Feedback = ({ user, renderType }: any) => {
               </div>
             </div>
           </div>
-          {/* kudosWall */}
-          {/* <div className="w-full" id="benefits">
-            <div className={`w-full flex justify-center`}>
-              <Badge
-                variant={"secondary"}
-                className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-              >
-                Kudos Wall | Positive feedbacks
-              </Badge>
-            </div>
-            <div className="w-full">
-              <div className="relative isolate mx-auto">
-                <div>
-                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-row overflow-scroll gap-2">
-                      <KudosWall />
-                      <KudosWall />
-                      <KudosWall />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
-          <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
+          {/* <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
             <Badge
               variant={"secondary"}
               className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-4 mt-12 max-sm:mt-8 max-sm:text-sm"
@@ -394,12 +349,11 @@ const Feedback = ({ user, renderType }: any) => {
               effectiveness of coaching/mentoring is subjective. The coach can
               override the discussion via email.
             </p>
-          </div>{" "}
-          {/**/}
+          </div>{" "} */}
         </div>
       </div>
     </>
   );
 };
 
-export default Feedback;
+export default SubjectExpert;

@@ -71,6 +71,10 @@ export default function RootLayout({
     typeof window !== "undefined"
       ? window.localStorage.getItem("visitedFeedback")
       : null;
+  const hasVisitedSubject =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedSubject")
+      : null;
 
   useEffect(() => {
     //ADD LOCALSTORAGE ITEM after user
@@ -101,6 +105,19 @@ export default function RootLayout({
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
+    } else if (pathname.includes("/subject-expert")) {
+      setShowCoachBot(true);
+      if (!hasVisitedSubject) {
+        window.location.reload();
+        window.localStorage.setItem("visitedSubject", "true");
+      }
+      if (pathname === "/subject-expert") {
+        console.log("3RDDDD");
+        setBotId("stress-management-0032");
+      } else {
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
+      }
     } else if (pathname === "/content-library") {
       if (!hasVisitedContentLibrary) {
         window.location.reload();
@@ -109,17 +126,23 @@ export default function RootLayout({
       setShowCoachBot(false);
     }
 
-    //REMOVE LOCALSTORAGE ITEM after user
     if (pathname !== "/content-library") {
-      window.localStorage.removeItem("visitedContentLibrary"); // 1 - leaves /content-library page
+      window.localStorage.removeItem("visitedContentLibrary");
     }
 
     if (pathname !== "/" && !pathname.includes("/coach")) {
-      window.localStorage.removeItem("visitedCoach"); // 2 - leaves / and /[id] page
+      window.localStorage.removeItem("visitedCoach");
     }
 
     if (pathname !== "/feedback" && !pathname.includes("/feedback/feedback")) {
-      window.localStorage.removeItem("visitedFeedback"); // 3 - leaves when /feedback and /feedback/[id] page
+      window.localStorage.removeItem("visitedFeedback");
+    }
+
+    if (
+      pathname !== "/subject-expert" &&
+      !pathname.includes("/subject-expert")
+    ) {
+      window.localStorage.removeItem("visitedSubject");
     }
   }, [pathname]);
 
