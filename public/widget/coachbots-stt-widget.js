@@ -716,9 +716,9 @@ const handleFitmentAnalysis = async ()=> {
 }
 
 function handleFaqButtonClick(question) {
-  console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
-
+  
   if( question == 'fitness_analysis') {
+    // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
     // let buttons = '';
     // buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFitmentAnalysis('coaching_intake')">Coachig Intake</button>`
