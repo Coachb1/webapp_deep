@@ -1455,6 +1455,14 @@ const handleProceedClick = async (choice) => {
                             mozallowfullscreen="true" 
                             webkitallowfullscreen="true"
                             ></iframe>`)
+          }else if (questionMediaLink.includes('guidejar.com')){
+            const guidejarId = questionMediaLink.split('/').pop()
+            appendMessage(`
+            <div style="width:640px">
+            <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+            <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+            ></div></div>
+            `)
           }
         }
       }
@@ -2719,6 +2727,14 @@ loadExternalModule().then(() => {
                                         mozallowfullscreen="true" 
                                         webkitallowfullscreen="true"
                                         ></iframe>`)
+                      }else if (questionMediaLink.includes('guidejar.com')){
+                        const guidejarId = questionMediaLink.split('/').pop()
+                        appendMessage(`
+                        <div style="width:640px">
+                        <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                        <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                        ></div></div>
+                        `)
                       }
                     }
                   }
@@ -3757,7 +3773,22 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`);
-                            } else {
+                            } else if (senarioMediaDescription.includes('guidejar.com')){
+                              const guidejarId = senarioMediaDescription.split('/').pop()
+                              appendMessage(
+                                `▪ Title : ${senarioTitle} <br><br>
+                              ▪ Description : ${senarioDescription} <br><br>
+                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>`
+                              );
+
+                              appendMessage(`
+                              <div style="width:640px">
+                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                              ></div></div>
+                              `)
+                            }
+                            else {
                               appendMessage(
                                 `▪ Title : ${senarioTitle} <br><br>
                                     ▪ Description : ${senarioDescription} <br><br>
@@ -3920,6 +3951,14 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`)
+                            }else if (questionMediaLink.includes('guidejar.com')){
+                              const guidejarId = questionMediaLink.split('/').pop()
+                              appendMessage(`
+                              <div style="width:640px">
+                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                              ></div></div>
+                              `)
                             }
                           }
                           }
