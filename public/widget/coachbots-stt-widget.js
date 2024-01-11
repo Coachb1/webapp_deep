@@ -573,7 +573,9 @@ function getAnonymousEmail() {
       }
 
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
+      if(botDetails.data.fitment_qna){
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
+      }
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">something else ?</button>`
 
       console.log("buttons : ",buttons)
@@ -2630,6 +2632,7 @@ loadExternalModule().then(() => {
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
   botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+  // botId = 'stress-management-0032'
 
   const _ =  getBotDetails2(botId);
 
@@ -4925,6 +4928,8 @@ const openChatContainer2 = () => {
 
    //to close other bot
    botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+  // botId = 'stress-management-0032'
+
    if(!botId){
      const chatContainer = document.getElementById("chat-container");
      chatContainer.style.scale = 0;
