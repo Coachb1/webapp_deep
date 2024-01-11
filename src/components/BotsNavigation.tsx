@@ -48,6 +48,20 @@ const BotsNavigation = ({ user }: any) => {
             Avatar Bot{" "}
           </Button>
         </Link>
+        <Link href={"/subject-expert"}>
+          <Button
+            variant={"outline"}
+            className={` h-8 px-2 ${
+              pathname === "/subject-expert" ||
+              pathname.includes("/subject-expert")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+          >
+            {" "}
+            Subject Expert Bot{" "}
+          </Button>
+        </Link>
         <Link href={"/feedback"}>
           <Button
             variant={"outline"}
@@ -93,6 +107,20 @@ const BotsNavigation = ({ user }: any) => {
               >
                 {" "}
                 Avatar Bot
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={"/"}
+                className={`${
+                  pathname === "/subject-expert" ||
+                  pathname.includes("/subject-expert")
+                    ? "bg-gray-200"
+                    : null
+                }`}
+              >
+                {" "}
+                Subject Expert Bot
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
