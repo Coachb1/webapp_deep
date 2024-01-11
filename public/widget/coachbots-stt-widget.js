@@ -450,8 +450,23 @@ function getAnonymousEmail() {
 
   }
 
+  function renameKey(obj) {
+    let newObj = {}
+    for (const key in obj) {
+      const oldKey = key
+      const newKey = parseInt(oldKey) + 1
+      newObj[`${newKey}`] = obj[oldKey];
+    }
+    console.log(newObj)
+    return newObj
+  }
+  
+
   const feedbackBotQnAFlow = (flow)=>{
     if (flow === 'up'){
+      feedbackBotQuestions = renameKey(feedbackBotQuestions)
+      feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?"
+
       const queryparams = new URLSearchParams({
                 conversation: "",
                 bot_id: botId,
