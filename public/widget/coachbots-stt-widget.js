@@ -97,6 +97,7 @@ let botType;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 let fitmentAnalysisOptions;
+let IsPositiveFeedback = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -406,6 +407,31 @@ function getAnonymousEmail() {
           
       })
 
+      const queryparam = new URLSearchParams({
+        method: "post",
+        qna: JSON.stringify(feedbackBotQnA),
+        bot_id: botId,
+        is_positive: IsPositiveFeedback ? "True" : "False",
+        qna_type: "feedback",
+        user_id: userId2
+    });
+
+      const resp = await fetch(
+        `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+        {
+            method: "GET",
+            headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+            "Content-Type": "application/json",
+            },
+        }
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(" response : ", data);
+            
+        })
+
     // resetAllVariablesStt()
     appendMessage2("please wait while we are getting some recommendations for you...")
 
@@ -467,6 +493,7 @@ function getAnonymousEmail() {
       feedbackBotQuestions = renameKey(feedbackBotQuestions)
       feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?"
 
+      IsPositiveFeedback = true;
       const queryparams = new URLSearchParams({
                 conversation: "",
                 bot_id: botId,
@@ -3132,10 +3159,34 @@ loadExternalModule().then(() => {
                     console.log("Dynamic mcq response : ", data);
                     
                 })
-          
+
+                const queryparam = new URLSearchParams({
+                  method: "post",
+                  qna: JSON.stringify(feedbackBotQnA),
+                  bot_id: botId,
+                  is_positive: IsPositiveFeedback ? "True" : "False",
+                  qna_type: "feedback",
+                  user_id: userId2
+              });
+
+                const resp = await fetch(
+                  `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+                  {
+                      method: "GET",
+                      headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+                      "Content-Type": "application/json",
+                      },
+                  }
+                  )
+                  .then((response) => response.json())
+                  .then((data) => {
+                      console.log("Dynamic mcq response : ", data);
+                      
+                  })
+
               
-
-
+          
               // resetAllVariablesStt()
               appendMessage2("please wait while we are getting some recommendations for you...")
 
