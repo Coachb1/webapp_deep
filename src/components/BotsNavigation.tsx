@@ -19,8 +19,8 @@ const BotsNavigation = ({ user }: any) => {
     <>
       <div
         className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800] gap-2 max-sm:hidden ${
-          pathname === "/content-library" ? "mr-5" : ""
-        }  ${!user && pathname === "/content-library" ? "mr-16 " : ""}`}
+          !user ? "mr-16 " : "mr-5"
+        }`}
       >
         <Link href={"/content-library"}>
           <Button
@@ -77,9 +77,9 @@ const BotsNavigation = ({ user }: any) => {
         </Link>
       </div>
       <div
-        className={`hidden fixed w-full max-sm:flex items-center justify-end p-4 h-6 py-8 !z-[800] gap-2 ${
-          pathname === "/content-library" ? "mr-5" : ""
-        } ${!user && pathname === "/content-library" ? "mr-16 " : ""}`}
+        className={`hidden fixed w-full max-sm:flex items-center justify-end p-4 h-6 py-8 !z-[800] gap-2  ${
+          !user ? "mr-16 " : "mr-5"
+        }`}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">

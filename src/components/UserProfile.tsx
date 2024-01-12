@@ -121,31 +121,24 @@ const UserProfile = ({
           </div>
         </div>
         <hr />
-        <div className="my-4 flex flex-row items-center max-sm:justify-between">
-          <p className="text-sm font-mono">History</p>
+        <div className="my-4 flex flex-row items-center">
+          <p className="text-sm  font-mono">
+            Session Reports <br className="max-sm:block hidden" /> (For
+            Simulations)
+          </p>
           <>
-            {testAttempedCount !== 0 ? (
-              <>
-                <Button className="ml-8 ">
-                  {candidateReportUrl && candidateReportUrl.length !== 0 ? (
-                    <>
-                      <Link href={candidateReportUrl} target="_blank">
-                        Participant Report{" "}
-                        <Link2 className="h-4 w-4 ml-2 inline" />
-                      </Link>
-                    </>
-                  ) : (
-                    <Loader className="h-4 w-4 animate-spin" />
-                  )}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Badge variant={"destructive"} className="ml-8">
-                  Not attended any session.
-                </Badge>
-              </>
-            )}
+            <Button disabled={testAttempedCount === 0} className="ml-8 ">
+              {candidateReportUrl && candidateReportUrl.length !== 0 ? (
+                <>
+                  <Link href={candidateReportUrl} target="_blank">
+                    Participant Report{" "}
+                    <Link2 className={`h-4 w-4 ml-2 inline`} />
+                  </Link>
+                </>
+              ) : (
+                <Loader className="h-4 w-4 animate-spin" />
+              )}
+            </Button>
           </>
         </div>
       </div>

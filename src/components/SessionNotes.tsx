@@ -15,22 +15,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Separator } from "./ui/separator";
 import { Info, Loader, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
+import { convertDate } from "@/lib/utils";
 
 // Pagination related variables
 
 //convert date
-const convertDate = (date: string) => {
-  const utcTimestamp = new Date(date);
-  const istOptions = {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  } as Intl.DateTimeFormatOptions;
-
-  const istDateString = utcTimestamp.toLocaleString("en-US", istOptions);
-  return istDateString;
-};
 
 function filterByValue(array: any, value: any) {
   return array.filter((obj: any) => {
@@ -49,6 +39,7 @@ const SessionNotes = ({ user }: any) => {
     date: string;
     recommendations: string;
     mentee_email_id: string;
+    mentee_name: string;
   }
   // const commentsGivenData = [];
   const [commentsGiven, setCommentsGiven] = useState<givenCommentType[]>([]);
@@ -58,6 +49,7 @@ const SessionNotes = ({ user }: any) => {
     date: string;
     recommendations: string;
     mentor_name: string;
+    mentor_email_id: string;
   }
 
   const [commentsRecieved, setCommmentsRecieved] = useState<
@@ -121,7 +113,7 @@ const SessionNotes = ({ user }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.data);
+        console.log("COMMENTS GIVEN RES : ", data.data);
         setCommentsGiven(data.data);
         setCommentsLoading(false);
       })
@@ -162,7 +154,7 @@ const SessionNotes = ({ user }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        console.log("COMMENTS Recieved RES : ", data);
         setCommmentsRecieved(data.data);
         setCommentsLoading(false);
       })
@@ -244,7 +236,9 @@ const SessionNotes = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2">Session notes</div>
+      <div className="pl-4 max-sm:pl-2 pt-2">
+        Session Notes (For Bot Interactions)
+      </div>
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-given"
@@ -284,15 +278,6 @@ const SessionNotes = ({ user }: any) => {
           </div>
 
           <TabsContent value="c-given">
-            {commentsGiven.length > 0 && (
-              <div className="text-xs max-sm:text-[11px] text-orange-400 flex flex-row items-center">
-                {" "}
-                <Info className="h-3 w-3 mr-1 " />
-                <b>
-                  System recommendations are assigned once the admin updates it.
-                </b>
-              </div>
-            )}
             <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
               {commentsLoading ? (
                 <div className="flex justify-center pt-8">
@@ -307,45 +292,46 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentee_email_id}
+                              <b>Mentee Name</b> : {comment.mentee_name}
                             </p>
-                            {/* <input
-                      type="text"
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.email}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
                           <div className="flex flex-col">
-                            <p className="mr-2 my-1 mt-2 overflow-scroll">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentee_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
                               <b>Comment</b> : {comment.context}
                             </p>
-                            {/* <textarea
-                      rows={4}
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.comment}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
-                          {comment.recommendations !== null && (
-                            <div>
-                              <p className="mr-2 my-1 mt-2">
-                                <b> System recommendations</b> :{" "}
-                                {comment.recommendations}{" "}
-                              </p>
-                            </div>
-                          )}
+                          <div>
+                            <p className="mr-2 my-1 mt-2">
+                              <b> Recommended practice access codes </b> :{" "}
+                              {comment.recommendations !== null ? (
+                                <>
+                                  {comment.recommendations
+                                    .split(",")
+                                    .map((recommendation, i) => (
+                                      <Link
+                                        className="text-semibold text-blue-500"
+                                        href={"/content-library"}
+                                      >
+                                        {recommendation}
+                                      </Link>
+                                    ))}
+                                </>
+                              ) : (
+                                <span>
+                                  In process, please check again in a while.{" "}
+                                </span>
+                              )}
+                            </p>
+                          </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
                           </p>
-                          {/* <div className="w-full  flex flex-row justify-end">
-                    <Button
-                      disabled={comment.isSubmitted}
-                      className="max-sm:p-2 h-6 mt-2 hover:brightness-105 "
-                    >
-                      {comment.isSubmitted ? "submitted" : "submit"}
-                    </Button>
-                  </div> */}
                         </div>
                       ))}
                     </>
@@ -357,45 +343,46 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentee_email_id}
+                              <b>Mentee Name</b> : {comment.mentee_name}
                             </p>
-                            {/* <input
-                      type="text"
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.email}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
                           <div className="flex flex-col">
-                            <p className="mr-2 my-1 mt-2 overflow-scroll">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentee_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
                               <b>Comment</b> : {comment.context}
                             </p>
-                            {/* <textarea
-                      rows={4}
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.comment}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
-                          {comment.recommendations !== null && (
-                            <div>
-                              <p className="mr-2 my-1 mt-2">
-                                <b> System recommendations</b> :{" "}
-                                {comment.recommendations}{" "}
-                              </p>
-                            </div>
-                          )}
+                          <div>
+                            <p className="mr-2 my-1 mt-2">
+                              <b> Recommended practice access codes </b> :{" "}
+                              {comment.recommendations !== null ? (
+                                <>
+                                  {comment.recommendations
+                                    .split(",")
+                                    .map((recommendation, i) => (
+                                      <Link
+                                        className="text-semibold text-blue-500"
+                                        href={"/content-library"}
+                                      >
+                                        {recommendation}
+                                      </Link>
+                                    ))}
+                                </>
+                              ) : (
+                                <span>
+                                  In process, please check again in a while.{" "}
+                                </span>
+                              )}
+                            </p>
+                          </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
                           </p>
-                          {/* <div className="w-full  flex flex-row justify-end">
-                    <Button
-                      disabled={comment.isSubmitted}
-                      className="max-sm:p-2 h-6 mt-2 hover:brightness-105 "
-                    >
-                      {comment.isSubmitted ? "submitted" : "submit"}
-                    </Button>
-                  </div> */}
                         </div>
                       ))}
                       <div className="py-4 flex justify-center">
@@ -498,15 +485,6 @@ const SessionNotes = ({ user }: any) => {
             )}
           </TabsContent>
           <TabsContent value="c-recieved">
-            {commentsRecieved.length > 0 && (
-              <div className="text-xs max-sm:text-[11px]  text-orange-400 flex flex-row items-center">
-                {" "}
-                <Info className="h-3 w-3 mr-1 " />
-                <b>
-                  System recommendations are assigned once the admin updates it.
-                </b>
-              </div>
-            )}
             <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs  min-h-[109px]">
               {commentsLoading ? (
                 <div className="flex justify-center pt-8">
@@ -521,45 +499,46 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentor_name}
+                              <b>Mentor name</b> : {comment.mentor_name}
                             </p>
-                            {/* <input
-                      type="text"
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.email}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
                           <div className="flex flex-col">
-                            <p className="mr-2 my-1 mt-2 overflow-scroll">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentor_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
                               <b>Comment</b> : {comment.context}
                             </p>
-                            {/* <textarea
-                      rows={4}
-                      className="w-full p-2 bg-gray-100 rounded-md"
-                      value={comment.comment}
-                      disabled={comment.isSubmitted}
-                    /> */}
                           </div>
-                          {comment.recommendations !== null && (
-                            <div>
-                              <p className="mr-2 my-1 mt-2">
-                                <b> System recommendations</b> :{" "}
-                                {comment.recommendations}{" "}
-                              </p>
-                            </div>
-                          )}
+                          <div>
+                            <p className="mr-2 my-1 mt-2">
+                              <b> Recommended practice access codes </b> :{" "}
+                              {comment.recommendations !== null ? (
+                                <>
+                                  {comment.recommendations
+                                    .split(",")
+                                    .map((recommendation, i) => (
+                                      <Link
+                                        className="text-semibold text-blue-500"
+                                        href={"/content-library"}
+                                      >
+                                        {recommendation}
+                                      </Link>
+                                    ))}
+                                </>
+                              ) : (
+                                <span>
+                                  In process, please check again in a while.{" "}
+                                </span>
+                              )}
+                            </p>
+                          </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
                           </p>
-                          {/* <div className="w-full  flex flex-row justify-end">
-                    <Button
-                      disabled={comment.isSubmitted}
-                      className="max-sm:p-2 h-6 mt-2 hover:brightness-105 "
-                    >
-                      {comment.isSubmitted ? "submitted" : "submit"}
-                    </Button>
-                  </div> */}
                         </div>
                       ))}
                     </>
@@ -571,23 +550,44 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Mentor</b> : {comment.mentor_name}
+                              <b>Mentor name</b> : {comment.mentor_name}
                             </p>
                           </div>
                           <div className="flex flex-col">
-                            <p className="mr-2 my-1 mt-2">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentor_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
                               <b>Comment</b> : {comment.context}
                             </p>
                           </div>
                           <div>
-                            {comment.recommendations !== null && (
-                              <div>
-                                <p className="mr-2 my-1 mt-2">
-                                  <b> System recommendations</b> :{" "}
-                                  {comment.recommendations}{" "}
-                                </p>
-                              </div>
-                            )}
+                            <div>
+                              <p className="mr-2 my-1 mt-2">
+                                <b> Recommended practice access codes </b> :{" "}
+                                {comment.recommendations !== null ? (
+                                  <>
+                                    {comment.recommendations
+                                      .split(",")
+                                      .map((recommendation, i) => (
+                                        <Link
+                                          className="text-semibold text-blue-500"
+                                          href={"/content-library"}
+                                        >
+                                          {recommendation}
+                                        </Link>
+                                      ))}
+                                  </>
+                                ) : (
+                                  <span>
+                                    In process, please check again in a while.{" "}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
                           </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
@@ -601,7 +601,7 @@ const SessionNotes = ({ user }: any) => {
                             <button
                               key={index + 1}
                               className={`mx-2 max-sm:mx-1 max-sm:px-2 rounded-md px-4 py-2 ${
-                                currentPage === index + 1
+                                currentPageRecieved === index + 1
                                   ? "bg-black text-white"
                                   : "bg-white text-black"
                               }`}

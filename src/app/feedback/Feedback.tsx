@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
+import { convertDate } from "@/lib/utils";
+import { AlertTriangle, CornerDownRight, Loader, Quote } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -73,6 +74,37 @@ const benefitsData = [
   },
 ];
 
+const staticPositiveFeedbacks = [
+  {
+    name: "Sneha Patel",
+    date: "12 January, 2024",
+    feedback_message:
+      "Amit Trivedi's leadership has been a game-changer. His commitment to continuous improvement and innovation, along with the chatbot for coaching, has strengthened our team. Grateful for the guidance!",
+  },
+  {
+    name: "Rajesh Kumar",
+    date: "12 January, 2024",
+    feedback_message:
+      "Amit Trivedi's leadership is truly inspiring. The coaching chatbot has been a game-changer, providing instant access to valuable insights. His approach encourages accountability and ownership. Thumbs up!",
+  },
+  {
+    name: "Priya Sharma",
+    date: "12 January, 2024",
+    feedback_message:
+      "Amit Trivedi's leadership has flourished our division. The coaching chatbot is a brilliant tool, offering tailored advice. His focus on continuous improvement and open communication has transformed our dynamics. Thumbs up!",
+  },
+];
+
+const feedbackJsonConversion = (jsonData: any) => {
+  return jsonData.positive_msgs.map((msg: any) => {
+    return {
+      name: msg.participant_name,
+      date: msg.date,
+      feedback_message: msg.msg["Why are you giving me a thumbs up today?"],
+    };
+  });
+};
+
 const Feedback = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
@@ -83,6 +115,16 @@ const Feedback = ({ user, renderType }: any) => {
     "https://www.linkedin.com/"
   );
   const [coachBookLink, setCoachBookLink] = useState("https://calendly.com/");
+
+  interface feedbackType {
+    name: string;
+    date: string;
+    feedback_message: string;
+  }
+
+  const [positiveFeedbacks, setPositiveFeedbacks] = useState<feedbackType[]>(
+    []
+  );
 
   const [invalidId, setInValidCoach] = useState(false);
 
@@ -115,6 +157,24 @@ const Feedback = ({ user, renderType }: any) => {
           console.error(err);
           setInValidCoach(true);
         });
+
+      fetch(
+        `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${bot_id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("feedback DATA");
+          setPositiveFeedbacks(feedbackJsonConversion(data));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
       setIsLoading(false);
     }
@@ -125,21 +185,12 @@ const Feedback = ({ user, renderType }: any) => {
       {renderType === "static" && (
         <Script src="../widget/coachbots-stt-widget.js" />
       )}
-      <Script
-        src="https://static.elfsight.com/platform/platform.js"
-        data-use-service-core
-        defer
-      />
 
       <div className="fixed max-sm:hidden right-[100px] bottom-12">
         <span className="mr-6 text-sm font-bold">Try Now</span>
         <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
       </div>
 
-      <div
-        className="elfsight-app-a2ca2565-f013-4a6a-9ad8-3ff1f7eadf9a"
-        data-elfsight-app-lazy
-      ></div>
       {isLoading && renderType === "dynamic" && (
         <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
           <div className="p-2 bg-gray-300 rounded-md text-sm">
@@ -157,9 +208,9 @@ const Feedback = ({ user, renderType }: any) => {
         </div>
       )}
       <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div>
-          {/* <NavProfile user={user} /> */}
-          <BotsNavigation />
+        <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+          <NavProfile user={user} />
+          <BotsNavigation user={user} />
         </div>
         <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
@@ -180,7 +231,7 @@ const Feedback = ({ user, renderType }: any) => {
               </p>
             )}
             {renderType === "dynamic" ? (
-              coachDescription
+              <p className="mt-4 mb-2">{coachDescription}</p>
             ) : (
               <p className="max-sm:text-xs text-[#2f2323]">
                 <b>Sample : </b>Hi, I am Amit Trivedi, a results-driven senior
@@ -357,45 +408,57 @@ const Feedback = ({ user, renderType }: any) => {
             </div>
           </div>
           {/* kudosWall */}
-          {/* <div className="w-full" id="benefits">
+          <div className="w-full" id="benefits">
             <div className={`w-full flex justify-center`}>
               <Badge
                 variant={"secondary"}
                 className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
               >
-                Kudos Wall | Positive feedbacks
+                Kudos Wall
               </Badge>
             </div>
             <div className="w-full">
               <div className="relative isolate mx-auto">
                 <div>
                   <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-row overflow-scroll gap-2">
-                      <KudosWall />
-                      <KudosWall />
-                      <KudosWall />
+                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
+                      {renderType === "dynamic" ? (
+                        <>
+                          {positiveFeedbacks.length > 0 ? (
+                            <>
+                              {positiveFeedbacks.map((feedback) => (
+                                <KudosWall
+                                  name={feedback.name}
+                                  feedback={feedback.feedback_message}
+                                  date={convertDate(feedback.date)}
+                                />
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
+                                No Feedbacks yet
+                              </p>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {staticPositiveFeedbacks.map((feedback) => (
+                            <KudosWall
+                              name={feedback.name}
+                              feedback={feedback.feedback_message}
+                              date={feedback.date}
+                            />
+                          ))}
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div> */}
-          <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
-            <Badge
-              variant={"secondary"}
-              className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-4 mt-12 max-sm:mt-8 max-sm:text-sm"
-            >
-              Disclaimer
-            </Badge>
-            <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-              The coach/mentor's personalized bot is designed to enhance your
-              coaching/mentoring experience. The information provided in the
-              coach/mentor's detailed sections serves as a guide, and the
-              effectiveness of coaching/mentoring is subjective. The coach can
-              override the discussion via email.
-            </p>
-          </div>{" "}
-          {/**/}
+          </div>
         </div>
       </div>
     </>
