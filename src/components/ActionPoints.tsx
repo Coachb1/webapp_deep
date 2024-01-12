@@ -52,7 +52,7 @@ const ActionPoints = ({ user }: any) => {
         console.log("USER FROM ACTIONS", data);
         console.log(data.uid);
         fetch(
-          `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=e2575f66-8561-4aac-8f00-10769b6bdc1c`,
+          `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${data.uid}`,
           {
             method: "GET",
             headers: {
