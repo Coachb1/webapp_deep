@@ -50,3 +50,16 @@ export function constructMetadata({
     }),
   };
 }
+
+export const convertDate = (date: string) => {
+  const utcTimestamp = new Date(date);
+  const istOptions = {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  } as Intl.DateTimeFormatOptions;
+
+  const istDateString = utcTimestamp.toLocaleString("en-US", istOptions);
+  return istDateString;
+};

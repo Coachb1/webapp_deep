@@ -29,6 +29,7 @@ interface Conversation {
   participant_uid: string;
   role: string;
   date: string;
+  bot_name?: string; // Add bot_name to the Conversation interface
 }
 
 interface ConvertedResult {
@@ -36,6 +37,7 @@ interface ConvertedResult {
   coach_message: string;
   user_role: string;
   conversation_date: string;
+  bot_name?: string; // Add bot_name to the ConvertedResult interface
 }
 
 interface ConvertedConversation {
@@ -43,13 +45,14 @@ interface ConvertedConversation {
   conversation: ConvertedResult[];
   role: string;
   date: string;
+  bot_name?: string; // Add bot_name to the ConvertedConversation interface
 }
 
 function convertJsonToExpectedFormat(
   jsonData: Conversation[]
 ): ConvertedConversation[] {
   return jsonData.map((conversation) => {
-    const { participant_name, results, role, date } = conversation;
+    const { participant_name, results, role, date, bot_name } = conversation;
     const conversationArray: ConvertedResult[] = results.map((result) => {
       const participantMessage = result.participant_message_text || "";
       const coachMessage = result.coach_message_text || "";
@@ -62,6 +65,7 @@ function convertJsonToExpectedFormat(
         coach_message: coachMessage,
         user_role: userRole,
         conversation_date: conversationDate,
+        bot_name: bot_name, // Include bot_name in ConvertedResult
       };
     });
 
@@ -70,6 +74,7 @@ function convertJsonToExpectedFormat(
       conversation: conversationArray,
       role: role,
       date: date,
+      bot_name: bot_name, // Include bot_name in ConvertedConversation
     };
   });
 }
@@ -140,12 +145,11 @@ const Conversations = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("FOR ADMIN : ", data);
-              if (data[0] != 'Bot not Found'){
+              if (data[0] != "Bot not Found") {
                 const convertedData: ConvertedConversation[] =
                   convertJsonToExpectedFormat(data);
                 setConvertsationDataAdmin(convertedData);
               }
-              //   setLoading(false);
             })
             .catch((err) => {
               console.error(err);
@@ -193,7 +197,6 @@ const Conversations = ({ user }: any) => {
                 <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                   {conversationDataAdmin.length > 0 && (
                     <>
-                      <Badge>Admin</Badge>
                       <div className="flex flex-col w-full">
                         {conversationDataAdmin.map((conversation) => (
                           <ConversationChat
@@ -212,7 +215,6 @@ const Conversations = ({ user }: any) => {
                   )}
                   {conversationData.length > 0 && (
                     <>
-                      <Badge>User</Badge>
                       <div className="flex flex-col w-full">
                         {conversationData.map((conversation) => (
                           <ConversationChat
@@ -223,6 +225,7 @@ const Conversations = ({ user }: any) => {
                               formatDate(conversation.date)
                             }
                             role={conversation.role}
+                            botName={conversation.bot_name}
                           />
                         ))}
                       </div>

@@ -45,17 +45,8 @@ const Page = async () => {
 
   return (
     <div>
-      <Script
-        src="https://static.elfsight.com/platform/platform.js"
-        data-use-service-core
-        defer
-      />
       <VersionOne user={user} groups={group_list} />
       <Widgets from="content-library" />
-      <div
-        className="elfsight-app-a2ca2565-f013-4a6a-9ad8-3ff1f7eadf9a"
-        data-elfsight-app-lazy
-      ></div>
     </div>
   );
 };

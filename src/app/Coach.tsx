@@ -129,21 +129,12 @@ const Coach = ({ user, renderType }: any) => {
       {renderType === "static" && (
         <Script src="../widget/coachbots-stt-widget.js" />
       )}
-      <Script
-        src="https://static.elfsight.com/platform/platform.js"
-        data-use-service-core
-        defer
-      />
 
       <div className="fixed max-sm:hidden right-[100px] bottom-12">
         <span className="mr-6 text-sm font-bold">Try Now</span>
         <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
       </div>
 
-      <div
-        className="elfsight-app-a2ca2565-f013-4a6a-9ad8-3ff1f7eadf9a"
-        data-elfsight-app-lazy
-      ></div>
       {isLoading && renderType === "dynamic" && (
         <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
           <div className="p-2 bg-gray-300 rounded-md text-sm">
@@ -162,8 +153,8 @@ const Coach = ({ user, renderType }: any) => {
       )}
       <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
         <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-          {/* <NavProfile user={user} /> */}
-          <BotsNavigation />
+          <NavProfile user={user} />
+          <BotsNavigation user={user} />
         </div>
         <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">

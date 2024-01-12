@@ -106,7 +106,7 @@ const VersionOne = ({ user, groups }: any) => {
           </span>
           BOTS
         </h1>
-        <h1 className="text-5xl font-bold md:text-6xl lg:text-4xl text-black max-sm:text-3xl max-sm:px-4  bg-gradient-to-br from-gray-700 to-gray-400 bg-clip-text text-transparent">
+        <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
@@ -287,7 +287,7 @@ const VersionOne = ({ user, groups }: any) => {
               </Button>
             </Link>
 
-            {shouldRenderDiv && (
+            {/* {shouldRenderDiv && (
               <Link href={"#create-your-own"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -303,7 +303,7 @@ const VersionOne = ({ user, groups }: any) => {
                   </div>
                 </div>
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -458,11 +458,11 @@ const VersionOne = ({ user, groups }: any) => {
               tests={meetings}
             />
           </div>
-          {shouldRenderDiv && (
+          {/* {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
