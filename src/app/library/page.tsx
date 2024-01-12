@@ -1,7 +1,7 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { constructMetadata } from "@/lib/utils";
 import MyLibrary from "./library";
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import Widgets from "@/components/Widgets";
 
 export const metadata = constructMetadata({
   title: "My Library",
@@ -14,6 +14,7 @@ const Page = async () => {
   return (
     <div>
       <MyLibrary user={user} />
+      <Widgets />
     </div>
   );
 };

@@ -63,3 +63,25 @@ export const convertDate = (date: string) => {
   const istDateString = utcTimestamp.toLocaleString("en-US", istOptions);
   return istDateString;
 };
+
+interface ActionPoints {
+  feedback_given: number;
+  feedback_received: number;
+  chat_attempted: number;
+  transcript_email_received: number;
+  transcript_email_sent: number;
+  interaction_attempted: number;
+}
+
+interface ActionPointsData {
+  action_points: ActionPoints;
+}
+
+export function calculateTotalActionPoints(jsonData: ActionPointsData): number {
+  const actionPoints: ActionPoints = jsonData.action_points;
+  const totalActionPoints: number = Object.values(actionPoints).reduce(
+    (total, points) => total + points,
+    0
+  );
+  return totalActionPoints;
+}

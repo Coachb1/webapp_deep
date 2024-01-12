@@ -1,3 +1,4 @@
+import ActionPoints from "@/components/ActionPoints";
 import BotsNavigation from "@/components/BotsNavigation";
 import Conversations from "@/components/Conversations";
 import NavProfile from "@/components/NavProfile";
@@ -40,6 +41,8 @@ const Page = async () => {
           <SessionNotes user={user} />
           <hr className="my-2" />
           <Conversations user={user} />
+          <hr className="my-2" />
+          <ActionPoints user={user} />
         </div>
       </div>
     </>
