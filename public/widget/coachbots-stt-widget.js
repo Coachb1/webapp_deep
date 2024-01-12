@@ -383,6 +383,7 @@ function getAnonymousEmail() {
     }
     isFeedbackConvEnd = true;
     appendMessage2("<p> That's it Thank you for your feedback.")
+    increaseActionPointStt(userId2,"feedback_given")
     const queryparams = new URLSearchParams({
       conversation: JSON.stringify(feedbackBotQnA),
       bot_id: botId,
@@ -1382,6 +1383,28 @@ const resetAllVariablesStt = () => {
   recommendationClicked = false;
 };
 
+function  increaseActionPointStt(user_id,field_name){
+
+  fetch(
+    `${baseURL2}/test-attempt-sessions/get-or-save-action-point/?mode=save&user_id=${user_id}&for=${field_name}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(`increased.`,data);
+    })
+    .catch((err) => console.log("increaseActionPointStt Error",err));
+  
+ 
+
+}
+
 function findRelatedItemsStt(data, targetCode) {
   let matchingItems = [];
   let targetTitle = "";
@@ -2257,6 +2280,7 @@ async function submitEmailAndName2() {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
       sendEmail2(sessionId2,globalReportUrl2);
+      increaseActionPointStt(userId2,'interaction_attempted')
       // append custom message to chat
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 

@@ -964,6 +964,7 @@ async function submitEmailAndName() {
     .then((data) => {
       console.log("name email updated, sending email");
       sendEmail(sessionId,globalReportUrl);
+      increaseActionPoint(userId,"interaction_attempted")
 
       if (!window.user) {
         // append custom message to chat
@@ -1297,6 +1298,26 @@ const resetAllVariables = () => {
   clientName = "";
   isTranscriptOnly = false;
 };
+
+function  increaseActionPoint(user_id,field_name){
+
+  fetch(
+    `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=save&user_id=${user_id}&for=${field_name}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(`increased.`,data);
+    })
+    .catch((err) => console.log("increaseActionPoint Error",err));
+
+}
 
 function findRelatedItems(data, targetCode) {
   let matchingItems = [];
