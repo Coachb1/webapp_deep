@@ -2,7 +2,6 @@
 
 import BotsNavigation from "@/components/BotsNavigation";
 import NavProfile from "@/components/NavProfile";
-import PageFooter from "@/components/PageFooter";
 import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
@@ -170,21 +169,6 @@ const SubjectExpert = ({ user, renderType }: any) => {
             )}
           </div>
           <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-            {/* <Link target="_blank" href={coachProfileLink}>
-              <div className="relative group cursor-pointer">
-                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                  <div className="space-y-2">
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer w-fit"
-                    >
-                      Profile {renderType !== "dynamic" && "(sample)"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
             <Link href={"#wtu"}>
               <Button
                 variant={"secondary"}
@@ -209,21 +193,6 @@ const SubjectExpert = ({ user, renderType }: any) => {
                 Benefits
               </Button>
             </Link>
-            {/* <Link target="_blank" href={coachBookLink}>
-              <div className="relative group cursor-pointer">
-                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                  <div className="space-y-2">
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Book me {renderType !== "dynamic" && "(sample)"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
           </div>
           <div id="wtu">
             <WhereToUse />
@@ -320,21 +289,6 @@ const SubjectExpert = ({ user, renderType }: any) => {
               </div>
             </div>
           </div>
-          {/* <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
-            <Badge
-              variant={"secondary"}
-              className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-4 mt-12 max-sm:mt-8 max-sm:text-sm"
-            >
-              Disclaimer
-            </Badge>
-            <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-              The coach/mentor's personalized bot is designed to enhance your
-              coaching/mentoring experience. The information provided in the
-              coach/mentor's detailed sections serves as a guide, and the
-              effectiveness of coaching/mentoring is subjective. The coach can
-              override the discussion via email.
-            </p>
-          </div>{" "} */}
         </div>
       </div>
     </>
