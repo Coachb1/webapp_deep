@@ -3,6 +3,7 @@
 import BotsNavigation from "@/components/BotsNavigation";
 import KudosWall from "@/components/KudosWall";
 import NavProfile from "@/components/NavProfile";
+import NoLoginFlag from "@/components/NoLoginFlag";
 import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
@@ -111,10 +112,10 @@ const Feedback = ({ user, renderType }: any) => {
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [coachProfileLink, setCoachProfileLink] = useState(
-    "https://www.linkedin.com/"
-  );
-  const [coachBookLink, setCoachBookLink] = useState("https://calendly.com/");
+
+  //login walls
+  const [loginRequired, setLoginRequired] = useState<boolean>();
+  const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
 
   interface feedbackType {
     name: string;
@@ -129,135 +130,148 @@ const Feedback = ({ user, renderType }: any) => {
   const [invalidId, setInValidCoach] = useState(false);
 
   useEffect(() => {
-    if (renderType === "dynamic") {
-      setIsLoading(true);
-      const bot_id = pathname.split("/")[2];
-      console.log(bot_id);
-      fetch(`${baseURL}/accounts/get-bot-details/?bot_id=${bot_id}`, {
+    setIsLoading(true);
+
+    fetch(
+      `${baseURL}/accounts/get-bot-details/?bot_id=${
+        renderType === "dynamic"
+          ? pathname.split("/")[2]
+          : "feedback-d55cd-aravsharma"
+      }`,
+      {
         method: "GET",
         headers: {
           Authorization: basicAuth,
         },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("DYNAMIC COACH DATA ", data);
-          const coachScribe =
-            document.getElementsByClassName("deep-chat-poc2")[0];
-          console.log(coachScribe);
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const coachScribe =
+          document.getElementsByClassName("deep-chat-poc2")[0];
+
+        if (renderType === "dynamic") {
+          console.log("DYNAMIC FEEDBACK DATA ", data);
           if (data.error) {
             coachScribe.setAttribute("style", "display: none;");
             setInValidCoach(true);
           }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setInValidCoach(true);
-        });
-
-      fetch(
-        `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${bot_id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
         }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("feedback DATA");
-          setPositiveFeedbacks(feedbackJsonConversion(data));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      setIsLoading(false);
-    }
+        if (data.data.bot_details.is_strict_login_required && !user) {
+          coachScribe.setAttribute("style", "display: none;");
+        }
+        if (data.data.bot_details.is_login_required) {
+          if (!user) {
+            coachScribe.setAttribute("style", "display: none;");
+          }
+        }
+        setLoginRequired(data.data.bot_details.is_login_required);
+        setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
+
+        fetch(
+          `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${
+            renderType === "dynamic"
+              ? pathname.split("/")[1]
+              : "feedback-d55cd-aravsharma"
+          }`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("feedback DATA");
+            setPositiveFeedbacks(feedbackJsonConversion(data));
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setInValidCoach(true);
+      });
   }, []);
 
-  return (
-    <>
-      {renderType === "static" && (
-        <Script src="../widget/coachbots-stt-widget.js" />
-      )}
+  const FeedbackBotBody = () => {
+    return (
+      <>
+        {renderType === "static" && (
+          <Script src="../widget/coachbots-stt-widget.js" />
+        )}
 
-      <div className="fixed max-sm:hidden right-[100px] bottom-12">
-        <span className="mr-6 text-sm font-bold">Try Now</span>
-        <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
-      </div>
-
-      {isLoading && renderType === "dynamic" && (
-        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
-          <div className="p-2 bg-gray-300 rounded-md text-sm">
-            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
-            Please wait while we prepare your coach.
+        {!loginRequired && (
+          <div className="fixed max-sm:hidden right-[100px] bottom-12">
+            <span className="mr-6 text-sm font-bold">Try Now</span>
+            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
           </div>
-        </div>
-      )}
-      {invalidId && renderType === "dynamic" && (
-        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-          <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
-            <AlertTriangle className="h-4 w-4 mr-2 inline" />
-            We have encountered an error. Please try again.{" "}
-          </div>
-        </div>
-      )}
-      <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-          <NavProfile user={user} />
-          <BotsNavigation user={user} />
-        </div>
-        <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
-          <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-            <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-              COACH
-            </span>
-            BOTS
-          </h1>
-          <div>
-            <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-              Love to hear your feedback
-            </h1>
+        )}
 
-            {renderType !== "dynamic" && (
-              <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                This section is about the user profile who is looking to get
-                feedback.
-              </p>
-            )}
-            {renderType === "dynamic" ? (
-              <p className="mt-4 mb-2">{coachDescription}</p>
-            ) : (
-              <p className="max-sm:text-xs text-[#2f2323]">
-                <b>Sample : </b>Hi, I am Amit Trivedi, a results-driven senior
-                manager with over 15 years of experience leading
-                cross-functional teams across India. I hold an MBA from IIM
-                Ahmedabad and PMP certification. Currently, I lead the software
-                development division, managing a team of 35 engineers across
-                cloud architecture, QA, and agile delivery functions. I value
-                candid feedback and strive for continuous improvement at both a
-                personal and organizational level.
-              </p>
-            )}
-            <div className="my-4 max-sm:text-xs text-[#2f2323]">
-              <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
-                {" "}
-                Thank you for taking the time! Your feedback is invaluable to
-                me. Please take a moment to share your experience by selecting
-                either a thumbs up or thumbs down. I have a few additional
-                questions to gather more details about your experience. Please
-                share your honest answers to the questions. Your input helps me
-                improve, and I genuinely appreciate your time and insights.
-              </p>
+        {invalidId && renderType === "dynamic" && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              We have encountered an error. Please try again.{" "}
             </div>
           </div>
-          <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-            {/* <Link target="_blank" href={coachProfileLink}>
+        )}
+        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+          <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+            <NavProfile user={user} />
+            <BotsNavigation user={user} />
+          </div>
+          <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+            <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
+              <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+                COACH
+              </span>
+              BOTS
+            </h1>
+            <div>
+              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+                Love to hear your feedback
+              </h1>
+
+              {renderType !== "dynamic" && (
+                <p className="my-4 max-sm:text-xs text-[#2f2323]">
+                  This section is about the user profile who is looking to get
+                  feedback.
+                </p>
+              )}
+              {renderType === "dynamic" ? (
+                <p className="mt-4 mb-2">{coachDescription}</p>
+              ) : (
+                <p className="max-sm:text-xs text-[#2f2323]">
+                  <b>Sample : </b>Hi, I am Amit Trivedi, a results-driven senior
+                  manager with over 15 years of experience leading
+                  cross-functional teams across India. I hold an MBA from IIM
+                  Ahmedabad and PMP certification. Currently, I lead the
+                  software development division, managing a team of 35 engineers
+                  across cloud architecture, QA, and agile delivery functions. I
+                  value candid feedback and strive for continuous improvement at
+                  both a personal and organizational level.
+                </p>
+              )}
+              <div className="my-4 max-sm:text-xs text-[#2f2323]">
+                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+                  {" "}
+                  Thank you for taking the time! Your feedback is invaluable to
+                  me. Please take a moment to share your experience by selecting
+                  either a thumbs up or thumbs down. I have a few additional
+                  questions to gather more details about your experience. Please
+                  share your honest answers to the questions. Your input helps
+                  me improve, and I genuinely appreciate your time and insights.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
+              {/* <Link target="_blank" href={coachProfileLink}>
               <div className="relative group cursor-pointer">
                 <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -272,31 +286,31 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </Link> */}
-            <Link href={"#wtu"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Where to use
-              </Button>
-            </Link>
-            <Link href={"#howItWorks"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                How it works
-              </Button>
-            </Link>
-            <Link href={"#benefits"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Benefits
-              </Button>
-            </Link>
-            {/* <Link target="_blank" href={coachBookLink}>
+              <Link href={"#wtu"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Where to use
+                </Button>
+              </Link>
+              <Link href={"#howItWorks"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  How it works
+                </Button>
+              </Link>
+              <Link href={"#benefits"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Benefits
+                </Button>
+              </Link>
+              {/* <Link target="_blank" href={coachBookLink}>
               <div className="relative group cursor-pointer">
                 <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -311,148 +325,149 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </Link> */}
-          </div>
-          <div id="wtu">
-            <WhereToUse />
-          </div>
-          <div className="w-full" id="howItWorks">
-            <div className={`w-full flex justify-center`}>
-              <Badge
-                variant={"secondary"}
-                className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-              >
-                How it works
-              </Badge>
             </div>
-            <div className="w-full">
-              <div className="relative isolate mx-auto">
-                <div>
-                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                      <Accordion
-                        type="single"
-                        collapsible
-                        className="w-full text-gray-500 max-sm:p-4 "
-                      >
-                        {howItWorks.map((test, i) => (
-                          <AccordionItem
-                            key={i}
-                            value={`item-${i + 1}`}
-                            className={
-                              i === howItWorks.length - 1
-                                ? "border-none"
-                                : "border-b"
-                            }
-                          >
-                            <AccordionTrigger className="text-left max-sm:text-xs">
-                              <div>
-                                <b>{test.heading}</b>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="max-sm:text-xs text-left">
-                              <p> {test.description}</p>
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    </div>
-                  </div>
-                </div>
+            <div id="wtu">
+              <WhereToUse />
+            </div>
+            <div className="w-full" id="howItWorks">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  How it works
+                </Badge>
               </div>
-            </div>
-          </div>
-          <div className="w-full" id="benefits">
-            <div className={`w-full flex justify-center`}>
-              <Badge
-                variant={"secondary"}
-                className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-              >
-                Benefits
-              </Badge>
-            </div>
-            <div className="w-full">
-              <div className="relative isolate mx-auto">
-                <div>
-                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                      <Accordion
-                        type="single"
-                        collapsible
-                        className="w-full text-gray-500 max-sm:p-4 "
-                      >
-                        {benefitsData.map((test, i) => (
-                          <AccordionItem
-                            key={i}
-                            value={`item-${i + 1}`}
-                            className={
-                              i === howItWorks.length - 1
-                                ? "border-none"
-                                : "border-b"
-                            }
-                          >
-                            <AccordionTrigger className="text-left max-sm:text-xs">
-                              <div>
-                                <b>{test.heading}</b>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="max-sm:text-xs text-left">
-                              <p> {test.description}</p>
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* kudosWall */}
-          <div className="w-full" id="benefits">
-            <div className={`w-full flex justify-center`}>
-              <Badge
-                variant={"secondary"}
-                className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-              >
-                Kudos Wall
-              </Badge>
-            </div>
-            <div className="w-full">
-              <div className="relative isolate mx-auto">
-                <div>
-                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
-                      {renderType === "dynamic" ? (
-                        <>
-                          {positiveFeedbacks.length > 0 ? (
-                            <>
-                              {positiveFeedbacks.map((feedback) => (
-                                <KudosWall
-                                  name={feedback.name}
-                                  feedback={feedback.feedback_message}
-                                  date={convertDate(feedback.date)}
-                                />
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
-                                No Feedbacks yet
-                              </p>
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {staticPositiveFeedbacks.map((feedback) => (
-                            <KudosWall
-                              name={feedback.name}
-                              feedback={feedback.feedback_message}
-                              date={feedback.date}
-                            />
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {howItWorks.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
+                            >
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
                           ))}
-                        </>
-                      )}
+                        </Accordion>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full" id="benefits">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  Benefits
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {benefitsData.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
+                            >
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* kudosWall */}
+            <div className="w-full" id="benefits">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  Kudos Wall
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
+                        {renderType === "dynamic" ? (
+                          <>
+                            {positiveFeedbacks.length > 0 ? (
+                              <>
+                                {positiveFeedbacks.map((feedback) => (
+                                  <KudosWall
+                                    name={feedback.name}
+                                    feedback={feedback.feedback_message}
+                                    date={convertDate(feedback.date)}
+                                  />
+                                ))}
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
+                                  No Feedbacks yet
+                                </p>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {staticPositiveFeedbacks.map((feedback) => (
+                              <KudosWall
+                                name={feedback.name}
+                                feedback={feedback.feedback_message}
+                                date={feedback.date}
+                              />
+                            ))}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -460,7 +475,28 @@ const Feedback = ({ user, renderType }: any) => {
             </div>
           </div>
         </div>
-      </div>
+      </>
+    );
+  };
+  return (
+    <>
+      {isLoading && (
+        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
+          <div className="p-2 bg-gray-300 rounded-md text-sm">
+            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
+            Please wait while we prepare your coach.
+          </div>
+        </div>
+      )}
+
+      {strictLoginRequired === false && <FeedbackBotBody />}
+      {!strictLoginRequired && user && <FeedbackBotBody />}
+      {strictLoginRequired && user && <FeedbackBotBody />}
+      {strictLoginRequired && !user && (
+        <>
+          <NoLoginFlag />
+        </>
+      )}
     </>
   );
 };
