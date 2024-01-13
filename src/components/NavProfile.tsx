@@ -93,7 +93,7 @@ const NavProfile = ({ user }: any) => {
         </DropdownMenu>
       ) : (
         <Button variant={"default"} className={cn("text-xs h-8 px-4 z-50")}>
-          <RegisterLink>Log in</RegisterLink>
+          <RegisterLink postLoginRedirectURL={pathname}>Log in</RegisterLink>
         </Button>
       )}
     </>
