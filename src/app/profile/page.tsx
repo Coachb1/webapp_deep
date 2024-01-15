@@ -4,6 +4,7 @@ import Conversations from "@/components/Conversations";
 import NavProfile from "@/components/NavProfile";
 import SessionNotes from "@/components/SessionNotes";
 import UserProfile from "@/components/UserProfile";
+import { Button } from "@/components/ui/button";
 import { constructMetadata } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ChevronLeft } from "lucide-react";
