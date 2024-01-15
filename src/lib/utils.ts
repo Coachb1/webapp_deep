@@ -85,3 +85,13 @@ export function calculateTotalActionPoints(jsonData: ActionPointsData): number {
   );
   return totalActionPoints;
 }
+
+// api endpoints via subdomain match
+export const subdomain =
+  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
+export const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
+export const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
+export const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+
+export const basicAuth =
+  "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
