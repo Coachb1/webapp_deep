@@ -45,11 +45,35 @@ const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === "playground" ? devUrl : prodUrl;
 
-const VersionOne = ({ user, groups }: any) => {
-  // const { user } = useKindeBrowserClient();
+const VersionOne = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
+
   useEffect(() => {
-    setGroupList(groups);
+    if (user) {
+      fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
+        method: "GET",
+        headers: {
+          Authorization:
+            "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          let group_list: string[] = [];
+          for (const item of data.data.my_lib) {
+            if (item.emails.includes(user?.email)) {
+              group_list.push(item.group);
+            }
+          }
+          console.log(group_list);
+          setGroupList(group_list);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }, []);
 
   let shouldRenderDiv;
