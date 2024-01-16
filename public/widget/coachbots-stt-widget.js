@@ -98,6 +98,11 @@ let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 let fitmentAnalysisOptions;
 let IsPositiveFeedback = false;
+let isBeginSessionProceed = false;
+let botInitialQuestions;
+let botInitialQuestionsIndex = 1;
+let isAskingInitialQuestions = false;
+let botInitialQuestionsQnA = {};
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -231,8 +236,7 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
     const token2 =
       "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
       // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
-//   const token2 =
-//     "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+    // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
 
@@ -629,6 +633,7 @@ function getAnonymousEmail() {
       if(botType != 'feedback_bot'){
         fitmentAnalysisQuestions = botDetails.data.fitment_qna
         fitmentAnalysisOptions = botDetails.data.fitment_options
+        botInitialQuestions = botDetails.data.initial_qna
         appendMessage2(faqHtmlData)
       } else{
         feedbackBotInitialFlow('initial')
@@ -707,7 +712,7 @@ const handleFitmentAnalysis = async ()=> {
     gShadowRoot2.getElementById(`fitment-analysis`).innerHTML = "<b>Please Wait...</b>"
     
     
-
+    console.log(userId2,participantId2)
     try {
         const response = await fetch(
           `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
@@ -744,9 +749,8 @@ const handleFitmentAnalysis = async ()=> {
         // }, 200);
          
         } catch (err) {
-            signals.onResponse({
-                html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
-             });
+            appendMessage2(`<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
+            )
         }
    
     
@@ -758,7 +762,7 @@ const handleFitmentAnalysis = async ()=> {
 
 }
 
-function handleFaqButtonClick(question) {
+async function handleFaqButtonClick(question) {
   
   if( question == 'fitness_analysis') {
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
@@ -794,7 +798,18 @@ function handleFaqButtonClick(question) {
 
   } else {
     if( question == 'something_else') {
-        appendMessage2('Please ask your question in chat box')
+        // appendMessage2('Please ask your question in chat box')
+        if (botType === 'avatar_bot'){
+          await getFitmentScore(userId2)
+          console.log(isBeginSessionProceed)
+          if (!isBeginSessionProceed){
+            appendMessage2("Please attempt fitment analysis.")
+            return;
+            }
+        }
+
+        isAskingInitialQuestions = true;
+        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
         return;
     }
     if( question == 'recommendations') {
@@ -1403,6 +1418,25 @@ function  increaseActionPointStt(user_id,field_name){
   
  
 
+}
+async function  getFitmentScore(user_id){
+  try{
+    const resp = await fetch(
+      `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    const jsonresp =  await resp.json()
+    console.log(`fitment_score_data`,jsonresp);
+    isBeginSessionProceed = jsonresp['proceed']
+
+  } catch(err){console.log("getFitmentScore Error",err)}
+  
 }
 
 function findRelatedItemsStt(data, targetCode) {
@@ -3301,6 +3335,7 @@ loadExternalModule().then(() => {
                               participant_id: participantId2,
                               bot_id: botId,
                               is_signature_bot: true,
+                              user_id: userId2,
                               fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
                             }),
                           }
@@ -3366,7 +3401,28 @@ loadExternalModule().then(() => {
             }
 
             console.log("Yes OMG control is reaching here") 
+
+            if (isAskingInitialQuestions == true) {
+                // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
+                const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
+
+                botInitialQuestionsQnA[botInitialQuestionsIndex] = tempQna;
+
+                botInitialQuestionsIndex ++;
+                if( botInitialQuestionsIndex > Object.keys(botInitialQuestions).length ) {
+                    // isAskingInitialQuestions = false;
+                    // botInitialQuestionsIndex = 0;
+                    console.log("all botInitialQuestions submitted : ", botInitialQuestionsQnA)
+                    // signals.onResponse({text: "Thank you for your response."})
+    
+                }
+                else {
+                    signals.onResponse({text: botInitialQuestions[botInitialQuestionsIndex]})
+                    return;
+                }
+            }
             
+            if( isSessionActiveStt == false && isBotInitialized == false) {
             try {
               const response = await fetch(
                 `${baseURL2}/test-attempt-sessions/`,
@@ -3392,6 +3448,7 @@ loadExternalModule().then(() => {
               sessionId2 = data.uid;
               isSessionActiveStt = true;
               console.log("Session Created => ", sessionId2);
+            
 
               if( isBotInitialized == false ) {
               // initialize coaching conversation 
@@ -3411,6 +3468,7 @@ loadExternalModule().then(() => {
                         body: JSON.stringify({
                           test_attempt_session_id: sessionId2,
                           is_signature_bot: true,
+                          initial_qna: JSON.stringify(botInitialQuestionsQnA),
                         }),
                       }
                     );
@@ -3422,6 +3480,12 @@ loadExternalModule().then(() => {
                     console.log("conversation_id", conversation_id2);
                     isBotInitialized = true;
 
+                    if( isAskingInitialQuestions == true && botInitialQuestionsIndex != 0) {
+                        isAskingInitialQuestions = false;
+                        botInitialQuestionsIndex = 0;
+                        signals.onResponse({text: data.coach_message_text})
+                        return;
+                    }
 
                  
                
@@ -3434,7 +3498,7 @@ loadExternalModule().then(() => {
               console.log(err);
               isSessionActiveStt = false;
             }
-
+        }
             if( isBotInitialized == true) {
             const response = await fetch(
                 `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
