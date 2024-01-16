@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Loader, Search } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface CoachesDataType {
@@ -31,7 +30,6 @@ interface FilterCategoriesType {
 }
 
 const Coaches = () => {
-  const router = useRouter();
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
@@ -100,30 +98,6 @@ const Coaches = () => {
         setLoading(false);
       })
       .catch((error) => console.log("error", error));
-
-    // var myHeaders = new Headers();
-    // myHeaders.append("Authorization", basicAuth);
-    // var formdata = new FormData();
-    // formdata.append("profile_type", "mentor");
-    // formdata.append("name", "aadil");
-    // formdata.append("email", "aadil611ofc@gmail.com");
-    // formdata.append("user_id", " f23d57a2-a4d4-42c0-8871-b3211f5cf618");
-    // formdata.append("about", "this is a about text");
-    // formdata.append("department", "IT");
-    // formdata.append("status", "booked");
-
-    // await fetch(
-    //   `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_type=coachee`,
-    //   {
-    //     method: "POST",
-    //     headers: myHeaders,
-    //     body: formdata,
-    //     redirect: "follow",
-    //   }
-    // )
-    //   .then((response) => response.json())
-    //   .then((result) => console.log(result))
-    //   .catch((error) => console.log("error", error));
   };
 
   useEffect(() => {

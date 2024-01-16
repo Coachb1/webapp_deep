@@ -5,27 +5,21 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
 import { useRef, useState } from "react";
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+import { baseURL, prodUrl, basicAuth } from "@/lib/utils";
 
 const CreateYourOwn = () => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<any>();
   const [userEnteredContext, setUserEnteredContext] = useState("");
   const [generationError, setGenerationError] = useState(false);
-  const [inputError, setInputError] = useState(false)
+  const [inputError, setInputError] = useState(false);
 
   const userContextRef = useRef<any>();
   const handleGenerateSenario = () => {
     setUserEnteredContext(userContextRef.current.value);
-    if(userContextRef.current.value.split(" ").length < 20){
-      console.log("to small")
-      setInputError(true)
+    if (userContextRef.current.value.split(" ").length < 20) {
+      console.log("to small");
+      setInputError(true);
     } else {
       setIsloading(true);
       const url: any = new URL(
@@ -41,16 +35,13 @@ const CreateYourOwn = () => {
         })
       );
       params.set("url", "");
-      params.set(
-        "access_token",
-        `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`
-      );
+      params.set("access_token", basicAuth);
       url.search = params;
 
       fetch(url, {
         method: "POST",
         headers: {
-          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+          Authorization: basicAuth,
           "Content-Type": "application/json",
         },
       })
@@ -66,7 +57,6 @@ const CreateYourOwn = () => {
           if (!data[0].title) {
             setGenerationError(true);
           }
-
         })
         .catch((err) => console.log(err));
     }
@@ -74,10 +64,9 @@ const CreateYourOwn = () => {
 
   const clearHanlder = () => {
     userContextRef.current.value = "";
-    setGeneratedTestData(null)
-    setGenerationError(false)
+    setGeneratedTestData(null);
+    setGenerationError(false);
   };
-
 
   return (
     <div>
@@ -169,8 +158,8 @@ const CreateYourOwn = () => {
                   <>
                     <hr className="my-2" />
                     <p className="text-sm text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
-                      We are unable to generate the scenario at this time. Please
-                      restate the context and try again.
+                      We are unable to generate the scenario at this time.
+                      Please restate the context and try again.
                     </p>
                   </>
                 )}

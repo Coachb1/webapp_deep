@@ -22,28 +22,18 @@ import {
   onBoarding,
   ijp,
   questionPro,
-  coachingPlus,
   pms,
   pitch,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import NavProfile from "@/components/NavProfile";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import CreateYourOwn from "@/components/CreateYourOwn";
 import BotsNavigation from "@/components/BotsNavigation";
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "playground" ? devUrl : prodUrl;
+import { baseURL, basicAuth } from "@/lib/utils";
 
 const VersionOne = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
@@ -53,8 +43,7 @@ const VersionOne = ({ user }: any) => {
       fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
         method: "GET",
         headers: {
-          Authorization:
-            "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==",
+          Authorization: basicAuth,
           "Content-Type": "application/json",
         },
       })

@@ -43,38 +43,38 @@ const FilterDropDown = ({
       <div className="w-full flex flex-row gap-2 max-sm:flex-wrap">
         {filtersCategory.map((filter: any) => (
           <>
-            {/* {filter.filterOptions.length > 0 && ( */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-8 w-fit p-1 px-2 border border-gray-200"
-                >
-                  {filter.filterName}{" "}
-                  <ChevronDownIcon className="h-4 w-5 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-fit">
-                {filter.filterOptions.map((option: any) => (
-                  <div className="flex items-center space-x-2 px-2 hover:bg-gray-200 rounded-sm">
-                    <Checkbox
-                      checked={checkedValues.includes(option)}
-                      onCheckedChange={(isChecked: boolean) => {
-                        updateCheckedValues(option, isChecked);
-                      }}
-                      id={option}
-                    />
-                    <label
-                      htmlFor={option}
-                      className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
-                    >
-                      {option}
-                    </label>
-                  </div>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {/* )} */}
+            {filter.filterOptions.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-8 w-fit p-1 px-2 border border-gray-200"
+                  >
+                    {filter.filterName}{" "}
+                    <ChevronDownIcon className="h-4 w-5 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-fit">
+                  {filter.filterOptions.map((option: any) => (
+                    <div className="flex items-center space-x-2 px-2 hover:bg-gray-200 rounded-sm">
+                      <Checkbox
+                        checked={checkedValues.includes(option)}
+                        onCheckedChange={(isChecked: boolean) => {
+                          updateCheckedValues(option, isChecked);
+                        }}
+                        id={option}
+                      />
+                      <label
+                        htmlFor={option}
+                        className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+                      >
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </>
         ))}
       </div>

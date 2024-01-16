@@ -6,13 +6,7 @@ import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+import { baseURL, basicAuth } from "@/lib/utils";
 
 const UserProfile = ({
   userName,
@@ -35,7 +29,7 @@ const UserProfile = ({
       fetch(`${baseURL}/accounts/`, {
         method: "POST",
         headers: {
-          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+          Authorization: basicAuth,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -63,7 +57,7 @@ const UserProfile = ({
           await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
             method: "POST",
             headers: {
-              Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+              Authorization: basicAuth,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
@@ -80,7 +74,7 @@ const UserProfile = ({
                 {
                   method: "GET",
                   headers: {
-                    Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+                    Authorization: basicAuth,
                     "Content-Type": "application/json",
                   },
                 }
