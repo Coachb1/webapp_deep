@@ -182,6 +182,11 @@ const SessionNotes = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("Submitted Data", data);
+                if ("Error" in data) {
+                    toast.error(data.Error);
+                    setSubmitLoading(false);
+                    return;
+                }
               toast.success(
                 "Your comment has been successfully sent to your mentee."
               );
