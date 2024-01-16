@@ -11,20 +11,12 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { ChevronLeft, Library, Loader } from "lucide-react";
+import { ChevronLeft, Loader } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
+import { baseURL, basicAuth } from "@/lib/utils";
 
 interface Test {
   title: string;
@@ -85,7 +77,7 @@ const MyLibrary = ({ user }: any) => {
       await fetch(`${baseURL}/accounts/get-my-lib-data/?group=${group}`, {
         method: "GET",
         headers: {
-          Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+          Authorization: basicAuth,
           "Content-Type": "application/json",
         },
         // body: JSON.stringify({
@@ -110,7 +102,7 @@ const MyLibrary = ({ user }: any) => {
     fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
       method: "GET",
       headers: {
-        Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+        Authorization: basicAuth,
         "Content-Type": "application/json",
       },
     })
@@ -131,7 +123,7 @@ const MyLibrary = ({ user }: any) => {
           {
             method: "GET",
             headers: {
-              Authorization: `Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==`,
+              Authorization: basicAuth,
               "Content-Type": "application/json",
             },
           }
@@ -163,6 +155,7 @@ const MyLibrary = ({ user }: any) => {
       </div>
     );
   }
+
   return (
     <div>
       <Head>

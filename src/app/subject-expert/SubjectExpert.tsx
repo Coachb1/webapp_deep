@@ -17,15 +17,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "platform" ? prodUrl : devUrl;
-const basicAuth =
-  "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+import { baseURL, basicAuth } from "@/lib/utils";
 
 const howItWorks = [
   {

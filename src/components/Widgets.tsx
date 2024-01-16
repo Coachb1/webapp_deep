@@ -4,14 +4,12 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
+import { subdomain } from "@/lib/utils";
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
   user?: any;
 }
-
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
 
 declare let window: CustomWindow;
 const Widgets = ({ from }: any) => {
