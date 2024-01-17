@@ -103,6 +103,8 @@ let botInitialQuestions;
 let botInitialQuestionsIndex = 1;
 let isAskingInitialQuestions = false;
 let botInitialQuestionsQnA = {};
+let isFitmentAllowed = false;
+let isStrictFitment = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -620,7 +622,7 @@ function getAnonymousEmail() {
       }
 
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
-      if(botDetails.data.fitment_qna){
+      if(botDetails.data.fitment_qna && botDetails.data.is_fitment_analysis){
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
       }
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">something else ?</button>`
@@ -634,6 +636,8 @@ function getAnonymousEmail() {
         fitmentAnalysisQuestions = botDetails.data.fitment_qna
         fitmentAnalysisOptions = botDetails.data.fitment_options
         botInitialQuestions = botDetails.data.initial_qna
+        isFitmentAllowed = botDetails.data.is_fitment_analysis;
+        isStrictFitment = botDetails.data.is_strict_fitment;
         appendMessage2(faqHtmlData)
       } else{
         feedbackBotInitialFlow('initial')
@@ -739,7 +743,7 @@ const handleFitmentAnalysis = async ()=> {
         const msg = gShadowRoot2.getElementById('fitment-analysis')
         // button.parentNode.removeChild(button)
         const que_msg = document.createElement("div");
-        que_msg.innerHTML = `<b>Fitness Analysis Result:</b> <p>${data.message}</p>`; // You can customize the message here
+        que_msg.innerHTML = `<b>Fitness Analysis Result:</b>   <p>${data.score}</p>`; // You can customize the message here
         // Replace the button with the "Thank you" message
         msg.parentNode.replaceChild(que_msg, msg);
         
@@ -802,7 +806,7 @@ async function handleFaqButtonClick(question) {
         if (botType === 'avatar_bot'){
           await getFitmentScore(userId2)
           console.log(isBeginSessionProceed)
-          if (!isBeginSessionProceed){
+          if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment){
             appendMessage2("Please attempt fitment analysis.")
             return;
             }
