@@ -4,10 +4,12 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { baseURL, basicAuth, capitalizeText } from "@/lib/utils";
-import { Loader, Plus } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { Info, Loader, Plus } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import CharactericticsSelect from "./CharacteristicsSelect";
 
 const CoachIntake = ({ user }: any) => {
   const [createLoading, setCreateLoading] = useState(false);
@@ -53,6 +55,34 @@ const CoachIntake = ({ user }: any) => {
   const [characteristicsRateLows, setCharacteristicsRateLows] = useState("");
   const [characteristicsRateHigh, setCharacteristicsRateHigh] = useState("");
 
+  const [characteristicsList, setCharacteristicsList] = useState<
+    {
+      label: string;
+      value: string;
+      disabled?: boolean;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    fetch(`${baseURL}/skills/get-characteristics-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const createLabelValuePairs = data.characteristic_list.map(
+          (val: string) => ({
+            label: val,
+            value: val,
+          })
+        );
+        setCharacteristicsList(createLabelValuePairs);
+      });
+  }, []);
+
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
@@ -63,36 +93,53 @@ const CoachIntake = ({ user }: any) => {
       formdata.append("name", name);
       formdata.append("about", about);
       formdata.append("experience", experience);
+
       //@ts-ignore
       formdata.append("profile_image", profileImage, "coachprofile.jpg");
       formdata.append("department", department);
-      formdata.append("area_domain", areaDomains);
-      formdata.append("mentoring_preference", mentoringPreferences);
-      formdata.append("mentoring_frameworks", coachMentFrameworks);
-      formdata.append("dominant_point_of_view", povProgramParticipants);
-      formdata.append("problem_solving_approach", problemSolvingApproach);
-      formdata.append("youtube_links", linksReflectingWVpersonal);
-      formdata.append("admired_leaders", leaderNames);
-      formdata.append("article_links", linksReflectyouWished);
-      formdata.append(
-        "reference_docs",
-        //@ts-ignore
-        referenceDocs,
-        user.given_name + "reference" + referenceDocs?.type
-      );
-      formdata.append("voice_sample", voiceSample);
-      formdata.append("coaching_for_fitment", coachmentSelect);
-      formdata.append("coaching_level", participantLevel);
-      formdata.append("coach_same_department", coachMentInSameDep);
+
       formdata.append("supported_outcome", outcomeSupported);
       formdata.append("hard_skill_areas", hardSkillAreas);
       formdata.append("coaching_style", coachMentStyle);
-      formdata.append("time_commitment", timeCommitmenttoCoaching);
-      formdata.append("is_data_flow_to_dir", "No");
 
-      formdata.forEach((val, key) => {
-        console.log(key, " : ", val);
-      });
+      if (formType == "coach") {
+        formdata.append("profile_type", "coach");
+        formdata.append("area_domain", areaDomains);
+        formdata.append("mentoring_preferences", mentoringPreferences);
+        formdata.append("mentoring_frameworks", coachMentFrameworks);
+        formdata.append("dominant_point_of_view", povProgramParticipants);
+        formdata.append("problem_solving_approach", problemSolvingApproach);
+        formdata.append(
+          "provided_links",
+          JSON.stringify({
+            youtube_links: linksReflectingWVpersonal,
+            article_links: linksReflectyouWished,
+          })
+        );
+        formdata.append("admired_leaders", leaderNames);
+        formdata.append(
+          "reference_docs",
+          //@ts-ignore
+          referenceDocs,
+          user.given_name + "reference" + referenceDocs?.type
+        );
+        formdata.append(
+          "voice_sample",
+          `${voiceSample === "yes" ? true : false}`
+        );
+        formdata.append("coaching_for_fitment", coachmentSelect);
+        formdata.append("coaching_level", participantLevel);
+        formdata.append(
+          "coach_same_department",
+          `${coachMentInSameDep === "yes" ? true : false}`
+        );
+
+        formdata.append("time_commitment", timeCommitmenttoCoaching);
+      } else if (formType === "coachee") {
+        formdata.append("profile_type", "coachee");
+        formdata.append("low_rating_characteristics", characteristicsRateLows);
+        formdata.append("high_rating_characteristics", characteristicsRateHigh);
+      }
 
       fetch(`${baseURL}/accounts/`, {
         method: "POST",
@@ -124,6 +171,11 @@ const CoachIntake = ({ user }: any) => {
           formdata.append("user_id", data.uid);
           formdata.append("email", user.email);
 
+          formdata.forEach((val, key) => {
+            console.log(key, " : ", val);
+          });
+          setCreateLoading(false);
+
           var myHeaders = new Headers();
           myHeaders.append("Authorization", basicAuth);
           var requestOptions = {
@@ -150,6 +202,32 @@ const CoachIntake = ({ user }: any) => {
         })
         .catch((err) => console.log(err));
     }
+  };
+
+  const onCharacteristicsSelectLow = (val: string) => {
+    setCharacteristicsRateLows(val);
+
+    const resetDisabledData = characteristicsList.map((option) => ({
+      ...option,
+      disabled: false,
+    }));
+
+    const selectedValueIndex = resetDisabledData.findIndex(
+      (option) => option.value === val
+    );
+
+    if (selectedValueIndex !== -1) {
+      resetDisabledData[selectedValueIndex] = {
+        ...resetDisabledData[selectedValueIndex],
+        disabled: true,
+      };
+    }
+    setCharacteristicsList(resetDisabledData);
+  };
+
+  const onCharacteristicsSelectHigh = (val: string) => {
+    console.log(val);
+    setCharacteristicsRateHigh(val);
   };
 
   return (
@@ -191,6 +269,12 @@ const CoachIntake = ({ user }: any) => {
                   createSubmitHandler(e);
                 }}
               >
+                <Badge
+                  variant={"secondary"}
+                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                >
+                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                </Badge>
                 <div>
                   <div className="my-3">
                     <p className="text-sm my-1">Enter your name</p>
@@ -234,7 +318,7 @@ const CoachIntake = ({ user }: any) => {
                           "10 - 20 years",
                           "20+ years",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -258,7 +342,7 @@ const CoachIntake = ({ user }: any) => {
                       }}
                     >
                       {departments.map((val, i) => (
-                        <div className="flex items-center space-x-2 ">
+                        <div key={i} className="flex items-center space-x-2 ">
                           <RadioGroupItem value={val} id={`r${i}+1`} />
                           <label
                             htmlFor={`r${i}+1`}
@@ -284,7 +368,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {areaDomain.map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -334,7 +418,7 @@ const CoachIntake = ({ user }: any) => {
                           "Coaching (Reflection)",
                           "Both",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -483,7 +567,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {["Yes", "No"].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -519,7 +603,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {["Anyone", "With fitment only"].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -548,7 +632,7 @@ const CoachIntake = ({ user }: any) => {
                           "Same or upto two level below ",
                           "Any level",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -573,7 +657,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {["Yes", "No"].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -604,7 +688,7 @@ const CoachIntake = ({ user }: any) => {
                           "Introspection & reflectiom",
                           "Networking & leadership",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -638,7 +722,7 @@ const CoachIntake = ({ user }: any) => {
                           "Sales & Marketing",
                           "Finance",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -669,7 +753,7 @@ const CoachIntake = ({ user }: any) => {
                           "Adaptive & Tailored",
                           "No Set Style",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -701,7 +785,7 @@ const CoachIntake = ({ user }: any) => {
                           "Ad-hoc",
                           "Undecided",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -752,6 +836,12 @@ const CoachIntake = ({ user }: any) => {
                   createSubmitHandler(e);
                 }}
               >
+                <Badge
+                  variant={"secondary"}
+                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                >
+                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                </Badge>
                 <div>
                   <div className="my-3">
                     <p className="text-sm my-1">Enter your name</p>
@@ -795,7 +885,7 @@ const CoachIntake = ({ user }: any) => {
                           "10 - 20 years",
                           "20+ years",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -831,52 +921,20 @@ const CoachIntake = ({ user }: any) => {
                       Please rate the characteristics/skills on which you will
                       rate yourself near the lows.
                     </p>
-                    <div>
-                      <RadioGroup
-                        required
-                        onValueChange={(value) => {
-                          setCharacteristicsRateLows(value);
-                        }}
-                      >
-                        {["Option 1", "Option 2", "Option 3"].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
-                            <label
-                              htmlFor={`r${i}+1`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
+                    <CharactericticsSelect
+                      onCharacteristicsSelect={onCharacteristicsSelectLow}
+                      options={characteristicsList}
+                    />
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
                       rate yourself highly.
                     </p>
-                    <div>
-                      <RadioGroup
-                        required
-                        onValueChange={(value) => {
-                          setCharacteristicsRateHigh(value);
-                        }}
-                      >
-                        {["Option 1", "Option 2", "Option 3"].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
-                            <label
-                              htmlFor={`r${i}+1`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
+                    <CharactericticsSelect
+                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                      options={characteristicsList}
+                    />
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -889,7 +947,7 @@ const CoachIntake = ({ user }: any) => {
                       }}
                     >
                       {departments.map((val, i) => (
-                        <div className="flex items-center space-x-2 ">
+                        <div key={i} className="flex items-center space-x-2 ">
                           <RadioGroupItem value={val} id={`r${i}+1`} />
                           <label
                             htmlFor={`r${i}+1`}
@@ -933,7 +991,7 @@ const CoachIntake = ({ user }: any) => {
                           "Sales & Marketing",
                           "Finance",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -964,7 +1022,7 @@ const CoachIntake = ({ user }: any) => {
                           "Lateral Transfer",
                           "Leadership development & networking",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
@@ -995,7 +1053,7 @@ const CoachIntake = ({ user }: any) => {
                           "Adaptive & Tailored",
                           "No Set Style",
                         ].map((val, i) => (
-                          <div className="flex items-center space-x-2 ">
+                          <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1`} />
                             <label
                               htmlFor={`r${i}+1`}
