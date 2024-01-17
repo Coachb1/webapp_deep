@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { UserContextProvider } from "@/lib/UserContext";
-import Widgets from "@/components/Widgets";
 import { usePathname } from "next/navigation";
 import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
@@ -12,6 +11,7 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { subdomain } from "@/lib/utils";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -174,7 +174,7 @@ export default function RootLayout({
               ) : (
                 <div className="deep-chat-poc2"></div>
               )}
-              {children}
+              <AntdRegistry>{children}</AntdRegistry>
             </ThemeProvider>
           </>
           <Toaster theme="light" richColors position="top-right" />

@@ -86,6 +86,14 @@ export function calculateTotalActionPoints(jsonData: ActionPointsData): number {
   return totalActionPoints;
 }
 
+export function capitalizeText(text: string) {
+  if (typeof text !== "string" || text.length === 0) {
+    return text;
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 // api endpoints via subdomain match
 export const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
