@@ -3539,7 +3539,7 @@ loadExternalModule().then(() => {
                 text: coachResponse,
               });
               setTimeout(() => {
-                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">Done</button>`)
+                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`)
               }, 200);
             }
 
