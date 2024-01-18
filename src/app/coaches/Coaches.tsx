@@ -8,7 +8,15 @@ import { Separator } from "@/components/ui/separator";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Loader, Search } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CoachesDataType {
   profile_type: string;
@@ -30,6 +38,7 @@ interface FilterCategoriesType {
 }
 
 const Coaches = () => {
+  const router = useRouter();
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
@@ -129,20 +138,43 @@ const Coaches = () => {
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-        {/* <div className="flex flex-row gap-1">
-          <Button
+        <div className="flex flex-row gap-1">
+          {/* <Button
             onClick={() => {
-              router.push(`coaches/create=1`);
+              router.push(`coaches/intake?type=coachee`);
             }}
             variant={"link"}
           >
-            post
-            <Link href={"/"}>Home</Link>
+            <Link href={"/"}>Connect as a cochee</Link>
           </Button>
           <Button variant={"link"}>
             <Link href={"/wj"}>Create</Link>
-          </Button>
-        </div> */}
+          </Button> */}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none border-none">
+              <Button variant={"outline"} className="h-8 max-sm:text-sm">
+                Connect to the network
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`coaches/intake?type=coach`);
+                }}
+              >
+                Connect as a Coach
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`coaches/intake?type=coachee`);
+                }}
+              >
+                Connect as a Coachee
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <MaxWidthWrapper className="flex pt-40 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">

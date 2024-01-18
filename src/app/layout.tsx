@@ -70,7 +70,7 @@ export default function RootLayout({
 
   useEffect(() => {
     //ADD LOCALSTORAGE ITEM after user
-    if (pathname === "/" || pathname.includes("/coach")) {
+    if (pathname === "/" || pathname.includes("/coach-")) {
       setShowCoachBot(true);
       if (!hasVisitedCoach) {
         window.location.reload();
