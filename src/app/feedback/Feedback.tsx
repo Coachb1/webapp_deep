@@ -165,7 +165,7 @@ const Feedback = ({ user, renderType }: any) => {
         fetch(
           `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${
             renderType === "dynamic"
-              ? pathname.split("/")[1]
+              ? pathname.split("/")[2]
               : "feedback-d55cd-aravsharma"
           }`,
           {
@@ -177,7 +177,7 @@ const Feedback = ({ user, renderType }: any) => {
         )
           .then((res) => res.json())
           .then((data) => {
-            console.log("feedback DATA");
+            console.log("feedback DATA", data);
             setPositiveFeedbacks(feedbackJsonConversion(data));
           })
           .catch((err) => {
@@ -481,7 +481,6 @@ const Feedback = ({ user, renderType }: any) => {
         </div>
       )}
 
-      {strictLoginRequired === false && <FeedbackBotBody />}
       {!strictLoginRequired && user && <FeedbackBotBody />}
       {strictLoginRequired && user && <FeedbackBotBody />}
       {strictLoginRequired && !user && (

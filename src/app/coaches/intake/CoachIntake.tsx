@@ -254,7 +254,7 @@ const CoachIntake = ({ user }: any) => {
       setFeedbackCreateLoading(true);
       var feedbackFormdata = JSON.stringify({
         bot_type: "feedback",
-        bot_name: "aadil",
+        bot_name: name,
         attributes: {
           heading: "welcome to feedback bot",
           feedback_questions: {
