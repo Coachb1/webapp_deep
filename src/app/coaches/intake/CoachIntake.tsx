@@ -149,12 +149,13 @@ const CoachIntake = ({ user }: any) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          const createLabelValuePairs = data.characteristic_list.map(
-            (val: string) => ({
-              label: val,
-              value: val,
-            })
-          );
+          const createLabelValuePairs = Array.from(
+            new Set(data.characteristic_list.map((val: string) => val))
+          ).map((val) => ({
+            label: val,
+            value: val,
+          }));
+          //@ts-ignore
           setCharacteristicsList(createLabelValuePairs);
         });
     }
