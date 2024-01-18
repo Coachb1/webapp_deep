@@ -394,7 +394,6 @@ const Coach = ({ user, renderType }: any) => {
           </div>
         </div>
       )}
-      {strictLoginRequired === false && <CoachBotBody />}
       {!strictLoginRequired && user && <CoachBotBody />}
       {strictLoginRequired && user && <CoachBotBody />}
       {strictLoginRequired && !user && (
