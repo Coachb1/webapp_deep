@@ -1502,6 +1502,8 @@ const handleProceedClick = async (choice) => {
             }
             if(isImmersive){
               console.log(initialQuestionText)
+              const queText = initialQuestionText
+              const queDiv = `<p>${queText}</p><br>`
               const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
               const response = await fetch(urltts, {
                 method: "GET",
@@ -1517,7 +1519,7 @@ const handleProceedClick = async (choice) => {
               
               console.log(objectUrl,'url')
              
-                initialQuestionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`
@@ -1556,6 +1558,8 @@ const handleProceedClick = async (choice) => {
           }
         }
         if(isImmersive){
+          const queText = initialQuestionText
+          const queDiv = `<p>${queText}</p><br>`
           const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
           const response = await fetch(url, {
             method: "GET",
@@ -1570,7 +1574,7 @@ const handleProceedClick = async (choice) => {
           const objectUrl = URL.createObjectURL(blob);
           
           console.log(objectUrl,'url')
-          initialQuestionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+          initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
           </audio></div>`
@@ -1599,6 +1603,9 @@ const handleProceedClick = async (choice) => {
 
             const responderName = `<b>${entry[0]}:</b><br>`
             console.log(entry)
+            const queText = entry[1]
+            const queDiv = `<p>${queText}</p><br>`
+            
             const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`
 
             const response = await fetch(url, {
@@ -1614,7 +1621,7 @@ const handleProceedClick = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            let audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
+            let audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
             </audio></div>`
@@ -2306,7 +2313,7 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainer = async (text) =>{
-
+    const queDiv = `<p>${text}</p><br>`
     const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`
     const response = await fetch(url, {
       method: "GET",
@@ -2321,7 +2328,7 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
     
     console.log(objectUrl,'url')
-    const audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+    const audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
     </audio></div>`
