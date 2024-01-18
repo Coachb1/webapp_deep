@@ -105,6 +105,7 @@ let isAskingInitialQuestions = false;
 let botInitialQuestionsQnA = {};
 let isFitmentAllowed = false;
 let isStrictFitment = false;
+let isBotAudioResponse = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -638,6 +639,7 @@ function getAnonymousEmail() {
         botInitialQuestions = botDetails.data.initial_qna
         isFitmentAllowed = botDetails.data.is_fitment_analysis;
         isStrictFitment = botDetails.data.is_strict_fitment;
+        isBotAudioResponse = botDetails.data.is_audio_response
         appendMessage2(faqHtmlData)
       } else{
         feedbackBotInitialFlow('initial')
@@ -1574,6 +1576,8 @@ const handleProceedClickStt = async (choice) => {
             }
             if(isImmersiveStt){
               console.log(initialQuestionTextStt)
+              let queText = initialQuestionTextStt
+              const queDiv = `<p>${queText}</p><br>`
               const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
               const response = await fetch(urltts, {
                 method: "GET",
@@ -1589,7 +1593,7 @@ const handleProceedClickStt = async (choice) => {
               
               console.log(objectUrl,'url')
 
-                initialQuestionTextStt = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                initialQuestionTextStt = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`
@@ -1628,6 +1632,8 @@ const handleProceedClickStt = async (choice) => {
             }
           }
           if(isImmersiveStt){
+            const queText = initialQuestionTextStt
+            const queDiv = `<p>${queText}</p><br>`
             console.log('dyna',initialQuestionTextStt)
             const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
             const response = await fetch(url, {
@@ -1643,7 +1649,7 @@ const handleProceedClickStt = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            initialQuestionTextStt = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+            initialQuestionTextStt = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
             </audio></div>`
@@ -1672,6 +1678,8 @@ const handleProceedClickStt = async (choice) => {
 
               const responderName = `<b>${entry[0]}:</b><br>`
               console.log(entry)
+              let queText = entry[1]
+              const queDiv = `<p>${queText}</p><br>`
               const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`
 
               const response = await fetch(url, {
@@ -1687,7 +1695,7 @@ const handleProceedClickStt = async (choice) => {
               const objectUrl = URL.createObjectURL(blob);
               
               console.log(objectUrl,'url')
-              let audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
+              let audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`
@@ -3120,7 +3128,7 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainerSTT = async (text) =>{
-
+      const queDiv = `<p>${text}</p><br>`
       const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`
       const response = await fetch(url, {
         method: "GET",
@@ -3135,7 +3143,7 @@ loadExternalModule().then(() => {
       const objectUrl = URL.createObjectURL(blob);
       
       console.log(objectUrl,'url')
-      const audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+      const audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
       </audio></div>`
@@ -3408,9 +3416,9 @@ loadExternalModule().then(() => {
 
             if (isAskingInitialQuestions == true) {
                 // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
-                const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
+                // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
 
-                botInitialQuestionsQnA[botInitialQuestionsIndex] = tempQna;
+                botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage;
 
                 botInitialQuestionsIndex ++;
                 if( botInitialQuestionsIndex > Object.keys(botInitialQuestions).length ) {
@@ -3421,6 +3429,7 @@ loadExternalModule().then(() => {
     
                 }
                 else {
+                    
                     signals.onResponse({text: botInitialQuestions[botInitialQuestionsIndex]})
                     return;
                 }
@@ -3487,7 +3496,13 @@ loadExternalModule().then(() => {
                     if( isAskingInitialQuestions == true && botInitialQuestionsIndex != 0) {
                         isAskingInitialQuestions = false;
                         botInitialQuestionsIndex = 0;
-                        signals.onResponse({text: data.coach_message_text})
+                        if (isBotAudioResponse){
+                          const audioDiv = await TTSContainerSTT(data.coach_message_text)
+                          signals.onResponse({html: audioDiv})
+
+                        } else {
+                        signals.onResponse({html: data.coach_message_text})
+                        }
                         return;
                     }
 
@@ -3535,9 +3550,15 @@ loadExternalModule().then(() => {
                 coachResponse = coachResponse.split(':').slice(1).join(':').trim()
               }
 
+              if (isBotAudioResponse){
+                const audioDiv = await TTSContainerSTT(coachResponse)
+                signals.onResponse({html: audioDiv})
+
+              } else {
               signals.onResponse({
-                text: coachResponse,
+                html: coachResponse,
               });
+              }
               setTimeout(() => {
                 appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`)
               }, 200);
