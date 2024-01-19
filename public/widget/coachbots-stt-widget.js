@@ -626,7 +626,7 @@ function getAnonymousEmail() {
       if(botDetails.data.fitment_qna && botDetails.data.is_fitment_analysis){
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
       }
-      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">something else ?</button>`
+      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">Begin session..</button>`
 
       console.log("buttons : ",buttons)
 
