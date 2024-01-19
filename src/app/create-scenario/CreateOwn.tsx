@@ -78,7 +78,7 @@ const CreateOwn = ({ user }: any) => {
         <div className="w-full flex flex-row max-sm:flex-col ">
           <div className="text-sm max-sm:text-xs text-left text-gray-600 ml-2 max-sm:ml-0 max-sm:my-2 flex flex-col justify-between">
             <div>
-              <div className="underline underline-offset-2 mb-1">
+              <div className="underline underline-offset-2 my-1">
                 <Link
                   target="_blank"
                   href={"link"}
@@ -86,7 +86,7 @@ const CreateOwn = ({ user }: any) => {
                 >
                   Lorem ipsum dolor sit amet consectetur.{" "}
                   <span>
-                    <Link2 className="h-4 w-4 ml-2 inline" />
+                    <Link2 className="h-4 w-4 inline" />
                   </span>
                 </Link>
               </div>
@@ -109,7 +109,7 @@ const CreateOwn = ({ user }: any) => {
             </div>
           </div>
         </div>
-        <Separator className="my-2  w-full" />
+        {/* <Separator className="my-2  w-full" />
         <div className="text-sm max-sm:text-xs text-left text-gray-600 pl-2">
           <b>Here's your scenario</b>
           <div>
@@ -125,7 +125,7 @@ const CreateOwn = ({ user }: any) => {
           <div className="flex justify-end mt-2">
             <CopyToClipboard textToCopy={"lorem bro"} />
           </div>
-        </div>
+        </div> */}
       </div>
     );
   };
