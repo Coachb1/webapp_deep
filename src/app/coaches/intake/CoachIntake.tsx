@@ -400,9 +400,9 @@ const CoachIntake = ({ user }: any) => {
                           "20+ years",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -425,9 +425,9 @@ const CoachIntake = ({ user }: any) => {
                     >
                       {departments.map((val, i) => (
                         <div key={i} className="flex items-center space-x-2 ">
-                          <RadioGroupItem value={val} id={`r${i}+1`} />
+                          <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                           <label
-                            htmlFor={`r${i}+1`}
+                            htmlFor={`r${i}+1 ${val}`}
                             className="text-xs text-gray-700"
                           >
                             {capitalizeText(val)}
@@ -452,9 +452,9 @@ const CoachIntake = ({ user }: any) => {
                       >
                         {areaDomains.map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -472,8 +472,6 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         required
-                        //@ts-ignore
-                        value={profileImage}
                         type="file"
                         name="myImage"
                         accept="image/*"
@@ -505,9 +503,9 @@ const CoachIntake = ({ user }: any) => {
                           "Both",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -634,8 +632,6 @@ const CoachIntake = ({ user }: any) => {
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
-                        //@ts-ignore
-                        value={referenceDocs}
                         required
                         type="file"
                         className="w-full text-xs my-2"
@@ -663,9 +659,9 @@ const CoachIntake = ({ user }: any) => {
                       >
                         {["Yes", "No"].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -700,9 +696,9 @@ const CoachIntake = ({ user }: any) => {
                       >
                         {["Anyone", "With fitment only"].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -730,9 +726,9 @@ const CoachIntake = ({ user }: any) => {
                           "Any level",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -756,9 +752,9 @@ const CoachIntake = ({ user }: any) => {
                       >
                         {["Yes", "No"].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -788,9 +784,9 @@ const CoachIntake = ({ user }: any) => {
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -823,9 +819,9 @@ const CoachIntake = ({ user }: any) => {
                           "Finance",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -855,9 +851,9 @@ const CoachIntake = ({ user }: any) => {
                           "No Set Style",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -888,9 +884,9 @@ const CoachIntake = ({ user }: any) => {
                           "Undecided",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -991,9 +987,9 @@ const CoachIntake = ({ user }: any) => {
                           "20+ years",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -1010,8 +1006,6 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         required
-                        //@ts-ignore
-                        value={profileImage}
                         type="file"
                         name="myImage"
                         accept="image/*"
@@ -1056,9 +1050,9 @@ const CoachIntake = ({ user }: any) => {
                     >
                       {departments.map((val, i) => (
                         <div key={i} className="flex items-center space-x-2 ">
-                          <RadioGroupItem value={val} id={`r${i}+1`} />
+                          <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                           <label
-                            htmlFor={`r${i}+1`}
+                            htmlFor={`r${i}+1 ${val}`}
                             className="text-xs text-gray-700"
                           >
                             {capitalizeText(val)}
@@ -1101,9 +1095,9 @@ const CoachIntake = ({ user }: any) => {
                           "Finance",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -1133,9 +1127,9 @@ const CoachIntake = ({ user }: any) => {
                           "Leadership development & networking",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
@@ -1165,9 +1159,9 @@ const CoachIntake = ({ user }: any) => {
                           "No Set Style",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1`} />
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
-                              htmlFor={`r${i}+1`}
+                              htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
