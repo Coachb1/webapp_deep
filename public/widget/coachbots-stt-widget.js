@@ -473,7 +473,7 @@ function getAnonymousEmail() {
           `
           );
       console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-      // recommendationClicked = false;
+      recommendationClicked = false;
       isFeedbackConvEnd = true;
     } catch (error) {
       console.error(`Error in get recommendation tests: ${error}`);
@@ -819,7 +819,34 @@ async function handleFaqButtonClick(question) {
         return;
     }
     if( question == 'recommendations') {
-        appendMessage2('please provide a context for recommendations in the chatbox')
+      if (botType === 'avatar_bot'){
+        appendMessage2('Please provide a context for recommendations in the chatbox')
+
+      } else{
+        const resp = await fetch(`${baseURL2}/tests/get-tests-by-bot/?bot_id=${botId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+          },
+        })
+        let buttons = ""
+        const respjson = await resp.json()
+        console.log(respjson,"bot_test_data")
+        
+        if (Object.keys(respjson).length > 0){
+          respjson.forEach(element => {
+            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${element.test_code}','${element.title}')">${element.title}</button>`
+          });
+          appendMessage2(`<b >Here are some recommendations for you : </b> <br> ${buttons}`)
+
+          appendMessage2('If you want to try other scenarios please provide a context for recommendations in the chatbox')
+        } else{
+          appendMessage2('Please provide a context for recommendations in the chatbox')
+
+        }
+      }
         recommendationClicked = true;
         return;
     }
@@ -2346,9 +2373,6 @@ async function submitEmailAndName2() {
         appendMessage2(recommDiv);
       }
 
-      // if (recommendationClicked){
-      //   appendMessage2(faqHtmlData);
-      // }
       resetAllVariablesStt();
     })
     .catch((err) => {
@@ -2429,6 +2453,7 @@ function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title)
     codeAvailabilityUserChoice2 = "No";
     optedNo2 = true;
     userAcessAvailability2 = true;
+    recommendationClicked = false;
   }
 
   gShadowRoot2.getElementById("text-input").focus();
@@ -3290,7 +3315,7 @@ loadExternalModule().then(() => {
                     `,
                     });
                 console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-                // recommendationClicked = false;
+                recommendationClicked = false;
                 isFeedbackConvEnd = true;
               } catch (error) {
                 console.error(`Error in get recommendation tests: ${error}`);
@@ -3375,7 +3400,7 @@ loadExternalModule().then(() => {
             }
 
             if( recommendationClicked == true) {
-              appendMessage2("please wait ... while we are getting some recommendations for you")
+              appendMessage2("Please wait while we are getting some recommendations for you...")
 
                   
     
@@ -3403,7 +3428,7 @@ loadExternalModule().then(() => {
                     `,
                     });
                 console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-                // recommendationClicked = false;
+                recommendationClicked = false;
               } catch (error) {
                 console.error(`Error in get recommendation tests: ${error}`);
               }
