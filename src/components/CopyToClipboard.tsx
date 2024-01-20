@@ -23,7 +23,11 @@ const CopyToClipboard = ({ textToCopy }: { textToCopy: string }) => {
 
   return (
     <>
-      <Button variant={"secondary"} className="p-2" onClick={handleCopyClick}>
+      <Button
+        variant={"secondary"}
+        className="p-2 h-8 border border-gray-200"
+        onClick={handleCopyClick}
+      >
         {isCopied ? "Copied" : "Copy code"}
         <Copy className="h-4 w-4 ml-2" />
       </Button>
