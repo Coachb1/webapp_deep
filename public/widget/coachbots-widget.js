@@ -91,6 +91,9 @@ let mediaProps;
 let questionImageData;
 let initialIndex;
 let isTranscriptOnly= false;
+let isEmailForm = false;
+let emailNameformJson = {};
+let formFields = []
 
 
 // sample TEst codes
@@ -834,8 +837,11 @@ async function setMcqVariables() {
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
-      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
-        credentialsForm;
+      // gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+      //   credentialsForm;
+      isEmailForm = true
+      formFields = ['name', 'email']
+      appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
     }
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -897,7 +903,15 @@ async function setMcqVariables() {
 //* handle MCQ type test : end
 
 let queryParams;
-
+async function proceedFormFlow(msg){
+  if (formFields.length > 0){
+    isEmailForm = true
+    const filedname = formFields[0]
+    formFields = formFields.slice(1);
+    emailNameformJson[filedname] = msg
+    
+  }
+}
 //*********** hit mail sending api */
 
 function sendEmail(session_id,reportUrl) {
@@ -929,11 +943,13 @@ function sendEmail(session_id,reportUrl) {
 async function submitEmailAndName() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   if (!window.user) {
-    const inputNameVal = gShadowRoot.getElementById("input-name").value;
-    const inputEmailVal = gShadowRoot.getElementById("input-email").value;
+    // const inputNameVal = gShadowRoot.getElementById("input-name").value;
+    // const inputEmailVal = gShadowRoot.getElementById("input-email").value;
 
-    inputName = inputNameVal;
-    inputEmail = inputEmailVal;
+    // inputName = inputNameVal;
+    // inputEmail = inputEmailVal;
+    inputEmail = emailNameformJson['email']
+    inputName = emailNameformJson['name']
 
     //* store these values in session storage
     // getOrSetSessionData(inputName, inputEmail);
@@ -968,13 +984,13 @@ async function submitEmailAndName() {
 
       if (!window.user) {
         // append custom message to chat
-        const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-        appendMessage(message);
+        // const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+        // appendMessage(message);
 
-        //* send message to start new session
-        appendMessage(
-          "<b>Please enter another access code to start a new interaction.</b>"
-        );
+        // //* send message to start new session
+        // appendMessage(
+        //   "<b>Please enter another access code to start a new interaction.</b>"
+        // );
       }
       const recommDiv = findRelatedItems(recommendationsData, testCode);
       if (recommDiv) {
@@ -1400,7 +1416,10 @@ const handleEndCoachingClick = async (randomId) => {
       "<b>Please enter another access code to start a new interaction.</b>"
     );
   } else {
-    appendMessage(getCredentialsForm());
+    // appendMessage(getCredentialsForm());
+    isEmailForm = true
+    formFields = ['name', 'email']
+    appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
   }
 };
 
@@ -2595,6 +2614,11 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
           
+          if (isEmailForm){
+            signals.onResponse({html: "<p style='font-size: 14px;color: #991b1b;'>Please provide response in text.</p>"})
+            return;
+          }
+
           // to check session active or not
           if (testType === "mcq" || testType === "dynamic_mcq") {
             signals.onResponse({
@@ -2941,8 +2965,13 @@ loadExternalModule().then(() => {
                   // appendMessage(
                   //   "<b>For obtaining your report, please submit the following details.</b>"
                   // );
+                  // signals.onResponse({
+                  //   html: credentialsForm,
+                  // });
+                  isEmailForm = true
+                  formFields = ['name', 'email']
                   signals.onResponse({
-                    html: credentialsForm,
+                    html: `<b>Please enter your ${formFields[0]}</b>`,
                   });
                 }
               }
@@ -3061,6 +3090,27 @@ loadExternalModule().then(() => {
 
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+          if (isEmailForm){
+            await proceedFormFlow(latestMessage)
+            if(formFields.length >0){
+              signals.onResponse({
+                html: `<b>Please enter your ${formFields[0]}<b>`
+              })
+            } else{
+              isEmailForm = false;
+              
+              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              appendMessage(message);
+              // //* send message to start new session
+
+              signals.onResponse({
+                html: "<b>Please enter another access code to start a new interaction.</b>",
+              });
+              submitEmailAndName();
+            
+            }
+            return;
+          }
           console.log("Latest Message ===> ", latestMessage);
           if ((testType === "mcq" || testType === "dynamic_mcq") && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
@@ -4281,8 +4331,13 @@ loadExternalModule().then(() => {
                     // appendMessage(
                     //   "<b>For obtaining your report, please submit the following details.</b>"
                     // );
+                    // signals.onResponse({
+                    //   html: credentialsForm,
+                    // });
+                    isEmailForm = true
+                    formFields = ['name', 'email']
                     signals.onResponse({
-                      html: credentialsForm,
+                      html: `<b>Please enter your ${formFields[0]}</b>`,
                     });
                   }
 

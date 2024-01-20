@@ -106,6 +106,9 @@ let botInitialQuestionsQnA = {};
 let isFitmentAllowed = false;
 let isStrictFitment = false;
 let isBotAudioResponse = false;
+let isEmailFormstt = false;
+let emailNameformJsonstt = {};
+let formFieldsstt = []
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -275,11 +278,17 @@ function getAnonymousEmail() {
     console.log(choice)
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("anonymous");
-    // button.parentNode.removeChild(button)
-    const que_msg = document.createElement("div");
-    que_msg.innerHTML = "Thank You"; // You can customize the message here
-    // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    // // button.parentNode.removeChild(button)
+    // const que_msg = document.createElement("div");
+    // que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // // Replace the button with the "Thank you" message
+    // msg.parentNode.replaceChild(que_msg, msg);
+    const buttons = msg.querySelectorAll('button');
+
+        // Disable each button
+        buttons.forEach(button => {
+            button.disabled = true;
+        });
     if (choice === 'No'){
       if (!window.user){
         let emailForm;
@@ -372,7 +381,10 @@ function getAnonymousEmail() {
         </div>
       </div>`;
         }
-        appendMessage2(emailForm)
+        // appendMessage2(emailForm)
+        isEmailFormstt = true
+        formFieldsstt = ['email']
+        appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
 
       } else{
         FeedbackUserEmail = user.email
@@ -542,10 +554,16 @@ function getAnonymousEmail() {
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("thumbsup-down");
     // button.parentNode.removeChild(button)
-    const que_msg = document.createElement("div");
-    que_msg.innerHTML = "Thank You"; // You can customize the message here
-    // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    // const que_msg = document.createElement("div");
+    // que_msg.innerHTML = "Thank You"; // You can customize the message here
+    // // Replace the button with the "Thank you" message
+    // msg.parentNode.replaceChild(que_msg, msg);
+    const buttons = msg.querySelectorAll('button');
+
+        // Disable each button
+        buttons.forEach(button => {
+            button.disabled = true;
+        });
 
 
 
@@ -563,17 +581,18 @@ function getAnonymousEmail() {
         appendMessage2(anonymous_text)
       } else if (flow === 'save_email'){
         if (!window.user && FeedbackUserEmail != 'Anonymous User'){
-        const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-        FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
+        // const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+        // FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
+        FeedbackUserEmail = emailNameformJsonstt['email']
 
-        const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-        const msg = gshadowRoot.getElementById("feedback-email-form");
+        // const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+        // const msg = gshadowRoot.getElementById("feedback-email-form");
         // button.parentNode.removeChild(button)
-        const que_msg = document.createElement("div");
-        que_msg.innerHTML = "Thank You"; // You can customize the message here
-        // Replace the button with the "Thank you" message
-        msg.parentNode.replaceChild(que_msg, msg);
-
+        // const que_msg = document.createElement("div");
+        // que_msg.innerHTML = "Thank You"; // You can customize the message here
+        // // Replace the button with the "Thank you" message
+        // msg.parentNode.replaceChild(que_msg, msg);
+       
         }
         feedbackBotIndex = 0
         const div_cont = `<div id="thumbsup-down" >
@@ -588,7 +607,7 @@ function getAnonymousEmail() {
           </svg>
           </button>
         </div>`;
-        appendMessage2(div_cont)
+        return (div_cont)
         
       }
 
@@ -862,7 +881,8 @@ function sendBotTranscript2() {
 
   let userEmail = "";
   if (!window.user) {
-    userEmail = shadowRoot2.getElementById("input-email2").value;
+    // userEmail = shadowRoot2.getElementById("input-email2").value;
+    userEmail = emailNameformJsonstt['email']
   } else {
     userEmail = window.user.email;
   }
@@ -907,11 +927,9 @@ function sendBotTranscript2() {
       .then((response) => response.json())
       .then((data) => {
           console.log("Dynamic mcq response : ", data);
-          if (!window.user) {
-            deleteAndReplaceContainerStt("bot-transcript-email", faqHtmlData)
-          } else{
-          appendMessage2(faqHtmlData)
-          }
+          
+          // appendMessage2(faqHtmlData)
+          
           // console.log(data.options_data)
           // questionText2 = data.options_data.next_situation;
           // newOption1NameStt = data.options_data.option_a;
@@ -1024,7 +1042,10 @@ function handleEndConversation() {
 </div>`;
   }
   if( ! window.user){
-  appendMessage2(emailForm);
+  // appendMessage2(emailForm);
+  isEmailFormstt = true
+  formFieldsstt = ['email']
+  appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
   }
   else {
     sendBotTranscript2()
@@ -1217,7 +1238,10 @@ const handleEndCoachingClick2 = async (randomId) => {
     );
     submitEmailAndName2();
   } else {
-    appendMessage2(getCredentialsForm2());
+    // appendMessage2(getCredentialsForm2());
+    isEmailFormstt = true
+    formFieldsstt = ['name', 'email']
+    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
   }
 };
 
@@ -2233,8 +2257,12 @@ async function setMcqVariablesStt() {
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
-      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
-        credentialsForm2;
+      // gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+      //   credentialsForm2;
+      isEmailFormstt = true
+      formFieldsstt = ['name', 'email']
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
+      
     }
 
     await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
@@ -2288,6 +2316,15 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
+async function proceedFormFlowStt(msg){
+  if (formFieldsstt.length > 0){
+    isEmailFormstt = true
+    const filedname = formFieldsstt[0]
+    formFieldsstt = formFieldsstt.slice(1);
+    emailNameformJsonstt[filedname] = msg
+    
+  }
+}
 function sendEmail2(session_id,reportUrl) {
   // responsesDone = false;
   console.log("sending email");
@@ -2321,10 +2358,12 @@ async function submitEmailAndName2() {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
   if (!window.user) {
-    const inputNameVal2 = shadowRoot2.getElementById("input-name2").value;
-    const inputEmailVal2 = shadowRoot2.getElementById("input-email2").value;
-    inputName2 = inputNameVal2;
-    inputEmail2 = inputEmailVal2;
+    // const inputNameVal2 = shadowRoot2.getElementById("input-name2").value;
+    // const inputEmailVal2 = shadowRoot2.getElementById("input-email2").value;
+    // inputName2 = inputNameVal2;
+    // inputEmail2 = inputEmailVal2;
+    inputEmail2 = emailNameformJsonstt['email']
+    inputName2 = emailNameformJsonstt['name']
 
     queryParams2 = new URLSearchParams({
       participant_id: participantId2,
@@ -2358,16 +2397,16 @@ async function submitEmailAndName2() {
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
       //* send message to start new session
-      if (!user2) {
-        appendMessage2(message2);
-        appendMessage2(
-          "<b>Please enter another access code to start a new interaction.</b>"
-        );
-      } else {
-        globalSignals.onResponse({
-          html: "<b>Please enter another access code to start a new interaction.</b>",
-        });
-      }
+      // if (!user2) {
+      //   appendMessage2(message2);
+      //   appendMessage2(
+      //     "<b>Please enter another access code to start a new interaction.</b>"
+      //   );
+      // } else {
+      //   globalSignals.onResponse({
+      //     html: "<b>Please enter another access code to start a new interaction.</b>",
+      //   });
+      // }
       const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
       if (recommDiv) {
         appendMessage2(recommDiv);
@@ -3219,6 +3258,36 @@ loadExternalModule().then(() => {
 
            // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+
+          if (isEmailFormstt){
+            await proceedFormFlowStt(latestMessage)
+            if(formFieldsstt.length >0){
+              signals.onResponse({
+                html: `<b>Please enter your ${formFieldsstt[0]}<b>`
+              })
+            } else{
+              isEmailFormstt = false;
+              if (botId != undefined && botType !== "feedback_bot"){
+                sendBotTranscript2()
+                signals.onResponse({html: faqHtmlData})
+              }else if (botId != undefined && botType === "feedback_bot"){
+                const thumbsupdiv = await feedbackBotInitialFlow('save_email')
+                signals.onResponse({
+                  html: thumbsupdiv,
+                });
+              }else{
+              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              appendMessage2(message);
+              // //* send message to start new session
+
+              signals.onResponse({
+                html: "<b>Please enter another access code to start a new interaction.</b>",
+              });
+              submitEmailAndName2();
+            }
+            }
+            return;
+          }
 
           if (botType === 'feedback_bot' && !isFeedbackConvEnd){
             feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] = latestMessage
@@ -4887,8 +4956,10 @@ loadExternalModule().then(() => {
                   }
 
                   if (!window.user) {
+                    isEmailFormstt = true
+                    formFieldsstt = ['name', 'email']
                     signals.onResponse({
-                      html: credentialsForm2,
+                      html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
                     });
                   }
 
