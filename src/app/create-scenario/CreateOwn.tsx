@@ -5,11 +5,10 @@ import CopyToClipboard from "@/components/CopyToClipboard";
 import NavProfile from "@/components/NavProfile";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { TabsList } from "@radix-ui/react-tabs";
-import { Link2, Loader, Search, Youtube } from "lucide-react";
+import { Link2, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 
@@ -46,12 +45,14 @@ const CreateOwn = ({ user }: any) => {
     video_title,
   }: YoutubeResultsType) => {
     const [generatedLoading, setGenerateLoading] = useState(false);
-    const [generatedData, setGeneratedData] = useState<
-      { test_code: string; test_title: string; test_description: string }[]
-    >([]);
-    const generatedSenarioHandler = () => {
+    const [generatedData, setGeneratedData] = useState<{
+      test_code: string;
+      title: string;
+      description: string;
+    }>();
+
+    const generatedSenarioHandlerYoutube = () => {
       setGenerateLoading(true);
-      setGlGenerateLoading(true);
 
       fetch(`${baseURL}/tests/create-test-from-links/?url=${video_link}`, {
         method: "GET",
@@ -62,16 +63,8 @@ const CreateOwn = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log("Result DATA", data);
-          const formattedTestData = [
-            {
-              test_code: data.test_code,
-              test_title: data.title,
-              test_description: data.description,
-            },
-          ];
-          setGeneratedData(formattedTestData);
+          setGeneratedData(data);
           setGenerateLoading(false);
-          setGlGenerateLoading(false);
         })
         .catch((err) => {
           console.log(err);
@@ -101,7 +94,7 @@ const CreateOwn = ({ user }: any) => {
               <Button
                 variant="secondary"
                 className="h-8 border border-gray-200 max-sm:w-full"
-                onClick={generatedSenarioHandler}
+                onClick={generatedSenarioHandlerYoutube}
               >
                 {generatedLoading ? (
                   <>
@@ -115,17 +108,19 @@ const CreateOwn = ({ user }: any) => {
             </div>
           </div>
         </div>
-        {generatedData.length > 0 && (
-          <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-            <b>Here's your scenario : </b>
-            <div>
-              <p>{generatedData[0].test_title}</p>
-              <p>{generatedData[0].test_description}</p>
+        {generatedData?.test_code && (
+          <>
+            <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+              <b>Here's your scenario : </b>
+              <div>
+                <p className="text-lg font-semibold">{generatedData?.title}</p>
+                <p>{generatedData?.description}</p>
+              </div>
+              <div className="flex justify-end mt-2">
+                <CopyToClipboard textToCopy={generatedData?.test_code!} />
+              </div>
             </div>
-            <div className="flex justify-end mt-2">
-              <CopyToClipboard textToCopy={generatedData[0].test_code} />
-            </div>
-          </div>
+          </>
         )}
       </div>
     );
@@ -137,12 +132,13 @@ const CreateOwn = ({ user }: any) => {
     title,
   }: GoogleResultsType) => {
     const [generatedLoading, setGenerateLoading] = useState(false);
-    const [generatedData, setGeneratedData] = useState<
-      { test_code: string; test_title: string; test_description: string }[]
-    >([]);
-    const generatedSenarioHandler = () => {
+    const [generatedData, setGeneratedData] = useState<{
+      test_code: string;
+      title: string;
+      description: string;
+    }>();
+    const generatedSenarioHandlerGoogle = () => {
       setGenerateLoading(true);
-      setGlGenerateLoading(true);
 
       fetch(`${baseURL}/tests/create-test-from-links/?url=${link}`, {
         method: "GET",
@@ -153,16 +149,8 @@ const CreateOwn = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log("Result DATA", data);
-          const formattedTestData = [
-            {
-              test_code: data.test_code,
-              test_title: data.title,
-              test_description: data.description,
-            },
-          ];
-          setGeneratedData(formattedTestData);
-          setGenerateLoading(false);
-          setGlGenerateLoading(false);
+          console.log(JSON.parse(data));
+          setGeneratedData(data);
         })
         .catch((err) => {
           console.log(err);
@@ -182,7 +170,7 @@ const CreateOwn = ({ user }: any) => {
                 <Link
                   target="_blank"
                   href={link}
-                  className="block font-semibold text-blue-500"
+                  className="block font-semibold text-blue-500 w-fit"
                 >
                   {link}{" "}
                   <span>
@@ -191,11 +179,13 @@ const CreateOwn = ({ user }: any) => {
                 </Link>
               </div>
             </div>
-            <div className="self-end w-full text-right max-sm:mt-2">
+            <div className="self-end w-full text-right max-sm:mt-2 ">
               <Button
                 variant="secondary"
                 className="h-8 border border-gray-200 max-sm:w-full"
-                onClick={generatedSenarioHandler}
+                onClick={() => {
+                  generatedSenarioHandlerGoogle();
+                }}
               >
                 {generatedLoading ? (
                   <>
@@ -209,19 +199,19 @@ const CreateOwn = ({ user }: any) => {
             </div>
           </div>
         </div>
-        {generatedData.length > 0 && (
-          <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-            <b>Here's your scenario : </b>
-            <div>
-              <p className="text-lg font-semibold">
-                {generatedData[0].test_title}
-              </p>
-              <p>{generatedData[0].test_description}</p>
+        {generatedData?.test_code && (
+          <>
+            <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+              <b>Here's your scenario : </b>
+              <div>
+                <p className="text-lg font-semibold">{generatedData?.title}</p>
+                <p>{generatedData?.description}</p>
+              </div>
+              <div className="flex justify-end mt-2">
+                <CopyToClipboard textToCopy={generatedData?.test_code!} />
+              </div>
             </div>
-            <div className="flex justify-end mt-2">
-              <CopyToClipboard textToCopy={generatedData[0].test_code} />
-            </div>
-          </div>
+          </>
         )}
       </div>
     );
@@ -232,8 +222,8 @@ const CreateOwn = ({ user }: any) => {
 
   const searchContextHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCreateLoading(true);
     if (searchMode === "google") {
+      setCreateLoading(true);
       console.log(searchInputText);
 
       // `https://www.googleapis.com/customsearch/v1?key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
@@ -259,6 +249,7 @@ const CreateOwn = ({ user }: any) => {
         });
     } else if (searchMode === "youtube") {
       console.log(searchInputText);
+      setCreateLoading(true);
       fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A`,
         {
@@ -340,7 +331,6 @@ const CreateOwn = ({ user }: any) => {
                   ref={inputRef}
                   value={searchInputText}
                   onChange={(e) => {
-                    // console.log(e.target);
                     setSearchInputText(inputRef.current?.value);
                   }}
                 />
