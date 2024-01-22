@@ -12,7 +12,7 @@ const Page = async () => {
 
   return (
     <div>
-      <Coaches />
+      <Coaches user={user} />
     </div>
   );
 };

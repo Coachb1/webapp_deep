@@ -5,8 +5,8 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { baseURL, basicAuth } from "@/lib/utils";
-import { Loader, Search } from "lucide-react";
+import { baseURL, basicAuth, hideBots } from "@/lib/utils";
+import { Loader, Menu, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,9 +14,16 @@ import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import NavProfile from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
 
 interface CoachesDataType {
   profile_type: string;
@@ -37,8 +44,7 @@ interface FilterCategoriesType {
   filterOptions: string[];
 }
 
-const Coaches = () => {
-  const router = useRouter();
+const Coaches = ({ user }: any) => {
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
@@ -111,6 +117,7 @@ const Coaches = () => {
 
   useEffect(() => {
     getCoachesData();
+    hideBots();
   }, []);
 
   const handleUpdateCheckedValues = (newValues: string[]) => {
@@ -139,41 +146,7 @@ const Coaches = () => {
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
         <div className="flex flex-row gap-1">
-          {/* <Button
-            onClick={() => {
-              router.push(`coaches/intake?type=coachee`);
-            }}
-            variant={"link"}
-          >
-            <Link href={"/"}>Connect as a cochee</Link>
-          </Button>
-          <Button variant={"link"}>
-            <Link href={"/wj"}>Create</Link>
-          </Button> */}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none border-none">
-              <Button variant={"outline"} className="h-8 max-sm:text-sm">
-                Connect to the network
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => {
-                  router.push(`coaches/intake?type=coach`);
-                }}
-              >
-                Connect as a Coach
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  router.push(`coaches/intake?type=coachee`);
-                }}
-              >
-                Connect as a Coachee
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <NetworkNav user={user} />
         </div>
       </div>
       <MaxWidthWrapper className="flex pt-40 flex-col items-center justify-center text-center">

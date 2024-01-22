@@ -34,6 +34,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import BotsNavigation from "@/components/BotsNavigation";
 import { baseURL, basicAuth } from "@/lib/utils";
+import NetworkNav from "@/components/NetworkNav";
 
 const VersionOne = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
@@ -107,8 +108,9 @@ const VersionOne = ({ user }: any) => {
           </Badge>
         )}
         <>
-          <BotsNavigation user={user} />
-          <NavProfile user={user} />
+          {/* <BotsNavigation user={user} />
+          <NavProfile user={user} /> */}
+          <NetworkNav user={user} />
         </>
       </div>
 

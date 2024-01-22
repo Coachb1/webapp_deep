@@ -103,3 +103,10 @@ export const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
 export const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+
+export const hideBots = () => {
+  const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
+  const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+  coachtalk.setAttribute("style", "display: none;");
+  coachScribe.setAttribute("style", "display: none;");
+};

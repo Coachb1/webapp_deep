@@ -20,6 +20,7 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
+import NetworkNav from "@/components/NetworkNav";
 
 const howItWorks = [
   {
@@ -265,8 +266,9 @@ const Feedback = ({ user, renderType }: any) => {
             )}
             <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
               <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-                <NavProfile user={user} />
-                <BotsNavigation user={user} />
+                {/* <NavProfile user={user} />
+                <BotsNavigation user={user} /> */}
+                <NetworkNav user={user} />
               </div>
               <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
                 <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
