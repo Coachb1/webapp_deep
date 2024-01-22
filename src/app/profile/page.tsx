@@ -2,6 +2,7 @@ import ActionPoints from "@/components/ActionPoints";
 import BotsNavigation from "@/components/BotsNavigation";
 import Conversations from "@/components/Conversations";
 import NavProfile from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
 import SessionNotes from "@/components/SessionNotes";
 import UserProfile from "@/components/UserProfile";
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,9 @@ const Page = async () => {
     <>
       {" "}
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-        <NavProfile user={user} />
-        <BotsNavigation user={user} />
+        {/* <NavProfile user={user} />
+        <BotsNavigation user={user} /> */}
+        <NetworkNav user={user} />
       </div>
       <div className="h-full bg-white min-h-screen px-44 py-24 max-lg:px-20 max-sm:px-8 max-sm:pb-5 max-sm:pt-24">
         <div>

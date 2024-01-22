@@ -3,12 +3,13 @@
 import BotsNavigation from "@/components/BotsNavigation";
 import CopyToClipboard from "@/components/CopyToClipboard";
 import NavProfile from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { TabsList } from "@radix-ui/react-tabs";
-import { Link2, Loader, Search } from "lucide-react";
+import { Link2, Loader, Network, Search } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 
@@ -280,7 +281,10 @@ const CreateOwn = ({ user }: any) => {
   return (
     <>
       <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div className="flex pt-5 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+        <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+          <NetworkNav user={user} />
+        </div>
+        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
             <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
               COACH
