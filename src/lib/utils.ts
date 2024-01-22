@@ -109,4 +109,6 @@ export const hideBots = () => {
   const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
   coachtalk.setAttribute("style", "display: none;");
   coachScribe.setAttribute("style", "display: none;");
+
+  console.log("Hidden");
 };

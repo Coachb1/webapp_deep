@@ -98,6 +98,7 @@ const Conversations = ({ user }: any) => {
   const [fetchError, setFetchError] = useState(false);
   useEffect(() => {
     if (user) {
+      setLoading(true);
       fetch(`${baseURL}/accounts/`, {
         method: "POST",
         headers: {
@@ -175,56 +176,56 @@ const Conversations = ({ user }: any) => {
   }, []);
   return (
     <>
+      {loading && (
+        <div className="flex justify-center pt-16">
+          <Loader className="h-5 w-5 animate-spin" />
+        </div>
+      )}
       {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
         <div className="bg-accent p-2 mt-2 rounded-md">
-          <div className="pl-4 max-sm:pl-2 pt-2">Conversations</div>
+          <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
           <div className="">
-            {loading ? (
-              <div className="flex justify-center pt-8">
-                <Loader className="h-5 w-5 animate-spin" />
+            <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
+              <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
+                {conversationDataAdmin.length > 0 && (
+                  <>
+                    <div className="flex flex-col w-full">
+                      {conversationDataAdmin.map((conversation) => (
+                        <ConversationChat
+                          participant={conversation.participant_name}
+                          conversation={conversation.conversation}
+                          date={
+                            conversation.date !== "" &&
+                            formatDate(conversation.date)
+                          }
+                          role={conversation.role}
+                        />
+                      ))}
+                    </div>
+                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
+                  </>
+                )}
+                {conversationData.length > 0 && (
+                  <>
+                    <div className="flex flex-col w-full">
+                      {conversationData.map((conversation) => (
+                        <ConversationChat
+                          participant={conversation.participant_name}
+                          conversation={conversation.conversation}
+                          date={
+                            conversation.date !== "" &&
+                            formatDate(conversation.date)
+                          }
+                          role={conversation.role}
+                          botName={conversation.bot_name}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-            ) : (
-              <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
-                <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
-                  {conversationDataAdmin.length > 0 && (
-                    <>
-                      <div className="flex flex-col w-full">
-                        {conversationDataAdmin.map((conversation) => (
-                          <ConversationChat
-                            participant={conversation.participant_name}
-                            conversation={conversation.conversation}
-                            date={
-                              conversation.date !== "" &&
-                              formatDate(conversation.date)
-                            }
-                            role={conversation.role}
-                          />
-                        ))}
-                      </div>
-                      <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
-                    </>
-                  )}
-                  {conversationData.length > 0 && (
-                    <>
-                      <div className="flex flex-col w-full">
-                        {conversationData.map((conversation) => (
-                          <ConversationChat
-                            participant={conversation.participant_name}
-                            conversation={conversation.conversation}
-                            date={
-                              conversation.date !== "" &&
-                              formatDate(conversation.date)
-                            }
-                            role={conversation.role}
-                            botName={conversation.bot_name}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
+            </div>
+            {/* )} */}
           </div>
         </div>
       ) : null}

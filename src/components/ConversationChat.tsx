@@ -17,9 +17,19 @@ const ConversationChat = ({
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
-            <p>
-              <b>Participant</b> : {participant} | <b>Name</b> : {botName} |{" "}
-              <b>Date</b> : {date}
+            <p className="flex flex-row max-sm:flex-col max-sm:text-left">
+              <span>
+                {" "}
+                <b>Participant</b> : {participant}{" "}
+                <span className="max-sm:hidden mx-2">|</span>
+              </span>
+              <span>
+                <b>Name</b> : {botName}{" "}
+                <span className="max-sm:hidden mx-2">|</span>
+              </span>{" "}
+              <span>
+                <b>Date</b> : {date}
+              </span>
             </p>
           </AccordionTrigger>
           <AccordionContent>

@@ -97,18 +97,18 @@ const UserProfile = ({
   }, []);
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
+    <div className="bg-accent p-2 mt-2 rounded-md w-full">
       <div className="pl-4 max-sm:pl-2 pt-2">Account Information</div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
           <div className="flex flex-row items-center">
-            <p className="text-md font-mono ">Name </p>
+            <p className="text-md ">Name </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-7 border">
               {userName}
             </p>
           </div>
           <div className="flex flex-row items-center mt-4">
-            <p className="text-sm font-mono">Email </p>
+            <p className="text-sm ">Email </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
               {userEmail}
             </p>
@@ -116,12 +116,15 @@ const UserProfile = ({
         </div>
         <hr />
         <div className="my-4 flex flex-row items-center">
-          <p className="text-sm  font-mono">
+          <p className="text-sm">
             Session Reports <br className="max-sm:block hidden" /> (For
             Simulations)
           </p>
           <>
-            <Button disabled={testAttempedCount === 0} className="ml-8 ">
+            <Button
+              disabled={testAttempedCount === 0}
+              className="ml-8 max-sm:ml-2 w-fit"
+            >
               {candidateReportUrl && candidateReportUrl.length !== 0 ? (
                 <>
                   <Link href={candidateReportUrl} target="_blank">
