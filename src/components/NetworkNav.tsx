@@ -79,7 +79,7 @@ const NetworkNav = ({ user }: any) => {
                 : ""
             } `}
           >
-            Open simulations
+            Open Simulations
           </Button>
         </Link>{" "}
       </div>
@@ -139,7 +139,7 @@ const NetworkNav = ({ user }: any) => {
               }`}
               asChild
             >
-              <Link href={"/create-scenario"}> Open simulations</Link>
+              <Link href={"/create-scenario"}> Open Simulations</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

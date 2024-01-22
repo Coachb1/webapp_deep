@@ -302,7 +302,7 @@ const VersionOne = ({ user }: any) => {
               </Button>
             </Link>
 
-            {shouldRenderDiv && (
+            {/* {shouldRenderDiv && (
               <Link href={"/create-scenario"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -318,7 +318,7 @@ const VersionOne = ({ user }: any) => {
                   </div>
                 </div>
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </MaxWidthWrapper>
