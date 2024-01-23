@@ -99,17 +99,14 @@ const VersionOne = ({ user }: any) => {
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
+            className="bg-[#2DC092] absolute right-20 h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16"
           >
             ✨ Sign up to get the EQ Acess{" "}
             <br className="hidden max-sm:inline" /> (Workplace emails only)
-            {/* <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "} */}
             <ArrowUp className="ml-2 w-4 h-4" />
           </Badge>
         )}
         <>
-          {/* <BotsNavigation user={user} />
-          <NavProfile user={user} /> */}
           <NetworkNav user={user} />
         </>
       </div>

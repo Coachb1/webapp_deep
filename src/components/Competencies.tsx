@@ -123,6 +123,10 @@ const Competencies = ({ user }: any) => {
             setSkillTwo(parsedSkills[1].replace(/"/g, ""));
             setSkillThree(parsedSkills[2].replace(/"/g, ""));
             setSkillFour(parsedSkills[3].replace(/"/g, ""));
+          })
+          .catch((err) => {
+            console.error(err);
+            setFetchLoading(false);
           });
       });
   };

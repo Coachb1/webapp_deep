@@ -13,9 +13,10 @@ import {
   BrainCircuit,
   ChevronLeft,
   BookCopyIcon,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -24,9 +25,22 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/components/Competencies";
 import MyPages from "@/components/MyPages";
+import { Button } from "@/components/ui/button";
+import { getUserAccount } from "@/lib/utils";
+import AdminProfile from "@/components/AdminProfile";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    getUserAccount(user)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUserRole(data.role);
+      });
+  });
 
   const NavItem = ({ itemName, icon }: any) => {
     return (
@@ -88,13 +102,19 @@ const Profile = ({ user }: any) => {
               icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
             />
             <NavItem
-              itemName={"Action Points"}
+              itemName={"My Rewards"}
               icon={<PocketIcon className="text-gray-500 h-5 w-5" />}
             />
             <NavItem
               itemName={"Competencies"}
               icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
             />
+            {userRole === "admin" && (
+              <NavItem
+                itemName={"Admin"}
+                icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
+              />
+            )}
             {/* <NavItem
               itemName={"My Pages"}
               icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
@@ -112,8 +132,9 @@ const Profile = ({ user }: any) => {
           {selectedItem === "Bot Conversations" && (
             <Conversations user={user} />
           )}
-          {selectedItem === "Action Points" && <ActionPoints user={user} />}
+          {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
+          {selectedItem === "Admin" && <AdminProfile user={user} />}
           {/* {selectedItem === "My Pages" && <MyPages user={user} />} */}
         </div>
       </div>
