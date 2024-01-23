@@ -12,6 +12,7 @@ import { TabsList } from "@radix-ui/react-tabs";
 import { Link2, Loader, Network, Search } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const CreateOwn = ({ user }: any) => {
   const [searchMode, setSearchMode] = useState("google");
@@ -55,20 +56,47 @@ const CreateOwn = ({ user }: any) => {
     const generatedSenarioHandlerYoutube = () => {
       setGenerateLoading(true);
 
-      fetch(`${baseURL}/tests/create-test-from-links/?url=${video_link}`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      })
+      const apiKey = "AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A";
+      const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${video_id}&key=${apiKey}`;
+      fetch(apiUrl)
         .then((res) => res.json())
         .then((data) => {
-          console.log("Result DATA", data);
-          setGeneratedData(data);
-          setGenerateLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
+          const video = data.items[0];
+
+          console.log(video.snippet.description, video.snippet.title);
+          const url: any = new URL(
+            `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+          );
+          const params = new URLSearchParams();
+          params.set("mode", "A");
+          params.set(
+            "information",
+            JSON.stringify({
+              data: { information: video.snippet.description },
+              title: video.snippet.title,
+            })
+          );
+          params.set("url", "");
+          params.set("access_token", basicAuth);
+          url.search = params;
+
+          fetch(url, {
+            method: "POST",
+            headers: {
+              Authorization: basicAuth,
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Result DATA", data);
+              setGeneratedData(data[0]);
+              setGenerateLoading(false);
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error("Error generating your scenario");
+            });
         });
     };
     return (
@@ -114,7 +142,9 @@ const CreateOwn = ({ user }: any) => {
             <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
               <b>Here's your scenario : </b>
               <div>
-                <p className="text-lg font-semibold">{generatedData?.title}</p>
+                <p className="text-base font-semibold">
+                  {generatedData?.title}
+                </p>
                 <p>{generatedData?.description}</p>
               </div>
               <div className="flex justify-end mt-2">
@@ -140,21 +170,38 @@ const CreateOwn = ({ user }: any) => {
     }>();
     const generatedSenarioHandlerGoogle = () => {
       setGenerateLoading(true);
+      const url: any = new URL(
+        `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+      );
+      const params = new URLSearchParams();
+      params.set("mode", "A");
+      params.set(
+        "information",
+        JSON.stringify({
+          data: { information: decsription },
+          title: title,
+        })
+      );
+      params.set("url", "");
+      params.set("access_token", basicAuth);
+      url.search = params;
 
-      fetch(`${baseURL}/tests/create-test-from-links/?url=${link}`, {
-        method: "GET",
+      fetch(url, {
+        method: "POST",
         headers: {
           Authorization: basicAuth,
+          "Content-Type": "application/json",
         },
       })
-        .then((res) => res.json())
+        .then((response) => response.json())
         .then((data) => {
           console.log("Result DATA", data);
-          console.log(JSON.parse(data));
-          setGeneratedData(data);
+          setGeneratedData(data[0]);
+          setGenerateLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
+          toast.error("Error generating your scenario");
         });
     };
 
@@ -205,7 +252,9 @@ const CreateOwn = ({ user }: any) => {
             <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
               <b>Here's your scenario : </b>
               <div>
-                <p className="text-lg font-semibold">{generatedData?.title}</p>
+                <p className="text-base font-semibold">
+                  {generatedData?.title}
+                </p>
                 <p>{generatedData?.description}</p>
               </div>
               <div className="flex justify-end mt-2">
@@ -223,10 +272,10 @@ const CreateOwn = ({ user }: any) => {
 
   const searchContextHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (searchMode === "google") {
-      setCreateLoading(true);
-      console.log(searchInputText);
 
+    if (searchMode === "google") {
+      console.log(searchInputText);
+      setCreateLoading(true);
       fetch(
         `https://www.googleapis.com/customsearch/v1?key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
         {
@@ -242,8 +291,9 @@ const CreateOwn = ({ user }: any) => {
             decsription: item.pagemap.metatags[0]["og:description"],
           }));
           setGoogleSearchResults(formattedSearchResults);
-          setSearchInputText("");
+
           setTimeout(() => {
+            setSearchInputText("");
             setCreateLoading(false);
           }, 500);
         });
@@ -268,13 +318,13 @@ const CreateOwn = ({ user }: any) => {
           }));
           setYoutubeSearchResults(formattedVideos);
           console.log(formattedVideos);
-          setSearchInputText("");
+
           setTimeout(() => {
             setCreateLoading(false);
-          }, 4000);
+            setSearchInputText("");
+          }, 500);
         });
     }
-    setCreateLoading(false);
   };
 
   return (
@@ -283,13 +333,14 @@ const CreateOwn = ({ user }: any) => {
         <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
           <NetworkNav user={user} />
         </div>
-        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
             <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
               COACH
             </span>
             BOTS
           </h1>
+
           <div className="w-full">
             <h1 className="text-2xl font-semibold text-gray-600">
               Create your own scenario
@@ -321,7 +372,7 @@ const CreateOwn = ({ user }: any) => {
                       className="text-xs p-1 m-1"
                       value="youtube"
                     >
-                      Youtube
+                      Youtube | TEDx
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
