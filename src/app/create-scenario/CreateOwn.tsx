@@ -227,9 +227,8 @@ const CreateOwn = ({ user }: any) => {
       setCreateLoading(true);
       console.log(searchInputText);
 
-      // `https://www.googleapis.com/customsearch/v1?key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
       fetch(
-        `https://www.googleapis.com/customsearch/v1?key=AIzaSyBn0XUAYjzxvK5YYwzR-xxtCRwaUBQ87pA&cx=941b134ecf23b462e&num=10&q=${searchInputText}`,
+        `https://www.googleapis.com/customsearch/v1?key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&cx=74697a1c8338d4d9a&num=10&q=${searchInputText}`,
         {
           method: "GET",
         }
@@ -252,7 +251,7 @@ const CreateOwn = ({ user }: any) => {
       console.log(searchInputText);
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A`,
         {
           method: "GET",
         }
