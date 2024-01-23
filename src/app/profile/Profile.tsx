@@ -12,6 +12,7 @@ import {
   PocketIcon,
   BrainCircuit,
   ChevronLeft,
+  BookCopyIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -21,7 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-// import Competencies from "@/components/Competencies";
+import Competencies from "@/components/Competencies";
+import MyPages from "@/components/MyPages";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -54,7 +56,7 @@ const Profile = ({ user }: any) => {
   return (
     <>
       {" "}
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 ">
         <NetworkNav user={user} />
       </div>
       <div className="w-full flex flex-row justify-end">
@@ -89,9 +91,13 @@ const Profile = ({ user }: any) => {
               itemName={"Action Points"}
               icon={<PocketIcon className="text-gray-500 h-5 w-5" />}
             />
-            {/* <NavItem
+            <NavItem
               itemName={"Competencies"}
               icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
+            />
+            {/* <NavItem
+              itemName={"My Pages"}
+              icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
             /> */}
           </div>
         </div>
@@ -107,7 +113,8 @@ const Profile = ({ user }: any) => {
             <Conversations user={user} />
           )}
           {selectedItem === "Action Points" && <ActionPoints user={user} />}
-          {/* {selectedItem === "Competencies" && <Competencies user={user} />} */}
+          {selectedItem === "Competencies" && <Competencies user={user} />}
+          {/* {selectedItem === "My Pages" && <MyPages user={user} />} */}
         </div>
       </div>
     </>
