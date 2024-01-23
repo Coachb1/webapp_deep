@@ -95,7 +95,7 @@ const ActionPoints = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Points</div>
+      <div className="pl-4 max-sm:pl-2 pt-2">My rewards</div>
       <div className="m-4 max-sm:m-2">
         <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:pr-1 rounded-md">
           <div className="flex flex-col justify-evenly items-center w-[16%]">

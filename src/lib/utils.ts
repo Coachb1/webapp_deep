@@ -112,3 +112,30 @@ export const hideBots = () => {
 
   console.log("Hidden");
 };
+
+export const getUserAccount = (user: any) => {
+  return fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: basicAuth,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user.given_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            username: "web_user",
+            email: user.email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user.email,
+      },
+    }),
+  });
+};
