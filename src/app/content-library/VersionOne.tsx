@@ -33,11 +33,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import BotsNavigation from "@/components/BotsNavigation";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 
 const VersionOne = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(
+            `${baseURL}/accounts/get-client-information/?for=user_info&user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("USER INFO FOR AUTH ACESS", data);
+            });
+        });
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {

@@ -52,7 +52,6 @@ const UserProfile = ({
       })
         .then((response) => response.json())
         .then(async (data) => {
-          console.log(data);
           const userId = data.uid;
           await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
             method: "POST",

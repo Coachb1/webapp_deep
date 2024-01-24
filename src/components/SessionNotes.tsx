@@ -182,11 +182,11 @@ const SessionNotes = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("Submitted Data", data);
-                if ("Error" in data) {
-                    toast.error(data.Error);
-                    setSubmitLoading(false);
-                    return;
-                }
+              if ("Error" in data) {
+                toast.error(data.Error);
+                setSubmitLoading(false);
+                return;
+              }
               toast.success(
                 "Your comment has been successfully sent to your mentee."
               );
@@ -277,9 +277,14 @@ const SessionNotes = ({ user }: any) => {
           <TabsContent value="c-given">
             <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
               {commentsLoading ? (
-                <div className="flex justify-center pt-8">
-                  <Loader className="h-5 w-5 animate-spin" />
-                </div>
+                <>
+                  <div className="text-xs w-full h-20 flex items-center justify-center">
+                    <div>
+                      <Loader className="h-4 w-4 mr-2 animate-spin inline" />{" "}
+                      Loading
+                    </div>
+                  </div>
+                </>
               ) : (
                 <>
                   {searchTriggered && (

@@ -3,7 +3,12 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseURL, basicAuth, capitalizeText } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  capitalizeText,
+  getUserAccount,
+} from "@/lib/utils";
 import { Info, Loader, Plus } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +21,17 @@ import { useSearchParams } from "next/navigation";
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
+  const checkIfEdit = params.get("edit");
+  const botIdFromParams = params.get("bot_id");
+
+  function getBotById(botId: string, jsonData: any) {
+    for (const item of jsonData) {
+      if (item.signature_bot && item.signature_bot.bot_id === botId) {
+        return item;
+      }
+    }
+    return null; // Return null if bot with specified ID is not found
+  }
 
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
@@ -321,6 +337,36 @@ const CoachIntake = ({ user }: any) => {
     setCharacteristicsRateHigh(val);
   };
 
+  //handling edit
+  useEffect(() => {
+    if (checkIfEdit === "true") {
+      console.log(botIdFromParams);
+      if (botIdFromParams?.includes("feedback")) {
+        setIsFeedbackNeeded(true);
+        // document.scr
+        // document.getElementById("feedback-section")?.scrollIntoView({
+        //   behavior: "smooth",
+        // });
+        console.log(document.getElementById("feedback-section"));
+      }
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            headers: {
+              Authorization: basicAuth,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Bot details for edit", data);
+              const resultingBot = getBotById(botIdFromParams!, data.data);
+              console.log(resultingBot);
+            });
+        });
+    }
+  }, []);
+
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -484,7 +530,7 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
 
-                  <div className="my-3">
+                  <div className="my-3" id="feedback-section">
                     <p className="text-sm my-1">
                       Which way do you want to help the program participants the
                       most?

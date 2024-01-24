@@ -5,7 +5,13 @@ import { Button } from "./ui/button";
 import { Copy } from "lucide-react";
 import copy from "clipboard-copy";
 
-const CopyToClipboard = ({ textToCopy }: { textToCopy: string }) => {
+const CopyToClipboard = ({
+  textToCopy,
+  copyType,
+}: {
+  textToCopy: string;
+  copyType?: string;
+}) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyClick = async () => {
@@ -28,7 +34,7 @@ const CopyToClipboard = ({ textToCopy }: { textToCopy: string }) => {
         className="p-2 h-8 border border-gray-200"
         onClick={handleCopyClick}
       >
-        {isCopied ? "Copied" : "Copy code"}
+        {isCopied ? "Copied" : copyType === "link" ? "Copy Link" : "Copy code"}
         <Copy className="h-4 w-4 ml-2" />
       </Button>
     </>
