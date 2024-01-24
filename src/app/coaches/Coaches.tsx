@@ -45,6 +45,7 @@ interface FilterCategoriesType {
 }
 
 const Coaches = ({ user }: any) => {
+  const router = useRouter();
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
@@ -175,10 +176,31 @@ const Coaches = ({ user }: any) => {
           >
             See List
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none border-none">
+              <Button className="h-7 w-fit ml-2">Join the network</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`/coaches/intake/?type=coach`);
+                }}
+              >
+                Join as a Coach
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`/coaches/intake/?type=coachee`);
+                }}
+              >
+                Join as a Coachee
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div id="list" className="min-h-screen w-full max-sm:px-2">
-          <div className="mt-12 ">
+          <div className="mt-20">
             <p className="font-semibold text-gray-500 max-sm:text-sm">
               We enable deep and meaningful coaching conversations with AI
               assistance even when life gets busy!
