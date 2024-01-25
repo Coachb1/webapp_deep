@@ -65,6 +65,11 @@ const NetworkNav = ({ user }: any) => {
             Open Simulations
           </Button>
         </Link>{" "}
+        <Link href="/intake/?type=IDP">
+          <Button variant={"outline"} className={`px-1 h-8 max-sm:text-sm`}>
+            Individual development Plan
+          </Button>
+        </Link>{" "}
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
@@ -104,6 +109,12 @@ const NetworkNav = ({ user }: any) => {
               asChild
             >
               <Link href={"/create-scenario"}> Open Simulations</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={"/intake/?type=IDP"}>
+                {" "}
+                Individual development Plan
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
