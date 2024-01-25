@@ -8,9 +8,10 @@ import {
   basicAuth,
   capitalizeText,
   getUserAccount,
+  subdomain,
 } from "@/lib/utils";
-import { Info, Loader, PenBox, PenLine, Plus, Save } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
@@ -70,9 +71,6 @@ const CoachIntake = ({ user }: any) => {
   const [participantLevel, setParticipantLevel] = useState("");
   const [coachMentInSameDep, setCochMentInSameDep] = useState("");
   const [outcomeSupported, setOutcomeSupported] = useState("");
-  const [hardSkillAreas, setHardSkillAreas] = useState("");
-  const [coachMentStyle, setCoachMentStyle] = useState("");
-  const [timeCommitmenttoCoaching, setTimeCommitmenttoCoaching] = useState("");
 
   const [characteristicsRateLows, setCharacteristicsRateLows] = useState("");
   const [characteristicsRateHigh, setCharacteristicsRateHigh] = useState("");
@@ -110,9 +108,6 @@ const CoachIntake = ({ user }: any) => {
     setParticipantLevel("");
     setCochMentInSameDep("");
     setOutcomeSupported("");
-    setHardSkillAreas("");
-    setCoachMentStyle("");
-    setTimeCommitmenttoCoaching("");
     setCharacteristicsRateLows("");
     setCharacteristicsRateHigh("");
     setCharacteristicsList([]);
@@ -178,88 +173,163 @@ const CoachIntake = ({ user }: any) => {
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (user) {
-      setCreateLoading(true);
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", basicAuth);
-      var formdata = new FormData();
-      formdata.append("name", name);
-      formdata.append("user_id", userId);
-      formdata.append("email", user.email);
-      formdata.append("about", about);
-      formdata.append("experience", experience);
+    try {
+      if (user) {
+        setCreateLoading(true);
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
+        var formdata = new FormData();
+        formdata.append("name", name);
+        formdata.append("user_id", userId);
+        formdata.append("email", user.email);
+        formdata.append("about", about);
+        formdata.append("experience", experience);
 
-      //@ts-ignore
-      formdata.append("profile_image", profileImage, "coachprofile.jpg");
-      formdata.append("department", department);
+        //@ts-ignore
+        formdata.append("profile_image", profileImage, "coachprofile.jpg");
+        formdata.append("department", department);
 
-      formdata.append("supported_outcome", outcomeSupported);
-      formdata.append("hard_skill_areas", hardSkillAreas);
-      formdata.append("coaching_style", coachMentStyle);
+        formdata.append("supported_outcome", outcomeSupported);
+        formdata.append("bot_type", "avatar_bot");
 
-      if (formType == "coach") {
-        formdata.append("profile_type", "coach");
-        formdata.append("area_domain", areaDomain);
-        formdata.append("mentoring_preferences", mentoringPreferences);
-        formdata.append("mentoring_frameworks", coachMentFrameworks);
-        formdata.append("dominant_point_of_view", povProgramParticipants);
-        formdata.append("problem_solving_approach", problemSolvingApproach);
-        formdata.append(
-          "provided_links",
-          JSON.stringify({
-            youtube_links: linksReflectingWVpersonal,
-            article_links: linksReflectyouWished,
+        if (formType == "coach") {
+          formdata.append("profile_type", "coach");
+          formdata.append("area_domain", areaDomain);
+          formdata.append("mentoring_preferences", mentoringPreferences);
+          formdata.append("mentoring_frameworks", coachMentFrameworks);
+          formdata.append("dominant_point_of_view", povProgramParticipants);
+          formdata.append("problem_solving_approach", problemSolvingApproach);
+          formdata.append(
+            "provided_links",
+            JSON.stringify({
+              youtube_links: linksReflectingWVpersonal,
+              article_links: linksReflectyouWished,
+            })
+          );
+          formdata.append("admired_leaders", leaderNames);
+          formdata.append(
+            "reference_docs",
+            //@ts-ignore
+            referenceDocs,
+            user.given_name + "reference" + referenceDocs?.type
+          );
+          formdata.append(
+            "voice_sample",
+            `${voiceSample === "yes" ? true : false}`
+          );
+          formdata.append("coaching_for_fitment", coachmentSelect);
+          formdata.append("coaching_level", participantLevel);
+          formdata.append(
+            "coach_same_department",
+            `${coachMentInSameDep === "yes" ? true : false}`
+          );
+        } else if (formType === "coachee") {
+          formdata.append("profile_type", "coachee");
+          formdata.append(
+            "low_rating_characteristics",
+            characteristicsRateLows
+          );
+          formdata.append(
+            "high_rating_characteristics",
+            characteristicsRateHigh
+          );
+        }
+
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: formdata,
+        };
+        fetch(
+          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
+          requestOptions
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result);
+
+            if (formType === "coach") {
+              myHeaders.append("Content-Type", "application/json");
+              const avatarBotCreationFormData = JSON.stringify({
+                bot_type: "avatar_bot",
+                bot_name: name,
+                attributes: {
+                  heading: `welcome to ${name}'s avatar bot`,
+                },
+                participant_id: userId,
+                bot_base_url: `${
+                  subdomain === "playground"
+                    ? "https://playground.coachbots.com/coach/"
+                    : "https://platform.coachbots.com/coach/"
+                }`,
+                fitment_answer: {
+                  coaching_for_fitment: coachmentSelect,
+                  coaching_level: participantLevel,
+                  coach_same_department: `${
+                    coachMentInSameDep === "yes" ? true : false
+                  }`,
+                  supported_outcome: outcomeSupported,
+                },
+                additional_data: {
+                  profile_type: "coach",
+                  area_domain: areaDomain,
+                  experience: experience,
+                  mentoring_preferences: mentoringPreferences,
+                  mentoring_frameworks: coachMentFrameworks,
+                  dominant_point_of_view: povProgramParticipants,
+                  problem_solving_approach: problemSolvingApproach,
+                  admired_leaders: leaderNames,
+                },
+              });
+
+              fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                method: "POST",
+                headers: myHeaders,
+                body: avatarBotCreationFormData,
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  console.log(data);
+                  setCreateLoading(false);
+                  if (!data.error && !data.detail) {
+                    toast.success(
+                      "Thanks for your request. You will get notified when your profile is approved and live."
+                    );
+                    resetAllStates();
+                  } else {
+                    if (data.error === "Bot already exists") {
+                      toast.error("Bot already exists");
+                    } else {
+                      toast.error(
+                        "Error creating your coach profile. Please try again."
+                      );
+                    }
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                  setCreateLoading(false);
+                });
+            } else {
+              resetAllStates();
+              setCreateLoading(false);
+              toast.success(
+                "Thanks for your request. You will get notified when your profile is approved and live."
+              );
+            }
           })
-        );
-        formdata.append("admired_leaders", leaderNames);
-        formdata.append(
-          "reference_docs",
-          //@ts-ignore
-          referenceDocs,
-          user.given_name + "reference" + referenceDocs?.type
-        );
-        formdata.append(
-          "voice_sample",
-          `${voiceSample === "yes" ? true : false}`
-        );
-        formdata.append("coaching_for_fitment", coachmentSelect);
-        formdata.append("coaching_level", participantLevel);
-        formdata.append(
-          "coach_same_department",
-          `${coachMentInSameDep === "yes" ? true : false}`
-        );
-
-        formdata.append("time_commitment", timeCommitmenttoCoaching);
-      } else if (formType === "coachee") {
-        formdata.append("profile_type", "coachee");
-        formdata.append("low_rating_characteristics", characteristicsRateLows);
-        formdata.append("high_rating_characteristics", characteristicsRateHigh);
+          .catch((error) => {
+            console.log("error", error);
+            toast.error("Error creating your coach profile. Please try again.");
+          });
       }
-
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating your coach profile. Please try again.");
       setCreateLoading(false);
-
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", basicAuth);
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: formdata,
-      };
-      fetch(
-        `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          setCreateLoading(false);
-          toast.success("Successfully created your coach profile.");
-          resetAllStates();
-        })
-        .catch((error) => {
-          console.log("error", error);
-          toast.error("Error creating your coach profile. Please try again.");
-        });
     }
   };
 
@@ -268,7 +338,7 @@ const CoachIntake = ({ user }: any) => {
     if (user) {
       setFeedbackCreateLoading(true);
       var feedbackFormdata = JSON.stringify({
-        bot_type: "feedback",
+        bot_type: "feedback_bot",
         bot_name: name,
         attributes: {
           heading: "welcome to feedback bot",
@@ -303,7 +373,9 @@ const CoachIntake = ({ user }: any) => {
           if (checkIfEdit) {
             toast.success("Successfully Updated your feedback bot.");
           } else {
-            toast.success("Successfully created your feedback bot.");
+            toast.success(
+              "Thanks for your request. You will get notified when your Feedback bot is approved and live."
+            );
           }
           resetAllStates();
         })
@@ -341,7 +413,6 @@ const CoachIntake = ({ user }: any) => {
   };
 
   //handling edit
-  const feedbackScrollRef = useRef(null);
   useEffect(() => {
     if (checkIfEdit === "true") {
       if (botIdFromParams?.includes("feedback")) {
@@ -352,36 +423,37 @@ const CoachIntake = ({ user }: any) => {
             behavior: "smooth",
           });
         }, 200);
-      }
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("Bot details for edit", data);
-              const resultingBot = getBotById(botIdFromParams!, data.data);
 
-              console.log(resultingBot);
-              setName(resultingBot.bot_attributes.coach_name);
-              if (botIdFromParams?.includes("feedback")) {
-                setProfileBio(
-                  resultingBot.signature_bot.data.additional_data.short_profile_bio.trim()
-                );
-                setCurrentProjects(
-                  resultingBot.signature_bot.data.additional_data.current_projects.trim()
-                );
-                setSuggestedProjects(
-                  resultingBot.signature_bot.data.additional_data.suggested_projects.trim()
-                );
-              } else if (botIdFromParams?.includes("coach-")) {
-              }
-            });
-        });
+        getUserAccount(user)
+          .then((res) => res.json())
+          .then((data) => {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit", data);
+                const resultingBot = getBotById(botIdFromParams!, data.data);
+
+                console.log(resultingBot);
+                setName(resultingBot.bot_attributes.coach_name);
+                if (botIdFromParams?.includes("feedback")) {
+                  setProfileBio(
+                    resultingBot.signature_bot.data.additional_data.short_profile_bio.trim()
+                  );
+                  setCurrentProjects(
+                    resultingBot.signature_bot.data.additional_data.current_projects.trim()
+                  );
+                  setSuggestedProjects(
+                    resultingBot.signature_bot.data.additional_data.suggested_projects.trim()
+                  );
+                } else if (botIdFromParams?.includes("coach-")) {
+                }
+              });
+          });
+      }
     }
   }, []);
 
@@ -396,7 +468,7 @@ const CoachIntake = ({ user }: any) => {
         </h1>
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full">
-            <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-20">
+            <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Coach & Mentor Intake
               </h1>
@@ -440,7 +512,7 @@ const CoachIntake = ({ user }: any) => {
                       onChange={(e) => {
                         setAbout(e.target.value);
                       }}
-                      placeholder="Guidance and support through personalized strategies, fostering growth, and unlocking potential to achieve your goals and aspirations effectively..."
+                      placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
@@ -474,6 +546,28 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                    </div>
+                  </div>
+                  <div className="my-4">
+                    <p className="text-sm my-1">
+                      Please add a professional picture to be added with your
+                      profile.
+                    </p>
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        required
+                        type="file"
+                        name="myImage"
+                        accept="image/*"
+                        onChange={(e) => {
+                          //@ts-ignore
+                          setProfileImage(e.target.files[0]);
+                        }}
+                        className="w-fit"
+                      />{" "}
+                      <p className="m-1 mt-2 ml-0 text-gray-500">
+                        Upload image with (240px * 240px) under 2MB
+                      </p>
                     </div>
                   </div>
                   <div className="my-3">
@@ -516,7 +610,11 @@ const CoachIntake = ({ user }: any) => {
                       >
                         {areaDomains.map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                            <RadioGroupItem
+                              className={`rounded-sm`}
+                              value={val}
+                              id={`r${i}+1 ${val}`}
+                            />
                             <label
                               htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
@@ -526,25 +624,6 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-4">
-                    <p className="text-sm my-1">
-                      Please add a professional picture to be added with your
-                      profile.
-                    </p>
-                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                      <input
-                        required
-                        type="file"
-                        name="myImage"
-                        accept="image/*"
-                        onChange={(e) => {
-                          //@ts-ignore
-                          setProfileImage(e.target.files[0]);
-                        }}
-                        className="w-fit"
-                      />{" "}
                     </div>
                   </div>
 
@@ -663,7 +742,7 @@ const CoachIntake = ({ user }: any) => {
                           setLeaderNames(e.target.value);
                         }}
                         value={leaderNames}
-                        placeholder="BJCXK"
+                        placeholder="Bill Gates, Ratan Tata"
                         type="text"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
@@ -710,8 +789,9 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Do you want to provide voice sample, if you want an audio
-                      avatar? (We will separately contact you for the same).
+                      Do you want to provide a voice sample, if you want an
+                      audio avatar? (We will separately contact you for the
+                      same)
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -774,7 +854,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      What level of participant you want to coach & mentor?
+                      What level of participant do you want to coach & mentor?
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -804,7 +884,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      I want to coach & mentor someone in the same department...
+                      I want to coach & mentor someone in the same department.
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -830,7 +910,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      What kind of outcome you can support in these sessions the
+                      What kind of outcome can you support in these sessions the
                       most?
                     </p>
                     <div className="my-2 mb-3">
@@ -848,107 +928,11 @@ const CoachIntake = ({ user }: any) => {
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What are the hard skill areas, if any, you can help with
-                      your expertise?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        value={hardSkillAreas}
-                        onValueChange={(value) => {
-                          setHardSkillAreas(value);
-                        }}
-                      >
-                        {[
-                          "None",
-                          "Technology",
-                          "Business Operations",
-                          "Project management & engineering",
-                          "HR & People development",
-                          "Sales & Marketing",
-                          "Finance",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What is your mentoring/coaching style?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        value={coachMentStyle}
-                        onValueChange={(value) => {
-                          setCoachMentStyle(value);
-                        }}
-                      >
-                        {[
-                          "Directive & Task oriented",
-                          "Supportive & Emphatic",
-                          "Collaborative & Goal focused",
-                          "Adaptive & Tailored",
-                          "No Set Style",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      If it were face-to-face interaction, how much time can you
-                      commit to mentoring/coaching?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        value={timeCommitmenttoCoaching}
-                        required
-                        onValueChange={(value) => {
-                          setTimeCommitmenttoCoaching(value);
-                        }}
-                      >
-                        {[
-                          "Weekly",
-                          "Bi-Weekly",
-                          "Monthly",
-                          "Ad-hoc",
-                          "Undecided",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                            <RadioGroupItem
+                              className="rounded-sm"
+                              value={val}
+                              id={`r${i}+1 ${val}`}
+                            />
                             <label
                               htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
@@ -977,307 +961,16 @@ const CoachIntake = ({ user }: any) => {
                         )}
                       </Button>
                     ) : (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
+                      <Button disabled={createLoading} className="h-8">
                         {" "}
-                        {feedbackCreateLoading ? (
+                        {createLoading ? (
                           <>
                             <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Creating
+                            Submitting
                           </>
                         ) : (
                           <>
-                            Create <Plus className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {formType === "coachee" && (
-          <div className="flex flex-col justify-center items-center w-full">
-            <div className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
-              <h1 className="text-xl text-left text-gray-600 font-bold">
-                Coachee & Mentee Intake
-              </h1>
-              <p className="mb-3 text-left text-sm text-gray-600">
-                Use this to add yourself to your organization's mentoring and
-                coaching network.
-              </p>
-              <form
-                className="text-left"
-                onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createSubmitHandler(e);
-                }}
-              >
-                <Badge
-                  variant={"secondary"}
-                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
-                >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
-                </Badge>
-                <div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">Enter your name</p>
-                    <input
-                      required
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                      }}
-                      placeholder="Aarav Sharma"
-                      type="text"
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add a profile description.
-                    </p>
-                    <textarea
-                      value={about}
-                      required
-                      onChange={(e) => {
-                        setAbout(e.target.value);
-                      }}
-                      placeholder="Guidance and support through personalized strategies, fostering growth, and unlocking potential to achieve your goals and aspirations effectively..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Total number of years of experience.
-                    </p>
-                    <div>
-                      <RadioGroup
-                        value={experience}
-                        required
-                        onValueChange={(value) => {
-                          setExperience(value);
-                        }}
-                      >
-                        {[
-                          "0 - 5 years",
-                          "5 - 10 years",
-                          "10 - 20 years",
-                          "20+ years",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-4">
-                    <p className="text-sm my-1">
-                      Please add a profile picture for adding to your profile.
-                    </p>
-                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                      <input
-                        required
-                        type="file"
-                        name="myImage"
-                        accept="image/*"
-                        onChange={(e) => {
-                          //@ts-ignore
-                          setProfileImage(e.target.files[0]);
-                        }}
-                        className="w-fit"
-                      />{" "}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please rate the characteristics/skills on which you will
-                      rate yourself near the lows.
-                    </p>
-                    <CharactericticsSelect
-                      onCharacteristicsSelect={onCharacteristicsSelectLow}
-                      options={characteristicsList}
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please rate the characteristics/skills on which you will
-                      rate yourself highly.
-                    </p>
-                    <CharactericticsSelect
-                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
-                      options={characteristicsList}
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please list your department affiliation.
-                    </p>
-                    <RadioGroup
-                      required
-                      onValueChange={(value) => {
-                        setDepartment(value);
-                      }}
-                      value={department}
-                    >
-                      {departments.map((val, i) => (
-                        <div key={i} className="flex items-center space-x-2 ">
-                          <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                          <label
-                            htmlFor={`r${i}+1 ${val}`}
-                            className="text-xs text-gray-700"
-                          >
-                            {capitalizeText(val)}
-                          </label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
-
-                  <hr />
-                  <div className="my-2">
-                    <h3 className="font-semibold text-base text-gray-600">
-                      Fitment Analysis
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      This section analyzes your fitment with the participant,
-                      as if it were a face to face engagement.
-                    </p>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What are the hard skills if any that you hope to improve
-                      through this engagement?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        value={hardSkillAreas}
-                        onValueChange={(value) => {
-                          setHardSkillAreas(value);
-                        }}
-                      >
-                        {[
-                          "None",
-                          "Technology",
-                          "Business Operations",
-                          "Project management & engineering",
-                          "HR & People development",
-                          "Sales & Marketing",
-                          "Finance",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What is the key objective or goal you want to achieve via
-                      coaching and mentoring?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        value={outcomeSupported}
-                        required
-                        onValueChange={(value) => {
-                          setOutcomeSupported(value);
-                        }}
-                      >
-                        {[
-                          "Careeer advancement",
-                          "Skill development",
-                          "Lateral Transfer",
-                          "Leadership development & networking",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What kind of coaching and mentoring support you prefer?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        value={coachMentStyle}
-                        onValueChange={(value) => {
-                          setCoachMentStyle(value);
-                        }}
-                      >
-                        {[
-                          "Directive & Task oriented",
-                          "Supportive & Emphatic",
-                          "Collaborative & Goal focused",
-                          "Adaptive & Tailored",
-                          "No Set Style",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div>
-                  <hr className="my-2" />
-                  <div>
-                    {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
-                        ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Creating
-                          </>
-                        ) : (
-                          <>
-                            Create <Plus className="ml-2 h-5 w-5" />
+                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
                           </>
                         )}
                       </Button>
@@ -1395,11 +1088,314 @@ const CoachIntake = ({ user }: any) => {
                         {feedbackCreateLoading ? (
                           <>
                             <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Creating
+                            Submitting
                           </>
                         ) : (
                           <>
-                            Create <Plus className="ml-2 h-5 w-5" />
+                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+        {formType === "coachee" && (
+          <div className="flex flex-col justify-center items-center w-full">
+            <div className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+              <h1 className="text-xl text-left text-gray-600 font-bold">
+                Coachee & Mentee Intake
+              </h1>
+              <p className="mb-3 text-left text-sm text-gray-600">
+                Use this to add yourself to your organization's mentoring and
+                coaching network.
+              </p>
+              <form
+                className="text-left"
+                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                  createSubmitHandler(e);
+                }}
+              >
+                <Badge
+                  variant={"secondary"}
+                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                >
+                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                </Badge>
+                <div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">Enter your name</p>
+                    <input
+                      required
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                      placeholder="Aarav Sharma"
+                      type="text"
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add a profile description.
+                    </p>
+                    <textarea
+                      value={about}
+                      required
+                      onChange={(e) => {
+                        setAbout(e.target.value);
+                      }}
+                      placeholder="Briefly share your background, goals, and what you're seeking in a coaching or mentoring relationship."
+                      rows={3}
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Total number of years of experience.
+                    </p>
+                    <div>
+                      <RadioGroup
+                        value={experience}
+                        required
+                        onValueChange={(value) => {
+                          setExperience(value);
+                        }}
+                      >
+                        {[
+                          "0 - 5 years",
+                          "5 - 10 years",
+                          "10 - 20 years",
+                          "20+ years",
+                        ].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                            <label
+                              htmlFor={`r${i}+1 ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  <div className="my-4">
+                    <p className="text-sm my-1">
+                      Please add a profile picture for adding to your profile.
+                    </p>
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        required
+                        type="file"
+                        name="myImage"
+                        accept="image/*"
+                        onChange={(e) => {
+                          //@ts-ignore
+                          setProfileImage(e.target.files[0]);
+                        }}
+                        className="w-fit"
+                      />{" "}
+                    </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself near the lows.
+                    </p>
+                    <CharactericticsSelect
+                      onCharacteristicsSelect={onCharacteristicsSelectLow}
+                      options={characteristicsList}
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself highly.
+                    </p>
+                    <CharactericticsSelect
+                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                      options={characteristicsList}
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please list your department affiliation.
+                    </p>
+                    <RadioGroup
+                      required
+                      onValueChange={(value) => {
+                        setDepartment(value);
+                      }}
+                      value={department}
+                    >
+                      {departments.map((val, i) => (
+                        <div key={i} className="flex items-center space-x-2 ">
+                          <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                          <label
+                            htmlFor={`r${i}+1 ${val}`}
+                            className="text-xs text-gray-700"
+                          >
+                            {capitalizeText(val)}
+                          </label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                  <hr className="my-2" />
+                  <div>
+                    {checkIfEdit ? (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Saving
+                          </>
+                        ) : (
+                          <>
+                            Save Changes <PenLine className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button disabled={createLoading} className="h-8">
+                        {" "}
+                        {createLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Submitting
+                          </>
+                        ) : (
+                          <>
+                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div
+              id="feedback"
+              className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
+            >
+              <div className="flex items-center space-x-2">
+                <label className="text-sm" htmlFor="feedback-needed">
+                  Do you want to create a feedback bot?
+                </label>
+                <Switch
+                  id="feedback-needed"
+                  checked={isFeedbackNeeded}
+                  onCheckedChange={(checked) => {
+                    console.log("is checked", checked);
+                    setIsFeedbackNeeded(checked);
+                  }}
+                />
+              </div>
+              {isFeedbackNeeded && (
+                <form
+                  className="text-left"
+                  onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                    createFeedbackSubmitHandler(e);
+                  }}
+                >
+                  <Badge
+                    variant={"secondary"}
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2"
+                  >
+                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  </Badge>
+                  <div className="my-3">
+                    <p className="text-sm my-1">Enter your name</p>
+                    <input
+                      value={name}
+                      required
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                      placeholder="Aarav Sharma"
+                      type="text"
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add a short profile bio.
+                    </p>
+                    <textarea
+                      value={profileBio}
+                      required
+                      onChange={(e) => {
+                        setProfileBio(e.target.value);
+                      }}
+                      placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
+                      rows={3}
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please enter your Current Projects
+                    </p>
+                    <textarea
+                      value={currentProjects}
+                      required
+                      onChange={(e) => {
+                        setCurrentProjects(e.target.value);
+                      }}
+                      placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
+                      rows={3}
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please enter your Suggested projects/ assignments.
+                    </p>
+                    <textarea
+                      required
+                      value={suggestedProjects}
+                      onChange={(e) => {
+                        setSuggestedProjects(e.target.value);
+                      }}
+                      placeholder="Proposing innovative projects or assignments such as [Project/Assignment 1], [Project/Assignment 2], and [Project/Assignment 3] that align with your expertise and interests..."
+                      rows={3}
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    />
+                  </div>
+                  <div>
+                    {checkIfEdit ? (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Saving
+                          </>
+                        ) : (
+                          <>
+                            Save Changes <PenLine className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Submitting
+                          </>
+                        ) : (
+                          <>
+                            Submit <SendHorizonal className="ml-2 h-5 w-5" />
                           </>
                         )}
                       </Button>
