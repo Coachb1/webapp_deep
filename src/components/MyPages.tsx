@@ -1,6 +1,6 @@
 "use client";
 
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Code, Copy, Edit, LinkIcon, Loader } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
@@ -34,32 +34,10 @@ const MyPages = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${baseURL}/accounts/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_context: {
-          name: user.given_name,
-          role: "member",
-          user_attributes: {
-            tag: "deepchat_profile",
-            attributes: {
-              username: "web_user",
-              email: user.email,
-            },
-          },
-        },
-        identity_context: {
-          identity_type: "deepchat_unique_id",
-          value: user.email,
-        },
-      }),
-    })
+    getUserAccount(user)
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
           headers: {
             Authorization: basicAuth,

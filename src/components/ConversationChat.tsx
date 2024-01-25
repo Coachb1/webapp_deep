@@ -13,7 +13,7 @@ const ConversationChat = ({
   botName,
 }: any) => {
   return (
-    <div className="w-full border my-2 px-2 rounded-sm">
+    <div className="w-full border bg-gray-200 my-2 px-2 rounded-sm">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>

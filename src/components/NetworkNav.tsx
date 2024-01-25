@@ -31,33 +31,6 @@ const NetworkNav = ({ user }: any) => {
             Network Directory
           </Button>
         </Link>{" "}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none border-none">
-            <Button variant={"outline"} className="h-8 max-sm:text-sm">
-              Playground
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              onClick={() => {
-                router.push(`/`);
-              }}
-              className={`${pathname === "/" ? "bg-gray-200" : ""} `}
-            >
-              Avatar Page (Sample)
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                router.push(`/feedback`);
-              }}
-              className={`${
-                pathname.includes("/feedback") ? "bg-gray-200" : ""
-              } `}
-            >
-              Feedback page (Sample)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         <Link href="/content-library">
           <Button
             variant={"outline"}
@@ -67,7 +40,19 @@ const NetworkNav = ({ user }: any) => {
                 : ""
             } `}
           >
-            Library
+            Playground
+          </Button>
+        </Link>{" "}
+        <Link href="/library">
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname.includes("/library")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+          >
+            My Library
           </Button>
         </Link>{" "}
         <Link href="/create-scenario">
@@ -97,41 +82,22 @@ const NetworkNav = ({ user }: any) => {
             >
               <Link href={"/coaches"}> Network directory</Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <p className="text-sm ml-2">Playground</p>
             <DropdownMenuItem
               className={`${
-                (pathname.includes("/coach") && pathname !== "/coaches") ||
-                pathname === "/"
-                  ? "bg-gray-200"
-                  : null
+                pathname === "/content-library" ? "bg-gray-200" : null
               }`}
               asChild
             >
-              <Link href={"/"} className="text-xs">
-                {" "}
-                - Avatar Page (Sample)
-              </Link>
+              <Link href={"/content-library"}>Playground</Link>
             </DropdownMenuItem>
+
             <DropdownMenuItem
               className={`${
-                pathname.includes("/feedback") ? "bg-gray-200" : null
+                pathname.includes("/library") ? "bg-gray-200" : null
               }`}
               asChild
             >
-              <Link href={"/feedback"} className="text-xs">
-                {" "}
-                - Feedback Page (Sample)
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/content-library") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <Link href={"/content-library"}> Library</Link>
+              <Link href={"/library"}> Library</Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={`${
