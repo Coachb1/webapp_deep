@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { baseURL, basicAuth, hideBots } from "@/lib/utils";
-import { Loader, Search } from "lucide-react";
+import { ChevronDown, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,17 +20,24 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 
 interface CoachesDataType {
-  profile_type: string;
+  id: number;
   name: string;
-  status: string;
-  speciality: string | null;
-  experience: string | null;
-  favourite_simulation_codes: string[] | null;
-  about: string;
+  profile_id: string;
   department: string;
-  bot_ids: string[] | null;
-  bot_urls: string[] | null;
-  profile_image_url: string;
+  bot_type: string;
+  profile_pic_url: string;
+  profile_type: string;
+  description: string;
+  experience: string;
+  favourite_simulation_codes: string;
+  status: string;
+  avatar_bot_id: string;
+  feedback_wall: string | null;
+  skills: string;
+  is_visible: boolean;
+  is_approved: boolean;
+  avatar_snippit: string;
+  avatar_bot_url: string;
 }
 
 interface FilterCategoriesType {
@@ -47,13 +54,57 @@ const Coaches = ({ user }: any) => {
   );
   const [filterCategroies, setFilterCategories] = useState<
     FilterCategoriesType[]
-  >([]);
+  >([
+    {
+      filterName: "Profile Type",
+      filterOptions: ["coach", "coachee", "mentor", "mentee"],
+    },
+    {
+      filterName: "Experience",
+      filterOptions: ["0-5 years", "5-10 years", "10-15 years", "15-20 years"],
+    },
+    {
+      filterName: "Department",
+      filterOptions: [
+        "Sales & Marketing",
+        "Production",
+        "Design",
+        "Engineering",
+        "HR & Training",
+      ],
+    },
+    {
+      filterName: "Skills",
+      filterOptions: [
+        "None",
+        "Technology",
+        "Business Operations",
+        "Project management & engineering",
+        "HR & People development",
+        "Sales & Marketing",
+        "Finance",
+      ],
+    },
+    {
+      filterName: "Expertise",
+      filterOptions: [
+        "Career Management",
+        "Work Life Banlance",
+        "Project Management",
+        "Lateral Transfers",
+      ],
+    },
+    {
+      filterName: "Bot Type",
+      filterOptions: ["feedback bot", "Avatar bot", "Subject Expert Bot"],
+    },
+  ]);
 
   const [loading, setLoading] = useState(true);
 
   const getCoachesData = async () => {
     //GET COACHES
-    await fetch(`${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`, {
+    await fetch(`${baseURL}/accounts/get-directory-informations/`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -62,49 +113,8 @@ const Coaches = ({ user }: any) => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setCoachesData(data.data);
-        setSavedCoachesData(data.data);
-        const namesArray: string[] = [];
-        const specialitiesArray: string[] = [];
-        const departmentsArray: string[] = [];
-
-        data.data.forEach((obj: CoachesDataType) => {
-          if (obj.name && !namesArray.includes(obj.name)) {
-            namesArray.push(obj.name);
-          }
-
-          if (obj.speciality && !specialitiesArray.includes(obj.speciality)) {
-            specialitiesArray.push(obj.speciality);
-          }
-
-          if (obj.department && !departmentsArray.includes(obj.department)) {
-            departmentsArray.push(obj.department);
-          }
-        });
-
-        console.log(namesArray, departmentsArray, specialitiesArray);
-        setFilterCategories([
-          {
-            filterName: "Profile Type",
-            filterOptions: ["coach", "coachee", "mentor", "mentee"],
-          },
-          {
-            filterName: "Name",
-            filterOptions: namesArray,
-          },
-          {
-            filterName: "Speciality",
-            filterOptions: specialitiesArray,
-          },
-          {
-            filterName: "Status",
-            filterOptions: ["Available", "Booked"],
-          },
-          {
-            filterName: "Department",
-            filterOptions: departmentsArray,
-          },
-        ]);
+        setSavedCoachesData(data);
+        setCoachesData(data);
         setLoading(false);
       })
       .catch((error) => console.log("error", error));
@@ -115,25 +125,45 @@ const Coaches = ({ user }: any) => {
     hideBots();
   }, []);
 
+  function filterData(
+    inputArray: CoachesDataType[],
+    filterArray: string[]
+  ): CoachesDataType[] {
+    if (filterArray.length === 0) {
+      return inputArray;
+    }
+
+    return inputArray.filter((obj) => {
+      return filterArray.every((filter) => {
+        for (const prop in obj) {
+          if (obj.hasOwnProperty(prop) && obj[prop as keyof CoachesDataType]) {
+            const propValue = obj[prop as keyof CoachesDataType]!.toString();
+            if (propValue.includes(filter)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+    });
+  }
+
   const handleUpdateCheckedValues = (newValues: string[]) => {
+    console.log(newValues);
     setParentCheckedValues(newValues);
+
+    //for search when empty
     if (newValues.length > 0 && newValues[0].length === 0) {
       setParentCheckedValues([]);
     }
 
-    if (newValues.length > 0 && newValues[0].length > 0) {
-      const filteredArray = coachesData.filter((obj) => {
-        return newValues.every((term) =>
-          Object.values(obj).some(
-            (value) =>
-              value &&
-              value.toString().toLowerCase().includes(term.toLowerCase())
-          )
-        );
-      });
-      setCoachesData(filteredArray);
-    } else {
+    //for dropdown select
+    if (newValues.length === 0) {
+      console.log("no values selected");
       setCoachesData(savedCoachesData);
+    } else {
+      const filteredData = filterData(savedCoachesData, newValues);
+      setCoachesData(filteredData);
     }
   };
 
@@ -144,7 +174,7 @@ const Coaches = ({ user }: any) => {
           <NetworkNav user={user} />
         </div>
       </div>
-      <MaxWidthWrapper className="flex pt-40 flex-col items-center justify-center text-center">
+      <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
             COACH
@@ -154,25 +184,20 @@ const Coaches = ({ user }: any) => {
         <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Coaching & Mentoring community
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
+        <p className="my-2 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
           {" "}
           2000+ Strong group of experts & future leaders
         </p>
 
-        <div className="mt-2 mb-[45vh]">
-          <Button
-            className="h-7 w-fit"
-            onClick={() => {
-              document.getElementById("list")?.scrollIntoView({
-                behavior: "smooth",
-              });
-            }}
-          >
-            See List
+        <div className="my-4 max-sm:text-xs flex flex-row gap-2 max-sm:flex-wrap justify-center">
+          <Button disabled variant={"outline"} className="h-fit w-fit">
+            Group coaching (coming soon)
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none border-none">
-              <Button className="h-7 w-fit ml-2">Join the network</Button>
+              <Button variant={"outline"} className="h-fit w-fit">
+                Join the network <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
@@ -191,16 +216,18 @@ const Coaches = ({ user }: any) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button disabled variant={"outline"} className="h-fit w-fit">
+            Whatsapp Community (coming soon)
+          </Button>
         </div>
-
         <div id="list" className="min-h-screen w-full max-sm:px-2">
-          <div className="mt-20">
+          <div className="my-4">
             <p className="font-semibold text-gray-500 max-sm:text-sm">
               We enable deep and meaningful coaching conversations with AI
               assistance even when life gets busy!
             </p>
           </div>
-          <div className="mt-24">
+          <div className="my-4">
             <div className="bg-white flex flex-row items-center p-1.5 py-3 rounded-md shadow-md  ">
               <Search className="h-4 w-4 mr-1 inline" />
               <input
@@ -246,7 +273,7 @@ const Coaches = ({ user }: any) => {
                     <div className="w-[30%] max-sm:w-[30%] flex items-center justify-center max-sm:items-start">
                       <img
                         className="w-[250px] h-[250px] max-sm:h-[130px] max-lg:mr-4 object-cover"
-                        src={coach.profile_image_url}
+                        src={coach.profile_pic_url}
                       />
                     </div>
                     <div className="flex flex-row w-[70%] max-sm:w-[70%]  max-sm:flex-col">
@@ -261,19 +288,19 @@ const Coaches = ({ user }: any) => {
                           {coach.profile_type}
                         </Badge>
                         <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
-                          {coach.about}
+                          {coach.description}
                         </p>
                         <Separator className="my-2 max-sm:my-1.5 bg-gray-400" />
-                        <div className="my-1.5 text-gray-600 max-sm:text-xs">
+                        <div className="my-1 text-gray-600 max-sm:text-xs">
                           <p className="text-sm max-sm:text-xs font-light inline">
                             Experience :
                           </p>{" "}
                           <b className="inline">{coach.experience}</b>
                         </div>
-                        <p className="my-1.5  text-gray-600 max-sm:text-xs">
+                        <p className="my-1  text-gray-600 max-sm:text-xs">
                           <p className="text-sm  max-sm:text-xs font-light inline">
                             {" "}
-                            Favorite Simulation Code :
+                            Expertise :
                           </p>{" "}
                           <b className="inline">
                             {coach.favourite_simulation_codes}
@@ -282,7 +309,7 @@ const Coaches = ({ user }: any) => {
                       </div>
                       <div className="w-[30%] max-sm:w-full flex flex-col items-center justify-start gap-3">
                         <div className="w-full mt-[20%] max-sm:mt-4">
-                          <Link href={"https://playground.coachbots.com/"}>
+                          <Link href={coach.avatar_bot_url}>
                             <Button
                               variant={"outline"}
                               className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
@@ -291,18 +318,18 @@ const Coaches = ({ user }: any) => {
                             </Button>
                           </Link>
                         </div>
-                        <div className="w-full">
-                          <Link
-                            href={"https://playground.coachbots.com/feedback"}
-                          >
-                            <Button
-                              variant={"outline"}
-                              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-                            >
-                              Feedback Wall
-                            </Button>
-                          </Link>
-                        </div>
+                        {coach.feedback_wall !== null && (
+                          <div className="w-full">
+                            <Link href={coach.feedback_wall}>
+                              <Button
+                                variant={"outline"}
+                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                              >
+                                Feedback Wall
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -311,40 +338,13 @@ const Coaches = ({ user }: any) => {
                   )}
                 </>
               ))}
-            {coachesData.length === 0 && (
+            {!loading && coachesData.length === 0 && (
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">
                   <span>No Data</span>
                 </div>
               </div>
             )}
-          </div>
-        </div>
-        <div className="mt-10">
-          <div>
-            <p className="text-lg font-bold text-gray-800">Contact us</p>
-            <p className="my-1">
-              <span>📩</span>{" "}
-              <a
-                className="ml-2 text-sm text-gray-600 underline underline-offset-4"
-                href="mailto:info@coachbots.com"
-              >
-                info@coachbots.com
-              </a>{" "}
-            </p>
-            <p className="my-1">
-              <span>📞</span>{" "}
-              <a
-                className="ml-2 text-sm text-gray-600 "
-                href="mailto:info@coachbots.com"
-              >
-                +91 212 000101002
-              </a>{" "}
-            </p>
-            <p className="my-1">
-              <span>🌎</span>{" "}
-              <p className="inline ml-2 text-sm text-gray-600 ">Banglore</p>
-            </p>
           </div>
         </div>
       </MaxWidthWrapper>
