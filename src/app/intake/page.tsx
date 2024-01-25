@@ -1,6 +1,7 @@
 import { constructMetadata } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import CoachIntake from "./CoachIntake";
+import IDPIntake from "./IDPIntake";
 
 export const metadata = constructMetadata({
   title: "Intake - Coachbots",
