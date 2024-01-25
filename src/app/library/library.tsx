@@ -12,11 +12,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader } from "lucide-react";
-import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
+import NetworkNav from "@/components/NetworkNav";
 
 interface Test {
   title: string;
@@ -158,15 +158,10 @@ const MyLibrary = ({ user }: any) => {
 
   return (
     <div>
-      <Head>
-        <title>My Library</title>
-      </Head>
+      <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 !z-[800]">
+        <NetworkNav user={user} />
+      </div>
       <main className="bg-gray-100 min-h-[100vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-        <div className=" text-blue-500 absolute top-[5rem] left-4 text-sm rounded-lg p-2 max-sm:hidden">
-          <Link href={"/content-library"} className="flex items-center">
-            <ChevronLeft className="h-4 w-4 mr-1 inline" /> <span>Home</span>
-          </Link>
-        </div>
         <div>
           <div>
             <div className="pb-6 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
