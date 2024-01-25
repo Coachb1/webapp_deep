@@ -1,13 +1,20 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import Coach from "./Coach";
 import { constructMetadata } from "@/lib/utils";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import Coaches from "./Coaches";
+
 export const metadata = constructMetadata({
-  title: "Coach",
+  title: "Network - Coachbots",
 });
+
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  return <Coach renderType="static" user={user} />;
+
+  return (
+    <div>
+      <Coaches user={user} />
+    </div>
+  );
 };
 
 export default Page;

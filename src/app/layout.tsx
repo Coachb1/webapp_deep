@@ -70,16 +70,16 @@ export default function RootLayout({
 
   useEffect(() => {
     //ADD LOCALSTORAGE ITEM after user
-    if (pathname === "/" || pathname.includes("/coach-")) {
+    if (pathname === "/coach" || pathname.includes("/coach-")) {
       setShowCoachBot(true);
       if (!hasVisitedCoach) {
         window.location.reload();
-        window.localStorage.setItem("visitedCoach", "true"); //1 - visits / or /[id] and page refreshes
+        window.localStorage.setItem("visitedCoach", "true");
       }
-      if (pathname === "/") {
+      if (pathname === "/coach") {
         setBotId("coach-d54cd-aravsharma");
       } else {
-        const bot_id = pathname.split("/")[1];
+        const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
     } else if (
@@ -122,7 +122,7 @@ export default function RootLayout({
       window.localStorage.removeItem("visitedContentLibrary");
     }
 
-    if (pathname !== "/" && !pathname.includes("/coach")) {
+    if (pathname !== "/coach" && !pathname.includes("/coach")) {
       window.localStorage.removeItem("visitedCoach");
     }
 
