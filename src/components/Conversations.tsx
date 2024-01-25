@@ -177,9 +177,13 @@ const Conversations = ({ user }: any) => {
   return (
     <>
       {loading && (
-        <div className="flex justify-center pt-16">
-          <Loader className="h-5 w-5 animate-spin" />
-        </div>
+        <>
+          <div className="text-xs w-full h-20 flex items-center justify-center">
+            <div>
+              <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
+            </div>
+          </div>
+        </>
       )}
       {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
         <div className="bg-accent p-2 mt-2 rounded-md">
@@ -228,7 +232,19 @@ const Conversations = ({ user }: any) => {
             {/* )} */}
           </div>
         </div>
-      ) : null}
+      ) : (
+        <>
+          {!loading && (
+            <>
+              <>
+                <div className="text-xs w-full h-20 flex items-center justify-center">
+                  <div>You have no conversations yet.</div>
+                </div>
+              </>
+            </>
+          )}
+        </>
+      )}
     </>
   );
 };

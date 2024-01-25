@@ -33,7 +33,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import BotsNavigation from "@/components/BotsNavigation";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 
 const VersionOne = ({ user }: any) => {
@@ -41,27 +41,21 @@ const VersionOne = ({ user }: any) => {
 
   useEffect(() => {
     if (user) {
-      fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-      })
+      getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          let group_list: string[] = [];
-          for (const item of data.data.my_lib) {
-            if (item.emails.includes(user?.email)) {
-              group_list.push(item.group);
+          fetch(
+            `${baseURL}/accounts/get-client-information/?for=user_info&user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
             }
-          }
-          console.log(group_list);
-          setGroupList(group_list);
-        })
-        .catch((err) => {
-          console.error(err);
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("USER INFO FOR AUTH ACESS", data);
+            });
         });
     }
   }, []);
@@ -126,15 +120,18 @@ const VersionOne = ({ user }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        {groupList.length > 0 && (
-          <div className="flex flex-row mt-4 z-50">
-            <Link href={"library"}>
-              <Button variant={"default"} className=" mx-4">
-                My Library
-              </Button>
-            </Link>
-          </div>
-        )}
+        <div className="flex flex-row mt-4 z-50 gap-2">
+          <Link href="/">
+            <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
+              Avatar Page (Sample)
+            </Button>
+          </Link>
+          <Link href="/feedback">
+            <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
+              Feedback Page (Sample)
+            </Button>
+          </Link>
+        </div>
 
         <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">

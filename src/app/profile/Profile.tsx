@@ -37,7 +37,6 @@ const Profile = ({ user }: any) => {
     getUserAccount(user)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setUserRole(data.role);
       });
   });
@@ -109,16 +108,16 @@ const Profile = ({ user }: any) => {
               itemName={"Competencies"}
               icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
             />
+            <NavItem
+              itemName={"My Pages"}
+              icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
+            />
             {userRole === "admin" && (
               <NavItem
                 itemName={"Admin"}
                 icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
               />
             )}
-            {/* <NavItem
-              itemName={"My Pages"}
-              icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
-            /> */}
           </div>
         </div>
         <div className="w-[80%] max-sm:w-[90%]">
@@ -135,7 +134,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && <AdminProfile user={user} />}
-          {/* {selectedItem === "My Pages" && <MyPages user={user} />} */}
+          {selectedItem === "My Pages" && <MyPages user={user} />}
         </div>
       </div>
     </>

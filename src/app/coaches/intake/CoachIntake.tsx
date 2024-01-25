@@ -3,11 +3,15 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { baseURL, basicAuth, capitalizeText } from "@/lib/utils";
-import { Info, Loader, Plus } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import {
+  baseURL,
+  basicAuth,
+  capitalizeText,
+  getUserAccount,
+} from "@/lib/utils";
+import { Info, Loader, PenBox, PenLine, Plus, Save } from "lucide-react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
 import { Switch } from "@/components/ui/switch";
@@ -16,6 +20,17 @@ import { useSearchParams } from "next/navigation";
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
+  const checkIfEdit = params.get("edit");
+  const botIdFromParams = params.get("bot_id");
+
+  function getBotById(botId: string, jsonData: any) {
+    for (const item of jsonData) {
+      if (item.signature_bot && item.signature_bot.bot_id === botId) {
+        return item;
+      }
+    }
+    return null;
+  }
 
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
@@ -285,7 +300,11 @@ const CoachIntake = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setFeedbackCreateLoading(false);
-          toast.success("Successfully created your feedback bot.");
+          if (checkIfEdit) {
+            toast.success("Successfully Updated your feedback bot.");
+          } else {
+            toast.success("Successfully created your feedback bot.");
+          }
           resetAllStates();
         })
         .catch((err) => {
@@ -320,6 +339,51 @@ const CoachIntake = ({ user }: any) => {
     console.log(val);
     setCharacteristicsRateHigh(val);
   };
+
+  //handling edit
+  const feedbackScrollRef = useRef(null);
+  useEffect(() => {
+    if (checkIfEdit === "true") {
+      if (botIdFromParams?.includes("feedback")) {
+        setIsFeedbackNeeded(true);
+        setTimeout(() => {
+          console.log(document.getElementById("feedback"));
+          document.getElementById("feedback")?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }, 200);
+      }
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            headers: {
+              Authorization: basicAuth,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Bot details for edit", data);
+              const resultingBot = getBotById(botIdFromParams!, data.data);
+
+              console.log(resultingBot);
+              setName(resultingBot.bot_attributes.coach_name);
+              if (botIdFromParams?.includes("feedback")) {
+                setProfileBio(
+                  resultingBot.signature_bot.data.additional_data.short_profile_bio.trim()
+                );
+                setCurrentProjects(
+                  resultingBot.signature_bot.data.additional_data.current_projects.trim()
+                );
+                setSuggestedProjects(
+                  resultingBot.signature_bot.data.additional_data.suggested_projects.trim()
+                );
+              } else if (botIdFromParams?.includes("coach-")) {
+              }
+            });
+        });
+    }
+  }, []);
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
@@ -898,19 +962,35 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <hr className="my-2" />
                   <div>
-                    <Button disabled={createLoading} className="h-8">
-                      {" "}
-                      {createLoading ? (
-                        <>
-                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                          Creating
-                        </>
-                      ) : (
-                        <>
-                          Create <Plus className="ml-2 h-5 w-5" />
-                        </>
-                      )}
-                    </Button>
+                    {checkIfEdit ? (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Saving
+                          </>
+                        ) : (
+                          <>
+                            Save Changes <PenLine className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Creating
+                          </>
+                        ) : (
+                          <>
+                            Create <Plus className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </form>
@@ -1173,30 +1253,50 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <hr className="my-2" />
                   <div>
-                    <Button disabled={createLoading} className="h-8">
-                      {" "}
-                      {createLoading ? (
-                        <>
-                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                          Creating
-                        </>
-                      ) : (
-                        <>
-                          Create <Plus className="ml-2 h-5 w-5" />
-                        </>
-                      )}
-                    </Button>
+                    {checkIfEdit ? (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Saving
+                          </>
+                        ) : (
+                          <>
+                            Save Changes <PenLine className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Creating
+                          </>
+                        ) : (
+                          <>
+                            Create <Plus className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </form>
             </div>
-            <div className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20">
+            <div
+              id="feedback"
+              className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
+            >
               <div className="flex items-center space-x-2">
                 <label className="text-sm" htmlFor="feedback-needed">
                   Do you want to create a feedback bot?
                 </label>
                 <Switch
                   id="feedback-needed"
+                  checked={isFeedbackNeeded}
                   onCheckedChange={(checked) => {
                     console.log("is checked", checked);
                     setIsFeedbackNeeded(checked);
@@ -1275,19 +1375,35 @@ const CoachIntake = ({ user }: any) => {
                     />
                   </div>
                   <div>
-                    <Button disabled={feedbackCreateLoading} className="h-8">
-                      {" "}
-                      {feedbackCreateLoading ? (
-                        <>
-                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                          Creating
-                        </>
-                      ) : (
-                        <>
-                          Create <Plus className="ml-2 h-5 w-5" />
-                        </>
-                      )}
-                    </Button>
+                    {checkIfEdit ? (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Saving
+                          </>
+                        ) : (
+                          <>
+                            Save Changes <PenLine className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button disabled={feedbackCreateLoading} className="h-8">
+                        {" "}
+                        {feedbackCreateLoading ? (
+                          <>
+                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                            Creating
+                          </>
+                        ) : (
+                          <>
+                            Create <Plus className="ml-2 h-5 w-5" />
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </form>
               )}
