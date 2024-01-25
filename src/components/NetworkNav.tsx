@@ -19,13 +19,11 @@ const NetworkNav = ({ user }: any) => {
   return (
     <div className="flex flex-row gap-2">
       <div className="flex flex-row gap-2 max-sm:hidden">
-        <Link href="/coaches">
+        <Link href="/">
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
-              pathname.includes("/coaches")
-                ? "border border-gray-500 shadow-md"
-                : ""
+              pathname === "/" ? "border border-gray-500 shadow-md" : ""
             } `}
           >
             Network Directory
@@ -77,10 +75,10 @@ const NetworkNav = ({ user }: any) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="z-[999] w-fit">
             <DropdownMenuItem
-              className={`${pathname === "/coaches" ? "bg-gray-200" : null}`}
+              className={`${pathname === "/" ? "bg-gray-200" : null}`}
               asChild
             >
-              <Link href={"/coaches"}> Network directory</Link>
+              <Link href={"/"}> Network directory</Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={`${

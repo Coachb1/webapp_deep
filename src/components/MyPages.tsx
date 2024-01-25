@@ -88,7 +88,7 @@ const MyPages = ({ user }: any) => {
 
   const BotTypeLinks = (botType: string, bot_id: string) => {
     if (botType === "avatar_bot") {
-      return `https://playground.coachbots.com/${bot_id}`;
+      return `https://playground.coachbots.com/coach/${bot_id}`;
     } else if (botType === "feedback_bot") {
       return `https://playground.coachbots.com/feedback/${bot_id}`;
     } else if (botType === "subject_matter_bot") {
@@ -98,9 +98,9 @@ const MyPages = ({ user }: any) => {
 
   const intakeBotTypeLinks = (botType: string, bot_id: string) => {
     if (botType === "avatar_bot") {
-      return `/coaches/intake/?type=coach&edit=true&bot_id=${bot_id}`;
+      return `/intake/?type=coach&edit=true&bot_id=${bot_id}`;
     } else if (botType === "feedback_bot") {
-      return `/coaches/intake/?type=coachee&edit=true&bot_id=${bot_id}`;
+      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}`;
     }
   };
 

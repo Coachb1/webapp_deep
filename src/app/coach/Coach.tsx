@@ -1,7 +1,5 @@
 "use client";
 
-import BotsNavigation from "@/components/BotsNavigation";
-import NavProfile from "@/components/NavProfile";
 import NoLoginFlag from "@/components/NoLoginFlag";
 import WhereToUse from "@/components/WhereToUse";
 import {
@@ -12,7 +10,6 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -134,7 +131,7 @@ const Coach = ({ user, renderType }: any) => {
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
-          ? pathname.split("/")[1]
+          ? pathname.split("/")[2]
           : "coach-d54cd-aravsharma"
       }`,
       {
@@ -209,8 +206,6 @@ const Coach = ({ user, renderType }: any) => {
             )}
             <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
               <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-                {/* <NavProfile user={user} /> */}
-                {/* <BotsNavigation user={user} /> */}
                 <NetworkNav user={user} />
               </div>
               <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">

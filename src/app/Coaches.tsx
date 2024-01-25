@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { baseURL, basicAuth, hideBots } from "@/lib/utils";
-import { Loader, Menu, Search } from "lucide-react";
+import { Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,15 +14,9 @@ import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import NavProfile from "@/components/NavProfile";
 import NetworkNav from "@/components/NetworkNav";
 
 interface CoachesDataType {
@@ -183,14 +177,14 @@ const Coaches = ({ user }: any) => {
             <DropdownMenuContent>
               <DropdownMenuItem
                 onClick={() => {
-                  router.push(`/coaches/intake/?type=coach`);
+                  router.push(`/intake/?type=coach`);
                 }}
               >
                 Join as a Coach
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  router.push(`/coaches/intake/?type=coachee`);
+                  router.push(`/intake/?type=coachee`);
                 }}
               >
                 Join as a Coachee
