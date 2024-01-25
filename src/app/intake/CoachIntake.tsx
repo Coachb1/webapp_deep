@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
 import { Switch } from "@/components/ui/switch";
 import { useSearchParams } from "next/navigation";
+import IDPIntake from "./IDPIntake";
 
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
@@ -466,6 +467,7 @@ const CoachIntake = ({ user }: any) => {
           </span>
           BOTS
         </h1>
+        {formType === "IDP" && <IDPIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
