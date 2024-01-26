@@ -4,7 +4,6 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
 
 import {
-  EQTests,
   Managerial,
   oneTwoOne,
   roundFeedback,
@@ -26,13 +25,11 @@ import {
   pitch,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
-import NavProfile from "@/components/NavProfile";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import BotsNavigation from "@/components/BotsNavigation";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 
@@ -318,15 +315,6 @@ const VersionOne = ({ user }: any) => {
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
-          {shouldRenderDiv && (
-            <div>
-              <HeroAccordion
-                badgeText="EQ mini course"
-                user={user ? true : false}
-                tests={EQTests}
-              />
-            </div>
-          )}
           <div id="managerplus">
             <HeroAccordion
               badgeText="Manager+"

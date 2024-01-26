@@ -8,6 +8,7 @@ import {
   basicAuth,
   capitalizeText,
   getUserAccount,
+  hideBots,
   subdomain,
 } from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
@@ -415,6 +416,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
+    hideBots();
     if (checkIfEdit === "true") {
       if (botIdFromParams?.includes("feedback")) {
         setIsFeedbackNeeded(true);
