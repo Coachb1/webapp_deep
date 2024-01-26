@@ -11,7 +11,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import NavProfile from "./NavProfile";
-import { Menu } from "lucide-react";
+import { Info, Menu } from "lucide-react";
+import { TooltipWrapper } from "./TooltipWrapper";
 
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
@@ -65,11 +66,24 @@ const NetworkNav = ({ user }: any) => {
             Open Simulations
           </Button>
         </Link>{" "}
-        <Link href="/intake/?type=IDP">
-          <Button variant={"outline"} className={`px-1 h-8 max-sm:text-sm`}>
-            Individual development Plan
-          </Button>
-        </Link>{" "}
+        <TooltipWrapper
+          className="w-60 text-xs"
+          tooltipName="Individual development Plan Intake (Login required)"
+          body={
+            <div>
+              <Button
+                onClick={() => {
+                  router.push("/intake/?type=IDP");
+                }}
+                disabled={!user}
+                variant={"outline"}
+                className={`h-8 max-sm:text-sm`}
+              >
+                IDP <Info className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          }
+        />{" "}
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
@@ -110,11 +124,26 @@ const NetworkNav = ({ user }: any) => {
             >
               <Link href={"/create-scenario"}> Open Simulations</Link>
             </DropdownMenuItem>
+
             <DropdownMenuItem asChild>
-              <Link href={"/intake/?type=IDP"}>
-                {" "}
-                Individual development Plan
-              </Link>
+              <TooltipWrapper
+                className="w-60 text-xs"
+                tooltipName="Individual development Plan Intake (Login required)"
+                body={
+                  <div>
+                    <Button
+                      onClick={() => {
+                        router.push("/intake/?type=IDP");
+                      }}
+                      disabled={!user}
+                      variant={"outline"}
+                      className={`h-8 p-0 pl-2 max-sm:text-sm border-none`}
+                    >
+                      IDP <Info className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                }
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

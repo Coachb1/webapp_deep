@@ -13,14 +13,7 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import {
-  LogIn,
-  LogOut,
-  MessageSquareDashed,
-  MessageSquarePlusIcon,
-  User,
-  UserCircle2,
-} from "lucide-react";
+import { LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
