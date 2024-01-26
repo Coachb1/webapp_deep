@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ const IDPIntake = ({ user }: any) => {
   const checkIfEdit = params.get("edit");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [userId, setUserId] = useState("");
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [professionalAcc, setProfessionalAcc] = useState("");
@@ -39,12 +40,16 @@ const IDPIntake = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("USER Data from IDP intake", data);
-        setUserId(data.uid);
-      });
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("USER Data from IDP intake", data);
+          setUserId(data.uid);
+        });
+    } else {
+      router.push("/");
+    }
   }, []);
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
