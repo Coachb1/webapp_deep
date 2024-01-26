@@ -263,166 +263,184 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   </div>
                 )} */}
-                <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
-                <div
-                  id="custom-tests"
-                  className="w-full pt-12 flex flex-col items-center justify-center"
-                >
-                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
-                    Custom Library{" "}
-                  </h1>
+                {groupList.length > 0 && (
+                  <>
+                    <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
+                    <div
+                      id="custom-tests"
+                      className="w-full pt-12 flex flex-col items-center justify-center"
+                    >
+                      <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                        Custom Library{" "}
+                      </h1>
 
-                  {!isLoading ? (
-                    <>
-                      <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
-                        <SearchNSelect
-                          placeholder="Select by Simulation areas"
-                          onSearchHandler={onDomainSearchHandler}
-                          onDomainSelectHandler={onDomainSelectHandler}
-                          optionDomains={domainOptions}
-                        />
-                      </div>
+                      {!isLoading ? (
+                        <>
+                          <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                            <SearchNSelect
+                              placeholder="Select by Simulation areas"
+                              onSearchHandler={onDomainSearchHandler}
+                              onDomainSelectHandler={onDomainSelectHandler}
+                              optionDomains={domainOptions}
+                            />
+                          </div>
 
-                      {tests.length === 0 && !isLoading && (
-                        <div>Sorry, there's no data yet.</div>
-                      )}
-                      <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
-                        {filteredTests.map((testbyCategory) => (
-                          <>
-                            <div
-                              id={testbyCategory.category}
-                              className={`w-full flex justify-center`}
-                            >
-                              <Badge
-                                variant={"default"}
-                                className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
-                              >
-                                ✨ {testbyCategory.category}
-                              </Badge>
-                            </div>
+                          {tests.length === 0 && !isLoading && (
+                            <div>Sorry, there's no data yet.</div>
+                          )}
+                          <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
+                            {filteredTests.map((testbyCategory) => (
+                              <>
+                                <div
+                                  id={testbyCategory.category}
+                                  className={`w-full flex justify-center`}
+                                >
+                                  <Badge
+                                    variant={"default"}
+                                    className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                  >
+                                    ✨ {testbyCategory.category}
+                                  </Badge>
+                                </div>
 
-                            <div>
-                              <div className="relative isolate mx-auto">
                                 <div>
-                                  <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                    <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                                      {testbyCategory.tests.some(
-                                        (test) => test.is_micro === false
-                                      ) && (
-                                        <p className="w-fit text-center text-gray-500 max-sm:text-sm mt-2 bg-accent mx-auto px-2 rounded-lg">
-                                          Regular learning
-                                        </p>
-                                      )}
-                                      <Accordion
-                                        type="single"
-                                        collapsible
-                                        className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
-                                      >
-                                        {testbyCategory.tests.map((test, i) => (
-                                          <>
-                                            {!test.is_micro && (
-                                              <AccordionItem
-                                                key={i}
-                                                value={`item-${i + 1}`}
-                                                className={
-                                                  i ===
-                                                  testbyCategory.tests.length -
-                                                    1
-                                                    ? "border-none"
-                                                    : "border-b"
-                                                }
-                                              >
-                                                <AccordionTrigger className="text-left max-sm:text-xs">
-                                                  <div>
-                                                    {test.title.split(":")[1]}
-                                                  </div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="max-sm:text-xs">
-                                                  <p className="text-left">
-                                                    {" "}
-                                                    {test.description}
-                                                  </p>
-                                                  <div className="flex justify-end mt-2">
-                                                    <CopyToClipboard
-                                                      textToCopy={
-                                                        test.test_code
+                                  <div className="relative isolate mx-auto">
+                                    <div>
+                                      <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                          {testbyCategory.tests.some(
+                                            (test) => test.is_micro === false
+                                          ) && (
+                                            <p className="w-fit text-center text-gray-500 max-sm:text-sm mt-2 bg-accent mx-auto px-2 rounded-lg">
+                                              Regular learning
+                                            </p>
+                                          )}
+                                          <Accordion
+                                            type="single"
+                                            collapsible
+                                            className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                          >
+                                            {testbyCategory.tests.map(
+                                              (test, i) => (
+                                                <>
+                                                  {!test.is_micro && (
+                                                    <AccordionItem
+                                                      key={i}
+                                                      value={`item-${i + 1}`}
+                                                      className={
+                                                        i ===
+                                                        testbyCategory.tests
+                                                          .length -
+                                                          1
+                                                          ? "border-none"
+                                                          : "border-b"
                                                       }
-                                                    />
-                                                  </div>
-                                                </AccordionContent>
-                                              </AccordionItem>
+                                                    >
+                                                      <AccordionTrigger className="text-left max-sm:text-xs">
+                                                        <div>
+                                                          {
+                                                            test.title.split(
+                                                              ":"
+                                                            )[1]
+                                                          }
+                                                        </div>
+                                                      </AccordionTrigger>
+                                                      <AccordionContent className="max-sm:text-xs">
+                                                        <p className="text-left">
+                                                          {" "}
+                                                          {test.description}
+                                                        </p>
+                                                        <div className="flex justify-end mt-2">
+                                                          <CopyToClipboard
+                                                            textToCopy={
+                                                              test.test_code
+                                                            }
+                                                          />
+                                                        </div>
+                                                      </AccordionContent>
+                                                    </AccordionItem>
+                                                  )}
+                                                </>
+                                              )
                                             )}
-                                          </>
-                                        ))}
-                                      </Accordion>
-                                      {testbyCategory.tests.some(
-                                        (test) => test.is_micro === true
-                                      ) && (
-                                        <p className="w-fit rounded-lg text-center mt-2 bg-accent mx-auto px-2 text-gray-500 max-sm:text-sm">
-                                          Micro learning
-                                        </p>
-                                      )}
-                                      <Accordion
-                                        type="single"
-                                        collapsible
-                                        className="w-full text-gray-500 max-sm:p-2 bg-white px-4 pt-2 "
-                                      >
-                                        {testbyCategory.tests.map((test, i) => (
-                                          <>
-                                            {test.is_micro && (
-                                              <AccordionItem
-                                                key={i}
-                                                value={`item-${i + 1}`}
-                                                className={
-                                                  i ===
-                                                  testbyCategory.tests.length -
-                                                    1
-                                                    ? "border-none"
-                                                    : "border-b"
-                                                }
-                                              >
-                                                <AccordionTrigger className="text-left max-sm:text-xs">
-                                                  <div>
-                                                    {test.title.split(":")[1]}
-                                                  </div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="max-sm:text-xs">
-                                                  <p className="text-left">
-                                                    {" "}
-                                                    {test.description}
-                                                  </p>
-                                                  <div className="flex justify-end mt-2">
-                                                    <CopyToClipboard
-                                                      textToCopy={
-                                                        test.test_code
+                                          </Accordion>
+                                          {testbyCategory.tests.some(
+                                            (test) => test.is_micro === true
+                                          ) && (
+                                            <p className="w-fit rounded-lg text-center mt-2 bg-accent mx-auto px-2 text-gray-500 max-sm:text-sm">
+                                              Micro learning
+                                            </p>
+                                          )}
+                                          <Accordion
+                                            type="single"
+                                            collapsible
+                                            className="w-full text-gray-500 max-sm:p-2 bg-white px-4 pt-2 "
+                                          >
+                                            {testbyCategory.tests.map(
+                                              (test, i) => (
+                                                <>
+                                                  {test.is_micro && (
+                                                    <AccordionItem
+                                                      key={i}
+                                                      value={`item-${i + 1}`}
+                                                      className={
+                                                        i ===
+                                                        testbyCategory.tests
+                                                          .length -
+                                                          1
+                                                          ? "border-none"
+                                                          : "border-b"
                                                       }
-                                                    />
-                                                  </div>
-                                                </AccordionContent>
-                                              </AccordionItem>
+                                                    >
+                                                      <AccordionTrigger className="text-left max-sm:text-xs">
+                                                        <div>
+                                                          {
+                                                            test.title.split(
+                                                              ":"
+                                                            )[1]
+                                                          }
+                                                        </div>
+                                                      </AccordionTrigger>
+                                                      <AccordionContent className="max-sm:text-xs">
+                                                        <p className="text-left">
+                                                          {" "}
+                                                          {test.description}
+                                                        </p>
+                                                        <div className="flex justify-end mt-2">
+                                                          <CopyToClipboard
+                                                            textToCopy={
+                                                              test.test_code
+                                                            }
+                                                          />
+                                                        </div>
+                                                      </AccordionContent>
+                                                    </AccordionItem>
+                                                  )}
+                                                </>
+                                              )
                                             )}
-                                          </>
-                                        ))}
-                                      </Accordion>
+                                          </Accordion>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
-                          </>
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="bg-gray-100 my-16  grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
-                      <p className="p-2 text-sm max-sm:text-xs">
-                        {" "}
-                        <Loader className="animate-spin inline h-4 w-4 mr-2" />
-                        Loading...
-                      </p>
+                              </>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="bg-gray-100 my-16  grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
+                          <p className="p-2 text-sm max-sm:text-xs">
+                            {" "}
+                            <Loader className="animate-spin inline h-4 w-4 mr-2" />
+                            Loading...
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                )}
                 {/* <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
                 <div
                   id="competency-tests"
