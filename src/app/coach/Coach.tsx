@@ -219,7 +219,7 @@ const Coach = ({ user, renderType }: any) => {
                   <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                     {renderType === "dynamic"
                       ? `Welcome to ${coachName}'s Avatar🚀`
-                      : "Welcome to the Coach, Mentor Avatar!🚀"}
+                      : "Welcome to the Aarav Sharma’s Avatar!🚀"}
                   </h1>
                   <p className="my-4 max-sm:text-xs text-[#2f2323]">
                     <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
@@ -234,35 +234,34 @@ const Coach = ({ user, renderType }: any) => {
                       tailored and effective coaching experience.{" "}
                     </div>
                   </p>
-                  {renderType !== "dynamic" && (
+                  {/* {renderType !== "dynamic" && (
                     <p className="my-4 max-sm:text-xs text-[#2f2323]">
                       This is where you will see the summary information of the
                       particular coach avatar. The bot on this page demonstrates
                       a conversation based on this profile.
                     </p>
-                  )}
+                  )} */}
                   {renderType === "dynamic" ? (
                     coachDescription
                   ) : (
                     <p className="max-sm:text-xs text-[#2f2323]">
-                      <b>Sample</b> : I'm Aarav Sharma, a seasoned corporate
-                      coach with 15+ years' experience in leadership
-                      development. Holding a master's in organizational
-                      psychology and certifications in executive coaching, I've
-                      collaborated with top-tier companies. My coaching style, a
-                      unique blend of empathy and strategic thinking, fosters a
-                      growth mindset and aligns personal values with
-                      professional goals. Known for approachability, I create a
-                      safe space for executives, incorporating mindfulness for
-                      self-awareness and resilience. Tailoring strategies to
-                      individual needs, I aim to be a trusted guide for
-                      long-term, sustainable leadership development in the
-                      dynamic corporate landscape.
+                      I'm Aarav Sharma, a seasoned corporate coach with 15+
+                      years' experience in leadership development. Holding a
+                      master's in organizational psychology and certifications
+                      in executive coaching, I've collaborated with top-tier
+                      companies. My coaching style, a unique blend of empathy
+                      and strategic thinking, fosters a growth mindset and
+                      aligns personal values with professional goals. Known for
+                      approachability, I create a safe space for executives,
+                      incorporating mindfulness for self-awareness and
+                      resilience. Tailoring strategies to individual needs, I
+                      aim to be a trusted guide for long-term, sustainable
+                      leadership development in the dynamic corporate landscape.
                     </p>
                   )}
                 </div>
                 <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-                  <Link target="_blank" href={coachProfileLink}>
+                  {/* <Link target="_blank" href={coachProfileLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                       <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -276,7 +275,7 @@ const Coach = ({ user, renderType }: any) => {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </Link> */}
                   <Link href={"#wtu"}>
                     <Button
                       variant={"secondary"}
@@ -301,7 +300,7 @@ const Coach = ({ user, renderType }: any) => {
                       Benefits
                     </Button>
                   </Link>
-                  <Link target="_blank" href={coachBookLink}>
+                  {/* <Link target="_blank" href={coachBookLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                       <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -315,7 +314,7 @@ const Coach = ({ user, renderType }: any) => {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </Link> */}
                 </div>
                 <div id="wtu">
                   <WhereToUse />
