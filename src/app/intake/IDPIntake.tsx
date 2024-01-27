@@ -1,12 +1,22 @@
 "use client";
 
+import CopyToClipboard from "@/components/CopyToClipboard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogClose,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const IDPIntake = ({ user }: any) => {
   const params = useSearchParams();
@@ -25,6 +35,10 @@ const IDPIntake = ({ user }: any) => {
   const [priorities, setPriorities] = useState("");
   const [learningNcertificates, setLearningNcertificates] = useState("");
   const [domainSpecialised, setDomainSpecialised] = useState("");
+
+  //success
+  const [reportUrl, setReportUrl] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
 
   const resetAllStates = () => {
     setName("");
@@ -58,6 +72,7 @@ const IDPIntake = ({ user }: any) => {
     var IDPFormData = JSON.stringify({
       user_id: userId,
       idp_data: {
+        user_name: name,
         strengths: professionalAcc,
         weakness: criticalFeedback,
         opportunities: areasToImprove,
@@ -76,23 +91,8 @@ const IDPIntake = ({ user }: any) => {
 
     setTimeout(() => {
       setSubmitLoading(false);
-      const promise = () =>
-        new Promise((resolve, reject) =>
-          setTimeout(() => resolve({ name: "Sonner" }), 10000)
-        );
-
-      toast.promise(promise, {
-        loading:
-          "Your personal development plan is under process. It will be available here and under your profile shortly. It will also be emailed to you.",
-        success: () => {
-          resetAllStates();
-          //init the popup with data got after we get the report
-          return "Thank you";
-        },
-        error:
-          "We have encountered an error while creating your Individual Development Plan. Please try again",
-      });
-    }, 2000);
+      setOpenDialog(true);
+    }, 4000);
 
     fetch(`${baseURL}/accounts/get_or_create_idp/`, {
       method: "POST",
@@ -102,7 +102,8 @@ const IDPIntake = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setSubmitLoading(false);
+        resetAllStates();
+        setReportUrl(data.report);
       })
       .catch((err) => {
         setSubmitLoading(false);
@@ -111,6 +112,76 @@ const IDPIntake = ({ user }: any) => {
   };
   return (
     <>
+      <Dialog open={openDialog}>
+        <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+          {reportUrl.length > 0 ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>Report Url</DialogTitle>
+                <DialogDescription>
+                  <Link
+                    target="_blank"
+                    href={reportUrl}
+                    className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
+                  >
+                    {reportUrl}
+                  </Link>
+                </DialogDescription>
+                <DialogClose />
+              </DialogHeader>
+              <DialogFooter className="-mt-4">
+                <Button
+                  variant={"outline"}
+                  className="h-8"
+                  onClick={() => {
+                    router.push("/");
+                  }}
+                >
+                  Return to home
+                </Button>
+                <Button
+                  variant={"destructive"}
+                  className="h-8"
+                  onClick={() => {
+                    setOpenDialog(false);
+                  }}
+                >
+                  Close
+                </Button>
+                <CopyToClipboard copyType="link" textToCopy={reportUrl} />
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle>Loading...</DialogTitle>
+                <DialogDescription>
+                  <div className="flex flex-row items-center justify-center gap-2 my-4">
+                    <Loader className="h-10 w-10 mr-2 animate-spin" />
+                    <p className="text-xs">
+                      Your personal development plan is under process. It will
+                      be available here and under your profile shortly. It will
+                      also be emailed to you.
+                    </p>
+                  </div>
+                </DialogDescription>
+                <DialogClose />
+              </DialogHeader>
+              <DialogFooter className="-mt-4">
+                <Button
+                  variant={"destructive"}
+                  className="h-8"
+                  onClick={() => {
+                    setOpenDialog(false);
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
       <div className="flex flex-col justify-center items-center w-full">
         <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
           <h1 className="text-xl text-left text-gray-600 font-bold">
@@ -147,7 +218,7 @@ const IDPIntake = ({ user }: any) => {
               </div>
               <div className="my-3">
                 <p className="text-sm my-1">
-                  Few professional accomplishments you are proud?
+                  Few professional accomplishments you are proud of?
                 </p>
                 <textarea
                   value={professionalAcc}
@@ -155,15 +226,14 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setProfessionalAcc(e.target.value);
                   }}
-                  placeholder="
-                  Implemented a cost-saving strategy that resulted in a 20% budget reduction."
+                  placeholder="List a few significant achievements in your career."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
               </div>
               <div className="my-3">
                 <p className="text-sm my-1">
-                  What areas of work you often get crtical feedback or you
+                  What areas of work do you often get critical feedback or you
                   believe is your drawback?
                 </p>
                 <textarea
@@ -172,14 +242,14 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setCriticalFeedback(e.target.value);
                   }}
-                  placeholder="Handling tight deadlines has been an area where I'm working to improve."
+                  placeholder="Identify areas where improvement is needed or commonly criticized."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
               </div>
               <div className="my-3">
                 <p className="text-sm my-1">
-                  What are some of areas you want to improve?
+                  What are some areas you want to improve?
                 </p>
                 <textarea
                   required
@@ -187,7 +257,7 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setAreasToImprove(e.target.value);
                   }}
-                  placeholder="Enhancing my data analysis skills is a priority for more effective decision-making"
+                  placeholder="Specify aspects you aim to enhance in your work performance."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
@@ -202,7 +272,7 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setPlanDerialCause(e.target.value);
                   }}
-                  placeholder="The potential for unexpected project delays could pose a challenge."
+                  placeholder="Highlight factors that could obstruct your plans or progress."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
@@ -217,7 +287,7 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setNinetyDayFocus(e.target.value);
                   }}
-                  placeholder="Prioritizing client satisfaction through improved communication and service delivery."
+                  placeholder="Describe immediate goals and objectives for eg. Prioritizing project deadlines, and refining task delegation."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
@@ -232,8 +302,7 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setLongTermGoals(e.target.value);
                   }}
-                  placeholder="Attain a leadership role and contribute to company-wide strategic initiatives.
-                  "
+                  placeholder="Describe goal for the next 12-24 months for eg. Attain advanced certification in the field, contribute to impactful projects etc."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
@@ -248,14 +317,14 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setPriorities(e.target.value);
                   }}
-                  placeholder="Strengthening cross-functional collaboration for streamlined project execution"
+                  placeholder="Determine what tasks or objectives hold the highest importance eg. Balancing project deadlines, fostering team collaboration etc."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
               </div>
               <div className="my-3">
                 <p className="text-sm my-1">
-                  What learning and certifications you already have?
+                  What learning and certifications do you already have?
                 </p>
                 <textarea
                   required
@@ -263,14 +332,14 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setLearningNcertificates(e.target.value);
                   }}
-                  placeholder="Certified in Project Management (PMP) to enhance project planning and execution."
+                  placeholder="Detail relevant training and certifications you've attained eg. Hold certifications in A, B, C. Actively pursuing continuous learning opportunities in D and E."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
               </div>
               <div className="my-3">
                 <p className="text-sm my-1">
-                  What domain and subject areas do you spealize?
+                  What domain and subject areas do you specialize in?
                 </p>
                 <textarea
                   required
@@ -278,7 +347,7 @@ const IDPIntake = ({ user }: any) => {
                   onChange={(e) => {
                     setDomainSpecialised(e.target.value);
                   }}
-                  placeholder="Specializing in digital marketing with a focus on content strategy and SEO."
+                  placeholder="Specify your expertise in domain and subject matter areas eg. Specializing in X domain with expertise in Y and Z subject areas."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
