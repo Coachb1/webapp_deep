@@ -12,7 +12,7 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount, hideBots } from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -54,6 +54,7 @@ const IDPIntake = ({ user }: any) => {
   };
 
   useEffect(() => {
+    hideBots();
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())

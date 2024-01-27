@@ -19,8 +19,6 @@ const UserProfile = ({
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
 
-  // window.location.reload();
-
   useEffect(() => {
     if (!userEmail) {
       pathname.push("/api/auth/login");
