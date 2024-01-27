@@ -128,9 +128,6 @@ const MyLibrary = ({ user }: any) => {
             setIsPageLoading(false);
           })
           .catch((err) => console.error("Cannot retrive tests", err));
-        if (group_list.length === 0) {
-          pathname.push("/");
-        }
       })
       .catch((err) => console.error("Cannot retrive test codes", err));
   }, []);

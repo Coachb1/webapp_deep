@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   BookCopyIcon,
   ShieldCheck,
+  GanttChartSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -28,6 +29,7 @@ import MyPages from "@/components/MyPages";
 import { Button } from "@/components/ui/button";
 import { getUserAccount } from "@/lib/utils";
 import AdminProfile from "@/components/AdminProfile";
+import IDP from "@/components/IDP";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -112,6 +114,10 @@ const Profile = ({ user }: any) => {
               itemName={"My Pages"}
               icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
             />
+            <NavItem
+              itemName={"IDP"}
+              icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
+            />
             {userRole === "admin" && (
               <NavItem
                 itemName={"Admin"}
@@ -135,6 +141,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && <AdminProfile user={user} />}
           {selectedItem === "My Pages" && <MyPages user={user} />}
+          {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>
     </>

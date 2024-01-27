@@ -14,7 +14,7 @@ const Page = async () => {
 
   return (
     <div>
-      <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 !z-[800]">
+      <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 ">
         <Link href="/">
           <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
             Return to home
