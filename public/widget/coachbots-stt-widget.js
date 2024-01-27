@@ -109,6 +109,8 @@ let isBotAudioResponse = false;
 let isEmailFormstt = false;
 let emailNameformJsonstt = {};
 let formFieldsstt = []
+let CoachingForFitment;
+let previousFitmentJson = {};
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -642,7 +644,7 @@ function getAnonymousEmail() {
       }
 
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
-      if(botDetails.data.fitment_qna && botDetails.data.is_fitment_analysis){
+      if(botDetails.data.fitment_qna && botDetails.data.is_fitment_analysis && botDetails.data.coaching_for_fitment === "anyone"){
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
       }
       buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">Begin session..</button>`
@@ -658,7 +660,8 @@ function getAnonymousEmail() {
         botInitialQuestions = botDetails.data.initial_qna
         isFitmentAllowed = botDetails.data.is_fitment_analysis;
         isStrictFitment = botDetails.data.is_strict_fitment;
-        isBotAudioResponse = botDetails.data.is_audio_response
+        isBotAudioResponse = botDetails.data.is_audio_response;
+        CoachingForFitment = botDetails.data.coaching_for_fitment;
         appendMessage2(faqHtmlData)
       } else{
         feedbackBotInitialFlow('initial')
@@ -827,9 +830,9 @@ async function handleFaqButtonClick(question) {
         if (botType === 'avatar_bot'){
           await getFitmentScore(userId2)
           console.log(isBeginSessionProceed)
-          if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment){
-            appendMessage2("Please attempt fitment analysis.")
-            return;
+          
+          if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && CoachingForFitment === 'anyone'){
+            appendMessage2("Your fitment score is low or has not been attempted. Please proceed with this in mind.")
             }
         }
 
@@ -1490,6 +1493,7 @@ async function  getFitmentScore(user_id){
     )
     const jsonresp =  await resp.json()
     console.log(`fitment_score_data`,jsonresp);
+    previousFitmentJson = jsonresp;
     isBeginSessionProceed = jsonresp['proceed']
 
   } catch(err){console.log("getFitmentScore Error",err)}
