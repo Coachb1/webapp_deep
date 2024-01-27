@@ -119,6 +119,7 @@ const CoachIntake = ({ user }: any) => {
   };
 
   useEffect(() => {
+    hideBots();
     if (user) {
       fetch(`${baseURL}/accounts/`, {
         method: "POST",
