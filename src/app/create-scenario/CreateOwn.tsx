@@ -47,11 +47,13 @@ const CreateOwn = ({ user }: any) => {
     video_title,
   }: YoutubeResultsType) => {
     const [generatedLoading, setGenerateLoading] = useState(false);
-    const [generatedData, setGeneratedData] = useState<{
-      test_code: string;
-      title: string;
-      description: string;
-    }>();
+    const [generatedData, setGeneratedData] = useState<
+      {
+        test_code: string;
+        title: string;
+        description: string;
+      }[]
+    >([]);
 
     const generatedSenarioHandlerYoutube = () => {
       setGenerateLoading(true);
@@ -90,7 +92,7 @@ const CreateOwn = ({ user }: any) => {
             .then((response) => response.json())
             .then((data) => {
               console.log("Result DATA", data);
-              setGeneratedData(data[0]);
+              setGeneratedData(data);
               setGenerateLoading(false);
             })
             .catch((err) => {
@@ -131,28 +133,28 @@ const CreateOwn = ({ user }: any) => {
                     <Loader className="animate-spin h-4 w-4 mr-2" /> Generating
                   </>
                 ) : (
-                  <>Generate</>
+                  <>Generate Simulation</>
                 )}
               </Button>
             </div>
           </div>
         </div>
-        {generatedData?.test_code && (
-          <>
-            <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-              <b>Here's your scenario : </b>
-              <div>
-                <p className="text-base font-semibold">
-                  {generatedData?.title}
-                </p>
-                <p>{generatedData?.description}</p>
+        <div className="flex flex-row gap-2 max-sm:flex-col">
+          {generatedData.map((test, i) => (
+            <>
+              <div className="w-[50%] text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+                <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                <div>
+                  <p className="text-base font-semibold">{test?.title}</p>
+                  <p>{test?.description}</p>
+                </div>
+                <div className="flex justify-end mt-2">
+                  <CopyToClipboard textToCopy={test?.test_code!} />
+                </div>
               </div>
-              <div className="flex justify-end mt-2">
-                <CopyToClipboard textToCopy={generatedData?.test_code!} />
-              </div>
-            </div>
-          </>
-        )}
+            </>
+          ))}
+        </div>
       </div>
     );
   };
@@ -163,11 +165,13 @@ const CreateOwn = ({ user }: any) => {
     title,
   }: GoogleResultsType) => {
     const [generatedLoading, setGenerateLoading] = useState(false);
-    const [generatedData, setGeneratedData] = useState<{
-      test_code: string;
-      title: string;
-      description: string;
-    }>();
+    const [generatedData, setGeneratedData] = useState<
+      {
+        test_code: string;
+        title: string;
+        description: string;
+      }[]
+    >([]);
     const generatedSenarioHandlerGoogle = () => {
       setGenerateLoading(true);
       const url: any = new URL(
@@ -196,12 +200,13 @@ const CreateOwn = ({ user }: any) => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Result DATA", data);
-          setGeneratedData(data[0]);
+          setGeneratedData(data);
           setGenerateLoading(false);
         })
         .catch((err) => {
           console.error(err);
           toast.error("Error generating your scenario");
+          setGenerateLoading(false);
         });
     };
 
@@ -241,28 +246,28 @@ const CreateOwn = ({ user }: any) => {
                     <Loader className="animate-spin h-4 w-4 mr-2" /> Generating
                   </>
                 ) : (
-                  <>Generate</>
+                  <>Generate Simulation</>
                 )}
               </Button>
             </div>
           </div>
         </div>
-        {generatedData?.test_code && (
-          <>
-            <div className="text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-              <b>Here's your scenario : </b>
-              <div>
-                <p className="text-base font-semibold">
-                  {generatedData?.title}
-                </p>
-                <p>{generatedData?.description}</p>
+        <div className="flex flex-row gap-2 max-sm:flex-col">
+          {generatedData.map((test, i) => (
+            <>
+              <div className="w-[50%] text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+                <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                <div>
+                  <p className="text-base font-semibold">{test?.title}</p>
+                  <p>{test?.description}</p>
+                </div>
+                <div className="flex justify-end mt-2">
+                  <CopyToClipboard textToCopy={test?.test_code!} />
+                </div>
               </div>
-              <div className="flex justify-end mt-2">
-                <CopyToClipboard textToCopy={generatedData?.test_code!} />
-              </div>
-            </div>
-          </>
-        )}
+            </>
+          ))}
+        </div>
       </div>
     );
   };
@@ -365,14 +370,14 @@ const CreateOwn = ({ user }: any) => {
                       className="text-xs p-1 m-1"
                       value="google"
                     >
-                      Google
+                      HBR
                     </TabsTrigger>
                     <TabsTrigger
                       disabled={glGenerateLoading}
                       className="text-xs p-1 m-1"
                       value="youtube"
                     >
-                      Youtube | TEDx
+                      TED | TEDx
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -415,10 +420,8 @@ const CreateOwn = ({ user }: any) => {
               </div>
             </form>
           </div>
-          <b className="my-2 w-[80%] max-sm:w-full text-left text-gray-600">
-            Results :{" "}
-          </b>
-          <div className="w-[80%] max-sm:w-full flex flex-col gap-2">
+
+          <div className="w-[80%] max-sm:w-full flex flex-col gap-2 mt-4">
             {searchMode === "google" && (
               <>
                 {googleSearchResults.length > 0 ? (
