@@ -64,6 +64,23 @@ export const convertDate = (date: string) => {
   return istDateString;
 };
 
+export const convertDateWithTime = (date: string) => {
+  const utcTimestamp = new Date(date);
+  const istOptions = {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false, // Use 24-hour format
+  } as Intl.DateTimeFormatOptions;
+
+  const istDateString = utcTimestamp.toLocaleString("en-US", istOptions);
+  return istDateString;
+};
+
 interface ActionPoints {
   feedback_given: number;
   feedback_received: number;
