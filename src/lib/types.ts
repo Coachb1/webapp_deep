@@ -51,3 +51,15 @@ export interface UserIDPsType {
   recommended_scenarios: RecommendedScenarios;
   report: string;
 }
+
+export interface TestsType {
+  title: string;
+  description: string;
+  test_code: string;
+  test_type?: string;
+}
+
+export interface competencySkillsTestType {
+  skill: string;
+  tests: TestsType[];
+}

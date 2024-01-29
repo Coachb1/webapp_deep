@@ -119,12 +119,18 @@ const VersionOne = ({ user }: any) => {
 
         <div className="flex flex-row mt-4 z-50 gap-2">
           <Link href="/coach">
-            <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
+            <Button
+              variant={"outline"}
+              className={`h-8 text-sm max-sm:text-xs`}
+            >
               Avatar Page (Sample)
             </Button>
           </Link>
           <Link href="/feedback">
-            <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
+            <Button
+              variant={"outline"}
+              className={` h-8 text-sm max-sm:text-xs`}
+            >
               Feedback Page (Sample)
             </Button>
           </Link>
