@@ -288,21 +288,25 @@ const Feedback = ({ user, renderType }: any) => {
                       get feedback.
                     </p>
                   )}
-                  {renderType === "dynamic" ? (
-                    <p className="mt-4 mb-2">{coachDescription}</p>
-                  ) : (
-                    <p className="max-sm:text-xs text-[#2f2323]">
-                      <b>Sample : </b>Hi, I am Amit Trivedi, a results-driven
-                      senior manager with over 15 years of experience leading
-                      cross-functional teams across India. I hold an MBA from
-                      IIM Ahmedabad and PMP certification. Currently, I lead the
-                      software development division, managing a team of 35
-                      engineers across cloud architecture, QA, and agile
-                      delivery functions. I value candid feedback and strive for
-                      continuous improvement at both a personal and
-                      organizational level.
-                    </p>
-                  )}
+                  <div className="p-2 mt-4 border border-gray-200 bg-amber-50 rounded-lg">
+                    {renderType === "dynamic" ? (
+                      <p className="max-sm:text-xs text-[#2f2323]">
+                        {coachDescription}
+                      </p>
+                    ) : (
+                      <p className="max-sm:text-xs text-[#2f2323]">
+                        Hi, I am Amit Trivedi, a results-driven senior manager
+                        with over 15 years of experience leading
+                        cross-functional teams across India. I hold an MBA from
+                        IIM Ahmedabad and PMP certification. Currently, I lead
+                        the software development division, managing a team of 35
+                        engineers across cloud architecture, QA, and agile
+                        delivery functions. I value candid feedback and strive
+                        for continuous improvement at both a personal and
+                        organizational level.
+                      </p>
+                    )}
+                  </div>
                   <div className="my-4 max-sm:text-xs text-[#2f2323]">
                     <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                       {" "}
@@ -332,6 +336,14 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </Link> */}
+                  <Link href={"#kudos"}>
+                    <Button
+                      variant={"secondary"}
+                      className="border border-gray-200 h-8 hover:cursor-pointer"
+                    >
+                      Kudos Wall
+                    </Button>
+                  </Link>
                   <Link href={"#wtu"}>
                     <Button
                       variant={"secondary"}
@@ -371,6 +383,58 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </Link> */}
+                </div>
+                {/* kudosWall */}
+                <div className="w-full" id="kudos">
+                  <div className={`w-full flex justify-center`}>
+                    <Badge
+                      variant={"secondary"}
+                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                    >
+                      Kudos Wall
+                    </Badge>
+                  </div>
+                  <div className="w-full">
+                    <div className="relative isolate mx-auto">
+                      <div>
+                        <div className="mx-auto lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                          <div className="rounded-xl p-2  bg-[url(https://cdn.statically.io/gh/falahh6/coachbots/main/kudoswallbg.svg)] ring-1 ring-inset ring-gray-900/10 lg:-m-4 max-h-[450px] lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
+                            {renderType === "dynamic" ? (
+                              <>
+                                {positiveFeedbacks.length > 0 ? (
+                                  <>
+                                    {positiveFeedbacks.map((feedback) => (
+                                      <KudosWall
+                                        name={feedback.name}
+                                        feedback={feedback.feedback_message}
+                                        date={convertDate(feedback.date)}
+                                      />
+                                    ))}
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
+                                      No Feedbacks yet
+                                    </p>
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {staticPositiveFeedbacks.map((feedback) => (
+                                  <KudosWall
+                                    name={feedback.name}
+                                    feedback={feedback.feedback_message}
+                                    date={feedback.date}
+                                  />
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div id="wtu">
                   <WhereToUse />
@@ -461,58 +525,6 @@ const Feedback = ({ user, renderType }: any) => {
                                 </AccordionItem>
                               ))}
                             </Accordion>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* kudosWall */}
-                <div className="w-full" id="benefits">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      Kudos Wall
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
-                            {renderType === "dynamic" ? (
-                              <>
-                                {positiveFeedbacks.length > 0 ? (
-                                  <>
-                                    {positiveFeedbacks.map((feedback) => (
-                                      <KudosWall
-                                        name={feedback.name}
-                                        feedback={feedback.feedback_message}
-                                        date={convertDate(feedback.date)}
-                                      />
-                                    ))}
-                                  </>
-                                ) : (
-                                  <>
-                                    <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
-                                      No Feedbacks yet
-                                    </p>
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {staticPositiveFeedbacks.map((feedback) => (
-                                  <KudosWall
-                                    name={feedback.name}
-                                    feedback={feedback.feedback_message}
-                                    date={feedback.date}
-                                  />
-                                ))}
-                              </>
-                            )}
                           </div>
                         </div>
                       </div>

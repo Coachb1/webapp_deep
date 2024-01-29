@@ -13,14 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, History, Loader } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  baseURL,
-  basicAuth,
-  dummyCompetencyBasedPowerSkills,
-  getUserAccount,
-} from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import HeroAccordion from "@/components/HeroAccordion";
 import { EQTests } from "@/lib/test";
@@ -158,55 +152,58 @@ const MyLibrary = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getTestsByCompetencies();
-    getRequestedTests();
-    fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        const group_list: string[] = [];
-        for (const item of data.data.my_lib) {
-          if (item.emails.includes(user?.email)) {
-            group_list.push(item.group);
-          }
-        }
-        setGroupList(group_list);
-        await fetch(
-          `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-          .then((response) => response.json())
-          .then(async (data) => {
-            setCurrentActiveGroup(group_list[0]);
-            setIsLoading(false);
-            console.log(data);
-            const convertedTests = convertToJsonArray(data.data);
-            console.log(convertedTests);
-            const tempConversion = convertedTests.map((test) => {
-              return {
-                label: test.category,
-                value: test.category,
-              };
-            });
-            setDomainOptions(tempConversion);
-            setTests(convertedTests);
-            setFilteredTests(convertedTests);
-            setIsPageLoading(false);
-          })
-          .catch((err) => console.error("Cannot retrive tests", err));
+    if (user) {
+      getTestsByCompetencies();
+      getRequestedTests();
+      fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
       })
-      .catch((err) => console.error("Cannot retrive test codes", err));
+        .then((response) => response.json())
+        .then(async (data) => {
+          const group_list: string[] = [];
+          for (const item of data.data.my_lib) {
+            if (item.emails.includes(user?.email)) {
+              group_list.push(item.group);
+            }
+          }
+          setGroupList(group_list);
+          await fetch(
+            `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+                "Content-Type": "application/json",
+              },
+            }
+          )
+            .then((response) => response.json())
+            .then(async (data) => {
+              setCurrentActiveGroup(group_list[0]);
+              setIsLoading(false);
+              console.log(data);
+              const convertedTests = convertToJsonArray(data.data);
+              console.log(convertedTests);
+              const tempConversion = convertedTests.map((test) => {
+                return {
+                  label: test.category,
+                  value: test.category,
+                };
+              });
+              setDomainOptions(tempConversion);
+              setTests(convertedTests);
+              setFilteredTests(convertedTests);
+              setIsPageLoading(false);
+            })
+            .catch((err) => console.error("Cannot retrive tests", err));
+        })
+
+        .catch((err) => console.error("Cannot retrive test codes", err));
+    }
   }, []);
 
   const onDomainSelectHandler = (val: string) => {
@@ -648,7 +645,7 @@ const MyLibrary = ({ user }: any) => {
                                   ))}
                                 </Accordion>
                               ) : (
-                                <p>
+                                <p className="text-sm max-sm:text-xs text-gray-600">
                                   You don't have any requested scnarios, Start
                                   by Creating.
                                 </p>

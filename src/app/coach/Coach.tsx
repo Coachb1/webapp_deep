@@ -17,6 +17,7 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
+import Image from "next/image";
 
 const howItWorks = [
   {
@@ -66,6 +67,7 @@ const Coach = ({ user, renderType }: any) => {
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState("");
 
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
@@ -161,6 +163,7 @@ const Coach = ({ user, renderType }: any) => {
           }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
+          setCoachProfileLink(data.owner_profile_image);
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -242,22 +245,48 @@ const Coach = ({ user, renderType }: any) => {
                     </p>
                   )} */}
                   {renderType === "dynamic" ? (
-                    coachDescription
+                    // coachDescription
+                    <>
+                      <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                        <div className="w-[20%] max-sm:w-fit">
+                          <img
+                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                            src={coachProfileLink}
+                          />
+                        </div>{" "}
+                        <p className="w-[80%] max-sm:w-full text-left">
+                          {" "}
+                          {coachDescription}
+                        </p>
+                      </div>
+                    </>
                   ) : (
-                    <p className="max-sm:text-xs text-[#2f2323]">
-                      I'm Aarav Sharma, a seasoned corporate coach with 15+
-                      years' experience in leadership development. Holding a
-                      master's in organizational psychology and certifications
-                      in executive coaching, I've collaborated with top-tier
-                      companies. My coaching style, a unique blend of empathy
-                      and strategic thinking, fosters a growth mindset and
-                      aligns personal values with professional goals. Known for
-                      approachability, I create a safe space for executives,
-                      incorporating mindfulness for self-awareness and
-                      resilience. Tailoring strategies to individual needs, I
-                      aim to be a trusted guide for long-term, sustainable
-                      leadership development in the dynamic corporate landscape.
-                    </p>
+                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                      <div className="w-[20%] max-sm:w-fit">
+                        <img
+                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                          src={
+                            "https://res.cloudinary.com/dtbl4jg02/image/upload/v1706180818/nvvgijnibqkznjh3d1pi.jpg"
+                          }
+                        />
+                      </div>{" "}
+                      <p className="w-[80%] max-sm:w-full text-left">
+                        {" "}
+                        I'm Aarav Sharma, a seasoned corporate coach with 15+
+                        years' experience in leadership development. Holding a
+                        master's in organizational psychology and certifications
+                        in executive coaching, I've collaborated with top-tier
+                        companies. My coaching style, a unique blend of empathy
+                        and strategic thinking, fosters a growth mindset and
+                        aligns personal values with professional goals. Known
+                        for approachability, I create a safe space for
+                        executives, incorporating mindfulness for self-awareness
+                        and resilience. Tailoring strategies to individual
+                        needs, I aim to be a trusted guide for long-term,
+                        sustainable leadership development in the dynamic
+                        corporate landscape.
+                      </p>
+                    </div>
                   )}
                 </div>
                 <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
