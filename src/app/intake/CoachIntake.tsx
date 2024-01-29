@@ -268,13 +268,15 @@ const CoachIntake = ({ user }: any) => {
                     ? "https://playground.coachbots.com/coach/"
                     : "https://platform.coachbots.com/coach/"
                 }`,
-                fitment_answer: {
-                  coaching_for_fitment: coachmentSelect,
-                  coaching_level: participantLevel,
-                  coach_same_department: `${
-                    coachMentInSameDep === "yes" ? true : false
-                  }`,
-                  supported_outcome: outcomeSupported,
+                fitment_answer: `${participantLevel},${coachMentInSameDep === "yes" ? true : false},${outcomeSupported}`,
+                fitment_data: {
+                  options:{
+                  "1": ["Anyone above me","Same or up to two level below","Any level"],
+                  "2": ["Yes","No"],
+                  "3": ["Career advancement","Skill development", "Introspection & reflection", "Networking & leadership"]
+                  },
+                  mentee_que: {"1": "What level of coach & mentor do you want?", "2": "I want a coach & mentor someone from the same department.", "3": "What kind of outcome do you want from these sessions the most?"},
+                  mentor_que: {"1": "What level of participant do you want to coach & mentor?", "2": "I want to coach & mentor someone in the same department.", "3": "What kind of outcome can you support in these sessions the most?"}
                 },
                 additional_data: {
                   profile_type: "coach",
@@ -286,6 +288,10 @@ const CoachIntake = ({ user }: any) => {
                   problem_solving_approach: problemSolvingApproach,
                   admired_leaders: leaderNames,
                 },
+                media_data: JSON.stringify({
+                  youtube_links: linksReflectingWVpersonal,
+                  article_links: linksReflectyouWished,
+                })
               });
 
               fetch(`${baseURL}/accounts/create-bot-by-details/`, {
@@ -352,12 +358,23 @@ const CoachIntake = ({ user }: any) => {
             "4": "How would like to see me implement the feedback you have provided so far?",
           },
         },
+        feedback_questions:{
+          "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+          "2": "Regarding workplace team management skills, how would you rate my skills?",
+          "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+          "4": "How would like to see me implement the feedback you have provided so far?",
+        },
         participant_id: userId,
         additional_data: {
           short_profile_bio: profileBio,
           current_projects: currentProjects,
           suggested_projects: suggestedProjects,
         },
+        bot_base_url: `${
+          subdomain === "playground"
+            ? "https://playground.coachbots.com/coach/"
+            : "https://platform.coachbots.com/coach/"
+        }`
       });
 
       var myHeaders = new Headers();
