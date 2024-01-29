@@ -1,10 +1,10 @@
 "use client";
 
-import ActionPoints from "@/components/ActionPoints";
-import Conversations from "@/components/Conversations";
+import ActionPoints from "@/app/profile/ActionPoints";
+import Conversations from "@/app/profile/Conversations";
 import NetworkNav from "@/components/NetworkNav";
-import SessionNotes from "@/components/SessionNotes";
-import UserProfile from "@/components/UserProfile";
+import SessionNotes from "@/app/profile/SessionNotes";
+import UserProfile from "@/app/profile/UserProfile";
 import {
   UserCircle,
   StickyNote,
@@ -25,12 +25,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import Competencies from "@/components/Competencies";
-import MyPages from "@/components/MyPages";
+import Competencies from "@/app/profile/Competencies";
+import MyPages from "@/app/profile/MyPages";
 import { Button } from "@/components/ui/button";
 import { getUserAccount } from "@/lib/utils";
-import AdminProfile from "@/components/AdminProfile";
-import IDP from "@/components/IDP";
+import AdminProfile from "@/app/profile/AdminProfile";
+import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
 
 const Profile = ({ user }: any) => {

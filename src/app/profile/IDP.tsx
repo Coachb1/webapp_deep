@@ -2,7 +2,7 @@
 
 import { Copy, Loader, LucideExternalLink, View } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import {
   baseURL,
@@ -11,7 +11,7 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { UserIDPsType } from "@/lib/types";
-import { TooltipWrapper } from "./TooltipWrapper";
+import { TooltipWrapper } from "../../components/TooltipWrapper";
 import { toast } from "sonner";
 
 function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
@@ -57,7 +57,7 @@ const IDP = ({ user }: any) => {
   }, []);
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] overflow-scroll">
+    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] max-sm:max-h-[75vh] overflow-scroll">
       <div className="pl-4 max-sm:pl-2 pt-2">Individual Development Plan</div>
       {loading && (
         <>

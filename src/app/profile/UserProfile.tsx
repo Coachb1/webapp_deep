@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
 import { baseURL, basicAuth } from "@/lib/utils";
 
@@ -117,12 +117,16 @@ const UserProfile = ({
           <>
             <Button
               disabled={testAttempedCount === 0}
-              className="ml-8 max-sm:ml-2 w-fit"
+              className="ml-8 max-sm:ml-1 w-fit max-sm:text-xs"
             >
               {candidateReportUrl && candidateReportUrl.length !== 0 ? (
                 <>
-                  <Link href={candidateReportUrl} target="_blank">
-                    Participant Report{" "}
+                  <Link
+                    className="flex flex-row items-center justify-center ml-2 max-sm:ml-1"
+                    href={candidateReportUrl}
+                    target="_blank"
+                  >
+                    <p className="w-fit">Participant Report</p>{" "}
                     <Link2 className={`h-4 w-4 ml-2 inline`} />
                   </Link>
                 </>
