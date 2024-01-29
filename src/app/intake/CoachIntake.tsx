@@ -288,10 +288,10 @@ const CoachIntake = ({ user }: any) => {
                   problem_solving_approach: problemSolvingApproach,
                   admired_leaders: leaderNames,
                 },
-                media_data: JSON.stringify({
+                media_data: {
                   youtube_links: linksReflectingWVpersonal,
                   article_links: linksReflectyouWished,
-                })
+                }
               });
 
               fetch(`${baseURL}/accounts/create-bot-by-details/`, {
