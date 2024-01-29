@@ -1,15 +1,12 @@
 "use client";
 
 import { Eraser, Loader } from "lucide-react";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
-import { useRef, useState } from "react";
-import { baseURL, prodUrl, basicAuth } from "@/lib/utils";
-import MaxWidthWrapper from "./MaxWidthWrapper";
-import { Separator } from "./ui/separator";
+import { useEffect, useRef, useState } from "react";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 
-const CreateYourOwn = () => {
+const CreateYourOwn = ({ user }: any) => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<
     {
@@ -21,7 +18,17 @@ const CreateYourOwn = () => {
   const [userEnteredContext, setUserEnteredContext] = useState("");
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
+  const [userId, setUserId] = useState("");
 
+  useEffect(() => {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          setUserId(data.uid);
+        });
+    }
+  }, []);
   const userContextRef = useRef<any>();
   const handleGenerateSenario = () => {
     setUserEnteredContext(userContextRef.current.value);
@@ -44,6 +51,7 @@ const CreateYourOwn = () => {
       );
       params.set("url", "");
       params.set("access_token", basicAuth);
+      params.set("creator_user_id", userId);
       url.search = params;
 
       fetch(url, {

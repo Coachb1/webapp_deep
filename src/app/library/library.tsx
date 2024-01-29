@@ -666,7 +666,7 @@ const MyLibrary = ({ user }: any) => {
                     Create new Scenario{" "}
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                    <CreateYourOwn />
+                    <CreateYourOwn user={user} />
                   </div>
                 </div>
               </MaxWidthWrapper>

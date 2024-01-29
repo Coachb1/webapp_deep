@@ -232,7 +232,7 @@ const SessionNotes = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
+    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] overflow-scroll">
       <div className="pl-4 max-sm:pl-2 pt-2">
         Session Notes (For Bot Interactions)
       </div>

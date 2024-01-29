@@ -1,22 +1,21 @@
 "use client";
 
-import BotsNavigation from "@/components/BotsNavigation";
 import CopyToClipboard from "@/components/CopyToClipboard";
-import NavProfile from "@/components/NavProfile";
 import NetworkNav from "@/components/NetworkNav";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { Tabs, TabsTrigger } from "@/components/ui/tabs";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { TabsList } from "@radix-ui/react-tabs";
-import { Link2, Loader, Network, Search } from "lucide-react";
+import { Link2, Loader, Search } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const CreateOwn = ({ user }: any) => {
   const [searchMode, setSearchMode] = useState("google");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const [searchInputText, setSearchInputText] = useState<string | undefined>(
     ""
@@ -39,6 +38,16 @@ const CreateOwn = ({ user }: any) => {
   const [youtubeSearchResults, setYoutubeSearchResults] = useState<
     YoutubeResultsType[]
   >([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          setUserId(data.uid);
+        });
+    }
+  }, []);
 
   const YoutubeResultComponent = ({
     video_id,
@@ -81,6 +90,7 @@ const CreateOwn = ({ user }: any) => {
           );
           params.set("url", "");
           params.set("access_token", basicAuth);
+          params.set("creator_user_id", userId);
           url.search = params;
 
           fetch(url, {
@@ -200,6 +210,7 @@ const CreateOwn = ({ user }: any) => {
       );
       params.set("url", "");
       params.set("access_token", basicAuth);
+      params.set("creator_user_id", userId);
       url.search = params;
 
       fetch(url, {

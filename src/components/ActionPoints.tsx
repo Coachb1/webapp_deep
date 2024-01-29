@@ -5,6 +5,7 @@ import {
   BookA,
   Check,
   Clapperboard,
+  Info,
   MailCheck,
   Newspaper,
   ShoppingBag,
@@ -97,6 +98,11 @@ const ActionPoints = ({ user }: any) => {
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">My rewards</div>
       <div className="m-4 max-sm:m-2">
+        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
+          {" "}
+          <Info className="h-3 w-3 mr-2 inline" />
+          Please reach out to your admin for redemption of your award points.
+        </p>
         <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:pr-1 rounded-md">
           <div className="flex flex-col justify-evenly items-center w-[16%]">
             <p>Points</p>

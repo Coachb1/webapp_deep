@@ -100,7 +100,7 @@ const UserProfile = ({
         <div className="mt-4 mb-4">
           <div className="flex flex-row items-center">
             <p className="text-md ">Name </p>
-            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-7 border">
+            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
               {userName}
             </p>
           </div>
@@ -113,10 +113,7 @@ const UserProfile = ({
         </div>
         <hr />
         <div className="my-4 flex flex-row items-center">
-          <p className="text-sm">
-            Session Reports <br className="max-sm:block hidden" /> (For
-            Simulations)
-          </p>
+          <p className="text-sm">Session Reports</p>
           <>
             <Button
               disabled={testAttempedCount === 0}
