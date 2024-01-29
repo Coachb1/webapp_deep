@@ -54,6 +54,7 @@ const CreateOwn = ({ user }: any) => {
         description: string;
       }[]
     >([]);
+    const [generationError, setGenerationError] = useState(false);
 
     const generatedSenarioHandlerYoutube = () => {
       setGenerateLoading(true);
@@ -94,6 +95,9 @@ const CreateOwn = ({ user }: any) => {
               console.log("Result DATA", data);
               setGeneratedData(data);
               setGenerateLoading(false);
+              if (data[0].message || data[1].message) {
+                setGenerationError(true);
+              }
             })
             .catch((err) => {
               console.error(err);
@@ -140,20 +144,27 @@ const CreateOwn = ({ user }: any) => {
           </div>
         </div>
         <div className="flex flex-row gap-2 max-sm:flex-col">
-          {generatedData.map((test, i) => (
-            <>
-              <div className="w-[50%] text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-                <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
-                <div>
-                  <p className="text-base font-semibold">{test?.title}</p>
-                  <p>{test?.description}</p>
+          {!generationError &&
+            generatedData.map((test, i) => (
+              <>
+                <div className="w-[50%]  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+                  <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                  <div>
+                    <p className="text-base font-semibold">{test?.title}</p>
+                    <p>{test?.description}</p>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    <CopyToClipboard textToCopy={test?.test_code!} />
+                  </div>
                 </div>
-                <div className="flex justify-end mt-2">
-                  <CopyToClipboard textToCopy={test?.test_code!} />
-                </div>
-              </div>
-            </>
-          ))}
+              </>
+            ))}
+          {generationError && (
+            <p className="text-red-400 my-4 text-sm max-sm:text-xs w-full text-center">
+              Encountered and error while Generating your scenarios. It will be
+              saved in "My Library (Requested Scenario Tab)"
+            </p>
+          )}
         </div>
       </div>
     );
@@ -172,6 +183,7 @@ const CreateOwn = ({ user }: any) => {
         description: string;
       }[]
     >([]);
+    const [generationError, setGenerationError] = useState(false);
     const generatedSenarioHandlerGoogle = () => {
       setGenerateLoading(true);
       const url: any = new URL(
@@ -202,6 +214,10 @@ const CreateOwn = ({ user }: any) => {
           console.log("Result DATA", data);
           setGeneratedData(data);
           setGenerateLoading(false);
+
+          if (data[0].message || data[1].message) {
+            setGenerationError(true);
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -253,20 +269,27 @@ const CreateOwn = ({ user }: any) => {
           </div>
         </div>
         <div className="flex flex-row gap-2 max-sm:flex-col">
-          {generatedData.map((test, i) => (
-            <>
-              <div className="w-[50%] text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-                <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
-                <div>
-                  <p className="text-base font-semibold">{test?.title}</p>
-                  <p>{test?.description}</p>
+          {!generationError &&
+            generatedData.map((test, i) => (
+              <>
+                <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+                  <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                  <div>
+                    <p className="text-base font-semibold">{test?.title}</p>
+                    <p>{test?.description}</p>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    <CopyToClipboard textToCopy={test?.test_code!} />
+                  </div>
                 </div>
-                <div className="flex justify-end mt-2">
-                  <CopyToClipboard textToCopy={test?.test_code!} />
-                </div>
-              </div>
-            </>
-          ))}
+              </>
+            ))}
+          {generationError && (
+            <p className="text-red-400 my-4 text-sm max-sm:text-xs w-full text-center">
+              Encountered and error while Generating your scenarios. It will be
+              saved in "My Library (Requested Scenario Tab)"
+            </p>
+          )}
         </div>
       </div>
     );
@@ -338,7 +361,7 @@ const CreateOwn = ({ user }: any) => {
         <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
           <NetworkNav user={user} />
         </div>
-        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-8">
+        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-4">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
             <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
               COACH
@@ -385,7 +408,7 @@ const CreateOwn = ({ user }: any) => {
               <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-sm:w-full mt-1">
                 <input
                   placeholder="Please enter the context to create the scenario"
-                  className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1"
+                  className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1 "
                   type="text"
                   ref={inputRef}
                   value={searchInputText}
@@ -401,17 +424,21 @@ const CreateOwn = ({ user }: any) => {
                   {createLoading ? (
                     <>
                       {" "}
-                      <span className="font-semibold">Searching</span>
+                      <span className="font-semibold max-sm:hidden">
+                        Searching
+                      </span>
                       <Loader
-                        className="h-3 w-3 ml-1.5 inline animate-spin"
+                        className="h-3 w-3 ml-1.5 max-sm:ml-0 inline animate-spin"
                         strokeWidth={4}
                       />
                     </>
                   ) : (
                     <>
-                      <span className="font-semibold">Search</span>
+                      <span className="font-semibold max-sm:hidden">
+                        Search
+                      </span>
                       <Search
-                        className="h-3 w-3 ml-1.5 inline"
+                        className="h-3 w-3 ml-1.5 max-sm:ml-0 inline"
                         strokeWidth={4}
                       />
                     </>

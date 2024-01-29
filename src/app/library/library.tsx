@@ -11,17 +11,23 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Loader } from "lucide-react";
+import { ChevronLeft, History, Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  dummyCompetencyBasedPowerSkills,
+  getUserAccount,
+} from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import HeroAccordion from "@/components/HeroAccordion";
 import { EQTests } from "@/lib/test";
 import { Separator } from "@/components/ui/separator";
-import CharactericticsSelect from "../intake/CharacteristicsSelect";
 import SearchNSelect from "./SearchNSelect";
+import CreateYourOwn from "@/components/CreateYourOwn";
+import { competencySkillsTestType, TestsType } from "@/lib/types";
 
 interface Test {
   title: string;
@@ -74,13 +80,86 @@ const MyLibrary = ({ user }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [groupList, setGroupList] = useState<string[]>([]);
   const [currentActiveGroup, setCurrentActiveGroup] = useState<string>("");
-  const pathname = useRouter();
+
+  const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
+    useState<competencySkillsTestType[]>([]);
+
+  const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
 
   const [domainOptions, setDomainOptions] = useState<
     { label: string; value: string }[]
   >([]);
 
+  const getTestsByCompetencies = () => {
+    getUserAccount(user)
+      .then((res) => res.json())
+      .then((data) => {
+        fetch(
+          `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data[0]);
+            const user_competencies = Object.values(data[0]).join(", ");
+            console.log(user_competencies);
+            fetch(
+              `${baseURL}/tests/get-tests-by-competency/?competencies=${user_competencies.replace(
+                /"/g,
+                ""
+              )}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: basicAuth,
+                },
+              }
+            )
+              .then((response) => response.json())
+              .then((data: { [key: string]: TestsType[] }) => {
+                console.log("GET TESTS BY COMPETENCIES : ", data);
+                const convertedCompetencyTests = Object.entries(data).map(
+                  ([skill, tests]) => ({ skill, tests })
+                );
+
+                setCompetencyBasedPowerSkillsTests(convertedCompetencyTests);
+              })
+              .then((err) => {
+                console.error(err);
+              });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      });
+  };
+
+  const getRequestedTests = () => {
+    getUserAccount(user)
+      .then((res) => res.json())
+      .then((data) => {
+        fetch(`${baseURL}/tests/get-requested-tests/?user_id=${data.uid}`, {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            setRequestedScenarios(data);
+          });
+      });
+  };
+
   useEffect(() => {
+    getTestsByCompetencies();
+    getRequestedTests();
     fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
       method: "GET",
       headers: {
@@ -90,9 +169,6 @@ const MyLibrary = ({ user }: any) => {
     })
       .then((response) => response.json())
       .then(async (data) => {
-        // console.log(data.data.my_lib[0].codes);
-        // const testcodes = data.data.my_lib[0].codes.join(",");
-
         const group_list: string[] = [];
         for (const item of data.data.my_lib) {
           if (item.emails.includes(user?.email)) {
@@ -114,6 +190,7 @@ const MyLibrary = ({ user }: any) => {
           .then(async (data) => {
             setCurrentActiveGroup(group_list[0]);
             setIsLoading(false);
+            console.log(data);
             const convertedTests = convertToJsonArray(data.data);
             console.log(convertedTests);
             const tempConversion = convertedTests.map((test) => {
@@ -150,18 +227,6 @@ const MyLibrary = ({ user }: any) => {
     setFilteredTests(filtered);
     console.log(filtered);
   };
-
-  // if (isPageLoading) {
-  //   return (
-  //     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
-  //       <p className="p-2 bg-gray-300 w-fit text-sm rounded-lg">
-  //         {" "}
-  //         <Loader className="animate-spin inline mr-2" />
-  //         Loading...
-  //       </p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div>
@@ -227,6 +292,30 @@ const MyLibrary = ({ user }: any) => {
                     >
                       Competency Based Power Skills
                     </Button>
+                    <Button
+                      onClick={() => {
+                        document
+                          .getElementById("requested-tests")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                      }}
+                      variant={"outline"}
+                      className={`h-8 max-sm:text-sm`}
+                    >
+                      Requested Scenarios <History className="h-4 w-4 ml-2" />
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        document.getElementById("create-new")?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }}
+                      variant={"outline"}
+                      className={`h-8 max-sm:text-sm`}
+                    >
+                      Create New Simulation
+                    </Button>
                   </div>
                 </div>
 
@@ -240,26 +329,7 @@ const MyLibrary = ({ user }: any) => {
                     />
                   </div>
                 </div>
-                {/* {isLoading ? (
-                  <div>
-                    <Loader className="animate-spin h-5 w-5 inline mr-2" />
-                  </div>
-                ) : (
-                  <div className="text-lg z-50 w-[80%] max-sm:w-full">
-                    <div className="flex justify-center flex-row gap-2 flex-wrap">
-                      {tests.map((test) => (
-                        <Link href={`#${test.category}`}>
-                          <Button
-                            variant={"default"}
-                            className="border border-gray-200 h-8 hover:cursor-pointer truncate bg-[#4e72df] max-sm:text-xs"
-                          >
-                            {test.category}
-                          </Button>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )} */}
+
                 {groupList.length > 0 && (
                   <>
                     <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
@@ -438,23 +508,170 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   </>
                 )}
-                {/* <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
+                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
                 <div
                   id="competency-tests"
-                  className="w-full pt-12 flex flex-col items-center justify-center"
+                  className="w-full flex flex-col items-center justify-center"
                 >
                   <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
-                    Competency Based Power Skills
+                    Competency Based Power Skills{" "}
                   </h1>
+                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                    {competencyBasedPowerSkillsTests.length > 0 &&
+                      competencyBasedPowerSkillsTests.map((skills) => (
+                        <>
+                          {skills.tests.length > 0 && (
+                            <>
+                              <div className={`w-full flex justify-center`}>
+                                <Badge
+                                  variant={"default"}
+                                  className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                >
+                                  <>✨ {skills.skill}</>
+                                </Badge>
+                              </div>
 
-                  <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
-                    <SearchNSelect
-                      onSearchHandler={onDomainSearchHandler}
-                      onDomainSelectHandler={onDomainSelectHandler}
-                      optionDomains={domainOptions}
-                    />
+                              <div className="w-full">
+                                <div className="relative isolate mx-auto">
+                                  <div>
+                                    <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                        <Accordion
+                                          type="single"
+                                          collapsible
+                                          className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                        >
+                                          {skills.tests.length > 0 &&
+                                            skills.tests.map((test, i) => (
+                                              <>
+                                                <AccordionItem
+                                                  key={i}
+                                                  value={`item-${i + 1}`}
+                                                  className={
+                                                    i ===
+                                                    skills.tests.length - 1
+                                                      ? "border-none"
+                                                      : "border-b"
+                                                  }
+                                                >
+                                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                                    <div>{test.title}</div>
+                                                  </AccordionTrigger>
+                                                  <AccordionContent className="max-sm:text-xs">
+                                                    <p className="text-left">
+                                                      {" "}
+                                                      {test.description}
+                                                    </p>
+                                                    <div className="flex justify-end mt-2">
+                                                      <CopyToClipboard
+                                                        textToCopy={
+                                                          test.test_code
+                                                        }
+                                                      />
+                                                    </div>
+                                                  </AccordionContent>
+                                                </AccordionItem>
+                                              </>
+                                            ))}
+                                        </Accordion>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </>
+                      ))}
+                    {competencyBasedPowerSkillsTests.length === 0 && (
+                      <div className="w-full">
+                        <div className="relative isolate mx-auto">
+                          <div>
+                            <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
+                              <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                There are no data yet.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div> */}
+                </div>
+                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                <div
+                  id="requested-tests"
+                  className="w-full flex flex-col items-center justify-center"
+                >
+                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                    Requested Scenarios
+                  </h1>
+                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                    <div className="w-full">
+                      <div className="relative isolate mx-auto">
+                        <div>
+                          <div className="mx-auto w-full mt-10 max-sm:w-[100%] z-50">
+                            <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                              {requestedScenarios.length > 0 ? (
+                                <Accordion
+                                  type="single"
+                                  collapsible
+                                  className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                >
+                                  {requestedScenarios.map((test, i) => (
+                                    <>
+                                      <AccordionItem
+                                        key={i}
+                                        value={`item-${i + 1}`}
+                                        className={
+                                          i === tests.length - 1
+                                            ? "border-none"
+                                            : "border-b"
+                                        }
+                                      >
+                                        <AccordionTrigger className="text-left max-sm:text-xs">
+                                          <div>{test.title}</div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="max-sm:text-xs">
+                                          <p className="text-left">
+                                            {" "}
+                                            {test.description}
+                                          </p>
+                                          <div className="flex justify-end mt-2">
+                                            <CopyToClipboard
+                                              textToCopy={test.test_code}
+                                            />
+                                          </div>
+                                        </AccordionContent>
+                                      </AccordionItem>
+                                    </>
+                                  ))}
+                                </Accordion>
+                              ) : (
+                                <p>
+                                  You don't have any requested scnarios, Start
+                                  by Creating.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                <div
+                  id="create-new"
+                  className="w-full flex flex-col items-center justify-center"
+                >
+                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                    Create new Scenario{" "}
+                  </h1>
+                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                    <CreateYourOwn />
+                  </div>
+                </div>
               </MaxWidthWrapper>
             </div>
           </div>
