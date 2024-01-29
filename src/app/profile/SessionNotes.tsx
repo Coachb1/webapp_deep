@@ -1,10 +1,15 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import { baseURL, basicAuth } from "@/lib/utils";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Separator } from "./ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import { Separator } from "../../components/ui/separator";
 import { Info, Loader, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -232,7 +237,7 @@ const SessionNotes = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
+    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] max-sm:max-h-[75vh] overflow-scroll">
       <div className="pl-4 max-sm:pl-2 pt-2">
         Session Notes (For Bot Interactions)
       </div>

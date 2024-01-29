@@ -1,8 +1,8 @@
 "use client";
 
 import { Loader, Pen, PenBox, X } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
 import {
   Select,
   SelectContent,
@@ -212,7 +212,7 @@ const Competencies = ({ user }: any) => {
                       >
                         <span>
                           {" "}
-                          Skill {i + 1} : {skill.replace(/"/g, "")}{" "}
+                          Skill Group {i + 1} : {skill.replace(/"/g, "")}{" "}
                         </span>{" "}
                       </Badge>
                     ))}
@@ -260,8 +260,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-56 flex flex-row items-center">
-                  <p className="w-16 block ">Skill 1 : </p>
+                <div className="w-fit flex flex-row items-center">
+                  <p className="w-32 block ">Skill Group 1 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillOne(value);
@@ -292,8 +292,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-56 flex flex-row items-center">
-                  <p className="w-16 block ">Skill 2 : </p>
+                <div className="w-fit flex flex-row items-center">
+                  <p className="w-36 block ">Skill Group 2 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillTwo(value);
@@ -324,8 +324,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-56 flex flex-row items-center">
-                  <p className="w-16 block ">Skill 3 : </p>
+                <div className="w-fit flex flex-row items-center">
+                  <p className="w-36 block ">Skill Group 3 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillThree(value);
@@ -355,8 +355,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-56 flex flex-row items-center">
-                  <p className="w-16 block ">Skill 4 : </p>
+                <div className="w-fit flex flex-row items-center">
+                  <p className="w-32 block ">Skill Group 4 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillFour(value);

@@ -1,10 +1,10 @@
 "use client";
 
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import { Code, Copy, Edit, LinkIcon, Loader } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { TooltipWrapper } from "./TooltipWrapper";
+import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
   Dialog,
@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import CopyToClipboard from "./CopyToClipboard";
+import CopyToClipboard from "../../components/CopyToClipboard";
 import Link from "next/link";
 interface Bot {
   bot_id: string;

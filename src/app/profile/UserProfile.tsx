@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
 import { baseURL, basicAuth } from "@/lib/utils";
 
@@ -100,7 +100,7 @@ const UserProfile = ({
         <div className="mt-4 mb-4">
           <div className="flex flex-row items-center">
             <p className="text-md ">Name </p>
-            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-7 border">
+            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
               {userName}
             </p>
           </div>
@@ -113,19 +113,20 @@ const UserProfile = ({
         </div>
         <hr />
         <div className="my-4 flex flex-row items-center">
-          <p className="text-sm">
-            Session Reports <br className="max-sm:block hidden" /> (For
-            Simulations)
-          </p>
+          <p className="text-sm">Session Reports</p>
           <>
             <Button
               disabled={testAttempedCount === 0}
-              className="ml-8 max-sm:ml-2 w-fit"
+              className="ml-8 max-sm:ml-1 w-fit max-sm:text-xs"
             >
               {candidateReportUrl && candidateReportUrl.length !== 0 ? (
                 <>
-                  <Link href={candidateReportUrl} target="_blank">
-                    Participant Report{" "}
+                  <Link
+                    className="flex flex-row items-center justify-center ml-2 max-sm:ml-1"
+                    href={candidateReportUrl}
+                    target="_blank"
+                  >
+                    <p className="w-fit">Participant Report</p>{" "}
                     <Link2 className={`h-4 w-4 ml-2 inline`} />
                   </Link>
                 </>

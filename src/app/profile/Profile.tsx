@@ -1,10 +1,10 @@
 "use client";
 
-import ActionPoints from "@/components/ActionPoints";
-import Conversations from "@/components/Conversations";
+import ActionPoints from "@/app/profile/ActionPoints";
+import Conversations from "@/app/profile/Conversations";
 import NetworkNav from "@/components/NetworkNav";
-import SessionNotes from "@/components/SessionNotes";
-import UserProfile from "@/components/UserProfile";
+import SessionNotes from "@/app/profile/SessionNotes";
+import UserProfile from "@/app/profile/UserProfile";
 import {
   UserCircle,
   StickyNote,
@@ -15,6 +15,7 @@ import {
   BookCopyIcon,
   ShieldCheck,
   GanttChartSquare,
+  MailCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -24,12 +25,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import Competencies from "@/components/Competencies";
-import MyPages from "@/components/MyPages";
+import Competencies from "@/app/profile/Competencies";
+import MyPages from "@/app/profile/MyPages";
 import { Button } from "@/components/ui/button";
 import { getUserAccount } from "@/lib/utils";
-import AdminProfile from "@/components/AdminProfile";
-import IDP from "@/components/IDP";
+import AdminProfile from "@/app/profile/AdminProfile";
+import IDP from "@/app/profile/IDP";
+import EmailSign from "./EmailSign";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -71,7 +73,7 @@ const Profile = ({ user }: any) => {
   return (
     <>
       {" "}
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 ">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 pt-8 ">
         <NetworkNav user={user} />
       </div>
       <div className="w-full flex flex-row justify-end">
@@ -86,7 +88,7 @@ const Profile = ({ user }: any) => {
         </div>
         <hr />
       </div>
-      <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-screen flex flex-row justify-between">
+      <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-[80vh] flex flex-row justify-between">
         <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2 ">
           <div className="h-full flex flex-col justify-start gap-3">
             <NavItem
@@ -118,6 +120,10 @@ const Profile = ({ user }: any) => {
               itemName={"IDP"}
               icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
             />
+            <NavItem
+              itemName={"Email Signature"}
+              icon={<MailCheck className="text-gray-500 h-5 w-5" />}
+            />
             {userRole === "admin" && (
               <NavItem
                 itemName={"Admin"}
@@ -141,6 +147,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && <AdminProfile user={user} />}
           {selectedItem === "My Pages" && <MyPages user={user} />}
+          {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>
