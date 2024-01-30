@@ -153,7 +153,7 @@ const MyLibrary = ({ user }: any) => {
             setRequestedScenarios(data);
             setRequestedScenariosLoading(false);
           })
-          .then((err) => {
+          .catch((err) => {
             console.error(err);
             setRequestedScenariosLoading(false);
           });

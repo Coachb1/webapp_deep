@@ -1261,6 +1261,9 @@ const CoachIntake = ({ user }: any) => {
                         }}
                         className="w-fit"
                       />{" "}
+                      <p className="m-1 mt-2 ml-0 text-gray-500">
+                        Upload image with (240px * 240px) under 2MB
+                      </p>
                     </div>
                   </div>
                   <div className="my-3">
