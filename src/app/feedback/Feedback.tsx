@@ -101,7 +101,7 @@ const feedbackJsonConversion = (jsonData: any) => {
 
 const Feedback = ({ user, renderType }: any) => {
   const pathname = usePathname();
-  const [enrolled, setEnrolled] = useState(true);
+  const [enrolled, setEnrolled] = useState(false);
 
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
@@ -534,12 +534,20 @@ const Feedback = ({ user, renderType }: any) => {
           </>
         ) : (
           <>
+            <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+              <NetworkNav user={user} />
+            </div>
             <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
               <div className="flex flex-col items-center justify-center">
-                <p className="font-semibold text-sm">
+                <p className="font-semibold text-sm mb-2">
                   You have not enrolled as a program participant. Please enroll
                   and try again.
                 </p>
+                <Link href="/">
+                  <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
+                    Return to home
+                  </Button>
+                </Link>
               </div>
             </div>
           </>

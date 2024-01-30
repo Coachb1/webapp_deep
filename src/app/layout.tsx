@@ -10,7 +10,7 @@ import setupLogRocketReact from "logrocket-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { subdomain } from "@/lib/utils";
+import { hideBots, subdomain } from "@/lib/utils";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -69,6 +69,10 @@ export default function RootLayout({
       : null;
 
   useEffect(() => {
+    //hide bots from intake
+    if (pathname.includes("intake")) {
+      hideBots();
+    }
     //ADD LOCALSTORAGE ITEM after user
     if (pathname === "/coach" || pathname.includes("/coach-")) {
       setShowCoachBot(true);
@@ -147,6 +151,9 @@ export default function RootLayout({
     } else if (pathname === "/") {
       coachtalk.setAttribute("style", "display: none;");
       // coachScribe.setAttribute("style", "display: none;");
+    } else if (pathname.includes("intake")) {
+      coachtalk.setAttribute("style", "display: none;");
+      coachScribe.setAttribute("style", "display: none;");
     } else {
       coachtalk.removeAttribute("style");
       coachScribe.removeAttribute("style");
@@ -177,11 +184,7 @@ export default function RootLayout({
               <AntdRegistry>{children}</AntdRegistry>
             </ThemeProvider>
           </>
-          <Toaster
-            theme="light"
-            richColors
-            position="top-right"
-          />
+          <Toaster theme="light" richColors position="top-right" />
         </body>
       </UserContextProvider>
     </html>
