@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 
-const CreateYourOwn = ({ user }: any) => {
+const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<
     {
@@ -65,9 +65,7 @@ const CreateYourOwn = ({ user }: any) => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Dynamically created Test result", data);
-          console.log(data[0]);
-
-          console.log(data);
+          generatedHandler();
 
           setGeneratedTestData(data);
           setIsloading(false);
@@ -183,8 +181,8 @@ const CreateYourOwn = ({ user }: any) => {
             <>
               <hr className="my-2" />
               <p className="text-sm text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
-                We are unable to generate the scenario at this time. Please
-                restate the context and try again.
+                Encountered and error while Generating your scenarios. It will
+                be saved in "My Library (Requested Scenario Tab)"
               </p>
             </>
           )}
