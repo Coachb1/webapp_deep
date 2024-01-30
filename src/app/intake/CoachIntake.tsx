@@ -326,7 +326,7 @@ const CoachIntake = ({ user }: any) => {
                     toast.success(
                       "Thanks for your request. You will get notified when your profile is approved and live.",
                       {
-                        duration: 10000,
+                        duration: 6000,
                       }
                     );
                     resetAllStates();
@@ -337,7 +337,7 @@ const CoachIntake = ({ user }: any) => {
                       toast.error(
                         "Error creating your coach profile. Please try again.",
                         {
-                          duration: 10000,
+                          duration: 6000,
                         }
                       );
                     }
@@ -351,8 +351,9 @@ const CoachIntake = ({ user }: any) => {
               resetAllStates();
               setCreateLoading(false);
               toast.success(
-                "Thanks for your request. You will get notified when your profile is approved and live.",  {
-                  duration: 10000,
+                "Thanks for your request. You will get notified when your profile is approved and live.",
+                {
+                  duration: 6000,
                 }
               );
             }
@@ -418,13 +419,14 @@ const CoachIntake = ({ user }: any) => {
           console.log(data);
           setFeedbackCreateLoading(false);
           if (checkIfEdit) {
-            toast.success("Successfully Updated your feedback bot." ,  {
-              duration: 10000,
+            toast.success("Successfully Updated your feedback bot.", {
+              duration: 6000,
             });
           } else {
             toast.success(
-              "Thanks for your request. You will get notified when your Feedback bot is approved and live." ,  {
-                duration: 10000,
+              "Thanks for your request. You will get notified when your Feedback bot is approved and live.",
+              {
+                duration: 6000,
               }
             );
           }
@@ -432,7 +434,9 @@ const CoachIntake = ({ user }: any) => {
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Error creating your feedback bot. Please try again.");
+          toast.error("Error creating your feedback bot. Please try again.", {
+            duration: 6000,
+          });
         });
     }
   };
@@ -465,7 +469,10 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    hideBots();
+    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
+    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    coachtalk.setAttribute("style", "display: none;");
+    coachScribe.setAttribute("style", "display: none;");
     if (checkIfEdit === "true") {
       if (botIdFromParams?.includes("feedback")) {
         setIsFeedbackNeeded(true);

@@ -56,7 +56,9 @@ const ActionPoints = ({ user }: any) => {
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
-            setTotalActionPoints(calculateTotalActionPoints(data));
+            if (!data.msg) {
+              setTotalActionPoints(calculateTotalActionPoints(data));
+            }
           })
           .catch((err) => {
             console.log(err);

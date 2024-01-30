@@ -461,6 +461,9 @@ const Coach = ({ user, renderType }: any) => {
           </>
         ) : (
           <>
+            <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+              <NetworkNav user={user} />
+            </div>
             <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
               <div className="flex flex-col items-center justify-center">
                 <p className="font-semibold text-sm">

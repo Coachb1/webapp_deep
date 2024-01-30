@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader, Pen, PenBox, X } from "lucide-react";
+import { Loader, PenBox, X } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
@@ -8,30 +8,11 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { toast } from "sonner";
-import Link from "next/link";
-
-// const skillsArray = [
-//   "Communication Skills",
-//   "Achievement Focus",
-//   "Analytical Thinking",
-//   "Leading and Supervising",
-//   "Teamwork",
-//   "Planning and Organizing",
-//   "Client Focus",
-//   "Developing Talent",
-//   "Decision Making",
-//   "Change Management",
-//   "Strategic Networking",
-//   "Influencing",
-//   "Resilience",
-// ];
 
 const Competencies = ({ user }: any) => {
   const [skillsArray, setSkillsArray] = useState<
@@ -117,6 +98,13 @@ const Competencies = ({ user }: any) => {
           .then((data) => {
             console.log(data);
             const parsedSkills: string[] = Object.values(data[0]);
+            console.log(parsedSkills);
+            setSkillsArray((prevSkills) =>
+              prevSkills.map((skill) => ({
+                ...skill,
+                disabled: parsedSkills.includes(skill.value),
+              }))
+            );
             setExistingSkills(parsedSkills);
             setFetchLoading(false);
             setSkillOne(parsedSkills[0].replace(/"/g, ""));
@@ -179,14 +167,15 @@ const Competencies = ({ user }: any) => {
     setRenderInputComponent(true);
   };
 
-  const disableSkills = (valuesToDisable: string[]) => {
-    const updatedSkillsArray = skillsArray.map((skill) => ({
-      ...skill,
-      disabled: valuesToDisable.includes(skill.value),
-    }));
-
-    setSkillsArray(updatedSkillsArray);
-  };
+  useEffect(() => {
+    const skillsToDisable = [skillOne, skillTwo, skillThree, skillFour];
+    setSkillsArray((prevSkills) =>
+      prevSkills.map((skill) => ({
+        ...skill,
+        disabled: skillsToDisable.includes(skill.value),
+      }))
+    );
+  }, [skillOne, skillTwo, skillThree, skillFour]);
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
@@ -264,6 +253,7 @@ const Competencies = ({ user }: any) => {
                   <p className="w-32 block ">Skill Group 1 : </p>
                   <Select
                     onValueChange={(value) => {
+                      console.log(value);
                       setSkillOne(value);
                     }}
                     value={skillOne}
@@ -356,7 +346,7 @@ const Competencies = ({ user }: any) => {
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
                 <div className="w-fit flex flex-row items-center">
-                  <p className="w-32 block ">Skill Group 4 : </p>
+                  <p className="w-36 block">Skill Group 4 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillFour(value);

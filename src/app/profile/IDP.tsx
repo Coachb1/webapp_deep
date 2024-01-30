@@ -49,6 +49,7 @@ const IDP = ({ user }: any) => {
           })
           .catch((err) => {
             console.error(err);
+            setLoading(false);
           });
       })
       .catch((err) => {
@@ -72,17 +73,17 @@ const IDP = ({ user }: any) => {
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
             <div>You don't have IDP's yet.</div>{" "}
-            <Link href={"/intake/?type=IDP"}></Link>
-            <Button className="pl-1" variant={"link"}>
-              Create one?
-            </Button>
+            <Link href={"/intake/?type=IDP"}>
+              <Button className="pl-1" variant={"link"}>
+                Create one?
+              </Button>
+            </Link>
           </div>
         </>
       )}
       {userIDPs.length > 0 && (
         <div className="m-4 text-sm max-sm:m-2">
           <div className="bg-gray-200 px-4 text-sm w-full m-2 ml-0 p-2 rounded-md">
-            {/* <p className="text-base font-semibold ">IDP Reports</p> */}
             <div className="mx-4 flex flex-row mt-4  max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
               <div className="w-[5%] max-sm:w-[12%] max-sm:text-xs  text-center">
                 SL no.

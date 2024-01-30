@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
 import { useEffect, useRef, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { toast } from "sonner";
 
 const CreateYourOwn = ({ user }: any) => {
   const [isLoading, setIsloading] = useState(false);
@@ -74,7 +75,10 @@ const CreateYourOwn = ({ user }: any) => {
             setGenerationError(true);
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.error(err);
+          toast.error("Error generating your scenario");
+        });
     }
   };
 
