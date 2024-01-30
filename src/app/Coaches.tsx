@@ -308,16 +308,18 @@ const Coaches = ({ user }: any) => {
                         </p>
                       </div>
                       <div className="w-[30%] max-sm:w-full flex flex-col items-center justify-start gap-3">
-                        <div className="w-full mt-[20%] max-sm:mt-4">
-                          <Link href={coach.avatar_bot_url}>
-                            <Button
-                              variant={"outline"}
-                              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-                            >
-                              Avatar Bot
-                            </Button>
-                          </Link>
-                        </div>
+                        {coach.avatar_bot_url !== null && (
+                          <div className="w-full mt-[20%] max-sm:mt-4">
+                            <Link href={coach.avatar_bot_url}>
+                              <Button
+                                variant={"outline"}
+                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                              >
+                                Avatar Bot
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
                         {coach.feedback_wall !== null && (
                           <div className="w-full">
                             <Link href={coach.feedback_wall}>
