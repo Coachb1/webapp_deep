@@ -268,15 +268,34 @@ const CoachIntake = ({ user }: any) => {
                     ? "https://playground.coachbots.com/coach/"
                     : "https://platform.coachbots.com/coach/"
                 }`,
-                fitment_answer: `${participantLevel},${coachMentInSameDep === "yes" ? true : false},${outcomeSupported}`,
+                fitment_answer: `${participantLevel},${
+                  coachMentInSameDep === "yes" ? true : false
+                },${outcomeSupported}`,
                 fitment_data: {
-                  options:{
-                  "1": ["Anyone above me","Same or up to two level below","Any level"],
-                  "2": ["Yes","No"],
-                  "3": ["Career advancement","Skill development", "Introspection & reflection", "Networking & leadership"]
+                  options: {
+                    "1": [
+                      "Anyone above me",
+                      "Same or up to two level below",
+                      "Any level",
+                    ],
+                    "2": ["Yes", "No"],
+                    "3": [
+                      "Career advancement",
+                      "Skill development",
+                      "Introspection & reflection",
+                      "Networking & leadership",
+                    ],
                   },
-                  mentee_que: {"1": "What level of coach & mentor do you want?", "2": "I want a coach & mentor someone from the same department.", "3": "What kind of outcome do you want from these sessions the most?"},
-                  mentor_que: {"1": "What level of participant do you want to coach & mentor?", "2": "I want to coach & mentor someone in the same department.", "3": "What kind of outcome can you support in these sessions the most?"}
+                  mentee_que: {
+                    "1": "What level of coach & mentor do you want?",
+                    "2": "I want a coach & mentor someone from the same department.",
+                    "3": "What kind of outcome do you want from these sessions the most?",
+                  },
+                  mentor_que: {
+                    "1": "What level of participant do you want to coach & mentor?",
+                    "2": "I want to coach & mentor someone in the same department.",
+                    "3": "What kind of outcome can you support in these sessions the most?",
+                  },
                 },
                 additional_data: {
                   profile_type: "coach",
@@ -291,7 +310,7 @@ const CoachIntake = ({ user }: any) => {
                 media_data: {
                   youtube_links: linksReflectingWVpersonal,
                   article_links: linksReflectyouWished,
-                }
+                },
               });
 
               fetch(`${baseURL}/accounts/create-bot-by-details/`, {
@@ -305,7 +324,10 @@ const CoachIntake = ({ user }: any) => {
                   setCreateLoading(false);
                   if (!data.error && !data.detail) {
                     toast.success(
-                      "Thanks for your request. You will get notified when your profile is approved and live."
+                      "Thanks for your request. You will get notified when your profile is approved and live.",
+                      {
+                        duration: 10000,
+                      }
                     );
                     resetAllStates();
                   } else {
@@ -313,7 +335,10 @@ const CoachIntake = ({ user }: any) => {
                       toast.error("Bot already exists");
                     } else {
                       toast.error(
-                        "Error creating your coach profile. Please try again."
+                        "Error creating your coach profile. Please try again.",
+                        {
+                          duration: 10000,
+                        }
                       );
                     }
                   }
@@ -326,7 +351,9 @@ const CoachIntake = ({ user }: any) => {
               resetAllStates();
               setCreateLoading(false);
               toast.success(
-                "Thanks for your request. You will get notified when your profile is approved and live."
+                "Thanks for your request. You will get notified when your profile is approved and live.",  {
+                  duration: 10000,
+                }
               );
             }
           })
@@ -358,7 +385,7 @@ const CoachIntake = ({ user }: any) => {
             "4": "How would like to see me implement the feedback you have provided so far?",
           },
         },
-        feedback_questions:{
+        feedback_questions: {
           "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
           "2": "Regarding workplace team management skills, how would you rate my skills?",
           "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
@@ -374,7 +401,7 @@ const CoachIntake = ({ user }: any) => {
           subdomain === "playground"
             ? "https://playground.coachbots.com/coach/"
             : "https://platform.coachbots.com/coach/"
-        }`
+        }`,
       });
 
       var myHeaders = new Headers();
@@ -391,10 +418,14 @@ const CoachIntake = ({ user }: any) => {
           console.log(data);
           setFeedbackCreateLoading(false);
           if (checkIfEdit) {
-            toast.success("Successfully Updated your feedback bot.");
+            toast.success("Successfully Updated your feedback bot." ,  {
+              duration: 10000,
+            });
           } else {
             toast.success(
-              "Thanks for your request. You will get notified when your Feedback bot is approved and live."
+              "Thanks for your request. You will get notified when your Feedback bot is approved and live." ,  {
+                duration: 10000,
+              }
             );
           }
           resetAllStates();

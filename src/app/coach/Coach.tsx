@@ -76,59 +76,11 @@ const Coach = ({ user, renderType }: any) => {
   const [coachProfileLink, setCoachProfileLink] = useState(
     "https://www.linkedin.com/"
   );
-  const [coachBookLink, setCoachBookLink] = useState("https://calendly.com/");
 
   const [invalidId, setInValidCoach] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
-    if (user) {
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: user.given_name,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: "web_user",
-                email: user.email,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: user.email,
-          },
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          ).then((response) => {
-            if (!response.ok) {
-              setEnrolled(false);
-              const coachScribe =
-                document.getElementsByClassName("deep-chat-poc2")[0];
-              coachScribe.setAttribute("style", "display: none;");
-            }
-          });
-        });
-    } else {
-      setEnrolled(false);
-    }
 
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
@@ -145,9 +97,9 @@ const Coach = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log("BOT DETAILS : ", data);
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
-        console.log("USER ", user);
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -175,10 +127,58 @@ const Coach = ({ user, renderType }: any) => {
         }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
-        setIsLoading(false);
+
+        if (!data.data.is_sample_bot && !data.data.is_system_bot) {
+          fetch(`${baseURL}/accounts/`, {
+            method: "POST",
+            headers: {
+              Authorization: basicAuth,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user_context: {
+                name: user.given_name,
+                role: "member",
+                user_attributes: {
+                  tag: "deepchat_profile",
+                  attributes: {
+                    username: "web_user",
+                    email: user.email,
+                  },
+                },
+              },
+              identity_context: {
+                identity_type: "deepchat_unique_id",
+                value: user.email,
+              },
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              setIsLoading(false);
+              fetch(
+                `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                }
+              ).then((response) => {
+                if (!response.ok) {
+                  setEnrolled(false);
+                  const coachScribe =
+                    document.getElementsByClassName("deep-chat-poc2")[0];
+                  coachScribe.setAttribute("style", "display: none;");
+                }
+              });
+            });
+        }
+        // setIsLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setIsLoading(false);
         setInValidCoach(true);
       });
   }, []);

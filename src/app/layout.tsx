@@ -177,7 +177,11 @@ export default function RootLayout({
               <AntdRegistry>{children}</AntdRegistry>
             </ThemeProvider>
           </>
-          <Toaster theme="light" richColors position="top-right" />
+          <Toaster
+            theme="light"
+            richColors
+            position="top-right"
+          />
         </body>
       </UserContextProvider>
     </html>
