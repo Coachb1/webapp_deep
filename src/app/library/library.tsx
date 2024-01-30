@@ -75,6 +75,9 @@ const MyLibrary = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
   const [currentActiveGroup, setCurrentActiveGroup] = useState<string>("");
 
+  const [requestedScenariosLoading, setRequestedScenariosLoading] =
+    useState(true);
+
   const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
     useState<competencySkillsTestType[]>([]);
 
@@ -134,6 +137,7 @@ const MyLibrary = ({ user }: any) => {
   };
 
   const getRequestedTests = () => {
+    setRequestedScenariosLoading(true);
     getUserAccount(user)
       .then((res) => res.json())
       .then((data) => {
@@ -147,8 +151,17 @@ const MyLibrary = ({ user }: any) => {
           .then((data) => {
             console.log(data);
             setRequestedScenarios(data);
+            setRequestedScenariosLoading(false);
+          })
+          .then((err) => {
+            console.error(err);
+            setRequestedScenariosLoading(false);
           });
       });
+  };
+
+  const CreateYourOwnGeneratedHandler = () => {
+    getRequestedTests();
   };
 
   useEffect(() => {
@@ -603,59 +616,69 @@ const MyLibrary = ({ user }: any) => {
                   <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
                     Requested Scenarios
                   </h1>
-                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                    <div className="w-full">
-                      <div className="relative isolate mx-auto">
-                        <div>
-                          <div className="mx-auto w-full mt-10 max-sm:w-[100%] z-50">
-                            <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                              {requestedScenarios.length > 0 ? (
-                                <Accordion
-                                  type="single"
-                                  collapsible
-                                  className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
-                                >
-                                  {requestedScenarios.map((test, i) => (
-                                    <>
-                                      <AccordionItem
-                                        key={i}
-                                        value={`item-${i + 1}`}
-                                        className={
-                                          i === tests.length - 1
-                                            ? "border-none"
-                                            : "border-b"
-                                        }
-                                      >
-                                        <AccordionTrigger className="text-left max-sm:text-xs">
-                                          <div>{test.title}</div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="max-sm:text-xs">
-                                          <p className="text-left">
-                                            {" "}
-                                            {test.description}
-                                          </p>
-                                          <div className="flex justify-end mt-2">
-                                            <CopyToClipboard
-                                              textToCopy={test.test_code}
-                                            />
-                                          </div>
-                                        </AccordionContent>
-                                      </AccordionItem>
-                                    </>
-                                  ))}
-                                </Accordion>
-                              ) : (
-                                <p className="text-sm max-sm:text-xs text-gray-600">
-                                  You don't have any requested scnarios, Start
-                                  by Creating.
-                                </p>
-                              )}
+                  {requestedScenariosLoading ? (
+                    <div className="bg-gray-100 my-16  grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
+                      <p className="p-2 text-sm max-sm:text-xs">
+                        {" "}
+                        <Loader className="animate-spin inline h-4 w-4 mr-2" />
+                        Loading...
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                      <div className="w-full">
+                        <div className="relative isolate mx-auto">
+                          <div>
+                            <div className="mx-auto w-full mt-10 max-sm:w-[100%] z-50">
+                              <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                {requestedScenarios.length > 0 ? (
+                                  <Accordion
+                                    type="single"
+                                    collapsible
+                                    className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                  >
+                                    {requestedScenarios.map((test, i) => (
+                                      <>
+                                        <AccordionItem
+                                          key={i}
+                                          value={`item-${i + 1}`}
+                                          className={
+                                            i === tests.length - 1
+                                              ? "border-none"
+                                              : "border-b"
+                                          }
+                                        >
+                                          <AccordionTrigger className="text-left max-sm:text-xs">
+                                            <div>{test.title}</div>
+                                          </AccordionTrigger>
+                                          <AccordionContent className="max-sm:text-xs">
+                                            <p className="text-left">
+                                              {" "}
+                                              {test.description}
+                                            </p>
+                                            <div className="flex justify-end mt-2">
+                                              <CopyToClipboard
+                                                textToCopy={test.test_code}
+                                              />
+                                            </div>
+                                          </AccordionContent>
+                                        </AccordionItem>
+                                      </>
+                                    ))}
+                                  </Accordion>
+                                ) : (
+                                  <p className="text-sm max-sm:text-xs text-gray-600">
+                                    You don't have any requested scnarios, Start
+                                    by Creating.
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
                 <div
@@ -666,7 +689,10 @@ const MyLibrary = ({ user }: any) => {
                     Create new Scenario{" "}
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                    <CreateYourOwn user={user} />
+                    <CreateYourOwn
+                      user={user}
+                      generatedHandler={CreateYourOwnGeneratedHandler}
+                    />
                   </div>
                 </div>
               </MaxWidthWrapper>

@@ -17,6 +17,10 @@ const CreateOwn = ({ user }: any) => {
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
   const [userId, setUserId] = useState("");
 
+  const [contextPrompt, setContextPrompt] = useState(
+    "Please enter the context and search!"
+  );
+
   const [searchInputText, setSearchInputText] = useState<string | undefined>(
     ""
   );
@@ -324,13 +328,17 @@ const CreateOwn = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          const formattedSearchResults = data.items.map((item: any) => ({
-            link: item.link,
-            title: item.pagemap.metatags[0]["og:title"],
-            decsription: item.pagemap.metatags[0]["og:description"],
-          }));
-          setGoogleSearchResults(formattedSearchResults);
-
+          if (data.searchInformation.totalResults !== "0") {
+            const formattedSearchResults = data.items.map((item: any) => ({
+              link: item.link,
+              title: item.pagemap.metatags[0]["og:title"],
+              decsription: item.pagemap.metatags[0]["og:description"],
+            }));
+            setGoogleSearchResults(formattedSearchResults);
+          } else {
+            setGoogleSearchResults([]);
+            setContextPrompt("0 results, Please provide a valid context!");
+          }
           setTimeout(() => {
             setSearchInputText("");
             setCreateLoading(false);
@@ -349,15 +357,19 @@ const CreateOwn = ({ user }: any) => {
         .then((data) => {
           console.log(data);
 
-          const formattedVideos = data.items.map((item: any) => ({
-            video_id: item.id.videoId,
-            video_link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-            video_title: item.snippet.title,
-            video_description: item.snippet.description,
-          }));
-          setYoutubeSearchResults(formattedVideos);
-          console.log(formattedVideos);
-
+          if (data.pageInfo.resultsPerPage > 0) {
+            const formattedVideos = data.items.map((item: any) => ({
+              video_id: item.id.videoId,
+              video_link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+              video_title: item.snippet.title,
+              video_description: item.snippet.description,
+            }));
+            setYoutubeSearchResults(formattedVideos);
+            console.log(formattedVideos);
+          } else {
+            setYoutubeSearchResults([]);
+            setContextPrompt("0 results, Please provide a valid context!");
+          }
           setTimeout(() => {
             setCreateLoading(false);
             setSearchInputText("");
@@ -475,7 +487,7 @@ const CreateOwn = ({ user }: any) => {
                 ) : (
                   <>
                     <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                      <p>Please enter the context and search!</p>
+                      <p>{contextPrompt}</p>
                     </div>
                   </>
                 )}
@@ -509,7 +521,7 @@ const CreateOwn = ({ user }: any) => {
                     ) : (
                       <>
                         <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                          <p>Please enter the context and search!</p>
+                          <p>{contextPrompt}</p>
                         </div>{" "}
                       </>
                     )}
