@@ -259,6 +259,9 @@ const CoachIntake = ({ user }: any) => {
               const avatarBotCreationFormData = JSON.stringify({
                 bot_type: "avatar_bot",
                 bot_name: name,
+                bot_details: {"info": about,
+                              "coach_name": name
+                },
                 attributes: {
                   heading: `welcome to ${name}'s avatar bot`,
                 },
