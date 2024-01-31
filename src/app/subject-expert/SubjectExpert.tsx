@@ -19,6 +19,7 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
+import { toast } from "sonner";
 
 const howItWorks = [
   {
@@ -107,10 +108,23 @@ const SubjectExpert = ({ user, renderType }: any) => {
             }
           ).then((response) => {
             if (!response.ok) {
-              setEnrolled(false);
               const coachScribe =
                 document.getElementsByClassName("deep-chat-poc2")[0];
-              coachScribe.setAttribute("style", "display: none;");
+  
+                console.log(coachScribe)
+              const botButton = document.getElementsByClassName("chat-icon-container2")[0]
+              botButton.removeAttribute("onclick")
+  
+              
+              const chatIcon = document.getElementsByClassName("chat-icon2")[0]
+              const showEnrollmentToast = () => {
+                chatIcon.addEventListener("click", () =>{
+                  toast.error("You have not enrolled as a program participant. Please enroll and try again.",)
+                })
+              }
+              if(!chatIcon.getAttribute("onclick")){
+                chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`)
+              }
             }
           });
         });
@@ -163,205 +177,204 @@ const SubjectExpert = ({ user, renderType }: any) => {
   const SubjectBotBody = () => {
     return (
       <>
-        {enrolled ? (
-          <>
-            {renderType === "static" && (
-              <Script src="../widget/coachbots-stt-widget.js" />
-            )}
-
-            {!loginRequired && (
-              <div className="fixed max-sm:hidden right-[100px] bottom-12">
-                <span className="mr-6 text-sm font-bold">Try Now</span>
-                <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
-              </div>
-            )}
-
-            {invalidId && renderType === "dynamic" && (
-              <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-                <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
-                  <AlertTriangle className="h-4 w-4 mr-2 inline" />
-                  We have encountered an error. Please try again.{" "}
-                </div>
-              </div>
-            )}
-            <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-              <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-                {/* <NavProfile user={user} />
-                <BotsNavigation user={user} /> */}
-                <NetworkNav user={user} />
-              </div>
-              <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
-                <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-                  <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-                    COACH
-                  </span>
-                  BOTS
-                </h1>
-                <div>
-                  <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-                    Welcome to our Subject Expert Avatars
-                  </h1>
-
-                  {renderType !== "dynamic" && (
-                    <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                      This section is about the subject matter of the bot, in
-                      this case, stress management.
-                    </p>
-                  )}
-                  {renderType === "dynamic" ? (
-                    <p className="mt-4 mb-2">{coachDescription}</p>
-                  ) : (
-                    <p className="max-sm:text-xs text-[#2f2323]">
-                      <b>Sample : </b> This is a Stress Management Avatar
-                      created to provide users with personalized strategies and
-                      resources to help manage stress and anxiety. With
-                      extensive knowledge on techniques like mindfulness,
-                      meditation, deep breathing, and cognitive restructuring,
-                      this Avatar offers evidence-based recommendations tailored
-                      to each user's unique needs. The Avatar is grounded in
-                      techniques recommended by experts in the field, so the
-                      users can take control of their stress and start living a
-                      more relaxed, positive life.
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-                  <Link href={"#wtu"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Where to use
-                    </Button>
-                  </Link>
-                  <Link href={"#howItWorks"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      How it works
-                    </Button>
-                  </Link>
-                  <Link href={"#benefits"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Benefits
-                    </Button>
-                  </Link>
-                </div>
-                <div id="wtu">
-                  <WhereToUse />
-                </div>
-                <div className="w-full" id="howItWorks">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      How it works
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                            <Accordion
-                              type="single"
-                              collapsible
-                              className="w-full text-gray-500 max-sm:p-4 "
-                            >
-                              {howItWorks.map((test, i) => (
-                                <AccordionItem
-                                  key={i}
-                                  value={`item-${i + 1}`}
-                                  className={
-                                    i === howItWorks.length - 1
-                                      ? "border-none"
-                                      : "border-b"
-                                  }
-                                >
-                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                    <div>
-                                      <b>{test.heading}</b>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent className="max-sm:text-xs text-left">
-                                    <p> {test.description}</p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              ))}
-                            </Accordion>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full" id="benefits">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      Benefits
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                            <Accordion
-                              type="single"
-                              collapsible
-                              className="w-full text-gray-500 max-sm:p-4 "
-                            >
-                              {benefitsData.map((test, i) => (
-                                <AccordionItem
-                                  key={i}
-                                  value={`item-${i + 1}`}
-                                  className={
-                                    i === howItWorks.length - 1
-                                      ? "border-none"
-                                      : "border-b"
-                                  }
-                                >
-                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                    <div>
-                                      <b>{test.heading}</b>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent className="max-sm:text-xs text-left">
-                                    <p> {test.description}</p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              ))}
-                            </Accordion>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-              <div className="flex flex-col items-center justify-center">
-                <p className="font-semibold text-sm">
-                  You have not enrolled as a program participant. Please enroll
-                  and try again.
-                </p>
-              </div>
-            </div>
-          </>
+        {/* {enrolled ? (
+          <> */}
+        {renderType === "static" && (
+          <Script src="../widget/coachbots-stt-widget.js" />
         )}
+
+        {!loginRequired && (
+          <div className="fixed max-sm:hidden right-[100px] bottom-12">
+            <span className="mr-6 text-sm font-bold">Try Now</span>
+            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          </div>
+        )}
+
+        {invalidId && renderType === "dynamic" && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              We have encountered an error. Please try again.{" "}
+            </div>
+          </div>
+        )}
+        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+          <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+            {/* <NavProfile user={user} />
+                <BotsNavigation user={user} /> */}
+            <NetworkNav user={user} />
+          </div>
+          <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+            <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
+              <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+                COACH
+              </span>
+              BOTS
+            </h1>
+            <div>
+              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 mb-4 ">
+                Welcome to our Subject Expert Avatars
+              </h1>
+
+              {/* {renderType !== "dynamic" && (
+                <p className="my-4 max-sm:text-xs text-[#2f2323]">
+                  This section is about the subject matter of the bot, in this
+                  case, stress management.
+                </p>
+              )} */}
+              {renderType === "dynamic" ? (
+                <p className="mt-4 mb-2">{coachDescription}</p>
+              ) : (
+                <p className="max-sm:text-xs text-[#2f2323]">
+                 This is a Stress Management Avatar created to
+                  provide users with personalized strategies and resources to
+                  help manage stress and anxiety. With extensive knowledge on
+                  techniques like mindfulness, meditation, deep breathing, and
+                  cognitive restructuring, this Avatar offers evidence-based
+                  recommendations tailored to each user's unique needs. The
+                  Avatar is grounded in techniques recommended by experts in the
+                  field, so the users can take control of their stress and start
+                  living a more relaxed, positive life.
+                </p>
+              )}
+            </div>
+            <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
+              <Link href={"#wtu"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Where to use
+                </Button>
+              </Link>
+              <Link href={"#howItWorks"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  How it works
+                </Button>
+              </Link>
+              <Link href={"#benefits"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Benefits
+                </Button>
+              </Link>
+            </div>
+            <div id="wtu">
+              <WhereToUse />
+            </div>
+            <div className="w-full" id="howItWorks">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  How it works
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {howItWorks.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
+                            >
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full" id="benefits">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  Benefits
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {benefitsData.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
+                            >
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </>
+      // ) : (
+      //   <>
+      //     <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+      //       <div className="flex flex-col items-center justify-center">
+      //         <p className="font-semibold text-sm">
+      //           You have not enrolled as a program participant. Please enroll
+      //           and try again.
+      //         </p>
+      //       </div>
+      //     </div>
+      //   </>
+      // )}
+      // </>
     );
   };
 
