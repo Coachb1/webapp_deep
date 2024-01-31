@@ -94,6 +94,8 @@ let isTranscriptOnly= false;
 let isEmailForm = false;
 let emailNameformJson = {};
 let formFields = []
+let userResponses = []
+let DuplicateResponseCount = 0;
 
 
 // sample TEst codes
@@ -369,6 +371,12 @@ function createMessageNode(message) {
 //* function to test if a text can be a test code
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+}
+
+
+//* check for duplicate response
+function isDuplicateResponse(text) {
+  return userResponses.includes(text);
 }
 
 //* add a custom message to chat
@@ -1262,6 +1270,8 @@ coords.map((item) => {
 // to reset all variables
 const resetAllVariables = () => {
   //* reset all variables : start
+  userResponses = []
+  DuplicateResponseCount = 0;
   console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
@@ -3261,6 +3271,26 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
+
+              if ( isDuplicateResponse(latestMessage)) {
+                DuplicateResponseCount += 1;
+                if (DuplicateResponseCount > 1) {
+                  resetAllVariables();
+                  signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                });
+                return;
+                }
+
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+                });
+                return;
+              }
+              else {
+                userResponses2.push(latestMessage);
+              }
+
             }
           }
 

@@ -111,6 +111,8 @@ let emailNameformJsonstt = {};
 let formFieldsstt = []
 let CoachingForFitment;
 let previousFitmentJson = {};
+let userResponses2 = []
+let DuplicateResponseCount2 = 0;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -252,6 +254,12 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
 }
+
+
+function isDuplicateResponse(text) {
+  return userResponses2.includes(text);
+}
+
 
 function getAnonymousEmail() {
     const user_name = "coachbots_anonyoususer";
@@ -1405,6 +1413,8 @@ coordsStt.map((item) => {
 // to reset all variables
 const resetAllVariablesStt = () => {
   //* reset all variables : start
+  userResponses2 = [];
+  DuplicateResponseCount2 = 0;
   console.log("resetingvariables")
   questionText2 = "";
   reportType2 = "interactionSessionReport";
@@ -3832,6 +3842,25 @@ loadExternalModule().then(() => {
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
                 });
                 return;
+              }
+              
+              if ( isDuplicateResponse(latestMessage)) {
+                DuplicateResponseCount2 += 1;
+                if (DuplicateResponseCount2 > 1) {
+                  resetAllVariablesStt();
+                  signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                });
+                return;
+                }
+
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+                });
+                return;
+              }
+              else {
+                userResponses2.push(latestMessage);
               }
             }
           }
