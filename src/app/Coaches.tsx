@@ -29,7 +29,7 @@ interface CoachesDataType {
   profile_type: string;
   description: string;
   experience: string;
-  favourite_simulation_codes: string;
+  expertise: string;
   status: string;
   avatar_bot_id: string;
   feedback_wall: string | null;
@@ -303,7 +303,7 @@ const Coaches = ({ user }: any) => {
                             Expertise :
                           </p>{" "}
                           <b className="inline">
-                            {coach.favourite_simulation_codes}
+                            {coach.expertise}
                           </b>
                         </p>
                       </div>

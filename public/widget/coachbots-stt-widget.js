@@ -1492,7 +1492,7 @@ function  increaseActionPointStt(user_id,field_name){
 async function  getFitmentScore(user_id){
   try{
     const resp = await fetch(
-      `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}`,
+      `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}&bot_id=${botId}`,
       {
         method: "GET",
         headers: {
