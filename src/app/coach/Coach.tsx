@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const howItWorks = [
   {
@@ -62,12 +63,12 @@ const benefitsData = [
 
 const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
-  const [enrolled, setEnrolled] = useState(true);
 
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
+  const [enrolled, SetEnrolled] = useState(true)
 
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
@@ -115,7 +116,7 @@ const Coach = ({ user, renderType }: any) => {
           }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
-          setCoachProfileLink(data.owner_profile_image);
+          setProfileImage(data.owner_profile_image);
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -127,7 +128,7 @@ const Coach = ({ user, renderType }: any) => {
         }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
-
+        setIsLoading(false);
         if (!data.data.is_sample_bot && !data.data.is_system_bot) {
           fetch(`${baseURL}/accounts/`, {
             method: "POST",
@@ -156,25 +157,37 @@ const Coach = ({ user, renderType }: any) => {
             .then((response) => response.json())
             .then((data) => {
               setIsLoading(false);
-              fetch(
-                `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                }
-              ).then((response) => {
-                if (!response.ok) {
-                  setEnrolled(false);
-                  const coachScribe =
-                    document.getElementsByClassName("deep-chat-poc2")[0];
-                  coachScribe.setAttribute("style", "display: none;");
-                }
-              });
-            });
+        fetch(
+          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        ).then((response) => {
+          if (!response.ok) {
+            const coachScribe =
+              document.getElementsByClassName("deep-chat-poc2")[0];
+
+              console.log(coachScribe)
+            const botButton = document.getElementsByClassName("chat-icon-container2")[0]
+            botButton.removeAttribute("onclick")
+
+            
+            const chatIcon = document.getElementsByClassName("chat-icon2")[0]
+            const showEnrollmentToast = () => {
+              chatIcon.addEventListener("click", () =>{
+                toast.error("You have not enrolled as a program participant. Please enroll and try again.",)
+              })
+            }
+            if(!chatIcon.getAttribute("onclick")){
+              chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`)
+            }
+          }
+        });
+        });
         }
-        // setIsLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -183,114 +196,114 @@ const Coach = ({ user, renderType }: any) => {
       });
   }, []);
 
+
   const CoachBotBody = () => {
     return (
       <>
-        {enrolled ? (
-          <>
-            {renderType === "static" && (
-              <Script src="../widget/coachbots-stt-widget.js" />
-            )}
+        {/* {enrolled ? (
+          <> */}
+        {renderType === "static" && (
+          <Script src="../widget/coachbots-stt-widget.js" />
+        )}
 
-            {!loginRequired && (
-              <div className="fixed max-sm:hidden right-[100px] bottom-12">
-                <span className="mr-6 text-sm font-bold">Try Now</span>
-                <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
-              </div>
-            )}
+        {!loginRequired && (
+          <div className="fixed max-sm:hidden right-[100px] bottom-12">
+            <span className="mr-6 text-sm font-bold">Try Now</span>
+            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          </div>
+        )}
 
-            {invalidId && renderType === "dynamic" && (
-              <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-                <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
-                  <AlertTriangle className="h-4 w-4 mr-2 inline" />
-                  We have encountered an error. Please try again.{" "}
+        {invalidId && renderType === "dynamic" && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              We have encountered an error. Please try again.{" "}
+            </div>
+          </div>
+        )}
+        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+          <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+            <NetworkNav user={user} />
+          </div>
+          <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
+            <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
+              <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+                COACH
+              </span>
+              BOTS
+            </h1>
+            <div>
+              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+                {renderType === "dynamic"
+                  ? `Welcome to ${coachName}'s Avatar🚀`
+                  : "Welcome to the Aarav Sharma’s Avatar!🚀"}
+              </h1>
+              <p className="my-4 max-sm:text-xs text-[#2f2323]">
+                <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+                  {" "}
+                  This is your coach/mentor’s personalized bot. Here, you would
+                  typically find a detailed description of your
+                  coach/mentor—highlighting their expertise, approach, and
+                  unique coaching/mentoring style. Dive into the detailed
+                  sections to explore the benefits and learn how it works. Our
+                  bot is trained on the coach/ mentor’s style, ideologies, and
+                  coaching/mentoring style, ensuring a tailored and effective
+                  coaching experience.{" "}
                 </div>
-              </div>
-            )}
-            <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-              <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-                <NetworkNav user={user} />
-              </div>
-              <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
-                <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-                  <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-                    COACH
-                  </span>
-                  BOTS
-                </h1>
-                <div>
-                  <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-                    {renderType === "dynamic"
-                      ? `Welcome to ${coachName}'s Avatar🚀`
-                      : "Welcome to the Aarav Sharma’s Avatar!🚀"}
-                  </h1>
-                  <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                    <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
-                      {" "}
-                      This is your coach/mentor’s personalized bot. Here, you
-                      would typically find a detailed description of your
-                      coach/mentor—highlighting their expertise, approach, and
-                      unique coaching/mentoring style. Dive into the detailed
-                      sections to explore the benefits and learn how it works.
-                      Our bot is trained on the coach/ mentor’s style,
-                      ideologies, and coaching/mentoring style, ensuring a
-                      tailored and effective coaching experience.{" "}
-                    </div>
-                  </p>
-                  {/* {renderType !== "dynamic" && (
+              </p>
+              {/* {renderType !== "dynamic" && (
                     <p className="my-4 max-sm:text-xs text-[#2f2323]">
                       This is where you will see the summary information of the
                       particular coach avatar. The bot on this page demonstrates
                       a conversation based on this profile.
                     </p>
                   )} */}
-                  {renderType === "dynamic" ? (
-                    // coachDescription
-                    <>
-                      <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                        <div className="w-[20%] max-sm:w-fit">
-                          <img
-                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                            src={coachProfileLink}
-                          />
-                        </div>{" "}
-                        <p className="w-[80%] max-sm:w-full text-left">
-                          {" "}
-                          {coachDescription}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                      <div className="w-[20%] max-sm:w-fit">
-                        <img
-                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                          src={
-                            "https://res.cloudinary.com/dtbl4jg02/image/upload/v1706180818/nvvgijnibqkznjh3d1pi.jpg"
-                          }
-                        />
-                      </div>{" "}
-                      <p className="w-[80%] max-sm:w-full text-left">
-                        {" "}
-                        I'm Aarav Sharma, a seasoned corporate coach with 15+
-                        years' experience in leadership development. Holding a
-                        master's in organizational psychology and certifications
-                        in executive coaching, I've collaborated with top-tier
-                        companies. My coaching style, a unique blend of empathy
-                        and strategic thinking, fosters a growth mindset and
-                        aligns personal values with professional goals. Known
-                        for approachability, I create a safe space for
-                        executives, incorporating mindfulness for self-awareness
-                        and resilience. Tailoring strategies to individual
-                        needs, I aim to be a trusted guide for long-term,
-                        sustainable leadership development in the dynamic
-                        corporate landscape.
-                      </p>
-                    </div>
-                  )}
+              {renderType === "dynamic" ? (
+                // coachDescription
+                <>
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                    <div className="w-[20%] max-sm:w-fit">
+                      <img
+                        className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                        src={profileImage}
+                      />
+                    </div>{" "}
+                    <p className="w-[80%] max-sm:w-full text-left">
+                      {" "}
+                      {coachDescription}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                  <div className="w-[20%] max-sm:w-fit">
+                    <img
+                      className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                      src={
+                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1706180818/nvvgijnibqkznjh3d1pi.jpg"
+                      }
+                    />
+                  </div>{" "}
+                  <p className="w-[80%] max-sm:w-full text-left">
+                    {" "}
+                    I'm Aarav Sharma, a seasoned corporate coach with 15+ years'
+                    experience in leadership development. Holding a master's in
+                    organizational psychology and certifications in executive
+                    coaching, I've collaborated with top-tier companies. My
+                    coaching style, a unique blend of empathy and strategic
+                    thinking, fosters a growth mindset and aligns personal
+                    values with professional goals. Known for approachability, I
+                    create a safe space for executives, incorporating
+                    mindfulness for self-awareness and resilience. Tailoring
+                    strategies to individual needs, I aim to be a trusted guide
+                    for long-term, sustainable leadership development in the
+                    dynamic corporate landscape.
+                  </p>
                 </div>
-                <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-                  {/* <Link target="_blank" href={coachProfileLink}>
+              )}
+            </div>
+            <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
+              {/* <Link target="_blank" href={coachProfileLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                       <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -305,31 +318,31 @@ const Coach = ({ user, renderType }: any) => {
                       </div>
                     </div>
                   </Link> */}
-                  <Link href={"#wtu"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Where to use
-                    </Button>
-                  </Link>
-                  <Link href={"#howItWorks"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      How Avatar works
-                    </Button>
-                  </Link>
-                  <Link href={"#benefits"}>
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Benefits
-                    </Button>
-                  </Link>
-                  {/* <Link target="_blank" href={coachBookLink}>
+              <Link href={"#wtu"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Where to use
+                </Button>
+              </Link>
+              <Link href={"#howItWorks"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  How Avatar works
+                </Button>
+              </Link>
+              <Link href={"#benefits"}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Benefits
+                </Button>
+              </Link>
+              {/* <Link target="_blank" href={coachBookLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                       <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -344,137 +357,137 @@ const Coach = ({ user, renderType }: any) => {
                       </div>
                     </div>
                   </Link> */}
-                </div>
-                <div id="wtu">
-                  <WhereToUse />
-                </div>
-                <div className="w-full" id="howItWorks">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      How Avatar works
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                            <Accordion
-                              type="single"
-                              collapsible
-                              className="w-full text-gray-500 max-sm:p-4 "
+            </div>
+            <div id="wtu">
+              <WhereToUse />
+            </div>
+            <div className="w-full" id="howItWorks">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  How Avatar works
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {howItWorks.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
                             >
-                              {howItWorks.map((test, i) => (
-                                <AccordionItem
-                                  key={i}
-                                  value={`item-${i + 1}`}
-                                  className={
-                                    i === howItWorks.length - 1
-                                      ? "border-none"
-                                      : "border-b"
-                                  }
-                                >
-                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                    <div>
-                                      <b>{test.heading}</b>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent className="max-sm:text-xs text-left">
-                                    <p> {test.description}</p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              ))}
-                            </Accordion>
-                          </div>
-                        </div>
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="w-full" id="benefits">
-                  <div className={`w-full flex justify-center`}>
-                    <Badge
-                      variant={"secondary"}
-                      className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                    >
-                      Benefits
-                    </Badge>
-                  </div>
-                  <div className="w-full">
-                    <div className="relative isolate mx-auto">
-                      <div>
-                        <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                            <Accordion
-                              type="single"
-                              collapsible
-                              className="w-full text-gray-500 max-sm:p-4 "
+              </div>
+            </div>
+            <div className="w-full" id="benefits">
+              <div className={`w-full flex justify-center`}>
+                <Badge
+                  variant={"secondary"}
+                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                >
+                  Benefits
+                </Badge>
+              </div>
+              <div className="w-full">
+                <div className="relative isolate mx-auto">
+                  <div>
+                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="w-full text-gray-500 max-sm:p-4 "
+                        >
+                          {benefitsData.map((test, i) => (
+                            <AccordionItem
+                              key={i}
+                              value={`item-${i + 1}`}
+                              className={
+                                i === howItWorks.length - 1
+                                  ? "border-none"
+                                  : "border-b"
+                              }
                             >
-                              {benefitsData.map((test, i) => (
-                                <AccordionItem
-                                  key={i}
-                                  value={`item-${i + 1}`}
-                                  className={
-                                    i === howItWorks.length - 1
-                                      ? "border-none"
-                                      : "border-b"
-                                  }
-                                >
-                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                    <div>
-                                      <b>{test.heading}</b>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent className="max-sm:text-xs text-left">
-                                    <p> {test.description}</p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              ))}
-                            </Accordion>
-                          </div>
-                        </div>
+                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                <div>
+                                  <b>{test.heading}</b>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="max-sm:text-xs text-left">
+                                <p> {test.description}</p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
-                  <Badge
-                    variant={"secondary"}
-                    className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-4 mt-12 max-sm:mt-8 max-sm:text-sm"
-                  >
-                    Disclaimer
-                  </Badge>
-                  <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-                    The coach/mentor's personalized bot is designed to enhance
-                    your coaching/mentoring experience. The information provided
-                    in the coach/mentor's detailed sections serves as a guide,
-                    and the effectiveness of coaching/mentoring is subjective.
-                    The coach can override the discussion via email.
-                  </p>
-                </div>
-              </div>
+            <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
+              <Badge
+                variant={"secondary"}
+                className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-4 mt-12 max-sm:mt-8 max-sm:text-sm"
+              >
+                Disclaimer
+              </Badge>
+              <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
+                The coach/mentor's personalized bot is designed to enhance your
+                coaching/mentoring experience. The information provided in the
+                coach/mentor's detailed sections serves as a guide, and the
+                effectiveness of coaching/mentoring is subjective. The coach can
+                override the discussion via email.
+              </p>
             </div>
-          </>
-        ) : (
-          <>
-            <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-              <NetworkNav user={user} />
-            </div>
-            <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-              <div className="flex flex-col items-center justify-center">
-                <p className="font-semibold text-sm">
-                  You have not enrolled as a program participant. Please enroll
-                  and try again.
-                </p>
-              </div>
-            </div>
-          </>
-        )}
+          </div>
+        </div>
       </>
+      // ) : (
+      //   <>
+      //     <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+      //       <NetworkNav user={user} />
+      //     </div>
+      //     <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+      //       <div className="flex flex-col items-center justify-center">
+      //         <p className="font-semibold text-sm">
+      //           You have not enrolled as a program participant. Please enroll
+      //           and try again.
+      //         </p>
+      //       </div>
+      //     </div>
+      //   </>
+      // )}
+      // </>
     );
   };
   return (
@@ -487,7 +500,6 @@ const Coach = ({ user, renderType }: any) => {
           </div>
         </div>
       )}
-      {!enrolled && <></>}
       {!strictLoginRequired && user && <CoachBotBody />}
       {strictLoginRequired && user && <CoachBotBody />}
       {strictLoginRequired && !user && (
