@@ -38,7 +38,7 @@ const NetworkNav = ({ user }: any) => {
                 : ""
             } `}
           >
-            Playground
+            Explore
           </Button>
         </Link>{" "}
         <Link href="/library">
@@ -104,7 +104,7 @@ const NetworkNav = ({ user }: any) => {
               }`}
               asChild
             >
-              <Link href={"/content-library"}>Playground</Link>
+              <Link href={"/content-library"}>Explore</Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem

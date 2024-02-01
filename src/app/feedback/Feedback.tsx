@@ -200,27 +200,40 @@ const Feedback = ({ user, renderType }: any) => {
                     Authorization: basicAuth,
                   },
                 }
-              ).then((response) => {
-                if (!response.ok) {
-                  const coachScribe =
-                    document.getElementsByClassName("deep-chat-poc2")[0];
-      
-                    console.log(coachScribe)
-                  const botButton = document.getElementsByClassName("chat-icon-container2")[0]
-                  botButton.removeAttribute("onclick")
-      
-                  
-                  const chatIcon = document.getElementsByClassName("chat-icon2")[0]
-                  const showEnrollmentToast = () => {
-                    chatIcon.addEventListener("click", () =>{
-                      toast.error("You have not enrolled as a program participant. Please enroll and try again.",)
-                    })
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  console.log("xyz-data", data);
+                  if (data.data.length === 0) {
+                    const coachScribe =
+                      document.getElementsByClassName("deep-chat-poc2")[0];
+
+                    console.log(coachScribe);
+                    const botButton = document.getElementsByClassName(
+                      "chat-icon-container2"
+                    )[0];
+                    botButton.removeAttribute("onclick");
+
+                    const chatIcon =
+                      document.getElementsByClassName("chat-icon2")[0];
+                    const showEnrollmentToast = () => {
+                      chatIcon.addEventListener("click", () => {
+                        toast.error(
+                          "You have not enrolled as a program participant. Please enroll and try again."
+                        );
+                      });
+                    };
+                    if (!chatIcon.getAttribute("onclick")) {
+                      chatIcon.setAttribute(
+                        "onclick",
+                        `${showEnrollmentToast()}`
+                      );
+                    }
                   }
-                  if(!chatIcon.getAttribute("onclick")){
-                    chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`)
-                  }
-                }
-              });
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
             });
         }
         fetch(
@@ -291,7 +304,9 @@ const Feedback = ({ user, renderType }: any) => {
             </h1>
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-              Hey this is {renderType === "dynamic" ? coachName : "Aarav Sharma"}, Love to hear your feedback
+                Hey this is{" "}
+                {renderType === "dynamic" ? coachName : "Aarav Sharma"}, Love to
+                hear your feedback
               </h1>
 
               <div className="p-2 mt-4 border border-gray-200 bg-amber-50 rounded-lg">
@@ -348,14 +363,14 @@ const Feedback = ({ user, renderType }: any) => {
                   Kudos Wall
                 </Button>
               </Link>
-              <Link href={"#wtu"}>
+              {/* <Link href={"#wtu"}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   Where to use
                 </Button>
-              </Link>
+              </Link> */}
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -440,9 +455,9 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
-            <div id="wtu">
+            {/* <div id="wtu">
               <WhereToUse />
-            </div>
+            </div> */}
             <div className="w-full" id="howItWorks">
               <div className={`w-full flex justify-center`}>
                 <Badge
