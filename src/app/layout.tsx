@@ -122,15 +122,23 @@ export default function RootLayout({
       ? window.localStorage.getItem("visitedSubject")
       : null;
 
-  useEffect(() => {
-    //temp-c
+  const hasVisitedOpenSimulation =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedOpenSimulation")
+      : null;
 
+  const hasVisitMyLibrary =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("visitedMyLibrary")
+      : null;
+
+  useEffect(() => {
     //hide bots from intake
     if (pathname.includes("intake")) {
       hideBots();
     }
     //ADD LOCALSTORAGE ITEM after user
-    if (pathname === "/coach" || pathname.includes("/coach-")) {
+    if (pathname === "/coach" || pathname.includes("/coach/")) {
       setShowCoachBot(true);
       if (!hasVisitedCoach) {
         window.location.reload();
@@ -176,6 +184,16 @@ export default function RootLayout({
         window.localStorage.setItem("visitedContentLibrary", "true"); //3 - visits /content-library and page refreshes
       }
       setShowCoachBot(false);
+    } else if (pathname === "/create-scenario") {
+      if (!hasVisitedOpenSimulation) {
+        window.location.reload();
+        window.localStorage.setItem("visitedOpenSimulation", "true");
+      }
+    } else if (pathname === "/library") {
+      if (!hasVisitMyLibrary) {
+        window.location.reload();
+        window.localStorage.setItem("visitedMyLibrary", "true");
+      }
     }
 
     if (pathname !== "/content-library") {
@@ -188,6 +206,14 @@ export default function RootLayout({
 
     if (pathname !== "/feedback" && !pathname.includes("/feedback/feedback")) {
       window.localStorage.removeItem("visitedFeedback");
+    }
+
+    if (pathname !== "/create-scenario") {
+      window.localStorage.removeItem("visitedOpenSimulation");
+    }
+
+    if (pathname !== "/library") {
+      window.localStorage.removeItem("visitedMyLibrary");
     }
 
     if (
@@ -221,6 +247,33 @@ export default function RootLayout({
       }
     }
   }, [pathname, user, isDemoUser, isRestricted]);
+
+  useEffect(() => {
+    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
+    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    if (pathname === "/library") {
+      if (coachScribe) {
+        coachScribe.setAttribute("style", "display: none;");
+      }
+      if (coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
+      }
+    } else if (pathname === "/profile") {
+      if (coachScribe) {
+        coachScribe.setAttribute("style", "display: none;");
+      }
+      if (coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
+      }
+    } else if (pathname === "/create-scenario") {
+      if (coachScribe) {
+        coachScribe.removeAttribute("style");
+      }
+      if (coachtalk) {
+        coachtalk.removeAttribute("style");
+      }
+    }
+  }, [pathname]);
 
   return (
     <html lang="en" className="bg-gray-100 grainy">
