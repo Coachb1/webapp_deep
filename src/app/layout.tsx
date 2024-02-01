@@ -10,8 +10,17 @@ import setupLogRocketReact from "logrocket-react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { hideBots, subdomain } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  getUserAccount,
+  hideBots,
+  subdomain,
+} from "@/lib/utils";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { LoadingComponent, LoginWall, UnAuth } from "./UnAuthpage";
+import { Loader } from "lucide-react";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +42,11 @@ export default function RootLayout({
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
+  // const [authorised, setAuthorised] = useState(true);
+  const [isRestricted, setIsRestricted] = useState<Boolean | null>(null);
+  const [isDemoUser, setIsDemoUser] = useState<Boolean | null>(null);
+
+  const [loading, setLoading] = useState<Boolean | null>(null);
 
   if (!isLoading && !logSessionStarted) {
     LogRocket.init("irkulq/coachbots");
@@ -48,6 +62,46 @@ export default function RootLayout({
     setLogSessionStarted(true);
     console.log("LOG SESSION STARTED");
   }
+
+  //Unauth check
+  useEffect(() => {
+    // if (pathname === "/") {
+    setLoading(true);
+    if (!isLoading) {
+      if (user) {
+        console.log(user.email);
+        getUserAccount(user)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            fetch(
+              `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: basicAuth,
+                },
+              }
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("GET USER INFO - Client : ", data);
+                console.log(
+                  data.data.user_info[0].is_demo_user,
+                  data.data.user_info[0].is_restricted
+                );
+                // setIsDemoUser(true);
+                setIsDemoUser(true);
+                setIsRestricted(data.data.user_info[0].is_restricted);
+                setLoading(false);
+              });
+          });
+      } else {
+        setLoading(false);
+      }
+    }
+    // }
+  }, [isLoading]);
 
   //auto refresh and conditional coach(aravsharma) bot display
   const hasVisitedContentLibrary =
@@ -69,6 +123,8 @@ export default function RootLayout({
       : null;
 
   useEffect(() => {
+    //temp-c
+
     //hide bots from intake
     if (pathname.includes("intake")) {
       hideBots();
@@ -145,20 +201,26 @@ export default function RootLayout({
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
-    if (pathname === "/profile") {
-      coachtalk.setAttribute("style", "display: none;");
-      coachScribe.setAttribute("style", "display: none;");
-    } else if (pathname === "/") {
-      coachtalk.setAttribute("style", "display: none;");
-      // coachScribe.setAttribute("style", "display: none;");
-    } else if (pathname.includes("intake")) {
-      coachtalk.setAttribute("style", "display: none;");
-      coachScribe.setAttribute("style", "display: none;");
-    } else {
-      coachtalk.removeAttribute("style");
-      coachScribe.removeAttribute("style");
+    if (isDemoUser && !isRestricted && user && !isLoading) {
+      if (pathname === "/profile") {
+        coachtalk.setAttribute("style", "display: none;");
+        coachScribe.setAttribute("style", "display: none;");
+      } else if (pathname === "/") {
+        coachtalk.setAttribute("style", "display: none;");
+        // coachScribe.setAttribute("style", "display: none;");
+      } else if (pathname.includes("intake")) {
+        if (coachScribe && coachtalk) {
+          coachtalk.setAttribute("style", "display: none;");
+          coachScribe.setAttribute("style", "display: none;");
+        }
+      } else {
+        if (coachScribe && coachtalk) {
+          coachtalk.removeAttribute("style");
+          coachScribe.removeAttribute("style");
+        }
+      }
     }
-  }, [pathname]);
+  }, [pathname, user, isDemoUser, isRestricted]);
 
   return (
     <html lang="en" className="bg-gray-100 grainy">
@@ -171,17 +233,69 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {subdomain === "platform" ? (
-                <div className="deep-chat-poc hidden"></div>
-              ) : (
-                <div className="deep-chat-poc"></div>
-              )}
-              {showCoachBot ? (
-                <div data-bot-id={botId} className="deep-chat-poc2"></div>
-              ) : (
-                <div className="deep-chat-poc2"></div>
-              )}
-              <AntdRegistry>{children}</AntdRegistry>
+              <AntdRegistry>
+                {!loading && !isLoading && (
+                  <>
+                    {!user ? (
+                      <>
+                        <LoginWall />
+                      </>
+                    ) : (
+                      <>
+                        {isRestricted ? (
+                          <>
+                            {isDemoUser ? (
+                              <>
+                                {" "}
+                                {subdomain === "platform" ? (
+                                  <div className="deep-chat-poc hidden"></div>
+                                ) : (
+                                  <div className="deep-chat-poc"></div>
+                                )}
+                                {showCoachBot ? (
+                                  <div
+                                    data-bot-id={botId}
+                                    className="deep-chat-poc2"
+                                  ></div>
+                                ) : (
+                                  <div className="deep-chat-poc2"></div>
+                                )}
+                                {children}
+                              </>
+                            ) : (
+                              <>
+                                <UnAuth user={user} />
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {subdomain === "platform" ? (
+                              <div className="deep-chat-poc hidden"></div>
+                            ) : (
+                              <div className="deep-chat-poc"></div>
+                            )}
+                            {showCoachBot ? (
+                              <div
+                                data-bot-id={botId}
+                                className="deep-chat-poc2"
+                              ></div>
+                            ) : (
+                              <div className="deep-chat-poc2"></div>
+                            )}
+                            {children}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+                {loading && (
+                  <>
+                    <LoadingComponent />
+                  </>
+                )}
+              </AntdRegistry>
             </ThemeProvider>
           </>
           <Toaster theme="light" richColors position="top-right" />
