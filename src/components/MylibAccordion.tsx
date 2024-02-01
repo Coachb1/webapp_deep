@@ -51,7 +51,10 @@ const MylibraryAccordion = ({ tests, badgeText, user }: testTypes) => {
                       <AccordionContent className="max-sm:text-xs">
                         <p> {test.description}</p>
                         <div className="flex justify-end mt-2">
-                          <CopyToClipboard textToCopy={test.test_code} />
+                          <CopyToClipboard
+                            textToCopy={test.test_code}
+                            copyType="code"
+                          />
                         </div>
                       </AccordionContent>
                     </AccordionItem>

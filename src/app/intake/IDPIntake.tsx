@@ -17,6 +17,7 @@ import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const IDPIntake = ({ user }: any) => {
   const params = useSearchParams();
@@ -103,8 +104,13 @@ const IDPIntake = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        resetAllStates();
-        setReportUrl(data.report);
+        if (data.msg.includes("error")) {
+          toast.error("Error while generating your IDP, Please try again!");
+          setOpenDialog(false);
+        } else {
+          resetAllStates();
+          setReportUrl(data.report);
+        }
       })
       .catch((err) => {
         setSubmitLoading(false);
@@ -163,6 +169,7 @@ const IDPIntake = ({ user }: any) => {
                       Your personal development plan is under process. It will
                       be available here and under your profile shortly. It will
                       also be emailed to you.
+                      <br /> Meanwhile you will be redirected in 10 seconds
                     </p>
                   </div>
                 </DialogDescription>
