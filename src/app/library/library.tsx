@@ -432,6 +432,7 @@ const MyLibrary = ({ user }: any) => {
                                                             textToCopy={
                                                               test.test_code
                                                             }
+                                                            copyType="code"
                                                           />
                                                         </div>
                                                       </AccordionContent>
@@ -488,6 +489,7 @@ const MyLibrary = ({ user }: any) => {
                                                             textToCopy={
                                                               test.test_code
                                                             }
+                                                            copyType="code"
                                                           />
                                                         </div>
                                                       </AccordionContent>
@@ -577,6 +579,7 @@ const MyLibrary = ({ user }: any) => {
                                                         textToCopy={
                                                           test.test_code
                                                         }
+                                                        copyType="code"
                                                       />
                                                     </div>
                                                   </AccordionContent>
@@ -658,6 +661,7 @@ const MyLibrary = ({ user }: any) => {
                                             </p>
                                             <div className="flex justify-end mt-2">
                                               <CopyToClipboard
+                                              copyType="code"
                                                 textToCopy={test.test_code}
                                               />
                                             </div>

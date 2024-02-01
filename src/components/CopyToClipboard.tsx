@@ -34,7 +34,7 @@ const CopyToClipboard = ({
         className="p-2 h-8 border border-gray-200"
         onClick={handleCopyClick}
       >
-        {isCopied ? "Copied" : copyType === "link" ? "Copy Link" : "Copy code"}
+        {isCopied ? "Copied" : `Copy ${copyType} `}
         <Copy className="h-4 w-4 ml-2" />
       </Button>
     </>

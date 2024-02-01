@@ -171,7 +171,10 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                     <p>{test?.description}</p>
                   </div>
                   <div className="flex justify-end mt-2">
-                    <CopyToClipboard textToCopy={test?.test_code!} />
+                    <CopyToClipboard
+                      textToCopy={test?.test_code!}
+                      copyType="code"
+                    />
                   </div>
                 </div>
               </>
