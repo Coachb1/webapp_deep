@@ -21,6 +21,7 @@ import Link from "next/link";
 interface Bot {
   bot_id: string;
   bot_name: string;
+  uid: string;
 }
 
 interface BotTypeEntry {
@@ -58,6 +59,7 @@ const MyPages = ({ user }: any) => {
               if (!existingEntry) {
                 botTypeMap[botType].push({
                   bot_id: entry.signature_bot.bot_id,
+                  uid: entry.signature_bot.uid,
                   bot_name: entry.bot_attributes.bot_name,
                 });
               }
@@ -224,7 +226,10 @@ const MyPages = ({ user }: any) => {
                   </Dialog>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
                   <Link
-                    href={intakeBotTypeLinks(botType.bot_type, bot.bot_id)!}
+                    href={
+                      intakeBotTypeLinks(botType.bot_type, bot.bot_id)! +
+                      `&uid=${bot.uid}`
+                    }
                   >
                     <Button
                       variant={"secondary"}
