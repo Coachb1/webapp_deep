@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
 import { Switch } from "@/components/ui/switch";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
 
 const CoachIntake = ({ user }: any) => {
@@ -26,6 +26,8 @@ const CoachIntake = ({ user }: any) => {
   const checkIfEdit = params.get("edit");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
+
+  const router = useRouter();
 
   if (checkIfEdit) {
     const [editLoading, setEditLoading] = useState(true);
@@ -199,9 +201,13 @@ const CoachIntake = ({ user }: any) => {
               if (data.data.length > 0) {
                 if (formType === "coach" && !checkIfEdit) {
                   setCanCreateProfile(false);
-                  toast.error(
-                    "Your Profile Already Exists, cannot create another one!"
+                  toast.loading(
+                    "Your Profile Already Exists, cannot create another one!\n Redirecting you to the home page."
                   );
+
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
                 }
               }
             })
@@ -281,148 +287,277 @@ const CoachIntake = ({ user }: any) => {
           );
         }
 
-        var myHeaders = new Headers();
-        myHeaders.append("Authorization", basicAuth);
+        if (!checkIfEdit) {
+          var myHeaders = new Headers();
+          myHeaders.append("Authorization", basicAuth);
 
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: formdata,
-        };
-        fetch(
-          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
-          requestOptions
-        )
-          .then((response) => response.json())
-          .then((result) => {
-            console.log(result);
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+          };
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
+            requestOptions
+          )
+            .then((response) => response.json())
+            .then((result) => {
+              console.log(result);
 
-            if (formType === "coach") {
-              myHeaders.append("Content-Type", "application/json");
-              const avatarBotCreationFormData = JSON.stringify({
-                bot_type: "avatar_bot",
-                bot_name: name,
-                email: user.email,
-                bot_details: { info: about, coach_name: name },
-                attributes: {
-                  heading: `welcome to ${name}'s avatar bot`,
-                },
-                participant_id: userId,
-                bot_base_url: `${
-                  subdomain === "playground"
-                    ? "https://playground.coachbots.com/coach/"
-                    : "https://platform.coachbots.com/coach/"
-                }`,
-                fitment_answer: `${participantLevel},${
-                  coachMentInSameDep === "yes" ? true : false
-                },${outcomeSupported}`,
-                fitment_data: {
-                  options: {
-                    "1": [
-                      "Anyone above me",
-                      "Same or up to two level below",
-                      "Any level",
-                    ],
-                    "2": ["Yes", "No"],
-                    "3": [
-                      "Career advancement",
-                      "Skill development",
-                      "Introspection & reflection",
-                      "Networking & leadership",
-                    ],
+              if (formType === "coach") {
+                myHeaders.append("Content-Type", "application/json");
+                const avatarBotCreationFormData = {
+                  bot_type: "avatar_bot",
+                  bot_name: name,
+                  email: user.email,
+                  bot_details: { info: about, coach_name: name },
+                  attributes: {
+                    heading: `welcome to ${name}'s avatar bot`,
                   },
-                  mentee_que: {
-                    "1": "What level of coach & mentor do you want?",
-                    "2": "I want a coach & mentor someone from the same department.",
-                    "3": "What kind of outcome do you want from these sessions the most?",
+                  participant_id: userId,
+                  bot_base_url: `${
+                    subdomain === "playground"
+                      ? "https://playground.coachbots.com/coach/"
+                      : "https://platform.coachbots.com/coach/"
+                  }`,
+                  fitment_answer: `${participantLevel},${
+                    coachMentInSameDep === "yes" ? true : false
+                  },${outcomeSupported}`,
+                  fitment_data: {
+                    options: {
+                      "1": [
+                        "Anyone above me",
+                        "Same or up to two level below",
+                        "Any level",
+                      ],
+                      "2": ["Yes", "No"],
+                      "3": [
+                        "Career advancement",
+                        "Skill development",
+                        "Introspection & reflection",
+                        "Networking & leadership",
+                      ],
+                    },
+                    mentee_que: {
+                      "1": "What level of coach & mentor do you want?",
+                      "2": "I want a coach & mentor someone from the same department.",
+                      "3": "What kind of outcome do you want from these sessions the most?",
+                    },
+                    mentor_que: {
+                      "1": "What level of participant do you want to coach & mentor?",
+                      "2": "I want to coach & mentor someone in the same department.",
+                      "3": "What kind of outcome can you support in these sessions the most?",
+                    },
                   },
-                  mentor_que: {
-                    "1": "What level of participant do you want to coach & mentor?",
-                    "2": "I want to coach & mentor someone in the same department.",
-                    "3": "What kind of outcome can you support in these sessions the most?",
+                  additional_data: {
+                    profile_type: "coach",
+                    area_domain: areaDomain,
+                    experience: experience,
+                    mentoring_preferences: mentoringPreferences,
+                    mentoring_frameworks: coachMentFrameworks,
+                    dominant_point_of_view: povProgramParticipants,
+                    problem_solving_approach: problemSolvingApproach,
+                    admired_leaders: leaderNames,
+                    profile_description: about,
+                    department: department,
+                    youtube_links: linksReflectingWVpersonal,
+                    article_links: linksReflectyouWished,
+                    voice_sample: voiceSample,
+                    fitment_answers: {
+                      coachmentSelect,
+                      participantLevel,
+                      coachMentInSameDep,
+                      outcomeSupported,
+                    },
                   },
-                },
-                additional_data: {
-                  profile_type: "coach",
-                  area_domain: areaDomain,
-                  experience: experience,
-                  mentoring_preferences: mentoringPreferences,
-                  mentoring_frameworks: coachMentFrameworks,
-                  dominant_point_of_view: povProgramParticipants,
-                  problem_solving_approach: problemSolvingApproach,
-                  admired_leaders: leaderNames,
-                  profile_description: about,
-                  department: department,
-                  youtube_links: linksReflectingWVpersonal,
-                  article_links: linksReflectyouWished,
-                  voice_sample: voiceSample,
-                  fitment_answers: {
-                    coachmentSelect,
-                    participantLevel,
-                    coachMentInSameDep,
-                    outcomeSupported,
+                  media_data: {
+                    youtube_links: linksReflectingWVpersonal,
+                    article_links: linksReflectyouWished,
                   },
-                },
-                media_data: {
-                  youtube_links: linksReflectingWVpersonal,
-                  article_links: linksReflectyouWished,
-                },
-              });
+                };
 
-              fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                method: checkIfEdit ? "PATCH" : "POST",
-                headers: myHeaders,
-                body: checkIfEdit
-                  ? JSON.stringify({
-                      bot_id: botIUidFromParams,
-                      updated_data: avatarBotCreationFormData,
-                    })
-                  : avatarBotCreationFormData,
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                  console.log(data);
-                  setCreateLoading(false);
-                  if (!data.error && !data.detail) {
-                    toast.success(
-                      "Thanks for your request. You will get notified when your profile is approved and live.",
-                      {
-                        duration: 6000,
-                      }
-                    );
-                    resetAllStates();
-                  } else {
-                    if (data.error === "Bot already exists") {
-                      toast.error("Bot already exists");
-                    } else {
-                      toast.error(
-                        "Error creating your coach profile. Please try again.",
+                fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                  method: checkIfEdit ? "PATCH" : "POST",
+                  headers: myHeaders,
+                  body: checkIfEdit
+                    ? JSON.stringify({
+                        bot_id: botIUidFromParams,
+                        updated_data: avatarBotCreationFormData,
+                      })
+                    : JSON.stringify(avatarBotCreationFormData),
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log(data);
+                    setCreateLoading(false);
+                    if (!data.error && !data.detail) {
+                      toast.success(
+                        "Thanks for your request. You will get notified when your profile is approved and live.",
                         {
                           duration: 6000,
                         }
                       );
+                      resetAllStates();
+                    } else {
+                      if (data.error === "Bot already exists") {
+                        toast.error("Bot already exists");
+                      } else {
+                        toast.error(
+                          "Error creating your coach profile. Please try again.",
+                          {
+                            duration: 6000,
+                          }
+                        );
+                      }
                     }
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    setCreateLoading(false);
+                  });
+              } else {
+                resetAllStates();
+                setCreateLoading(false);
+                toast.success(
+                  "Thanks for your request. You will get notified when your profile is approved and live.",
+                  {
+                    duration: 6000,
                   }
-                })
-                .catch((err) => {
-                  console.error(err);
-                  setCreateLoading(false);
-                });
-            } else {
-              resetAllStates();
-              setCreateLoading(false);
-              toast.success(
-                "Thanks for your request. You will get notified when your profile is approved and live.",
-                {
-                  duration: 6000,
-                }
+                );
+              }
+            })
+            .catch((error) => {
+              console.log("error", error);
+              toast.error(
+                "Error creating your coach profile. Please try again."
               );
-            }
-          })
-          .catch((error) => {
-            console.log("error", error);
-            toast.error("Error creating your coach profile. Please try again.");
-          });
+            });
+        } else {
+          if (formType === "coach") {
+            myHeaders.append("Content-Type", "application/json");
+            const avatarBotCreationFormData = {
+              bot_type: "avatar_bot",
+              bot_name: name,
+              email: user.email,
+              bot_details: { info: about, coach_name: name },
+              attributes: {
+                heading: `welcome to ${name}'s avatar bot`,
+              },
+              participant_id: userId,
+              bot_base_url: `${
+                subdomain === "playground"
+                  ? "https://playground.coachbots.com/coach/"
+                  : "https://platform.coachbots.com/coach/"
+              }`,
+              fitment_answer: `${participantLevel},${
+                coachMentInSameDep === "yes" ? true : false
+              },${outcomeSupported}`,
+              fitment_data: {
+                options: {
+                  "1": [
+                    "Anyone above me",
+                    "Same or up to two level below",
+                    "Any level",
+                  ],
+                  "2": ["Yes", "No"],
+                  "3": [
+                    "Career advancement",
+                    "Skill development",
+                    "Introspection & reflection",
+                    "Networking & leadership",
+                  ],
+                },
+                mentee_que: {
+                  "1": "What level of coach & mentor do you want?",
+                  "2": "I want a coach & mentor someone from the same department.",
+                  "3": "What kind of outcome do you want from these sessions the most?",
+                },
+                mentor_que: {
+                  "1": "What level of participant do you want to coach & mentor?",
+                  "2": "I want to coach & mentor someone in the same department.",
+                  "3": "What kind of outcome can you support in these sessions the most?",
+                },
+              },
+              additional_data: {
+                profile_type: "coach",
+                area_domain: areaDomain,
+                experience: experience,
+                mentoring_preferences: mentoringPreferences,
+                mentoring_frameworks: coachMentFrameworks,
+                dominant_point_of_view: povProgramParticipants,
+                problem_solving_approach: problemSolvingApproach,
+                admired_leaders: leaderNames,
+                profile_description: about,
+                department: department,
+                youtube_links: linksReflectingWVpersonal,
+                article_links: linksReflectyouWished,
+                voice_sample: voiceSample,
+                fitment_answers: {
+                  coachmentSelect,
+                  participantLevel,
+                  coachMentInSameDep,
+                  outcomeSupported,
+                },
+              },
+              media_data: {
+                youtube_links: linksReflectingWVpersonal,
+                article_links: linksReflectyouWished,
+              },
+            };
+
+            fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+              method: checkIfEdit ? "PATCH" : "POST",
+              headers: myHeaders,
+              body: checkIfEdit
+                ? JSON.stringify({
+                    bot_id: botIUidFromParams,
+                    updated_data: avatarBotCreationFormData,
+                  })
+                : JSON.stringify(avatarBotCreationFormData),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+                setCreateLoading(false);
+                if (!data.error && !data.detail) {
+                  toast.loading(
+                    "Your profile and Bot have been updated. Redirecting you to your profile.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  resetAllStates();
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 6000);
+                } else {
+                  if (data.error === "Bot already exists") {
+                    toast.error("Bot already exists");
+                  } else {
+                    toast.error(
+                      "Error creating your coach profile. Please try again.",
+                      {
+                        duration: 6000,
+                      }
+                    );
+                  }
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+                setCreateLoading(false);
+              });
+          } else {
+            resetAllStates();
+            setCreateLoading(false);
+            toast.success(
+              "Thanks for your request. You will get notified when your profile is approved and live.",
+              {
+                duration: 6000,
+              }
+            );
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -435,7 +570,7 @@ const CoachIntake = ({ user }: any) => {
     e.preventDefault();
     if (user) {
       setFeedbackCreateLoading(true);
-      var feedbackFormdata = JSON.stringify({
+      var feedbackFormdata = {
         bot_type: "feedback_bot",
         bot_name: name,
         email: user.email,
@@ -465,7 +600,7 @@ const CoachIntake = ({ user }: any) => {
             ? "https://playground.coachbots.com/feedback/"
             : "https://platform.coachbots.com/feedback/"
         }`,
-      });
+      };
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -479,7 +614,7 @@ const CoachIntake = ({ user }: any) => {
               bot_id: botIUidFromParams,
               updated_data: feedbackFormdata,
             })
-          : feedbackFormdata,
+          : JSON.stringify(feedbackFormdata),
       })
         .then((res) => res.json())
         .then((data) => {
