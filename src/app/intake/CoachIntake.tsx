@@ -25,6 +25,13 @@ const CoachIntake = ({ user }: any) => {
   const formType = params.get("type");
   const checkIfEdit = params.get("edit");
   const botIdFromParams = params.get("bot_id");
+  const botIUidFromParams = params.get("uid");
+
+  if (checkIfEdit) {
+    const [editLoading, setEditLoading] = useState(true);
+  }
+
+  const [canCreateProfile, setCanCreateProfile] = useState(true);
 
   function getBotById(botId: string, jsonData: any) {
     for (const item of jsonData) {
@@ -172,6 +179,37 @@ const CoachIntake = ({ user }: any) => {
           setCharacteristicsList(createLabelValuePairs);
         });
     }
+
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Can create coach?", data);
+
+              if (data.data.length > 0) {
+                if (formType === "coach" && !checkIfEdit) {
+                  setCanCreateProfile(false);
+                  toast.error(
+                    "Your Profile Already Exists, cannot create another one!"
+                  );
+                }
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        });
+    }
   }, []);
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
@@ -188,8 +226,11 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("about", about);
         formdata.append("experience", experience);
 
-        //@ts-ignore
-        formdata.append("profile_image", profileImage, "coachprofile.jpg");
+        if (!checkIfEdit) {
+          //@ts-ignore
+          formdata.append("profile_image", profileImage, "coachprofile.jpg");
+        }
+
         formdata.append("department", department);
 
         formdata.append("supported_outcome", outcomeSupported);
@@ -210,12 +251,14 @@ const CoachIntake = ({ user }: any) => {
             })
           );
           formdata.append("admired_leaders", leaderNames);
-          formdata.append(
-            "reference_docs",
-            //@ts-ignore
-            referenceDocs,
-            user.given_name + "reference" + referenceDocs?.type
-          );
+          if (!checkIfEdit) {
+            formdata.append(
+              "reference_docs",
+              //@ts-ignore
+              referenceDocs,
+              user.given_name + "reference" + referenceDocs?.type
+            );
+          }
           formdata.append(
             "voice_sample",
             `${voiceSample === "yes" ? true : false}`
@@ -259,6 +302,8 @@ const CoachIntake = ({ user }: any) => {
               const avatarBotCreationFormData = JSON.stringify({
                 bot_type: "avatar_bot",
                 bot_name: name,
+                email: user.email,
+                bot_details: { info: about, coach_name: name },
                 attributes: {
                   heading: `welcome to ${name}'s avatar bot`,
                 },
@@ -306,6 +351,17 @@ const CoachIntake = ({ user }: any) => {
                   dominant_point_of_view: povProgramParticipants,
                   problem_solving_approach: problemSolvingApproach,
                   admired_leaders: leaderNames,
+                  profile_description: about,
+                  department: department,
+                  youtube_links: linksReflectingWVpersonal,
+                  article_links: linksReflectyouWished,
+                  voice_sample: voiceSample,
+                  fitment_answers: {
+                    coachmentSelect,
+                    participantLevel,
+                    coachMentInSameDep,
+                    outcomeSupported,
+                  },
                 },
                 media_data: {
                   youtube_links: linksReflectingWVpersonal,
@@ -314,9 +370,14 @@ const CoachIntake = ({ user }: any) => {
               });
 
               fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                method: "POST",
+                method: checkIfEdit ? "PATCH" : "POST",
                 headers: myHeaders,
-                body: avatarBotCreationFormData,
+                body: checkIfEdit
+                  ? JSON.stringify({
+                      bot_id: botIUidFromParams,
+                      updated_data: avatarBotCreationFormData,
+                    })
+                  : avatarBotCreationFormData,
               })
                 .then((res) => res.json())
                 .then((data) => {
@@ -377,6 +438,7 @@ const CoachIntake = ({ user }: any) => {
       var feedbackFormdata = JSON.stringify({
         bot_type: "feedback_bot",
         bot_name: name,
+        email: user.email,
         attributes: {
           heading: "welcome to feedback bot",
           feedback_questions: {
@@ -386,12 +448,12 @@ const CoachIntake = ({ user }: any) => {
             "4": "How would like to see me implement the feedback you have provided so far?",
           },
         },
-        feedback_questions: {
-          "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-          "2": "Regarding workplace team management skills, how would you rate my skills?",
-          "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-          "4": "How would like to see me implement the feedback you have provided so far?",
-        },
+        // feedback_questions: {
+        //   "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+        //   "2": "Regarding workplace team management skills, how would you rate my skills?",
+        //   "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+        //   "4": "How would like to see me implement the feedback you have provided so far?",
+        // },
         participant_id: userId,
         additional_data: {
           short_profile_bio: profileBio,
@@ -400,8 +462,8 @@ const CoachIntake = ({ user }: any) => {
         },
         bot_base_url: `${
           subdomain === "playground"
-            ? "https://playground.coachbots.com/coach/"
-            : "https://platform.coachbots.com/coach/"
+            ? "https://playground.coachbots.com/feedback/"
+            : "https://platform.coachbots.com/feedback/"
         }`,
       });
 
@@ -410,33 +472,51 @@ const CoachIntake = ({ user }: any) => {
       myHeaders.append("Authorization", basicAuth);
 
       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-        method: "POST",
+        method: checkIfEdit ? "PATCH" : "POST",
         headers: myHeaders,
-        body: feedbackFormdata,
+        body: checkIfEdit
+          ? JSON.stringify({
+              bot_id: botIUidFromParams,
+              updated_data: feedbackFormdata,
+            })
+          : feedbackFormdata,
       })
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
           setFeedbackCreateLoading(false);
-          if (checkIfEdit) {
-            toast.success("Successfully Updated your feedback bot.", {
+
+          if (!data.error && !data.detail) {
+            if (checkIfEdit) {
+              toast.success("Successfully Updated your feedback bot.", {
+                duration: 6000,
+              });
+            } else {
+              toast.success(
+                "Thanks for your request. You will get notified when your Feedback bot is approved and live.",
+                {
+                  duration: 6000,
+                }
+              );
+            }
+            resetAllStates();
+          } else {
+            toast.error("Error creating your feedback bot. Please try again.", {
               duration: 6000,
             });
-          } else {
-            toast.success(
-              "Thanks for your request. You will get notified when your Feedback bot is approved and live.",
-              {
-                duration: 6000,
-              }
-            );
           }
-          resetAllStates();
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Error creating your feedback bot. Please try again.", {
-            duration: 6000,
-          });
+          if (checkIfEdit) {
+            toast.error("Error Updating your feedback bot. Please try again.", {
+              duration: 6000,
+            });
+          } else {
+            toast.error("Error creating your feedback bot. Please try again.", {
+              duration: 6000,
+            });
+          }
         });
     }
   };
@@ -494,22 +574,95 @@ const CoachIntake = ({ user }: any) => {
               .then((res) => res.json())
               .then((data) => {
                 console.log("Bot details for edit", data);
-                const resultingBot = getBotById(botIdFromParams!, data.data);
+                let resultingBot = getBotById(botIdFromParams!, data.data);
 
+                console.log(resultingBot);
+                resultingBot.signature_bot.bot_details.info = "hello";
                 console.log(resultingBot);
                 setName(resultingBot.bot_attributes.coach_name);
                 if (botIdFromParams?.includes("feedback")) {
                   setProfileBio(
-                    resultingBot.signature_bot.data.additional_data.short_profile_bio.trim()
+                    resultingBot.signature_bot.data.additional_data.short_profile_bio?.trim()
                   );
                   setCurrentProjects(
-                    resultingBot.signature_bot.data.additional_data.current_projects.trim()
+                    resultingBot.signature_bot.data.additional_data.current_projects?.trim()
                   );
                   setSuggestedProjects(
-                    resultingBot.signature_bot.data.additional_data.suggested_projects.trim()
+                    resultingBot.signature_bot.data.additional_data.suggested_projects?.trim()
                   );
-                } else if (botIdFromParams?.includes("coach-")) {
                 }
+              });
+          });
+      } else if (formType === "coach") {
+        getUserAccount(user)
+          .then((res) => res.json())
+          .then((data) => {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit - Coach", data);
+
+                const resultingBot = getBotById(botIdFromParams!, data.data);
+
+                console.log(resultingBot);
+                setName(resultingBot.bot_attributes.bot_name);
+                setAbout(
+                  resultingBot.signature_bot.data.additional_data.profile_description?.trim()
+                );
+                setExperience(
+                  resultingBot.signature_bot.data.additional_data.experience
+                );
+                setDepartment(
+                  resultingBot.signature_bot.data.additional_data.department
+                );
+                setAreaDomain(
+                  resultingBot.signature_bot.data.additional_data.area_domain
+                );
+                setMentoringPreferences(
+                  resultingBot.signature_bot.data.additional_data
+                    .mentoring_preferences
+                );
+                setCoachMentFrameworks(
+                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.trim()
+                );
+                setPovProgramParticipants(
+                  resultingBot.signature_bot.data.additional_data.dominant_point_of_view?.trim()
+                );
+                setProblemSolvingApproach(
+                  resultingBot.signature_bot.data.additional_data.problem_solving_approach?.trim()
+                );
+                setLinksReflectingWVpersonal(
+                  resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
+                );
+                setLinksReflectyouWished(
+                  resultingBot.signature_bot.data.additional_data.article_links?.trim()
+                );
+                setLeaderNames(
+                  resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
+                );
+                setVoiceSample(
+                  resultingBot.signature_bot.data.additional_data.voice_sample
+                );
+                setCoachMentSelect(
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers?.coachmentSelect
+                );
+                setCochMentInSameDep(
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers?.coachMentInSameDep
+                );
+                setParticipantLevel(
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers?.participantLevel
+                );
+                setOutcomeSupported(
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers?.outcomeSupported
+                );
               });
           });
       }
@@ -615,7 +768,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
-                        required
+                        required={!checkIfEdit}
                         type="file"
                         name="myImage"
                         accept="image/*"
@@ -835,7 +988,7 @@ const CoachIntake = ({ user }: any) => {
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
-                        required
+                        required={!checkIfEdit}
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
@@ -1007,9 +1160,9 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="my-2" />
                   <div>
                     {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
+                      <Button disabled={createLoading} className="h-8">
                         {" "}
-                        {feedbackCreateLoading ? (
+                        {createLoading ? (
                           <>
                             <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
                             Saving
@@ -1251,7 +1404,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
-                        required
+                        required={!checkIfEdit}
                         type="file"
                         name="myImage"
                         accept="image/*"

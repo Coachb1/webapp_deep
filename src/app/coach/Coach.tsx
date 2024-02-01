@@ -68,7 +68,7 @@ const Coach = ({ user, renderType }: any) => {
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
-  const [enrolled, SetEnrolled] = useState(true)
+  const [enrolled, SetEnrolled] = useState(true);
 
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
@@ -157,36 +157,49 @@ const Coach = ({ user, renderType }: any) => {
             .then((response) => response.json())
             .then((data) => {
               setIsLoading(false);
-        fetch(
-          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        ).then((response) => {
-          if (!response.ok) {
-            const coachScribe =
-              document.getElementsByClassName("deep-chat-poc2")[0];
+              fetch(
+                `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                }
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  console.log("xyz-data", data);
+                  if (data.data.length === 0) {
+                    const coachScribe =
+                      document.getElementsByClassName("deep-chat-poc2")[0];
 
-              console.log(coachScribe)
-            const botButton = document.getElementsByClassName("chat-icon-container2")[0]
-            botButton.removeAttribute("onclick")
+                    console.log(coachScribe);
+                    const botButton = document.getElementsByClassName(
+                      "chat-icon-container2"
+                    )[0];
+                    botButton.removeAttribute("onclick");
 
-            
-            const chatIcon = document.getElementsByClassName("chat-icon2")[0]
-            const showEnrollmentToast = () => {
-              chatIcon.addEventListener("click", () =>{
-                toast.error("You have not enrolled as a program participant. Please enroll and try again.",)
-              })
-            }
-            if(!chatIcon.getAttribute("onclick")){
-              chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`)
-            }
-          }
-        });
-        });
+                    const chatIcon =
+                      document.getElementsByClassName("chat-icon2")[0];
+                    const showEnrollmentToast = () => {
+                      chatIcon.addEventListener("click", () => {
+                        toast.error(
+                          "You have not enrolled as a program participant. Please enroll and try again."
+                        );
+                      });
+                    };
+                    if (!chatIcon.getAttribute("onclick")) {
+                      chatIcon.setAttribute(
+                        "onclick",
+                        `${showEnrollmentToast()}`
+                      );
+                    }
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            });
         }
       })
       .catch((err) => {
@@ -195,7 +208,6 @@ const Coach = ({ user, renderType }: any) => {
         setInValidCoach(true);
       });
   }, []);
-
 
   const CoachBotBody = () => {
     return (
@@ -318,14 +330,14 @@ const Coach = ({ user, renderType }: any) => {
                       </div>
                     </div>
                   </Link> */}
-              <Link href={"#wtu"}>
+              {/* <Link href={"#wtu"}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   Where to use
                 </Button>
-              </Link>
+              </Link> */}
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -358,9 +370,9 @@ const Coach = ({ user, renderType }: any) => {
                     </div>
                   </Link> */}
             </div>
-            <div id="wtu">
+            {/* <div id="wtu">
               <WhereToUse />
-            </div>
+            </div> */}
             <div className="w-full" id="howItWorks">
               <div className={`w-full flex justify-center`}>
                 <Badge

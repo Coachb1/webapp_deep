@@ -106,27 +106,37 @@ const SubjectExpert = ({ user, renderType }: any) => {
                 Authorization: basicAuth,
               },
             }
-          ).then((response) => {
-            if (!response.ok) {
-              const coachScribe =
-                document.getElementsByClassName("deep-chat-poc2")[0];
-  
-                console.log(coachScribe)
-              const botButton = document.getElementsByClassName("chat-icon-container2")[0]
-              botButton.removeAttribute("onclick")
-  
-              
-              const chatIcon = document.getElementsByClassName("chat-icon2")[0]
-              const showEnrollmentToast = () => {
-                chatIcon.addEventListener("click", () =>{
-                  toast.error("You have not enrolled as a program participant. Please enroll and try again.",)
-                })
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("xyz-data", data);
+              if (data.data.length === 0) {
+                const coachScribe =
+                  document.getElementsByClassName("deep-chat-poc2")[0];
+
+                console.log(coachScribe);
+                const botButton = document.getElementsByClassName(
+                  "chat-icon-container2"
+                )[0];
+                botButton.removeAttribute("onclick");
+
+                const chatIcon =
+                  document.getElementsByClassName("chat-icon2")[0];
+                const showEnrollmentToast = () => {
+                  chatIcon.addEventListener("click", () => {
+                    toast.error(
+                      "You have not enrolled as a program participant. Please enroll and try again."
+                    );
+                  });
+                };
+                if (!chatIcon.getAttribute("onclick")) {
+                  chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`);
+                }
               }
-              if(!chatIcon.getAttribute("onclick")){
-                chatIcon.setAttribute("onclick", `${showEnrollmentToast()}`)
-              }
-            }
-          });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
         });
     } else {
       setEnrolled(false);
@@ -226,11 +236,11 @@ const SubjectExpert = ({ user, renderType }: any) => {
                 <p className="mt-4 mb-2">{coachDescription}</p>
               ) : (
                 <p className="max-sm:text-xs text-[#2f2323]">
-                 This is a Stress Management Avatar created to
-                  provide users with personalized strategies and resources to
-                  help manage stress and anxiety. With extensive knowledge on
-                  techniques like mindfulness, meditation, deep breathing, and
-                  cognitive restructuring, this Avatar offers evidence-based
+                  This is a Stress Management Avatar created to provide users
+                  with personalized strategies and resources to help manage
+                  stress and anxiety. With extensive knowledge on techniques
+                  like mindfulness, meditation, deep breathing, and cognitive
+                  restructuring, this Avatar offers evidence-based
                   recommendations tailored to each user's unique needs. The
                   Avatar is grounded in techniques recommended by experts in the
                   field, so the users can take control of their stress and start
@@ -239,14 +249,14 @@ const SubjectExpert = ({ user, renderType }: any) => {
               )}
             </div>
             <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-              <Link href={"#wtu"}>
+              {/* <Link href={"#wtu"}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   Where to use
                 </Button>
-              </Link>
+              </Link> */}
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -264,9 +274,9 @@ const SubjectExpert = ({ user, renderType }: any) => {
                 </Button>
               </Link>
             </div>
-            <div id="wtu">
+            {/* <div id="wtu">
               <WhereToUse />
-            </div>
+            </div> */}
             <div className="w-full" id="howItWorks">
               <div className={`w-full flex justify-center`}>
                 <Badge
