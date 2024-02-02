@@ -169,7 +169,7 @@ const IDPIntake = ({ user }: any) => {
                       Your personal development plan is under process. It will
                       be available here and under your profile shortly. It will
                       also be emailed to you.
-                      <br /> Meanwhile you will be redirected in 10 seconds
+                      {/* <br /> Meanwhile you will be redirected in 10 seconds */}
                     </p>
                   </div>
                 </DialogDescription>
