@@ -168,7 +168,7 @@ const MyLibrary = ({ user }: any) => {
     if (user) {
       getTestsByCompetencies();
       getRequestedTests();
-      fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
+      fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",
         headers: {
           Authorization: basicAuth,

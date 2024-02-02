@@ -3187,6 +3187,31 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getClientInformationStt = async (use_case,user_id=null) => {
+    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    // use case can ====> my_lib or (user_info, user_id)
+    if(user_id && use_case === "user_info"){
+      url += `&user_id=${user_id}`
+    }
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      
+      return resp_json['data'][`${use_case}`]
+    } catch (error) {
+      console.error(`Error in getClientInformationStt: ${error}`);
+    }
+  };
+
   const SessionCheckStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
 
@@ -4000,7 +4025,8 @@ loadExternalModule().then(() => {
                   //   }
 
                   const group_list = ["Demo", "free", "Free"];
-                  const my_lib = await getTestCodesByRule2("my_lib");
+                  // const my_lib = await getTestCodesByRule2("my_lib");
+                  const my_lib = await getClientInformationStt("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user2.email)) {
                       group_list.push(item.group);
