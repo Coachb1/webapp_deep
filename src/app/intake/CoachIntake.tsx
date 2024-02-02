@@ -62,6 +62,7 @@ const CoachIntake = ({ user }: any) => {
   ];
   //intake fields state
   const [name, setName] = useState("");
+  const [profileId, setProfileId] = useState("");
   const [userId, setUserId] = useState("");
   const [profileImage, setProfileImage] = useState<File>();
   const [department, setDepartment] = useState("");
@@ -101,6 +102,7 @@ const CoachIntake = ({ user }: any) => {
 
   const resetAllStates = () => {
     setName("");
+    setProfileId("");
     setProfileImage(undefined);
     setDepartment("");
     setAbout("");
@@ -325,11 +327,14 @@ const CoachIntake = ({ user }: any) => {
             .then((response) => response.json())
             .then((result) => {
               console.log(result);
+              setProfileId(result.data.uid)
+              
 
               if (formType === "coach") {
                 myHeaders.append("Content-Type", "application/json");
                 const avatarBotCreationFormData = {
                   bot_type: "avatar_bot",
+                  profile_id: profileId,
                   bot_name: name,
                   email: user.email,
                   bot_details: { info: about, coach_name: name },
@@ -465,6 +470,7 @@ const CoachIntake = ({ user }: any) => {
             myHeaders.append("Content-Type", "application/json");
             const avatarBotCreationFormData = {
               bot_type: "avatar_bot",
+              profile_id: profileId,
               bot_name: name,
               email: user.email,
               bot_details: { info: about, coach_name: name },
@@ -604,6 +610,7 @@ const CoachIntake = ({ user }: any) => {
       var feedbackFormdata = {
         bot_type: "feedback_bot",
         bot_name: name,
+        profile_id: profileId,
         email: user.email,
         attributes: {
           heading: "welcome to feedback bot",

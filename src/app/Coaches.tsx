@@ -308,7 +308,7 @@ const Coaches = ({ user }: any) => {
                         </p>
                       </div>
                       <div className="w-[30%] max-sm:w-full flex flex-col items-center justify-start gap-3">
-                        {coach.avatar_bot_url !== null && (
+                        {coach.avatar_bot_url !== null && coach.avatar_bot_url !== "" &&(
                           <div className="w-full mt-[20%] max-sm:mt-4">
                             <Link href={coach.avatar_bot_url}>
                               <Button
@@ -320,7 +320,7 @@ const Coaches = ({ user }: any) => {
                             </Link>
                           </div>
                         )}
-                        {coach.feedback_wall !== null && (
+                        {coach.feedback_wall !== null && coach.feedback_wall !== "" &&(
                           <div className="w-full">
                             <Link href={coach.feedback_wall}>
                               <Button
