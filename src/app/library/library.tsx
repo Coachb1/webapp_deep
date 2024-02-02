@@ -87,6 +87,13 @@ const MyLibrary = ({ user }: any) => {
   const [newManagerTests, setNewManagerTests] = useState<newManagerTestsType[]>(
     []
   );
+  const [domainsOptionsNewManager, setDomainOptionsNewManager] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  const [filteredNewManagerTests, SetFilteredNewManagerTests] = useState<
+    newManagerTestsType[]
+  >([]);
   const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
 
   const [domainOptions, setDomainOptions] = useState<
@@ -171,7 +178,7 @@ const MyLibrary = ({ user }: any) => {
   };
 
   const getNewManagerTests = () => {
-    fetch(`${baseURL}/tests/get-requested-tests/`, {
+    fetch(`${baseURL}/tests/get-tests-by-tab-category/`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -180,7 +187,19 @@ const MyLibrary = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setNewManagerTests([]);
+        //@ts-ignore
+        const newManagerTests: newManagerTestsType[] = Object.entries(
+          data["Manager"]
+        ).map(([domain, tests]) => ({ domain, tests }));
+        setNewManagerTests(newManagerTests);
+        SetFilteredNewManagerTests(newManagerTests);
+        const tempConversionDomains = newManagerTests.map((test) => {
+          return {
+            label: test.domain,
+            value: test.domain,
+          };
+        });
+        setDomainOptionsNewManager(tempConversionDomains);
       })
       .catch((err) => console.error("Cannot retrive tests", err));
   };
@@ -189,7 +208,7 @@ const MyLibrary = ({ user }: any) => {
     if (user) {
       getTestsByCompetencies();
       getRequestedTests();
-      // getNewManagerTests();
+      getNewManagerTests();
       fetch(`${baseURL}/accounts/get-test-codes-for-web/`, {
         method: "GET",
         headers: {
@@ -258,6 +277,25 @@ const MyLibrary = ({ user }: any) => {
     });
     setFilteredTests(filtered);
     console.log(filtered);
+  };
+
+  const onDomainSelectHandlerNewManager = (val: string) => {
+    console.log(val);
+    const filtered = newManagerTests.filter((test) => {
+      return test.domain.toLowerCase().includes(val.toLowerCase());
+    });
+    console.log(filtered);
+    SetFilteredNewManagerTests(filtered);
+  };
+
+  const onDomainSearchHandlerNewManager = (value: string) => {
+    console.log("search:", value);
+    console.log("ALL:", tests);
+    const filtered = newManagerTests.filter((test) => {
+      return test.domain.toLowerCase().includes(value.toLowerCase());
+    });
+    console.log(filtered);
+    SetFilteredNewManagerTests(filtered);
   };
 
   return (
@@ -395,10 +433,20 @@ const MyLibrary = ({ user }: any) => {
                             />
                           </div>
 
-                          {tests.length === 0 && !isLoading && (
-                            <div>Sorry, there's no data yet.</div>
-                          )}
                           <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
+                            {tests.length === 0 && !isLoading && (
+                              <div className="w-[80%] mx-auto">
+                                <div className="relative isolate mx-auto">
+                                  <div>
+                                    <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
+                                      <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                        There are no data yet.
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                             {filteredTests.map((testbyCategory) => (
                               <>
                                 <div
@@ -652,9 +700,17 @@ const MyLibrary = ({ user }: any) => {
                   <h1 className="text-4xl  pt-12 max-sm:text-xl text-gray-600 font-semibold">
                     New Manager{" "}
                   </h1>
+                  <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                    <SearchNSelect
+                      placeholder="Select by Simulation domain"
+                      onSearchHandler={onDomainSearchHandlerNewManager}
+                      onDomainSelectHandler={onDomainSelectHandlerNewManager}
+                      optionDomains={domainOptions}
+                    />
+                  </div>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                     {newManagerTests.length > 0 &&
-                      newManagerTests.map((domains) => (
+                      filteredNewManagerTests.map((domains) => (
                         <>
                           {domains.tests.length > 0 && (
                             <>
@@ -691,7 +747,11 @@ const MyLibrary = ({ user }: any) => {
                                                   }
                                                 >
                                                   <AccordionTrigger className="text-left max-sm:text-xs">
-                                                    <div>{test.title}</div>
+                                                    <div>
+                                                      {test.title
+                                                        .split(":")[1]
+                                                        .trim()}
+                                                    </div>
                                                   </AccordionTrigger>
                                                   <AccordionContent className="max-sm:text-xs">
                                                     <p className="text-left">
