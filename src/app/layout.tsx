@@ -74,6 +74,7 @@ export default function RootLayout({
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
+
             fetch(
               `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
               {
@@ -91,7 +92,7 @@ export default function RootLayout({
                   data.data.user_info[0].is_restricted
                 );
                 // setIsDemoUser(true);
-                setIsDemoUser(true);
+                setIsDemoUser(data.data.user_info[0].is_demo_user);
                 setIsRestricted(data.data.user_info[0].is_restricted);
                 setLoading(false);
               });
