@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ConversationChat from "./ConversationChat";
 import { Loader } from "lucide-react";
 import { baseURL, basicAuth } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface Result {
   uid: string;
@@ -176,28 +177,21 @@ const Conversations = ({ user }: any) => {
   }, []);
   return (
     <>
-      {loading && (
-        <>
-          <div className="text-xs w-full h-20 flex items-center justify-center">
-            <div>
-              <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
-            </div>
-          </div>
-        </>
-      )}
-      {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
-        <div className="bg-accent p-2 mt-2 rounded-md">
-          <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
-          <div className="">
+      <div className="bg-accent p-2 mt-2 rounded-md">
+        <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
+        <div className="">
+          {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
             <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
+                    <Badge>Others Interaction</Badge>
                     <div className="flex flex-col w-full">
                       {conversationDataAdmin.map((conversation) => (
                         <ConversationChat
                           participant={conversation.participant_name}
                           conversation={conversation.conversation}
+                          botName={conversation.bot_name}
                           date={
                             conversation.date !== "" &&
                             formatDate(conversation.date)
@@ -211,6 +205,7 @@ const Conversations = ({ user }: any) => {
                 )}
                 {conversationData.length > 0 && (
                   <>
+                    <Badge>My interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationData.map((conversation) => (
                         <ConversationChat
@@ -229,22 +224,31 @@ const Conversations = ({ user }: any) => {
                 )}
               </div>
             </div>
-            {/* )} */}
-          </div>
-        </div>
-      ) : (
-        <>
-          {!loading && (
+          ) : (
             <>
-              <>
-                <div className="text-xs w-full h-20 flex items-center justify-center">
-                  <div>You have no conversations yet.</div>
-                </div>
-              </>
+              {!loading && (
+                <>
+                  <>
+                    <div className="text-xs w-full h-20 flex items-center justify-center">
+                      <div>You have no conversations yet.</div>
+                    </div>
+                  </>
+                </>
+              )}
             </>
           )}
-        </>
-      )}
+          {loading && (
+            <>
+              <div className="text-xs w-full h-20 flex items-center justify-center">
+                <div>
+                  <Loader className="h-4 w-4 mr-2 animate-spin inline" />{" "}
+                  Loading
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 };

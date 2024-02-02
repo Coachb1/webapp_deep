@@ -129,6 +129,11 @@ const CoachIntake = ({ user }: any) => {
     setCurrentProjects("");
   };
 
+  function getProfileTypes(data: any) {
+    const profileTypes = data.map((profile: any) => profile.profile_type);
+    return profileTypes;
+  }
+
   useEffect(() => {
     hideBots();
     if (user) {
@@ -199,17 +204,34 @@ const CoachIntake = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("Can create coach?", data);
-
-              if (data.data.length > 0) {
-                if (formType === "coach" && !checkIfEdit) {
+              const profileTypes = getProfileTypes(data.data);
+              if (data.data.length > 0 && !checkIfEdit) {
+                if (
+                  formType === "coach" &&
+                  (profileTypes.includes("coach") ||
+                    profileTypes.includes("mentor"))
+                ) {
                   setCanCreateProfile(false);
                   toast.loading(
-                    "Your Profile Already Exists, cannot create another one!\n Redirecting you to the home page."
+                    "Your profile as a Coach/Mentor already exists. You cannot create another one. Redirecting you to the home page"
                   );
-
                   setTimeout(() => {
                     router.push("/");
                   }, 4000);
+                } else if (formType === "coachee" && !checkIfEdit) {
+                  if (
+                    formType === "coachee" &&
+                    (profileTypes.includes("coachee") ||
+                      profileTypes.includes("mentee"))
+                  ) {
+                    setCanCreateProfile(false);
+                    toast.loading(
+                      "Your profile as a Coachee/Mentee already exists. You cannot create another one. Redirecting you to the home page"
+                    );
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 4000);
+                  }
                 }
               }
             })
@@ -403,6 +425,9 @@ const CoachIntake = ({ user }: any) => {
                         }
                       );
                       resetAllStates();
+                      setTimeout(() => {
+                        router.push("/");
+                      }, 4000);
                     } else {
                       if (data.error === "Bot already exists") {
                         toast.error("Bot already exists");
@@ -429,6 +454,9 @@ const CoachIntake = ({ user }: any) => {
                     duration: 6000,
                   }
                 );
+                setTimeout(() => {
+                  router.push("/");
+                }, 4000);
               }
             })
             .catch((error) => {
@@ -562,6 +590,9 @@ const CoachIntake = ({ user }: any) => {
                 duration: 6000,
               }
             );
+            setTimeout(() => {
+              router.push("/");
+            }, 4000);
           }
         }
       }
@@ -640,6 +671,9 @@ const CoachIntake = ({ user }: any) => {
                   duration: 6000,
                 }
               );
+              setTimeout(() => {
+                router.push("/");
+              }, 4000);
             }
             resetAllStates();
           } else {

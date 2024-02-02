@@ -173,6 +173,7 @@ const MyPages = ({ user }: any) => {
                       </DialogHeader>
                       <DialogFooter className="-mt-4">
                         <CopyToClipboard
+                          copyType="code"
                           textToCopy={`<div
                                 class="deep-chat-poc2"
                                 data-bot-id="${bot.bot_id}"

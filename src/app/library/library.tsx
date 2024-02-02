@@ -21,7 +21,11 @@ import { EQTests } from "@/lib/test";
 import { Separator } from "@/components/ui/separator";
 import SearchNSelect from "./SearchNSelect";
 import CreateYourOwn from "@/components/CreateYourOwn";
-import { competencySkillsTestType, TestsType } from "@/lib/types";
+import {
+  competencySkillsTestType,
+  newManagerTestsType,
+  TestsType,
+} from "@/lib/types";
 
 interface Test {
   title: string;
@@ -80,7 +84,9 @@ const MyLibrary = ({ user }: any) => {
 
   const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
     useState<competencySkillsTestType[]>([]);
-
+  const [newManagerTests, setNewManagerTests] = useState<newManagerTestsType[]>(
+    []
+  );
   const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
 
   const [domainOptions, setDomainOptions] = useState<
@@ -164,10 +170,27 @@ const MyLibrary = ({ user }: any) => {
     getRequestedTests();
   };
 
+  const getNewManagerTests = () => {
+    fetch(`${baseURL}/tests/get-requested-tests/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setNewManagerTests([]);
+      })
+      .catch((err) => console.error("Cannot retrive tests", err));
+  };
+
   useEffect(() => {
     if (user) {
       getTestsByCompetencies();
       getRequestedTests();
+      // getNewManagerTests();
+      
       fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",
         headers: {
@@ -304,6 +327,17 @@ const MyLibrary = ({ user }: any) => {
                     </Button>
                     <Button
                       onClick={() => {
+                        document.getElementById("new-manager")?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                      }}
+                      variant={"outline"}
+                      className={`h-8 max-sm:text-sm`}
+                    >
+                      New Manager
+                    </Button>
+                    <Button
+                      onClick={() => {
                         document
                           .getElementById("requested-tests")
                           ?.scrollIntoView({
@@ -432,6 +466,7 @@ const MyLibrary = ({ user }: any) => {
                                                             textToCopy={
                                                               test.test_code
                                                             }
+                                                            copyType="code"
                                                           />
                                                         </div>
                                                       </AccordionContent>
@@ -488,6 +523,7 @@ const MyLibrary = ({ user }: any) => {
                                                             textToCopy={
                                                               test.test_code
                                                             }
+                                                            copyType="code"
                                                           />
                                                         </div>
                                                       </AccordionContent>
@@ -518,12 +554,12 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   </>
                 )}
-                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
                 <div
                   id="competency-tests"
                   className="w-full flex flex-col items-center justify-center"
                 >
-                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                  <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
                     Competency Based Power Skills{" "}
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
@@ -577,6 +613,7 @@ const MyLibrary = ({ user }: any) => {
                                                         textToCopy={
                                                           test.test_code
                                                         }
+                                                        copyType="code"
                                                       />
                                                     </div>
                                                   </AccordionContent>
@@ -608,12 +645,103 @@ const MyLibrary = ({ user }: any) => {
                     )}
                   </div>
                 </div>
-                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                <div
+                  id="new-manager"
+                  className="w-full flex flex-col items-center justify-center"
+                >
+                  <h1 className="text-4xl  pt-12 max-sm:text-xl text-gray-600 font-semibold">
+                    New Manager{" "}
+                  </h1>
+                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                    {newManagerTests.length > 0 &&
+                      newManagerTests.map((domains) => (
+                        <>
+                          {domains.tests.length > 0 && (
+                            <>
+                              <div className={`w-full flex justify-center`}>
+                                <Badge
+                                  variant={"default"}
+                                  className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                >
+                                  <>✨ {domains.domain}</>
+                                </Badge>
+                              </div>
+
+                              <div className="w-full">
+                                <div className="relative isolate mx-auto">
+                                  <div>
+                                    <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                        <Accordion
+                                          type="single"
+                                          collapsible
+                                          className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                        >
+                                          {domains.tests.length > 0 &&
+                                            domains.tests.map((test, i) => (
+                                              <>
+                                                <AccordionItem
+                                                  key={i}
+                                                  value={`item-${i + 1}`}
+                                                  className={
+                                                    i ===
+                                                    domains.tests.length - 1
+                                                      ? "border-none"
+                                                      : "border-b"
+                                                  }
+                                                >
+                                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                                    <div>{test.title}</div>
+                                                  </AccordionTrigger>
+                                                  <AccordionContent className="max-sm:text-xs">
+                                                    <p className="text-left">
+                                                      {" "}
+                                                      {test.description}
+                                                    </p>
+                                                    <div className="flex justify-end mt-2">
+                                                      <CopyToClipboard
+                                                        textToCopy={
+                                                          test.test_code
+                                                        }
+                                                        copyType="code"
+                                                      />
+                                                    </div>
+                                                  </AccordionContent>
+                                                </AccordionItem>
+                                              </>
+                                            ))}
+                                        </Accordion>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </>
+                      ))}
+                    {newManagerTests.length === 0 && (
+                      <div className="w-full">
+                        <div className="relative isolate mx-auto">
+                          <div>
+                            <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
+                              <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                There are no data yet.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>{" "}
+                </div>
+                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
                 <div
                   id="requested-tests"
                   className="w-full flex flex-col items-center justify-center"
                 >
-                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                  <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
                     Requested Scenarios
                   </h1>
                   {requestedScenariosLoading ? (
@@ -658,6 +786,7 @@ const MyLibrary = ({ user }: any) => {
                                             </p>
                                             <div className="flex justify-end mt-2">
                                               <CopyToClipboard
+                                                copyType="code"
                                                 textToCopy={test.test_code}
                                               />
                                             </div>
