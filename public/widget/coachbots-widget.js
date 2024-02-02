@@ -2321,6 +2321,28 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getClientInformation = async (use_case,user_id) => {
+    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    // use case can ====> my_lib or (user_info, user_id)
+    if(user_id && use_case === "user_info"){
+      url += `&user_id=${user_id}`
+    }
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      return resp_json['data'][`${use_case}`]
+    } catch (error) {
+      console.error(`Error in getClientInformation: ${error}`);
+    }
+  };
+
   const SesseionCheck = async (session_id) => {
     const url = `${baseURL}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
 
@@ -3412,7 +3434,8 @@ loadExternalModule().then(() => {
 
                 if (user) {
                   const group_list = ["Demo", "free", "Free"];
-                  const my_lib = await getTestCodesByRule("my_lib");
+                  // const my_lib = await getTestCodesByRule("my_lib");
+                  const my_lib = await getClientInformation("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user.email)) {
                       group_list.push(item.group);
