@@ -1268,14 +1268,15 @@ coords.map((item) => {
 
 
 // to reset all variables
-const resetAllVariables = () => {
+const resetAllVariables = async () => {
   //* reset all variables : start
+  responsesDone = false;
+  questionIndex = 0;
   userResponses = []
   DuplicateResponseCount = 0;
   console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
-  questionIndex = 0;
   questionId = null;
   userResponse = "";
 
@@ -1293,7 +1294,6 @@ const resetAllVariables = () => {
   senarioCase = "";
   senarioMediaDescription;
   questionMediaLink = null;
-  responsesDone = false;
   userName = "";
   userEmail = "";
   reportUrl = null;
@@ -1323,6 +1323,7 @@ const resetAllVariables = () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
+  console.log("resetting variables completed")
 };
 
 function  increaseActionPoint(user_id,field_name){
@@ -3207,10 +3208,17 @@ loadExternalModule().then(() => {
               msg.parentNode.replaceChild(que_msg, msg);
             }
             await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
+            // resetAllVariables(); //reseting variables
 
-            signals.onResponse({
-              html: "<b>Your session is terminated. You can restart again!</b>",
+            // signals.onResponse({
+            //   html: "<b>Your session is terminated. You can restart again!</b>",
+            // });
+            resetAllVariables().then(() => {
+              console.log("Your session is terminated. You can restart again!")
+
+              signals.onResponse({
+                html: "<b>Your session is terminated. You can restart again!</b>",
+              });
             });
             // setTimeout(() => {
             //   window.location.reload();
