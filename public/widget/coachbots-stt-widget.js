@@ -843,6 +843,11 @@ async function handleFaqButtonClick(question) {
             appendMessage2("Your fitment score is low or has not been attempted. Please proceed with this in mind.")
             }
         }
+        console.log(botType)
+        if(botType === "subject_matter_bot"){
+          appendMessage2("Please provide context to start conversaton.")
+          return;
+        }
 
         isAskingInitialQuestions = true;
         appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
