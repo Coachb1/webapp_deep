@@ -1411,14 +1411,15 @@ coordsStt.map((item) => {
 }
 
 // to reset all variables
-const resetAllVariablesStt = () => {
+const resetAllVariablesStt = async () => {
   //* reset all variables : start
+  responsesDone2 = false;
+  questionIndex2 = 0;
   userResponses2 = [];
   DuplicateResponseCount2 = 0;
   console.log("resetingvariables")
   questionText2 = "";
   reportType2 = "interactionSessionReport";
-  questionIndex2 = 0;
   questionId2 = null;
   userResponse2 = "";
 
@@ -1434,7 +1435,6 @@ const resetAllVariablesStt = () => {
   senarioTitle2 = "";
   senarioMediaDescription2;
   questionMediaLinkStt = null;
-  responsesDone2 = false;
   userName2 = "";
   userEmail2 = "";
   reportUrl2 = null;
@@ -1466,6 +1466,8 @@ const resetAllVariablesStt = () => {
   isTranscriptOnlyStt = false;
   allowRecommendationTestCode = false;
   recommendationClicked = false;
+
+  console.log("resetting variables completed")
 };
 
 function  increaseActionPointStt(user_id,field_name){
@@ -1491,6 +1493,7 @@ function  increaseActionPointStt(user_id,field_name){
 }
 async function  getFitmentScore(user_id){
   try{
+    console.log(`user_id : ${user_id}, bot_id: ${botId}`)
     const resp = await fetch(
       `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}&bot_id=${botId}`,
       {
@@ -3775,9 +3778,16 @@ loadExternalModule().then(() => {
               msg.parentNode.replaceChild(que_msg, msg);
             }
 
-            resetAllVariablesStt(); //reseting variables
-            signals.onResponse({
-              html: "<b>Your session is terminated. You can restart again!</b>",
+            // resetAllVariablesStt(); //reseting variables
+            // signals.onResponse({
+            //   html: "<b>Your session is terminated. You can restart again!</b>",
+            // });
+            resetAllVariablesStt().then(() => {
+              console.log("Your session is terminated. You can restart again!")
+
+              signals.onResponse({
+                html: "<b>Your session is terminated. You can restart again!</b>",
+              });
             });
             // setTimeout(() => {
             //   window.location.reload();
