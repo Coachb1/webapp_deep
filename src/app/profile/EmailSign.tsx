@@ -67,8 +67,8 @@ const EmailSign = ({ user }: any) => {
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Email Signature</div>
       <>
-        {totalActionPoints < 3 ? (
-          <div className="text-xs w-full h-40 min-h-40 flex items-center justify-center">
+        {false ? ( //totalActionPoints < 3
+          <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
             <div>Your custom email signature is currently not active.</div>{" "}
           </div>
         ) : (
@@ -81,7 +81,7 @@ const EmailSign = ({ user }: any) => {
               />
               <div className="text-sm font-semibold text-gray-700 mt-2">
                 <CopyToClipboard
-                  copyType="Signature"
+                  copyType="signature"
                   textToCopy={`With Best Regards, 
 Mala Kumari
 Employee Experience Manager 
