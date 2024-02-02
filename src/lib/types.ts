@@ -63,3 +63,15 @@ export interface competencySkillsTestType {
   skill: string;
   tests: TestsType[];
 }
+
+export interface TestsType {
+  title: string;
+  description: string;
+  test_code: string;
+  test_type?: string;
+}
+
+export interface newManagerTestsType {
+  domain: string;
+  tests: TestsType[];
+}
