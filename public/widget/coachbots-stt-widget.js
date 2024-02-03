@@ -113,6 +113,7 @@ let CoachingForFitment;
 let previousFitmentJson = {};
 let userResponses2 = []
 let DuplicateResponseCount2 = 0;
+let isAttemptingRecommendation = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -967,6 +968,8 @@ function handleEndConversation() {
     "<b>Thanks for interacting with me. Have a great day!</b>"
   );
 
+  isSessionActiveStt = false;
+
   let emailForm;
   if(window.innerWidth > 768) {
     emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
@@ -1418,8 +1421,11 @@ coordsStt.map((item) => {
 // to reset all variables
 const resetAllVariablesStt = async () => {
   //* reset all variables : start
+
+  isAttemptingRecommendation = false;
   responsesDone2 = false;
   questionIndex2 = 0;
+
   userResponses2 = [];
   DuplicateResponseCount2 = 0;
   console.log("resetingvariables")
@@ -2515,6 +2521,7 @@ function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title)
     optedNo2 = true;
     userAcessAvailability2 = true;
     recommendationClicked = false;
+    isAttemptingRecommendation = true;
   }
 
   gShadowRoot2.getElementById("text-input").focus();
@@ -3554,6 +3561,13 @@ loadExternalModule().then(() => {
             }
 
             console.log("Yes OMG control is reaching here") 
+            if (isAskingInitialQuestions == false && fitmentAnalysisInProgress == false && isSessionActiveStt == false && isAttemptingRecommendation == false ) {
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+              })
+              return;
+            }
+            
 
             if (isAskingInitialQuestions == true) {
                 // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
@@ -3849,6 +3863,14 @@ loadExternalModule().then(() => {
               buttonTextArray.push(value.trim());
             });
             //end
+
+            console.log("isAttemptingRecommendation : ", isAttemptingRecommendation, "isValidMessageStt(latestMessage) : ", isValidMessageStt(latestMessage), "isProceedstt", isProceedStt)
+            if ( isAttemptingRecommendation == true && isProceedStt == "true" && isValidMessageStt(latestMessage) == false) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+                });
+                return;
+              }
 
             if (!buttonTextArray.includes(latestMessage) && allowRecommendationTestCode == false) {
               if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
