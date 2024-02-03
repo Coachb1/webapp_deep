@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
 import { Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
@@ -16,6 +16,7 @@ import { TooltipWrapper } from "./TooltipWrapper";
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
+  const params = useSearchParams();
   return (
     <div className="flex flex-row gap-2">
       <div className="flex flex-row gap-2 max-sm:hidden">
@@ -73,10 +74,15 @@ const NetworkNav = ({ user }: any) => {
               <Button
                 onClick={() => {
                   router.push("/intake/?type=IDP");
+                  console.log(pathname, params.toString());
                 }}
                 disabled={!user}
                 variant={"outline"}
-                className={`h-8 max-sm:text-sm`}
+                className={` h-8 max-sm:text-sm ${
+                  params.toString().includes("IDP")
+                    ? "border border-gray-500 shadow-md"
+                    : ""
+                } `}
               >
                 IDP <Info className="h-4 w-4 ml-2" />
               </Button>
@@ -136,7 +142,9 @@ const NetworkNav = ({ user }: any) => {
                       }}
                       disabled={!user}
                       variant={"outline"}
-                      className={`h-8 p-0 pl-2 max-sm:text-sm border-none`}
+                      className={`h-8 w-full text-start flex flex-row justify-start p-0 pl-2 max-sm:text-sm border-none  ${
+                        params.toString().includes("IDP") ? "bg-gray-200" : ""
+                      }`}
                     >
                       IDP <Info className="h-4 w-4 ml-2" />
                     </Button>
