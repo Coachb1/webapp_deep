@@ -94,6 +94,14 @@ const IDPIntake = ({ user }: any) => {
     setTimeout(() => {
       setSubmitLoading(false);
       setOpenDialog(true);
+      toast.success(
+        "Thank you. Your development plan and recommendations will be emailed to you soon. It will be also available in the profile section for you to review.",
+        {
+          position: "bottom-right",
+          duration: 10000,
+        }
+      );
+      resetAllStates();
     }, 4000);
 
     fetch(`${baseURL}/accounts/get_or_create_idp/`, {
@@ -113,13 +121,14 @@ const IDPIntake = ({ user }: any) => {
         }
       })
       .catch((err) => {
+        toast.error("Error while generating your IDP, Please try again!");
         setSubmitLoading(false);
         console.error(err);
       });
   };
   return (
     <>
-      <Dialog open={openDialog}>
+      {/* <Dialog open={openDialog}>
         <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
           {reportUrl.length > 0 ? (
             <>
@@ -169,7 +178,6 @@ const IDPIntake = ({ user }: any) => {
                       Your personal development plan is under process. It will
                       be available here and under your profile shortly. It will
                       also be emailed to you.
-                      <br /> Meanwhile you will be redirected in 10 seconds
                     </p>
                   </div>
                 </DialogDescription>
@@ -189,7 +197,7 @@ const IDPIntake = ({ user }: any) => {
             </>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       <div className="flex flex-col justify-center items-center w-full">
         <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
           <h1 className="text-xl text-left text-gray-600 font-bold">

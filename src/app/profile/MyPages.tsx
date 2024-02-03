@@ -60,7 +60,7 @@ const MyPages = ({ user }: any) => {
                 botTypeMap[botType].push({
                   bot_id: entry.signature_bot.bot_id,
                   uid: entry.signature_bot.uid,
-                  bot_name: entry.bot_attributes.bot_name,
+                  bot_name: entry.bot_attributes.coach_name,
                 });
               }
             });

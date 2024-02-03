@@ -88,7 +88,12 @@ const CreateOwn = ({ user }: any) => {
           params.set(
             "information",
             JSON.stringify({
-              data: { information: video.snippet.description },
+              data: {
+                information:
+                  video.snippet.description.length > 0
+                    ? video.snippet.description
+                    : video.snippet.title,
+              },
               title: video.snippet.title,
             })
           );
@@ -97,6 +102,7 @@ const CreateOwn = ({ user }: any) => {
           params.set("creator_user_id", userId);
           url.search = params;
 
+          console.log(url);
           fetch(url, {
             method: "POST",
             headers: {
@@ -115,6 +121,7 @@ const CreateOwn = ({ user }: any) => {
             })
             .catch((err) => {
               console.error(err);
+              setGenerationError(true);
               toast.error("Error generating your scenario");
             });
         });
@@ -177,8 +184,8 @@ const CreateOwn = ({ user }: any) => {
               </>
             ))}
           {generationError && (
-            <p className="text-red-400 my-4 text-sm max-sm:text-xs w-full text-center">
-              Encountered and error while Generating your scenarios. It will be
+            <p className="text-red-400 my-8 text-sm max-sm:text-xs w-full text-center">
+              Encountered an error while Generating your scenarios. It will be
               saved in "My Library (Requested Scenario Tab)"
             </p>
           )}
@@ -211,7 +218,7 @@ const CreateOwn = ({ user }: any) => {
       params.set(
         "information",
         JSON.stringify({
-          data: { information: decsription },
+          data: { information: decsription.length > 0 ? decsription : title },
           title: title,
         })
       );
@@ -239,6 +246,7 @@ const CreateOwn = ({ user }: any) => {
         })
         .catch((err) => {
           console.error(err);
+          setGenerationError(true);
           toast.error("Error generating your scenario");
           setGenerateLoading(false);
         });
@@ -306,8 +314,8 @@ const CreateOwn = ({ user }: any) => {
               </>
             ))}
           {generationError && (
-            <p className="text-red-400 my-4 text-sm max-sm:text-xs w-full text-center">
-              Encountered and error while Generating your scenarios. It will be
+            <p className="text-red-400 my-8 text-sm max-sm:text-xs w-full text-center">
+              Encountered an error while Generating your scenarios. It will be
               saved in "My Library (Requested Scenario Tab)"
             </p>
           )}

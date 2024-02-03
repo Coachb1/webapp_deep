@@ -1268,14 +1268,15 @@ coords.map((item) => {
 
 
 // to reset all variables
-const resetAllVariables = () => {
+const resetAllVariables = async () => {
   //* reset all variables : start
+  responsesDone = false;
+  questionIndex = 0;
   userResponses = []
   DuplicateResponseCount = 0;
   console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
-  questionIndex = 0;
   questionId = null;
   userResponse = "";
 
@@ -1293,7 +1294,6 @@ const resetAllVariables = () => {
   senarioCase = "";
   senarioMediaDescription;
   questionMediaLink = null;
-  responsesDone = false;
   userName = "";
   userEmail = "";
   reportUrl = null;
@@ -1323,6 +1323,7 @@ const resetAllVariables = () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
+  console.log("resetting variables completed")
 };
 
 function  increaseActionPoint(user_id,field_name){
@@ -2320,6 +2321,28 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getClientInformation = async (use_case,user_id) => {
+    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    // use case can ====> my_lib or (user_info, user_id)
+    if(user_id && use_case === "user_info"){
+      url += `&user_id=${user_id}`
+    }
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      return resp_json['data'][`${use_case}`]
+    } catch (error) {
+      console.error(`Error in getClientInformation: ${error}`);
+    }
+  };
+
   const SesseionCheck = async (session_id) => {
     const url = `${baseURL}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
 
@@ -3207,10 +3230,17 @@ loadExternalModule().then(() => {
               msg.parentNode.replaceChild(que_msg, msg);
             }
             await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
+            // resetAllVariables(); //reseting variables
 
-            signals.onResponse({
-              html: "<b>Your session is terminated. You can restart again!</b>",
+            // signals.onResponse({
+            //   html: "<b>Your session is terminated. You can restart again!</b>",
+            // });
+            resetAllVariables().then(() => {
+              console.log("Your session is terminated. You can restart again!")
+
+              signals.onResponse({
+                html: "<b>Your session is terminated. You can restart again!</b>",
+              });
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -3404,7 +3434,8 @@ loadExternalModule().then(() => {
 
                 if (user) {
                   const group_list = ["Demo", "free", "Free"];
-                  const my_lib = await getTestCodesByRule("my_lib");
+                  // const my_lib = await getTestCodesByRule("my_lib");
+                  const my_lib = await getClientInformation("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user.email)) {
                       group_list.push(item.group);

@@ -1,6 +1,5 @@
 "use client";
 
-import CopyToClipboard from "@/components/CopyToClipboard";
 import { Button } from "@/components/ui/button";
 import { baseURL, basicAuth, calculateTotalActionPoints } from "@/lib/utils";
 import { Copy } from "lucide-react";
@@ -8,6 +7,7 @@ import { useEffect, useState } from "react";
 
 const EmailSign = ({ user }: any) => {
   const [totalActionPoints, setTotalActionPoints] = useState(0);
+  const [copied, setCopied] = useState(false);
   useEffect(() => {
     fetch(`${baseURL}/accounts/`, {
       method: "POST",
@@ -58,37 +58,81 @@ const EmailSign = ({ user }: any) => {
           });
       });
   }, []);
-
   useEffect(() => {
     console.log(totalActionPoints);
   }, [totalActionPoints]);
+
+  const copySignatureHandler = () => {
+    const emailSign = document.getElementById("email-sign");
+    console.log(emailSign);
+    var range = document.createRange();
+    range.selectNodeContents(emailSign!);
+    var selection = window.getSelection();
+    selection!.removeAllRanges();
+    selection!.addRange(range);
+    console.log(selection);
+    document.execCommand("copy");
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+  };
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Email Signature</div>
       <>
-        {false ? ( //totalActionPoints < 3
+        {totalActionPoints < 3 ? (
           <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
             <div>Your custom email signature is currently not active.</div>{" "}
           </div>
         ) : (
           <div className="m-4">
             <div>
-              <img
-                src="/feedbackSign.png"
-                alt="feedback email sign"
-                className="w-60 max-sm:w-full h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain"
-              />
+              <div className="w-fit max-sm:w-full h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
+                <div
+                  id="email-sign"
+                  className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                >
+                  <div>With best Regards,</div>
+                  <div>Mala Kumari</div>
+                  <div>Employee Experience Manager </div>
+                  <div>
+                    Email:{" "}
+                    <a
+                      style={{
+                        color: "#2563eb",
+                        textDecoration: "underline",
+                      }}
+                      href="maito:mala@world.com"
+                    >
+                      mala@world.com
+                    </a>{" "}
+                  </div>
+                  <div>Phone: +91-889988998 </div>
+                  <a
+                    href="https://playground.coachbots.com/feedback"
+                    style={{
+                      fontWeight: 600,
+                      fontSize: "12px",
+                      color: "#2563eb",
+                      fontFamily: "serif",
+                    }}
+                  >
+                    🤔 Open to your feedback - How am I doing? 📈{" "}
+                  </a>
+                </div>
+              </div>
               <div className="text-sm font-semibold text-gray-700 mt-2">
-                <CopyToClipboard
-                  copyType="signature"
-                  textToCopy={`With Best Regards, 
-Mala Kumari
-Employee Experience Manager 
-Email: mala@world.com
-Phone: +91-889988998
-🤔 Feeling stressed - Try me! 😟`}
-                />
+                <Button
+                  onClick={() => {
+                    copySignatureHandler();
+                  }}
+                  variant={"outline"}
+                >
+                  {copied ? "Copied" : "Copy signature"}
+                  <Copy className="h-4 w-4 ml-2" />
+                </Button>
               </div>
             </div>
           </div>

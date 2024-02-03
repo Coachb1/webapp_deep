@@ -844,6 +844,11 @@ async function handleFaqButtonClick(question) {
             appendMessage2("Your fitment score is low or has not been attempted. Please proceed with this in mind.")
             }
         }
+        console.log(botType)
+        if(botType === "subject_matter_bot"){
+          appendMessage2("Please provide context to start conversaton.")
+          return;
+        }
 
         isAskingInitialQuestions = true;
         appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
@@ -1414,15 +1419,18 @@ coordsStt.map((item) => {
 }
 
 // to reset all variables
-const resetAllVariablesStt = () => {
+const resetAllVariablesStt = async () => {
   //* reset all variables : start
+
   isAttemptingRecommendation = false;
+  responsesDone2 = false;
+  questionIndex2 = 0;
+
   userResponses2 = [];
   DuplicateResponseCount2 = 0;
   console.log("resetingvariables")
   questionText2 = "";
   reportType2 = "interactionSessionReport";
-  questionIndex2 = 0;
   questionId2 = null;
   userResponse2 = "";
 
@@ -1438,7 +1446,6 @@ const resetAllVariablesStt = () => {
   senarioTitle2 = "";
   senarioMediaDescription2;
   questionMediaLinkStt = null;
-  responsesDone2 = false;
   userName2 = "";
   userEmail2 = "";
   reportUrl2 = null;
@@ -1470,6 +1477,8 @@ const resetAllVariablesStt = () => {
   isTranscriptOnlyStt = false;
   allowRecommendationTestCode = false;
   recommendationClicked = false;
+
+  console.log("resetting variables completed")
 };
 
 function  increaseActionPointStt(user_id,field_name){
@@ -1495,6 +1504,7 @@ function  increaseActionPointStt(user_id,field_name){
 }
 async function  getFitmentScore(user_id){
   try{
+    console.log(`user_id : ${user_id}, bot_id: ${botId}`)
     const resp = await fetch(
       `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}&bot_id=${botId}`,
       {
@@ -3189,6 +3199,31 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getClientInformationStt = async (use_case,user_id=null) => {
+    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    // use case can ====> my_lib or (user_info, user_id)
+    if(user_id && use_case === "user_info"){
+      url += `&user_id=${user_id}`
+    }
+    // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      
+      return resp_json['data'][`${use_case}`]
+    } catch (error) {
+      console.error(`Error in getClientInformationStt: ${error}`);
+    }
+  };
+
   const SessionCheckStt = async (session_id) => {
     const url = `${baseURL2}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
 
@@ -3787,9 +3822,16 @@ loadExternalModule().then(() => {
               msg.parentNode.replaceChild(que_msg, msg);
             }
 
-            resetAllVariablesStt(); //reseting variables
-            signals.onResponse({
-              html: "<b>Your session is terminated. You can restart again!</b>",
+            // resetAllVariablesStt(); //reseting variables
+            // signals.onResponse({
+            //   html: "<b>Your session is terminated. You can restart again!</b>",
+            // });
+            resetAllVariablesStt().then(() => {
+              console.log("Your session is terminated. You can restart again!")
+
+              signals.onResponse({
+                html: "<b>Your session is terminated. You can restart again!</b>",
+              });
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -4010,7 +4052,8 @@ loadExternalModule().then(() => {
                   //   }
 
                   const group_list = ["Demo", "free", "Free"];
-                  const my_lib = await getTestCodesByRule2("my_lib");
+                  // const my_lib = await getTestCodesByRule2("my_lib");
+                  const my_lib = await getClientInformationStt("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user2.email)) {
                       group_list.push(item.group);
