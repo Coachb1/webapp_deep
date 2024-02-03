@@ -54,51 +54,7 @@ const Coaches = ({ user }: any) => {
   );
   const [filterCategroies, setFilterCategories] = useState<
     FilterCategoriesType[]
-  >([
-    {
-      filterName: "Profile Type",
-      filterOptions: ["coach", "coachee", "mentor", "mentee"],
-    },
-    {
-      filterName: "Experience",
-      filterOptions: ["0-5 years", "5-10 years", "10-15 years", "15-20 years"],
-    },
-    {
-      filterName: "Department",
-      filterOptions: [
-        "Sales & Marketing",
-        "Production",
-        "Design",
-        "Engineering",
-        "HR & Training",
-      ],
-    },
-    {
-      filterName: "Skills",
-      filterOptions: [
-        "None",
-        "Technology",
-        "Business Operations",
-        "Project management & engineering",
-        "HR & People development",
-        "Sales & Marketing",
-        "Finance",
-      ],
-    },
-    {
-      filterName: "Expertise",
-      filterOptions: [
-        "Career Management",
-        "Work Life Banlance",
-        "Project Management",
-        "Lateral Transfers",
-      ],
-    },
-    {
-      filterName: "Bot Type",
-      filterOptions: ["feedback bot", "Avatar bot", "Subject Expert Bot"],
-    },
-  ]);
+  >([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -116,6 +72,71 @@ const Coaches = ({ user }: any) => {
         setSavedCoachesData(data);
         setCoachesData(data);
         setLoading(false);
+
+        const profileTypeOptions: string[] = Array.from(
+          new Set(data.map((profile: CoachesDataType) => profile.profile_type))
+        );
+
+        const departmentOptions: string[] = Array.from(
+          new Set(data.map((profile: CoachesDataType) => profile.department))
+        );
+
+        const botTypeTypes: string[] = Array.from(
+          new Set(data.map((profile: CoachesDataType) => profile.bot_type))
+        );
+
+        setFilterCategories([
+          {
+            filterName: "Profile Type",
+            filterOptions: profileTypeOptions,
+          },
+          {
+            filterName: "Experience",
+            filterOptions: [
+              "0 - 5 years",
+              "5 - 10 years",
+              "10 - 15 years",
+              "15 - 20 years",
+            ],
+          },
+          {
+            filterName: "Department",
+            filterOptions: [
+              "Sales & Marketing",
+              "Production",
+              "Design",
+              "Engineering",
+              "HR & Training",
+            ],
+          },
+          {
+            filterName: "Skills",
+            filterOptions: [
+              "None",
+              "Technology",
+              "Business Operations",
+              "Project management & engineering",
+              "HR & People development",
+              "Sales & Marketing",
+              "Finance",
+            ],
+          },
+          {
+            filterName: "Expertise",
+            filterOptions: [
+              "Career Management",
+              "Work Life Banlance",
+              "Project Management",
+              "Lateral Transfers",
+            ],
+          },
+          {
+            filterName: "Bot Type",
+            filterOptions: botTypeTypes,
+          },
+        ]);
+
+        console.log(profileTypeOptions, departmentOptions, botTypeTypes);
       })
       .catch((error) => console.log("error", error));
   };
@@ -163,6 +184,7 @@ const Coaches = ({ user }: any) => {
       setCoachesData(savedCoachesData);
     } else {
       const filteredData = filterData(savedCoachesData, newValues);
+      console.log(filteredData);
       setCoachesData(filteredData);
     }
   };
@@ -270,9 +292,9 @@ const Coaches = ({ user }: any) => {
                       coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
                     } border border-gray-300 rounded-md`}
                   >
-                    <div className="w-[30%] max-sm:w-[30%] flex items-center justify-center max-sm:items-start">
+                    <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex items-center justify-center max-sm:items-start">
                       <img
-                        className="w-[250px] h-[250px] max-sm:h-[130px] max-lg:mr-4 object-cover"
+                        className="w-[250px] h-[250px] max-sm:h-[130px] object-cover"
                         src={coach.profile_pic_url}
                       />
                     </div>
@@ -291,47 +313,49 @@ const Coaches = ({ user }: any) => {
                           {coach.description}
                         </p>
                         <Separator className="my-2 max-sm:my-1.5 bg-gray-400" />
-                        <div className="my-1 text-gray-600 max-sm:text-xs">
-                          <p className="text-sm max-sm:text-xs font-light inline">
-                            Experience :
-                          </p>{" "}
-                          <b className="inline">{coach.experience}</b>
-                        </div>
-                        <p className="my-1  text-gray-600 max-sm:text-xs">
+                        {coach.profile_type !== "skill_bot" && (
+                          <div className="my-1 text-gray-600 max-sm:text-xs">
+                            <p className="text-sm max-sm:text-xs font-light inline">
+                              Experience :
+                            </p>{" "}
+                            <b className="inline">{coach.experience}</b>
+                          </div>
+                        )}
+                        <p className="my-1 text-left text-gray-600 max-sm:text-xs">
                           <p className="text-sm  max-sm:text-xs font-light inline">
                             {" "}
                             Expertise :
                           </p>{" "}
-                          <b className="inline">
-                            {coach.expertise}
-                          </b>
+                          <b className="inline">{coach.expertise}</b>
                         </p>
                       </div>
                       <div className="w-[30%] max-sm:w-full flex flex-col items-center justify-start gap-3">
-                        {coach.avatar_bot_url !== null && coach.avatar_bot_url !== "" &&(
-                          <div className="w-full mt-[20%] max-sm:mt-4">
-                            <Link href={coach.avatar_bot_url}>
-                              <Button
-                                variant={"outline"}
-                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-                              >
-                                Avatar Bot
-                              </Button>
-                            </Link>
-                          </div>
-                        )}
-                        {coach.feedback_wall !== null && coach.feedback_wall !== "" &&(
-                          <div className="w-full">
-                            <Link href={coach.feedback_wall}>
-                              <Button
-                                variant={"outline"}
-                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-                              >
-                                Feedback Wall
-                              </Button>
-                            </Link>
-                          </div>
-                        )}
+                        {coach.avatar_bot_url !== null &&
+                          coach.avatar_bot_url !== "" && (
+                            <div className="w-full mt-[20%] max-sm:mt-4">
+                              <Link href={coach.avatar_bot_url}>
+                                <Button
+                                  variant={"outline"}
+                                  className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                                >
+                                  Avatar Bot
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        {coach.feedback_wall !== null &&
+                          coach.feedback_wall !== "" && (
+                            <div className="w-full">
+                              <Link href={coach.feedback_wall}>
+                                <Button
+                                  variant={"outline"}
+                                  className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                                >
+                                  Feedback Wall
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
