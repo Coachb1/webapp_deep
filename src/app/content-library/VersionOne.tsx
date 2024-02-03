@@ -4,7 +4,6 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
 
 import {
-  EQTests,
   Managerial,
   oneTwoOne,
   roundFeedback,
@@ -22,33 +21,40 @@ import {
   onBoarding,
   ijp,
   questionPro,
-  coachingPlus,
   pms,
   pitch,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
-import NavProfile from "@/components/NavProfile";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import CreateYourOwn from "@/components/CreateYourOwn";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import NetworkNav from "@/components/NetworkNav";
 
-const subdomain =
-  typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
-// const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
-const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
-const baseURL = subdomain === "playground" ? devUrl : prodUrl;
-
-const VersionOne = ({ user, groups }: any) => {
-  // const { user } = useKindeBrowserClient();
+const VersionOne = ({ user }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
+
   useEffect(() => {
-    setGroupList(groups);
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(
+            `${baseURL}/accounts/get-client-information/?for=user_info&user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("USER INFO FOR AUTH ACESS", data);
+            });
+        });
+    }
   }, []);
 
   let shouldRenderDiv;
@@ -84,15 +90,16 @@ const VersionOne = ({ user, groups }: any) => {
         {!user && (
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 text-white mr-4 hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate max-sm:mt-[5.5rem] max-sm:-mr-16" //max-sm:text-[12px] max-sm:mt-[4.5rem] max-sm:-mr-16 | max-sm:hidden
+            className="bg-[#2DC092] absolute right-20 h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16"
           >
             ✨ Sign up to get the EQ Acess{" "}
             <br className="hidden max-sm:inline" /> (Workplace emails only)
-            <ArrowRight className="ml-2 w-4 h-4 max-sm:hidden" />{" "}
-            <ArrowUp className="ml-2 w-4 h-4 hidden max-sm:block" />
+            <ArrowUp className="ml-2 w-4 h-4" />
           </Badge>
         )}
-        <NavProfile user={user} />
+        <>
+          <NetworkNav user={user} />
+        </>
       </div>
 
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
@@ -102,7 +109,7 @@ const VersionOne = ({ user, groups }: any) => {
           </span>
           BOTS
         </h1>
-        <h1 className="text-5xl font-bold md:text-6xl lg:text-4xl text-black max-sm:text-3xl max-sm:px-4">
+        <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
@@ -110,15 +117,24 @@ const VersionOne = ({ user, groups }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        {groupList.length > 0 && (
-          <div className="flex flex-row mt-4 z-50">
-            <Link href={"library"}>
-              <Button variant={"default"} className=" mx-4">
-                My Library
-              </Button>
-            </Link>
-          </div>
-        )}
+        <div className="flex flex-row mt-4 z-50 gap-2">
+          <Link href="/coach">
+            <Button
+              variant={"outline"}
+              className={`h-8 text-sm max-sm:text-xs`}
+            >
+              Avatar Page (Sample)
+            </Button>
+          </Link>
+          <Link href="/feedback">
+            <Button
+              variant={"outline"}
+              className={` h-8 text-sm max-sm:text-xs`}
+            >
+              Feedback Page (Sample)
+            </Button>
+          </Link>
+        </div>
 
         <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
@@ -170,14 +186,14 @@ const VersionOne = ({ user, groups }: any) => {
                 PMS enabled
               </Button>
             </Link>
-            <Link href={"#coachingplus"}>
+            {/* <Link href={"#coachingplus"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Coaching+
               </Button>
-            </Link>
+            </Link> */}
             <Link href={"#pitch"}>
               <Button
                 variant={"secondary"}
@@ -283,8 +299,8 @@ const VersionOne = ({ user, groups }: any) => {
               </Button>
             </Link>
 
-            {shouldRenderDiv && (
-              <Link href={"#create-your-own"}>
+            {/* {shouldRenderDiv && (
+              <Link href={"/create-scenario"}>
                 <div className="relative group cursor-pointer">
                   <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                   <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -293,27 +309,18 @@ const VersionOne = ({ user, groups }: any) => {
                         variant={"secondary"}
                         className="border border-gray-200 h-8 hover:cursor-pointer"
                       >
-                        Create your own
+                        Create your own scenario
                       </Button>
                     </div>
                   </div>
                 </div>
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
-          {shouldRenderDiv && (
-            <div>
-              <HeroAccordion
-                badgeText="EQ mini course"
-                user={user ? true : false}
-                tests={EQTests}
-              />
-            </div>
-          )}
           <div id="managerplus">
             <HeroAccordion
               badgeText="Manager+"
@@ -356,13 +363,13 @@ const VersionOne = ({ user, groups }: any) => {
               tests={pms}
             />
           </div>
-          <div id="coachingplus">
+          {/* <div id="coachingplus">
             <HeroAccordion
               badgeText="Coaching+"
               user={user ? true : false}
               tests={coachingPlus}
             />
-          </div>
+          </div> */}
           <div id="pitch">
             <HeroAccordion
               badgeText="Pitch+"
@@ -454,11 +461,11 @@ const VersionOne = ({ user, groups }: any) => {
               tests={meetings}
             />
           </div>
-          {shouldRenderDiv && (
+          {/* {shouldRenderDiv && (
             <div id="create-your-own">
               <CreateYourOwn />
             </div>
-          )}
+          )} */}
         </div>
       </div>
 

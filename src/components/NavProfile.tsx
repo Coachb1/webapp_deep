@@ -13,36 +13,20 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { UserCircle2 } from "lucide-react";
+import { LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const NavProfile = ({user} : any) => {
-  // const { user } = useKindeBrowserClient();
-
-  // if (isLoading) {
-  //   return <Loader className="h-4 w-4 animate-spin" />;
-  // }
-
+const NavProfile = ({ user }: any) => {
+  const pathname = usePathname();
   return (
     <>
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
-            {/* <Avatar className="relative hover:cursor-pointer">
-              {user.picture ? (
-                <AvatarImage
-                  src={user.picture}
-                  alt="profile picture"
-                  className="h-8 w-8 rounded-full"
-                />
-              ) : (
-                <AvatarFallback>
-                  <span className="">{user.given_name}</span>
-                  <User className="h-6 w-4 text-zinc-900" />
-                </AvatarFallback>
-              )}
-            </Avatar> */}
-             <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+            <div className=" p-[4px]">
+              <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <div className="flex items-center justify-center gap-2 p-2">
@@ -63,18 +47,46 @@ const NavProfile = ({user} : any) => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <Link href={"/profile"}>Your profile</Link>
+              <Link href={"/profile"}>
+                {" "}
+                <User className="h-4 w-4 mr-2" /> Your profile
+              </Link>
             </DropdownMenuItem>
+            {/* {pathname !== "/content-library" && (
+              <DropdownMenuItem asChild>
+                <Link href={"/content-library"}> ⚡️ Content Library</Link>
+              </DropdownMenuItem>
+            )}
+            {pathname !== "/feedback" &&
+              !pathname.includes("/feedback/feedback") && (
+                <DropdownMenuItem asChild>
+                  <Link href={"/feedback"}>
+                    {" "}
+                    <MessageSquarePlusIcon className="h-4 w-4 mr-2" /> Feedback
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            {pathname !== "/" && !pathname.includes("/coach") && (
+              <DropdownMenuItem asChild>
+                <Link href={"/"}>
+                  {" "}
+                  <span className="mr-2">👩‍🏫</span> Coach
+                </Link>
+              </DropdownMenuItem>
+            )} */}
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <LogoutLink>Logout</LogoutLink>
+              <LogoutLink>
+                {" "}
+                <LogOut className="h-4 w-4 mr-2" /> Logout
+              </LogoutLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
         <Button variant={"default"} className={cn("text-xs h-8 px-4 z-50")}>
-          <RegisterLink>Log in</RegisterLink>
+          <RegisterLink postLoginRedirectURL={pathname}>Log in</RegisterLink>
         </Button>
       )}
     </>

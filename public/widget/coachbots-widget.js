@@ -91,6 +91,11 @@ let mediaProps;
 let questionImageData;
 let initialIndex;
 let isTranscriptOnly= false;
+let isEmailForm = false;
+let emailNameformJson = {};
+let formFields = []
+let userResponses = []
+let DuplicateResponseCount = 0;
 
 
 // sample TEst codes
@@ -366,6 +371,12 @@ function createMessageNode(message) {
 //* function to test if a text can be a test code
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
+}
+
+
+//* check for duplicate response
+function isDuplicateResponse(text) {
+  return userResponses.includes(text);
 }
 
 //* add a custom message to chat
@@ -834,8 +845,11 @@ async function setMcqVariables() {
 
     if (!window.user) {
       console.log("user not logged in, so asking for credentials");
-      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
-        credentialsForm;
+      // gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+      //   credentialsForm;
+      isEmailForm = true
+      formFields = ['name', 'email']
+      appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
     }
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -897,7 +911,15 @@ async function setMcqVariables() {
 //* handle MCQ type test : end
 
 let queryParams;
-
+async function proceedFormFlow(msg){
+  if (formFields.length > 0){
+    isEmailForm = true
+    const filedname = formFields[0]
+    formFields = formFields.slice(1);
+    emailNameformJson[filedname] = msg
+    
+  }
+}
 //*********** hit mail sending api */
 
 function sendEmail(session_id,reportUrl) {
@@ -929,11 +951,13 @@ function sendEmail(session_id,reportUrl) {
 async function submitEmailAndName() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   if (!window.user) {
-    const inputNameVal = gShadowRoot.getElementById("input-name").value;
-    const inputEmailVal = gShadowRoot.getElementById("input-email").value;
+    // const inputNameVal = gShadowRoot.getElementById("input-name").value;
+    // const inputEmailVal = gShadowRoot.getElementById("input-email").value;
 
-    inputName = inputNameVal;
-    inputEmail = inputEmailVal;
+    // inputName = inputNameVal;
+    // inputEmail = inputEmailVal;
+    inputEmail = emailNameformJson['email']
+    inputName = emailNameformJson['name']
 
     //* store these values in session storage
     // getOrSetSessionData(inputName, inputEmail);
@@ -964,16 +988,17 @@ async function submitEmailAndName() {
     .then((data) => {
       console.log("name email updated, sending email");
       sendEmail(sessionId,globalReportUrl);
+      increaseActionPoint(userId,"interaction_attempted")
 
       if (!window.user) {
         // append custom message to chat
-        const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-        appendMessage(message);
+        // const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+        // appendMessage(message);
 
-        //* send message to start new session
-        appendMessage(
-          "<b>Please enter another access code to start a new interaction.</b>"
-        );
+        // //* send message to start new session
+        // appendMessage(
+        //   "<b>Please enter another access code to start a new interaction.</b>"
+        // );
       }
       const recommDiv = findRelatedItems(recommendationsData, testCode);
       if (recommDiv) {
@@ -1243,12 +1268,15 @@ coords.map((item) => {
 
 
 // to reset all variables
-const resetAllVariables = () => {
+const resetAllVariables = async () => {
   //* reset all variables : start
+  responsesDone = false;
+  questionIndex = 0;
+  userResponses = []
+  DuplicateResponseCount = 0;
   console.log('reseting variables')
   questionText = "";
   reportType = "interactionSessionReport";
-  questionIndex = 0;
   questionId = null;
   userResponse = "";
 
@@ -1266,7 +1294,6 @@ const resetAllVariables = () => {
   senarioCase = "";
   senarioMediaDescription;
   questionMediaLink = null;
-  responsesDone = false;
   userName = "";
   userEmail = "";
   reportUrl = null;
@@ -1296,7 +1323,28 @@ const resetAllVariables = () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
+  console.log("resetting variables completed")
 };
+
+function  increaseActionPoint(user_id,field_name){
+
+  fetch(
+    `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=save&user_id=${user_id}&for=${field_name}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(`increased.`,data);
+    })
+    .catch((err) => console.log("increaseActionPoint Error",err));
+
+}
 
 function findRelatedItems(data, targetCode) {
   let matchingItems = [];
@@ -1379,7 +1427,10 @@ const handleEndCoachingClick = async (randomId) => {
       "<b>Please enter another access code to start a new interaction.</b>"
     );
   } else {
-    appendMessage(getCredentialsForm());
+    // appendMessage(getCredentialsForm());
+    isEmailForm = true
+    formFields = ['name', 'email']
+    appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
   }
 };
 
@@ -1455,6 +1506,14 @@ const handleProceedClick = async (choice) => {
                             mozallowfullscreen="true" 
                             webkitallowfullscreen="true"
                             ></iframe>`)
+          }else if (questionMediaLink.includes('guidejar.com')){
+            const guidejarId = questionMediaLink.split('/').pop()
+            appendMessage(`
+            <div style="width:640px">
+            <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+            <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+            ></div></div>
+            `)
           }
         }
       }
@@ -1473,6 +1532,8 @@ const handleProceedClick = async (choice) => {
             }
             if(isImmersive){
               console.log(initialQuestionText)
+              const queText = initialQuestionText
+              const queDiv = `<p>${queText}</p><br>`
               const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
               const response = await fetch(urltts, {
                 method: "GET",
@@ -1488,7 +1549,7 @@ const handleProceedClick = async (choice) => {
               
               console.log(objectUrl,'url')
              
-                initialQuestionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio></div>`
@@ -1527,6 +1588,8 @@ const handleProceedClick = async (choice) => {
           }
         }
         if(isImmersive){
+          const queText = initialQuestionText
+          const queDiv = `<p>${queText}</p><br>`
           const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
           const response = await fetch(url, {
             method: "GET",
@@ -1541,7 +1604,7 @@ const handleProceedClick = async (choice) => {
           const objectUrl = URL.createObjectURL(blob);
           
           console.log(objectUrl,'url')
-          initialQuestionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+          initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
           </audio></div>`
@@ -1570,6 +1633,9 @@ const handleProceedClick = async (choice) => {
 
             const responderName = `<b>${entry[0]}:</b><br>`
             console.log(entry)
+            const queText = entry[1]
+            const queDiv = `<p>${queText}</p><br>`
+            
             const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`
 
             const response = await fetch(url, {
@@ -1585,7 +1651,7 @@ const handleProceedClick = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
             
             console.log(objectUrl,'url')
-            let audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
+            let audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
             </audio></div>`
@@ -2255,6 +2321,28 @@ loadExternalModule().then(() => {
     }
   };
 
+  const getClientInformation = async (use_case,user_id) => {
+    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    // use case can ====> my_lib or (user_info, user_id)
+    if(user_id && use_case === "user_info"){
+      url += `&user_id=${user_id}`
+    }
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+        },
+      });
+
+      const resp_json = await response.json();
+      console.log(resp_json);
+      return resp_json['data'][`${use_case}`]
+    } catch (error) {
+      console.error(`Error in getClientInformation: ${error}`);
+    }
+  };
+
   const SesseionCheck = async (session_id) => {
     const url = `${baseURL}/test-attempt-sessions/check-session-data-exist/?session_id=${session_id}`;
 
@@ -2277,7 +2365,7 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainer = async (text) =>{
-
+    const queDiv = `<p>${text}</p><br>`
     const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`
     const response = await fetch(url, {
       method: "GET",
@@ -2292,7 +2380,7 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
     
     console.log(objectUrl,'url')
-    const audioCont = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+    const audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
     </audio></div>`
@@ -2559,6 +2647,11 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
           
+          if (isEmailForm){
+            signals.onResponse({html: "<p style='font-size: 14px;color: #991b1b;'>Please provide response in text.</p>"})
+            return;
+          }
+
           // to check session active or not
           if (testType === "mcq" || testType === "dynamic_mcq") {
             signals.onResponse({
@@ -2719,6 +2812,14 @@ loadExternalModule().then(() => {
                                         mozallowfullscreen="true" 
                                         webkitallowfullscreen="true"
                                         ></iframe>`)
+                      }else if (questionMediaLink.includes('guidejar.com')){
+                        const guidejarId = questionMediaLink.split('/').pop()
+                        appendMessage(`
+                        <div style="width:640px">
+                        <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                        <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                        ></div></div>
+                        `)
                       }
                     }
                   }
@@ -2897,8 +2998,13 @@ loadExternalModule().then(() => {
                   // appendMessage(
                   //   "<b>For obtaining your report, please submit the following details.</b>"
                   // );
+                  // signals.onResponse({
+                  //   html: credentialsForm,
+                  // });
+                  isEmailForm = true
+                  formFields = ['name', 'email']
                   signals.onResponse({
-                    html: credentialsForm,
+                    html: `<b>Please enter your ${formFields[0]}</b>`,
                   });
                 }
               }
@@ -3017,6 +3123,27 @@ loadExternalModule().then(() => {
 
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
+          if (isEmailForm){
+            await proceedFormFlow(latestMessage)
+            if(formFields.length >0){
+              signals.onResponse({
+                html: `<b>Please enter your ${formFields[0]}<b>`
+              })
+            } else{
+              isEmailForm = false;
+              
+              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              appendMessage(message);
+              // //* send message to start new session
+
+              signals.onResponse({
+                html: "<b>Please enter another access code to start a new interaction.</b>",
+              });
+              submitEmailAndName();
+            
+            }
+            return;
+          }
           console.log("Latest Message ===> ", latestMessage);
           if ((testType === "mcq" || testType === "dynamic_mcq") && latestMessage.toUpperCase() != "STOP") {
             signals.onResponse({
@@ -3103,10 +3230,17 @@ loadExternalModule().then(() => {
               msg.parentNode.replaceChild(que_msg, msg);
             }
             await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
+            // resetAllVariables(); //reseting variables
 
-            signals.onResponse({
-              html: "<b>Your session is terminated. You can restart again!</b>",
+            // signals.onResponse({
+            //   html: "<b>Your session is terminated. You can restart again!</b>",
+            // });
+            resetAllVariables().then(() => {
+              console.log("Your session is terminated. You can restart again!")
+
+              signals.onResponse({
+                html: "<b>Your session is terminated. You can restart again!</b>",
+              });
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -3167,6 +3301,26 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
+
+              if ( isDuplicateResponse(latestMessage)) {
+                DuplicateResponseCount += 1;
+                if (DuplicateResponseCount > 1) {
+                  resetAllVariables();
+                  signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                });
+                return;
+                }
+
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+                });
+                return;
+              }
+              else {
+                userResponses2.push(latestMessage);
+              }
+
             }
           }
 
@@ -3280,7 +3434,8 @@ loadExternalModule().then(() => {
 
                 if (user) {
                   const group_list = ["Demo", "free", "Free"];
-                  const my_lib = await getTestCodesByRule("my_lib");
+                  // const my_lib = await getTestCodesByRule("my_lib");
+                  const my_lib = await getClientInformation("my_lib");
                   for (const item of my_lib) {
                     if (item.emails.includes(user.email)) {
                       group_list.push(item.group);
@@ -3757,7 +3912,22 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`);
-                            } else {
+                            } else if (senarioMediaDescription.includes('guidejar.com')){
+                              const guidejarId = senarioMediaDescription.split('/').pop()
+                              appendMessage(
+                                `▪ Title : ${senarioTitle} <br><br>
+                              ▪ Description : ${senarioDescription} <br><br>
+                              ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>`
+                              );
+
+                              appendMessage(`
+                              <div style="width:640px">
+                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                              ></div></div>
+                              `)
+                            }
+                            else {
                               appendMessage(
                                 `▪ Title : ${senarioTitle} <br><br>
                                     ▪ Description : ${senarioDescription} <br><br>
@@ -3920,6 +4090,14 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`)
+                            }else if (questionMediaLink.includes('guidejar.com')){
+                              const guidejarId = questionMediaLink.split('/').pop()
+                              appendMessage(`
+                              <div style="width:640px">
+                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+                              ></div></div>
+                              `)
                             }
                           }
                           }
@@ -4214,8 +4392,13 @@ loadExternalModule().then(() => {
                     // appendMessage(
                     //   "<b>For obtaining your report, please submit the following details.</b>"
                     // );
+                    // signals.onResponse({
+                    //   html: credentialsForm,
+                    // });
+                    isEmailForm = true
+                    formFields = ['name', 'email']
                     signals.onResponse({
-                      html: credentialsForm,
+                      html: `<b>Please enter your ${formFields[0]}</b>`,
                     });
                   }
 

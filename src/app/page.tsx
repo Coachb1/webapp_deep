@@ -1,7 +1,20 @@
-export default function Home() {
+import { constructMetadata } from "@/lib/utils";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import Coaches from "./Coaches";
+
+export const metadata = constructMetadata({
+  title: "Network - Coachbots",
+});
+
+const Page = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
   return (
-    <main className="flex min-h-screen min-w-screen flex-col items-center justify-center p-24">
-      <p>Coachbots playground</p>
-    </main>
+    <div>
+      <Coaches user={user} />
+    </div>
   );
-}
+};
+
+export default Page;
