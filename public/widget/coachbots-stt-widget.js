@@ -285,7 +285,7 @@ function getAnonymousEmail() {
     return generatedSessionId;
   }
 
-  const getUserOrAnonymousDetails = (choice)=>{
+  const getUserOrAnonymousDetails = async(choice)=>{
     console.log(choice)
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("anonymous");
@@ -296,10 +296,10 @@ function getAnonymousEmail() {
     // msg.parentNode.replaceChild(que_msg, msg);
     const buttons = msg.querySelectorAll('button');
 
-        // Disable each button
-        buttons.forEach(button => {
-            button.disabled = true;
-        });
+    // Disable each button
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
     if (choice === 'No'){
       if (!window.user){
         let emailForm;
@@ -399,11 +399,14 @@ function getAnonymousEmail() {
 
       } else{
         FeedbackUserEmail = user.email
-        feedbackBotInitialFlow('save_email')
+        const thumbsupdiv =  await feedbackBotInitialFlow('save_email')
+        appendMessage2(thumbsupdiv)
       }
     } else if (choice === "Yes"){
+      console.log("hi")
       FeedbackUserEmail = 'Anonymous User'
-      feedbackBotInitialFlow('save_email')
+      const thumbsupdiv = await feedbackBotInitialFlow('save_email')
+      appendMessage2(thumbsupdiv)
 
     }
   }
