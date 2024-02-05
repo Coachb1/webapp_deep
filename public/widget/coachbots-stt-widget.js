@@ -115,6 +115,7 @@ let userResponses2 = []
 let DuplicateResponseCount2 = 0;
 let isAttemptingRecommendation = false;
 let optedBeginSession = false;
+let botWelcomeMessage="";
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -644,6 +645,12 @@ function getAnonymousEmail() {
       console.log("FAQS => ",botDetails.data.faqs)
       globalBotDetails = botDetails;
       botType = botDetails.data.bot_type;
+
+      if (botType !== 'avatar_bot'){
+        botWelcomeMessage = botDetails.data.attributes.heading;
+      }else{
+        botWelcomeMessage = "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!"
+      }
       console.log(botType)
 
       let buttons = ''
@@ -667,6 +674,9 @@ function getAnonymousEmail() {
       faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
                       </div>`
+      // sending welcome msg
+      appendMessage2(`<p><b>${botWelcomeMessage}</b></p>`)
+
       if(botType != 'feedback_bot'){
         fitmentAnalysisQuestions = botDetails.data.fitment_qna
         fitmentAnalysisOptions = botDetails.data.fitment_options
@@ -2998,19 +3008,13 @@ loadExternalModule().then(() => {
   }
   // if botid is null or notdefined show other message
 
-  chatElementRef2.initialMessages = [
-    {
-      html:  (botId === undefined) 
-      ? `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>` 
-      : (botId && !botId.includes('feedback')) 
-        ? "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!"
-        : "Welcome to My feedback bot..",
-      role: "ai",
-    },
-
-  ];
-
   if( botId == undefined) {
+    chatElementRef2.initialMessages = [
+      {
+        html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>` ,
+        role: "ai",
+      }
+    ];
     chatElementRef2.initialMessages.push(
       {
         html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
