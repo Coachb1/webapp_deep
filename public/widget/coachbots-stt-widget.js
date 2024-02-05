@@ -114,6 +114,7 @@ let previousFitmentJson = {};
 let userResponses2 = []
 let DuplicateResponseCount2 = 0;
 let isAttemptingRecommendation = false;
+let optedBeginSession = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -801,6 +802,7 @@ const handleFitmentAnalysis = async ()=> {
 
 async function handleFaqButtonClick(question) {
   
+  optedBeginSession = false;
   if( question == 'fitness_analysis') {
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
@@ -836,6 +838,7 @@ async function handleFaqButtonClick(question) {
   } else {
     if( question == 'something_else') {
         // appendMessage2('Please ask your question in chat box')
+        optedBeginSession = true;
         if (botType === 'avatar_bot'){
           await getFitmentScore(userId2)
           console.log(isBeginSessionProceed)
@@ -969,6 +972,7 @@ function handleEndConversation() {
   );
 
   isSessionActiveStt = false;
+  optedBeginSession = false;
 
   let emailForm;
   if(window.innerWidth > 768) {
@@ -3561,7 +3565,13 @@ loadExternalModule().then(() => {
             }
 
             console.log("Yes OMG control is reaching here") 
-            if (isAskingInitialQuestions == false && fitmentAnalysisInProgress == false && isSessionActiveStt == false && isAttemptingRecommendation == false ) {
+
+            console.log("isAskingInitialQuestions : ", isAskingInitialQuestions,
+            "fitmentAnalysisInProgress : ", fitmentAnalysisInProgress, 
+            "isSessionActiveStt : ", isSessionActiveStt, 
+            "isAttemptingRecommendation : ", isAttemptingRecommendation,
+            "optedBeginSession : ", optedBeginSession)
+            if (isAskingInitialQuestions == false && fitmentAnalysisInProgress == false && isSessionActiveStt == false && isAttemptingRecommendation == false && optedBeginSession == false) {
               signals.onResponse({
                 html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
               })
