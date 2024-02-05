@@ -65,43 +65,46 @@ export default function RootLayout({
 
   //Unauth check
   useEffect(() => {
-    // if (pathname === "/") {
     setLoading(true);
-    if (!isLoading) {
-      if (user) {
-        console.log(user.email);
-        getUserAccount(user)
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
+    try {
+      if (!isLoading) {
+        if (user) {
+          console.log(user.email);
+          getUserAccount(user)
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
 
-            fetch(
-              `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
-              {
-                method: "GET",
-                headers: {
-                  Authorization: basicAuth,
-                },
-              }
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                console.log("GET USER INFO - Client : ", data);
-                console.log(
-                  data.data.user_info[0].is_demo_user,
-                  data.data.user_info[0].is_restricted
-                );
-                // setIsDemoUser(true);
-                setIsDemoUser(data.data.user_info[0].is_demo_user);
-                setIsRestricted(data.data.user_info[0].is_restricted);
-                setLoading(false);
-              });
-          });
-      } else {
-        setLoading(false);
+              fetch(
+                `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                }
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  console.log("GET USER INFO - Client : ", data);
+                  console.log(
+                    data.data.user_info[0].is_demo_user,
+                    data.data.user_info[0].is_restricted
+                  );
+                  // setIsDemoUser(true);
+                  setIsDemoUser(data.data.user_info[0].is_demo_user);
+                  setIsRestricted(data.data.user_info[0].is_restricted);
+                  setLoading(false);
+                });
+            });
+        } else {
+          setLoading(false);
+        }
       }
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
     }
-    // }
   }, [isLoading]);
 
   //auto refresh and conditional coach(aravsharma) bot display
