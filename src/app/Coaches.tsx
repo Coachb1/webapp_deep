@@ -5,10 +5,16 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { baseURL, basicAuth, hideBots } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  findCoacheeUID,
+  getUserAccount,
+  hideBots,
+} from "@/lib/utils";
 import { ChevronDown, Loader, Search } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
@@ -18,6 +24,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import NetworkNav from "@/components/NetworkNav";
+import { toast } from "sonner";
+import { connectionType } from "@/lib/types";
 
 interface CoachesDataType {
   id: number;
@@ -45,8 +53,28 @@ interface FilterCategoriesType {
   filterOptions: string[];
 }
 
+function findConnectionStatus(
+  connections: connectionType[],
+  coachId: string,
+  coacheeId: string
+) {
+  for (let i = 0; i < connections.length; i++) {
+    const connection = connections[i];
+    if (
+      connection.coach_id === coachId &&
+      connection.coachee_id === coacheeId
+    ) {
+      return connection.status;
+    }
+  }
+  return "";
+}
+
 const Coaches = ({ user }: any) => {
   const router = useRouter();
+  const params = useSearchParams();
+  const coacheeIdFromParams = params.get("coachee_id");
+
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);
   const [savedCoachesData, setSavedCoachesData] = useState<CoachesDataType[]>(
@@ -56,7 +84,11 @@ const Coaches = ({ user }: any) => {
     FilterCategoriesType[]
   >([]);
 
+  const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [coacheeId, setCoacheeId] = useState("");
+  const [connections, setConnections] = useState<connectionType[]>([]);
 
   const getCoachesData = async () => {
     //GET COACHES
@@ -135,15 +167,68 @@ const Coaches = ({ user }: any) => {
             filterOptions: botTypeTypes,
           },
         ]);
-
-        console.log(profileTypeOptions, departmentOptions, botTypeTypes);
+        if (coacheeIdFromParams) {
+          document.getElementById(coacheeIdFromParams)?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
       })
       .catch((error) => console.log("error", error));
+  };
+
+  const getAllConnections = () => {
+    fetch(`${baseURL}/accounts/coach-coachee-connections/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setConnections(data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   useEffect(() => {
     getCoachesData();
     hideBots();
+    getAllConnections();
+
+    getUserAccount(user)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUserId(data.uid);
+        fetch(
+          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+
+            const isApprovedData = data.data.filter(
+              (coachData: any) => coachData.is_approved === true
+            );
+            if (isApprovedData.length > 0) {
+              setCoacheeId(findCoacheeUID(isApprovedData));
+            } else {
+              setCoacheeId("");
+            }
+          })
+          .then((err) => {
+            console.error(err);
+          });
+      });
   }, []);
 
   function filterData(
@@ -187,6 +272,112 @@ const Coaches = ({ user }: any) => {
       console.log(filteredData);
       setCoachesData(filteredData);
     }
+  };
+
+  const RequestionConnection = ({ coachId }: { coachId: string }) => {
+    const [requestLoading, setRequestLoading] = useState(false);
+    const [status, setStatus] = useState("");
+
+    useEffect(() => {
+      setStatus(findConnectionStatus(connections, coachId, coacheeId));
+    }, [connections]);
+
+    const requestConnectHandler = () => {
+      console.log(coacheeId);
+      if (coacheeId.length > 0) {
+        setRequestLoading(true);
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", basicAuth);
+
+        var reqestionData = JSON.stringify({
+          coach_id: coachId,
+          coachee_id: coacheeId,
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: reqestionData,
+        };
+
+        fetch(`${baseURL}/accounts/coach-coachee-connections/`, requestOptions)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+
+            if (data.error) {
+              toast.error("Error while sending your request!");
+            } else {
+              getAllConnections();
+            }
+            setTimeout(() => {
+              setRequestLoading(false);
+            }, 200);
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error("Error while sending your request!");
+            setRequestLoading(false);
+          });
+      } else {
+        toast.error(
+          "You are not a valid coachee, Please join a network to make Requests to the Coaches/Mentors."
+        );
+      }
+    };
+    return (
+      <>
+        <div className="w-full mt-[20%] max-sm:mt-4">
+          {status === "" && (
+            <Button
+              variant={"outline"}
+              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+              onClick={() => {
+                requestConnectHandler();
+              }}
+            >
+              {requestLoading ? (
+                <>
+                  <Loader className="h-4 w-4 animate-spin mr-2" />
+                  Requesting
+                </>
+              ) : (
+                "Request connection"
+              )}
+            </Button>
+          )}
+          {status === "pending" && (
+            <Button
+              disabled
+              variant={"outline"}
+              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+            >
+              Requested
+            </Button>
+          )}
+          {status === "accepted" && (
+            <Button
+              disabled
+              variant={"outline"}
+              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-green-300 bg-green-100"
+            >
+              Connected
+            </Button>
+          )}
+          {/* {status === "rejected" && (
+            <Button
+              disabled
+              variant={"destructive"}
+              className="w-[80%] max-sm:w-[90%] max-sm:text-sm"
+            >
+              Rejected
+            </Button>
+          )} */}
+        </div>
+        <Separator className="bg-gray-400 w-[80%]" />
+      </>
+    );
   };
 
   return (
@@ -288,6 +479,7 @@ const Coaches = ({ user }: any) => {
               coachesData.map((coach, i) => (
                 <>
                   <div
+                    id={coach.profile_id}
                     className={`w-full my-3 flex flex-row p-4 max-sm:p-2 ${
                       coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
                     } border border-gray-300 rounded-md`}
@@ -329,10 +521,15 @@ const Coaches = ({ user }: any) => {
                           <b className="inline">{coach.expertise}</b>
                         </p>
                       </div>
-                      <div className="w-[30%] max-sm:w-full flex flex-col items-center justify-start gap-3">
+                      <div className="w-[30%] max-sm:w-full pb-[20%] max-sm:pb-4 flex flex-col items-center justify-center gap-3">
+                        {coach.profile_type === "coach" && (
+                          <>
+                            <RequestionConnection coachId={coach.profile_id} />
+                          </>
+                        )}
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
-                            <div className="w-full mt-[20%] max-sm:mt-4">
+                            <div className="w-full ">
                               <Link href={coach.avatar_bot_url}>
                                 <Button
                                   variant={"outline"}

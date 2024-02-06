@@ -75,3 +75,26 @@ export interface newManagerTestsType {
   domain: string;
   tests: TestsType[];
 }
+
+export interface connectionType {
+  id: number;
+  created: string;
+  updated: string;
+  deleted: number;
+  uid: string;
+  tenant_id: string;
+  coach_id: string;
+  coachee_id: string;
+  mentor_id: null | string;
+  mentee_id: null | string;
+  connection_type: null | string;
+  status: string;
+  is_approved: boolean;
+  is_rejected: boolean;
+  is_blocked: boolean;
+  is_deleted: boolean;
+  is_removed: boolean;
+  coach_name: string;
+  coachee_name: string;
+  coach_avatar_bot_id: string;
+}

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   GanttChartSquare,
   MailCheck,
+  UserCog2,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -27,11 +28,11 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/app/profile/Competencies";
 import MyPages from "@/app/profile/MyPages";
-import { Button } from "@/components/ui/button";
 import { getUserAccount } from "@/lib/utils";
 import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
+import MyComnnections from "./MyConnections";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -96,10 +97,13 @@ const Profile = ({ user }: any) => {
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
             />
             <NavItem
+              itemName={"My Connections"}
+              icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
+            />
+            <NavItem
               itemName={"Session Notes"}
               icon={<StickyNote className="text-gray-500 h-5 w-5" />}
             />
-
             <NavItem
               itemName={"Bot Conversations"}
               icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
@@ -148,6 +152,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "Admin" && <AdminProfile user={user} />}
           {selectedItem === "My Pages" && <MyPages user={user} />}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
+          {selectedItem === "My Connections" && <MyComnnections user={user} />}
           {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>
