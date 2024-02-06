@@ -17,6 +17,7 @@ import {
   GanttChartSquare,
   MailCheck,
   UserCog2,
+  ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -33,6 +34,7 @@ import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
 import MyComnnections from "./MyConnections";
+import AdminReports from "./AdminReports";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -91,7 +93,7 @@ const Profile = ({ user }: any) => {
       </div>
       <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-[80vh] flex flex-row justify-between">
         <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2 ">
-          <div className="h-full flex flex-col justify-start gap-3">
+          <div className="h-full flex flex-col justify-start gap-3 mb-4 overflow-scroll no-scrollbar ">
             <NavItem
               itemName={"Account Information"}
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
@@ -128,10 +130,16 @@ const Profile = ({ user }: any) => {
               itemName={"Email Signature"}
               icon={<MailCheck className="text-gray-500 h-5 w-5" />}
             />
-            {userRole === "admin" && (
+            {userRole === "admin" || userRole === "client_admin" ? (
               <NavItem
                 itemName={"Admin"}
                 icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
+              />
+            ) : null}
+            {userRole === "client_admin" && (
+              <NavItem
+                itemName={"Admin Reports"}
+                icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
               />
             )}
           </div>
@@ -153,6 +161,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "My Pages" && <MyPages user={user} />}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
+          {selectedItem === "Admin Reports" && <AdminReports user={user} />}
           {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>
