@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   baseURL,
   basicAuth,
+  findCoachUID,
   findCoacheeUID,
   getUserAccount,
   hideBots,
@@ -88,6 +89,7 @@ const Coaches = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
 
   const [coacheeId, setCoacheeId] = useState("");
+  const [coachId, setCoachId] = useState("");
   const [connections, setConnections] = useState<connectionType[]>([]);
 
   const getCoachesData = async () => {
@@ -120,7 +122,7 @@ const Coaches = ({ user }: any) => {
         setFilterCategories([
           {
             filterName: "Profile Type",
-            filterOptions: profileTypeOptions,
+            filterOptions: [...profileTypeOptions], //, ...["accepted"]
           },
           {
             filterName: "Experience",
@@ -194,9 +196,9 @@ const Coaches = ({ user }: any) => {
   };
 
   useEffect(() => {
+    getAllConnections();
     getCoachesData();
     hideBots();
-    getAllConnections();
 
     getUserAccount(user)
       .then((res) => res.json())
@@ -221,8 +223,10 @@ const Coaches = ({ user }: any) => {
             );
             if (isApprovedData.length > 0) {
               setCoacheeId(findCoacheeUID(isApprovedData));
+              setCoachId(findCoachUID(isApprovedData));
             } else {
               setCoacheeId("");
+              setCoachId("");
             }
           })
           .then((err) => {
@@ -235,6 +239,7 @@ const Coaches = ({ user }: any) => {
     inputArray: CoachesDataType[],
     filterArray: string[]
   ): CoachesDataType[] {
+    console.log("INPUT ARRAY ", inputArray);
     if (filterArray.length === 0) {
       return inputArray;
     }
@@ -258,6 +263,7 @@ const Coaches = ({ user }: any) => {
     console.log(newValues);
     setParentCheckedValues(newValues);
 
+    console.log(coachesData);
     //for search when empty
     if (newValues.length > 0 && newValues[0].length === 0) {
       setParentCheckedValues([]);
@@ -268,11 +274,43 @@ const Coaches = ({ user }: any) => {
       console.log("no values selected");
       setCoachesData(savedCoachesData);
     } else {
-      const filteredData = filterData(savedCoachesData, newValues);
+      console.log(newValues.includes("Connected"));
+      const filteredData = filterData(
+        newValues.includes("Connected") ? coachesData : savedCoachesData,
+        newValues
+      );
       console.log(filteredData);
       setCoachesData(filteredData);
     }
   };
+
+  function isConnected(coachStatus: string): boolean {
+    return coachStatus === "accepted";
+  }
+
+  useEffect(() => {
+    console.log(savedCoachesData, connections);
+    const coachesWithStatus = savedCoachesData.map((coach: CoachesDataType) => {
+      console.log("CONNECTIONS : ", connections);
+      const connection = connections.find(
+        (connection) => connection.coach_id === coach.profile_id
+      );
+      return {
+        ...coach,
+        status: connection ? connection.status : "", // Set status to empty string if not found
+      };
+    });
+
+    const connectedCoaches = coachesWithStatus.filter((coach) =>
+      isConnected(coach.status)
+    );
+
+    const unconnectedCoaches = coachesWithStatus.filter(
+      (coach) => !isConnected(coach.status)
+    );
+
+    setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+  }, [savedCoachesData, connections]);
 
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
     const [requestLoading, setRequestLoading] = useState(false);
@@ -313,7 +351,7 @@ const Coaches = ({ user }: any) => {
             }
             setTimeout(() => {
               setRequestLoading(false);
-            }, 200);
+            }, 1000);
           })
           .catch((err) => {
             console.log(err);
@@ -331,6 +369,7 @@ const Coaches = ({ user }: any) => {
         <div className="w-full mt-[20%] max-sm:mt-4">
           {status === "" && (
             <Button
+              disabled={requestLoading}
               variant={"outline"}
               className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
               onClick={() => {
@@ -387,6 +426,7 @@ const Coaches = ({ user }: any) => {
           <NetworkNav user={user} />
         </div>
       </div>
+
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -401,16 +441,33 @@ const Coaches = ({ user }: any) => {
           {" "}
           2000+ Strong group of experts & future leaders
         </p>
-
         <div className="my-4 max-sm:text-xs flex flex-row gap-2 max-sm:flex-wrap justify-center">
           <Button disabled variant={"outline"} className="h-fit w-fit">
             Group coaching (coming soon)
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none border-none">
-              <Button variant={"outline"} className="h-fit w-fit">
-                Join the network <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
+            <DropdownMenuTrigger
+              disabled={coachId.length > 0 || coacheeId.length > 0}
+              asChild
+              className="outline-none border-none"
+            >
+              <div>
+                {" "}
+                <Button
+                  onClick={() => {
+                    console.log(coachId, coacheeId);
+                    if (coachId.length > 0) {
+                      toast.info("You have already enrolled as a Coach!");
+                    } else if (coacheeId.length > 0) {
+                      toast.info("You have already enrolled as a Coachee!");
+                    }
+                  }}
+                  variant={"outline"}
+                  className="h-fit w-fit"
+                >
+                  Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
@@ -465,7 +522,15 @@ const Coaches = ({ user }: any) => {
             </div>
           </div>
           <hr className="mt-2" />
-          <div className="mt-2">
+          <div className="mt-2 ">
+            {/* <div className="w-fit">
+              <Badge
+                variant={"outline"}
+                className="text-lg text-white bg-[#2DC092]"
+              >
+                My Connects
+              </Badge>
+            </div> */}
             {loading && (
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">
@@ -474,6 +539,7 @@ const Coaches = ({ user }: any) => {
                 </div>
               </div>
             )}
+
             {!loading &&
               coachesData.length > 0 &&
               coachesData.map((coach, i) => (
@@ -484,7 +550,7 @@ const Coaches = ({ user }: any) => {
                       coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
                     } border border-gray-300 rounded-md`}
                   >
-                    <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex items-center justify-center max-sm:items-start">
+                    <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex flex-col items-center justify-center max-sm:justify-start max-sm:items-start">
                       <img
                         className="w-[250px] h-[250px] max-sm:h-[130px] object-cover"
                         src={coach.profile_pic_url}
@@ -556,9 +622,9 @@ const Coaches = ({ user }: any) => {
                       </div>
                     </div>
                   </div>
-                  {coachesData.length !== i + 1 && (
+                  {/* {coachesData.length !== i + 1 && (
                     <Separator className="my-2 max-sm:my-1.5 bg-gray-300" />
-                  )}
+                  )} */}
                 </>
               ))}
             {!loading && coachesData.length === 0 && (
