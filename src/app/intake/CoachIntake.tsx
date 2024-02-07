@@ -333,7 +333,7 @@ const CoachIntake = ({ user }: any) => {
                 myHeaders.append("Content-Type", "application/json");
                 const avatarBotCreationFormData = {
                   bot_type: "avatar_bot",
-                  profile_id: profileId,
+                  profile_id: result.data.uid,
                   bot_name: name,
                   email: user.email,
                   bot_details: { info: about, coach_name: name },
@@ -479,8 +479,8 @@ const CoachIntake = ({ user }: any) => {
               participant_id: userId,
               bot_base_url: `${
                 subdomain === "playground"
-                  ? "https://playground.coachbots.com/coach/"
-                  : "https://platform.coachbots.com/coach/"
+                  ? "https://playground.coachbots.com"
+                  : "https://platform.coachbots.com"
               }`,
               fitment_answer: `${participantLevel},${
                 coachMentInSameDep === "yes" ? true : false
@@ -620,12 +620,12 @@ const CoachIntake = ({ user }: any) => {
             "4": "How would like to see me implement the feedback you have provided so far?",
           },
         },
-        // feedback_questions: {
-        //   "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-        //   "2": "Regarding workplace team management skills, how would you rate my skills?",
-        //   "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-        //   "4": "How would like to see me implement the feedback you have provided so far?",
-        // },
+        feedback_questions: {
+          "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+          "2": "Regarding workplace team management skills, how would you rate my skills?",
+          "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+          "4": "How would like to see me implement the feedback you have provided so far?",
+        },
         participant_id: userId,
         additional_data: {
           short_profile_bio: profileBio,
@@ -634,8 +634,8 @@ const CoachIntake = ({ user }: any) => {
         },
         bot_base_url: `${
           subdomain === "playground"
-            ? "https://playground.coachbots.com/feedback/"
-            : "https://platform.coachbots.com/feedback/"
+            ? "https://playground.coachbots.com"
+            : "https://platform.coachbots.com"
         }`,
       };
 

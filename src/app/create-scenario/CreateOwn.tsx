@@ -218,7 +218,7 @@ const CreateOwn = ({ user }: any) => {
       params.set(
         "information",
         JSON.stringify({
-          data: { information: decsription.length > 0 ? decsription : title },
+          data: { information: decsription !== undefined ? decsription : title },
           title: title,
         })
       );

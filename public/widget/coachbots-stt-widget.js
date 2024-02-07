@@ -889,7 +889,7 @@ async function handleFaqButtonClick(question) {
         
         if (Object.keys(respjson).length > 0){
           respjson.forEach(element => {
-            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${element.test_code}','${element.title}')">${element.title}</button>`
+            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${element.test_code}','${element.title.replaceAll("'","")}')">${element.title}</button>`
           });
           appendMessage2(`<b >Here are some recommendations for you : </b> <br> ${buttons}`)
 
