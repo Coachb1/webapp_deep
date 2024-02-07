@@ -327,8 +327,7 @@ const CoachIntake = ({ user }: any) => {
             .then((response) => response.json())
             .then((result) => {
               console.log(result);
-              setProfileId(result.data.uid)
-              
+              setProfileId(result.data.uid);
 
               if (formType === "coach") {
                 myHeaders.append("Content-Type", "application/json");
@@ -785,7 +784,7 @@ const CoachIntake = ({ user }: any) => {
                 const resultingBot = getBotById(botIdFromParams!, data.data);
 
                 console.log(resultingBot);
-                setName(resultingBot.bot_attributes.bot_name);
+                setName(resultingBot.bot_attributes.coach_name);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
                 );
