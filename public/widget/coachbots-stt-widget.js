@@ -851,6 +851,10 @@ async function handleFaqButtonClick(question) {
   } else {
     if( question == 'something_else') {
         // appendMessage2('Please ask your question in chat box')
+        if(isAskingInitialQuestions){
+          return;
+        }
+        botInitialQuestionsIndex=1;
         optedBeginSession = true;
         if (botType === 'avatar_bot'){
           await getFitmentScore(userId2)
@@ -3882,12 +3886,33 @@ loadExternalModule().then(() => {
             //end
 
             console.log("isAttemptingRecommendation : ", isAttemptingRecommendation, "isValidMessageStt(latestMessage) : ", isValidMessageStt(latestMessage), "isProceedstt", isProceedStt)
-            if ( isAttemptingRecommendation == true && isProceedStt == "true" && isValidMessageStt(latestMessage) == false) {
+            if ( isAttemptingRecommendation == true && isProceedStt == "true") {
+              if ( isValidMessageStt(latestMessage) == false){
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
                 });
                 return;
               }
+
+              if ( isDuplicateResponse(latestMessage)) {
+                DuplicateResponseCount2 += 1;
+                if (DuplicateResponseCount2 > 1) {
+                  resetAllVariablesStt();
+                  signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                });
+                return;
+                }
+
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+                });
+                return;
+              }
+              else {
+                userResponses2.push(latestMessage);
+              }
+            }
 
             if (!buttonTextArray.includes(latestMessage) && allowRecommendationTestCode == false) {
               if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
