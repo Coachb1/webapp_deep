@@ -122,7 +122,7 @@ const Coaches = ({ user }: any) => {
         setFilterCategories([
           {
             filterName: "Profile Type",
-            filterOptions: [...profileTypeOptions], //, ...["accepted"]
+            filterOptions: [...profileTypeOptions, ...["External", "accepted"]], //, ...["accepted"]
           },
           {
             filterName: "Experience",
@@ -260,27 +260,31 @@ const Coaches = ({ user }: any) => {
   }
 
   const handleUpdateCheckedValues = (newValues: string[]) => {
-    console.log(newValues);
-    setParentCheckedValues(newValues);
-
-    console.log(coachesData);
-    //for search when empty
-    if (newValues.length > 0 && newValues[0].length === 0) {
-      setParentCheckedValues([]);
-    }
-
-    //for dropdown select
-    if (newValues.length === 0) {
-      console.log("no values selected");
-      setCoachesData(savedCoachesData);
-    } else {
-      console.log(newValues.includes("Connected"));
-      const filteredData = filterData(
-        newValues.includes("Connected") ? coachesData : savedCoachesData,
-        newValues
+    if (newValues.includes("External")) {
+      toast.info(
+        "You do not have access to external coaches and mentors at this time. Please connect with your administrator."
       );
-      console.log(filteredData);
-      setCoachesData(filteredData);
+    } else {
+      setParentCheckedValues(newValues);
+      console.log(newValues);
+      //for search when empty
+      if (newValues.length > 0 && newValues[0].length === 0) {
+        setParentCheckedValues([]);
+      }
+
+      //for dropdown select
+      if (newValues.length === 0) {
+        console.log("no values selected");
+        setCoachesData(savedCoachesData);
+      } else {
+        console.log(newValues.includes("Connected"));
+        const filteredData = filterData(
+          newValues.includes("Connected") ? coachesData : savedCoachesData,
+          newValues
+        );
+        console.log(filteredData);
+        setCoachesData(filteredData);
+      }
     }
   };
 
@@ -289,9 +293,8 @@ const Coaches = ({ user }: any) => {
   }
 
   useEffect(() => {
-    console.log(savedCoachesData, connections);
+    console.log("ALL CONNECTIONS : ", connections);
     const coachesWithStatus = savedCoachesData.map((coach: CoachesDataType) => {
-      console.log("CONNECTIONS : ", connections);
       const connection = connections.find(
         (connection) => connection.coach_id === coach.profile_id
       );
@@ -301,16 +304,21 @@ const Coaches = ({ user }: any) => {
       };
     });
 
-    const connectedCoaches = coachesWithStatus.filter((coach) =>
-      isConnected(coach.status)
+    console.log("Coaches with status : ", coachesWithStatus);
+
+    const connectedCoaches = coachesWithStatus.filter(
+      (coach) => coach.status === "accepted"
     );
 
     const unconnectedCoaches = coachesWithStatus.filter(
       (coach) => !isConnected(coach.status)
     );
 
+    console.log("Connected Coaches", connectedCoaches);
+
     setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
-  }, [savedCoachesData, connections]);
+    setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+  }, [connections]);
 
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
     const [requestLoading, setRequestLoading] = useState(false);
@@ -366,55 +374,23 @@ const Coaches = ({ user }: any) => {
     };
     return (
       <>
-        <div className="w-full mt-[20%] max-sm:mt-4">
-          {status === "" && (
-            <Button
-              disabled={requestLoading}
-              variant={"outline"}
-              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-              onClick={() => {
-                requestConnectHandler();
-              }}
-            >
-              {requestLoading ? (
-                <>
-                  <Loader className="h-4 w-4 animate-spin mr-2" />
-                  Requesting
-                </>
-              ) : (
-                "Request connection"
-              )}
-            </Button>
+        <Button
+          disabled={requestLoading}
+          variant={"outline"}
+          className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+          onClick={() => {
+            requestConnectHandler();
+          }}
+        >
+          {requestLoading ? (
+            <>
+              <Loader className="h-4 w-4 animate-spin mr-2" />
+              Requesting
+            </>
+          ) : (
+            "Request connection"
           )}
-          {status === "pending" && (
-            <Button
-              disabled
-              variant={"outline"}
-              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-            >
-              Requested
-            </Button>
-          )}
-          {status === "accepted" && (
-            <Button
-              disabled
-              variant={"outline"}
-              className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-green-300 bg-green-100"
-            >
-              Connected
-            </Button>
-          )}
-          {/* {status === "rejected" && (
-            <Button
-              disabled
-              variant={"destructive"}
-              className="w-[80%] max-sm:w-[90%] max-sm:text-sm"
-            >
-              Rejected
-            </Button>
-          )} */}
-        </div>
-        <Separator className="bg-gray-400 w-[80%]" />
+        </Button>
       </>
     );
   };
@@ -590,7 +566,30 @@ const Coaches = ({ user }: any) => {
                       <div className="w-[30%] max-sm:w-full pb-[20%] max-sm:pb-4 flex flex-col items-center justify-center gap-3">
                         {coach.profile_type === "coach" && (
                           <>
-                            <RequestionConnection coachId={coach.profile_id} />
+                            {coach.status === "accepted" && (
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-green-300 bg-green-100"
+                              >
+                                Connected
+                              </Button>
+                            )}
+                            {coach.status === "pending" && (
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                              >
+                                Requested
+                              </Button>
+                            )}
+                            {coach.status === "" && (
+                              <RequestionConnection
+                                coachId={coach.profile_id}
+                              />
+                            )}
+                            <Separator className="bg-gray-400 w-[80%]" />
                           </>
                         )}
                         {coach.avatar_bot_url !== null &&

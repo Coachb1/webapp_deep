@@ -68,7 +68,7 @@ const FilterDropDown = ({
                         htmlFor={option}
                         className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
                       >
-                        {option}
+                        {option === "accepted" ? "Connected" : option}
                       </label>
                     </div>
                   ))}
@@ -81,7 +81,9 @@ const FilterDropDown = ({
       <div className="mt-2 flex flex-row items-center gap-2">
         {checkedValues.map((checkedItem) => (
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
-            <p className="text-sm px-1">{checkedItem}</p>{" "}
+            <p className="text-sm px-1">
+              {checkedItem === "accepted" ? "Connected" : checkedItem}
+            </p>{" "}
             <X
               className="h-4 w-4 ml-1 m-[2px] hover:bg-gray-300 rounded-sm cursor-pointer"
               onClick={() => {
