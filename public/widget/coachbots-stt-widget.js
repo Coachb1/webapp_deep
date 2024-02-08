@@ -3897,10 +3897,11 @@ loadExternalModule().then(() => {
               if ( isDuplicateResponse(latestMessage)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
-                  resetAllVariablesStt();
-                  signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
-                });
+                  resetAllVariablesStt().then(() => {
+                    signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                  });
+                })
                 return;
                 }
 
