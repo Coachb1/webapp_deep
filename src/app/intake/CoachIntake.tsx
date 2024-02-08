@@ -844,6 +844,19 @@ const CoachIntake = ({ user }: any) => {
     }
   }, []);
 
+  const [error, setError] = useState({});
+
+  const handleWordLimit = (input_value:string,minLimit:number,maxLimit:number,fieldName:string) => {
+    const inputValue = input_value;
+   
+    if (inputValue.length > minLimit && inputValue.length < maxLimit) {
+      
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: '' }));
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: `${fieldName} should be between ${minLimit} and ${maxLimit} characters.` }));
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -882,13 +895,18 @@ const CoachIntake = ({ user }: any) => {
                     <input
                       value={name}
                       required
+                      minLength={10}
+                      maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
+                        handleWordLimit(e.target.value,10,30,"Name")
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
+                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
+
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -896,14 +914,20 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <textarea
                       value={about}
+                      minLength={200}
+                      maxLength={1500}
                       required
                       onChange={(e) => {
                         setAbout(e.target.value);
-                      }}
+                        handleWordLimit(e.target.value,200,1500,"Profile Description")
+                        }
+                      }
                       placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
                       rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 outline-blue-400 resize-none"
                     />
+                    {Object.keys(error).includes("Profile Description") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Description']}</p>}
+
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1402,13 +1426,17 @@ const CoachIntake = ({ user }: any) => {
                     <input
                       value={name}
                       required
+                      minLength={10}
+                      maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
+                        handleWordLimit(e.target.value,10,30,"Name")
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
+                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1416,14 +1444,19 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <textarea
                       value={profileBio}
+                      minLength={200}
+                      maxLength={1500}
                       required
                       onChange={(e) => {
                         setProfileBio(e.target.value);
+                        handleWordLimit(e.target.value,200,1500,"Profile Bio")
+
                       }}
                       placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
+                    {Object.keys(error).includes("Profile Bio") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Bio']}</p>}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1519,13 +1552,21 @@ const CoachIntake = ({ user }: any) => {
                     <input
                       required
                       value={name}
+                      minLength={10}
+                      maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
+                        handleWordLimit(e.target.value,10,30,"Name")
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      
                     />
+                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
+
+                    {/* {error && <p className="text-red-500 text-xs mt-1">{error}</p>} */}
+
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1534,13 +1575,17 @@ const CoachIntake = ({ user }: any) => {
                     <textarea
                       value={about}
                       required
+                      minLength={200}
+                      maxLength={1500}
                       onChange={(e) => {
                         setAbout(e.target.value);
+                        handleWordLimit(e.target.value,200,1500,"Profile Description")
                       }}
                       placeholder="Briefly share your background, goals, and what you're seeking in a coaching or mentoring relationship."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
+                    {Object.keys(error).includes("Profile Description") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Description']}</p>}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1708,13 +1753,17 @@ const CoachIntake = ({ user }: any) => {
                     <input
                       value={name}
                       required
+                      minLength={10}
+                      maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
+                        handleWordLimit(e.target.value,10,30,"Name")
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
+                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1723,13 +1772,17 @@ const CoachIntake = ({ user }: any) => {
                     <textarea
                       value={profileBio}
                       required
+                      minLength={200}
+                      maxLength={1500}
                       onChange={(e) => {
                         setProfileBio(e.target.value);
+                        handleWordLimit(e.target.value,200,1500,"Profile Bio")
                       }}
                       placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
+                    {Object.keys(error).includes("Profile Bio") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Bio']}</p>}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
