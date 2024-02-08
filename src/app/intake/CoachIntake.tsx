@@ -924,7 +924,7 @@ const CoachIntake = ({ user }: any) => {
                       }
                       placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
                       rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 outline-blue-400 resize-none"
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
                     {Object.keys(error).includes("Profile Description") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Description']}</p>}
 
