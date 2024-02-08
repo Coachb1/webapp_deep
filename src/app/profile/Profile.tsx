@@ -130,18 +130,18 @@ const Profile = ({ user }: any) => {
               itemName={"Email Signature"}
               icon={<MailCheck className="text-gray-500 h-5 w-5" />}
             />
-            {userRole === "admin" || userRole === "client_admin" ? (
+            {userRole === "super_admin" ? (
               <NavItem
                 itemName={"Admin"}
                 icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
               />
             ) : null}
-            {userRole === "client_admin" && (
+            {userRole === "super_admin" || userRole === "client_admin" ? (
               <NavItem
                 itemName={"Admin Reports"}
                 icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
               />
-            )}
+            ): null}
           </div>
         </div>
         <div className="w-[80%] max-sm:w-[90%]">

@@ -110,6 +110,8 @@ const Coaches = ({ user }: any) => {
         const profileTypeOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.profile_type))
         );
+        // Adding a another option for profile_type 
+        profileTypeOptions.push("External")
 
         const departmentOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.department))
@@ -629,7 +631,12 @@ const Coaches = ({ user }: any) => {
             {!loading && coachesData.length === 0 && (
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">
-                  <span>No Data</span>
+                  {parentCheckedValues.includes("External") ? (
+                      <span>You do not have access to external coaches and mentors at this time. Please connect with your administrator.</span>
+                    ) : (
+                      <span>No Data</span>
+                    )
+                  }
                 </div>
               </div>
             )}
