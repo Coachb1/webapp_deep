@@ -32,13 +32,28 @@ const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
+  const [userProfile, setUserProfile] = useState<any>({})
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getUserAccount(user)
       .then((response) => response.json())
-      .then((data) => {
+      .then(async(data) => {
         console.log(data);
+        const profile = await fetch(`${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`, {
+          headers: {
+            Authorization: basicAuth,
+          },
+        })
+        
+        const profileJson = await profile.json()
+        // const userProfile = profileJson.data[0]
+        console.log('profile', profileJson.data)
+
+        // const profileType = userProfile.profile_type;
+        setUserProfile(profileJson.data[0])
+        console.log(profileJson.data[0])
+
         fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
           headers: {
             Authorization: basicAuth,
@@ -98,11 +113,12 @@ const MyPages = ({ user }: any) => {
     }
   };
 
-  const intakeBotTypeLinks = (botType: string, bot_id: string) => {
-    if (botType === "avatar_bot") {
-      return `/intake/?type=coach&edit=true&bot_id=${bot_id}`;
-    } else if (botType === "feedback_bot") {
-      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}`;
+  const intakeBotTypeLinks = (botType: string, bot_id: string,profile_id:string,profile_type:string) => {
+
+    if (profile_type === "coach") {
+      return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    } else if (profile_type === "coachee") {
+      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
     }
   };
 
@@ -118,7 +134,7 @@ const MyPages = ({ user }: any) => {
           </div>
         </>
       )}
-      {!loading && botTypes.length === 0 && (
+      {!loading && botTypes.length === 0 && !userProfile && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
             <div>You don't have any active bots yet!</div>{" "}
@@ -228,7 +244,7 @@ const MyPages = ({ user }: any) => {
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
                   <Link
                     href={
-                      intakeBotTypeLinks(botType.bot_type, bot.bot_id)! +
+                      intakeBotTypeLinks(botType.bot_type, bot.bot_id,userProfile.uid,userProfile.profile_type)! +
                       `&uid=${bot.uid}`
                     }
                   >
@@ -250,6 +266,37 @@ const MyPages = ({ user }: any) => {
           </div>
         ))}
       </div>
+      {userProfile && userProfile.profile_type === 'coachee' && 
+        <>
+          <hr />
+          <div className="m-4 text-sm max-sm:m-2">
+            <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
+              <div className="flex items-center">
+                <p className="text-sm inline">Profile</p>
+                <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
+                <Link
+                  href={
+                    intakeBotTypeLinks("profile", "123", userProfile.uid, userProfile.profile_type)! +
+                    `&uid=`
+                  }
+                >
+                  <Button
+                    variant={"secondary"}
+                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                  >
+                    <span className="max-sm:hidden">Edit</span>{" "}
+                    <TooltipWrapper
+                      className="hidden max-sm:block text-xs"
+                      tooltipName="Edit"
+                      body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                    />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </>
+      }
     </div>
   );
 };
