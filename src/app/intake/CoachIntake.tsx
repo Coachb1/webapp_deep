@@ -26,6 +26,9 @@ const CoachIntake = ({ user }: any) => {
   const checkIfEdit = params.get("edit");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
+  const editBotType = params.get("bot_type");
+  const profileType = params.get("profile_type")
+  const userProfileId = params.get("profile_id")
 
   const router = useRouter();
 
@@ -465,6 +468,42 @@ const CoachIntake = ({ user }: any) => {
               );
             });
         } else {
+            console.log('edit',myHeaders)
+            // Create a plain JavaScript object
+            const formDataObject: { [key: string]: any } = {};
+            formdata.forEach((value, key) => {
+              formDataObject[key] = value;
+            });
+
+            // Convert the object to JSON
+            var formDataJSON = JSON.stringify(formDataObject);
+            console.log(formDataObject)
+            
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
+              {
+                method: "PATCH",
+                headers: myHeaders,
+                body: formType === "coach"? formDataJSON: formdata,
+              }
+              )
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data,"updated");
+                setCreateLoading(false);
+                if (!data.error && !data.detail) {
+                  toast.loading(
+                    "Your profile and Bot have been updated. Redirecting you to your profile.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  resetAllStates();
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 6000);
+                }
+              })
           if (formType === "coach") {
             myHeaders.append("Content-Type", "application/json");
             const avatarBotCreationFormData = {
@@ -838,6 +877,38 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data
                     .fitment_answers?.outcomeSupported
                 );
+              });
+          });
+      } else if (formType === "coachee") {
+        getUserAccount(user)
+          .then((res) => res.json())
+          .then((data) => {
+            fetch(`${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit - coachee", data);
+
+                const resultingBot = data.data
+
+                console.log(resultingBot);
+                setName(resultingBot.name);
+                setAbout(
+                  resultingBot.about?.trim()
+                );
+                setExperience(
+                  resultingBot.experience
+                );
+                console.log(resultingBot.low_rating_characteristics,resultingBot.high_rating_characteristics)
+                setCharacteristicsRateLows(resultingBot.low_rating_characteristics);
+                setCharacteristicsRateHigh(resultingBot.high_rating_characteristics);
+                setDepartment(
+                  resultingBot.department
+                );
+                
               });
           });
       }
