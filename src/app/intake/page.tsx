@@ -4,6 +4,7 @@ import CoachIntake from "./CoachIntake";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import NetworkNav from "@/components/NetworkNav";
+import MyComponent from "./UploadTest";
 
 export const metadata = constructMetadata({
   title: "Intake - Coachbots",
@@ -20,6 +21,9 @@ const Page = async () => {
           <NetworkNav user={user} />
         </div>
       </div>
+      {/* <div className="pt-20">
+        <MyComponent />
+      </div> */}
       {/* <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 ">
         <Link href="/">
           <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
