@@ -27,8 +27,8 @@ const CoachIntake = ({ user }: any) => {
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
-  const profileType = params.get("profile_type")
-  const userProfileId = params.get("profile_id")
+  const profileType = params.get("profile_type");
+  const userProfileId = params.get("profile_id");
 
   const router = useRouter();
 
@@ -80,7 +80,12 @@ const CoachIntake = ({ user }: any) => {
     useState("");
   const [leaderNames, setLeaderNames] = useState("");
   const [linksReflectyouWished, setLinksReflectyouWished] = useState("");
-  const [referenceDocs, setReferenceDocs] = useState<File>();
+
+  interface FileData {
+    file: File;
+    id: number;
+  }
+  const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
   const [coachmentSelect, setCoachMentSelect] = useState("");
   const [participantLevel, setParticipantLevel] = useState("");
@@ -118,7 +123,7 @@ const CoachIntake = ({ user }: any) => {
     setLinksReflectingWVpersonal("");
     setLeaderNames("");
     setLinksReflectyouWished("");
-    setReferenceDocs(undefined);
+    setReferenceDocs([]);
     setVoiceSample("");
     setCoachMentSelect("");
     setParticipantLevel("");
@@ -284,14 +289,14 @@ const CoachIntake = ({ user }: any) => {
             })
           );
           formdata.append("admired_leaders", leaderNames);
-          if (!checkIfEdit) {
-            formdata.append(
-              "reference_docs",
-              //@ts-ignore
-              referenceDocs,
-              user.given_name + "reference" + referenceDocs?.type
-            );
-          }
+          // if (!checkIfEdit) {
+          //   formdata.append(
+          //     "reference_docs",
+          //     //@ts-ignore
+          //     referenceDocs,
+          //     user.given_name + "reference" + referenceDocs?.type
+          //   );
+          // }
           formdata.append(
             "voice_sample",
             `${voiceSample === "yes" ? true : false}`
@@ -418,19 +423,73 @@ const CoachIntake = ({ user }: any) => {
                   .then((res) => res.json())
                   .then((data) => {
                     console.log(data);
-                    setCreateLoading(false);
-                    if (!data.error && !data.detail) {
-                      toast.success(
-                        "Thanks for your request. You will get notified when your profile is approved and live.",
-                        {
-                          duration: 6000,
-                        }
+                    if (!data.error && !data.detail && !data.msg) {
+                      //PATCH MEDIA DATA HERE
+
+                      const filesPatchFormData = new FormData();
+                      referenceDocs.forEach(({ file }) => {
+                        filesPatchFormData.append(
+                          `attatched_pdfs`,
+                          file,
+                          file.name.trim()
+                        );
+                      });
+
+                      filesPatchFormData.append("bot_id", data.bot_uid);
+
+                      const media_data = {
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
+                      };
+                      filesPatchFormData.append(
+                        "media_data",
+                        JSON.stringify(media_data)
                       );
-                      resetAllStates();
-                      setTimeout(() => {
-                        router.push("/");
-                      }, 4000);
+
+                      console.log(referenceDocs);
+                      fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                        method: "PATCH",
+                        headers: {
+                          Authorization: basicAuth,
+                        },
+                        body: filesPatchFormData,
+                      })
+                        .then((res) => res.json())
+                        .then((data) => {
+                          console.log(data);
+                          setCreateLoading(false);
+                          if (!data.error && !data.detail) {
+                            toast.success(
+                              "Thanks for your request. You will get notified when your profile is approved and live.",
+                              {
+                                duration: 6000,
+                              }
+                            );
+                            resetAllStates();
+                            setTimeout(() => {
+                              router.push("/");
+                            }, 4000);
+                          } else {
+                            toast.error(
+                              "Error creating your coach profile. Please try again.",
+                              {
+                                duration: 6000,
+                              }
+                            );
+                          }
+                        })
+                        .catch((err) => {
+                          toast.error(
+                            "Error creating your coach profile. Please try again.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                          console.error(err);
+                          setCreateLoading(false);
+                        });
                     } else {
+                      setCreateLoading(false);
                       if (data.error === "Bot already exists") {
                         toast.error("Bot already exists");
                       } else {
@@ -446,6 +505,12 @@ const CoachIntake = ({ user }: any) => {
                   .catch((err) => {
                     console.error(err);
                     setCreateLoading(false);
+                    toast.error(
+                      "Error creating your coach profile. Please try again.",
+                      {
+                        duration: 6000,
+                      }
+                    );
                   });
               } else {
                 resetAllStates();
@@ -468,42 +533,42 @@ const CoachIntake = ({ user }: any) => {
               );
             });
         } else {
-            console.log('edit',myHeaders)
-            // Create a plain JavaScript object
-            const formDataObject: { [key: string]: any } = {};
-            formdata.forEach((value, key) => {
-              formDataObject[key] = value;
-            });
+          console.log("edit", myHeaders);
+          // Create a plain JavaScript object
+          const formDataObject: { [key: string]: any } = {};
+          formdata.forEach((value, key) => {
+            formDataObject[key] = value;
+          });
 
-            // Convert the object to JSON
-            var formDataJSON = JSON.stringify(formDataObject);
-            console.log(formDataObject)
-            
-            fetch(
-              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
-              {
-                method: "PATCH",
-                headers: myHeaders,
-                body: formType === "coach"? formDataJSON: formdata,
-              }
-              )
-              .then((res) => res.json())
-              .then((data) => {
-                console.log(data,"updated");
-                setCreateLoading(false);
-                if (!data.error && !data.detail) {
-                  toast.loading(
-                    "Your profile and Bot have been updated. Redirecting you to your profile.",
-                    {
-                      duration: 6000,
-                    }
-                  );
-                  resetAllStates();
-                  setTimeout(() => {
-                    router.push("/profile");
-                  }, 6000);
-                }
-              })
+          // Convert the object to JSON
+          var formDataJSON = JSON.stringify(formDataObject);
+          console.log(formDataObject);
+
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
+            {
+              method: "PATCH",
+              headers: myHeaders,
+              body: formType === "coach" ? formDataJSON : formdata,
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data, "updated");
+              // setCreateLoading(false);
+              // if (!data.error && !data.detail) {
+              //   toast.loading(
+              //     "Your profile and Bot have been updated. Redirecting you to your profile.",
+              //     {
+              //       duration: 6000,
+              //     }
+              //   );
+              // resetAllStates();
+              // setTimeout(() => {
+              //   router.push("/profile");
+              // }, 6000);
+              // }
+            });
           if (formType === "coach") {
             myHeaders.append("Content-Type", "application/json");
             const avatarBotCreationFormData = {
@@ -590,19 +655,87 @@ const CoachIntake = ({ user }: any) => {
               .then((res) => res.json())
               .then((data) => {
                 console.log(data);
-                setCreateLoading(false);
+                // setCreateLoading(false);
                 if (!data.error && !data.detail) {
-                  toast.loading(
-                    "Your profile and Bot have been updated. Redirecting you to your profile.",
-                    {
-                      duration: 6000,
+                  if (referenceDocs.length > 0) {
+                    const filesPatchFormData = new FormData();
+                    if (referenceDocs.length > 0) {
+                      referenceDocs.forEach(({ file }) => {
+                        filesPatchFormData.append(
+                          `attatched_pdfs`,
+                          file,
+                          file.name.trim()
+                        );
+                      });
                     }
-                  );
-                  resetAllStates();
-                  setTimeout(() => {
-                    router.push("/profile");
-                  }, 6000);
+
+                    filesPatchFormData.append("bot_id", botIUidFromParams!);
+
+                    const media_data = {
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                    };
+                    filesPatchFormData.append(
+                      "media_data",
+                      JSON.stringify(media_data)
+                    );
+
+                    fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                      method: "PATCH",
+                      headers: {
+                        Authorization: basicAuth,
+                      },
+                      body: filesPatchFormData,
+                    })
+                      .then((res) => res.json())
+                      .then((data) => {
+                        console.log(data);
+                        setCreateLoading(false);
+                        if (!data.error && !data.detail) {
+                          toast.success(
+                            "Thanks for your request. You will get notified when your profile is approved and live.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                          resetAllStates();
+                          setTimeout(() => {
+                            router.push("/");
+                          }, 4000);
+                        } else {
+                          toast.error(
+                            "Error creating your coach profile. Please try again.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                        }
+                      })
+                      .catch((err) => {
+                        toast.error(
+                          "Error creating your coach profile. Please try again.",
+                          {
+                            duration: 6000,
+                          }
+                        );
+                        console.error(err);
+                        setCreateLoading(false);
+                      });
+                  } else {
+                    setCreateLoading(false);
+                    toast.success(
+                      "Thanks for your request. You will get notified when your profile is approved and live.",
+                      {
+                        duration: 6000,
+                      }
+                    );
+                    resetAllStates();
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 4000);
+                  }
                 } else {
+                  setCreateLoading(false);
                   if (data.error === "Bot already exists") {
                     toast.error("Bot already exists");
                   } else {
@@ -849,12 +982,12 @@ const CoachIntake = ({ user }: any) => {
                 setProblemSolvingApproach(
                   resultingBot.signature_bot.data.additional_data.problem_solving_approach?.trim()
                 );
-                setLinksReflectingWVpersonal(
-                  resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
-                );
-                setLinksReflectyouWished(
-                  resultingBot.signature_bot.data.additional_data.article_links?.trim()
-                );
+                // setLinksReflectingWVpersonal(
+                //   resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
+                // );
+                // setLinksReflectyouWished(
+                //   resultingBot.signature_bot.data.additional_data.article_links?.trim()
+                // );
                 setLeaderNames(
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
@@ -883,32 +1016,35 @@ const CoachIntake = ({ user }: any) => {
         getUserAccount(user)
           .then((res) => res.json())
           .then((data) => {
-            fetch(`${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`, {
-              headers: {
-                Authorization: basicAuth,
-              },
-            })
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
+              {
+                headers: {
+                  Authorization: basicAuth,
+                },
+              }
+            )
               .then((res) => res.json())
               .then((data) => {
                 console.log("Bot details for edit - coachee", data);
 
-                const resultingBot = data.data
+                const resultingBot = data.data;
 
                 console.log(resultingBot);
                 setName(resultingBot.name);
-                setAbout(
-                  resultingBot.about?.trim()
+                setAbout(resultingBot.about?.trim());
+                setExperience(resultingBot.experience);
+                console.log(
+                  resultingBot.low_rating_characteristics,
+                  resultingBot.high_rating_characteristics
                 );
-                setExperience(
-                  resultingBot.experience
+                setCharacteristicsRateLows(
+                  resultingBot.low_rating_characteristics
                 );
-                console.log(resultingBot.low_rating_characteristics,resultingBot.high_rating_characteristics)
-                setCharacteristicsRateLows(resultingBot.low_rating_characteristics);
-                setCharacteristicsRateHigh(resultingBot.high_rating_characteristics);
-                setDepartment(
-                  resultingBot.department
+                setCharacteristicsRateHigh(
+                  resultingBot.high_rating_characteristics
                 );
-                
+                setDepartment(resultingBot.department);
               });
           });
       }
@@ -917,14 +1053,21 @@ const CoachIntake = ({ user }: any) => {
 
   const [error, setError] = useState({});
 
-  const handleWordLimit = (input_value:string,minLimit:number,maxLimit:number,fieldName:string) => {
+  const handleWordLimit = (
+    input_value: string,
+    minLimit: number,
+    maxLimit: number,
+    fieldName: string
+  ) => {
     const inputValue = input_value;
-   
+
     if (inputValue.length > minLimit && inputValue.length < maxLimit) {
-      
-      setError((prevErrors) => ({ ...prevErrors, [fieldName]: '' }));
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
     } else {
-      setError((prevErrors) => ({ ...prevErrors, [fieldName]: `${fieldName} should be between ${minLimit} and ${maxLimit} characters.` }));
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `${fieldName} should be between ${minLimit} and ${maxLimit} characters.`,
+      }));
     }
   };
 
@@ -954,12 +1097,23 @@ const CoachIntake = ({ user }: any) => {
                   createSubmitHandler(e);
                 }}
               >
-                <Badge
-                  variant={"secondary"}
-                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
-                >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
-                </Badge>
+                <div className="flex flex-col gap-2">
+                  <Badge
+                    variant={"secondary"}
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
+                  >
+                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  </Badge>
+                  {checkIfEdit && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800"
+                      variant={"outline"}
+                    >
+                      You are editing your bot. All the earlier inputs will be
+                      replaced by current inputs.
+                    </Badge>
+                  )}
+                </div>
                 <div>
                   <div className="my-3">
                     <p className="text-sm my-1">Enter your name</p>
@@ -970,14 +1124,17 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
-                        handleWordLimit(e.target.value,10,30,"Name")
+                        handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
-                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
-
+                    {Object.keys(error).includes("Name") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Name"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -990,15 +1147,22 @@ const CoachIntake = ({ user }: any) => {
                       required
                       onChange={(e) => {
                         setAbout(e.target.value);
-                        handleWordLimit(e.target.value,200,1500,"Profile Description")
-                        }
-                      }
+                        handleWordLimit(
+                          e.target.value,
+                          200,
+                          1500,
+                          "Profile Description"
+                        );
+                      }}
                       placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
-                    {Object.keys(error).includes("Profile Description") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Description']}</p>}
-
+                    {Object.keys(error).includes("Profile Description") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Profile Description"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1203,7 +1367,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
-                        required
+                        required={!checkIfEdit}
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
                           setLinksReflectingWVpersonal(e.target.value);
@@ -1239,7 +1403,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
-                        required
+                        required={!checkIfEdit}
                         value={linksReflectyouWished}
                         onChange={(e) => {
                           setLinksReflectyouWished(e.target.value);
@@ -1262,10 +1426,21 @@ const CoachIntake = ({ user }: any) => {
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
-                        accept=".pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .gif, .bmp, .mp3, .ogg, .wav, .mp4, .webm, .mkv"
-                        onChange={(e) => {
-                          //@ts-ignore
-                          setReferenceDocs(e.target.files[0]);
+                        name="files"
+                        accept=".pdf"
+                        onChange={async (e) => {
+                          const selectedFiles = Array.from(
+                            e.target.files as FileList
+                          );
+                          const filesArray = selectedFiles.map((file) => ({
+                            file: file,
+                            id: Math.floor(Math.random() * 10000),
+                          }));
+                          console.log(filesArray);
+                          setReferenceDocs((prevFiles) => [
+                            ...prevFiles,
+                            ...filesArray,
+                          ]);
                         }}
                       />
                     </div>
@@ -1501,13 +1676,17 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
-                        handleWordLimit(e.target.value,10,30,"Name")
+                        handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
-                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
+                    {Object.keys(error).includes("Name") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Name"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1520,14 +1699,22 @@ const CoachIntake = ({ user }: any) => {
                       required
                       onChange={(e) => {
                         setProfileBio(e.target.value);
-                        handleWordLimit(e.target.value,200,1500,"Profile Bio")
-
+                        handleWordLimit(
+                          e.target.value,
+                          200,
+                          1500,
+                          "Profile Bio"
+                        );
                       }}
                       placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
-                    {Object.keys(error).includes("Profile Bio") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Bio']}</p>}
+                    {Object.keys(error).includes("Profile Bio") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Profile Bio"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1627,17 +1814,19 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
-                        handleWordLimit(e.target.value,10,30,"Name")
+                        handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      
                     />
-                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
+                    {Object.keys(error).includes("Name") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Name"]}
+                      </p>
+                    )}
 
                     {/* {error && <p className="text-red-500 text-xs mt-1">{error}</p>} */}
-
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1650,13 +1839,22 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={1500}
                       onChange={(e) => {
                         setAbout(e.target.value);
-                        handleWordLimit(e.target.value,200,1500,"Profile Description")
+                        handleWordLimit(
+                          e.target.value,
+                          200,
+                          1500,
+                          "Profile Description"
+                        );
                       }}
                       placeholder="Briefly share your background, goals, and what you're seeking in a coaching or mentoring relationship."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
-                    {Object.keys(error).includes("Profile Description") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Description']}</p>}
+                    {Object.keys(error).includes("Profile Description") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Profile Description"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1828,13 +2026,17 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={30}
                       onChange={(e) => {
                         setName(e.target.value);
-                        handleWordLimit(e.target.value,10,30,"Name")
+                        handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
-                    {Object.keys(error).includes("Name") && <p className="text-red-500 text-xs mt-1">{(error as any)['Name']}</p>}
+                    {Object.keys(error).includes("Name") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Name"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -1847,13 +2049,22 @@ const CoachIntake = ({ user }: any) => {
                       maxLength={1500}
                       onChange={(e) => {
                         setProfileBio(e.target.value);
-                        handleWordLimit(e.target.value,200,1500,"Profile Bio")
+                        handleWordLimit(
+                          e.target.value,
+                          200,
+                          1500,
+                          "Profile Bio"
+                        );
                       }}
                       placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                       rows={3}
                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                     />
-                    {Object.keys(error).includes("Profile Bio") && <p className="text-red-500 text-xs mt-1">{(error as any)['Profile Bio']}</p>}
+                    {Object.keys(error).includes("Profile Bio") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["Profile Bio"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
