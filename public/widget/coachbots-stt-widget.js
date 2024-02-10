@@ -560,6 +560,8 @@ function getAnonymousEmail() {
       }, 200);
 
     } else if (flow === 'down'){
+      feedbackBotQuestions = renameKey(feedbackBotQuestions)
+      feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?"
       feedbackBotIndex += 1
       appendMessage2(feedbackBotQuestions[feedbackBotIndex])
       setTimeout(() => {

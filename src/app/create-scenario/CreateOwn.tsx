@@ -77,7 +77,23 @@ const CreateOwn = ({ user }: any) => {
       fetch(apiUrl)
         .then((res) => res.json())
         .then((data) => {
+          console.log("youtube")
+          console.log(data)
+          const captionId = data.items[0].id;
           const video = data.items[0];
+                // Step 2: Get the transcript using the caption ID
+          const transcriptApiUrl = `https://www.googleapis.com/youtube/v3/captions/${captionId}?key=${apiKey}`;
+
+          fetch(transcriptApiUrl)
+            .then(response => response.json())
+            .then(transcriptData => {
+              // The transcript is available in the transcriptData object
+              const transcriptText = transcriptData.snippet.transcript;
+              console.log(transcriptText);
+              console.log("tran",transcriptData)
+
+            })
+            .catch(error => console.error("Error fetching transcript:", error));
 
           console.log(video.snippet.description, video.snippet.title);
           const url: any = new URL(
