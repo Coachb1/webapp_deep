@@ -177,3 +177,11 @@ export function findCoachUID(profiles: any) {
   }
   return "";
 }
+
+export function reportsLinksSelector() {
+  if (subdomain === "platform") {
+    return "https://myreportdev.coachbots.com/";
+  } else {
+    return "https://myreportdev.coachbots.com/";
+  }
+}

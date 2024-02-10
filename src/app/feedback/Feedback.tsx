@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { convertDate } from "@/lib/utils";
+import { convertDate, getUserAccount, reportsLinksSelector } from "@/lib/utils";
 import { AlertTriangle, CornerDownRight, Loader, Quote } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -102,6 +102,7 @@ const feedbackJsonConversion = (jsonData: any) => {
 
 const Feedback = ({ user, renderType }: any) => {
   const pathname = usePathname();
+
   // const [enrolled, setEnrolled] = useState(false);
 
   const [coachName, setCoachName] = useState<string>("");
@@ -124,8 +125,23 @@ const Feedback = ({ user, renderType }: any) => {
 
   const [invalidId, setInValidCoach] = useState(false);
 
+  //for owner verific
+  const [userId, setUserId] = useState<string>("");
+  const [userIdFromBotDetails, setUserIdFromBotDetails] = useState<string>("");
+
   useEffect(() => {
     setIsLoading(true);
+
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          setUserId(data.uid);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
 
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
@@ -164,6 +180,7 @@ const Feedback = ({ user, renderType }: any) => {
         }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
+        setUserIdFromBotDetails(data.data.user_id);
 
         if (!data.data.is_sample_bot && !data.data.is_system_bot) {
           fetch(`${baseURL}/accounts/`, {
@@ -387,21 +404,31 @@ const Feedback = ({ user, renderType }: any) => {
                   Benefits
                 </Button>
               </Link>
-              {/* <Link target="_blank" href={coachBookLink}>
-              <div className="relative group cursor-pointer">
-                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                  <div className="space-y-2">
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer"
-                    >
-                      Book me {renderType !== "dynamic" && "(sample)"}
-                    </Button>
+              <Link
+                target="_blank"
+                href={
+                  reportsLinksSelector() +
+                  "criticalFeedbackReport/" +
+                  `?bot_id=${pathname.split("/")[2]}&bot_name=${coachName}`
+                }
+              >
+                {userId === userIdFromBotDetails && (
+                  <div className="relative group cursor-pointer">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                      <div className="space-y-2">
+                        <Button
+                          variant={"secondary"}
+                          className="border border-gray-200 h-8 hover:cursor-pointer"
+                        >
+                          Critical Feedbacks{" "}
+                          {renderType !== "dynamic" && "(sample)"}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Link> */}
+                )}
+              </Link>
             </div>
             {/* kudosWall */}
             <div className="w-full" id="kudos">
