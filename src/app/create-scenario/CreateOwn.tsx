@@ -534,7 +534,7 @@ const CreateOwn = ({ user }: any) => {
     } else if (searchMode === "curated-learning") {
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en&videoEmbeddable=true`,
         {
           method: "GET",
         }
