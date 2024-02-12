@@ -710,14 +710,14 @@ const CoachIntake = ({ user }: any) => {
                         setCreateLoading(false);
                         if (!data.error && !data.detail) {
                           toast.success(
-                            "Thanks for your request. You will get notified when your profile is approved and live.",
+                            "Successfully updated your profile. Redirecting you to your Profile page.",
                             {
                               duration: 6000,
                             }
                           );
                           resetAllStates();
                           setTimeout(() => {
-                            router.push("/");
+                            router.push("/profile");
                           }, 4000);
                         } else {
                           toast.error(
@@ -741,14 +741,14 @@ const CoachIntake = ({ user }: any) => {
                   } else {
                     setCreateLoading(false);
                     toast.success(
-                      "Thanks for your request. You will get notified when your profile is approved and live.",
+                      "Successfully updated your profile. Redirecting you to your Profile page.",
                       {
                         duration: 6000,
                       }
                     );
                     resetAllStates();
                     setTimeout(() => {
-                      router.push("/");
+                      router.push("/profile");
                     }, 4000);
                   }
                 } else {
@@ -773,13 +773,13 @@ const CoachIntake = ({ user }: any) => {
             resetAllStates();
             setCreateLoading(false);
             toast.success(
-              "Thanks for your request. You will get notified when your profile is approved and live.",
+              "Successfully updated your profile. Redirecting you to your Profile page.",
               {
                 duration: 6000,
               }
             );
             setTimeout(() => {
-              router.push("/");
+              router.push("/profile");
             }, 4000);
           }
         }
