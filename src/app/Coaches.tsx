@@ -110,8 +110,8 @@ const Coaches = ({ user }: any) => {
         const profileTypeOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.profile_type))
         );
-        // Adding a another option for profile_type 
-        profileTypeOptions.push("External")
+        // Adding a another option for profile_type
+        profileTypeOptions.push("External");
 
         const departmentOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.department))
@@ -202,39 +202,41 @@ const Coaches = ({ user }: any) => {
     getCoachesData();
     hideBots();
 
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setUserId(data.uid);
-        fetch(
-          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-
-            const isApprovedData = data.data.filter(
-              (coachData: any) => coachData.is_approved === true
-            );
-            if (isApprovedData.length > 0) {
-              setCoacheeId(findCoacheeUID(isApprovedData));
-              setCoachId(findCoachUID(isApprovedData));
-            } else {
-              setCoacheeId("");
-              setCoachId("");
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setUserId(data.uid);
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
             }
-          })
-          .then((err) => {
-            console.error(err);
-          });
-      });
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+
+              const isApprovedData = data.data.filter(
+                (coachData: any) => coachData.is_approved === true
+              );
+              if (isApprovedData.length > 0) {
+                setCoacheeId(findCoacheeUID(isApprovedData));
+                setCoachId(findCoachUID(isApprovedData));
+              } else {
+                setCoacheeId("");
+                setCoachId("");
+              }
+            })
+            .then((err) => {
+              console.error(err);
+            });
+        });
+    }
   }, []);
 
   function filterData(
@@ -632,11 +634,13 @@ const Coaches = ({ user }: any) => {
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">
                   {parentCheckedValues.includes("External") ? (
-                      <span>You do not have access to external coaches and mentors at this time. Please connect with your administrator.</span>
-                    ) : (
-                      <span>No Data</span>
-                    )
-                  }
+                    <span>
+                      You do not have access to external coaches and mentors at
+                      this time. Please connect with your administrator.
+                    </span>
+                  ) : (
+                    <span>No Data</span>
+                  )}
                 </div>
               </div>
             )}
