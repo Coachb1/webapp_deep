@@ -19,6 +19,10 @@ import CharactericticsSelect from "./CharacteristicsSelect";
 import { Switch } from "@/components/ui/switch";
 import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
+import mammoth from 'mammoth';
+import { pdfjs } from 'react-pdf';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
@@ -28,7 +32,7 @@ const CoachIntake = ({ user }: any) => {
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
   const profileType = params.get("profile_type");
-  const userProfileId = params.get("profile_id");
+  let userProfileId = params.get("profile_id");
 
   const router = useRouter();
 
@@ -84,6 +88,7 @@ const CoachIntake = ({ user }: any) => {
   interface FileData {
     file: File;
     id: number;
+    text: string;
   }
   const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
@@ -136,6 +141,93 @@ const CoachIntake = ({ user }: any) => {
     setSuggestedProjects("");
     setCurrentProjects("");
   };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target?.files;
+
+    if (selectedFiles) {
+      const filesArray = await Promise.all(
+        Array.from(selectedFiles).map(async (file: File) => {
+          let textContent: string = '';
+          try {
+            if (file.name.includes('.pdf')){
+            textContent = (await extractTextFromPdf(file)) || '';
+            }else if (file.name.includes('.docx')){
+              textContent = (await extractTextFromDocx(file)) || '';
+            }
+            console.log('text',textContent)
+          } catch (error) {
+            console.error('Error extracting text from DOCX:', error);
+            // If text extraction fails, set textContent to an empty string or handle it as needed
+            // textContent = '';
+          }
+          return {
+            file: file,
+            id: Math.floor(Math.random() * 10000),
+            text: textContent,
+          };
+        })
+      );
+
+      setReferenceDocs((prevFiles) => [...prevFiles, ...filesArray]);
+    }
+  };
+
+  const extractTextFromDocx = async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const arrayBuffer = (event.target as FileReader)?.result as ArrayBuffer | null;
+  
+        if (arrayBuffer) {
+          try {
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            console.log('text',result.value)
+            resolve(result.value);
+          } catch (error) {
+            console.error('Error extracting text from DOCX:', error);
+            reject(error);
+          }
+        } else {
+          reject(new Error('Failed to read file as ArrayBuffer.'));
+        }
+      };
+  
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const extractTextFromPdf = async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const arrayBuffer = (event.target as FileReader)?.result as ArrayBuffer | null;
+
+        if (arrayBuffer) {
+          try {
+            const pdfData = new Uint8Array(await file.arrayBuffer());
+            const pdf = await pdfjs.getDocument({ data: pdfData }).promise;
+            let extractedText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const content = await page.getTextContent();
+              extractedText += content.items.map((item: any) => item.str).join(' ') + '\n'; // Type assertion here
+            }
+
+            resolve(extractedText);
+          } catch (error) {
+            console.error('Error extracting text from PDF:', error);
+            reject(error);
+          }
+        } else {
+          reject(new Error('Failed to read file as ArrayBuffer.'));
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
 
   function getProfileTypes(data: any) {
     const profileTypes = data.map((profile: any) => profile.profile_type);
@@ -336,6 +428,7 @@ const CoachIntake = ({ user }: any) => {
             .then((result) => {
               console.log(result);
               setProfileId(result.data.uid);
+              userProfileId = result.data.uid;
 
               if (formType === "coach") {
                 myHeaders.append("Content-Type", "application/json");
@@ -427,32 +520,35 @@ const CoachIntake = ({ user }: any) => {
                       //PATCH MEDIA DATA HERE
 
                       const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file }) => {
-                        if (file.name.includes('.pdf')){
-                          filesPatchFormData.append(
-                            `attatched_pdfs`,
-                            file,
-                            file.name.trim()
-                          );
-                        } else if (file.name.includes(".docx")){
-                          filesPatchFormData.append(
-                            `attached_docs`,
-                            file,
-                            file.name.trim()
-                          );
+                      referenceDocs.forEach(({ file ,text}) => {
+                        if (file.name.includes('.pdf')) {
+                          if (text){
+                            filesPatchFormData.append("pdf_data",text);
+                            console.log(text)
+
+                          }else{
+                            filesPatchFormData.append(`attached_pdfs`, file, file.name.trim());
+                          }
+                        } else if (file.name.includes('.docx')) {
+                          if (text) {
+                            filesPatchFormData.append(`doc_data`, text);
+                            console.log(text)
+                          } else {
+                            filesPatchFormData.append(`attached_docs`, file, file.name.trim());
+                          }
                         }
                       });
 
                       filesPatchFormData.append("bot_id", data.bot_uid);
 
-                      const media_data = {
-                        youtube_links: linksReflectingWVpersonal,
-                        article_links: linksReflectyouWished,
-                      };
-                      filesPatchFormData.append(
-                        "media_data",
-                        JSON.stringify(media_data)
-                      );
+                      // const media_data = {
+                      //   youtube_links: linksReflectingWVpersonal,
+                      //   article_links: linksReflectyouWished,
+                      // };
+                      // filesPatchFormData.append(
+                      //   "media_data",
+                      //   JSON.stringify(media_data)
+                      // );
 
                       console.log(referenceDocs);
                       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
@@ -581,7 +677,7 @@ const CoachIntake = ({ user }: any) => {
             myHeaders.append("Content-Type", "application/json");
             const avatarBotCreationFormData = {
               bot_type: "avatar_bot",
-              profile_id: profileId,
+              profile_id: userProfileId,
               bot_name: name,
               email: user.email,
               bot_details: { info: about, coach_name: name },
@@ -665,37 +761,40 @@ const CoachIntake = ({ user }: any) => {
                 console.log(data);
                 // setCreateLoading(false);
                 if (!data.error && !data.detail) {
+                  console.log(referenceDocs.length,'length')
                   if (referenceDocs.length > 0) {
                     const filesPatchFormData = new FormData();
                     if (referenceDocs.length > 0) {
-                      referenceDocs.forEach(({ file }) => {
+                      
+                      referenceDocs.forEach(({ file, text }) => {
+                        if (file.name.includes('.pdf')) {
+                          if (text){
+                            filesPatchFormData.append("pdf_data",text);
+                            console.log(text)
 
-                        if (file.name.includes('.pdf')){
-                        filesPatchFormData.append(
-                          `attatched_pdfs`,
-                          file,
-                          file.name.trim()
-                        );
-                        } else if (file.name.includes(".docx")){
-                          filesPatchFormData.append(
-                            `attached_docs`,
-                            file,
-                            file.name.trim()
-                          );
+                          }else{
+                            filesPatchFormData.append(`attached_pdfs`, file, file.name.trim());
+                          }
+                        } else if (file.name.includes('.docx')) {
+                          if (text) {
+                            filesPatchFormData.append(`doc_data`, text);
+                            console.log(text)
+                          } else {
+                            filesPatchFormData.append(`attached_docs`, file, file.name.trim());
+                          }
                         }
                       });
                     }
 
                     filesPatchFormData.append("bot_id", botIUidFromParams!);
-
-                    const media_data = {
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                    };
-                    filesPatchFormData.append(
-                      "media_data",
-                      JSON.stringify(media_data)
-                    );
+                    // const media_data = {
+                    //   youtube_links: linksReflectingWVpersonal,
+                    //   article_links: linksReflectyouWished,
+                    // };
+                    // filesPatchFormData.append(
+                    //   "media_data",
+                    //   JSON.stringify(media_data)
+                    // );
 
                     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                       method: "PATCH",
@@ -798,7 +897,7 @@ const CoachIntake = ({ user }: any) => {
       var feedbackFormdata = {
         bot_type: "feedback_bot",
         bot_name: name,
-        profile_id: profileId,
+        profile_id: userProfileId,
         email: user.email,
         attributes: {
           heading: "welcome to feedback bot",
@@ -1446,18 +1545,7 @@ const CoachIntake = ({ user }: any) => {
                         name="files"
                         accept=".pdf,.docx"
                         onChange={async (e) => {
-                          const selectedFiles = Array.from(
-                            e.target.files as FileList
-                          );
-                          const filesArray = selectedFiles.map((file) => ({
-                            file: file,
-                            id: Math.floor(Math.random() * 10000),
-                          }));
-                          console.log(filesArray);
-                          setReferenceDocs((prevFiles) => [
-                            ...prevFiles,
-                            ...filesArray,
-                          ]);
+                          handleFileChange(e)
                         }}
                       />
                     </div>
