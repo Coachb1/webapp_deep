@@ -43,6 +43,9 @@ const CreateOwn = ({ user }: any) => {
     YoutubeResultsType[]
   >([]);
 
+  const [curatedLearningSearchResults, setCuratedLearningSearchResults] =
+    useState<YoutubeResultsType[]>([]);
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -67,63 +70,134 @@ const CreateOwn = ({ user }: any) => {
         description: string;
       }[]
     >([]);
+
     const [generationError, setGenerationError] = useState(false);
+    const [summaryGenerationLoading, setSummaryGenerationLoading] =
+      useState(false);
+    const [generatedSummary, setGeneratedSummary] = useState("");
+
+    const [expanded, setExpanded] = useState(false);
+    const [expandLoading, setExpandLoading] = useState(false);
 
     const generatedSenarioHandlerYoutube = () => {
       setGenerateLoading(true);
+      setGenerationError(false);
 
-      const apiKey = "AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A";
-      const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${video_id}&key=${apiKey}`;
-      fetch(apiUrl)
+      //GENERATE SIMULATION BASED ON video_descrtion, video_title
+      // const apiKey = "AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A";
+      // const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${video_id}&key=${apiKey}`;
+      // fetch(apiUrl)
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     const video = data.items[0];
+
+      //     console.log(video.snippet.description, video.snippet.title);
+      //     const url: any = new URL(
+      //       `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+      //     );
+      //     const params = new URLSearchParams();
+      //     params.set("mode", "A");
+      //     params.set(
+      //       "information",
+      //       JSON.stringify({
+      //         data: {
+      //           information:
+      //             video.snippet.description.length > 0
+      //               ? video.snippet.description
+      //               : video.snippet.title,
+      //         },
+      //         title: video.snippet.title,
+      //       })
+      //     );
+      //     params.set("url", "");
+      //     params.set("access_token", basicAuth);
+      //     params.set("creator_user_id", userId);
+      //     url.search = params;
+
+      //     console.log(url);
+      //     fetch(url, {
+      //       method: "POST",
+      //       headers: {
+      //         Authorization: basicAuth,
+      //         "Content-Type": "application/json",
+      //       },
+      //     })
+      //       .then((response) => response.json())
+      //       .then((data) => {
+      //         console.log("Result DATA", data);
+      //         setGeneratedData(data);
+      //         setGenerateLoading(false);
+      //         if (data[0].message || data[1].message) {
+      //           setGenerationError(true);
+      //         }
+      //       })
+      //       .catch((err) => {
+      //         console.error(err);
+      //         setGenerationError(true);
+      //         toast.error("Error generating your scenario");
+      //       });
+      //   });
+
+      //GENERATE SIMULATION BASED ON SUMMARY
+      fetch(
+        `${baseURL}/tests/create-test-from-links/?url=${video_link}&creator_user_id=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
-          const video = data.items[0];
+          console.log("Result DATA:", data);
+          setGeneratedData(data);
+          setGenerateLoading(false);
+          if (data[0].message || data[1].message) {
+            setGenerationError(true);
+          }
+          setGenerateLoading(false);
+        })
+        .catch((err) => {
+          setGenerationError(true);
+          toast.error("Error generating your scenario");
+          setGenerateLoading(false);
+        });
+    };
 
-          console.log(video.snippet.description, video.snippet.title);
-          const url: any = new URL(
-            `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
-          );
-          const params = new URLSearchParams();
-          params.set("mode", "A");
-          params.set(
-            "information",
-            JSON.stringify({
-              data: {
-                information:
-                  video.snippet.description.length > 0
-                    ? video.snippet.description
-                    : video.snippet.title,
-              },
-              title: video.snippet.title,
-            })
-          );
-          params.set("url", "");
-          params.set("access_token", basicAuth);
-          params.set("creator_user_id", userId);
-          url.search = params;
+    const generateYoutubeSummary = (choice: string) => {
+      if (choice === "short") {
+        setSummaryGenerationLoading(true);
+      } else if (choice === "long") {
+        setExpandLoading(true);
+      }
 
-          console.log(url);
-          fetch(url, {
-            method: "POST",
-            headers: {
-              Authorization: basicAuth,
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("Result DATA", data);
-              setGeneratedData(data);
-              setGenerateLoading(false);
-              if (data[0].message || data[1].message) {
-                setGenerationError(true);
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              setGenerationError(true);
-              toast.error("Error generating your scenario");
-            });
+      fetch(
+        `${baseURL}/documents/get-summary/?youtube_link=${video_link}&choice=${choice}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setGeneratedSummary(data.summary);
+          setGeneratedData([]);
+
+          if (choice === "long") {
+            setExpanded(true);
+            setExpandLoading(false);
+          } else if (choice === "short") {
+            setExpanded(false);
+            setSummaryGenerationLoading(false);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setSummaryGenerationLoading(false);
         });
     };
     return (
@@ -146,13 +220,19 @@ const CreateOwn = ({ user }: any) => {
               <b>{video_title}</b>
               <p>{video_description}</p>
             </div>
-            <div className="self-end w-full text-right max-sm:mt-2">
+            <div className="self-end w-full  flex flex-row max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
               <Button
+                disabled={
+                  generatedLoading || summaryGenerationLoading || expandLoading
+                }
                 variant="secondary"
                 className="h-8 border border-gray-200 max-sm:w-full"
                 onClick={() => {
                   generatedSenarioHandlerYoutube();
-                  toast.info("The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",{duration : 8000});
+                  toast.info(
+                    "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
+                    { duration: 8000 }
+                  );
                 }}
               >
                 {generatedLoading ? (
@@ -164,11 +244,31 @@ const CreateOwn = ({ user }: any) => {
                   <>Generate Simulation</>
                 )}
               </Button>
+              <Button
+                disabled={
+                  generatedLoading || summaryGenerationLoading || expandLoading
+                }
+                variant="secondary"
+                className="h-8 border border-gray-200 max-sm:w-full"
+                onClick={() => {
+                  generateYoutubeSummary("short");
+                }}
+              >
+                {summaryGenerationLoading ? (
+                  <>
+                    {" "}
+                    <Loader className="animate-spin h-4 w-4 mr-2" /> Generating
+                  </>
+                ) : (
+                  <>Generate Summary</>
+                )}
+              </Button>
             </div>
           </div>
         </div>
         <div className="flex flex-row gap-2 max-sm:flex-col">
           {!generationError &&
+            generatedData.length > 0 &&
             generatedData.map((test, i) => (
               <>
                 <div className="w-[50%]  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
@@ -191,6 +291,38 @@ const CreateOwn = ({ user }: any) => {
               Encountered an error while Generating your scenarios. It will be
               saved in "My Library (Requested Scenario Tab)"
             </p>
+          )}
+          {generatedData.length === 0 && generatedSummary.length > 0 && (
+            <div className="w-full  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+              <b className="my-1">Summary : </b>
+              <div>
+                <p>
+                  {generatedSummary.split("\n\n").map((text) => (
+                    <p className="max-sm:text-xs text-sm text-gray-800 whitespace-pre-wrap">
+                      {text.trim()}
+                    </p>
+                  ))}
+                </p>
+                {!expanded && (
+                  <Button
+                    variant={"outline"}
+                    onClick={() => {
+                      generateYoutubeSummary("long");
+                    }}
+                    className="h-8 w-fit text-xs p-1 my-1"
+                  >
+                    {expandLoading ? (
+                      <>
+                        {" "}
+                        <Loader className="animate-spin h-4 w-4" />{" "}
+                      </>
+                    ) : (
+                      <>Expand</>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -221,7 +353,9 @@ const CreateOwn = ({ user }: any) => {
       params.set(
         "information",
         JSON.stringify({
-          data: { information: decsription !== undefined ? decsription : title },
+          data: {
+            information: decsription !== undefined ? decsription : title,
+          },
           title: title,
         })
       );
@@ -245,6 +379,7 @@ const CreateOwn = ({ user }: any) => {
 
           if (data[0].message || data[1].message) {
             setGenerationError(true);
+            toast.error("Error generating your scenario");
           }
         })
         .catch((err) => {
@@ -283,7 +418,10 @@ const CreateOwn = ({ user }: any) => {
                 className="h-8 border border-gray-200 max-sm:w-full"
                 onClick={() => {
                   generatedSenarioHandlerGoogle();
-                  toast.info("The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",{duration : 8000});
+                  toast.info(
+                    "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
+                    { duration: 8000 }
+                  );
                 }}
               >
                 {generatedLoading ? (
@@ -366,7 +504,7 @@ const CreateOwn = ({ user }: any) => {
       console.log(searchInputText);
       setCreateLoading(true);
       fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyCqxQ785vTLNWf0W7ddJAUKZY9nNWO7C6A`,
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&channelId=UCsT0YIqwnpJCM-mx7-gSA4Q&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo`,
         {
           method: "GET",
         }
@@ -393,6 +531,39 @@ const CreateOwn = ({ user }: any) => {
             setSearchInputText("");
           }, 500);
         });
+    } else if (searchMode === "curated-learning") {
+      setCreateLoading(true);
+      fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${searchInputText}&type=video&key=AIzaSyCbEar5KvvPVTRmm6QrmVmSJSAqylaT_mo&videoDuration=medium&videoCategoryId=27&relevanceLanguage=en`,
+        {
+          method: "GET",
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data.pageInfo.resultsPerPage > 0) {
+            const formattedVideos = data.items.map((item: any) => ({
+              video_id: item.id.videoId,
+              video_link: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+              video_title: item.snippet.title,
+              video_description: item.snippet.description,
+            }));
+            setCuratedLearningSearchResults(formattedVideos);
+            console.log(formattedVideos);
+          } else {
+            setCuratedLearningSearchResults([]);
+            setContextPrompt("0 results, Please provide a valid context!");
+          }
+          setTimeout(() => {
+            setCreateLoading(false);
+            setSearchInputText("");
+          }, 500);
+        })
+        .catch((error) => {
+          setCreateLoading(false);
+          console.error("Error making API request:", error.message);
+        });
     }
   };
 
@@ -402,7 +573,7 @@ const CreateOwn = ({ user }: any) => {
         <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
           <NetworkNav user={user} />
         </div>
-        <div className="flex pt-10 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-4">
+        <div className="flex pt-16 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-8">
           <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
             <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
               COACH
@@ -420,7 +591,7 @@ const CreateOwn = ({ user }: any) => {
               }}
               className="flex flex-col justify-center items-center mt-3"
             >
-              <div className="w-[80%] max-sm:w-full mb-1 text-xs">
+              <div className="w-[80%]  max-sm:w-fit mb-1 text-xs">
                 <Tabs
                   className="w-fit self-start"
                   value={searchMode}
@@ -428,7 +599,7 @@ const CreateOwn = ({ user }: any) => {
                     setSearchMode(val);
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
+                  <TabsList className="grid w-full grid-cols-3 bg-gray-200 rounded-sm">
                     <TabsTrigger
                       disabled={glGenerateLoading}
                       className="text-xs p-1 m-1"
@@ -442,6 +613,13 @@ const CreateOwn = ({ user }: any) => {
                       value="youtube"
                     >
                       TED | TEDx
+                    </TabsTrigger>
+                    <TabsTrigger
+                      disabled={glGenerateLoading}
+                      className="text-xs p-1 m-1"
+                      value="curated-learning"
+                    >
+                      Curated Learning
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -527,8 +705,46 @@ const CreateOwn = ({ user }: any) => {
                   <>
                     {youtubeSearchResults.length > 0 ? (
                       <>
-                        {youtubeSearchResults.map((result) => (
+                        {youtubeSearchResults.map((result, i) => (
                           <YoutubeResultComponent
+                            key={i}
+                            video_link={result.video_link}
+                            video_id={result.video_id}
+                            video_title={result.video_title}
+                            video_description={result.video_description}
+                          />
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                          <p>{contextPrompt}</p>
+                        </div>{" "}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            {searchMode === "curated-learning" && (
+              <>
+                {createLoading ? (
+                  <>
+                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                      <div className="flex justify-center items-center">
+                        {" "}
+                        <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
+                        <p>loading</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {curatedLearningSearchResults.length > 0 ? (
+                      <>
+                        {curatedLearningSearchResults.map((result, i) => (
+                          <YoutubeResultComponent
+                            key={i}
                             video_link={result.video_link}
                             video_id={result.video_id}
                             video_title={result.video_title}
