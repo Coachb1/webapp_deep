@@ -428,11 +428,19 @@ const CoachIntake = ({ user }: any) => {
 
                       const filesPatchFormData = new FormData();
                       referenceDocs.forEach(({ file }) => {
-                        filesPatchFormData.append(
-                          `attatched_pdfs`,
-                          file,
-                          file.name.trim()
-                        );
+                        if (file.name.includes('.pdf')){
+                          filesPatchFormData.append(
+                            `attatched_pdfs`,
+                            file,
+                            file.name.trim()
+                          );
+                        } else if (file.name.includes(".docx")){
+                          filesPatchFormData.append(
+                            `attached_docs`,
+                            file,
+                            file.name.trim()
+                          );
+                        }
                       });
 
                       filesPatchFormData.append("bot_id", data.bot_uid);
@@ -661,11 +669,20 @@ const CoachIntake = ({ user }: any) => {
                     const filesPatchFormData = new FormData();
                     if (referenceDocs.length > 0) {
                       referenceDocs.forEach(({ file }) => {
+
+                        if (file.name.includes('.pdf')){
                         filesPatchFormData.append(
                           `attatched_pdfs`,
                           file,
                           file.name.trim()
                         );
+                        } else if (file.name.includes(".docx")){
+                          filesPatchFormData.append(
+                            `attached_docs`,
+                            file,
+                            file.name.trim()
+                          );
+                        }
                       });
                     }
 
@@ -1427,7 +1444,7 @@ const CoachIntake = ({ user }: any) => {
                         className="w-full text-xs my-2"
                         multiple
                         name="files"
-                        accept=".pdf"
+                        accept=".pdf,.docx"
                         onChange={async (e) => {
                           const selectedFiles = Array.from(
                             e.target.files as FileList
