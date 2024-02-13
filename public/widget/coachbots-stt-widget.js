@@ -591,7 +591,7 @@ const feedbackBotQnAFlow = (flow) => {
 
 const feedbackBotInitialFlow = async (flow) => {
   if (flow === "initial") {
-    const anonymous_text = `<div id="anonymous" >
+    const anonymous_text = `<div id="anonymous">
         <b>Want to continue as Anonymous?</b>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
@@ -627,6 +627,7 @@ const feedbackBotInitialFlow = async (flow) => {
     return div_cont;
   }
 };
+
 const getUserBotConversation = async (participant_id)=>{
     
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
@@ -653,6 +654,7 @@ const getUserBotConversation = async (participant_id)=>{
     console.error(`Error in getUserBotConversation: ${error}`);
   }
 }
+
 const getBotDetails2 = async (botId) => {
   try {
     const response = await fetch(
@@ -680,24 +682,50 @@ const getBotDetails2 = async (botId) => {
     console.log(botType);
 
     let buttons = "";
+    let buttonsWrapper = document.createElement("div");
+    buttonsWrapper.setAttribute(
+      "style",
+      "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px;"
+    );
+
+    const faqButtonsGenerator = (actionName, buttonText) => {
+      const button = document.createElement("button");
+      button.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content;`
+      );
+      button.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#e5e7eb'"
+      );
+      button.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = 'transparent'"
+      );
+      button.setAttribute("onclick", `handleFaqButtonClick('${actionName}')`);
+      button.innerText = buttonText;
+      buttonsWrapper.appendChild(button);
+    };
+
     if (botDetails.data.faqs) {
       let faqs = Object.keys(botDetails.data.faqs);
       if (faqs.length > 0) {
         faqs.forEach((title) => {
-          buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`;
+          faqButtonsGenerator(title, title);
         });
       }
     }
 
-    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`;
+    faqButtonsGenerator("recommendations", "Recommendations");
     if (
       botDetails.data.fitment_qna &&
       botDetails.data.is_fitment_analysis &&
       botDetails.data.coaching_for_fitment === "anyone"
     ) {
-      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`;
+      faqButtonsGenerator("fitness_analysis", "Fitment Analysis");
     }
-    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">Begin session..</button>`;
+
+    faqButtonsGenerator("something_else", "Begin session");
 
     console.log("buttons : ", buttons);
 
@@ -705,7 +733,9 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
-    appendMessage2(`<p><b>${botWelcomeMessage}</b></p>`);
+    appendMessage2(`<p>${botWelcomeMessage}</p>`);
+    // const
+    const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
 
     if (botType != "feedback_bot") {
       fitmentAnalysisQuestions = botDetails.data.fitment_qna;
@@ -715,7 +745,9 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
-      appendMessage2(faqHtmlData);
+      faqButtonsWrapper.style.display = "block";
+      faqButtonsWrapper.append(buttonsWrapper);
+      // appendMessage2(faqHtmlData);
     } else {
       feedbackBotInitialFlow("initial");
       feedbackBotQuestions = botDetails.data.feedback_qna;
@@ -1429,6 +1461,11 @@ function createMessageNode2(message) {
   messageBubble.classList.add("message-bubble", "ai-message-text");
   messageBubble.style.maxWidth = "80%";
   messageBubble.style.marginTop = "4px";
+  messageBubble.style.borderRadius = "4px";
+  messageBubble.style.padding = "4";
+  messageBubble.style.backgroundColor = "#f3f4f6";
+  messageBubble.style.color = "#374151";
+
   const messageText = document.createElement("p");
   messageText.innerHTML = message;
 
@@ -2938,7 +2975,7 @@ loadExternalModule().then(() => {
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
       z-index: 999 !important;
-      hight: 80vh;
+      hight: 75vh;
     "
   >
     <div 
@@ -2949,7 +2986,6 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      margin: 4px;
       margin-bottom: 0.4rem;
     ">
     <h1 style="
@@ -2966,15 +3002,21 @@ loadExternalModule().then(() => {
     ">
       C
     </h1>
-    <img id="close-top2" 
+   
+    <div 
+      id="close-top2" 
       onmouseover="this.style.cursor ='pointer'"
       onclick="closeFromTop2()"
-      src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
       style="
-      width : 50px;
-      position: absolute;
-      left : 1rem;
-    "/>
+        width : 50px;
+        position: absolute;
+        left : 1rem;
+      "
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>
+    </div>
     <h3 id="chatbot-heading2" style="
       font-size: 16px;
       font-weight: 500;
@@ -2987,14 +3029,43 @@ loadExternalModule().then(() => {
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 70vh; border: none;"
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px"}}
+          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
+          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
+        },
+        "loading": {
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
         }
       }'
+      inputAreaStyle='{"paddingTop": "2rem"}'
       displayLoadingBubble = "true";
       demo="true"
       style="border: none"
       textInput='{
+        "styles": {
+          "text": {"color": "black", "fontSize" : "14px"},
+          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #d1d5db", "zIndex" : "1"},
+          "focus": {"border": "1px solid #9ca3af"}
+        },
         "placeholder": {"text": "Welcome, Please follow provided instructions."}
+      }'
+      submitButtonStyles='{
+        "submit": {
+          "container": {
+            "default": {"padding" : "4px" },
+            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
+            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
+          },
+          "svg": {
+            "styles": {
+              "default": {
+                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
+              }
+            }
+          }
+        },
+        "alwaysEnabled": true,
+        "position": "inside-right"
       }'
       speechToText='{"webSpeech": true,
         "commands": {"resume": "resume", "submit" : "submit", "settings": {"commandMode": "hello"}},
@@ -3003,34 +3074,31 @@ loadExternalModule().then(() => {
           "position" : "outside-left",
           "default": {
             "container": {
-              "hover": {"backgroundColor": "#7fbded69"},
-              "click": {"backgroundColor": "#4babf669"}
+              "default" : {"padding" : "4px"},
+              "hover": {"backgroundColor": "#7fbded69", "padding" : "4px"},
+              "click": {"backgroundColor": "#4babf669", "padding" : "4px"}
             },
              "svg": {
               "styles": {
                 "default": {
-                 "padding-top": "8px",
-                  "padding-bottom": "8px",
                   "filter":
                     "brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(826%) hue-rotate(52deg) brightness(95%) contrast(93%)"
                 }
               },
                 "content" : ${JSON.stringify(
-                  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16"><path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4.02 4.02 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a4.973 4.973 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/><path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12-.708.708z"/></svg>'
                 )}
-
           }
           },
           "active": {
             "container": {
-              "hover": {"backgroundColor": "#fee2e2"},
+              "default" : {"padding" : "4px"},
+              "hover": {"backgroundColor": "#fee2e2", "padding" : "4px" },
               "click": {"backgroundColor": "#ecb85c70"}
             },
             "svg": {
               "styles": {
                 "default": {
-                  "padding-top": "4px",
-                  "padding-bottom": "8px",
                   "filter":
                     "brightness(0) saturate(100%) invert(17%) sepia(98%) saturate(7277%) hue-rotate(359deg) brightness(99%) contrast(112%)"
                 }
@@ -3047,7 +3115,27 @@ loadExternalModule().then(() => {
         }
       }'
       >
+
     </deep-chat>
+    <div 
+      id="starting-faq-buttons"
+      style=" 
+        position: absolute; 
+        left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
+        bottom : ${window.innerWidth < 768 ? "15vh" : "5.5rem"}; 
+        width : 80%; 
+        overflow: scroll;
+        height : 36px; 
+        padding: 4px;
+        display : flex;
+        flex-direction : row;
+        gap : 4px;
+        background-color : white; 
+        padding : 2px;
+        border-radius : 4px;
+        display: none;
+      ">
+    </div>
     <p style="font-size: ${
       window.innerWidth < 768 ? "8px" : "12px"
     }; width: 100%; text-align: center; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
@@ -3061,7 +3149,6 @@ loadExternalModule().then(() => {
   const closeFromTopp2 = document.getElementById("close-top2");
   botId = document.querySelector(".deep-chat-poc2").dataset.botId;
   // botId = 'stress-management-0032'
-
   const _ = getBotDetails2(botId);
 
   //   appendMessage2(`<div id="option-button-container" >
@@ -3217,7 +3304,7 @@ loadExternalModule().then(() => {
   if (botId == undefined) {
     chatElementRef2.initialMessages = [
       {
-        html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>`,
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</p>`,
         role: "ai",
       },
     ];

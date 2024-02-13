@@ -356,6 +356,10 @@ function createMessageNode(message) {
   messageBubble.classList.add("message-bubble", "ai-message-text");
   messageBubble.style.maxWidth = "80%";
   messageBubble.style.marginTop = "4px";
+  messageBubble.style.borderRadius = "4px";
+  messageBubble.style.padding = "4";
+  messageBubble.style.backgroundColor = "#f3f4f6";
+  messageBubble.style.color = "#374151";
   const messageText = document.createElement("p");
   messageText.innerHTML = message;
 
@@ -1905,7 +1909,6 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      margin: 4px;
       margin-bottom: 0.4rem;
     ">
     <h1 style="
@@ -1922,15 +1925,20 @@ loadExternalModule().then(() => {
     ">
       C
     </h1>
-    <img id="close-top" 
+    <div 
+      id="close-top" 
       onmouseover="this.style.cursor ='pointer'"
       onclick="closeFromTop()"
-      src="https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png" 
       style="
-      width : 50px;
-      position: absolute;
-      right : 1rem;
-    "/>
+        width : 50px;
+        position: absolute;
+        right : 1rem;
+      "
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" stroke="10" height="24" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+      </svg>
+    </div>
     <h3 id="chatbot-heading" style="
       font-size: 16px;
       font-weight: 500;
@@ -1947,11 +1955,39 @@ loadExternalModule().then(() => {
       }'
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px" }}
+          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
+          "user" : {"bubble": {"backgroundColor": "#2DC092"}}
+        },
+        "loading": {
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
         }
       }'
       textInput='{
+        "styles": {
+          "text": {"color": "black", "fontSize" : "14px"},
+          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #d1d5db", "zIndex" : "1"},
+          "focus": {"border": "1px solid #9ca3af"}
+        },
         "placeholder": {"text": "Welcome, Please follow provided instructions."}
+      }'
+      submitButtonStyles='{
+        "submit": {
+          "container": {
+            "default": {"padding" : "4px" },
+            "hover": {"backgroundColor": "#c6e1ff",  "padding" : "4px" },
+            "click": {"backgroundColor": "#acd3ff",  "padding" : "4px" }
+          },
+          "svg": {
+            "styles": {
+              "default": {
+                "height" : "24px", "width" : "24px", "paddingBottom" : "16px"
+              }
+            }
+          }
+        },
+        "alwaysEnabled": true,
+        "position": "inside-right"
       }'
       demo="true"
       style="border: none"
@@ -2112,7 +2148,7 @@ loadExternalModule().then(() => {
 
   chatElementRef.initialMessages = [
     {
-      html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b>
+      html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
       </p>`,
       role: "ai",
     },
