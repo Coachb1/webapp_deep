@@ -116,6 +116,7 @@ let DuplicateResponseCount2 = 0;
 let isAttemptingRecommendation = false;
 let optedBeginSession = false;
 let botWelcomeMessage = "";
+let previousBotConversationId = "";
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -626,6 +627,32 @@ const feedbackBotInitialFlow = async (flow) => {
     return div_cont;
   }
 };
+const getUserBotConversation = async (participant_id)=>{
+    
+  const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    const botConv = await response.json();
+    console.log("PRevious conversations", botConv,botConv[0]['results'].length)
+    if (botConv.length > 0){
+      if (botConv[0]['results'].length > 0){
+        const lastConv = botConv[0]['results'][botConv[0]['results'].length - 1]
+        console.log("last converstion session",lastConv.uid,lastConv.session_id,lastConv)
+        previousBotConversationId =  `${lastConv.uid}:${lastConv.session_id}`
+    }
+  }
+    
+  } catch (error) {
+    console.error(`Error in getUserBotConversation: ${error}`);
+  }
+}
 const getBotDetails2 = async (botId) => {
   try {
     const response = await fetch(
@@ -836,6 +863,58 @@ function handleRadioTypeInitialQuestion(
 
     return formRadio;
 }
+async function handlePreviousConversation(choice){
+
+  if ( choice === 'previous'){
+    conversation_id2 = previousBotConversationId.split(':')[0]
+    sessionId2 = previousBotConversationId.split(':')[1]
+    isBotInitialized = true
+  }
+
+    botInitialQuestionsIndex = 1;
+    optedBeginSession = true;
+    if (botType === "avatar_bot") {
+      await getFitmentScore(userId2);
+      console.log(isBeginSessionProceed);
+
+      if (
+        !isBeginSessionProceed &&
+        isFitmentAllowed &&
+        isStrictFitment &&
+        CoachingForFitment === "anyone"
+      ) {
+        appendMessage2(
+          "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+        );
+      }
+    }
+    console.log(botType);
+    if (botType === "subject_matter_bot" || choice === 'previous') {
+      if (choice === 'previous'){
+        appendMessage2("Please provide context to continue conversaton.");
+
+      }else{
+        appendMessage2("Please provide context to start conversaton.");
+      }
+      return;
+    }
+
+    isAskingInitialQuestions = true;
+
+    const question = botInitialQuestions[botInitialQuestionsIndex];
+    if (typeof question === "string") {
+      appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+    } else {
+      const radio_cont = handleRadioTypeInitialQuestion(
+        question["options"],
+        question["question"]
+        
+      );
+      appendMessage2(radio_cont);
+    }
+
+
+}
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
   if (question == "fitness_analysis") {
@@ -874,6 +953,21 @@ async function handleFaqButtonClick(question) {
       if (isAskingInitialQuestions) {
         return;
       }
+      
+      await getUserBotConversation(userId2)
+      console.log(previousBotConversationId,'out')
+      if (previousBotConversationId != ""){
+      console.log(previousBotConversationId,'in')
+
+        const div = `<div id="conversation-proceed" >
+        <b>Do you want to continue previous conversation or start new conversation?</b>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
+            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
+        </div>`
+        appendMessage2(div)
+        return;
+      }
+
       botInitialQuestionsIndex = 1;
       optedBeginSession = true;
       if (botType === "avatar_bot") {
