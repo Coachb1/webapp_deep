@@ -71,7 +71,7 @@ let testUIInfoStt;
 let isProceedStt;
 let initialQuestionTextStt;
 let isSessionActiveStt = false;
-let recommendationsStt = '';
+let recommendationsStt = "";
 let isTestSignedInStt;
 let clientNameStt;
 let questionMediaLinkStt;
@@ -82,15 +82,15 @@ let initialIndexStt;
 let isTranscriptOnlyStt = false;
 let isBotInitialized = false;
 let globalBotDetails;
-let faqHtmlData = '';
+let faqHtmlData = "";
 let fitmentAnalysisInProgress = false;
 let fitmentAnalysisIndex = 1;
 let fitmentAnalysisQuestions;
-let fitmentAnalysisQnA = {}
+let fitmentAnalysisQnA = {};
 let feedbackBotIndex = 1;
 let feedbackBotQuestions;
 let feedbackBotQnA = {};
-let isFeedbackConvEnd= false;
+let isFeedbackConvEnd = false;
 let FeedbackUserEmail;
 let botId;
 let botType;
@@ -108,14 +108,14 @@ let isStrictFitment = false;
 let isBotAudioResponse = false;
 let isEmailFormstt = false;
 let emailNameformJsonstt = {};
-let formFieldsstt = []
+let formFieldsstt = [];
 let CoachingForFitment;
 let previousFitmentJson = {};
-let userResponses2 = []
+let userResponses2 = [];
 let DuplicateResponseCount2 = 0;
 let isAttemptingRecommendation = false;
 let optedBeginSession = false;
-let botWelcomeMessage="";
+let botWelcomeMessage = "";
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -221,92 +221,85 @@ const sampleTestCodesStt = {
   QJZWYYB: "IT Requirements Gathering",
 };
 
-
-
-
 const fitment_analysis = {
-        "coaching_intake": {
-            "1": "Can you share a bit about your background and the specific goals you hope to achieve?",
-            "2": "What do you expect to gain from these sessions?",
-            "3": "How do you learn best?",
-            "4": "What are the three biggest changes you'd like to make in your life within the near future?",
-            "5": "How do you prefer to communicate and receive feedback?",
-            "6": "Are there any specific values that are important to you, and that you would like your coach to be aware of?",
-            "7": "What challenges or obstacles do you anticipate in achieving your goals, and how do you envision the coach supporting you in overcoming them?"
-        },
-        "mentoring_intake": {
-            "1": "What are your career goals and how can I help support you in working towards them?",
-            "2": "What strengths do you hope to enhance through this mentorship?",
-            "3": "How do you best learn new information or skills?",
-            "4": "What challenges are you currently facing that you'd like advice on?",
-            "5": "Are there specific milestones or achievements you're aiming for?",
-            "6": "How often would you like to meet and what's the best way to communicate between sessions?",
-            "7": "What motivated you to seek out a mentorship relationship?"
-        }
-    }
+  coaching_intake: {
+    1: "Can you share a bit about your background and the specific goals you hope to achieve?",
+    2: "What do you expect to gain from these sessions?",
+    3: "How do you learn best?",
+    4: "What are the three biggest changes you'd like to make in your life within the near future?",
+    5: "How do you prefer to communicate and receive feedback?",
+    6: "Are there any specific values that are important to you, and that you would like your coach to be aware of?",
+    7: "What challenges or obstacles do you anticipate in achieving your goals, and how do you envision the coach supporting you in overcoming them?",
+  },
+  mentoring_intake: {
+    1: "What are your career goals and how can I help support you in working towards them?",
+    2: "What strengths do you hope to enhance through this mentorship?",
+    3: "How do you best learn new information or skills?",
+    4: "What challenges are you currently facing that you'd like advice on?",
+    5: "Are there specific milestones or achievements you're aiming for?",
+    6: "How often would you like to meet and what's the best way to communicate between sessions?",
+    7: "What motivated you to seek out a mentorship relationship?",
+  },
+};
 
 function createBasicAuthToken2(key2 = "", secret2 = "") {
-    const token2 =
-      "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-      // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
-    // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+  const token2 =
+    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
+  // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
   return token2;
 }
-
 
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
 }
 
-
 function isDuplicateResponse(text) {
   return userResponses2.includes(text);
 }
 
-
 function getAnonymousEmail() {
-    const user_name = "coachbots_anonyoususer";
-    const user_sid = getOrSetSessionId();
-    const user_email = `${user_name}-${user_sid}@gmail.com`;
-  
-    return user_email;
+  const user_name = "coachbots_anonyoususer";
+  const user_sid = getOrSetSessionId();
+  const user_email = `${user_name}-${user_sid}@gmail.com`;
+
+  return user_email;
+}
+
+function getOrSetSessionId() {
+  let generatedSessionId = "";
+  const retrievedSessionId = localStorage.getItem("coachbots-session-id");
+  if (retrievedSessionId) {
+    console.log("SessionId found in SessionStorage.");
+    generatedSessionId = retrievedSessionId;
+  } else {
+    console.log("No sessionId found in SessionStorage. So setting it now.");
+    generatedSessionId = generateSessionId();
+    localStorage.setItem("coachbots-session-id", generatedSessionId);
   }
+  return generatedSessionId;
+}
 
+const getUserOrAnonymousDetails = async (choice) => {
+  console.log(choice);
+  const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+  const msg = gshadowRoot.getElementById("anonymous");
+  // // button.parentNode.removeChild(button)
+  // const que_msg = document.createElement("div");
+  // que_msg.innerHTML = "Thank You"; // You can customize the message here
+  // // Replace the button with the "Thank you" message
+  // msg.parentNode.replaceChild(que_msg, msg);
+  const buttons = msg.querySelectorAll("button");
 
-  function getOrSetSessionId() {
-    let generatedSessionId = "";
-    const retrievedSessionId = localStorage.getItem("coachbots-session-id");
-    if (retrievedSessionId) {
-      console.log("SessionId found in SessionStorage.");
-      generatedSessionId = retrievedSessionId;
-    } else {
-      console.log("No sessionId found in SessionStorage. So setting it now.");
-      generatedSessionId = generateSessionId();
-      localStorage.setItem("coachbots-session-id", generatedSessionId);
-    }
-    return generatedSessionId;
-  }
-
-  const getUserOrAnonymousDetails = async(choice)=>{
-    console.log(choice)
-    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-    const msg = gshadowRoot.getElementById("anonymous");
-    // // button.parentNode.removeChild(button)
-    // const que_msg = document.createElement("div");
-    // que_msg.innerHTML = "Thank You"; // You can customize the message here
-    // // Replace the button with the "Thank you" message
-    // msg.parentNode.replaceChild(que_msg, msg);
-    const buttons = msg.querySelectorAll('button');
-
-    // Disable each button
-    buttons.forEach(button => {
-        button.disabled = true;
-    });
-    if (choice === 'No'){
-      if (!window.user){
-        let emailForm;
-        if(window.innerWidth > 768) {
-          emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
+  // Disable each button
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
+  if (choice === "No") {
+    if (!window.user) {
+      let emailForm;
+      if (window.innerWidth > 768) {
+        emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
           <b>Please Enter your email</b>
           <div
             id="feedback-email-input"
@@ -349,8 +342,8 @@ function getAnonymousEmail() {
             </button>
           </div>
         </div>`;
-        } else {
-          emailForm = `<div if = "feedback-email-form" style="min-width: 200px;">
+      } else {
+        emailForm = `<div if = "feedback-email-form" style="min-width: 200px;">
         <b>Please Enter your email</b>
         <div
           id="feedback-email-input"
@@ -393,227 +386,232 @@ function getAnonymousEmail() {
           </button>
         </div>
       </div>`;
-        }
-        // appendMessage2(emailForm)
-        isEmailFormstt = true
-        formFieldsstt = ['email']
-        appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
-
-      } else{
-        FeedbackUserEmail = user.email
-        const thumbsupdiv =  await feedbackBotInitialFlow('save_email')
-        appendMessage2(thumbsupdiv)
       }
-    } else if (choice === "Yes"){
-      console.log("hi")
-      FeedbackUserEmail = 'Anonymous User'
-      const thumbsupdiv = await feedbackBotInitialFlow('save_email')
-      appendMessage2(thumbsupdiv)
-
+      // appendMessage2(emailForm)
+      isEmailFormstt = true;
+      formFieldsstt = ["email"];
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    } else {
+      FeedbackUserEmail = user.email;
+      const thumbsupdiv = await feedbackBotInitialFlow("save_email");
+      appendMessage2(thumbsupdiv);
     }
+  } else if (choice === "Yes") {
+    console.log("hi");
+    FeedbackUserEmail = "Anonymous User";
+    const thumbsupdiv = await feedbackBotInitialFlow("save_email");
+    appendMessage2(thumbsupdiv);
   }
-  const handleEndFeedback = async () =>{
-    if (isFeedbackConvEnd){
-      return;
-    }
-    isFeedbackConvEnd = true;
-    appendMessage2("<p> That's it Thank you for your feedback.")
-    increaseActionPointStt(userId2,"feedback_given")
-    const queryparams = new URLSearchParams({
-      conversation: JSON.stringify(feedbackBotQnA),
-      bot_id: botId,
-      type_of_email: "feedback_conv",
-      user_email: FeedbackUserEmail
+};
+const handleEndFeedback = async () => {
+  if (isFeedbackConvEnd) {
+    return;
+  }
+  isFeedbackConvEnd = true;
+  appendMessage2("<p> That's it Thank you for your feedback.");
+  increaseActionPointStt(userId2, "feedback_given");
+  const queryparams = new URLSearchParams({
+    conversation: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    type_of_email: "feedback_conv",
+    user_email: FeedbackUserEmail,
   });
 
-    // sending feedback conversation to bot owner
-    const response = await fetch(
-      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-      {
-          method: "GET",
-          headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
-          },
-      }
-      )
-      .then((response) => response.json())
-      .then((data) => {
-          console.log("Dynamic mcq response : ", data);
-          
-      })
-
-      const queryparam = new URLSearchParams({
-        method: "post",
-        qna: JSON.stringify(feedbackBotQnA),
-        bot_id: botId,
-        is_positive: IsPositiveFeedback ? "True" : "False",
-        qna_type: "feedback",
-        user_id: userId2
+  // sending feedback conversation to bot owner
+  const response = await fetch(
+    `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamic mcq response : ", data);
     });
 
-      const resp = await fetch(
-        `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-        {
-            method: "GET",
-            headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
-            "Content-Type": "application/json",
-            },
-        }
-        )
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(" response : ", data);
-            
-        })
+  const queryparam = new URLSearchParams({
+    method: "post",
+    qna: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    is_positive: IsPositiveFeedback ? "True" : "False",
+    qna_type: "feedback",
+    user_id: userId2,
+  });
 
-    // resetAllVariablesStt()
-    appendMessage2("please wait while we are getting some recommendations for you...")
+  const resp = await fetch(
+    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(" response : ", data);
+    });
 
-                  
-    
-    try {
-      const params = new URLSearchParams({
-        context: JSON.stringify(feedbackBotQnA),
-        for : 'feedback_bot'
-      })
-      const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?${params}`, {
+  // resetAllVariablesStt()
+  appendMessage2(
+    "please wait while we are getting some recommendations for you..."
+  );
+
+  try {
+    const params = new URLSearchParams({
+      context: JSON.stringify(feedbackBotQnA),
+      for: "feedback_bot",
+    });
+    const response = await fetch(
+      `${baseURL2}/tests/get-recommendetion-tests/?${params}`,
+      {
         method: "GET",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
-      });
+      }
+    );
 
-      const recommendation_tests_data = await response.json();
+    const recommendation_tests_data = await response.json();
 
-      const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
-      const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
+    const fetched_test_code = Object.keys(
+      recommendation_tests_data.matching_tests
+    )[0];
+    const fetched_test =
+      recommendation_tests_data.matching_tests[fetched_test_code];
 
-      const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
-      const created_test = recommendation_tests_data.created_scenario[created_test_code]
-      console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
+    const created_test_code = Object.keys(
+      recommendation_tests_data.created_scenario
+    )[0];
+    const created_test =
+      recommendation_tests_data.created_scenario[created_test_code];
+    console.log(
+      "fetched_test : ",
+      fetched_test,
+      recommendation_tests_data.matching_tests,
+      "created_test : ",
+      created_test
+    );
 
-      appendMessage2(
-          `<b >Here are some recommendations for you : </b> <br>
+    appendMessage2(
+      `<b >Here are some recommendations for you : </b> <br>
           <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
           <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
           `
-          );
-      console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-      recommendationClicked = false;
-      isFeedbackConvEnd = true;
-    } catch (error) {
-      console.error(`Error in get recommendation tests: ${error}`);
-    }
+    );
+    console.log(
+      "recommendation_tests_data : ",
+      recommendation_tests_data.matching_tests
+    );
+    recommendationClicked = false;
+    isFeedbackConvEnd = true;
+  } catch (error) {
+    console.error(`Error in get recommendation tests: ${error}`);
+  }
+};
 
+function renameKey(obj) {
+  let newObj = {};
+  for (const key in obj) {
+    const oldKey = key;
+    const newKey = parseInt(oldKey) + 1;
+    newObj[`${newKey}`] = obj[oldKey];
+  }
+  console.log(newObj);
+  return newObj;
+}
 
+const feedbackBotQnAFlow = (flow) => {
+  if (flow === "up") {
+    feedbackBotQuestions = renameKey(feedbackBotQuestions);
+    feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
 
+    IsPositiveFeedback = true;
+    const queryparams = new URLSearchParams({
+      conversation: "",
+      bot_id: botId,
+      type_of_email: "like_or_dislike",
+      user_email: FeedbackUserEmail,
+    });
+    const response = fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dynamic mcq response : ", data);
+      });
 
+    console.log("sent email");
+    feedbackBotIndex += 1;
+    appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
+    setTimeout(() => {
+      appendMessage2(
+        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+      );
+    }, 200);
+  } else if (flow === "down") {
+    feedbackBotQuestions = renameKey(feedbackBotQuestions);
+    feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?";
+    feedbackBotIndex += 1;
+    appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
+    setTimeout(() => {
+      appendMessage2(
+        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+      );
+    }, 200);
   }
 
-  function renameKey(obj) {
-    let newObj = {}
-    for (const key in obj) {
-      const oldKey = key
-      const newKey = parseInt(oldKey) + 1
-      newObj[`${newKey}`] = obj[oldKey];
-    }
-    console.log(newObj)
-    return newObj
-  }
-  
+  const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+  const msg = gshadowRoot.getElementById("thumbsup-down");
+  // button.parentNode.removeChild(button)
+  // const que_msg = document.createElement("div");
+  // que_msg.innerHTML = "Thank You"; // You can customize the message here
+  // // Replace the button with the "Thank you" message
+  // msg.parentNode.replaceChild(que_msg, msg);
+  const buttons = msg.querySelectorAll("button");
 
-  const feedbackBotQnAFlow = (flow)=>{
-    if (flow === 'up'){
-      feedbackBotQuestions = renameKey(feedbackBotQuestions)
-      feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?"
+  // Disable each button
+  buttons.forEach((button) => {
+    button.disabled = true;
+  });
+};
 
-      IsPositiveFeedback = true;
-      const queryparams = new URLSearchParams({
-                conversation: "",
-                bot_id: botId,
-                type_of_email: "like_or_dislike",
-                user_email: FeedbackUserEmail
-            });
-      const response = fetch(
-        `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-        {
-            method: "GET",
-            headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-            },
-        }
-        )
-        .then((response) => response.json())
-        .then((data) => {
-            console.log("Dynamic mcq response : ", data);
-            
-        })
-          
-      console.log("sent email");
-      feedbackBotIndex += 1
-      appendMessage2(feedbackBotQuestions[feedbackBotIndex])
-      setTimeout(() => {
-        appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
-      }, 200);
-
-    } else if (flow === 'down'){
-      feedbackBotQuestions = renameKey(feedbackBotQuestions)
-      feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?"
-      feedbackBotIndex += 1
-      appendMessage2(feedbackBotQuestions[feedbackBotIndex])
-      setTimeout(() => {
-        appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
-      }, 200);
-    }
-
-    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-    const msg = gshadowRoot.getElementById("thumbsup-down");
-    // button.parentNode.removeChild(button)
-    // const que_msg = document.createElement("div");
-    // que_msg.innerHTML = "Thank You"; // You can customize the message here
-    // // Replace the button with the "Thank you" message
-    // msg.parentNode.replaceChild(que_msg, msg);
-    const buttons = msg.querySelectorAll('button');
-
-        // Disable each button
-        buttons.forEach(button => {
-            button.disabled = true;
-        });
-
-
-
-
-  }
-
-    const feedbackBotInitialFlow = async (flow)=>{
-
-      if (flow === 'initial'){
-        const anonymous_text = `<div id="anonymous" >
+const feedbackBotInitialFlow = async (flow) => {
+  if (flow === "initial") {
+    const anonymous_text = `<div id="anonymous" >
         <b>Want to continue as Anonymous?</b>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
         </div>`;
-        appendMessage2(anonymous_text)
-      } else if (flow === 'save_email'){
-        if (!window.user && FeedbackUserEmail != 'Anonymous User'){
-        // const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-        // FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
-        FeedbackUserEmail = emailNameformJsonstt['email']
+    appendMessage2(anonymous_text);
+  } else if (flow === "save_email") {
+    if (!window.user && FeedbackUserEmail != "Anonymous User") {
+      // const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+      // FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
+      FeedbackUserEmail = emailNameformJsonstt["email"];
 
-        // const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-        // const msg = gshadowRoot.getElementById("feedback-email-form");
-        // button.parentNode.removeChild(button)
-        // const que_msg = document.createElement("div");
-        // que_msg.innerHTML = "Thank You"; // You can customize the message here
-        // // Replace the button with the "Thank you" message
-        // msg.parentNode.replaceChild(que_msg, msg);
-       
-        }
-        feedbackBotIndex = 0
-        const div_cont = `<div id="thumbsup-down" >
+      // const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+      // const msg = gshadowRoot.getElementById("feedback-email-form");
+      // button.parentNode.removeChild(button)
+      // const que_msg = document.createElement("div");
+      // que_msg.innerHTML = "Thank You"; // You can customize the message here
+      // // Replace the button with the "Thank you" message
+      // msg.parentNode.replaceChild(que_msg, msg);
+    }
+    feedbackBotIndex = 0;
+    const div_cont = `<div id="thumbsup-down" >
         
         <b>What do you think of our bot?</b>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
@@ -625,116 +623,121 @@ function getAnonymousEmail() {
           </svg>
           </button>
         </div>`;
-        return (div_cont)
-        
-      }
-
-
-
-    }
-    const getBotDetails2 = async (botId) => {
-
-    try {
-      const response = await fetch(`${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`, {
+    return div_cont;
+  }
+};
+const getBotDetails2 = async (botId) => {
+  try {
+    const response = await fetch(
+      `${baseURL2}/accounts/get-bot-details/?bot_id=${botId}`,
+      {
         method: "GET",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         },
-      });
-
-      const botDetails = await response.json();
-      console.log("Bot Details : ", botDetails);
-      console.log("FAQS => ",botDetails.data.faqs)
-      globalBotDetails = botDetails;
-      botType = botDetails.data.bot_type;
-
-      if (botType !== 'avatar_bot'){
-        botWelcomeMessage = botDetails.data.attributes.heading;
-      }else{
-        botWelcomeMessage = "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!"
       }
-      console.log(botType)
+    );
 
-      let buttons = ''
-      if (botDetails.data.faqs){
-        let faqs = Object.keys(botDetails.data.faqs)
-        if (faqs.length > 0){
-          faqs.forEach(title => {
-              buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
-          })
-        }
+    const botDetails = await response.json();
+    console.log("Bot Details : ", botDetails);
+    console.log("FAQS => ", botDetails.data.faqs);
+    globalBotDetails = botDetails;
+    botType = botDetails.data.bot_type;
+
+    if (botType !== "avatar_bot") {
+      botWelcomeMessage = botDetails.data.attributes.heading;
+    } else {
+      botWelcomeMessage =
+        "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!";
+    }
+    console.log(botType);
+
+    let buttons = "";
+    if (botDetails.data.faqs) {
+      let faqs = Object.keys(botDetails.data.faqs);
+      if (faqs.length > 0) {
+        faqs.forEach((title) => {
+          buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`;
+        });
       }
+    }
 
-      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`
-      if(botDetails.data.fitment_qna && botDetails.data.is_fitment_analysis && botDetails.data.coaching_for_fitment === "anyone"){
-      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`
-      }
-      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">Begin session..</button>`
+    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('recommendations')">Recommendations</button>`;
+    if (
+      botDetails.data.fitment_qna &&
+      botDetails.data.is_fitment_analysis &&
+      botDetails.data.coaching_for_fitment === "anyone"
+    ) {
+      buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('fitness_analysis')">Fitment Analysis</button>`;
+    }
+    buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('something_else')">Begin session..</button>`;
 
-      console.log("buttons : ",buttons)
+    console.log("buttons : ", buttons);
 
-      faqHtmlData = `<div id="option-button-container" >
+    faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
-                      </div>`
-      // sending welcome msg
-      appendMessage2(`<p><b>${botWelcomeMessage}</b></p>`)
+                      </div>`;
+    // sending welcome msg
+    appendMessage2(`<p><b>${botWelcomeMessage}</b></p>`);
 
-      if(botType != 'feedback_bot'){
-        fitmentAnalysisQuestions = botDetails.data.fitment_qna
-        fitmentAnalysisOptions = botDetails.data.fitment_options
-        botInitialQuestions = botDetails.data.initial_qna
-        isFitmentAllowed = botDetails.data.is_fitment_analysis;
-        isStrictFitment = botDetails.data.is_strict_fitment;
-        isBotAudioResponse = botDetails.data.is_audio_response;
-        CoachingForFitment = botDetails.data.coaching_for_fitment;
-        appendMessage2(faqHtmlData)
-      } else{
-        feedbackBotInitialFlow('initial')
-        feedbackBotQuestions = botDetails.data.feedback_qna;
-      }
-
+    if (botType != "feedback_bot") {
+      fitmentAnalysisQuestions = botDetails.data.fitment_qna;
+      fitmentAnalysisOptions = botDetails.data.fitment_options;
+      botInitialQuestions = botDetails.data.initial_qna;
+      isFitmentAllowed = botDetails.data.is_fitment_analysis;
+      isStrictFitment = botDetails.data.is_strict_fitment;
+      isBotAudioResponse = botDetails.data.is_audio_response;
+      CoachingForFitment = botDetails.data.coaching_for_fitment;
+      appendMessage2(faqHtmlData);
+    } else {
+      feedbackBotInitialFlow("initial");
+      feedbackBotQuestions = botDetails.data.feedback_qna;
+    }
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
-      return botDetails;
-    } catch (error) {
-      console.error(`Error in getBotDetails: ${error}`);
-    }
-  };
-  
+    return botDetails;
+  } catch (error) {
+    console.error(`Error in getBotDetails: ${error}`);
+  }
+};
 
- 
-const handleFitmentAnalysis = async ()=> {
-  console.log(fitmentAnalysisIndex,Object.keys(fitmentAnalysisQuestions).length)
-  if( fitmentAnalysisIndex <  Object.keys(fitmentAnalysisQuestions).length ) {
+const handleFitmentAnalysis = async () => {
+  console.log(
+    fitmentAnalysisIndex,
+    Object.keys(fitmentAnalysisQuestions).length
+  );
+  if (fitmentAnalysisIndex < Object.keys(fitmentAnalysisQuestions).length) {
     // console.log("Answer : ",latestMessage)
     // console.log("fitment question : ", fitmentAnalysisQuestions[fitmentAnalysisIndex])
     // signals.onResponse({
     //     html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
     // });
     // console.log("fitmentQuestions : ",fitmentAnalysisQuestions)
-    
-    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-    const responseValue = gShadowRoot2.querySelector(
-      'input[name="fitment_option"]:checked'
-    ).getAttribute("value");
-    console.log(responseValue)
 
-    let fitmentQueIndex = parseInt(gShadowRoot2.getElementById("question-fitment").getAttribute("value"));
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    const responseValue = gShadowRoot2
+      .querySelector('input[name="fitment_option"]:checked')
+      .getAttribute("value");
+    console.log(responseValue);
+
+    let fitmentQueIndex = parseInt(
+      gShadowRoot2.getElementById("question-fitment").getAttribute("value")
+    );
     fitmentAnalysisQnA[fitmentQueIndex] = {
-      "coach": fitmentAnalysisQuestions[fitmentQueIndex],
-      "cochee": responseValue
-    }
+      coach: fitmentAnalysisQuestions[fitmentQueIndex],
+      cochee: responseValue,
+    };
     fitmentQueIndex = fitmentQueIndex + 1;
-    const questiontext = fitmentAnalysisQuestions[fitmentQueIndex]
-    const questionoptins = fitmentAnalysisOptions[fitmentQueIndex]
-    let optioncont = ''
-    questionoptins.forEach((item,index) =>{
+    const questiontext = fitmentAnalysisQuestions[fitmentQueIndex];
+    const questionoptins = fitmentAnalysisOptions[fitmentQueIndex];
+    let optioncont = "";
+    questionoptins.forEach((item, index) => {
       optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
       <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
       <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
-    </div>`
-    })
+    </div>`;
+    });
     formRadio = `
                 <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentQueIndex}"><b>Q. </b>${questiontext}</div>
                 <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
@@ -743,82 +746,74 @@ const handleFitmentAnalysis = async ()=> {
                 <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
               `;
     // appendMessage2(formRadio)
-    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML =
-      formRadio;
+    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML = formRadio;
     fitmentAnalysisIndex = fitmentQueIndex;
     return;
   } else {
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-    const responseValue = gShadowRoot2.querySelector(
-      'input[name="fitment_option"]:checked'
-    ).getAttribute("value");
+    const responseValue = gShadowRoot2
+      .querySelector('input[name="fitment_option"]:checked')
+      .getAttribute("value");
 
-    let fitmentQueIndex = parseInt(gShadowRoot2.getElementById("question-fitment").getAttribute("value"));
+    let fitmentQueIndex = parseInt(
+      gShadowRoot2.getElementById("question-fitment").getAttribute("value")
+    );
     fitmentAnalysisQnA[fitmentQueIndex] = {
-      "coach": fitmentAnalysisQuestions[fitmentQueIndex],
-      "cochee": responseValue
-    }
+      coach: fitmentAnalysisQuestions[fitmentQueIndex],
+      cochee: responseValue,
+    };
 
     fitmentAnalysisInProgress = false;
     fitmentAnalysisIndex = 0;
-    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA)
-    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML = "<b>Please Wait...</b>"
-    
-    
-    console.log(userId2,participantId2)
+    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
+    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML =
+      "<b>Please Wait...</b>";
+
+    console.log(userId2, participantId2);
     try {
-        const response = await fetch(
-          `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken2(
-                key2,
-                secret2
-              )}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              participant_id: participantId2,
-              bot_id: botId,
-              is_signature_bot: true,
-              fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
-            }),
-          }
-        );
-
-        const data = await response.json();
-        console.log("Fitness Analysis Score => ", data); 
-        const msg = gShadowRoot2.getElementById('fitment-analysis')
-        // button.parentNode.removeChild(button)
-        const que_msg = document.createElement("div");
-        que_msg.innerHTML = `<b>Fitness Analysis Result:</b>   <p>${data.score}</p>`; // You can customize the message here
-        // Replace the button with the "Thank you" message
-        msg.parentNode.replaceChild(que_msg, msg);
-        
-
-        // setTimeout(() => {
-        //   appendMessage2(faqHtmlData);
-        // }, 200);
-         
-        } catch (err) {
-            appendMessage2(`<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
-            )
+      const response = await fetch(
+        `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            participant_id: participantId2,
+            bot_id: botId,
+            is_signature_bot: true,
+            fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
+          }),
         }
-   
-    
-    return;
-}
-    // fitmentAnalysisQuestions = fitment_analysis[type]
-    
-    
+      );
 
-}
+      const data = await response.json();
+      console.log("Fitness Analysis Score => ", data);
+      const msg = gShadowRoot2.getElementById("fitment-analysis");
+      // button.parentNode.removeChild(button)
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = `<b>Fitness Analysis Result:</b>   <p>${data.score}</p>`; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+
+      // setTimeout(() => {
+      //   appendMessage2(faqHtmlData);
+      // }, 200);
+    } catch (err) {
+      appendMessage2(
+        `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
+      );
+    }
+
+    return;
+  }
+  // fitmentAnalysisQuestions = fitment_analysis[type]
+};
 
 async function handleFaqButtonClick(question) {
-  
   optedBeginSession = false;
-  if( question == 'fitness_analysis') {
+  if (question == "fitness_analysis") {
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
     // let buttons = '';
@@ -828,16 +823,16 @@ async function handleFaqButtonClick(question) {
     // handleFitmentAnalysis()
     fitmentAnalysisInProgress = true;
     fitmentAnalysisIndex = 1;
-    console.log(fitmentAnalysisQuestions,fitmentAnalysisIndex)
-    const questiontext = fitmentAnalysisQuestions[fitmentAnalysisIndex]
-    const questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex]
-    let optioncont = ''
-    questionoptins.forEach((item,index) =>{
+    console.log(fitmentAnalysisQuestions, fitmentAnalysisIndex);
+    const questiontext = fitmentAnalysisQuestions[fitmentAnalysisIndex];
+    const questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex];
+    let optioncont = "";
+    questionoptins.forEach((item, index) => {
       optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
       <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
       <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
-    </div>`
-    })
+    </div>`;
+    });
     formRadio = `
               <div id='fitment-analysis' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
               <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentAnalysisIndex}"><b>Q. </b>${questiontext}</div>
@@ -847,73 +842,88 @@ async function handleFaqButtonClick(question) {
                 <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
               </div>`;
 
-    appendMessage2(formRadio)
-    
-
+    appendMessage2(formRadio);
   } else {
-    if( question == 'something_else') {
-        // appendMessage2('Please ask your question in chat box')
-        if(isAskingInitialQuestions){
-          return;
-        }
-        botInitialQuestionsIndex=1;
-        optedBeginSession = true;
-        if (botType === 'avatar_bot'){
-          await getFitmentScore(userId2)
-          console.log(isBeginSessionProceed)
-          
-          if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && CoachingForFitment === 'anyone'){
-            appendMessage2("Your fitment score is low or has not been attempted. Please proceed with this in mind.")
-            }
-        }
-        console.log(botType)
-        if(botType === "subject_matter_bot"){
-          appendMessage2("Please provide context to start conversaton.")
-          return;
-        }
-
-        isAskingInitialQuestions = true;
-        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+    if (question == "something_else") {
+      // appendMessage2('Please ask your question in chat box')
+      if (isAskingInitialQuestions) {
         return;
-    }
-    if( question == 'recommendations') {
-      if (botType === 'avatar_bot'){
-        appendMessage2('Please provide a context for recommendations in the chatbox')
+      }
+      botInitialQuestionsIndex = 1;
+      optedBeginSession = true;
+      if (botType === "avatar_bot") {
+        await getFitmentScore(userId2);
+        console.log(isBeginSessionProceed);
 
-      } else{
-        const resp = await fetch(`${baseURL2}/tests/get-tests-by-bot/?bot_id=${botId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-          },
-        })
-        let buttons = ""
-        const respjson = await resp.json()
-        console.log(respjson,"bot_test_data")
-        
-        if (Object.keys(respjson).length > 0){
-          respjson.forEach(element => {
-            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${element.test_code}','${element.title.replaceAll("'","")}')">${element.title}</button>`
-          });
-          appendMessage2(`<b >Here are some recommendations for you : </b> <br> ${buttons}`)
-
-          appendMessage2('If you want to try other scenarios please provide a context for recommendations in the chatbox')
-        } else{
-          appendMessage2('Please provide a context for recommendations in the chatbox')
-
+        if (
+          !isBeginSessionProceed &&
+          isFitmentAllowed &&
+          isStrictFitment &&
+          CoachingForFitment === "anyone"
+        ) {
+          appendMessage2(
+            "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+          );
         }
       }
-        recommendationClicked = true;
+      console.log(botType);
+      if (botType === "subject_matter_bot") {
+        appendMessage2("Please provide context to start conversaton.");
         return;
+      }
+
+      isAskingInitialQuestions = true;
+      appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+      return;
     }
-    appendMessage2(globalBotDetails.data.faqs[question])
+    if (question == "recommendations") {
+      if (botType === "avatar_bot") {
+        appendMessage2(
+          "Please provide a context for recommendations in the chatbox"
+        );
+      } else {
+        const resp = await fetch(
+          `${baseURL2}/tests/get-tests-by-bot/?bot_id=${botId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        let buttons = "";
+        const respjson = await resp.json();
+        console.log(respjson, "bot_test_data");
+
+        if (Object.keys(respjson).length > 0) {
+          respjson.forEach((element) => {
+            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${
+              element.test_code
+            }','${element.title.replaceAll("'", "")}')">${
+              element.title
+            }</button>`;
+          });
+          appendMessage2(
+            `<b >Here are some recommendations for you : </b> <br> ${buttons}`
+          );
+
+          appendMessage2(
+            "If you want to try other scenarios please provide a context for recommendations in the chatbox"
+          );
+        } else {
+          appendMessage2(
+            "Please provide a context for recommendations in the chatbox"
+          );
+        }
+      }
+      recommendationClicked = true;
+      return;
+    }
+    appendMessage2(globalBotDetails.data.faqs[question]);
     // appendMessage2(faqHtmlData)
   }
-  
 }
-
 
 function sendBotTranscript2() {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
@@ -921,18 +931,17 @@ function sendBotTranscript2() {
   let userEmail = "";
   if (!window.user) {
     // userEmail = shadowRoot2.getElementById("input-email2").value;
-    userEmail = emailNameformJsonstt['email']
+    userEmail = emailNameformJsonstt["email"];
   } else {
     userEmail = window.user.email;
   }
-    console.log("User email : ", userEmail);
+  console.log("User email : ", userEmail);
 
-   
-    queryParams2 = new URLSearchParams({
-      participant_id: participantId2,
-      email: userEmail,
-    });
-  
+  queryParams2 = new URLSearchParams({
+    participant_id: participantId2,
+    email: userEmail,
+  });
+
   fetch(
     `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
     {
@@ -951,24 +960,24 @@ function sendBotTranscript2() {
       const queryParamsEmail2 = new URLSearchParams({
         submitted_email: userEmail,
         test_attempt_session_id: sessionId2,
-    });
+      });
 
-    fetch(
-      `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
-      {
+      fetch(
+        `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
+        {
           method: "GET",
           headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
           },
-      }
+        }
       )
-      .then((response) => response.json())
-      .then((data) => {
+        .then((response) => response.json())
+        .then((data) => {
           console.log("Dynamic mcq response : ", data);
-          
+
           // appendMessage2(faqHtmlData)
-          
+
           // console.log(data.options_data)
           // questionText2 = data.options_data.next_situation;
           // newOption1NameStt = data.options_data.option_a;
@@ -977,24 +986,21 @@ function sendBotTranscript2() {
           // newOption2TextStt = data.options_data.option_b;
           // // qUid = data.options_data.next_situation;
           // qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
-      })
-
-    })
+        });
+    });
 
   return;
 }
 
 function handleEndConversation() {
   console.log("end conversation clicked");
-  appendMessage2(
-    "<b>Thanks for interacting with me. Have a great day!</b>"
-  );
+  appendMessage2("<b>Thanks for interacting with me. Have a great day!</b>");
 
   isSessionActiveStt = false;
   optedBeginSession = false;
 
   let emailForm;
-  if(window.innerWidth > 768) {
+  if (window.innerWidth > 768) {
     emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
     <b>Please Enter your email</b>
     <div
@@ -1083,17 +1089,15 @@ function handleEndConversation() {
   </div>
 </div>`;
   }
-  if( ! window.user){
-  // appendMessage2(emailForm);
-  isEmailFormstt = true
-  formFieldsstt = ['email']
-  appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
-  }
-  else {
-    sendBotTranscript2()
+  if (!window.user) {
+    // appendMessage2(emailForm);
+    isEmailFormstt = true;
+    formFieldsstt = ["email"];
+    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+  } else {
+    sendBotTranscript2();
   }
 }
-
 
 function getCredentialsForm2() {
   let credentialsForm2;
@@ -1223,7 +1227,7 @@ function getCredentialsForm2() {
 function getCoachingQuestionData2(questionText) {
   let randomId2 = Math.floor(Math.random() * 1000000);
   randomId2 = `coaching-question-${randomId2}`;
-  let parts = questionText.split(':');
+  let parts = questionText.split(":");
   questionText = parts.length > 1 ? parts[1].trim() : questionText;
   return `
             ${questionText}
@@ -1281,9 +1285,9 @@ const handleEndCoachingClick2 = async (randomId) => {
     submitEmailAndName2();
   } else {
     // appendMessage2(getCredentialsForm2());
-    isEmailFormstt = true
-    formFieldsstt = ['name', 'email']
-    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
+    isEmailFormstt = true;
+    formFieldsstt = ["name", "email"];
+    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
   }
 };
 
@@ -1311,10 +1315,9 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function deleteAndReplaceContainerStt(old,new_cont){
-  const gshadowRoot =
-            document.getElementById("chat-element2").shadowRoot;
-  const msg = gshadowRoot.getElementById(`${old}`)
+function deleteAndReplaceContainerStt(old, new_cont) {
+  const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+  const msg = gshadowRoot.getElementById(`${old}`);
   // button.parentNode.removeChild(button)
   const que_msg = document.createElement("div");
   que_msg.innerHTML = `${new_cont}`; // You can customize the message here
@@ -1323,123 +1326,108 @@ function deleteAndReplaceContainerStt(old,new_cont){
 }
 
 //image hover handlers - start
-function showTooltipStt(content, event, tooltipIdStt,imageMapNameStt) {
+function showTooltipStt(content, event, tooltipIdStt, imageMapNameStt) {
   // console.log(tooltipIdStt)
-  const shadowRootStt =
-  document.getElementById("chat-element2").shadowRoot;
-  const tooltipStt =
-    shadowRootStt.getElementById(tooltipIdStt);
+  const shadowRootStt = document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt = shadowRootStt.getElementById(tooltipIdStt);
   tooltipStt.innerHTML = content;
   updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
   tooltipStt.style.display = "block";
-  }
+}
 
 function updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt) {
   // console.log('update',tooltipIdStt)
 
-  const shadowRootStt =
-    document.getElementById("chat-element2").shadowRoot;
-  const tooltipStt =
-    shadowRootStt.getElementById(tooltipIdStt);
+  const shadowRootStt = document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt = shadowRootStt.getElementById(tooltipIdStt);
 
   const mouseX = event.clientX + window.pageXOffset;
   const mouseY = event.clientY + window.pageYOffset;
 
   if (window.innerWidth > 760) {
-    tooltipStt.style.left = event.clientX - 120 + "px" // mouseX - 120 + "px" //event.clientX //  // + xOffset - 120 + "px";
-    tooltipStt.style.top = event.clientY - 80  + "px" //mouseY - 80 + "px" //event.clientY // //+ yOffset - 170 + "px";
+    tooltipStt.style.left = event.clientX - 120 + "px"; // mouseX - 120 + "px" //event.clientX //  // + xOffset - 120 + "px";
+    tooltipStt.style.top = event.clientY - 80 + "px"; //mouseY - 80 + "px" //event.clientY // //+ yOffset - 170 + "px";
   } else {
-    tooltipStt.style.left = event.clientX - 90 + "px" 
-    tooltipStt.style.top = event.clientY - 180  + "px" 
+    tooltipStt.style.left = event.clientX - 90 + "px";
+    tooltipStt.style.top = event.clientY - 180 + "px";
   }
 }
 
 function hideTooltipStt(tooltipIdStt) {
   // console.log('hide',tooltipIdStt)
 
-  const shadowRootStt =
-  document.getElementById("chat-element2").shadowRoot;
-const tooltipStt =
-  shadowRootStt.getElementById(tooltipIdStt);
+  const shadowRootStt = document.getElementById("chat-element2").shadowRoot;
+  const tooltipStt = shadowRootStt.getElementById(tooltipIdStt);
   // console.log(tooltipStt)
   tooltipStt.style.display = "none";
 }
 //image hover handlers - end
 
-const setHoverPointsStt = (coordsStt, imageIdStt, imageMapNameStt, tooltipIdStt) => {
+const setHoverPointsStt = (
+  coordsStt,
+  imageIdStt,
+  imageMapNameStt,
+  tooltipIdStt
+) => {
   //hover configs
   const shadowRootForImageStt =
-  document.getElementById("chat-element2").shadowRoot;
-const descriptionMediaImageStt =
-  shadowRootForImageStt.getElementById(imageIdStt);
+    document.getElementById("chat-element2").shadowRoot;
+  const descriptionMediaImageStt =
+    shadowRootForImageStt.getElementById(imageIdStt);
 
-// -map element
-const mapElementStt = document.createElement("map");
-mapElementStt.setAttribute("name", imageMapNameStt);
-shadowRootForImageStt.appendChild(mapElementStt);
+  // -map element
+  const mapElementStt = document.createElement("map");
+  mapElementStt.setAttribute("name", imageMapNameStt);
+  shadowRootForImageStt.appendChild(mapElementStt);
 
-// -overlay element
-const overlayElementStt = document.createElement("div");
-overlayElementStt.setAttribute(
-  "class",
-  "image-overlayStt"
-);
-shadowRootForImageStt.appendChild(overlayElementStt);
+  // -overlay element
+  const overlayElementStt = document.createElement("div");
+  overlayElementStt.setAttribute("class", "image-overlayStt");
+  shadowRootForImageStt.appendChild(overlayElementStt);
 
-// -tooltip
-const tooltipELementStt = document.createElement("div");
-tooltipELementStt.setAttribute("id", tooltipIdStt);
-tooltipELementStt.setAttribute(
-  "class",
-  "custom-tooltipStt"
-);
-tooltipELementStt.style.position = "absolute";
-tooltipELementStt.style.backgroundColor = "#333";
-tooltipELementStt.style.color = "#fff";
-tooltipELementStt.style.padding = "5px";
-tooltipELementStt.style.borderRadius = "5px";
-tooltipELementStt.style.display = "none";
-shadowRootForImageStt.appendChild(tooltipELementStt);
+  // -tooltip
+  const tooltipELementStt = document.createElement("div");
+  tooltipELementStt.setAttribute("id", tooltipIdStt);
+  tooltipELementStt.setAttribute("class", "custom-tooltipStt");
+  tooltipELementStt.style.position = "absolute";
+  tooltipELementStt.style.backgroundColor = "#333";
+  tooltipELementStt.style.color = "#fff";
+  tooltipELementStt.style.padding = "5px";
+  tooltipELementStt.style.borderRadius = "5px";
+  tooltipELementStt.style.display = "none";
+  shadowRootForImageStt.appendChild(tooltipELementStt);
 
-
-coordsStt.map((item) => {
-  console.log(item)
-  let coord;
-  if(window.innerWidth < 768){
-    coord = item.coord
-    .split("|")[1].replace(/\./g, ',').split(",");
-  } else {
-    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
-  }
-
-  const areaElementStt = document.createElement("area");
-  areaElementStt.setAttribute("coords", coord);
-  areaElementStt.setAttribute("shape", "rect");
-  // areaElementStt.setAttribute("title", item.title);
-
-  // console.log(areaElementStt.addEventListener())
-
-  mapElementStt.appendChild(areaElementStt);
-
-  areaElementStt.addEventListener(
-    "mouseover",
-    (event) => {
-      showTooltipStt(item.title, event, tooltipIdStt,imageMapNameStt);
+  coordsStt.map((item) => {
+    console.log(item);
+    let coord;
+    if (window.innerWidth < 768) {
+      coord = item.coord.split("|")[1].replace(/\./g, ",").split(",");
+    } else {
+      coord = item.coord.split("|")[0].replace(/\./g, ",").split(",");
     }
-  );
 
-  areaElementStt.addEventListener(
-    "mousemove",
-    (event) => {
+    const areaElementStt = document.createElement("area");
+    areaElementStt.setAttribute("coords", coord);
+    areaElementStt.setAttribute("shape", "rect");
+    // areaElementStt.setAttribute("title", item.title);
+
+    // console.log(areaElementStt.addEventListener())
+
+    mapElementStt.appendChild(areaElementStt);
+
+    areaElementStt.addEventListener("mouseover", (event) => {
+      showTooltipStt(item.title, event, tooltipIdStt, imageMapNameStt);
+    });
+
+    areaElementStt.addEventListener("mousemove", (event) => {
       updateTooltipPositionStt(event, imageMapNameStt, tooltipIdStt);
-    }
-  );
+    });
 
-  areaElementStt.addEventListener("mouseout", () => {
-    hideTooltipStt(tooltipIdStt);
+    areaElementStt.addEventListener("mouseout", () => {
+      hideTooltipStt(tooltipIdStt);
+    });
   });
-});
-}
+};
 
 // to reset all variables
 const resetAllVariablesStt = async () => {
@@ -1451,7 +1439,7 @@ const resetAllVariablesStt = async () => {
 
   userResponses2 = [];
   DuplicateResponseCount2 = 0;
-  console.log("resetingvariables")
+  console.log("resetingvariables");
   questionText2 = "";
   reportType2 = "interactionSessionReport";
   questionId2 = null;
@@ -1501,11 +1489,10 @@ const resetAllVariablesStt = async () => {
   allowRecommendationTestCode = false;
   recommendationClicked = false;
 
-  console.log("resetting variables completed")
+  console.log("resetting variables completed");
 };
 
-function  increaseActionPointStt(user_id,field_name){
-
+function increaseActionPointStt(user_id, field_name) {
   fetch(
     `${baseURL2}/test-attempt-sessions/get-or-save-action-point/?mode=save&user_id=${user_id}&for=${field_name}`,
     {
@@ -1518,16 +1505,13 @@ function  increaseActionPointStt(user_id,field_name){
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log(`increased.`,data);
+      console.log(`increased.`, data);
     })
-    .catch((err) => console.log("increaseActionPointStt Error",err));
-  
- 
-
+    .catch((err) => console.log("increaseActionPointStt Error", err));
 }
-async function  getFitmentScore(user_id){
-  try{
-    console.log(`user_id : ${user_id}, bot_id: ${botId}`)
+async function getFitmentScore(user_id) {
+  try {
+    console.log(`user_id : ${user_id}, bot_id: ${botId}`);
     const resp = await fetch(
       `${baseURL2}/test-attempt-sessions/get-fitment-analysis-by-user/?user_id=${user_id}&bot_id=${botId}`,
       {
@@ -1537,14 +1521,14 @@ async function  getFitmentScore(user_id){
           "Content-Type": "application/json",
         },
       }
-    )
-    const jsonresp =  await resp.json()
-    console.log(`fitment_score_data`,jsonresp);
+    );
+    const jsonresp = await resp.json();
+    console.log(`fitment_score_data`, jsonresp);
     previousFitmentJson = jsonresp;
-    isBeginSessionProceed = jsonresp['proceed']
-
-  } catch(err){console.log("getFitmentScore Error",err)}
-  
+    isBeginSessionProceed = jsonresp["proceed"];
+  } catch (err) {
+    console.log("getFitmentScore Error", err);
+  }
 }
 
 function findRelatedItemsStt(data, targetCode) {
@@ -1577,324 +1561,370 @@ function findRelatedItemsStt(data, targetCode) {
     ? `<div>${resultDiv}</div>`
     : null;
 }
-      
+
 const handleProceedClickStt = async (choice) => {
-  if (choice == 'Yes'){
-      isProceedStt = 'true'
-      const gshadowRoot =
-                document.getElementById("chat-element2").shadowRoot;
-      const msg = gshadowRoot.getElementById('proceed-option2')
-      // button.parentNode.removeChild(button)
-      const que_msg = document.createElement("div");
-      que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-      // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
-            
-      if (questionMediaLinkStt && (testType2 != 'mcq' &&  testType2 != 'dynamic_mcq')) {
-        console.log(questionMediaLinkStt);
-        let embeddingUrl = "";
-        
-        if (questionMediaLinkStt.length > 0) {
-          if (questionMediaLinkStt.includes("youtube.com")) {
-            const videoId = questionMediaLinkStt.split("v=")[1];
-            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-          } else if (questionMediaLinkStt.includes("vimeo.com")) {
-            const videoId = questionMediaLinkStt.split("/").pop();
-            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-          } else if (questionMediaLinkStt.includes("twitter.com")) {
-            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-          }
-          
-          if (embeddingUrl){
-              appendMessage2(`▪ Media <br>  <iframe
+  if (choice == "Yes") {
+    isProceedStt = "true";
+    const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const msg = gshadowRoot.getElementById("proceed-option2");
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    msg.parentNode.replaceChild(que_msg, msg);
+
+    if (
+      questionMediaLinkStt &&
+      testType2 != "mcq" &&
+      testType2 != "dynamic_mcq"
+    ) {
+      console.log(questionMediaLinkStt);
+      let embeddingUrl = "";
+
+      if (questionMediaLinkStt.length > 0) {
+        if (questionMediaLinkStt.includes("youtube.com")) {
+          const videoId = questionMediaLinkStt.split("v=")[1];
+          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        } else if (questionMediaLinkStt.includes("vimeo.com")) {
+          const videoId = questionMediaLinkStt.split("/").pop();
+          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+        } else if (questionMediaLinkStt.includes("twitter.com")) {
+          embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+        }
+
+        if (embeddingUrl) {
+          appendMessage2(`▪ Media <br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                             src=${embeddingUrl}
                             frameborder="0"
                             allowfullscreen
                           >
-                    `)
-            }
+                    `);
+        }
 
-          const urlList = questionMediaLinkStt.split(',')
-          console.log("list",urlList)
-          if (urlList.length > 1){
-            urlList.forEach(element => {
-              element = element.trim()
-              if (element.includes('docs.google.com')){
-                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                console.log(url)
-                appendMessage2(`<iframe src=${url}
+        const urlList = questionMediaLinkStt.split(",");
+        console.log("list", urlList);
+        if (urlList.length > 1) {
+          urlList.forEach((element) => {
+            element = element.trim();
+            if (element.includes("docs.google.com")) {
+              let url =
+                element.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url);
+              appendMessage2(`<iframe src=${url}
                                 frameborder="0" 
                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                 allowfullscreen="true" 
                                 mozallowfullscreen="true" 
                                 webkitallowfullscreen="true"
-                                ></iframe>`)
-              }
-              else{
-                console.log(element)
-                
-                appendMessage2(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                ></iframe>`);
+            } else {
+              console.log(element);
+
+              appendMessage2(`<div ><audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls autoplay>
                 <source src=${element} type="audio/mpeg" />
                 Your browser does not support the audio element.
-                </audio></div>`)
-              }
-            });
-          }else {
-            if (questionMediaLinkStt.includes('docs.google.com')){
-              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-              console.log(url)
-              appendMessage2(`<iframe src=${url}
+                </audio></div>`);
+            }
+          });
+        } else {
+          if (questionMediaLinkStt.includes("docs.google.com")) {
+            let url =
+              questionMediaLinkStt.split("edit?")[0] +
+              "embed?start=true&loop=true&delayms=3000";
+            console.log(url);
+            appendMessage2(`<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                               allowfullscreen="true" 
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
-                              ></iframe>`)
-            }else if (questionMediaLinkStt.includes('guidejar.com')){
-              const guidejarId = questionMediaLinkStt.split('/').pop()
-              appendMessage2(`
+                              ></iframe>`);
+          } else if (questionMediaLinkStt.includes("guidejar.com")) {
+            const guidejarId = questionMediaLinkStt.split("/").pop();
+            appendMessage2(`
               <div style="width:640px">
               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
               ></div></div>
-              `)
-            }
+              `);
           }
         }
-        
-        if (initialQuestionTextStt){
-          const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-          const is_link = linkPattern.test(initialQuestionTextStt);
-          if (!is_link){
-            let strList = initialQuestionTextStt.replaceAll("*","")
-        
-            strList = strList.split(":",2)
-            let responderName;
-            if (strList.length >1){
-              initialQuestionTextStt = strList[1]
-              responderName = strList[0]
-            }
-            if(isImmersiveStt){
-              console.log(initialQuestionTextStt)
-              let queText = initialQuestionTextStt
-              const queDiv = `<p>${queText}</p><br>`
-              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
-              const response = await fetch(urltts, {
-                method: "GET",
-                headers: {
-                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                },
-              });
-        
-              const blob = await response.blob();
-              console.log('respnse', blob);
-        
-              const objectUrl = URL.createObjectURL(blob);
-              
-              console.log(objectUrl,'url')
+      }
 
-                initialQuestionTextStt = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+      if (initialQuestionTextStt) {
+        const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+        const is_link = linkPattern.test(initialQuestionTextStt);
+        if (!is_link) {
+          let strList = initialQuestionTextStt.replaceAll("*", "");
+
+          strList = strList.split(":", 2);
+          let responderName;
+          if (strList.length > 1) {
+            initialQuestionTextStt = strList[1];
+            responderName = strList[0];
+          }
+          if (isImmersiveStt) {
+            console.log(initialQuestionTextStt);
+            let queText = initialQuestionTextStt;
+            const queDiv = `<p>${queText}</p><br>`;
+            const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`;
+            const response = await fetch(urltts, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              },
+            });
+
+            const blob = await response.blob();
+            console.log("respnse", blob);
+
+            const objectUrl = URL.createObjectURL(blob);
+
+            console.log(objectUrl, "url");
+
+            initialQuestionTextStt =
+              queDiv +
+              `<div ><audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`
-              
-              console.log(initialQuestionTextStt)
+              </audio></div>`;
 
-            }
-            console.log("last",initialQuestionTextStt)
-            if (responderName){
-              initialQuestionTextStt = `<b>${responderName}:</b><br>` +`${initialQuestionTextStt}`
-              
-            }
+            console.log(initialQuestionTextStt);
+          }
+          console.log("last", initialQuestionTextStt);
+          if (responderName) {
+            initialQuestionTextStt =
+              `<b>${responderName}:</b><br>` + `${initialQuestionTextStt}`;
+          }
 
-            appendMessage2(initialQuestionTextStt)
+          appendMessage2(initialQuestionTextStt);
+        }
+      }
+    } else {
+      if (
+        !questionMediaLinkStt &&
+        testType2 != "orchestrated_conversation" &&
+        testType2 != "mcq" &&
+        testType2 != "dynamic_mcq" &&
+        senarioCase2 != "process_training"
+      ) {
+        let responderName;
+
+        if (testType2 === "dynamic_discussion_thread") {
+          if (initialQuestionTextStt.includes(":")) {
+            initialQuestionTextStt = initialQuestionTextStt.replace(
+              /<\/?p>/g,
+              ""
+            );
+            const strList = initialQuestionTextStt.split(":", 2);
+            responderName = `<b>${strList[0]}:</b><br>`;
+            initialQuestionTextStt = strList[1];
+          } else {
+            responderName = `<b>System:</b><br>`;
+          }
+        } else {
+          let strLIst = initialQuestionTextStt
+            .replaceAll("*", "")
+            .split(":", 2);
+          if (strLIst.length > 1) {
+            initialQuestionTextStt = strLIst[1];
+            responderName = `<b>${strLIst[0]}:</b><br>`;
           }
         }
-      } else{
-        if(!questionMediaLinkStt && testType2 != "orchestrated_conversation" && (testType2 != 'mcq' && testType2 != "dynamic_mcq") && senarioCase2 != "process_training" ){
-          let responderName;
-          
-          if (testType2 === 'dynamic_discussion_thread'){
-            if (initialQuestionTextStt.includes(":")){
-              initialQuestionTextStt = initialQuestionTextStt.replace(/<\/?p>/g, '');
-              const strList = initialQuestionTextStt.split(":",2)
-              responderName = `<b>${strList[0]}:</b><br>`
-              initialQuestionTextStt = strList[1]
-            } else{
-              responderName = `<b>System:</b><br>`
+        if (isImmersiveStt) {
+          const queText = initialQuestionTextStt;
+          const queDiv = `<p>${queText}</p><br>`;
+          console.log("dyna", initialQuestionTextStt);
+          const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`;
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            },
+          });
 
-            }
-          } else{
-            let strLIst = initialQuestionTextStt.replaceAll("*","").split(":",2)
-            if(strLIst.length>1){
-              initialQuestionTextStt = strLIst[1]
-              responderName = `<b>${strLIst[0]}:</b><br>`
-            }
-          }
-          if(isImmersiveStt){
-            const queText = initialQuestionTextStt
-            const queDiv = `<p>${queText}</p><br>`
-            console.log('dyna',initialQuestionTextStt)
-            const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`
+          const blob = await response.blob();
+          console.log("respnse", blob);
+
+          const objectUrl = URL.createObjectURL(blob);
+
+          console.log(objectUrl, "url");
+          initialQuestionTextStt =
+            queDiv +
+            `<div ><audio style="${
+              window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+            }" controls autoplay>
+            <source src=${objectUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+            </audio></div>`;
+        }
+
+        if (responderName) {
+          initialQuestionTextStt = responderName + initialQuestionTextStt;
+        }
+
+        appendMessage2(initialQuestionTextStt);
+      } else if (testType2 === "orchestrated_conversation") {
+        const regex = /<p>(.*?)<\/p>/g;
+
+        // Extracting text between <p> and </p> tags
+        const matches = Array.from(
+          initialQuestionTextStt.matchAll(regex),
+          (match) => match[1].trim()
+        );
+
+        console.log("matches", matches);
+        // Separating each extracted text by ":"
+        const separatedText = matches.map((match) => match.split(":", 2));
+        console.log("speratedTExt", separatedText);
+
+        // Displaying the separated text
+        if (isImmersiveStt) {
+          const audioPromises = separatedText.map(async (entry) => {
+            const responderName = `<b>${entry[0]}:</b><br>`;
+            console.log(entry);
+            let queText = entry[1];
+            const queDiv = `<p>${queText}</p><br>`;
+            const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`;
+
             const response = await fetch(url, {
               method: "GET",
               headers: {
                 Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
               },
             });
-      
+
             const blob = await response.blob();
-            console.log('respnse', blob);
-      
+            console.log("respnse", blob);
+
             const objectUrl = URL.createObjectURL(blob);
-            
-            console.log(objectUrl,'url')
-            initialQuestionTextStt = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
-            <source src=${objectUrl} type="audio/mpeg" />
-            Your browser does not support the audio element.
-            </audio></div>`
-          }
 
-          if (responderName){
-            initialQuestionTextStt = responderName + initialQuestionTextStt
-          }
-
-          appendMessage2(initialQuestionTextStt)
-          
-        } else if (testType2 === "orchestrated_conversation"){
-          const regex = /<p>(.*?)<\/p>/g;
-
-          // Extracting text between <p> and </p> tags
-          const matches = Array.from(initialQuestionTextStt.matchAll(regex), match => match[1].trim());
-
-          console.log('matches',matches)
-          // Separating each extracted text by ":"
-          const separatedText = matches.map(match => match.split(':',2));
-          console.log('speratedTExt',separatedText)
-
-          // Displaying the separated text
-          if (isImmersiveStt){
-            const audioPromises = separatedText.map(async entry => {
-
-              const responderName = `<b>${entry[0]}:</b><br>`
-              console.log(entry)
-              let queText = entry[1]
-              const queDiv = `<p>${queText}</p><br>`
-              const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${entry[1]}`
-
-              const response = await fetch(url, {
-              method: "GET",
-              headers: {
-                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-              },
-              });
-      
-              const blob = await response.blob();
-              console.log('respnse', blob);
-        
-              const objectUrl = URL.createObjectURL(blob);
-              
-              console.log(objectUrl,'url')
-              let audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
+            console.log(objectUrl, "url");
+            let audioCont =
+              queDiv +
+              `<div ><audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`
-              if (responderName){
-                audioCont = responderName + audioCont
-              }
-
-              return audioCont;
-              });
-
-            console.log(audioPromises,'audioPromises')
-
-            const audioContents = await Promise.all(audioPromises);
-
-            audioContents.forEach(content => {
-                appendMessage2(content);
-            });
-          } else{
-            separatedText.forEach(entry => {
-              const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`
-              appendMessage2(container)
-
-            })
-
-
-          }
-
-        }else if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${initialIndexStt}`)){
-          const questionpropName = `que_image ${initialIndexStt}`
-
-          const url = Object.keys(mediaPropsStt[questionpropName])[0];
-          let narration;
-          let coords = []
-          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
-
-          coordAndTitleNarrationList.forEach(element =>{
-            if (typeof element === 'string'){
-              narration = element
-            } else{
-              coords.push(element)
+              </audio></div>`;
+            if (responderName) {
+              audioCont = responderName + audioCont;
             }
-          })
 
-          const testImage = {
-            image: url,
-            coords: coords,
-            narration: narration
-          }
-          console.log(testImage)
-          const imageUrlStt = testImage.image
-          const coordsStt = testImage.coords
-          const narrationStt = testImage.narration
-
-          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${narrationStt}`
-          const response = await fetch(urltts, {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            },
+            return audioCont;
           });
-    
-          const blob = await response.blob();
-          console.log('respnse', blob);
-    
-          const objectUrl = URL.createObjectURL(blob);
-          
-          console.log(objectUrl,'url')
-          const ttsNarration = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}"" controls autoplay>
+
+          console.log(audioPromises, "audioPromises");
+
+          const audioContents = await Promise.all(audioPromises);
+
+          audioContents.forEach((content) => {
+            appendMessage2(content);
+          });
+        } else {
+          separatedText.forEach((entry) => {
+            const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`;
+            appendMessage2(container);
+          });
+        }
+      } else if (
+        mediaPropsStt &&
+        Object.keys(mediaPropsStt).includes(`que_image ${initialIndexStt}`)
+      ) {
+        const questionpropName = `que_image ${initialIndexStt}`;
+
+        const url = Object.keys(mediaPropsStt[questionpropName])[0];
+        let narration;
+        let coords = [];
+        const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+
+        coordAndTitleNarrationList.forEach((element) => {
+          if (typeof element === "string") {
+            narration = element;
+          } else {
+            coords.push(element);
+          }
+        });
+
+        const testImage = {
+          image: url,
+          coords: coords,
+          narration: narration,
+        };
+        console.log(testImage);
+        const imageUrlStt = testImage.image;
+        const coordsStt = testImage.coords;
+        const narrationStt = testImage.narration;
+
+        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${narrationStt}`;
+        const response = await fetch(urltts, {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
+        });
+
+        const blob = await response.blob();
+        console.log("respnse", blob);
+
+        const objectUrl = URL.createObjectURL(blob);
+
+        console.log(objectUrl, "url");
+        const ttsNarration = `<div ><audio style="${
+          window.innerWidth < 600
+            ? "width: 200px; max-width: 200px !important;"
+            : " min-width: 50vw !important;"
+        }"" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
-          </audio></div>`
-          const imageIdStt = `mediaImageStt${initialIndexStt}`
-          const imageMapNameStt = `image-mapStt${initialIndexStt}`
-          const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`
+          </audio></div>`;
+        const imageIdStt = `mediaImageStt${initialIndexStt}`;
+        const imageMapNameStt = `image-mapStt${initialIndexStt}`;
+        const imageTooltipIdStt = `tooltip-stt${initialIndexStt}`;
 
-             
-          appendMessage2(`▪  ${ttsNarration}<br><br>
-                          ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                          ▪ Question : <br> ${initialQuestionTextStt}`)
-          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
-          console.log("IMAGE MAPPED WITH COORDS")
+        appendMessage2(`▪  ${ttsNarration}<br><br>
+                          ▪ <img src=${imageUrlStt} ${
+          window.innerWidth < 768 ? "width='200'" : "width='400'"
+        } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          ▪ Question : <br> ${initialQuestionTextStt}`);
+        setHoverPointsStt(
+          coordsStt,
+          imageIdStt,
+          imageMapNameStt,
+          imageTooltipIdStt
+        );
+        console.log("IMAGE MAPPED WITH COORDS");
 
-          // questionText2 = questionText2 + imageDiv 
-        }else{
-
-          if (testType2 != 'mcq' && testType2 != "dynamic_mcq"){
-            let strList = initialQuestionTextStt.replaceAll("*","")
-          strList = strList.split(":",2)
-          if (strList.length >1){
-            initialQuestionTextStt = strList[1]
-            initialQuestionTextStt = `<b>${strList[0]}:</b><br>` +`<p>${initialQuestionTextStt}</p>`
-          }}
-          appendMessage2(initialQuestionTextStt)
+        // questionText2 = questionText2 + imageDiv
+      } else {
+        if (testType2 != "mcq" && testType2 != "dynamic_mcq") {
+          let strList = initialQuestionTextStt.replaceAll("*", "");
+          strList = strList.split(":", 2);
+          if (strList.length > 1) {
+            initialQuestionTextStt = strList[1];
+            initialQuestionTextStt =
+              `<b>${strList[0]}:</b><br>` + `<p>${initialQuestionTextStt}</p>`;
+          }
         }
-      } 
-      
-
+        appendMessage2(initialQuestionTextStt);
+      }
+    }
   } else {
     resetAllVariablesStt();
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
@@ -1940,96 +1970,106 @@ async function setMcqVariablesStt() {
   let newOption2TextStt;
 
   if (mcqQustionIndexStt != globalQuestionLengthStt) {
-    if( testType2 === "dynamic_mcq") {
+    if (testType2 === "dynamic_mcq") {
+      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
+        "Processing ...";
+      console.log(questionText2, "q");
+      queryParams2 = new URLSearchParams({
+        description: senarioDescription2,
+        situation:
+          mcqQustionIndexStt == 1
+            ? globalQuestionDataStt.results[0].questions[mcqQustionIndexStt - 1]
+                .question
+            : questionText2,
+        option_a: optionsNameStt[0].defaultValue,
+        option_b: optionsNameStt[0].defaultValue,
+        option_selected: responseTextStt,
+        test_attempt_session_id: test_attempt_session_id,
+      });
 
-      gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML = 'Processing ...'
-      console.log(questionText2,'q')
-        queryParams2 = new URLSearchParams({
-            description: senarioDescription2,
-            situation: mcqQustionIndexStt == 1 ? globalQuestionDataStt.results[0].questions[mcqQustionIndexStt - 1].question : questionText2,
-            option_a: optionsNameStt[0].defaultValue,
-            option_b: optionsNameStt[0].defaultValue,
-            option_selected: responseTextStt,
-            test_attempt_session_id: test_attempt_session_id,
-        });
-    
-        await fetch(
+      await fetch(
         `${baseURL2}/test-attempt-sessions/get_next_mcq_question_options/?${queryParams2}`,
         {
-            method: "GET",
-            headers: {
+          method: "GET",
+          headers: {
             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
             "Content-Type": "application/json",
-            },
+          },
         }
-        )
+      )
         .then((response) => response.json())
         .then((data) => {
-            console.log("Dynamic mcq response : ", data);
-            console.log(data.options_data)
-            questionText2 = data.options_data.next_situation;
-            newOption1NameStt = data.options_data.option_a;
-            newOption2NameStt = data.options_data.option_b;
-            newOption1TextStt = data.options_data.option_a;
-            newOption2TextStt = data.options_data.option_b;
-            // qUid = data.options_data.next_situation;
-            qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
-        })
-
+          console.log("Dynamic mcq response : ", data);
+          console.log(data.options_data);
+          questionText2 = data.options_data.next_situation;
+          newOption1NameStt = data.options_data.option_a;
+          newOption2NameStt = data.options_data.option_b;
+          newOption1TextStt = data.options_data.option_a;
+          newOption2TextStt = data.options_data.option_b;
+          // qUid = data.options_data.next_situation;
+          qUid =
+            globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
+        });
     } else {
-    // updating question
-    console.log("currentquestionidex", mcqQustionIndexStt);
-    console.log(`Story ${responseOptionStt}`);
+      // updating question
+      console.log("currentquestionidex", mcqQustionIndexStt);
+      console.log(`Story ${responseOptionStt}`);
 
-    const matchingQuestionsStt =
-      globalQuestionDataStt.results[0].questions.filter(
-        (question) => question.mcq_path === `Story ${responseOptionStt}`
+      const matchingQuestionsStt =
+        globalQuestionDataStt.results[0].questions.filter(
+          (question) => question.mcq_path === `Story ${responseOptionStt}`
+        );
+
+      qUid = matchingQuestionsStt.map((question) => question.uid)[0];
+      const mcqOptionsStt = matchingQuestionsStt.map(
+        (question) => question.mcq_options
+      )[0];
+      const optionName = Object.keys(mcqOptionsStt);
+      questionText2 = matchingQuestionsStt.map(
+        (question) => question.question
+      )[0];
+
+      const questionMedia = matchingQuestionsStt.map(
+        (question) => question.media_link
+      )[0];
+
+      let queImageData;
+      if (
+        mediaPropsStt &&
+        mediaPropsStt[`question_image ${responseOptionStt}`]
+      ) {
+        queImageData = [
+          mediaPropsStt[`question_image ${responseOptionStt}`],
+          mediaPropsStt[`question_image_mobile ${responseOptionStt}`],
+        ];
+      }
+
+      newOption1NameStt = optionName[0];
+      newOption2NameStt = optionName[1];
+      newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
+      newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
+
+      console.log(
+        newOption1NameStt,
+        newOption2NameStt,
+        newOption1TextStt,
+        newOption2TextStt
       );
+      if (questionMedia) {
+        let embeddingUrl = "";
+        if (questionMedia.length > 0) {
+          if (questionMedia.includes("youtube.com")) {
+            const videoId = questionMedia.split("v=")[1];
+            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          } else if (questionMedia.includes("vimeo.com")) {
+            const videoId = questionMedia.split("/").pop();
+            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+          } else if (questionMedia.includes("twitter.com")) {
+            embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
+          }
 
-    qUid = matchingQuestionsStt.map((question) => question.uid)[0];
-    const mcqOptionsStt = matchingQuestionsStt.map(
-      (question) => question.mcq_options
-    )[0];
-    const optionName = Object.keys(mcqOptionsStt);
-    questionText2 = matchingQuestionsStt.map(
-      (question) => question.question
-    )[0];
-
-    const questionMedia = matchingQuestionsStt.map(
-      (question) => question.media_link
-    )[0];
-    
-    let queImageData;
-    if (mediaPropsStt && mediaPropsStt[`question_image ${responseOptionStt}`]){
-      queImageData = [mediaPropsStt[`question_image ${responseOptionStt}`],mediaPropsStt[`question_image_mobile ${responseOptionStt}`]]
-    }
-
-    newOption1NameStt = optionName[0];
-    newOption2NameStt = optionName[1];
-    newOption1TextStt = mcqOptionsStt[newOption1NameStt]["opt"];
-    newOption2TextStt = mcqOptionsStt[newOption2NameStt]["opt"];
-
-    console.log(
-      newOption1NameStt,
-      newOption2NameStt,
-      newOption1TextStt,
-      newOption2TextStt
-    );
-    if (questionMedia) {
-      let embeddingUrl = "";
-      if (questionMedia.length > 0) {
-        if (questionMedia.includes("youtube.com")) {
-          const videoId = questionMedia.split("v=")[1];
-          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else if (questionMedia.includes("vimeo.com")) {
-          const videoId = questionMedia.split("/").pop();
-          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-        } else if (questionMedia.includes("twitter.com")) {
-          embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
-        }
-
-        if (embeddingUrl){
-        questionText2 = `▪ Media <br>  <iframe
+          if (embeddingUrl) {
+            questionText2 = `▪ Media <br>  <iframe
                         allow="autoplay; encrypted-media; fullscreen;"
                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                         src=${embeddingUrl}
@@ -2037,103 +2077,122 @@ async function setMcqVariablesStt() {
                         allowfullscreen
                       >
         `;
-        }
-        const urlList = questionMedia.split(',')
-        console.log("list",urlList)
-        if (urlList.length > 1){
-          urlList.forEach(element => {
-            element = element.trim()
-            if (element.includes('docs.google.com')){
-              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-              console.log(url,"googelsheet")
-              questionText2 = questionText2 + '\n' +(`<iframe src=${url}
+          }
+          const urlList = questionMedia.split(",");
+          console.log("list", urlList);
+          if (urlList.length > 1) {
+            urlList.forEach((element) => {
+              element = element.trim();
+              if (element.includes("docs.google.com")) {
+                let url =
+                  element.split("edit?")[0] +
+                  "embed?start=true&loop=true&delayms=3000";
+                console.log(url, "googelsheet");
+                questionText2 =
+                  questionText2 +
+                  "\n" +
+                  `<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                               allowfullscreen="true" 
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
-                              ></iframe>`)
-            }
-            else{
-              console.log('audio',element)
-              questionText2 = questionText2 + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                              ></iframe>`;
+              } else {
+                console.log("audio", element);
+                questionText2 =
+                  questionText2 +
+                  "\n" +
+                  `<div ><audio style="${
+                    window.innerWidth < 600
+                      ? "width: 200px; max-width: 200px !important;"
+                      : " min-width: 50vw !important;"
+                  }" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`)
-            }
-          });
-        }else {
-          if (questionMedia.includes('docs.google.com')){
-            let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-            console.log(url,'google')
-            if(isImmersiveStt){
-              questionText2 = questionText2.replaceAll(":","")
-              console.log('first', questionText2)
+              </audio></div>`;
+              }
+            });
+          } else {
+            if (questionMedia.includes("docs.google.com")) {
+              let url =
+                questionMedia.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url, "google");
+              if (isImmersiveStt) {
+                questionText2 = questionText2.replaceAll(":", "");
+                console.log("first", questionText2);
 
-              
-              const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
-              const response = await fetch(urltts, {
-                method: "GET",
-                headers: {
-                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                },
-              });
-        
-              const blob = await response.blob();
-              console.log('respnse', blob);
-        
-              const objectUrl = URL.createObjectURL(blob);
-              
-              console.log(objectUrl,'url')
-              questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
+                const response = await fetch(urltts, {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(
+                      key2,
+                      secret2
+                    )}`,
+                  },
+                });
+
+                const blob = await response.blob();
+                console.log("respnse", blob);
+
+                const objectUrl = URL.createObjectURL(blob);
+
+                console.log(objectUrl, "url");
+                questionText2 = `<div ><audio style="${
+                  window.innerWidth < 600
+                    ? "width: 200px; max-width: 200px !important;"
+                    : " min-width: 50vw !important;"
+                }" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`
-              console.log(questionText2)
-
-            }
-            questionText2 = questionText2 +(`<iframe src=${url}
+              </audio></div>`;
+                console.log(questionText2);
+              }
+              questionText2 =
+                questionText2 +
+                `<iframe src=${url}
                             frameborder="0" 
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                             allowfullscreen="true" 
                             mozallowfullscreen="true" 
                             webkitallowfullscreen="true"
-                            ></iframe>`)
+                            ></iframe>`;
+            }
           }
         }
-        }
       }
-    
-      if(isImmersiveStt && !questionMedia){
-        questionText2 = questionText2.replaceAll(":","")
-        console.log('first', questionText2)
 
-        
-        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
+      if (isImmersiveStt && !questionMedia) {
+        questionText2 = questionText2.replaceAll(":", "");
+        console.log("first", questionText2);
+
+        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
         const response = await fetch(urltts, {
           method: "GET",
           headers: {
             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           },
         });
-  
+
         const blob = await response.blob();
-        console.log('respnse', blob);
-  
+        console.log("respnse", blob);
+
         const objectUrl = URL.createObjectURL(blob);
-        
-        console.log(objectUrl,'url')
-        questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+        console.log(objectUrl, "url");
+        questionText2 = `<div ><audio style="${
+          window.innerWidth < 600
+            ? "width: 200px; max-width: 200px !important;"
+            : " min-width: 50vw !important;"
+        }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
-        </audio></div>`
-        console.log(questionText2)
-
-        
+        </audio></div>`;
+        console.log(questionText2);
       }
     }
-
-    
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -2275,7 +2334,7 @@ async function setMcqVariablesStt() {
 
     if (!isCheck.check) {
       console.log("failed to save session data", isCheck);
-      if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+      if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
         const shadowRoot = document.getElementById("chat-element2").shadowRoot;
         const button = shadowRoot.getElementById(
           `mcq-option-stt-${mcqFormIdStt}`
@@ -2310,10 +2369,9 @@ async function setMcqVariablesStt() {
       console.log("user not logged in, so asking for credentials");
       // gShadowRoot2.getElementById(`mcq-option-stt-${mcqFormIdStt}`).innerHTML =
       //   credentialsForm2;
-      isEmailFormstt = true
-      formFieldsstt = ['name', 'email']
-      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`)
-      
+      isEmailFormstt = true;
+      formFieldsstt = ["name", "email"];
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
 
     await fetch(`${baseURL2}/frontend-auth/get-report-url/`, {
@@ -2367,16 +2425,15 @@ async function setMcqVariablesStt() {
 
 let queryParams2;
 
-async function proceedFormFlowStt(msg){
-  if (formFieldsstt.length > 0){
-    isEmailFormstt = true
-    const filedname = formFieldsstt[0]
+async function proceedFormFlowStt(msg) {
+  if (formFieldsstt.length > 0) {
+    isEmailFormstt = true;
+    const filedname = formFieldsstt[0];
     formFieldsstt = formFieldsstt.slice(1);
-    emailNameformJsonstt[filedname] = msg
-    
+    emailNameformJsonstt[filedname] = msg;
   }
 }
-function sendEmail2(session_id,reportUrl) {
+function sendEmail2(session_id, reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams22 = new URLSearchParams({
@@ -2400,7 +2457,6 @@ function sendEmail2(session_id,reportUrl) {
       emailSent2 = data.status;
       console.log("email sent");
       // resetAllVariablesStt();
-
     })
     .catch((err) => console.log(err));
 }
@@ -2413,8 +2469,8 @@ async function submitEmailAndName2() {
     // const inputEmailVal2 = shadowRoot2.getElementById("input-email2").value;
     // inputName2 = inputNameVal2;
     // inputEmail2 = inputEmailVal2;
-    inputEmail2 = emailNameformJsonstt['email']
-    inputName2 = emailNameformJsonstt['name']
+    inputEmail2 = emailNameformJsonstt["email"];
+    inputName2 = emailNameformJsonstt["name"];
 
     queryParams2 = new URLSearchParams({
       participant_id: participantId2,
@@ -2442,8 +2498,8 @@ async function submitEmailAndName2() {
     .then((data) => {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
-      sendEmail2(sessionId2,globalReportUrl2);
-      increaseActionPointStt(userId2,'interaction_attempted')
+      sendEmail2(sessionId2, globalReportUrl2);
+      increaseActionPointStt(userId2, "interaction_attempted");
       // append custom message to chat
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
@@ -2492,7 +2548,10 @@ async function submitEmailAndName2() {
   //     .catch((err) => console.log(err));
 }
 
-function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title) {
+function handleSurpriseMeButtonClick2(
+  recommendation_code,
+  recommendation_title
+) {
   const challenges2 = [
     "QEEG5VY",
     "QMFMKQ4",
@@ -2509,11 +2568,21 @@ function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title)
     "QHYRLGN",
     "QJZWYYB",
   ];
-  console.log("surprise me! button clicked", "recommendation code : ", recommendation_code, "recommendation title : ", recommendation_title);
+  console.log(
+    "surprise me! button clicked",
+    "recommendation code : ",
+    recommendation_code,
+    "recommendation title : ",
+    recommendation_title
+  );
 
-  let tempTestTitle = ""
+  let tempTestTitle = "";
 
-  if( recommendation_code == undefined || recommendation_code == null || recommendation_code == ""){
+  if (
+    recommendation_code == undefined ||
+    recommendation_code == null ||
+    recommendation_code == ""
+  ) {
     const randomIndex2 = Math.floor(Math.random() * challenges2.length);
     const randomChallenge2 = challenges2[randomIndex2];
 
@@ -2533,9 +2602,9 @@ function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title)
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    tempTestTitle = sampleTestCodesStt[randomChallenge2]
+    tempTestTitle = sampleTestCodesStt[randomChallenge2];
   } else {
-    console.log("handling recommendation in surprise me")
+    console.log("handling recommendation in surprise me");
     testCode2 = recommendation_code;
     tempTestTitle = recommendation_title;
     allowRecommendationTestCode = true;
@@ -2549,8 +2618,7 @@ function handleSurpriseMeButtonClick2(recommendation_code, recommendation_title)
 
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent =
-      tempTestTitle;
+    gShadowRoot2.getElementById("text-input").textContent = tempTestTitle;
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -2850,7 +2918,9 @@ loadExternalModule().then(() => {
       }'
       >
     </deep-chat>
-    <p style="font-size: ${window.innerWidth < 768 ? "8px" : "12px" }; width: 100%; text-align: center; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
+    <p style="font-size: ${
+      window.innerWidth < 768 ? "8px" : "12px"
+    }; width: 100%; text-align: center; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
   </div>
   `;
 
@@ -2859,22 +2929,22 @@ loadExternalModule().then(() => {
   const chatIconContainer2 = document.getElementById("chat-icon2");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
-  botId = document.querySelector('.deep-chat-poc2').dataset.botId;
+  botId = document.querySelector(".deep-chat-poc2").dataset.botId;
   // botId = 'stress-management-0032'
 
-  const _ =  getBotDetails2(botId);
+  const _ = getBotDetails2(botId);
 
-//   appendMessage2(`<div id="option-button-container" >
-//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
+  //   appendMessage2(`<div id="option-button-container" >
+  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
 
-//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
+  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
 
-//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
 
-//                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
 
-//                     <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-//                 </div>`)
+  //                     <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+  //                 </div>`)
 
   //responsive styles for phones
   if (window.innerWidth < 600) {
@@ -3014,20 +3084,18 @@ loadExternalModule().then(() => {
   }
   // if botid is null or notdefined show other message
 
-  if( botId == undefined) {
+  if (botId == undefined) {
     chatElementRef2.initialMessages = [
       {
-        html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>` ,
+        html: `<p><b>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</b></p>`,
         role: "ai",
-      }
+      },
     ];
-    chatElementRef2.initialMessages.push(
-      {
-        html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+    chatElementRef2.initialMessages.push({
+      html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
           <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-        role: "user",
-      }
-    );
+      role: "user",
+    });
   } else {
     // faqs = Object.keys(globalBotDetails.data.faqs)
     // console.log("Bot details",Object.keys(globalBotDetails.data.faqs))
@@ -3035,13 +3103,10 @@ loadExternalModule().then(() => {
     // faqs.forEach(title => {
     //     buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleFaqButtonClick('${title}')">${title}</button>`
     // })
-
     // console.log("buttons : ",buttons)
-
     // let htmlData = `<div id="option-button-container" >
     //                 ${buttons}
     //                 </div>`
-
     // chatElementRef2.initialMessages.push(
     //   {
     //     html:htmlData,
@@ -3071,8 +3136,11 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessageStt(text) {
     const words = text.split(" ");
-    let uppercaseArray = words.map(element => element.toUpperCase());
-    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnlyStt || testType2 === 'coaching')){
+    let uppercaseArray = words.map((element) => element.toUpperCase());
+    if (
+      uppercaseArray.includes("SKIP") &&
+      (isTranscriptOnlyStt || testType2 === "coaching")
+    ) {
       return true;
     }
     if (words.length < 15) {
@@ -3216,11 +3284,11 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformationStt = async (use_case,user_id=null) => {
+  const getClientInformationStt = async (use_case, user_id = null) => {
     const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if(user_id && use_case === "user_info"){
-      url += `&user_id=${user_id}`
+    if (user_id && use_case === "user_info") {
+      url += `&user_id=${user_id}`;
     }
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
 
@@ -3234,8 +3302,8 @@ loadExternalModule().then(() => {
 
       const resp_json = await response.json();
       console.log(resp_json);
-      
-      return resp_json['data'][`${use_case}`]
+
+      return resp_json["data"][`${use_case}`];
     } catch (error) {
       console.error(`Error in getClientInformationStt: ${error}`);
     }
@@ -3262,29 +3330,35 @@ loadExternalModule().then(() => {
     }
   };
 
-  const TTSContainerSTT = async (text) =>{
-      const queDiv = `<p>${text}</p><br>`
-      const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        },
-      });
+  const TTSContainerSTT = async (text) => {
+    const queDiv = `<p>${text}</p><br>`;
+    const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
 
-      const blob = await response.blob();
-      console.log('respnse', blob);
+    const blob = await response.blob();
+    console.log("respnse", blob);
 
-      const objectUrl = URL.createObjectURL(blob);
-      
-      console.log(objectUrl,'url')
-      const audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+    const objectUrl = URL.createObjectURL(blob);
+
+    console.log(objectUrl, "url");
+    const audioCont =
+      queDiv +
+      `<div ><audio style="${
+        window.innerWidth < 600
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
+      }" controls autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
-      </audio></div>`
+      </audio></div>`;
 
-      return audioCont
-  }
+    return audioCont;
+  };
 
   //No condition STT pending
   chatElementRef2.request = {
@@ -3296,9 +3370,9 @@ loadExternalModule().then(() => {
 
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
-        //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
+          //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
 
-          console.log("Bot ID: ",botId);
+          console.log("Bot ID: ", botId);
 
           if (chatElement) {
             var shadowRootMic = chatElement.shadowRoot;
@@ -3319,306 +3393,68 @@ loadExternalModule().then(() => {
 
           globalSignals = signals;
 
-          if (fitmentAnalysisInProgress){
+          if (fitmentAnalysisInProgress) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-            })
+            });
             return;
           }
           // to check session active or not
 
-           // get latest message
+          // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
 
-          if (isEmailFormstt){
-            await proceedFormFlowStt(latestMessage)
-            if(formFieldsstt.length >0){
+          if (isEmailFormstt) {
+            await proceedFormFlowStt(latestMessage);
+            if (formFieldsstt.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFieldsstt[0]}<b>`
-              })
-            } else{
+                html: `<b>Please enter your ${formFieldsstt[0]}<b>`,
+              });
+            } else {
               isEmailFormstt = false;
-              if (botId != undefined && botType !== "feedback_bot"){
-                sendBotTranscript2()
-                signals.onResponse({html: faqHtmlData})
-              }else if (botId != undefined && botType === "feedback_bot"){
-                const thumbsupdiv = await feedbackBotInitialFlow('save_email')
+              if (botId != undefined && botType !== "feedback_bot") {
+                sendBotTranscript2();
+                signals.onResponse({ html: faqHtmlData });
+              } else if (botId != undefined && botType === "feedback_bot") {
+                const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                 signals.onResponse({
                   html: thumbsupdiv,
                 });
-              }else{
-              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-              appendMessage2(message);
-              // //* send message to start new session
+              } else {
+                const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                appendMessage2(message);
+                // //* send message to start new session
 
-              signals.onResponse({
-                html: "<b>Please enter another access code to start a new interaction.</b>",
-              });
-              submitEmailAndName2();
-            }
+                signals.onResponse({
+                  html: "<b>Please enter another access code to start a new interaction.</b>",
+                });
+                submitEmailAndName2();
+              }
             }
             return;
           }
 
-          if (botType === 'feedback_bot' && !isFeedbackConvEnd){
-            feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] = latestMessage
-            const que_length = Object.keys(feedbackBotQuestions).length
+          if (botType === "feedback_bot" && !isFeedbackConvEnd) {
+            feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] =
+              latestMessage;
+            const que_length = Object.keys(feedbackBotQuestions).length;
 
-            feedbackBotIndex += 1
-            const is_last = que_length + 1  === feedbackBotIndex;
-            if (is_last){
-
-              appendMessage2(
-                "<b> Thank you for your feedback.</b>"
-              )
+            feedbackBotIndex += 1;
+            const is_last = que_length + 1 === feedbackBotIndex;
+            if (is_last) {
+              appendMessage2("<b> Thank you for your feedback.</b>");
               const queryparams = new URLSearchParams({
                 conversation: JSON.stringify(feedbackBotQnA),
                 bot_id: botId,
                 type_of_email: "feedback_conv",
-                user_email: FeedbackUserEmail
-            });
+                user_email: FeedbackUserEmail,
+              });
 
               // sending feedback conversation to bot owner
               const response = await fetch(
                 `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
                 {
-                    method: "GET",
-                    headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
-                    "Content-Type": "application/json",
-                    },
-                }
-                )
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log("Dynamic mcq response : ", data);
-                    
-                })
-
-                const queryparam = new URLSearchParams({
-                  method: "post",
-                  qna: JSON.stringify(feedbackBotQnA),
-                  bot_id: botId,
-                  is_positive: IsPositiveFeedback ? "True" : "False",
-                  qna_type: "feedback",
-                  user_id: userId2
-              });
-
-                const resp = await fetch(
-                  `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-                  {
-                      method: "GET",
-                      headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
-                      "Content-Type": "application/json",
-                      },
-                  }
-                  )
-                  .then((response) => response.json())
-                  .then((data) => {
-                      console.log("Dynamic mcq response : ", data);
-                      
-                  })
-
-              
-          
-              // resetAllVariablesStt()
-              appendMessage2("please wait while we are getting some recommendations for you...")
-
-                  
-    
-              try {
-                const params = new URLSearchParams({
-                  context: JSON.stringify(feedbackBotQnA),
-                  for : 'feedback_bot'
-                })
-                const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?${params}`, {
                   method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                  },
-                });
-          
-                const recommendation_tests_data = await response.json();
-
-                const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
-                const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
-
-                const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
-                const created_test = recommendation_tests_data.created_scenario[created_test_code]
-                console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
-
-                signals.onResponse({
-                    html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
-                    `,
-                    });
-                console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-                recommendationClicked = false;
-                isFeedbackConvEnd = true;
-              } catch (error) {
-                console.error(`Error in get recommendation tests: ${error}`);
-              }
-
-
-              return;
-
-            } else{
-
-              signals.onResponse({
-                html: feedbackBotQuestions[feedbackBotIndex]
-              })
-              setTimeout(() => {
-                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`)
-              }, 200);
-          }
-            return;
-          }
-
-          if( botId != undefined && allowRecommendationTestCode == false) {
-            if( fitmentAnalysisInProgress == true) {
-                fitmentAnalysisQnA[fitmentAnalysisIndex] = {
-                    "coach": fitmentAnalysisQuestions[fitmentAnalysisIndex],
-                    "cochee": latestMessage
-                }
-                fitmentAnalysisIndex += 1;
-                console.log("fitmentAnalysisIndex : ", fitmentAnalysisIndex, Object.keys(fitmentAnalysisQuestions).length)
-                if( fitmentAnalysisIndex <=  Object.keys(fitmentAnalysisQuestions).length ) {
-                    console.log("Answer : ",latestMessage)
-                    console.log("fitment question : ", fitmentAnalysisQuestions[fitmentAnalysisIndex])
-                    signals.onResponse({
-                        html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
-                    });
-                    return;
-                } else {
-                    fitmentAnalysisInProgress = false;
-                    fitmentAnalysisIndex = 0;
-                    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA)
-
-                    try {
-                        const response = await fetch(
-                          `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
-                          {
-                            method: "POST",
-                            headers: {
-                              Authorization: `Basic ${createBasicAuthToken2(
-                                key2,
-                                secret2
-                              )}`,
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                              participant_id: participantId2,
-                              bot_id: botId,
-                              is_signature_bot: true,
-                              user_id: userId2,
-                              fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
-                            }),
-                          }
-                        );
-          
-                        const data = await response.json();
-                        console.log("Fitness Analysis Score => ", data); 
-                        score = ' {"Fitment score":"3"}'
-                        signals.onResponse({
-                            html: `<b >Fitment score is : ${data.data['Fitment score']} </b>`,
-                         });
-                        setTimeout(() => {
-                          appendMessage2(faqHtmlData);
-                        }, 200);
-                         
-                        } catch (err) {
-                            signals.onResponse({
-                                html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
-                             });
-                        }
-                   
-                    
-                    return;
-                }
-            }
-
-            if( recommendationClicked == true) {
-              appendMessage2("Please wait while we are getting some recommendations for you...")
-
-                  
-    
-              try {
-                const response = await fetch(`${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}`, {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                  },
-                });
-          
-                const recommendation_tests_data = await response.json();
-
-                const fetched_test_code = Object.keys(recommendation_tests_data.matching_tests)[0]
-                const fetched_test = recommendation_tests_data.matching_tests[fetched_test_code]
-
-                const created_test_code = Object.keys(recommendation_tests_data.created_scenario)[0]
-                const created_test = recommendation_tests_data.created_scenario[created_test_code]
-                console.log("fetched_test : ", fetched_test, recommendation_tests_data.matching_tests, "created_test : ", created_test)
-
-                signals.onResponse({
-                    html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
-                    `,
-                    });
-                console.log("recommendation_tests_data : ", recommendation_tests_data.matching_tests);
-                recommendationClicked = false;
-              } catch (error) {
-                console.error(`Error in get recommendation tests: ${error}`);
-              }
-
-
-              return;
-            }
-
-            console.log("Yes OMG control is reaching here") 
-
-            console.log("isAskingInitialQuestions : ", isAskingInitialQuestions,
-            "fitmentAnalysisInProgress : ", fitmentAnalysisInProgress, 
-            "isSessionActiveStt : ", isSessionActiveStt, 
-            "isAttemptingRecommendation : ", isAttemptingRecommendation,
-            "optedBeginSession : ", optedBeginSession)
-            if (isAskingInitialQuestions == false && fitmentAnalysisInProgress == false && isSessionActiveStt == false && isAttemptingRecommendation == false && optedBeginSession == false) {
-              signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-              })
-              return;
-            }
-            
-
-            if (isAskingInitialQuestions == true) {
-                // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
-                // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
-
-                botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage;
-
-                botInitialQuestionsIndex ++;
-                if( botInitialQuestionsIndex > Object.keys(botInitialQuestions).length ) {
-                    // isAskingInitialQuestions = false;
-                    // botInitialQuestionsIndex = 0;
-                    console.log("all botInitialQuestions submitted : ", botInitialQuestionsQnA)
-                    // signals.onResponse({text: "Thank you for your response."})
-    
-                }
-                else {
-                    
-                    signals.onResponse({text: botInitialQuestions[botInitialQuestionsIndex]})
-                    return;
-                }
-            }
-            
-            if( isSessionActiveStt == false && isBotInitialized == false) {
-            try {
-              const response = await fetch(
-                `${baseURL2}/test-attempt-sessions/`,
-                {
-                  method: "POST",
                   headers: {
                     Authorization: `Basic ${createBasicAuthToken2(
                       key2,
@@ -3626,25 +3462,329 @@ loadExternalModule().then(() => {
                     )}`,
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({
-                    participant_id: participantId2,
-                    ordering: "-id",
-                    test_id: botId,
-                    is_signature_bot: true,
-                  }),
                 }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Dynamic mcq response : ", data);
+                });
+
+              const queryparam = new URLSearchParams({
+                method: "post",
+                qna: JSON.stringify(feedbackBotQnA),
+                bot_id: botId,
+                is_positive: IsPositiveFeedback ? "True" : "False",
+                qna_type: "feedback",
+                user_id: userId2,
+              });
+
+              const resp = await fetch(
+                `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(
+                      key2,
+                      secret2
+                    )}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Dynamic mcq response : ", data);
+                });
+
+              // resetAllVariablesStt()
+              appendMessage2(
+                "please wait while we are getting some recommendations for you..."
               );
 
-              const data = await response.json();
-              sessionId2 = data.uid;
-              isSessionActiveStt = true;
-              console.log("Session Created => ", sessionId2);
-            
+              try {
+                const params = new URLSearchParams({
+                  context: JSON.stringify(feedbackBotQnA),
+                  for: "feedback_bot",
+                });
+                const response = await fetch(
+                  `${baseURL2}/tests/get-recommendetion-tests/?${params}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(
+                        key2,
+                        secret2
+                      )}`,
+                    },
+                  }
+                );
 
-              if( isBotInitialized == false ) {
-              // initialize coaching conversation 
+                const recommendation_tests_data = await response.json();
+
+                const fetched_test_code = Object.keys(
+                  recommendation_tests_data.matching_tests
+                )[0];
+                const fetched_test =
+                  recommendation_tests_data.matching_tests[fetched_test_code];
+
+                const created_test_code = Object.keys(
+                  recommendation_tests_data.created_scenario
+                )[0];
+                const created_test =
+                  recommendation_tests_data.created_scenario[created_test_code];
+                console.log(
+                  "fetched_test : ",
+                  fetched_test,
+                  recommendation_tests_data.matching_tests,
+                  "created_test : ",
+                  created_test
+                );
+
+                signals.onResponse({
+                  html: `<b >Here are some recommendations for you : </b> <br>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    `,
+                });
+                console.log(
+                  "recommendation_tests_data : ",
+                  recommendation_tests_data.matching_tests
+                );
+                recommendationClicked = false;
+                isFeedbackConvEnd = true;
+              } catch (error) {
+                console.error(`Error in get recommendation tests: ${error}`);
+              }
+
+              return;
+            } else {
+              signals.onResponse({
+                html: feedbackBotQuestions[feedbackBotIndex],
+              });
+              setTimeout(() => {
+                appendMessage2(
+                  `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+                );
+              }, 200);
+            }
+            return;
+          }
+
+          if (botId != undefined && allowRecommendationTestCode == false) {
+            if (fitmentAnalysisInProgress == true) {
+              fitmentAnalysisQnA[fitmentAnalysisIndex] = {
+                coach: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+                cochee: latestMessage,
+              };
+              fitmentAnalysisIndex += 1;
+              console.log(
+                "fitmentAnalysisIndex : ",
+                fitmentAnalysisIndex,
+                Object.keys(fitmentAnalysisQuestions).length
+              );
+              if (
+                fitmentAnalysisIndex <=
+                Object.keys(fitmentAnalysisQuestions).length
+              ) {
+                console.log("Answer : ", latestMessage);
+                console.log(
+                  "fitment question : ",
+                  fitmentAnalysisQuestions[fitmentAnalysisIndex]
+                );
+                signals.onResponse({
+                  html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+                });
+                return;
+              } else {
+                fitmentAnalysisInProgress = false;
+                fitmentAnalysisIndex = 0;
+                console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
+
                 try {
-    
+                  const response = await fetch(
+                    `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+                    {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Basic ${createBasicAuthToken2(
+                          key2,
+                          secret2
+                        )}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        participant_id: participantId2,
+                        bot_id: botId,
+                        is_signature_bot: true,
+                        user_id: userId2,
+                        fitness_analysis_data:
+                          JSON.stringify(fitmentAnalysisQnA),
+                      }),
+                    }
+                  );
+
+                  const data = await response.json();
+                  console.log("Fitness Analysis Score => ", data);
+                  score = ' {"Fitment score":"3"}';
+                  signals.onResponse({
+                    html: `<b >Fitment score is : ${data.data["Fitment score"]} </b>`,
+                  });
+                  setTimeout(() => {
+                    appendMessage2(faqHtmlData);
+                  }, 200);
+                } catch (err) {
+                  signals.onResponse({
+                    html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
+                  });
+                }
+
+                return;
+              }
+            }
+
+            if (recommendationClicked == true) {
+              appendMessage2(
+                "Please wait while we are getting some recommendations for you..."
+              );
+
+              try {
+                const response = await fetch(
+                  `${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(
+                        key2,
+                        secret2
+                      )}`,
+                    },
+                  }
+                );
+
+                const recommendation_tests_data = await response.json();
+
+                const fetched_test_code = Object.keys(
+                  recommendation_tests_data.matching_tests
+                )[0];
+                const fetched_test =
+                  recommendation_tests_data.matching_tests[fetched_test_code];
+
+                const created_test_code = Object.keys(
+                  recommendation_tests_data.created_scenario
+                )[0];
+                const created_test =
+                  recommendation_tests_data.created_scenario[created_test_code];
+                console.log(
+                  "fetched_test : ",
+                  fetched_test,
+                  recommendation_tests_data.matching_tests,
+                  "created_test : ",
+                  created_test
+                );
+
+                signals.onResponse({
+                  html: `<b >Here are some recommendations for you : </b> <br>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
+                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    `,
+                });
+                console.log(
+                  "recommendation_tests_data : ",
+                  recommendation_tests_data.matching_tests
+                );
+                recommendationClicked = false;
+              } catch (error) {
+                console.error(`Error in get recommendation tests: ${error}`);
+              }
+
+              return;
+            }
+
+            console.log("Yes OMG control is reaching here");
+
+            console.log(
+              "isAskingInitialQuestions : ",
+              isAskingInitialQuestions,
+              "fitmentAnalysisInProgress : ",
+              fitmentAnalysisInProgress,
+              "isSessionActiveStt : ",
+              isSessionActiveStt,
+              "isAttemptingRecommendation : ",
+              isAttemptingRecommendation,
+              "optedBeginSession : ",
+              optedBeginSession
+            );
+            if (
+              isAskingInitialQuestions == false &&
+              fitmentAnalysisInProgress == false &&
+              isSessionActiveStt == false &&
+              isAttemptingRecommendation == false &&
+              optedBeginSession == false
+            ) {
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+              });
+              return;
+            }
+
+            if (isAskingInitialQuestions == true) {
+              // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
+              // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
+
+              botInitialQuestionsQnA[
+                botInitialQuestions[botInitialQuestionsIndex]
+              ] = latestMessage;
+
+              botInitialQuestionsIndex++;
+              if (
+                botInitialQuestionsIndex >
+                Object.keys(botInitialQuestions).length
+              ) {
+                // isAskingInitialQuestions = false;
+                // botInitialQuestionsIndex = 0;
+                console.log(
+                  "all botInitialQuestions submitted : ",
+                  botInitialQuestionsQnA
+                );
+                // signals.onResponse({text: "Thank you for your response."})
+              } else {
+                signals.onResponse({
+                  text: botInitialQuestions[botInitialQuestionsIndex],
+                });
+                return;
+              }
+            }
+
+            if (isSessionActiveStt == false && isBotInitialized == false) {
+              try {
+                const response = await fetch(
+                  `${baseURL2}/test-attempt-sessions/`,
+                  {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Basic ${createBasicAuthToken2(
+                        key2,
+                        secret2
+                      )}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      participant_id: participantId2,
+                      ordering: "-id",
+                      test_id: botId,
+                      is_signature_bot: true,
+                    }),
+                  }
+                );
+
+                const data = await response.json();
+                sessionId2 = data.uid;
+                isSessionActiveStt = true;
+                console.log("Session Created => ", sessionId2);
+
+                if (isBotInitialized == false) {
+                  // initialize coaching conversation
+                  try {
                     const response = await fetch(
                       `${baseURL2}/coaching-conversations/initialize/`,
                       {
@@ -3671,33 +3811,34 @@ loadExternalModule().then(() => {
                     console.log("conversation_id", conversation_id2);
                     isBotInitialized = true;
 
-                    if( isAskingInitialQuestions == true && botInitialQuestionsIndex != 0) {
-                        isAskingInitialQuestions = false;
-                        botInitialQuestionsIndex = 0;
-                        if (isBotAudioResponse){
-                          const audioDiv = await TTSContainerSTT(data.coach_message_text)
-                          signals.onResponse({html: audioDiv})
-
-                        } else {
-                        signals.onResponse({html: data.coach_message_text})
-                        }
-                        return;
+                    if (
+                      isAskingInitialQuestions == true &&
+                      botInitialQuestionsIndex != 0
+                    ) {
+                      isAskingInitialQuestions = false;
+                      botInitialQuestionsIndex = 0;
+                      if (isBotAudioResponse) {
+                        const audioDiv = await TTSContainerSTT(
+                          data.coach_message_text
+                        );
+                        signals.onResponse({ html: audioDiv });
+                      } else {
+                        signals.onResponse({ html: data.coach_message_text });
+                      }
+                      return;
                     }
-
-                 
-               
+                  } catch (err) {
+                    console.log("Error while creating session : ", err);
+                    isSessionActiveStt = false;
+                  }
+                }
               } catch (err) {
-                console.log("Error while creating session : ", err);
+                console.log(err);
                 isSessionActiveStt = false;
               }
             }
-            } catch (err) {
-              console.log(err);
-              isSessionActiveStt = false;
-            }
-        }
-            if( isBotInitialized == true) {
-            const response = await fetch(
+            if (isBotInitialized == true) {
+              const response = await fetch(
                 `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
                 {
                   method: "POST",
@@ -3722,37 +3863,37 @@ loadExternalModule().then(() => {
               );
 
               conversation_id2 = responseData["uid"];
-              let coachResponse =  responseData["coach_message_text"]
+              let coachResponse = responseData["coach_message_text"];
 
-              if(coachResponse.split(':').length > 1 ) {
-                coachResponse = coachResponse.split(':').slice(1).join(':').trim()
+              if (coachResponse.split(":").length > 1) {
+                coachResponse = coachResponse
+                  .split(":")
+                  .slice(1)
+                  .join(":")
+                  .trim();
               }
 
-              if (isBotAudioResponse){
-                const audioDiv = await TTSContainerSTT(coachResponse)
-                signals.onResponse({html: audioDiv})
-
+              if (isBotAudioResponse) {
+                const audioDiv = await TTSContainerSTT(coachResponse);
+                signals.onResponse({ html: audioDiv });
               } else {
-              signals.onResponse({
-                html: coachResponse,
-              });
+                signals.onResponse({
+                  html: coachResponse,
+                });
               }
               setTimeout(() => {
-                appendMessage2(`<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`)
+                appendMessage2(
+                  `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`
+                );
               }, 200);
             }
-
           }
-          
-          if( botId != undefined && allowRecommendationTestCode == false ) {
+
+          if (botId != undefined && allowRecommendationTestCode == false) {
             // wait infinitely for bot to initialize
-            console.log("returning from here (bot logic)")
+            console.log("returning from here (bot logic)");
             return;
-
-
           }
-
-
 
           if (
             isProceedStt === "false" &&
@@ -3764,7 +3905,10 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if ((testType2 === "mcq" || testType2 === 'dynamic_mcq') && latestMessage.toUpperCase() != "STOP") {
+          if (
+            (testType2 === "mcq" || testType2 === "dynamic_mcq") &&
+            latestMessage.toUpperCase() != "STOP"
+          ) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -3821,7 +3965,7 @@ loadExternalModule().then(() => {
 
           if (body.messages[0].text.toUpperCase() === "STOP") {
             await cancelTestStt(participantId2); // cancelling session
-            if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+            if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
               const shadowRoot =
                 document.getElementById("chat-element2").shadowRoot;
               const button = shadowRoot.getElementById(
@@ -3850,7 +3994,7 @@ loadExternalModule().then(() => {
             //   html: "<b>Your session is terminated. You can restart again!</b>",
             // });
             resetAllVariablesStt().then(() => {
-              console.log("Your session is terminated. You can restart again!")
+              console.log("Your session is terminated. You can restart again!");
 
               signals.onResponse({
                 html: "<b>Your session is terminated. You can restart again!</b>",
@@ -3887,38 +4031,47 @@ loadExternalModule().then(() => {
             });
             //end
 
-            console.log("isAttemptingRecommendation : ", isAttemptingRecommendation, "isValidMessageStt(latestMessage) : ", isValidMessageStt(latestMessage), "isProceedstt", isProceedStt)
-            if ( isAttemptingRecommendation == true && isProceedStt == "true") {
-              if ( isValidMessageStt(latestMessage) == false){
+            console.log(
+              "isAttemptingRecommendation : ",
+              isAttemptingRecommendation,
+              "isValidMessageStt(latestMessage) : ",
+              isValidMessageStt(latestMessage),
+              "isProceedstt",
+              isProceedStt
+            );
+            if (isAttemptingRecommendation == true && isProceedStt == "true") {
+              if (isValidMessageStt(latestMessage) == false) {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
                 });
                 return;
               }
 
-              if ( isDuplicateResponse(latestMessage)) {
+              if (isDuplicateResponse(latestMessage)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt().then(() => {
                     signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                    });
                   });
-                })
-                return;
+                  return;
                 }
 
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
                 });
                 return;
-              }
-              else {
+              } else {
                 userResponses2.push(latestMessage);
               }
             }
 
-            if (!buttonTextArray.includes(latestMessage) && allowRecommendationTestCode == false) {
-              if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+            if (
+              !buttonTextArray.includes(latestMessage) &&
+              allowRecommendationTestCode == false
+            ) {
+              if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Not allowed! choose option to continue. </b></p>",
                 });
@@ -3950,23 +4103,22 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
-              
-              if ( isDuplicateResponse(latestMessage)) {
+
+              if (isDuplicateResponse(latestMessage)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt();
                   signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
-                });
-                return;
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                  });
+                  return;
                 }
 
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
                 });
                 return;
-              }
-              else {
+              } else {
                 userResponses2.push(latestMessage);
               }
             }
@@ -3984,7 +4136,12 @@ loadExternalModule().then(() => {
             "QBEWUOM",
           ];
 
-          console.log("questionIndex2", questionIndex2, "userAcessAvailability2", userAcessAvailability2);
+          console.log(
+            "questionIndex2",
+            questionIndex2,
+            "userAcessAvailability2",
+            userAcessAvailability2
+          );
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (optedNo2 === false) {
               testCode2 = body.messages[0].text;
@@ -4031,7 +4188,7 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
-                console.log('test-data = >', questionData2)
+                console.log("test-data = >", questionData2);
                 questionLength2 = questionData2.results[0].questions.length;
                 testId2 = questionData2.results[0].uid;
                 interactionMode2 = questionData2.results[0].interaction_mode;
@@ -4051,10 +4208,9 @@ loadExternalModule().then(() => {
                 isTestSignedInStt = questionData2.results[0].is_logged_in;
                 isImmersiveStt = questionData2.results[0].is_immersive;
                 mediaPropsStt = questionData2.results[0].media_props;
-                console.log(mediaPropsStt,"props")
-                isTranscriptOnlyStt = questionData2.results[0].is_transcript_only;
-                
-
+                console.log(mediaPropsStt, "props");
+                isTranscriptOnlyStt =
+                  questionData2.results[0].is_transcript_only;
 
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
@@ -4285,9 +4441,10 @@ loadExternalModule().then(() => {
                         questionData2.results[0].questions[questionIndex2]
                           .question;
 
-                      questionMediaLinkStt =questionData2.results[0].questions[questionIndex2].media_link;
+                      questionMediaLinkStt =
+                        questionData2.results[0].questions[questionIndex2]
+                          .media_link;
 
-                      
                       questionId2 =
                         questionData2.results[0].questions[questionIndex2].uid;
                       const mcqOptionsStt =
@@ -4306,15 +4463,21 @@ loadExternalModule().then(() => {
                           if (questionMediaLinkStt.includes("youtube.com")) {
                             const videoId = questionMediaLinkStt.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
-                            const videoId = questionMediaLinkStt.split("/").pop();
+                          } else if (
+                            questionMediaLinkStt.includes("vimeo.com")
+                          ) {
+                            const videoId = questionMediaLinkStt
+                              .split("/")
+                              .pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                          } else if (
+                            questionMediaLinkStt.includes("twitter.com")
+                          ) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
-                  
-                          if (embeddingUrl){
-                          questionText2 = `▪ Media <br>  <iframe
+
+                          if (embeddingUrl) {
+                            questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -4323,105 +4486,127 @@ loadExternalModule().then(() => {
                                         >
                           `;
                           }
-                          const urlList = questionMediaLinkStt.split(',')
-                          console.log("list",urlList)
-                          if (urlList.length > 1){
-                            urlList.forEach(element => {
-                              element = element.trim()
-                              if (element.includes('docs.google.com')){
-                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                                console.log(url)
-                                questionText2 = questionText2 + '\n' +(`<iframe src=${url}
+                          const urlList = questionMediaLinkStt.split(",");
+                          console.log("list", urlList);
+                          if (urlList.length > 1) {
+                            urlList.forEach((element) => {
+                              element = element.trim();
+                              if (element.includes("docs.google.com")) {
+                                let url =
+                                  element.split("edit?")[0] +
+                                  "embed?start=true&loop=true&delayms=3000";
+                                console.log(url);
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<iframe src=${url}
                                                 frameborder="0" 
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 allowfullscreen="true" 
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
-                                                ></iframe>`)
-                              }
-                              else{
-                                console.log(element)
-                                questionText2 = questionText2 + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                                ></iframe>`;
+                              } else {
+                                console.log(element);
+                                questionText2 =
+                                  questionText2 +
+                                  "\n" +
+                                  `<div ><audio style="${
+                                    window.innerWidth < 600
+                                      ? "width: 200px; max-width: 200px !important;"
+                                      : " min-width: 50vw !important;"
+                                  }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`)
+                                </audio></div>`;
                               }
                             });
-                          }else {
-                            if (questionMediaLinkStt.includes('docs.google.com')){
-                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                              console.log(url)
-                              questionText2 = questionText2.replaceAll(":","")
-                              if(isImmersiveStt){
-                                console.log(questionText2)
-                                const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
+                          } else {
+                            if (
+                              questionMediaLinkStt.includes("docs.google.com")
+                            ) {
+                              let url =
+                                questionMediaLinkStt.split("edit?")[0] +
+                                "embed?start=true&loop=true&delayms=3000";
+                              console.log(url);
+                              questionText2 = questionText2.replaceAll(":", "");
+                              if (isImmersiveStt) {
+                                console.log(questionText2);
+                                const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
                                 const response = await fetch(urltts, {
                                   method: "GET",
                                   headers: {
-                                    Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                                    Authorization: `Basic ${createBasicAuthToken2(
+                                      key2,
+                                      secret2
+                                    )}`,
                                   },
                                 });
-                          
+
                                 const blob = await response.blob();
-                                console.log('respnse', blob);
-                          
+                                console.log("respnse", blob);
+
                                 const objectUrl = URL.createObjectURL(blob);
-                                
-                                console.log(objectUrl,'url')
-                                questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+                                console.log(objectUrl, "url");
+                                questionText2 = `<div ><audio style="${
+                                  window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${objectUrl} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`
-                                console.log(questionText2)
-
+                                </audio></div>`;
+                                console.log(questionText2);
                               }
-                              console.log("last",questionText2)
-                              
+                              console.log("last", questionText2);
 
-                              questionText2 = questionText2 +(`<iframe src=${url}
+                              questionText2 =
+                                questionText2 +
+                                `<iframe src=${url}
                                               frameborder="0" 
                                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                               allowfullscreen="true" 
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
-                                              ></iframe>`)
+                                              ></iframe>`;
                             }
                           }
-                          }
                         }
+                      }
 
-                        
-                        if(isImmersiveStt && !questionMediaLinkStt){
-                          questionText2 = questionText2.replaceAll(":","")
-                          console.log('first', questionText2)
+                      if (isImmersiveStt && !questionMediaLinkStt) {
+                        questionText2 = questionText2.replaceAll(":", "");
+                        console.log("first", questionText2);
 
-                          
-                          const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`
-                          const response = await fetch(urltts, {
-                            method: "GET",
-                            headers: {
-                              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                            },
-                          });
-                    
-                          const blob = await response.blob();
-                          console.log('respnse', blob);
-                    
-                          const objectUrl = URL.createObjectURL(blob);
-                          
-                          console.log(objectUrl,'url')
-                          questionText2 = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
+                        const response = await fetch(urltts, {
+                          method: "GET",
+                          headers: {
+                            Authorization: `Basic ${createBasicAuthToken2(
+                              key2,
+                              secret2
+                            )}`,
+                          },
+                        });
+
+                        const blob = await response.blob();
+                        console.log("respnse", blob);
+
+                        const objectUrl = URL.createObjectURL(blob);
+
+                        console.log(objectUrl, "url");
+                        questionText2 = `<div ><audio style="${
+                          window.innerWidth < 600
+                            ? "width: 200px; max-width: 200px !important;"
+                            : " min-width: 50vw !important;"
+                        }" controls autoplay>
                           <source src=${objectUrl} type="audio/mpeg" />
                           Your browser does not support the audio element.
-                          </audio></div>`
-                          console.log(questionText2)
-
-                          
-                        }
-                        console.log("last",questionText2)
-                      
-                  
-                      
+                          </audio></div>`;
+                        console.log(questionText2);
+                      }
+                      console.log("last", questionText2);
 
                       formRadio = `
                       <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
@@ -4444,11 +4629,10 @@ loadExternalModule().then(() => {
                         questionText2 =
                           questionData2.results[0].questions[questionIndex2]
                             .question;
-                        questionMediaLinkStt = questionData2.results[0].questions[questionIndex2].media_link;
+                        questionMediaLinkStt =
+                          questionData2.results[0].questions[questionIndex2]
+                            .media_link;
                       }
-                      
-
-                      
                     }
                   }
                   console.log(questionText2);
@@ -4462,7 +4646,7 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
-                    console.log(senarioMediaDescription2,'mediadesc')
+                    console.log(senarioMediaDescription2, "mediadesc");
                     if (senarioMediaDescription2) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
@@ -4547,7 +4731,11 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage2(
-                                  `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                  `<div ><audio style="${
+                                    window.innerWidth < 600
+                                      ? "width: 200px; max-width: 200px !important;"
+                                      : " min-width: 50vw !important;"
+                                  }" controls autoplay>
                                   <source src=${element} type="audio/mpeg" />
                                   Your browser does not support the audio element.
                                   </audio></div>`
@@ -4577,8 +4765,12 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`);
-                            } else if (senarioMediaDescription2.includes('guidejar.com')){
-                              const guidejarId = senarioMediaDescription2.split('/').pop()
+                            } else if (
+                              senarioMediaDescription2.includes("guidejar.com")
+                            ) {
+                              const guidejarId = senarioMediaDescription2
+                                .split("/")
+                                .pop();
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                               ▪ Description : ${senarioDescription2} <br><br>
@@ -4590,9 +4782,8 @@ loadExternalModule().then(() => {
                               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
-                              `)
-                            }
-                            else {
+                              `);
+                            } else {
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                                     ▪ Description : ${senarioDescription2} <br><br>
@@ -4604,7 +4795,6 @@ loadExternalModule().then(() => {
                           }
                         }
 
-                        
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
                         //      `▪ Title : ${senarioTitle2} <br><br>
@@ -4626,74 +4816,89 @@ loadExternalModule().then(() => {
                              ▪ Instructions : Response should be at least 15 words.`
                         );
                       }
-                      // proceed buttion will show 
+                      // proceed buttion will show
                       signals.onResponse({
                         html: questionText2,
                       });
-                    } else if (mediaPropsStt && Object.keys(mediaPropsStt).includes('test_image')){
-                      console.log("Media props here", mediaPropsStt)
+                    } else if (
+                      mediaPropsStt &&
+                      Object.keys(mediaPropsStt).includes("test_image")
+                    ) {
+                      console.log("Media props here", mediaPropsStt);
                       console.log("SHOW MEDIA PROPS here", mediaPropsStt);
                       // const [imageUrlStt, coords] = Object.entries(
                       //   mediaPropsStt.test_image
                       // )[0];
                       const url = Object.keys(mediaPropsStt["test_image"])[0];
                       let narration;
-                      let coords = []
-                      const coordAndTitleNarrationList = mediaPropsStt["test_image"][url];
+                      let coords = [];
+                      const coordAndTitleNarrationList =
+                        mediaPropsStt["test_image"][url];
 
-                      coordAndTitleNarrationList.forEach(element =>{
-                        if (typeof element === 'string'){
-                          narration = element
-                        } else{
-                          coords.push(element)
+                      coordAndTitleNarrationList.forEach((element) => {
+                        if (typeof element === "string") {
+                          narration = element;
+                        } else {
+                          coords.push(element);
                         }
-                      })
+                      });
 
                       const testImage = {
                         image: url,
                         coords: coords,
-                        narration: narration
-                      }
+                        narration: narration,
+                      };
 
-                     console.log(testImage)
-                     const imageUrlStt = testImage.image
-                     const coordsStt = [
-                          { coord: "109.70.257.89|55.34.131.43", title: "Hand Wheel" },
-                          { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
-                          { coord: "128.208.246.242 | 63.97.125.125", title: "Gear Unit" }
-                        ]
-                     const narrationStt = testImage.narration
+                      console.log(testImage);
+                      const imageUrlStt = testImage.image;
+                      const coordsStt = [
+                        {
+                          coord: "109.70.257.89|55.34.131.43",
+                          title: "Hand Wheel",
+                        },
+                        { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+                        {
+                          coord: "128.208.246.242 | 63.97.125.125",
+                          title: "Gear Unit",
+                        },
+                      ];
+                      const narrationStt = testImage.narration;
 
-                      const ttsNarration = await TTSContainerSTT(narrationStt)
-                      const imageIdStt = "mediaImageStt"
-                      const imageMapNameStt = "image-mapStt"
-                      const imageTooltipIdStt = 'tooltip-stt'
+                      const ttsNarration = await TTSContainerSTT(narrationStt);
+                      const imageIdStt = "mediaImageStt";
+                      const imageMapNameStt = "image-mapStt";
+                      const imageTooltipIdStt = "tooltip-stt";
 
                       appendMessage2(
                         `▪ Title : ${senarioTitle2} <br><br>
                              ▪ Description : ${senarioDescription2} <br><br>
                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪ <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                             ▪ ${ttsNarration}` 
+                             ▪ <img src=${imageUrlStt} ${
+                          window.innerWidth < 768
+                            ? "width='200'"
+                            : "width='400'"
+                        } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ ${ttsNarration}`
                       );
                       signals.onResponse({
                         html: questionText2,
                       });
 
-                      // pass - coords, imagemap-name, 
-                      setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
-                      console.log("IMAGE MAPPED WITH COORDS")
-                      
+                      // pass - coords, imagemap-name,
+                      setHoverPointsStt(
+                        coordsStt,
+                        imageIdStt,
+                        imageMapNameStt,
+                        imageTooltipIdStt
+                      );
+                      console.log("IMAGE MAPPED WITH COORDS");
                     } else {
-                      // proceed buttion will show 
+                      // proceed buttion will show
                       signals.onResponse({
                         html: questionText2,
                         text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
                       });
                     }
-                    
-
-                  
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
@@ -4701,18 +4906,19 @@ loadExternalModule().then(() => {
                       testType2 != "coaching"
                     ) {
                       let responderName;
-                      let strList = questionText2.replaceAll("*","").split(":")
-                      if (strList.length > 1){
-                        questionText2 = strList[1]
-                        responderName = `<b>${strList[0]}:</b><br>`
-                        
+                      let strList = questionText2
+                        .replaceAll("*", "")
+                        .split(":");
+                      if (strList.length > 1) {
+                        questionText2 = strList[1];
+                        responderName = `<b>${strList[0]}:</b><br>`;
                       }
-                      if(isImmersiveStt){
-                        questionText2 = await TTSContainerSTT(questionText2)
+                      if (isImmersiveStt) {
+                        questionText2 = await TTSContainerSTT(questionText2);
                       }
 
-                      if (responderName){
-                        questionText2 = responderName + questionText2
+                      if (responderName) {
+                        questionText2 = responderName + questionText2;
                       }
                       if (questionMediaLinkStt) {
                         console.log(questionText2);
@@ -4721,15 +4927,21 @@ loadExternalModule().then(() => {
                           if (questionMediaLinkStt.includes("youtube.com")) {
                             const videoId = questionMediaLinkStt.split("v=")[1];
                             embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (questionMediaLinkStt.includes("vimeo.com")) {
-                            const videoId = questionMediaLinkStt.split("/").pop();
+                          } else if (
+                            questionMediaLinkStt.includes("vimeo.com")
+                          ) {
+                            const videoId = questionMediaLinkStt
+                              .split("/")
+                              .pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionMediaLinkStt.includes("twitter.com")) {
+                          } else if (
+                            questionMediaLinkStt.includes("twitter.com")
+                          ) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
                           }
 
-                          if (embeddingUrl){
-                          questionText2 = `▪ Media <br>  <iframe
+                          if (embeddingUrl) {
+                            questionText2 = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -4738,117 +4950,142 @@ loadExternalModule().then(() => {
                                         >
                           `;
                           }
-                          const urlList = questionMediaLinkStt.split(',')
-                          console.log("list",urlList)
-                          if (urlList.length > 1){
-                            urlList.forEach(element => {
-                              element = element.trim()
-                              if (element.includes('docs.google.com')){
-                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                                console.log(url)
+                          const urlList = questionMediaLinkStt.split(",");
+                          console.log("list", urlList);
+                          if (urlList.length > 1) {
+                            urlList.forEach((element) => {
+                              element = element.trim();
+                              if (element.includes("docs.google.com")) {
+                                let url =
+                                  element.split("edit?")[0] +
+                                  "embed?start=true&loop=true&delayms=3000";
+                                console.log(url);
                                 appendMessage2(`<iframe src=${url}
                                                 frameborder="0" 
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 allowfullscreen="true" 
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
-                                                ></iframe>`)
-                              }
-                              else{
-                                console.log(element)
-                                appendMessage2(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                                ></iframe>`);
+                              } else {
+                                console.log(element);
+                                appendMessage2(`<div ><audio style="${
+                                  window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`)
+                                </audio></div>`);
                               }
                             });
-                          }else {
-                            if (questionMediaLinkStt.includes('docs.google.com')){
-                              let url = questionMediaLinkStt.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                              console.log(url)
+                          } else {
+                            if (
+                              questionMediaLinkStt.includes("docs.google.com")
+                            ) {
+                              let url =
+                                questionMediaLinkStt.split("edit?")[0] +
+                                "embed?start=true&loop=true&delayms=3000";
+                              console.log(url);
                               appendMessage2(`<iframe src=${url}
                                               frameborder="0" 
                                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                               allowfullscreen="true" 
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
-                                              ></iframe>`)
-                            } else if (questionMediaLinkStt.includes('guidejar.com')){
-                              const guidejarId = questionMediaLinkStt.split('/').pop()
+                                              ></iframe>`);
+                            } else if (
+                              questionMediaLinkStt.includes("guidejar.com")
+                            ) {
+                              const guidejarId = questionMediaLinkStt
+                                .split("/")
+                                .pop();
                               appendMessage2(`
                               <div style="width:640px">
                               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
-                              `)
+                              `);
                             }
-
-                          }
                           }
                         }
-                      if (questionText2){
+                      }
+                      if (questionText2) {
+                        console.log(`que_image ${questionIndex2 + 1}`);
+                        if (
+                          mediaPropsStt &&
+                          Object.keys(mediaPropsStt).includes(
+                            `que_image ${questionIndex2 + 1}`
+                          )
+                        ) {
+                          const questionpropName = `que_image ${
+                            questionIndex2 + 1
+                          }`;
 
-                        
-                        console.log(`que_image ${questionIndex2 + 1}`)
-                        if(mediaPropsStt && Object.keys(mediaPropsStt).includes(`que_image ${questionIndex2 + 1}`)){
-                          const questionpropName = `que_image ${questionIndex2 + 1}`
-
-                          const url = Object.keys(mediaPropsStt[questionpropName])[0];
+                          const url = Object.keys(
+                            mediaPropsStt[questionpropName]
+                          )[0];
                           let narration;
-                          let coords = []
-                          const coordAndTitleNarrationList = mediaPropsStt[questionpropName][url];
+                          let coords = [];
+                          const coordAndTitleNarrationList =
+                            mediaPropsStt[questionpropName][url];
 
-                          coordAndTitleNarrationList.forEach(element =>{
-                            if (typeof element === 'string'){
-                              narration = element
-                            } else{
-                              coords.push(element)
+                          coordAndTitleNarrationList.forEach((element) => {
+                            if (typeof element === "string") {
+                              narration = element;
+                            } else {
+                              coords.push(element);
                             }
-                          })
+                          });
 
                           const testImage = {
                             image: url,
                             coords: coords,
-                            narration: narration
-                          }
-                          console.log(testImage)
-                          const imageUrlStt = testImage.image
-                          const coordsStt = testImage.coords
-                          const narrationStt = testImage.narration
+                            narration: narration,
+                          };
+                          console.log(testImage);
+                          const imageUrlStt = testImage.image;
+                          const coordsStt = testImage.coords;
+                          const narrationStt = testImage.narration;
 
-                          const ttsNarration = await TTSContainerSTT(narrationStt)
-                          const imageIdStt = `mediaImageStt${questionIndex2}`
-                          const imageMapNameStt = `image-mapStt${questionIndex2}`
-                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`
+                          const ttsNarration = await TTSContainerSTT(
+                            narrationStt
+                          );
+                          const imageIdStt = `mediaImageStt${questionIndex2}`;
+                          const imageMapNameStt = `image-mapStt${questionIndex2}`;
+                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`;
 
-
-                             
-                          questionText2 = (`▪ ${ttsNarration}<br><br>
-                                           <br> <img src=${imageUrlStt} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          questionText2 = `▪ ${ttsNarration}<br><br>
+                                           <br> <img src=${imageUrlStt} ${
+                            window.innerWidth < 768
+                              ? "width='200'"
+                              : "width='400'"
+                          } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                                             ▪ Question : <br> ${questionText2}
-                                          `)
+                                          `;
 
                           signals.onResponse({
                             html: questionText2,
                           });
-                          setHoverPointsStt(coordsStt, imageIdStt, imageMapNameStt,imageTooltipIdStt)
-                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {questionIndex2})
+                          setHoverPointsStt(
+                            coordsStt,
+                            imageIdStt,
+                            imageMapNameStt,
+                            imageTooltipIdStt
+                          );
+                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {
+                            questionIndex2,
+                          });
 
-
-                          // questionText2 = questionText2 + imageDiv 
-                        }else{
-                        signals.onResponse({
-                          html: questionText2,
-                        });
-
+                          // questionText2 = questionText2 + imageDiv
+                        } else {
+                          signals.onResponse({
+                            html: questionText2,
+                          });
                         }
-                        
                       }
-
-                      
                     }
                   }
-                
                 }
 
                 if (
@@ -4916,17 +5153,17 @@ loadExternalModule().then(() => {
                     console.log("coaching question Text: ", questionText2);
 
                     let responderName;
-                    const strList = questionText2.split(":",2)
-                    if (strList.length > 1){
-                      responderName = `<b>${strList[0]}:</b><br>`
-                      questionText2 = strList[1]
+                    const strList = questionText2.split(":", 2);
+                    if (strList.length > 1) {
+                      responderName = `<b>${strList[0]}:</b><br>`;
+                      questionText2 = strList[1];
                     }
-                    if(isImmersiveStt){
-                      questionText2 = await TTSContainerStt(questionText2)
+                    if (isImmersiveStt) {
+                      questionText2 = await TTSContainerStt(questionText2);
                     }
 
-                    if (responderName){
-                      questionText2 = responderName + questionText2
+                    if (responderName) {
+                      questionText2 = responderName + questionText2;
                     }
                     const dataToShow2 = getCoachingQuestionData2(questionText2);
                     signals.onResponse({
@@ -5012,15 +5249,16 @@ loadExternalModule().then(() => {
                       const responder_name2 = qRespnse2.responder_display_name;
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
-                      } 
-
-                      if (isImmersiveStt){
-                        questionText2 = questionText2.replace(`${responder_name2}`,"")
-                        questionText2 = questionText2.replace(`:`,"")
-                        questionText2 = responder_name2 + " : " + questionText2;
-
                       }
-                      
+
+                      if (isImmersiveStt) {
+                        questionText2 = questionText2.replace(
+                          `${responder_name2}`,
+                          ""
+                        );
+                        questionText2 = questionText2.replace(`:`, "");
+                        questionText2 = responder_name2 + " : " + questionText2;
+                      }
 
                       resQuestionNumber2 = qRespnse2.question.question_number;
                     }
@@ -5032,20 +5270,20 @@ loadExternalModule().then(() => {
                     testType2 === "orchestrated_conversation" ||
                     testType2 === "dynamic_discussion_thread"
                   ) {
-                    console.log('ismmersive',isImmersiveStt,questionText2)
+                    console.log("ismmersive", isImmersiveStt, questionText2);
 
-                    const stringList = questionText2.split(':', 2)
-                    console.log(stringList)
+                    const stringList = questionText2.split(":", 2);
+                    console.log(stringList);
                     let responderName;
-                    if(stringList.length > 1){
-                      questionText2 = stringList[1]
-                      responderName = `<b>${stringList[0]}:</b><br>`
+                    if (stringList.length > 1) {
+                      questionText2 = stringList[1];
+                      responderName = `<b>${stringList[0]}:</b><br>`;
                     }
-                    if (isImmersiveStt && questionIndex2 != 0){
+                    if (isImmersiveStt && questionIndex2 != 0) {
                       questionText2 = await TTSContainerSTT(questionText2);
                     }
-                    if(responderName){
-                      questionText2 = responderName + questionText2
+                    if (responderName) {
+                      questionText2 = responderName + questionText2;
                     }
                     signals.onResponse({
                       html: questionText2,
@@ -5064,7 +5302,7 @@ loadExternalModule().then(() => {
                   const isCheckStt = await SessionCheckStt(sessionId2);
                   if (!isCheckStt) {
                     console.log("failed to populate session data", isCheckStt);
-                    if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+                    if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
                       const shadowRoot =
                         document.getElementById("chat-element2").shadowRoot;
                       const button = shadowRoot.getElementById(
@@ -5097,8 +5335,8 @@ loadExternalModule().then(() => {
                   }
 
                   if (!window.user) {
-                    isEmailFormstt = true
-                    formFieldsstt = ['name', 'email']
+                    isEmailFormstt = true;
+                    formFieldsstt = ["name", "email"];
                     signals.onResponse({
                       html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
                     });
@@ -5143,7 +5381,7 @@ loadExternalModule().then(() => {
                       interaction_id: testId2,
                     };
                   }
-                  console.log(senarioCase2, getReportBody2)
+                  console.log(senarioCase2, getReportBody2);
 
                   const reportResponse = await fetch(
                     `${baseURL2}/frontend-auth/get-report-url/`,
@@ -5194,10 +5432,9 @@ loadExternalModule().then(() => {
                   }
                 }
               }
-              
             } catch (err) {
               console.log(err);
-              if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+              if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
                 const shadowRoot =
                   document.getElementById("chat-element2").shadowRoot;
                 const button = shadowRoot.getElementById(
@@ -5234,7 +5471,7 @@ loadExternalModule().then(() => {
       } catch (e) {
         console.log(e);
         await cancelTestStt(participantId2); // cancelling session
-        if (testType2 === "mcq" || testType2 === 'dynamic_mcq') {
+        if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
           const shadowRoot =
             document.getElementById("chat-element2").shadowRoot;
           const button = shadowRoot.getElementById(
@@ -5272,7 +5509,7 @@ const openChatContainer2 = () => {
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
 
   user2 = window.user;
-  console.log(user2)
+  console.log(user2);
 
   const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
 
@@ -5342,18 +5579,18 @@ const openChatContainer2 = () => {
     chatContainer2.style.scale = 1;
     chatContainer2.style["transform-origin"] = "100% 50%";
 
-   //to close other bot
-   botId = document.querySelector('.deep-chat-poc2').dataset.botId;
-  // botId = 'stress-management-0032'
+    //to close other bot
+    botId = document.querySelector(".deep-chat-poc2").dataset.botId;
+    // botId = 'stress-management-0032'
 
-   if(!botId){
-     const chatContainer = document.getElementById("chat-container");
-     chatContainer.style.scale = 0;
-     chatContainer.style["transform-origin"] = "100% 100%";
-     const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-     chatIcon.src =
-       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
-   }
+    if (!botId) {
+      const chatContainer = document.getElementById("chat-container");
+      chatContainer.style.scale = 0;
+      chatContainer.style["transform-origin"] = "100% 100%";
+      const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+      chatIcon.src =
+        "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+    }
   }
 
   if (
