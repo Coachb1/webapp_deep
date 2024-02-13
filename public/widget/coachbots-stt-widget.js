@@ -811,6 +811,31 @@ const handleFitmentAnalysis = async () => {
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
+function sendMessage(item){
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = item;
+    setTimeout(() => {
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+    }, 100);
+  }, 100);
+}
+
+function handleRadioTypeInitialQuestion(
+  questionOptions,
+  question_text,
+) {
+    let optioncont = "";
+    questionOptions.forEach((item, index) => {
+      optioncont += `<button  onclick="sendMessage('${item}')" style="display: inline-block; margin-right: 5px;">${item}</button>   `;
+    });
+    formRadio = `
+            <div id='question-initial' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="special_radio"><b>Q. </b>${question_text}</div>
+            <div id='intial-options' class="deep-chat-temporary-message">${optioncont} </div>
+           `;
+
+    return formRadio;
+}
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
   if (question == "fitness_analysis") {
@@ -873,7 +898,18 @@ async function handleFaqButtonClick(question) {
       }
 
       isAskingInitialQuestions = true;
-      appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+
+      const question = botInitialQuestions[botInitialQuestionsIndex];
+      if (typeof question === "string") {
+        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+      } else {
+        const radio_cont = handleRadioTypeInitialQuestion(
+          question["options"],
+          question["question"]
+          
+        );
+        appendMessage2(radio_cont);
+      }
       return;
     }
     if (question == "recommendations") {
@@ -3731,6 +3767,26 @@ loadExternalModule().then(() => {
               // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
               // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
 
+              
+              if (typeof botInitialQuestions[botInitialQuestionsIndex] != 'string'){
+                const options = botInitialQuestions[botInitialQuestionsIndex]['options']
+                if (!options.includes(latestMessage)){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+                  })
+                  return
+                }
+                const shadowRoot = 
+                document.getElementById("chat-element2").shadowRoot;
+                const initialOptionDiv = shadowRoot.getElementById('intial-options');
+                console.log(initialOptionDiv)
+                const buttons = initialOptionDiv.querySelectorAll('button');
+                buttons.forEach(button => {
+                  button.disabled = true;
+                });
+
+              }
+
               botInitialQuestionsQnA[
                 botInitialQuestions[botInitialQuestionsIndex]
               ] = latestMessage;
@@ -3748,9 +3804,22 @@ loadExternalModule().then(() => {
                 );
                 // signals.onResponse({text: "Thank you for your response."})
               } else {
-                signals.onResponse({
-                  text: botInitialQuestions[botInitialQuestionsIndex],
-                });
+                const question = botInitialQuestions[botInitialQuestionsIndex];
+                if (typeof question === "string") {
+                  // appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+                  signals.onResponse({
+                    text: question,
+                  });
+                } else {
+                  const radioCont = handleRadioTypeInitialQuestion(
+                    question["options"],
+                    question["question"],
+                  );
+                  signals.onResponse({
+                    html: radioCont,
+                  });
+                }
+
                 return;
               }
             }
