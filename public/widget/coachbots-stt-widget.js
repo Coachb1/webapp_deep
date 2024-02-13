@@ -117,6 +117,7 @@ let isAttemptingRecommendation = false;
 let optedBeginSession = false;
 let botWelcomeMessage = "";
 let previousBotConversationId = "";
+let isBotRecommendationFetched = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -3860,9 +3861,27 @@ loadExternalModule().then(() => {
             }
 
             if (recommendationClicked == true) {
+              // show warning if user message is less than 5 words
+              if (latestMessage.split(" ").length < 5) {
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Please provide atleast more than 5 words.</p>",
+                });
+                return;
+              }
               appendMessage2(
                 "Please wait while we are getting some recommendations for you..."
               );
+
+              // if isBotRecommendationFetched is not true after 1 minute, then show error message
+              setTimeout(() => {
+                if (!isBotRecommendationFetched) {
+                  recommendationClicked = false;
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'>Failed to fetch scenarios. we have got your request, scenario will be created and will be available in 'Requested Scenario' in 'My Library'. You can retry after some time</p>",
+                  });
+                  return;
+                }
+              }, 90000);
 
               try {
                 const response = await fetch(
@@ -3879,6 +3898,11 @@ loadExternalModule().then(() => {
                 );
 
                 const recommendation_tests_data = await response.json();
+
+                console.log("recommendation_tests_data : ", recommendation_tests_data);
+                if( recommendation_tests_data.success === true ) {
+                  isBotRecommendationFetched = true;
+                }
 
                 const fetched_test_code = Object.keys(
                   recommendation_tests_data.matching_tests
