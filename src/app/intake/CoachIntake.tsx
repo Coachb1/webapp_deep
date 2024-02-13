@@ -523,7 +523,7 @@ const CoachIntake = ({ user }: any) => {
                       referenceDocs.forEach(({ file ,text}) => {
                         if (file.name.includes('.pdf')) {
                           if (text){
-                            filesPatchFormData.append("pdf_data",text);
+                            filesPatchFormData.append("pdf_data",`file_name:${file.name} text_file:${text}`);
                             console.log(text)
 
                           }else{
@@ -531,7 +531,7 @@ const CoachIntake = ({ user }: any) => {
                           }
                         } else if (file.name.includes('.docx')) {
                           if (text) {
-                            filesPatchFormData.append(`doc_data`, text);
+                            filesPatchFormData.append(`doc_data`, `file_name:${file.name} text_file:${text}`);
                             console.log(text)
                           } else {
                             filesPatchFormData.append(`attached_docs`, file, file.name.trim());
@@ -769,7 +769,7 @@ const CoachIntake = ({ user }: any) => {
                       referenceDocs.forEach(({ file, text }) => {
                         if (file.name.includes('.pdf')) {
                           if (text){
-                            filesPatchFormData.append("pdf_data",text);
+                            filesPatchFormData.append("pdf_data",`file_name:${file.name} text_file:${text}`);
                             console.log(text)
 
                           }else{
@@ -777,7 +777,7 @@ const CoachIntake = ({ user }: any) => {
                           }
                         } else if (file.name.includes('.docx')) {
                           if (text) {
-                            filesPatchFormData.append(`doc_data`, text);
+                            filesPatchFormData.append(`doc_data`, `file_name:${file.name} text_file:${text}`);
                             console.log(text)
                           } else {
                             filesPatchFormData.append(`attached_docs`, file, file.name.trim());
