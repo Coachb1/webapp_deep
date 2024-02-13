@@ -77,26 +77,25 @@ let TestUIInfo;
 let isHindi = false;
 let isProceed;
 let isSessionActive = false;
-let isEmailType=false;
-let recommendations = '';
+let isEmailType = false;
+let recommendations = "";
 let isTestSignedIn;
 let clientName;
-let audioFileSrcMap={};  // maping response to resquestionNumber
-let audioFileMap = {}
+let audioFileSrcMap = {}; // maping response to resquestionNumber
+let audioFileMap = {};
 let audioDuration;
-let isRecordingGlobal= false;
+let isRecordingGlobal = false;
 let questionMediaLink;
 let isImmersive = false;
 let mediaProps;
 let questionImageData;
 let initialIndex;
-let isTranscriptOnly= false;
+let isTranscriptOnly = false;
 let isEmailForm = false;
 let emailNameformJson = {};
-let formFields = []
-let userResponses = []
+let formFields = [];
+let userResponses = [];
 let DuplicateResponseCount = 0;
-
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -201,8 +200,6 @@ let recommendationsData = [
     },
   ], // batch seven
 ];
-
-
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -341,7 +338,7 @@ function getCredentialsForm() {
 function getCoachingQuestionData(questionText) {
   let randomId = Math.floor(Math.random() * 1000000);
   randomId = `coaching-question-${randomId}`;
-  let parts = questionText.split(':');
+  let parts = questionText.split(":");
   questionText = parts.length > 1 ? parts[1].trim() : questionText;
   return `
           ${questionText}
@@ -372,7 +369,6 @@ function createMessageNode(message) {
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
 }
-
 
 //* check for duplicate response
 function isDuplicateResponse(text) {
@@ -493,68 +489,72 @@ async function setMcqVariables() {
   if (mcqQustionIndex != globalQuestionLength) {
     // updating question
 
-    if( testType === "dynamic_mcq") {
+    if (testType === "dynamic_mcq") {
+      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
+        "Processing ...";
 
-      gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML = 'Processing ...'
-    
-        queryParams = new URLSearchParams({
-            description: senarioDescription,
-            situation: mcqQustionIndex == 1 ? globalQuestionData.results[0].questions[mcqQustionIndex - 1].question : questionText,
-            option_a: optionsName[0].defaultValue,
-            option_b: optionsName[0].defaultValue,
-            option_selected: responseText,
-            test_attempt_session_id: test_attempt_session_id,
-        });
-    
-        await fetch(
+      queryParams = new URLSearchParams({
+        description: senarioDescription,
+        situation:
+          mcqQustionIndex == 1
+            ? globalQuestionData.results[0].questions[mcqQustionIndex - 1]
+                .question
+            : questionText,
+        option_a: optionsName[0].defaultValue,
+        option_b: optionsName[0].defaultValue,
+        option_selected: responseText,
+        test_attempt_session_id: test_attempt_session_id,
+      });
+
+      await fetch(
         `${baseURL}/test-attempt-sessions/get_next_mcq_question_options/?${queryParams}`,
         {
-            method: "GET",
-            headers: {
+          method: "GET",
+          headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
             "Content-Type": "application/json",
-            },
+          },
         }
-        )
+      )
         .then((response) => response.json())
         .then((data) => {
-            console.log("Dynamic mcq response : ", data);
-            console.log(data.options_data)
-            questionText = data.options_data.next_situation;
-            newOption1Name = data.options_data.option_a;
-            newOption2Name = data.options_data.option_b;
-            newOption1Text = data.options_data.option_a;
-            newOption2Text = data.options_data.option_b;
-            // qUid = data.options_data.next_situation;
-            qUid = globalQuestionData.results[0].questions[mcqQustionIndex].uid;
-        })
-
+          console.log("Dynamic mcq response : ", data);
+          console.log(data.options_data);
+          questionText = data.options_data.next_situation;
+          newOption1Name = data.options_data.option_a;
+          newOption2Name = data.options_data.option_b;
+          newOption1Text = data.options_data.option_a;
+          newOption2Text = data.options_data.option_b;
+          // qUid = data.options_data.next_situation;
+          qUid = globalQuestionData.results[0].questions[mcqQustionIndex].uid;
+        });
     } else {
       console.log("currentquestionidex", mcqQustionIndex);
       console.log(`Story ${responseOption}`);
 
       const matchingQuestions = globalQuestionData.results[0].questions.filter(
-      (question) => question.mcq_path === `Story ${responseOption}`
+        (question) => question.mcq_path === `Story ${responseOption}`
       );
 
       qUid = matchingQuestions.map((question) => question.uid)[0];
       const mcqOptions = matchingQuestions.map(
-      (question) => question.mcq_options
+        (question) => question.mcq_options
       )[0];
       const optionName = Object.keys(mcqOptions);
-      questionText = matchingQuestions.map(
-      (question) => question.question
-      )[0];
+      questionText = matchingQuestions.map((question) => question.question)[0];
 
       console.log("questionText :", questionText);
 
       const questionMedia = matchingQuestions.map(
-      (question) => question.media_link
+        (question) => question.media_link
       )[0];
 
       let queImageData;
-      if (mediaProps && mediaProps[`question_image ${responseOption}`]){
-      queImageData = [mediaProps[`question_image ${responseOption}`],mediaProps[`question_image_mobile ${responseOption}`]]
+      if (mediaProps && mediaProps[`question_image ${responseOption}`]) {
+        queImageData = [
+          mediaProps[`question_image ${responseOption}`],
+          mediaProps[`question_image_mobile ${responseOption}`],
+        ];
       }
 
       newOption1Name = optionName[0];
@@ -562,22 +562,21 @@ async function setMcqVariables() {
       newOption1Text = mcqOptions[newOption1Name]["opt"];
       newOption2Text = mcqOptions[newOption2Name]["opt"];
 
-
-    if (questionMedia) {
-      let embeddingUrl = "";
-      if (questionMedia.length > 0) {
+      if (questionMedia) {
+        let embeddingUrl = "";
+        if (questionMedia.length > 0) {
           if (questionMedia.includes("youtube.com")) {
-          const videoId = questionMedia.split("v=")[1];
-          embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            const videoId = questionMedia.split("v=")[1];
+            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
           } else if (questionMedia.includes("vimeo.com")) {
-          const videoId = questionMedia.split("/").pop();
-          embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+            const videoId = questionMedia.split("/").pop();
+            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
           } else if (questionMedia.includes("twitter.com")) {
-          embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
+            embeddingUrl = `https://twitframe.com/show?url=${questionMedia}`;
           }
 
-          if (embeddingUrl){
-          questionText = `▪ Media <br>  <iframe
+          if (embeddingUrl) {
+            questionText = `▪ Media <br>  <iframe
                           allow="autoplay; encrypted-media; fullscreen;"
                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                           src=${embeddingUrl}
@@ -586,102 +585,117 @@ async function setMcqVariables() {
                       >
           `;
           }
-          const urlList = questionMedia.split(',')
-          console.log("list",urlList)
-          if (urlList.length > 1){
-          urlList.forEach(element => {
-              element = element.trim()
-              if (element.includes('docs.google.com')){
-              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-              console.log(url,"googelsheet")
-              questionText = questionText + '\n' +(`<iframe src=${url}
+          const urlList = questionMedia.split(",");
+          console.log("list", urlList);
+          if (urlList.length > 1) {
+            urlList.forEach((element) => {
+              element = element.trim();
+              if (element.includes("docs.google.com")) {
+                let url =
+                  element.split("edit?")[0] +
+                  "embed?start=true&loop=true&delayms=3000";
+                console.log(url, "googelsheet");
+                questionText =
+                  questionText +
+                  "\n" +
+                  `<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                               allowfullscreen="true" 
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
-                              ></iframe>`)
-              }
-              else{
-              console.log('audio',element)
-              questionText = questionText + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                              ></iframe>`;
+              } else {
+                console.log("audio", element);
+                questionText =
+                  questionText +
+                  "\n" +
+                  `<div ><audio style="${
+                    window.innerWidth < 600
+                      ? "width: 200px; max-width: 200px !important;"
+                      : " min-width: 50vw !important;"
+                  }" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
-                </audio></div>`)
+                </audio></div>`;
               }
-          });
-          }else {
-          if (questionMedia.includes('docs.google.com')){
-              let url = questionMedia.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-              console.log(url,'google')
-              if(isImmersive){
-                questionText = questionText.replaceAll(":","")
-                console.log('first', questionText)
-  
-                
-                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+            });
+          } else {
+            if (questionMedia.includes("docs.google.com")) {
+              let url =
+                questionMedia.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url, "google");
+              if (isImmersive) {
+                questionText = questionText.replaceAll(":", "");
+                console.log("first", questionText);
+
+                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`;
                 const response = await fetch(urltts, {
                   method: "GET",
                   headers: {
                     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
                   },
                 });
-          
+
                 const blob = await response.blob();
-                console.log('respnse', blob);
-          
+                console.log("respnse", blob);
+
                 const objectUrl = URL.createObjectURL(blob);
-                
-                console.log(objectUrl,'url')
-                questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+                console.log(objectUrl, "url");
+                questionText = `<div ><audio style="${
+                  window.innerWidth < 600
+                    ? "width: 200px; max-width: 200px !important;"
+                    : " min-width: 50vw !important;"
+                }" controls autoplay>
                 <source src=${objectUrl} type="audio/mpeg" />
                 Your browser does not support the audio element.
-                </audio></div>`
-                console.log(questionText)
-  
+                </audio></div>`;
+                console.log(questionText);
               }
-              questionText = questionText +(`<iframe src=${url}
+              questionText =
+                questionText +
+                `<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                               allowfullscreen="true" 
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
-                              ></iframe>`)
+                              ></iframe>`;
+            }
           }
-          }
-          }
+        }
       }
-      if(isImmersive && !questionMedia){
-        questionText = questionText.replaceAll(":","")
-        console.log('first', questionText)
-  
-        
-        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+      if (isImmersive && !questionMedia) {
+        questionText = questionText.replaceAll(":", "");
+        console.log("first", questionText);
+
+        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`;
         const response = await fetch(urltts, {
           method: "GET",
           headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
           },
         });
-  
+
         const blob = await response.blob();
-        console.log('respnse', blob);
-  
+        console.log("respnse", blob);
+
         const objectUrl = URL.createObjectURL(blob);
-        
-        console.log(objectUrl,'url')
-        questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+        console.log(objectUrl, "url");
+        questionText = `<div ><audio style="${
+          window.innerWidth < 600
+            ? "width: 200px; max-width: 200px !important;"
+            : " min-width: 50vw !important;"
+        }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
-        </audio></div>`
-        console.log(questionText)
-  
-        
+        </audio></div>`;
+        console.log(questionText);
       }
-
     }
-
-    
 
     console.log("newquestionid", qUid, "session", test_attempt_session_id);
 
@@ -847,9 +861,9 @@ async function setMcqVariables() {
       console.log("user not logged in, so asking for credentials");
       // gShadowRoot.getElementById(`mcq-option-${mcqFormId}`).innerHTML =
       //   credentialsForm;
-      isEmailForm = true
-      formFields = ['name', 'email']
-      appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
+      isEmailForm = true;
+      formFields = ["name", "email"];
+      appendMessage(`<b>Please enter your ${formFields[0]}</b>`);
     }
 
     await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -867,7 +881,7 @@ async function setMcqVariables() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("REPORT 1")
+        console.log("REPORT 1");
         reportUrl = data.url;
         globalReportUrl = reportUrl;
         responsesDone = true;
@@ -888,7 +902,7 @@ async function setMcqVariables() {
           //   appendMessage(message);
 
           //* send message to start new session
-          
+
           appendMessage(
             "<b>Please enter another access code to start a new interaction.</b>"
           );
@@ -911,18 +925,17 @@ async function setMcqVariables() {
 //* handle MCQ type test : end
 
 let queryParams;
-async function proceedFormFlow(msg){
-  if (formFields.length > 0){
-    isEmailForm = true
-    const filedname = formFields[0]
+async function proceedFormFlow(msg) {
+  if (formFields.length > 0) {
+    isEmailForm = true;
+    const filedname = formFields[0];
     formFields = formFields.slice(1);
-    emailNameformJson[filedname] = msg
-    
+    emailNameformJson[filedname] = msg;
   }
 }
 //*********** hit mail sending api */
 
-function sendEmail(session_id,reportUrl) {
+function sendEmail(session_id, reportUrl) {
   // responsesDone = false;
   console.log("sending email");
   const queryParams2 = new URLSearchParams({
@@ -956,8 +969,8 @@ async function submitEmailAndName() {
 
     // inputName = inputNameVal;
     // inputEmail = inputEmailVal;
-    inputEmail = emailNameformJson['email']
-    inputName = emailNameformJson['name']
+    inputEmail = emailNameformJson["email"];
+    inputName = emailNameformJson["name"];
 
     //* store these values in session storage
     // getOrSetSessionData(inputName, inputEmail);
@@ -987,14 +1000,13 @@ async function submitEmailAndName() {
     .then((response) => response.json())
     .then((data) => {
       console.log("name email updated, sending email");
-      sendEmail(sessionId,globalReportUrl);
-      increaseActionPoint(userId,"interaction_attempted")
+      sendEmail(sessionId, globalReportUrl);
+      increaseActionPoint(userId, "interaction_attempted");
 
       if (!window.user) {
         // append custom message to chat
         // const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
         // appendMessage(message);
-
         // //* send message to start new session
         // appendMessage(
         //   "<b>Please enter another access code to start a new interaction.</b>"
@@ -1147,28 +1159,22 @@ function generateOptionButtons() {
 }
 
 //image hover handlers - start
-function showTooltip(content, event, tooltipId,imageMapName) {
-  const shadowRoot =
-  document.getElementById("chat-element").shadowRoot;
-  const tooltip =
-    shadowRoot.getElementById(tooltipId);
+function showTooltip(content, event, tooltipId, imageMapName) {
+  const shadowRoot = document.getElementById("chat-element").shadowRoot;
+  const tooltip = shadowRoot.getElementById(tooltipId);
   tooltip.innerHTML = content;
   updateTooltipPosition(event, imageMapName, tooltipId);
   tooltip.style.display = "block";
-  }
+}
 
 function updateTooltipPosition(event, imageMapName, tooltipId) {
-  const shadowRoot =
-    document.getElementById("chat-element").shadowRoot;
-  const tooltip =
-    shadowRoot.getElementById(tooltipId);
+  const shadowRoot = document.getElementById("chat-element").shadowRoot;
+  const tooltip = shadowRoot.getElementById(tooltipId);
 
   const xOffset = 0;
   const yOffset = 0;
 
-  const image = shadowRoot.querySelector(
-    `img[usemap='#${imageMapName}']`
-  );
+  const image = shadowRoot.querySelector(`img[usemap='#${imageMapName}']`);
   const imageRect = image.getBoundingClientRect();
 
   const mouseX = event.clientX + window.pageXOffset;
@@ -1176,18 +1182,16 @@ function updateTooltipPosition(event, imageMapName, tooltipId) {
 
   if (window.innerWidth > 760) {
     tooltip.style.left = event.clientX - 120 + "px";
-    tooltip.style.top = event.clientY - 60  + "px"
+    tooltip.style.top = event.clientY - 60 + "px";
   } else {
-    tooltip.style.left =  event.clientX - 90 + "px" 
-    tooltip.style.top = event.clientY - 180  + "px" 
+    tooltip.style.left = event.clientX - 90 + "px";
+    tooltip.style.top = event.clientY - 180 + "px";
   }
 }
 
 function hideTooltip(tooltipId) {
-  const shadowRoot =
-  document.getElementById("chat-element").shadowRoot;
-const tooltip =
-  shadowRoot.getElementById(tooltipId);
+  const shadowRoot = document.getElementById("chat-element").shadowRoot;
+  const tooltip = shadowRoot.getElementById(tooltipId);
   // console.log(tooltip)
   tooltip.style.display = "none";
 }
@@ -1195,86 +1199,69 @@ const tooltip =
 
 const setHoverPoints = (coords, imageId, imageMapName, tooltipId) => {
   //hover configs
-  const shadowRootForImage =
-  document.getElementById("chat-element").shadowRoot;
-const descriptionMediaImage =
-  shadowRootForImage.getElementById(imageId);
+  const shadowRootForImage = document.getElementById("chat-element").shadowRoot;
+  const descriptionMediaImage = shadowRootForImage.getElementById(imageId);
 
-// -map element
-const mapElement = document.createElement("map");
-mapElement.setAttribute("name", imageMapName);
-shadowRootForImage.appendChild(mapElement);
+  // -map element
+  const mapElement = document.createElement("map");
+  mapElement.setAttribute("name", imageMapName);
+  shadowRootForImage.appendChild(mapElement);
 
-// -overlay element
-const overlayElement = document.createElement("div");
-overlayElement.setAttribute(
-  "class",
-  "image-overlay"
-);
-shadowRootForImage.appendChild(overlayElement);
+  // -overlay element
+  const overlayElement = document.createElement("div");
+  overlayElement.setAttribute("class", "image-overlay");
+  shadowRootForImage.appendChild(overlayElement);
 
-// -tooltip
-const tooltipELement = document.createElement("div");
-tooltipELement.setAttribute("id", tooltipId);
-tooltipELement.setAttribute(
-  "class",
-  "custom-tooltip"
-);
-tooltipELement.style.position = "absolute";
-tooltipELement.style.backgroundColor = "#333";
-tooltipELement.style.color = "#fff";
-tooltipELement.style.padding = "5px";
-tooltipELement.style.borderRadius = "5px";
-tooltipELement.style.display = "none";
-shadowRootForImage.appendChild(tooltipELement);
+  // -tooltip
+  const tooltipELement = document.createElement("div");
+  tooltipELement.setAttribute("id", tooltipId);
+  tooltipELement.setAttribute("class", "custom-tooltip");
+  tooltipELement.style.position = "absolute";
+  tooltipELement.style.backgroundColor = "#333";
+  tooltipELement.style.color = "#fff";
+  tooltipELement.style.padding = "5px";
+  tooltipELement.style.borderRadius = "5px";
+  tooltipELement.style.display = "none";
+  shadowRootForImage.appendChild(tooltipELement);
 
-
-coords.map((item) => {
-  console.log(item)
-  let coord;
-  if(window.innerWidth < 768){
-    coord = item.coord
-    .split("|")[1].replace(/\./g, ',').split(",");
-  } else {
-    coord = item.coord.split("|")[0].replace(/\./g, ',').split(",")
-  }
-
-  const areaElement = document.createElement("area");
-  areaElement.setAttribute("coords", coord);
-  areaElement.setAttribute("shape", "rect");
-  // areaElement.setAttribute("title", item.title);
-
-  mapElement.appendChild(areaElement);
-
-  areaElement.addEventListener(
-    "mouseover",
-    (event) => {
-      showTooltip(item.title, event, tooltipId,imageMapName);
+  coords.map((item) => {
+    console.log(item);
+    let coord;
+    if (window.innerWidth < 768) {
+      coord = item.coord.split("|")[1].replace(/\./g, ",").split(",");
+    } else {
+      coord = item.coord.split("|")[0].replace(/\./g, ",").split(",");
     }
-  );
 
-  areaElement.addEventListener(
-    "mousemove",
-    (event) => {
+    const areaElement = document.createElement("area");
+    areaElement.setAttribute("coords", coord);
+    areaElement.setAttribute("shape", "rect");
+    // areaElement.setAttribute("title", item.title);
+
+    mapElement.appendChild(areaElement);
+
+    areaElement.addEventListener("mouseover", (event) => {
+      showTooltip(item.title, event, tooltipId, imageMapName);
+    });
+
+    areaElement.addEventListener("mousemove", (event) => {
       updateTooltipPosition(event, imageMapName, tooltipId);
-    }
-  );
+    });
 
-  areaElement.addEventListener("mouseout", () => {
-    hideTooltip(tooltipId);
+    areaElement.addEventListener("mouseout", () => {
+      hideTooltip(tooltipId);
+    });
   });
-});
-}
-
+};
 
 // to reset all variables
 const resetAllVariables = async () => {
   //* reset all variables : start
   responsesDone = false;
   questionIndex = 0;
-  userResponses = []
+  userResponses = [];
   DuplicateResponseCount = 0;
-  console.log('reseting variables')
+  console.log("reseting variables");
   questionText = "";
   reportType = "interactionSessionReport";
   questionId = null;
@@ -1323,11 +1310,10 @@ const resetAllVariables = async () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
-  console.log("resetting variables completed")
+  console.log("resetting variables completed");
 };
 
-function  increaseActionPoint(user_id,field_name){
-
+function increaseActionPoint(user_id, field_name) {
   fetch(
     `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=save&user_id=${user_id}&for=${field_name}`,
     {
@@ -1340,10 +1326,9 @@ function  increaseActionPoint(user_id,field_name){
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log(`increased.`,data);
+      console.log(`increased.`, data);
     })
-    .catch((err) => console.log("increaseActionPoint Error",err));
-
+    .catch((err) => console.log("increaseActionPoint Error", err));
 }
 
 function findRelatedItems(data, targetCode) {
@@ -1428,9 +1413,9 @@ const handleEndCoachingClick = async (randomId) => {
     );
   } else {
     // appendMessage(getCredentialsForm());
-    isEmailForm = true
-    formFields = ['name', 'email']
-    appendMessage(`<b>Please enter your ${formFields[0]}</b>`)
+    isEmailForm = true;
+    formFields = ["name", "email"];
+    appendMessage(`<b>Please enter your ${formFields[0]}</b>`);
   }
 };
 
@@ -1445,10 +1430,10 @@ const handleProceedClick = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
 
-    if(questionMediaLink && (testType != 'mcq' && testType != 'dynamic_mcq' )){
+    if (questionMediaLink && testType != "mcq" && testType != "dynamic_mcq") {
       console.log(questionMediaLink);
       let embeddingUrl = "";
-      
+
       if (questionMediaLink.length > 0) {
         if (questionMediaLink.includes("youtube.com")) {
           const videoId = questionMediaLink.split("v=")[1];
@@ -1459,288 +1444,324 @@ const handleProceedClick = async (choice) => {
         } else if (questionMediaLink.includes("twitter.com")) {
           embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
         }
-        
-        if (embeddingUrl){
-            appendMessage(`▪ Media <br>  <iframe
+
+        if (embeddingUrl) {
+          appendMessage(`▪ Media <br>  <iframe
                           allow="autoplay; encrypted-media; fullscreen;"
                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                           src=${embeddingUrl}
                           frameborder="0"
                           allowfullscreen
                         >
-                  `)
-          }
+                  `);
+        }
 
-        const urlList = questionMediaLink.split(',')
-        console.log("list",urlList)
-        if (urlList.length > 1){
-          urlList.forEach(element => {
-            element = element.trim()
-            if (element.includes('docs.google.com')){
-              let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-              console.log(url)
+        const urlList = questionMediaLink.split(",");
+        console.log("list", urlList);
+        if (urlList.length > 1) {
+          urlList.forEach((element) => {
+            element = element.trim();
+            if (element.includes("docs.google.com")) {
+              let url =
+                element.split("edit?")[0] +
+                "embed?start=true&loop=true&delayms=3000";
+              console.log(url);
               appendMessage(`<iframe src=${url}
                               frameborder="0" 
                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                               allowfullscreen="true" 
                               mozallowfullscreen="true" 
                               webkitallowfullscreen="true"
-                              ></iframe>`)
-            }
-            else{
-              console.log(element)
-              appendMessage(`<audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                              ></iframe>`);
+            } else {
+              console.log(element);
+              appendMessage(`<audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls autoplay>
               <source src=${element} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio>`)
+              </audio>`);
             }
           });
-        }else {
-          if (questionMediaLink.includes('docs.google.com')){
-            let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-            console.log(url)
+        } else {
+          if (questionMediaLink.includes("docs.google.com")) {
+            let url =
+              questionMediaLink.split("edit?")[0] +
+              "embed?start=true&loop=true&delayms=3000";
+            console.log(url);
             appendMessage(`<iframe src=${url}
                             frameborder="0" 
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                             allowfullscreen="true" 
                             mozallowfullscreen="true" 
                             webkitallowfullscreen="true"
-                            ></iframe>`)
-          }else if (questionMediaLink.includes('guidejar.com')){
-            const guidejarId = questionMediaLink.split('/').pop()
+                            ></iframe>`);
+          } else if (questionMediaLink.includes("guidejar.com")) {
+            const guidejarId = questionMediaLink.split("/").pop();
             appendMessage(`
             <div style="width:640px">
             <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
             <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
             ></div></div>
-            `)
+            `);
           }
         }
       }
-      
-      if (initialQuestionText){
+
+      if (initialQuestionText) {
         const linkPattern = /(http[s]?:\/\/[^\s]+)/;
         const is_link = linkPattern.test(initialQuestionText);
-        if (!is_link){
-            let strList = initialQuestionText.replaceAll("*","")
-        
-            strList = strList.split(":",2)
-            let responderName;
-            if (strList.length >1){
-              initialQuestionText = strList[1]
-              responderName = strList[0]
-            }
-            if(isImmersive){
-              console.log(initialQuestionText)
-              const queText = initialQuestionText
-              const queDiv = `<p>${queText}</p><br>`
-              const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
-              const response = await fetch(urltts, {
-                method: "GET",
-                headers: {
-                  Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                },
-              });
-        
-              const blob = await response.blob();
-              console.log('respnse', blob);
-        
-              const objectUrl = URL.createObjectURL(blob);
-              
-              console.log(objectUrl,'url')
-             
-                initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+        if (!is_link) {
+          let strList = initialQuestionText.replaceAll("*", "");
+
+          strList = strList.split(":", 2);
+          let responderName;
+          if (strList.length > 1) {
+            initialQuestionText = strList[1];
+            responderName = strList[0];
+          }
+          if (isImmersive) {
+            console.log(initialQuestionText);
+            const queText = initialQuestionText;
+            const queDiv = `<p>${queText}</p><br>`;
+            const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
+            const response = await fetch(urltts, {
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+              },
+            });
+
+            const blob = await response.blob();
+            console.log("respnse", blob);
+
+            const objectUrl = URL.createObjectURL(blob);
+
+            console.log(objectUrl, "url");
+
+            initialQuestionText =
+              queDiv +
+              `<div ><audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`
+              </audio></div>`;
 
-              console.log(initialQuestionText)
-
-            }
-            console.log("last",initialQuestionText)
-            if (responderName){
-              initialQuestionText = `<b>${responderName}:</b><br>` +`<p>${initialQuestionText}</p>`
-              
-            }
-
-            appendMessage(initialQuestionText)
+            console.log(initialQuestionText);
           }
+          console.log("last", initialQuestionText);
+          if (responderName) {
+            initialQuestionText =
+              `<b>${responderName}:</b><br>` + `<p>${initialQuestionText}</p>`;
+          }
+
+          appendMessage(initialQuestionText);
+        }
       }
-    } else{
-
-      if(!questionMediaLink && testType != "orchestrated_conversation" && (testType != 'mcq' && testType != 'dynamic_mcq' ) && senarioCase != "process_training"){
+    } else {
+      if (
+        !questionMediaLink &&
+        testType != "orchestrated_conversation" &&
+        testType != "mcq" &&
+        testType != "dynamic_mcq" &&
+        senarioCase != "process_training"
+      ) {
         let responderName;
-        if (testType === 'dynamic_discussion_thread'){
-          if (initialQuestionText.includes(":")){
-            initialQuestionText = initialQuestionText.replace(/<\/?p>/g, '');
-            const strList = initialQuestionText.split(":",2)
-            responderName = `<b>${strList[0]}:</b><br>`
-            initialQuestionText = strList[1]
-          } else{
-            responderName = `<b>System:</b><br>`
-
+        if (testType === "dynamic_discussion_thread") {
+          if (initialQuestionText.includes(":")) {
+            initialQuestionText = initialQuestionText.replace(/<\/?p>/g, "");
+            const strList = initialQuestionText.split(":", 2);
+            responderName = `<b>${strList[0]}:</b><br>`;
+            initialQuestionText = strList[1];
+          } else {
+            responderName = `<b>System:</b><br>`;
           }
-        }else{
-          let strLIst = initialQuestionText.replaceAll("*","").split(":",2)
-          if(strLIst.length>1){
-            initialQuestionText = strLIst[1]
-            responderName = `<b>${strLIst[0]}:</b><br>`
+        } else {
+          let strLIst = initialQuestionText.replaceAll("*", "").split(":", 2);
+          if (strLIst.length > 1) {
+            initialQuestionText = strLIst[1];
+            responderName = `<b>${strLIst[0]}:</b><br>`;
           }
         }
-        if(isImmersive){
-          const queText = initialQuestionText
-          const queDiv = `<p>${queText}</p><br>`
-          const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`
+        if (isImmersive) {
+          const queText = initialQuestionText;
+          const queDiv = `<p>${queText}</p><br>`;
+          const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
           const response = await fetch(url, {
             method: "GET",
             headers: {
               Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
             },
           });
-    
+
           const blob = await response.blob();
-          console.log('respnse', blob);
-    
+          console.log("respnse", blob);
+
           const objectUrl = URL.createObjectURL(blob);
-          
-          console.log(objectUrl,'url')
-          initialQuestionText = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+          console.log(objectUrl, "url");
+          initialQuestionText =
+            queDiv +
+            `<div ><audio style="${
+              window.innerWidth < 600
+                ? "width: 200px; max-width: 200px !important;"
+                : " min-width: 50vw !important;"
+            }" controls autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
-          </audio></div>`
+          </audio></div>`;
         }
-        if (responderName){
-          initialQuestionText = responderName + initialQuestionText
+        if (responderName) {
+          initialQuestionText = responderName + initialQuestionText;
         }
 
-        appendMessage(initialQuestionText)
-        
-      } else if (testType === "orchestrated_conversation"){
-        console.log(initialQuestionText)
+        appendMessage(initialQuestionText);
+      } else if (testType === "orchestrated_conversation") {
+        console.log(initialQuestionText);
         const regex = /<p>(.*?)<\/p>/g;
 
         // Extracting text between <p> and </p> tags
-        const matches = Array.from(initialQuestionText.matchAll(regex), match => match[1].trim());
+        const matches = Array.from(
+          initialQuestionText.matchAll(regex),
+          (match) => match[1].trim()
+        );
 
-        console.log('matches',matches)
+        console.log("matches", matches);
         // Separating each extracted text by ":"
-        const separatedText = matches.map(match => match.split(':',2));
-        console.log('speratedTExt',separatedText)
+        const separatedText = matches.map((match) => match.split(":", 2));
+        console.log("speratedTExt", separatedText);
 
         // Displaying the separated text
-        if (isImmersive){
-          const audioPromises = separatedText.map(async entry => {
+        if (isImmersive) {
+          const audioPromises = separatedText.map(async (entry) => {
+            const responderName = `<b>${entry[0]}:</b><br>`;
+            console.log(entry);
+            const queText = entry[1];
+            const queDiv = `<p>${queText}</p><br>`;
 
-            const responderName = `<b>${entry[0]}:</b><br>`
-            console.log(entry)
-            const queText = entry[1]
-            const queDiv = `<p>${queText}</p><br>`
-            
-            const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`
+            const url = `${baseURL}/test-responses/get-text-to-speech/?text=${entry[1]}`;
 
             const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-            },
+              method: "GET",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+              },
             });
-    
+
             const blob = await response.blob();
-            console.log('respnse', blob);
-      
+            console.log("respnse", blob);
+
             const objectUrl = URL.createObjectURL(blob);
-            
-            console.log(objectUrl,'url')
-            let audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls>
+
+            console.log(objectUrl, "url");
+            let audioCont =
+              queDiv +
+              `<div ><audio style="${
+                window.innerWidth < 600
+                  ? "width: 200px; max-width: 200px !important;"
+                  : " min-width: 50vw !important;"
+              }" controls>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
-            </audio></div>`
-            if (responderName){
-              audioCont = responderName + audioCont
+            </audio></div>`;
+            if (responderName) {
+              audioCont = responderName + audioCont;
             }
 
             return audioCont;
-            });
+          });
 
-          console.log(audioPromises,'audioPromises')
+          console.log(audioPromises, "audioPromises");
 
           const audioContents = await Promise.all(audioPromises);
 
-          audioContents.forEach(content => {
-              appendMessage(content);
+          audioContents.forEach((content) => {
+            appendMessage(content);
           });
-        } else{
-          separatedText.forEach(entry => {
-            const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`
-            appendMessage(container)
-
-          })
+        } else {
+          separatedText.forEach((entry) => {
+            const container = `<b>${entry[0]}:</b><br>` + `<p>${entry[1]}</P`;
+            appendMessage(container);
+          });
         }
-      }else if(mediaProps && Object.keys(mediaProps).includes(`que_image ${initialIndex}`)){
-        const questionpropName = `que_image ${initialIndex}`
+      } else if (
+        mediaProps &&
+        Object.keys(mediaProps).includes(`que_image ${initialIndex}`)
+      ) {
+        const questionpropName = `que_image ${initialIndex}`;
 
         const url = Object.keys(mediaProps[questionpropName])[0];
         let narration;
-        let coords = []
+        let coords = [];
         const coordAndTitleNarrationList = mediaProps[questionpropName][url];
 
-        coordAndTitleNarrationList.forEach(element =>{
-          if (typeof element === 'string'){
-            narration = element
-          } else{
-            coords.push(element)
+        coordAndTitleNarrationList.forEach((element) => {
+          if (typeof element === "string") {
+            narration = element;
+          } else {
+            coords.push(element);
           }
-        })
+        });
 
         const testImage = {
           image: url,
           coords: coords,
-          narration: narration
-        }
-        console.log(testImage)
-        const imageUrl = url
-        
+          narration: narration,
+        };
+        console.log(testImage);
+        const imageUrl = url;
 
-        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${narration}`
+        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${narration}`;
         const response = await fetch(urltts, {
           method: "GET",
           headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
           },
         });
-  
+
         const blob = await response.blob();
-        console.log('respnse', blob);
-  
+        console.log("respnse", blob);
+
         const objectUrl = URL.createObjectURL(blob);
-        
-        console.log(objectUrl,'url')
-        const ttsNarration = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+        console.log(objectUrl, "url");
+        const ttsNarration = `<div ><audio style="${
+          window.innerWidth < 600
+            ? "width: 200px; max-width: 200px !important;"
+            : " min-width: 50vw !important;"
+        }" controls autoplay>
         <source src=${objectUrl} type="audio/mpeg" />
         Your browser does not support the audio element.
-        </audio></div>`
-        const imageId = `mediaImage${initialIndex}`
-        const imageMapName = `image-map${initialIndex}`
-        const imageTooltipId = `tooltip-${initialIndex}`
+        </audio></div>`;
+        const imageId = `mediaImage${initialIndex}`;
+        const imageMapName = `image-map${initialIndex}`;
+        const imageTooltipId = `tooltip-${initialIndex}`;
 
-           
         appendMessage(`▪ ${ttsNarration}<br><br>
-                        ▪ <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                        ▪ Question : <br> ${initialQuestionText}<br><br>`)
-        setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
-        console.log("IMAGE MAPPED WITH COORDS")
+                        ▪ <img src=${imageUrl} ${
+          window.innerWidth < 768 ? "width='200'" : "width='400'"
+        } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                        ▪ Question : <br> ${initialQuestionText}<br><br>`);
+        setHoverPoints(coords, imageId, imageMapName, imageTooltipId);
+        console.log("IMAGE MAPPED WITH COORDS");
 
-        // questionText2 = questionText2 + imageDiv 
-      } 
-      else{
-          if(testType != 'mcq' && testType != 'dynamic_mcq'){
-            let strList = initialQuestionText.replaceAll("*","")
-          strList = strList.split(":",2)
-          if (strList.length >1){
-            initialQuestionText = strList[1]
-            initialQuestionText = `<b>${strList[0]}:</b><br>` +`<p>${initialQuestionText}</p>`
-          }}
-        appendMessage(initialQuestionText)
+        // questionText2 = questionText2 + imageDiv
+      } else {
+        if (testType != "mcq" && testType != "dynamic_mcq") {
+          let strList = initialQuestionText.replaceAll("*", "");
+          strList = strList.split(":", 2);
+          if (strList.length > 1) {
+            initialQuestionText = strList[1];
+            initialQuestionText =
+              `<b>${strList[0]}:</b><br>` + `<p>${initialQuestionText}</p>`;
+          }
+        }
+        appendMessage(initialQuestionText);
       }
     }
   } else {
@@ -2174,8 +2195,11 @@ loadExternalModule().then(() => {
   // to check word limit
   function isValidMessage(text) {
     const words = text.split(" ");
-    let uppercaseArray = words.map(element => element.toUpperCase());
-    if(uppercaseArray.includes('SKIP')&& (isTranscriptOnly || testType === 'coaching')){
+    let uppercaseArray = words.map((element) => element.toUpperCase());
+    if (
+      uppercaseArray.includes("SKIP") &&
+      (isTranscriptOnly || testType === "coaching")
+    ) {
       return true;
     }
     if (words.length < 15) {
@@ -2321,11 +2345,11 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformation = async (use_case,user_id) => {
+  const getClientInformation = async (use_case, user_id) => {
     const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if(user_id && use_case === "user_info"){
-      url += `&user_id=${user_id}`
+    if (user_id && use_case === "user_info") {
+      url += `&user_id=${user_id}`;
     }
     try {
       const response = await fetch(url, {
@@ -2337,7 +2361,7 @@ loadExternalModule().then(() => {
 
       const resp_json = await response.json();
       console.log(resp_json);
-      return resp_json['data'][`${use_case}`]
+      return resp_json["data"][`${use_case}`];
     } catch (error) {
       console.error(`Error in getClientInformation: ${error}`);
     }
@@ -2364,9 +2388,9 @@ loadExternalModule().then(() => {
     }
   };
 
-  const TTSContainer = async (text) =>{
-    const queDiv = `<p>${text}</p><br>`
-    const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`
+  const TTSContainer = async (text) => {
+    const queDiv = `<p>${text}</p><br>`;
+    const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -2375,138 +2399,143 @@ loadExternalModule().then(() => {
     });
 
     const blob = await response.blob();
-    console.log('respnse', blob);
+    console.log("respnse", blob);
 
     const objectUrl = URL.createObjectURL(blob);
-    
-    console.log(objectUrl,'url')
-    const audioCont = queDiv + `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+    console.log(objectUrl, "url");
+    const audioCont =
+      queDiv +
+      `<div ><audio style="${
+        window.innerWidth < 600
+          ? "width: 200px; max-width: 200px !important;"
+          : " min-width: 50vw !important;"
+      }" controls autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
-    </audio></div>`
+    </audio></div>`;
 
-    return audioCont
+    return audioCont;
   };
 
   const testResponseHandler = async (formdata, questionObj) => {
-    try{
-        const shadowRoot = document.getElementById("chat-element").shadowRoot;
-        const players = shadowRoot.querySelectorAll(".audio-player");
-        const targetPlayer = players[players.length - 1];
-        targetPlayer.src = audioFileSrc;
-        // if audio response in orch
-        if (
+    try {
+      const shadowRoot = document.getElementById("chat-element").shadowRoot;
+      const players = shadowRoot.querySelectorAll(".audio-player");
+      const targetPlayer = players[players.length - 1];
+      targetPlayer.src = audioFileSrc;
+      // if audio response in orch
+      if (
         testType === "orchestrated_conversation" ||
         interactionMode === "text"
-        ) {
+      ) {
         formdata["transcribe_file"] = true;
-        }
+      }
 
-        // trrow a error randomly
-        // if ( 3 > 2 |  questionObj.uid == 'd3240961-93f7-4ec5-bf1f-a479c5d3f7bc') {
-        //   throw new Error("Random error");
-        // }
+      // trrow a error randomly
+      // if ( 3 > 2 |  questionObj.uid == 'd3240961-93f7-4ec5-bf1f-a479c5d3f7bc') {
+      //   throw new Error("Random error");
+      // }
 
-        // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
-        //   method: "POST",
-        //   headers: {
-        //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        //   },
-        //   body: formdata,
-        // });
+      // const uploadDocResponse = await fetch(`${baseURL}/documents/upload/`, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+      //   },
+      //   body: formdata,
+      // });
 
-        function uploadDoc(formdata) {
+      function uploadDoc(formdata) {
         const basicAuthToken = createBasicAuthToken(key, secret);
-        try{
-            return fetch(`${baseURL}/documents/upload/`, {
+        try {
+          return fetch(`${baseURL}/documents/upload/`, {
             method: "POST",
             headers: {
-            Authorization: `Basic ${basicAuthToken}`,
+              Authorization: `Basic ${basicAuthToken}`,
             },
             body: formdata,
-        });
+          });
         } catch (error) {
-            console.log("error in uploading audio(try)", error);
-            return fetch(`${baseURL}/documents/upload/`, {
-                method: "POST",
-                headers: {
-                Authorization: `Basic ${basicAuthToken}`,
-                },
-                body: formdata,
-            });
+          console.log("error in uploading audio(try)", error);
+          return fetch(`${baseURL}/documents/upload/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${basicAuthToken}`,
+            },
+            body: formdata,
+          });
         }
-        
-        }
+      }
 
-        let uploadDocResponse = await uploadDoc(formdata);
+      let uploadDocResponse = await uploadDoc(formdata);
 
-        console.log("Jiks : ", uploadDocResponse);
+      console.log("Jiks : ", uploadDocResponse);
 
-        let documentUploadFailsCount = 0;
+      let documentUploadFailsCount = 0;
 
-        while (uploadDocResponse.status !== 201) {
+      while (uploadDocResponse.status !== 201) {
         console.log("error in uploading audio");
         documentUploadFailsCount += 1;
         if (documentUploadFailsCount > 1) {
-            console.log("document upload failed more than 1 times");
-            await cancelTest(participantId); // cancelling session
-            resetAllVariables(); //reseting variables
-            if (isProceed === "false") {
+          console.log("document upload failed more than 1 times");
+          await cancelTest(participantId); // cancelling session
+          resetAllVariables(); //reseting variables
+          if (isProceed === "false") {
             const gshadowRoot =
-                document.getElementById("chat-element").shadowRoot;
+              document.getElementById("chat-element").shadowRoot;
             const msg = gshadowRoot.getElementById("proceed-option");
             // button.parentNode.removeChild(button)
             const que_msg = document.createElement("div");
             que_msg.innerHTML = "Thank You"; // You can customize the message here
             // Replace the button with the "Thank you" message
             msg.parentNode.replaceChild(que_msg, msg);
-            }
+          }
 
-            if( questionIndex <= questionLength) {
+          if (questionIndex <= questionLength) {
             appendMessage(
-            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+              "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
             );
-            }
-            maxUploadFailed = true;
-            break;
+          }
+          maxUploadFailed = true;
+          break;
         }
         uploadDocResponse = await uploadDoc(formdata);
-        }
+      }
 
-        if (documentUploadFailsCount > 1) {
+      if (documentUploadFailsCount > 1) {
         return;
-        }
+      }
 
-        const uploadDocData = await uploadDocResponse.json();
-        documentId = uploadDocData.uid;
+      const uploadDocData = await uploadDocResponse.json();
+      documentId = uploadDocData.uid;
 
-        const docUrlResponse = await fetch(
+      const docUrlResponse = await fetch(
         `${baseURL}/documents/${documentId}/url/`,
         {
-            method: "GET",
-            headers: {
+          method: "GET",
+          headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-            },
+          },
         }
-        );
+      );
 
-        const docUrlData = await docUrlResponse.json();
-        userAudioResponse = docUrlData.url;
+      const docUrlData = await docUrlResponse.json();
+      userAudioResponse = docUrlData.url;
 
-        if (testType === "coaching") {
+      if (testType === "coaching") {
         const response = await fetch(
-            `${baseURL}/coaching-conversations/${conversation_id}/reply/`,
-            {
+          `${baseURL}/coaching-conversations/${conversation_id}/reply/`,
+          {
             method: "POST",
             headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                "Content-Type": "application/json",
+              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                participant_message_text: "",
-                participant_message_url: userAudioResponse,
+              participant_message_text: "",
+              participant_message_url: userAudioResponse,
             }),
-            }
+          }
         );
         const responseData = await response.json();
         console.log("Response from Coaching submit response : ", responseData);
@@ -2517,127 +2546,133 @@ loadExternalModule().then(() => {
 
         console.log(questionData);
         return;
-        } else if (
+      } else if (
         testType === "orchestrated_conversation" ||
         interactionMode === "text"
-        ) {
+      ) {
         // handling audio response in orch
         const usertext = uploadDocData["transcript_details"]["text"];
         console.log(usertext);
 
         const testResponse = await fetch(`${baseURL}/test-responses/`, {
-            method: "POST",
-            headers: {
+          method: "POST",
+          headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
             "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+          },
+          body: JSON.stringify({
             test_attempt_session_id: sessionId,
             question_id: questionObj.uid,
             response_text: usertext,
             response_file: "",
             user_attributes: {
-                tag: "deepchat_profile",
-                attributes: {
+              tag: "deepchat_profile",
+              attributes: {
                 username: "web_user",
                 email: user ? user.email : getAnonymousEmail(),
-                },
+              },
             },
-            }),
+          }),
         });
         const testResponseData = await testResponse.json();
         resQuestionNumber = testResponseData.question.question_number;
-        } else {
+      } else {
         const testResponse = await fetch(`${baseURL}/test-responses/`, {
-            method: "POST",
-            headers: {
+          method: "POST",
+          headers: {
             Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
             "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+          },
+          body: JSON.stringify({
             test_attempt_session_id: sessionId,
             question_id: questionObj.uid,
             response_text: "",
             response_file: userAudioResponse,
             user_attributes: {
-                tag: "deepchat_profile",
-                attributes: {
+              tag: "deepchat_profile",
+              attributes: {
                 username: "web_user",
                 email: user ? user.email : getAnonymousEmail(),
-                },
+              },
             },
-            }),
+          }),
         });
         const testResponseData = await testResponse.json();
         console.log(testResponseData);
         resQuestionNumber = testResponseData.question.question_number;
         console.log("que-num", resQuestionNumber);
-        }
+      }
 
-        // for generating question for dynamic and group meeting test type
-        if (questionIndex < questionLength) {
+      // for generating question for dynamic and group meeting test type
+      if (questionIndex < questionLength) {
         if (
-            testType === "dynamic_discussion_thread" ||
-            testType === "orchestrated_conversation"
+          testType === "dynamic_discussion_thread" ||
+          testType === "orchestrated_conversation"
         ) {
-            questionIndex += 1;
-            responseProcessedQuestion++;
-            console.log(questionIndex);
-            const response_text = await fetch(`${baseURL}/test-responses/`, {
+          questionIndex += 1;
+          responseProcessedQuestion++;
+          console.log(questionIndex);
+          const response_text = await fetch(`${baseURL}/test-responses/`, {
             method: "POST",
             headers: {
-                Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                "Content-Type": "application/json",
+              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                test_attempt_session_id: sessionId,
-                question_id:
+              test_attempt_session_id: sessionId,
+              question_id:
                 questionData.results[0].questions[questionIndex - 2].uid,
-                response_text: "",
-                response_file: "",
-                user_attributes: {
+              response_text: "",
+              response_file: "",
+              user_attributes: {
                 tag: "deepchat_profile",
                 attributes: {
-                    username: "web_user",
-                    email: user ? user.email : getAnonymousEmail(),
+                  username: "web_user",
+                  email: user ? user.email : getAnonymousEmail(),
                 },
-                },
+              },
             }),
-            });
+          });
 
-            const testResponseText = await response_text.json();
-            questionText = testResponseText.response_text;
+          const testResponseText = await response_text.json();
+          questionText = testResponseText.response_text;
 
-            // checking if botname is present or not
-            const responder_name = testResponseText.responder_display_name;
-            if (!questionText.includes(responder_name)) {
+          // checking if botname is present or not
+          const responder_name = testResponseText.responder_display_name;
+          if (!questionText.includes(responder_name)) {
             questionText = responder_name + " : " + questionText;
-            }
-            if (isImmersive){
-              questionText = questionText.replace(`${responder_name}`,"")
-              questionText = questionText.replace(`:`,"")
-              questionText = responder_name + " : " + questionText;
-    
-            }
+          }
+          if (isImmersive) {
+            questionText = questionText.replace(`${responder_name}`, "");
+            questionText = questionText.replace(`:`, "");
+            questionText = responder_name + " : " + questionText;
+          }
 
-            console.log(testResponseText);
-            console.log(questionText);
+          console.log(testResponseText);
+          console.log(questionText);
         }
-        }
+      }
 
-        return resQuestionNumber;
+      return resQuestionNumber;
     } catch (error) {
-        console.log("error in testResponseHandler", error);
-        console.log("questionIndex: ", questionIndex, "questionLength: ", questionLength, "testType: ", testType);
-        if( questionIndex <= questionLength && testType != "coaching") {
+      console.log("error in testResponseHandler", error);
+      console.log(
+        "questionIndex: ",
+        questionIndex,
+        "questionLength: ",
+        questionLength,
+        "testType: ",
+        testType
+      );
+      if (questionIndex <= questionLength && testType != "coaching") {
         setTimeout(() => {
-            appendMessage(
-                "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
-                );
+          appendMessage(
+            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+          );
         }, 200);
-        }
-        testResponseHandlerFailed = true;
-        return;
+      }
+      testResponseHandlerFailed = true;
+      return;
     }
   };
 
@@ -2646,9 +2681,11 @@ loadExternalModule().then(() => {
       try {
         if (body instanceof FormData) {
           //AUDIO RESPONSES
-          
-          if (isEmailForm){
-            signals.onResponse({html: "<p style='font-size: 14px;color: #991b1b;'>Please provide response in text.</p>"})
+
+          if (isEmailForm) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please provide response in text.</p>",
+            });
             return;
           }
 
@@ -2671,7 +2708,12 @@ loadExternalModule().then(() => {
           await getSessionStatus(sessionId);
 
           if (sessionStatus != "in_progress") {
-            console.log('sessionStatus',sessionStatus,sessionId,responsesDone)
+            console.log(
+              "sessionStatus",
+              sessionStatus,
+              sessionId,
+              responsesDone
+            );
             signals.onResponse({
               html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
             });
@@ -2731,43 +2773,43 @@ loadExternalModule().then(() => {
             ) {
               questionText =
                 questionData.results[0].questions[questionIndex].question;
-                questionMediaLink = questionData.results[0].questions[questionIndex].media_link;
-                if (isHindi) {
-                  questionText = TestUIInfo[`Question ${questionIndex + 1}`];
-                }
-                let responderName;
-                let strList = questionText.replaceAll("*","").split(":")
-                if (strList.length > 1){
-                  questionText = strList[1]
-                  responderName = `<b>${strList[0]}:</b><br>`
-                  
-                }
-                if(isImmersive){
-                  questionText = await TTSContainer(questionText)
-                }
-  
-                if (responderName){
-                  questionText = responderName + questionText
-                }
+              questionMediaLink =
+                questionData.results[0].questions[questionIndex].media_link;
+              if (isHindi) {
+                questionText = TestUIInfo[`Question ${questionIndex + 1}`];
+              }
+              let responderName;
+              let strList = questionText.replaceAll("*", "").split(":");
+              if (strList.length > 1) {
+                questionText = strList[1];
+                responderName = `<b>${strList[0]}:</b><br>`;
+              }
+              if (isImmersive) {
+                questionText = await TTSContainer(questionText);
+              }
 
-                const linkPattern = /(http[s]?:\/\/[^\s]+)/;
-                const is_link = linkPattern.test(questionText);
+              if (responderName) {
+                questionText = responderName + questionText;
+              }
 
-                if (questionMediaLink) {
-                  console.log(questionText);
-                  let embeddingUrl = "";
-                  if (questionMediaLink.length > 0) {
-                    if (questionMediaLink.includes("youtube.com")) {
-                      const videoId = questionMediaLink.split("v=")[1];
-                      embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                    } else if (questionMediaLink.includes("vimeo.com")) {
-                      const videoId = questionMediaLink.split("/").pop();
-                      embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                    } else if (questionMediaLink.includes("twitter.com")) {
-                      embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
-                    }
+              const linkPattern = /(http[s]?:\/\/[^\s]+)/;
+              const is_link = linkPattern.test(questionText);
 
-                    if (embeddingUrl){
+              if (questionMediaLink) {
+                console.log(questionText);
+                let embeddingUrl = "";
+                if (questionMediaLink.length > 0) {
+                  if (questionMediaLink.includes("youtube.com")) {
+                    const videoId = questionMediaLink.split("v=")[1];
+                    embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                  } else if (questionMediaLink.includes("vimeo.com")) {
+                    const videoId = questionMediaLink.split("/").pop();
+                    embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+                  } else if (questionMediaLink.includes("twitter.com")) {
+                    embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
+                  }
+
+                  if (embeddingUrl) {
                     questionText = `▪ Media <br>  <iframe
                             allow="autoplay; encrypted-media; fullscreen;"
                             style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
@@ -2776,99 +2818,109 @@ loadExternalModule().then(() => {
                             allowfullscreen
                           >
                         `;
-                    }
-                    const urlList = questionMediaLink.split(',')
-                    console.log("list",urlList)
-                    if (urlList.length > 1){
-                      urlList.forEach(element => {
-                        element = element.trim()
-                        if (element.includes('docs.google.com')){
-                          let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                          console.log(url)
-                          appendMessage(`<iframe src=${url}
+                  }
+                  const urlList = questionMediaLink.split(",");
+                  console.log("list", urlList);
+                  if (urlList.length > 1) {
+                    urlList.forEach((element) => {
+                      element = element.trim();
+                      if (element.includes("docs.google.com")) {
+                        let url =
+                          element.split("edit?")[0] +
+                          "embed?start=true&loop=true&delayms=3000";
+                        console.log(url);
+                        appendMessage(`<iframe src=${url}
                                           frameborder="0" 
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           allowfullscreen="true" 
                                           mozallowfullscreen="true" 
                                           webkitallowfullscreen="true"
-                                          ></iframe>`)
-                        }
-                        else{
-                          console.log(element)
-                          appendMessage(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                          ></iframe>`);
+                      } else {
+                        console.log(element);
+                        appendMessage(`<div ><audio style="${
+                          window.innerWidth < 600
+                            ? "width: 200px; max-width: 200px !important;"
+                            : " min-width: 50vw !important;"
+                        }" controls autoplay>
                           <source src=${element} type="audio/mpeg" />
                           Your browser does not support the audio element.
-                          </audio></div>`)
-                        }
-                      });
-                    }else {
-                      if (questionMediaLink.includes('docs.google.com')){
-                        let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                        console.log(url)
-                        appendMessage(`<iframe src=${url}
+                          </audio></div>`);
+                      }
+                    });
+                  } else {
+                    if (questionMediaLink.includes("docs.google.com")) {
+                      let url =
+                        questionMediaLink.split("edit?")[0] +
+                        "embed?start=true&loop=true&delayms=3000";
+                      console.log(url);
+                      appendMessage(`<iframe src=${url}
                                         frameborder="0" 
                                         style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                         allowfullscreen="true" 
                                         mozallowfullscreen="true" 
                                         webkitallowfullscreen="true"
-                                        ></iframe>`)
-                      }else if (questionMediaLink.includes('guidejar.com')){
-                        const guidejarId = questionMediaLink.split('/').pop()
-                        appendMessage(`
+                                        ></iframe>`);
+                    } else if (questionMediaLink.includes("guidejar.com")) {
+                      const guidejarId = questionMediaLink.split("/").pop();
+                      appendMessage(`
                         <div style="width:640px">
                         <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
                         <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                         ></div></div>
-                        `)
-                      }
+                        `);
                     }
                   }
                 }
-              
-                console.log(`que_image ${questionIndex + 1}`)
-                if(mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
-                  const questionpropName = `que_image ${questionIndex + 1}`
+              }
 
-                  const url = Object.keys(mediaProps[questionpropName])[0];
-                  let narration;
-                  let coords = []
-                  const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+              console.log(`que_image ${questionIndex + 1}`);
+              if (
+                mediaProps &&
+                Object.keys(mediaProps).includes(
+                  `que_image ${questionIndex + 1}`
+                )
+              ) {
+                const questionpropName = `que_image ${questionIndex + 1}`;
 
-                  coordAndTitleNarrationList.forEach(element =>{
-                    if (typeof element === 'string'){
-                      narration = element
-                    } else{
-                      coords.push(element)
-                    }
-                  })
+                const url = Object.keys(mediaProps[questionpropName])[0];
+                let narration;
+                let coords = [];
+                const coordAndTitleNarrationList =
+                  mediaProps[questionpropName][url];
 
-                  
-                  const imageUrl = url
-                  
-
-                  const ttsNarration = await TTSContainer(narration)
-                  const imageId = `mediaImage${questionIndex}`
-                  const imageMapName = `image-map${questionIndex}`
-                  const imageTooltipId = `tooltip-${questionIndex}`
-
-
-                     
-                  questionText = (`▪ ${ttsNarration}<br><br>
-                                  ▪ <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                                  ▪ Question : <br> ${questionText}
-                                  `)
-
-                  signals.onResponse({
-                    html: questionText,
-                  });
-                  setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
-                  console.log("IMAGE MAPPED WITH COORDS")
-
-                }else{
-                  signals.onResponse({
-                    html: questionText,
-                  });
+                coordAndTitleNarrationList.forEach((element) => {
+                  if (typeof element === "string") {
+                    narration = element;
+                  } else {
+                    coords.push(element);
                   }
+                });
+
+                const imageUrl = url;
+
+                const ttsNarration = await TTSContainer(narration);
+                const imageId = `mediaImage${questionIndex}`;
+                const imageMapName = `image-map${questionIndex}`;
+                const imageTooltipId = `tooltip-${questionIndex}`;
+
+                questionText = `▪ ${ttsNarration}<br><br>
+                                  ▪ <img src=${imageUrl} ${
+                  window.innerWidth < 768 ? "width='200'" : "width='400'"
+                } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                                  ▪ Question : <br> ${questionText}
+                                  `;
+
+                signals.onResponse({
+                  html: questionText,
+                });
+                setHoverPoints(coords, imageId, imageMapName, imageTooltipId);
+                console.log("IMAGE MAPPED WITH COORDS");
+              } else {
+                signals.onResponse({
+                  html: questionText,
+                });
+              }
             }
           }
 
@@ -2906,29 +2958,32 @@ loadExternalModule().then(() => {
               console.log("going to call testResponseHandler()");
               await testResponseHandler(formdata, questionObj);
               console.log("call to testResponseHandler() done");
-              if (maxUploadFailed === true || testResponseHandlerFailed === true) {
+              if (
+                maxUploadFailed === true ||
+                testResponseHandlerFailed === true
+              ) {
                 maxUploadFailed = false;
                 testResponseHandlerFailed = false;
                 resetAllVariables();
                 signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
                 });
                 return;
               }
 
               if (testType === "coaching") {
                 let responderName;
-                const strList = questionText.split(":",)
-                if (strList.length > 1){
-                  responderName = `<b>${strList[0]}:</b><br>`
-                  questionText = strList[1]
+                const strList = questionText.split(":");
+                if (strList.length > 1) {
+                  responderName = `<b>${strList[0]}:</b><br>`;
+                  questionText = strList[1];
                 }
-                if(isImmersive){
-                  questionText = await TTSContainer(questionText)
+                if (isImmersive) {
+                  questionText = await TTSContainer(questionText);
                 }
-                  
-                if (responderName){
-                  questionText = responderName + questionText
+
+                if (responderName) {
+                  questionText = responderName + questionText;
                 }
                 const dataToShow = getCoachingQuestionData(questionText);
                 signals.onResponse({
@@ -2944,18 +2999,18 @@ loadExternalModule().then(() => {
                   testType === "orchestrated_conversation" ||
                   testType === "dynamic_discussion_thread"
                 ) {
-                  const stringList = questionText.split(':', 2)
-                  console.log(stringList)
+                  const stringList = questionText.split(":", 2);
+                  console.log(stringList);
                   let responderName;
-                  if (stringList.length > 1){
-                    questionText = stringList[1]
-                    responderName = `<b>${stringList[0]}:</b><br>`
+                  if (stringList.length > 1) {
+                    questionText = stringList[1];
+                    responderName = `<b>${stringList[0]}:</b><br>`;
                   }
-                  if (isImmersive && questionIndex != 0){
+                  if (isImmersive && questionIndex != 0) {
                     questionText = await TTSContainer(questionText);
                   }
-                  if(responderName){
-                    questionText = responderName + questionText
+                  if (responderName) {
+                    questionText = responderName + questionText;
                   }
                   signals.onResponse({
                     html: questionText,
@@ -3001,8 +3056,8 @@ loadExternalModule().then(() => {
                   // signals.onResponse({
                   //   html: credentialsForm,
                   // });
-                  isEmailForm = true
-                  formFields = ['name', 'email']
+                  isEmailForm = true;
+                  formFields = ["name", "email"];
                   signals.onResponse({
                     html: `<b>Please enter your ${formFields[0]}</b>`,
                   });
@@ -3069,7 +3124,7 @@ loadExternalModule().then(() => {
                 };
               }
 
-              console.log(getReportBody, senarioCase)
+              console.log(getReportBody, senarioCase);
 
               if (responsesDone) {
                 await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -3082,7 +3137,7 @@ loadExternalModule().then(() => {
                 })
                   .then((response) => response.json())
                   .then((data) => {
-                    console.log("REPORT 2")
+                    console.log("REPORT 2");
 
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
@@ -3123,15 +3178,15 @@ loadExternalModule().then(() => {
 
           // get latest message
           const latestMessage = body.messages[body.messages.length - 1].text;
-          if (isEmailForm){
-            await proceedFormFlow(latestMessage)
-            if(formFields.length >0){
+          if (isEmailForm) {
+            await proceedFormFlow(latestMessage);
+            if (formFields.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFields[0]}<b>`
-              })
-            } else{
+                html: `<b>Please enter your ${formFields[0]}<b>`,
+              });
+            } else {
               isEmailForm = false;
-              
+
               const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
               appendMessage(message);
               // //* send message to start new session
@@ -3140,12 +3195,14 @@ loadExternalModule().then(() => {
                 html: "<b>Please enter another access code to start a new interaction.</b>",
               });
               submitEmailAndName();
-            
             }
             return;
           }
           console.log("Latest Message ===> ", latestMessage);
-          if ((testType === "mcq" || testType === "dynamic_mcq") && latestMessage.toUpperCase() != "STOP") {
+          if (
+            (testType === "mcq" || testType === "dynamic_mcq") &&
+            latestMessage.toUpperCase() != "STOP"
+          ) {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -3236,7 +3293,7 @@ loadExternalModule().then(() => {
             //   html: "<b>Your session is terminated. You can restart again!</b>",
             // });
             resetAllVariables().then(() => {
-              console.log("Your session is terminated. You can restart again!")
+              console.log("Your session is terminated. You can restart again!");
 
               signals.onResponse({
                 html: "<b>Your session is terminated. You can restart again!</b>",
@@ -3302,25 +3359,23 @@ loadExternalModule().then(() => {
                 return;
               }
 
-              if ( isDuplicateResponse(latestMessage)) {
+              if (isDuplicateResponse(latestMessage)) {
                 DuplicateResponseCount += 1;
                 if (DuplicateResponseCount > 1) {
                   resetAllVariables();
                   signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
-                });
-                return;
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+                  });
+                  return;
                 }
 
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
                 });
                 return;
-              }
-              else {
+              } else {
                 userResponses2.push(latestMessage);
               }
-
             }
           }
 
@@ -3402,9 +3457,7 @@ loadExternalModule().then(() => {
                 mediaProps = questionData.results[0].media_props;
                 isTranscriptOnly = questionData.results[0].is_transcript_only;
 
-
-
-                console.log(mediaProps,"props")
+                console.log(mediaProps, "props");
 
                 isTestcodeValid = true;
 
@@ -3610,13 +3663,14 @@ loadExternalModule().then(() => {
                     }
                   } else {
                     if (testType === "mcq" || testType === "dynamic_mcq") {
-                      console.log("mcq or dynamic mcq : YES")
+                      console.log("mcq or dynamic mcq : YES");
                       questionText =
                         questionData.results[0].questions[questionIndex]
                           .question;
-                      questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
+                      questionMediaLink =
+                        questionData.results[0].questions[questionIndex]
+                          .media_link;
 
-                      
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
                       const mcqOptions =
@@ -3637,12 +3691,14 @@ loadExternalModule().then(() => {
                           } else if (questionMediaLink.includes("vimeo.com")) {
                             const videoId = questionMediaLink.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionMediaLink.includes("twitter.com")) {
+                          } else if (
+                            questionMediaLink.includes("twitter.com")
+                          ) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
                           }
-                  
-                          if (embeddingUrl){
-                          questionText = `▪ Media <br>  <iframe
+
+                          if (embeddingUrl) {
+                            questionText = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -3651,104 +3707,125 @@ loadExternalModule().then(() => {
                                         >
                           `;
                           }
-                          const urlList = questionMediaLink.split(',')
-                          console.log("list",urlList)
-                          if (urlList.length > 1){
-                            urlList.forEach(element => {
-                              element = element.trim()
-                              if (element.includes('docs.google.com')){
-                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                                console.log(url)
-                                questionText = questionText + '\n' +(`<iframe src=${url}
+                          const urlList = questionMediaLink.split(",");
+                          console.log("list", urlList);
+                          if (urlList.length > 1) {
+                            urlList.forEach((element) => {
+                              element = element.trim();
+                              if (element.includes("docs.google.com")) {
+                                let url =
+                                  element.split("edit?")[0] +
+                                  "embed?start=true&loop=true&delayms=3000";
+                                console.log(url);
+                                questionText =
+                                  questionText +
+                                  "\n" +
+                                  `<iframe src=${url}
                                                 frameborder="0" 
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 allowfullscreen="true" 
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
-                                                ></iframe>`)
-                              }
-                              else{
-                                console.log(element)
-                                questionText = questionText + '\n' +(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                                ></iframe>`;
+                              } else {
+                                console.log(element);
+                                questionText =
+                                  questionText +
+                                  "\n" +
+                                  `<div ><audio style="${
+                                    window.innerWidth < 600
+                                      ? "width: 200px; max-width: 200px !important;"
+                                      : " min-width: 50vw !important;"
+                                  }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`)
+                                </audio></div>`;
                               }
                             });
-                          }else {
-                            if (questionMediaLink.includes('docs.google.com')){
-                              let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                              console.log(url)
-                              questionText = questionText.replaceAll(":","")
-                              if(isImmersive){
-                                console.log(questionText)
-                                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
+                          } else {
+                            if (questionMediaLink.includes("docs.google.com")) {
+                              let url =
+                                questionMediaLink.split("edit?")[0] +
+                                "embed?start=true&loop=true&delayms=3000";
+                              console.log(url);
+                              questionText = questionText.replaceAll(":", "");
+                              if (isImmersive) {
+                                console.log(questionText);
+                                const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`;
                                 const response = await fetch(urltts, {
                                   method: "GET",
                                   headers: {
-                                    Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+                                    Authorization: `Basic ${createBasicAuthToken(
+                                      key,
+                                      secret
+                                    )}`,
                                   },
                                 });
-                          
+
                                 const blob = await response.blob();
-                                console.log('respnse', blob);
-                          
+                                console.log("respnse", blob);
+
                                 const objectUrl = URL.createObjectURL(blob);
-                                
-                                console.log(objectUrl,'url')
-                                questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+
+                                console.log(objectUrl, "url");
+                                questionText = `<div ><audio style="${
+                                  window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${objectUrl} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`
-                                console.log(questionText)
-
+                                </audio></div>`;
+                                console.log(questionText);
                               }
-                              console.log("last",questionText)
-                              
+                              console.log("last", questionText);
 
-                              questionText = questionText + '\n' +(`<iframe src=${url}
+                              questionText =
+                                questionText +
+                                "\n" +
+                                `<iframe src=${url}
                                               frameborder="0" 
                                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                               allowfullscreen="true" 
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
-                                              ></iframe>`)
+                                              ></iframe>`;
                             }
                           }
-                          }
                         }
+                      }
 
-                        if(isImmersive && !questionMediaLink){
-                          questionText = questionText.replaceAll(":","")
-                          console.log('first', questionText)
+                      if (isImmersive && !questionMediaLink) {
+                        questionText = questionText.replaceAll(":", "");
+                        console.log("first", questionText);
 
-                          
-                          const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`
-                          const response = await fetch(urltts, {
-                            method: "GET",
-                            headers: {
-                              Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-                            },
-                          });
-                    
-                          const blob = await response.blob();
-                          console.log('respnse', blob);
-                    
-                          const objectUrl = URL.createObjectURL(blob);
-                          
-                          console.log(objectUrl,'url')
-                          questionText = `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                        const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${questionText}`;
+                        const response = await fetch(urltts, {
+                          method: "GET",
+                          headers: {
+                            Authorization: `Basic ${createBasicAuthToken(
+                              key,
+                              secret
+                            )}`,
+                          },
+                        });
+
+                        const blob = await response.blob();
+                        console.log("respnse", blob);
+
+                        const objectUrl = URL.createObjectURL(blob);
+
+                        console.log(objectUrl, "url");
+                        questionText = `<div ><audio style="${
+                          window.innerWidth < 600
+                            ? "width: 200px; max-width: 200px !important;"
+                            : " min-width: 50vw !important;"
+                        }" controls autoplay>
                           <source src=${objectUrl} type="audio/mpeg" />
                           Your browser does not support the audio element.
-                          </audio></div>`
-                          console.log(questionText)
-
-                          
-                        }
-                      
-                  
-                      
-
+                          </audio></div>`;
+                        console.log(questionText);
+                      }
 
                       formRadio = `
                       <div id='mcq-option-${mcqFormId}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
@@ -3771,18 +3848,17 @@ loadExternalModule().then(() => {
                         questionText =
                           questionData.results[0].questions[questionIndex]
                             .question;
-                        questionMediaLink =questionData.results[0].questions[questionIndex].media_link;
-
+                        questionMediaLink =
+                          questionData.results[0].questions[questionIndex]
+                            .media_link;
                       }
-                      
+
                       if (isHindi) {
                         questionText =
                           TestUIInfo[`Question ${questionIndex + 1}`];
                       }
                       const linkPattern = /(http[s]?:\/\/[^\s]+)/;
                       const is_link = linkPattern.test(questionText);
-
-                      
                     }
                   }
 
@@ -3883,7 +3959,11 @@ loadExternalModule().then(() => {
                               } else {
                                 console.log(element);
                                 appendMessage(
-                                  `<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                  `<div ><audio style="${
+                                    window.innerWidth < 600
+                                      ? "width: 200px; max-width: 200px !important;"
+                                      : " min-width: 50vw !important;"
+                                  }" controls autoplay>
                                   <source src=${element} type="audio/mpeg" />
                                   Your browser does not support the audio element.
                                   </audio></div>`
@@ -3912,8 +3992,12 @@ loadExternalModule().then(() => {
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
                                               ></iframe>`);
-                            } else if (senarioMediaDescription.includes('guidejar.com')){
-                              const guidejarId = senarioMediaDescription.split('/').pop()
+                            } else if (
+                              senarioMediaDescription.includes("guidejar.com")
+                            ) {
+                              const guidejarId = senarioMediaDescription
+                                .split("/")
+                                .pop();
                               appendMessage(
                                 `▪ Title : ${senarioTitle} <br><br>
                               ▪ Description : ${senarioDescription} <br><br>
@@ -3925,9 +4009,8 @@ loadExternalModule().then(() => {
                               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
-                              `)
-                            }
-                            else {
+                              `);
+                            } else {
                               appendMessage(
                                 `▪ Title : ${senarioTitle} <br><br>
                                     ▪ Description : ${senarioDescription} <br><br>
@@ -3965,45 +4048,57 @@ loadExternalModule().then(() => {
                         html: questionText,
                       });
                       //   }
-                    } else if (mediaProps && Object.keys(mediaProps).includes('test_image')){
-                      console.log("Media props here", mediaProps)
+                    } else if (
+                      mediaProps &&
+                      Object.keys(mediaProps).includes("test_image")
+                    ) {
+                      console.log("Media props here", mediaProps);
                       console.log("SHOW MEDIA PROPS here", mediaProps);
                       // const [imageUrl, coords] = Object.entries(
                       //   mediaProps.test_image
                       // )[0];
                       const imageUrl = Object.keys(mediaProps["test_image"])[0];
                       let narration;
-                      let coords = []
-                      const coordAndTitleNarrationList = mediaProps["test_image"][imageUrl];
+                      let coords = [];
+                      const coordAndTitleNarrationList =
+                        mediaProps["test_image"][imageUrl];
 
-                      coordAndTitleNarrationList.forEach(element =>{
-                        if (typeof element === 'string'){
-                          narration = element
-                        } else{
-                          coords.push(element)
+                      coordAndTitleNarrationList.forEach((element) => {
+                        if (typeof element === "string") {
+                          narration = element;
+                        } else {
+                          coords.push(element);
                         }
-                      })
-                      const ttsNarration = await TTSContainer(narration)
-                      const imageId = "mediaImage"
-                      const imageMapName = "image-map"
-                      const imageTooltipId = "tooltip"
+                      });
+                      const ttsNarration = await TTSContainer(narration);
+                      const imageId = "mediaImage";
+                      const imageMapName = "image-map";
+                      const imageTooltipId = "tooltip";
 
                       appendMessage(
-                            `▪ Title : ${senarioTitle} <br><br>
+                        `▪ Title : ${senarioTitle} <br><br>
                              ▪ Description : ${senarioDescription} <br><br>
                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪  <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                             ▪ ${ttsNarration}` 
+                             ▪  <img src=${imageUrl} ${
+                          window.innerWidth < 768
+                            ? "width='200'"
+                            : "width='400'"
+                        } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                             ▪ ${ttsNarration}`
                       );
                       signals.onResponse({
                         html: questionText,
                       });
 
-                      // pass - coords, imagemap-name, 
-                      setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
-                      console.log("IMAGE MAPPED WITH COORDS")
-                    }
-                    else {
+                      // pass - coords, imagemap-name,
+                      setHoverPoints(
+                        coords,
+                        imageId,
+                        imageMapName,
+                        imageTooltipId
+                      );
+                      console.log("IMAGE MAPPED WITH COORDS");
+                    } else {
                       signals.onResponse({
                         html: questionText,
                         text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
@@ -4017,18 +4112,17 @@ loadExternalModule().then(() => {
                       testType != "coaching"
                     ) {
                       let responderName;
-                      let strList = questionText.replaceAll("*","").split(":")
-                      if (strList.length > 1){
-                        questionText = strList[1]
-                        responderName = `<b>${strList[0]}:</b><br>`
-                        
+                      let strList = questionText.replaceAll("*", "").split(":");
+                      if (strList.length > 1) {
+                        questionText = strList[1];
+                        responderName = `<b>${strList[0]}:</b><br>`;
                       }
-                      if(isImmersive){
-                      questionText = await TTSContainer(questionText)
+                      if (isImmersive) {
+                        questionText = await TTSContainer(questionText);
                       }
 
-                      if (responderName){
-                        questionText = responderName + questionText
+                      if (responderName) {
+                        questionText = responderName + questionText;
                       }
 
                       if (questionMediaLink) {
@@ -4041,12 +4135,14 @@ loadExternalModule().then(() => {
                           } else if (questionMediaLink.includes("vimeo.com")) {
                             const videoId = questionMediaLink.split("/").pop();
                             embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (questionMediaLink.includes("twitter.com")) {
+                          } else if (
+                            questionMediaLink.includes("twitter.com")
+                          ) {
                             embeddingUrl = `https://twitframe.com/show?url=${questionMediaLink}`;
                           }
 
-                          if (embeddingUrl){
-                          questionText = `▪ Media <br>  <iframe
+                          if (embeddingUrl) {
+                            questionText = `▪ Media <br>  <iframe
                                           allow="autoplay; encrypted-media; fullscreen;"
                                           style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                           src=${embeddingUrl}
@@ -4055,105 +4151,127 @@ loadExternalModule().then(() => {
                                         >
                           `;
                           }
-                          const urlList = questionMediaLink.split(',')
-                          console.log("list",urlList)
-                          if (urlList.length > 1){
-                            urlList.forEach(element => {
-                              element = element.trim()
-                              if (element.includes('docs.google.com')){
-                                let url = element.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                                console.log(url)
+                          const urlList = questionMediaLink.split(",");
+                          console.log("list", urlList);
+                          if (urlList.length > 1) {
+                            urlList.forEach((element) => {
+                              element = element.trim();
+                              if (element.includes("docs.google.com")) {
+                                let url =
+                                  element.split("edit?")[0] +
+                                  "embed?start=true&loop=true&delayms=3000";
+                                console.log(url);
                                 appendMessage(`<iframe src=${url}
                                                 frameborder="0" 
                                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
                                                 allowfullscreen="true" 
                                                 mozallowfullscreen="true" 
                                                 webkitallowfullscreen="true"
-                                                ></iframe>`)
-                              }
-                              else{
-                                console.log(element)
-                                appendMessage(`<div ><audio style="${window.innerWidth < 600 ? "width: 200px; max-width: 200px !important;" : " min-width: 50vw !important;"}" controls autoplay>
+                                                ></iframe>`);
+                              } else {
+                                console.log(element);
+                                appendMessage(`<div ><audio style="${
+                                  window.innerWidth < 600
+                                    ? "width: 200px; max-width: 200px !important;"
+                                    : " min-width: 50vw !important;"
+                                }" controls autoplay>
                                 <source src=${element} type="audio/mpeg" />
                                 Your browser does not support the audio element.
-                                </audio></div>`)
+                                </audio></div>`);
                               }
                             });
-                          }else {
-                            if (questionMediaLink.includes('docs.google.com')){
-                              let url = questionMediaLink.split('edit?')[0] + 'embed?start=true&loop=true&delayms=3000'
-                              console.log(url)
+                          } else {
+                            if (questionMediaLink.includes("docs.google.com")) {
+                              let url =
+                                questionMediaLink.split("edit?")[0] +
+                                "embed?start=true&loop=true&delayms=3000";
+                              console.log(url);
                               appendMessage(`<iframe src=${url}
                                               frameborder="0" 
                                               style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
                                               allowfullscreen="true" 
                                               mozallowfullscreen="true" 
                                               webkitallowfullscreen="true"
-                                              ></iframe>`)
-                            }else if (questionMediaLink.includes('guidejar.com')){
-                              const guidejarId = questionMediaLink.split('/').pop()
+                                              ></iframe>`);
+                            } else if (
+                              questionMediaLink.includes("guidejar.com")
+                            ) {
+                              const guidejarId = questionMediaLink
+                                .split("/")
+                                .pop();
                               appendMessage(`
                               <div style="width:640px">
                               <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
                               <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
                               ></div></div>
-                              `)
+                              `);
                             }
-                          }
                           }
                         }
-                      if (questionText){
-                        
-                        console.log(`que_image ${questionIndex + 1}`)
-                        if( mediaProps && Object.keys(mediaProps).includes(`que_image ${questionIndex + 1}`)){
-                          const questionpropName = `que_image ${questionIndex + 1}`
+                      }
+                      if (questionText) {
+                        console.log(`que_image ${questionIndex + 1}`);
+                        if (
+                          mediaProps &&
+                          Object.keys(mediaProps).includes(
+                            `que_image ${questionIndex + 1}`
+                          )
+                        ) {
+                          const questionpropName = `que_image ${
+                            questionIndex + 1
+                          }`;
 
-                          const url = Object.keys(mediaProps[questionpropName])[0];
+                          const url = Object.keys(
+                            mediaProps[questionpropName]
+                          )[0];
                           let narration;
-                          let coords = []
-                          const coordAndTitleNarrationList = mediaProps[questionpropName][url];
+                          let coords = [];
+                          const coordAndTitleNarrationList =
+                            mediaProps[questionpropName][url];
 
-                          coordAndTitleNarrationList.forEach(element =>{
-                            if (typeof element === 'string'){
-                              narration = element
-                            } else{
-                              coords.push(element)
+                          coordAndTitleNarrationList.forEach((element) => {
+                            if (typeof element === "string") {
+                              narration = element;
+                            } else {
+                              coords.push(element);
                             }
-                          })
+                          });
 
-                          
-                          const imageUrl = url
-                          
+                          const imageUrl = url;
 
-                          const ttsNarration = await TTSContainer(narration)
-                          const imageId = `mediaImage${questionIndex}`
-                          const imageMapName = `image-map${questionIndex}`
-                          const imageTooltipId = `tooltip-${questionIndex}`
+                          const ttsNarration = await TTSContainer(narration);
+                          const imageId = `mediaImage${questionIndex}`;
+                          const imageMapName = `image-map${questionIndex}`;
+                          const imageTooltipId = `tooltip-${questionIndex}`;
 
-
-                             
-                          questionText = (`▪  ${ttsNarration}<br><br>
-                                          ▪ <br> <img src=${imageUrl} ${window.innerWidth < 768 ? "width='200'" : "width='400'" } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+                          questionText = `▪  ${ttsNarration}<br><br>
+                                          ▪ <br> <img src=${imageUrl} ${
+                            window.innerWidth < 768
+                              ? "width='200'"
+                              : "width='400'"
+                          } usemap="#${imageMapName}" id=${imageId} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                                           ▪ Question : <br> ${questionText}
-                                          `)
+                                          `;
 
                           signals.onResponse({
                             html: questionText,
                           });
-                          setHoverPoints(coords, imageId, imageMapName,imageTooltipId)
-                          console.log("IMAGE MAPPED WITH COORDS")
+                          setHoverPoints(
+                            coords,
+                            imageId,
+                            imageMapName,
+                            imageTooltipId
+                          );
+                          console.log("IMAGE MAPPED WITH COORDS");
 
-
-                          // questionText2 = questionText2 + imageDiv 
-                        }else{
-                          console.log("resp",questionText)
+                          // questionText2 = questionText2 + imageDiv
+                        } else {
+                          console.log("resp", questionText);
                           signals.onResponse({
                             html: questionText,
                           });
                         }
                       }
-
-                      
                     }
                   }
                 }
@@ -4218,17 +4336,17 @@ loadExternalModule().then(() => {
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
                     let responderName;
-                    const strList = questionText.split(":",)
-                    if (strList.length > 1){
-                      responderName = `<b>${strList[0]}:</b><br>`
-                      questionText = strList[1]
+                    const strList = questionText.split(":");
+                    if (strList.length > 1) {
+                      responderName = `<b>${strList[0]}:</b><br>`;
+                      questionText = strList[1];
                     }
-                    if(isImmersive){
-                      questionText = await TTSContainer(questionText)
+                    if (isImmersive) {
+                      questionText = await TTSContainer(questionText);
                     }
-                      
-                    if (responderName){
-                      questionText = responderName + questionText
+
+                    if (responderName) {
+                      questionText = responderName + questionText;
                     }
                     const dataToShow = getCoachingQuestionData(questionText);
                     signals.onResponse({
@@ -4313,11 +4431,13 @@ loadExternalModule().then(() => {
                       if (!questionText.includes(responder_name)) {
                         questionText = responder_name + " : " + questionText;
                       }
-                      if (isImmersive){
-                        questionText = questionText.replace(`${responder_name}`,"")
-                        questionText = questionText.replace(`:`,"")
+                      if (isImmersive) {
+                        questionText = questionText.replace(
+                          `${responder_name}`,
+                          ""
+                        );
+                        questionText = questionText.replace(`:`, "");
                         questionText = responder_name + " : " + questionText;
-
                       }
                       console.log(questionText);
                       resQuestionNumber = qRespnse.question.question_number;
@@ -4330,18 +4450,18 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
-                    const stringList = questionText.split(':', )
-                    console.log(stringList)
+                    const stringList = questionText.split(":");
+                    console.log(stringList);
                     let responderName;
-                    if (stringList.length > 1){
-                      questionText = stringList[1]
-                      responderName = `<b>${stringList[0]}:</b><br>`
+                    if (stringList.length > 1) {
+                      questionText = stringList[1];
+                      responderName = `<b>${stringList[0]}:</b><br>`;
                     }
-                    if (isImmersive && questionIndex != 0){
+                    if (isImmersive && questionIndex != 0) {
                       questionText = await TTSContainer(questionText);
                     }
-                    if(responderName){
-                      questionText = responderName + questionText
+                    if (responderName) {
+                      questionText = responderName + questionText;
                     }
                     signals.onResponse({
                       html: questionText,
@@ -4395,8 +4515,8 @@ loadExternalModule().then(() => {
                     // signals.onResponse({
                     //   html: credentialsForm,
                     // });
-                    isEmailForm = true
-                    formFields = ['name', 'email']
+                    isEmailForm = true;
+                    formFields = ["name", "email"];
                     signals.onResponse({
                       html: `<b>Please enter your ${formFields[0]}</b>`,
                     });
@@ -4450,17 +4570,17 @@ loadExternalModule().then(() => {
                       report_type: reportType,
                       test_attempt_session_id: sessionId,
                     };
-                  } else if (senarioCase === "process_training"){
-                      reportType = "processTrainingReport";
-                      getReportBody = {
-                        user_id: participantId,
-                        report_type: reportType,
-                        session_id: sessionId,
-                        interaction_id: testId,
-                      };
+                  } else if (senarioCase === "process_training") {
+                    reportType = "processTrainingReport";
+                    getReportBody = {
+                      user_id: participantId,
+                      report_type: reportType,
+                      session_id: sessionId,
+                      interaction_id: testId,
+                    };
                   }
 
-                  console.log(getReportBody, senarioCase)
+                  console.log(getReportBody, senarioCase);
 
                   console.log(sessionId);
                   const reportResponse = await fetch(
@@ -4481,7 +4601,7 @@ loadExternalModule().then(() => {
                   const reportData = await reportResponse.json();
                   reportUrl = reportData.url;
                   globalReportUrl = reportUrl;
-                  console.log("REPORT 3")
+                  console.log("REPORT 3");
                   console.log("Report Url : ", reportUrl, globalReportUrl);
                   // const urlObject = new URL(reportUrl);
                   // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
@@ -4497,7 +4617,7 @@ loadExternalModule().then(() => {
                     const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     appendMessage(message);
                     // //* send message to start new session
-                    
+
                     signals.onResponse({
                       html: "<b>Please enter another access code to start a new interaction.</b>",
                     });
@@ -4598,7 +4718,7 @@ const openChatContainer = () => {
       mediaRecorder = new MediaRecorder(stream);
       isRecording = true;
       isRecordingGlobal = true;
-      console.log("IS RECORDING ", isRecording,isRecordingGlobal)
+      console.log("IS RECORDING ", isRecording, isRecordingGlobal);
       audioChunks = [];
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -4610,7 +4730,9 @@ const openChatContainer = () => {
       mediaRecorder.onstop = async () => {
         let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
 
-        const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
+        const audioBuffer = await audioContext.decodeAudioData(
+          await audioBlob.arrayBuffer()
+        );
         audioDuration = audioBuffer.duration;
         console.log("at INIT - Audio duration:", audioDuration);
 
@@ -4624,7 +4746,7 @@ const openChatContainer = () => {
         audioFileSrc = fileUrl;
         // audioFileSrcMap[`${questionIndex}`] = fileUrl;
         isRecordingGlobal = false;
-        console.log('glrecor',isRecordingGlobal)
+        console.log("glrecor", isRecordingGlobal);
       };
 
       mediaRecorder.start();
@@ -4632,11 +4754,11 @@ const openChatContainer = () => {
       console.error("Error accessing microphone:", error);
     }
   }
-  
-  console.log("IS RECORDING ", isRecording)
+
+  console.log("IS RECORDING ", isRecording);
   if (micButton) {
     micButton.addEventListener("click", () => {
-      if(!isRecording){
+      if (!isRecording) {
         startRecording();
       }
     });
@@ -4644,10 +4766,10 @@ const openChatContainer = () => {
 
   if (sendBtn) {
     sendBtn.addEventListener("click", () => {
-      stream.getTracks().forEach(track => track.stop())
+      stream.getTracks().forEach((track) => track.stop());
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
-        isRecording = false
+        isRecording = false;
       }
     });
   }
