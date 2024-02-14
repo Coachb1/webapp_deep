@@ -3885,7 +3885,7 @@ loadExternalModule().then(() => {
 
               try {
                 const response = await fetch(
-                  `${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}`,
+                  `${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}&creator_user_id=${userId2}&test_type=test`,
                   {
                     method: "GET",
                     headers: {
