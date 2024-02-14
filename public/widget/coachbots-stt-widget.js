@@ -629,8 +629,7 @@ const feedbackBotInitialFlow = async (flow) => {
   }
 };
 
-const getUserBotConversation = async (participant_id)=>{
-    
+const getUserBotConversation = async (participant_id) => {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
 
   try {
@@ -642,19 +641,28 @@ const getUserBotConversation = async (participant_id)=>{
     });
 
     const botConv = await response.json();
-    console.log("PRevious conversations", botConv,botConv[0]['results'].length)
-    if (botConv.length > 0){
-      if (botConv[0]['results'].length > 0){
-        const lastConv = botConv[0]['results'][botConv[0]['results'].length - 1]
-        console.log("last converstion session",lastConv.uid,lastConv.session_id,lastConv)
-        previousBotConversationId =  `${lastConv.uid}:${lastConv.session_id}`
+    console.log(
+      "PRevious conversations",
+      botConv,
+      botConv[0]["results"].length
+    );
+    if (botConv.length > 0) {
+      if (botConv[0]["results"].length > 0) {
+        const lastConv =
+          botConv[0]["results"][botConv[0]["results"].length - 1];
+        console.log(
+          "last converstion session",
+          lastConv.uid,
+          lastConv.session_id,
+          lastConv
+        );
+        previousBotConversationId = `${lastConv.uid}:${lastConv.session_id}`;
+      }
     }
-  }
-    
   } catch (error) {
     console.error(`Error in getUserBotConversation: ${error}`);
   }
-}
+};
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -871,7 +879,7 @@ const handleFitmentAnalysis = async () => {
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
-function sendMessage(item){
+function sendMessage(item) {
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot2.getElementById("text-input").textContent = item;
@@ -881,72 +889,64 @@ function sendMessage(item){
   }, 100);
 }
 
-function handleRadioTypeInitialQuestion(
-  questionOptions,
-  question_text,
-) {
-    let optioncont = "";
-    questionOptions.forEach((item, index) => {
-      optioncont += `<button  onclick="sendMessage('${item}')" style="display: inline-block; margin-right: 5px;">${item}</button>   `;
-    });
-    formRadio = `
+function handleRadioTypeInitialQuestion(questionOptions, question_text) {
+  let optioncont = "";
+  questionOptions.forEach((item, index) => {
+    optioncont += `<button  onclick="sendMessage('${item}')" style="display: inline-block; margin-right: 5px;">${item}</button>   `;
+  });
+  formRadio = `
             <div id='question-initial' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="special_radio"><b>Q. </b>${question_text}</div>
             <div id='intial-options' class="deep-chat-temporary-message">${optioncont} </div>
            `;
 
-    return formRadio;
+  return formRadio;
 }
-async function handlePreviousConversation(choice){
-
-  if ( choice === 'previous'){
-    conversation_id2 = previousBotConversationId.split(':')[0]
-    sessionId2 = previousBotConversationId.split(':')[1]
-    isBotInitialized = true
+async function handlePreviousConversation(choice) {
+  if (choice === "previous") {
+    conversation_id2 = previousBotConversationId.split(":")[0];
+    sessionId2 = previousBotConversationId.split(":")[1];
+    isBotInitialized = true;
   }
 
-    botInitialQuestionsIndex = 1;
-    optedBeginSession = true;
-    if (botType === "avatar_bot") {
-      await getFitmentScore(userId2);
-      console.log(isBeginSessionProceed);
+  botInitialQuestionsIndex = 1;
+  optedBeginSession = true;
+  if (botType === "avatar_bot") {
+    await getFitmentScore(userId2);
+    console.log(isBeginSessionProceed);
 
-      if (
-        !isBeginSessionProceed &&
-        isFitmentAllowed &&
-        isStrictFitment &&
-        CoachingForFitment === "anyone"
-      ) {
-        appendMessage2(
-          "Your fitment score is low or has not been attempted. Please proceed with this in mind."
-        );
-      }
-    }
-    console.log(botType);
-    if (botType === "subject_matter_bot" || choice === 'previous') {
-      if (choice === 'previous'){
-        appendMessage2("Please provide context to continue conversaton.");
-
-      }else{
-        appendMessage2("Please provide context to start conversaton.");
-      }
-      return;
-    }
-
-    isAskingInitialQuestions = true;
-
-    const question = botInitialQuestions[botInitialQuestionsIndex];
-    if (typeof question === "string") {
-      appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
-    } else {
-      const radio_cont = handleRadioTypeInitialQuestion(
-        question["options"],
-        question["question"]
-        
+    if (
+      !isBeginSessionProceed &&
+      isFitmentAllowed &&
+      isStrictFitment &&
+      CoachingForFitment === "anyone"
+    ) {
+      appendMessage2(
+        "Your fitment score is low or has not been attempted. Please proceed with this in mind."
       );
-      appendMessage2(radio_cont);
     }
+  }
+  console.log(botType);
+  if (botType === "subject_matter_bot" || choice === "previous") {
+    if (choice === "previous") {
+      appendMessage2("Please provide context to continue conversaton.");
+    } else {
+      appendMessage2("Please provide context to start conversaton.");
+    }
+    return;
+  }
 
+  isAskingInitialQuestions = true;
 
+  const question = botInitialQuestions[botInitialQuestionsIndex];
+  if (typeof question === "string") {
+    appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+  } else {
+    const radio_cont = handleRadioTypeInitialQuestion(
+      question["options"],
+      question["question"]
+    );
+    appendMessage2(radio_cont);
+  }
 }
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
@@ -986,18 +986,18 @@ async function handleFaqButtonClick(question) {
       if (isAskingInitialQuestions) {
         return;
       }
-      
-      await getUserBotConversation(userId2)
-      console.log(previousBotConversationId,'out')
-      if (previousBotConversationId != ""){
-      console.log(previousBotConversationId,'in')
+
+      await getUserBotConversation(userId2);
+      console.log(previousBotConversationId, "out");
+      if (previousBotConversationId != "") {
+        console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
         <b>Do you want to continue previous conversation or start new conversation?</b>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
             <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
-        </div>`
-        appendMessage2(div)
+        </div>`;
+        appendMessage2(div);
         return;
       }
 
@@ -1033,7 +1033,6 @@ async function handleFaqButtonClick(question) {
         const radio_cont = handleRadioTypeInitialQuestion(
           question["options"],
           question["question"]
-          
         );
         appendMessage2(radio_cont);
       }
@@ -3899,8 +3898,11 @@ loadExternalModule().then(() => {
 
                 const recommendation_tests_data = await response.json();
 
-                console.log("recommendation_tests_data : ", recommendation_tests_data);
-                if( recommendation_tests_data.success === true ) {
+                console.log(
+                  "recommendation_tests_data : ",
+                  recommendation_tests_data
+                );
+                if (recommendation_tests_data.success === true) {
                   isBotRecommendationFetched = true;
                 }
 
@@ -3972,24 +3974,26 @@ loadExternalModule().then(() => {
               // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
               // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
 
-              
-              if (typeof botInitialQuestions[botInitialQuestionsIndex] != 'string'){
-                const options = botInitialQuestions[botInitialQuestionsIndex]['options']
-                if (!options.includes(latestMessage)){
+              if (
+                typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
+              ) {
+                const options =
+                  botInitialQuestions[botInitialQuestionsIndex]["options"];
+                if (!options.includes(latestMessage)) {
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-                  })
-                  return
+                  });
+                  return;
                 }
-                const shadowRoot = 
-                document.getElementById("chat-element2").shadowRoot;
-                const initialOptionDiv = shadowRoot.getElementById('intial-options');
-                console.log(initialOptionDiv)
-                const buttons = initialOptionDiv.querySelectorAll('button');
-                buttons.forEach(button => {
+                const shadowRoot =
+                  document.getElementById("chat-element2").shadowRoot;
+                const initialOptionDiv =
+                  shadowRoot.getElementById("intial-options");
+                console.log(initialOptionDiv);
+                const buttons = initialOptionDiv.querySelectorAll("button");
+                buttons.forEach((button) => {
                   button.disabled = true;
                 });
-
               }
 
               botInitialQuestionsQnA[
@@ -4018,7 +4022,7 @@ loadExternalModule().then(() => {
                 } else {
                   const radioCont = handleRadioTypeInitialQuestion(
                     question["options"],
-                    question["question"],
+                    question["question"]
                   );
                   signals.onResponse({
                     html: radioCont,
@@ -5377,6 +5381,11 @@ loadExternalModule().then(() => {
                   );
                   messageBubble.style.maxWidth = "80%";
                   messageBubble.style.marginTop = "4px";
+                  messageBubble.style.borderRadius = "4px";
+                  messageBubble.style.padding = "4";
+                  messageBubble.style.backgroundColor = "#f3f4f6";
+                  messageBubble.style.color = "#374151";
+
                   const messageText = document.createElement("p");
                   messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
                     user2 ? "" : "<b> Hang tight for next steps</b>"

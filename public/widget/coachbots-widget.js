@@ -2969,6 +2969,10 @@ loadExternalModule().then(() => {
             messageBubble.classList.add("message-bubble", "ai-message-text");
             messageBubble.style.maxWidth = "80%";
             messageBubble.style.marginTop = "4px";
+            messageBubble.style.borderRadius = "4px";
+            messageBubble.style.padding = "4";
+            messageBubble.style.backgroundColor = "#f3f4f6";
+            messageBubble.style.color = "#374151";
             const messageText = document.createElement("p");
             messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>${
               user ? "" : "<b> Hang tight for next steps </b>"
@@ -4326,6 +4330,10 @@ loadExternalModule().then(() => {
                   );
                   messageBubble.style.maxWidth = "80%";
                   messageBubble.style.marginTop = "4px";
+                  messageBubble.style.borderRadius = "4px";
+                  messageBubble.style.padding = "4";
+                  messageBubble.style.backgroundColor = "#f3f4f6";
+                  messageBubble.style.color = "#374151";
                   const messageText = document.createElement("p");
                   messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
                     user ? "" : "<b> Hang tight for next steps </b>"
