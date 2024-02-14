@@ -298,30 +298,36 @@ const Coaches = ({ user }: any) => {
 
   useEffect(() => {
     console.log("ALL CONNECTIONS : ", connections);
-    const coachesWithStatus = savedCoachesData.map((coach: CoachesDataType) => {
-      const connection = connections.find(
-        (connection) => connection.coach_id === coach.profile_id
+    if (coacheeId.length > 0) {
+      const coachesWithStatus = savedCoachesData.map(
+        (coach: CoachesDataType) => {
+          const connection = connections.find(
+            (connection) =>
+              connection.coach_id === coach.profile_id &&
+              connection.coachee_id === coacheeId
+          );
+          return {
+            ...coach,
+            status: connection ? connection.status : "", // Set status to empty string if not found
+          };
+        }
       );
-      return {
-        ...coach,
-        status: connection ? connection.status : "", // Set status to empty string if not found
-      };
-    });
 
-    console.log("Coaches with status : ", coachesWithStatus);
+      console.log("Coaches with status : ", coachesWithStatus);
 
-    const connectedCoaches = coachesWithStatus.filter(
-      (coach) => coach.status === "accepted"
-    );
+      const connectedCoaches = coachesWithStatus.filter(
+        (coach) => coach.status === "accepted"
+      );
 
-    const unconnectedCoaches = coachesWithStatus.filter(
-      (coach) => !isConnected(coach.status)
-    );
+      const unconnectedCoaches = coachesWithStatus.filter(
+        (coach) => !isConnected(coach.status)
+      );
 
-    console.log("Connected Coaches", connectedCoaches);
+      console.log("Connected Coaches", connectedCoaches);
 
-    setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
-    setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+      setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+      setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+    }
   }, [connections]);
 
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
@@ -333,7 +339,7 @@ const Coaches = ({ user }: any) => {
     }, [connections]);
 
     const requestConnectHandler = () => {
-      console.log(coacheeId);
+      console.log(coacheeId, coachId);
       if (coacheeId.length > 0) {
         setRequestLoading(true);
         var myHeaders = new Headers();
@@ -345,6 +351,7 @@ const Coaches = ({ user }: any) => {
           coachee_id: coacheeId,
         });
 
+        console.log(reqestionData);
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
@@ -356,7 +363,7 @@ const Coaches = ({ user }: any) => {
           .then((data) => {
             console.log(data);
 
-            if (data.error) {
+            if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
             } else {
               getAllConnections();
@@ -559,13 +566,15 @@ const Coaches = ({ user }: any) => {
                             <b className="inline">{coach.experience}</b>
                           </div>
                         )}
-                        <p className="my-1 text-left text-gray-600 max-sm:text-xs">
-                          <p className="text-sm  max-sm:text-xs font-light inline">
-                            {" "}
-                            Expertise :
-                          </p>{" "}
-                          <b className="inline">{coach.expertise}</b>
-                        </p>
+                        {coach.expertise && (
+                          <p className="my-1 text-left text-gray-600 max-sm:text-xs">
+                            <p className="text-sm  max-sm:text-xs font-light inline">
+                              {" "}
+                              Expertise :
+                            </p>{" "}
+                            <b className="inline">{coach.expertise}</b>
+                          </p>
+                        )}
                       </div>
                       <div className="w-[30%] max-sm:w-full pb-[20%] max-sm:pb-4 flex flex-col items-center justify-center gap-3">
                         {coach.profile_type === "coach" && (
@@ -589,6 +598,11 @@ const Coaches = ({ user }: any) => {
                               </Button>
                             )}
                             {coach.status === "" && (
+                              <RequestionConnection
+                                coachId={coach.profile_id}
+                              />
+                            )}
+                            {coach.status === "available" && (
                               <RequestionConnection
                                 coachId={coach.profile_id}
                               />
