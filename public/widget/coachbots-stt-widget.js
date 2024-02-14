@@ -696,6 +696,9 @@ const getBotDetails2 = async (botId) => {
       "style",
       "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px;"
     );
+    buttonsWrapper.style.webkitScrollbar = "none";
+    buttonsWrapper.style.msOverflowStyle = "none";
+    buttonsWrapper.style.scrollbarWidth = "none";
 
     const faqButtonsGenerator = (actionName, buttonText) => {
       const button = document.createElement("button");
