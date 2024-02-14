@@ -694,11 +694,8 @@ const getBotDetails2 = async (botId) => {
     let buttonsWrapper = document.createElement("div");
     buttonsWrapper.setAttribute(
       "style",
-      "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px;"
+      "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px; scrollbar-width : none;"
     );
-    buttonsWrapper.style.webkitScrollbar = "none";
-    buttonsWrapper.style.msOverflowStyle = "none";
-    buttonsWrapper.style.scrollbarWidth = "none";
 
     const faqButtonsGenerator = (actionName, buttonText) => {
       const button = document.createElement("button");
@@ -3128,6 +3125,7 @@ loadExternalModule().then(() => {
         bottom : ${window.innerWidth < 768 ? "15vh" : "5.5rem"}; 
         width : 80%; 
         overflow: scroll;
+        scrollbar-width : none;
         height : 36px; 
         padding: 4px;
         display : flex;
