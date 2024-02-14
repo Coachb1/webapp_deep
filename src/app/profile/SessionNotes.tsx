@@ -161,10 +161,11 @@ const SessionNotes = ({ user }: any) => {
       });
   };
 
+  const [contextLengthError, setContextLengthError] = useState(false);
   const createCommentHandler = async () => {
     setSubmitLoading(true);
     const menteeEmail = emailRef.current.value;
-    const context = commentRef.current.value;
+    const context: string = commentRef.current.value;
     fetch(`${baseURL}/accounts/identities/deepchat_unique_id/${menteeEmail}/`, {
       method: "GET",
       headers: {
@@ -174,31 +175,37 @@ const SessionNotes = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.name) {
-          fetch(
-            `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${data.uid}&context=${context}&for=mentor`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("Submitted Data", data);
-              if ("Error" in data) {
-                toast.error(data.Error);
-                setSubmitLoading(false);
-                return;
+        console.log(context);
+
+        if (context.split(" ").length > 40) {
+          if (data.name) {
+            fetch(
+              `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${data.uid}&context=${context}&for=mentor`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: basicAuth,
+                },
               }
-              toast.success(
-                "Your comment has been successfully sent to your mentee."
-              );
-              setSubmitLoading(false);
-              getCommentsGiven(userId);
-              setCreateCommentInit(false);
-            });
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Submitted Data", data);
+                if ("Error" in data) {
+                  toast.error(data.Error);
+                  setSubmitLoading(false);
+                  return;
+                }
+                toast.success(
+                  "Your comment has been successfully sent to your mentee."
+                );
+                setSubmitLoading(false);
+                getCommentsGiven(userId);
+                setCreateCommentInit(false);
+              });
+          }
+        } else {
+          setContextLengthError(true);
         }
         if (data.detail) {
           console.error("user not available");
@@ -456,10 +463,23 @@ const SessionNotes = ({ user }: any) => {
                   <div className="flex flex-col">
                     <p className="mr-2 my-1 mt-2">Comment</p>
                     <textarea
+                      onChange={() => {
+                        setContextLengthError(false);
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value.split(" ").length < 40) {
+                          setContextLengthError(true);
+                        }
+                      }}
                       ref={commentRef}
                       rows={4}
                       className="w-full p-2 bg-gray-100 rounded-md outline-none border focus-visible:border-gray-400"
                     />
+                    {contextLengthError && (
+                      <p className="text-red-500 text-xs m-2">
+                        Comment should be atleast 40 words!
+                      </p>
+                    )}
                   </div>
                   <div className="w-full  flex flex-row justify-end gap-2">
                     <Button
