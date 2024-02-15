@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
-import { baseURL, basicAuth } from "@/lib/utils";
+import {
+  CoachesDataType,
+  baseURL,
+  basicAuth,
+  findCoachUID,
+  findCoacheeUID,
+  getUserAccount,
+} from "@/lib/utils";
 
 import {
   Tabs,
@@ -14,6 +21,8 @@ import { Info, Loader, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { convertDate } from "@/lib/utils";
+import { connectionType } from "@/lib/types";
+import { Select, Space } from "antd";
 
 // Pagination related variables
 
@@ -162,61 +171,189 @@ const SessionNotes = ({ user }: any) => {
   };
 
   const [contextLengthError, setContextLengthError] = useState(false);
+
   const createCommentHandler = async () => {
     setSubmitLoading(true);
-    const menteeEmail = emailRef.current.value;
     const context: string = commentRef.current.value;
-    fetch(`${baseURL}/accounts/identities/deepchat_unique_id/${menteeEmail}/`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
+    // fetch(`${baseURL}/accounts/identities/deepchat_unique_id/${menteeEmail}/`, {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: basicAuth,
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data);
+    console.log(context);
+    console.log(
+      "MENTOR ID - ",
+      userId,
+      "USER ID - " + selectedUserForCommentUserId
+    );
+
+    if (context.split(" ").length > 40) {
+      fetch(
+        `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${selectedUserForCommentUserId}&context=${context}&for=mentor`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Submitted Data", data);
+          if ("Error" in data) {
+            toast.error(data.Error);
+            setSubmitLoading(false);
+            return;
+          }
+          toast.success(
+            "Your comment has been successfully sent to your mentee."
+          );
+          setSubmitLoading(false);
+          getCommentsGiven(userId);
+          setCreateCommentInit(false);
+        });
+    } else {
+      setContextLengthError(true);
+    }
+    //   if (data.detail) {
+    //     console.error("user not available");
+    //     toast.error("Entered email is not your valid mentee.");
+    //     setSubmitLoading(false);
+    //   }
+    // })
+    // .catch((err) => {
+    //   return err;
+    // });
+  };
+
+  const [connectionsForCoach, setConnectionsForCoach] = useState<
+    connectionType[]
+  >([]);
+  const [connectionsForCoachee, setConnectionsForCoachee] = useState<
+    connectionType[]
+  >([]);
+
+  const [connectionsOptions, setConnectionsOptions] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
+  const [selectedUserForCommentUserId, setSelectedUserForCommentUserId] =
+    useState("");
+
+  const getConnectionsForCoachee = (coacheeId: string) => {
+    fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        console.log(context);
+        console.log("CONNECTIONS for COACHEE", data);
+        setConnectionsForCoachee(data.data);
 
-        if (context.split(" ").length > 40) {
-          if (data.name) {
-            fetch(
-              `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${data.uid}&context=${context}&for=mentor`,
-              {
-                method: "GET",
-                headers: {
-                  Authorization: basicAuth,
-                },
-              }
-            )
-              .then((res) => res.json())
-              .then((data) => {
-                console.log("Submitted Data", data);
-                if ("Error" in data) {
-                  toast.error(data.Error);
-                  setSubmitLoading(false);
-                  return;
-                }
-                toast.success(
-                  "Your comment has been successfully sent to your mentee."
-                );
-                setSubmitLoading(false);
-                getCommentsGiven(userId);
-                setCreateCommentInit(false);
-              });
-          }
-        } else {
-          setContextLengthError(true);
-        }
-        if (data.detail) {
-          console.error("user not available");
-          toast.error("Entered email is not your valid mentee.");
-          setSubmitLoading(false);
-        }
+        const dataForOptions = data.data
+          .filter((data: connectionType) => data.status === "accepted")
+          .map((data: connectionType) => {
+            return {
+              label: data.coach_name,
+              value: `${data.coach_name}/${data.coach_user_id}`,
+            };
+          });
+
+        console.log(dataForOptions);
+        setConnectionsOptions(dataForOptions);
       })
       .catch((err) => {
-        return err;
+        console.log(err);
       });
   };
+
+  const getConnectionsForCoach = (coachId: string) => {
+    fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("CONNECTIONS for COACH", data);
+
+        setConnectionsForCoach(data.data);
+        const dataForOptions = data.data
+          .filter((data: connectionType) => data.status === "accepted")
+          .map((data: connectionType) => {
+            return {
+              label: data.coachee_name,
+              value: `${data.coachee_name}/${data.coachee_user_id}`,
+            };
+          });
+
+        setConnectionsOptions(dataForOptions);
+        // setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        // setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setUserId(data.uid);
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+
+              const isApprovedData = data.data.filter(
+                (coachData: any) => coachData.is_approved === true
+              );
+
+              console.log(isApprovedData);
+              if (findCoacheeUID(isApprovedData).length > 0) {
+                console.log("for coachees");
+                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+              }
+
+              if (findCoachUID(isApprovedData).length > 0) {
+                console.log("for coaches");
+                getConnectionsForCoach(findCoachUID(isApprovedData));
+              }
+              // setLoading(false);
+            })
+            .then((err) => {
+              console.error(err);
+              // setLoading(false);
+            });
+        });
+    }
+  }, []);
 
   const searchItemsHandler = (e: any) => {
     if (tabValue === "c-given") {
@@ -442,7 +579,22 @@ const SessionNotes = ({ user }: any) => {
                 <div className="border-gray-300  p-4">
                   <div className="flex flex-col">
                     <p className="mr-2 my-1">Email</p>
-                    <input
+                    <Select
+                      className="w-full"
+                      showSearch
+                      virtual={false}
+                      // optionFilterProp="children"
+                      onChange={(value: string) => {
+                        // setSelectedUserForComment(value);
+                        console.log(value.split("/")[1]);
+                        setSelectedUserForCommentUserId(value.split("/")[1]);
+                      }}
+                      onSearch={(val) => {
+                        console.log(val);
+                      }}
+                      options={connectionsOptions}
+                    />
+                    {/* <input
                       onChange={(e) => {
                         const email = e.target.value;
                         if (email.length > 8 && !email.includes("@")) {
@@ -456,7 +608,7 @@ const SessionNotes = ({ user }: any) => {
                       className={`w-full p-2 bg-gray-100 rounded-md outline-none border focus-visible:border-gray-400 ${
                         emailError ? "border border-red-300" : ""
                       }`}
-                    />
+                    /> */}
                   </div>
                   <div className="flex flex-col">
                     <p className="mr-2 my-1 mt-2">Comment</p>
@@ -471,7 +623,7 @@ const SessionNotes = ({ user }: any) => {
                       }}
                       ref={commentRef}
                       rows={4}
-                      className="w-full p-2 bg-gray-100 rounded-md outline-none border focus-visible:border-gray-400"
+                      className="w-full p-2 bg-[#FFFFFF] rounded-md outline-none border focus-visible:border-gray-400"
                     />
                     {contextLengthError && (
                       <p className="text-red-500 text-xs m-2">

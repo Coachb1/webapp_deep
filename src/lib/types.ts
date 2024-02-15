@@ -96,5 +96,7 @@ export interface connectionType {
   is_removed: boolean;
   coach_name: string;
   coachee_name: string;
+  coach_user_id: string;
+  coachee_user_id: string;
   coach_avatar_bot_id: string;
 }

@@ -195,3 +195,24 @@ export function convertTextToCorrectFormat(text: string) {
     )
     .join(" ");
 }
+
+export interface CoachesDataType {
+  id: number;
+  name: string;
+  profile_id: string;
+  department: string;
+  bot_type: string;
+  profile_pic_url: string;
+  profile_type: string;
+  description: string;
+  experience: string;
+  expertise: string;
+  status: string;
+  avatar_bot_id: string;
+  feedback_wall: string | null;
+  skills: string;
+  is_visible: boolean;
+  is_approved: boolean;
+  avatar_snippit: string;
+  avatar_bot_url: string;
+}

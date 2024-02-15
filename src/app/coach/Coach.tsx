@@ -69,7 +69,7 @@ const Coach = ({ user, renderType }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
   const [enrolled, SetEnrolled] = useState(true);
-
+  const [feedbackBotId, setFeedbackBotId] = useState("");
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
@@ -106,6 +106,7 @@ const Coach = ({ user, renderType }: any) => {
           data.data.bot_details.is_login_required,
           data.data.bot_details.is_strict_login_required
         );
+        setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
 
@@ -344,6 +345,15 @@ const Coach = ({ user, renderType }: any) => {
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   How Avatar works
+                </Button>
+              </Link>
+
+              <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
+                <Button
+                  variant={"secondary"}
+                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                >
+                  Feedback center
                 </Button>
               </Link>
               <Link href={"#benefits"}>
