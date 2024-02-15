@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   baseURL,
   basicAuth,
+  convertTextToCorrectFormat,
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
@@ -110,8 +111,6 @@ const Coaches = ({ user }: any) => {
         const profileTypeOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.profile_type))
         );
-        // Adding a another option for profile_type
-        profileTypeOptions.push("External");
 
         const departmentOptions: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.department))
@@ -148,7 +147,6 @@ const Coaches = ({ user }: any) => {
           {
             filterName: "Skills",
             filterOptions: [
-              "None",
               "Technology",
               "Business Operations",
               "Project management & engineering",
@@ -165,10 +163,6 @@ const Coaches = ({ user }: any) => {
               "Project Management",
               "Lateral Transfers",
             ],
-          },
-          {
-            filterName: "Bot Type",
-            filterOptions: botTypeTypes,
           },
         ]);
         if (coacheeIdFromParams) {
@@ -552,7 +546,7 @@ const Coaches = ({ user }: any) => {
                           {coach.department}
                         </p>
                         <Badge className="rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1">
-                          {coach.profile_type}
+                          {convertTextToCorrectFormat(coach.profile_type)}
                         </Badge>
                         <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
                           {coach.description}
@@ -618,12 +612,12 @@ const Coaches = ({ user }: any) => {
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
                                 >
-                                  Avatar Bot
+                                  Coach avatar
                                 </Button>
                               </Link>
                             </div>
                           )}
-                        {coach.feedback_wall !== null &&
+                        {/* {coach.feedback_wall !== null &&
                           coach.feedback_wall !== "" && (
                             <div className="w-full">
                               <Link href={coach.feedback_wall}>
@@ -635,7 +629,7 @@ const Coaches = ({ user }: any) => {
                                 </Button>
                               </Link>
                             </div>
-                          )}
+                          )} */}
                       </div>
                     </div>
                   </div>

@@ -85,15 +85,15 @@ const IDP = ({ user }: any) => {
         <div className="m-4 text-sm max-sm:m-2">
           <div className="bg-gray-200 px-4 text-sm w-full m-2 ml-0 p-2 rounded-md">
             <div className="mx-4 flex flex-row mt-4  max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
-              <div className="w-[5%] max-sm:w-[12%] max-sm:text-xs  text-center">
+              {/* <div className="w-[5%] max-sm:w-[12%] max-sm:text-xs  text-center">
                 SL no.
-              </div>
+              </div> */}
               <div className=" w-[40%] text-center ">Created Date </div>
             </div>
             <div className="mx-4 max-sm:mx-1">
               {userIDPs.map((idp, i) => (
                 <div className="flex flex-row gap-3 my-2 items-center">
-                  <p className="w-[5%] max-sm:w-[12%] text-center">{i + 1}</p>{" "}
+                  {/* <p className="w-[5%] max-sm:w-[12%] text-center">{i + 1}</p>{" "} */}
                   <p className="max-sm:text-xs w-[40%]  text-center">
                     {convertDateWithTime(idp.created)}
                   </p>{" "}

@@ -248,21 +248,20 @@ const MyComnnections = ({ user }: any) => {
           <div className="m-4 text-sm max-sm:m-0">
             {connectionsForCoach.length > 0 && (
               <div className="m-4 text-sm max-sm:m-0 max-sm:my-4">
-                <Badge>Connection Requests | as Coach</Badge>
                 <div className="bg-gray-200 px-4  max-sm:px-1 text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <div className="mx-4 flex flex-row my-3 gap-3 max-sm:gap-2  items-center max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
-                    <div className="w-[10%] max-sm:text-xs  text-center">
+                    {/* <div className="w-[10%] max-sm:text-xs  text-center">
                       SL no.
-                    </div>
+                    </div> */}
                     <div className=" w-[20%] text-center ">Name </div>
                     <div className=" w-[40%]  text-center ">Status </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1">
                     {connectionsForCoach.map((connection, i) => (
                       <div className="flex flex-row gap-3 my-2 items-center max-sm:justify-between">
-                        <p className="w-[10%] max-sm:w-[12%] text-center">
+                        {/* <p className="w-[10%] max-sm:w-[12%] text-center">
                           {i + 1}
-                        </p>{" "}
+                        </p>{" "} */}
                         <p className="max-sm:text-xs w-[20%]  text-center">
                           {connection.coachee_name}
                         </p>{" "}
@@ -319,21 +318,20 @@ const MyComnnections = ({ user }: any) => {
 
             {connectionsForCoachee.length > 0 && (
               <div className="m-4 text-sm max-sm:m-0 max-sm:my-4">
-                <Badge>Connections | as Coachee </Badge>
                 <div className="bg-gray-200 px-4  max-sm:px-1  text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <div className="mx-4 flex flex-row my-3 gap-3  max-sm:gap-2 items-center max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
-                    <div className="w-[10%] max-sm:w-[12%] max-sm:text-xs  text-center">
+                    {/* <div className="w-[10%] max-sm:w-[12%] max-sm:text-xs  text-center">
                       SL no.
-                    </div>
+                    </div> */}
                     <div className=" w-[20%] text-center ">Name </div>
                     <div className=" w-[40%] text-center ">Status </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1">
                     {connectionsForCoachee.map((connection, i) => (
                       <div className="flex flex-row gap-3 my-2 items-center max-sm:justify-between">
-                        <p className="w-[10%] max-sm:w-[12%] text-center">
+                        {/* <p className="w-[10%] max-sm:w-[12%] text-center">
                           {i + 1}
-                        </p>{" "}
+                        </p>{" "} */}
                         <p className="max-sm:text-xs w-[20%]  text-center">
                           {connection.coach_name}
                         </p>{" "}

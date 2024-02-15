@@ -118,10 +118,10 @@ const Profile = ({ user }: any) => {
               itemName={"Competencies"}
               icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
             />
-            <NavItem
+            {/* <NavItem
               itemName={"My Pages"}
               icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
-            />
+            /> */}
             <NavItem
               itemName={"IDP"}
               icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
@@ -141,15 +141,18 @@ const Profile = ({ user }: any) => {
                 itemName={"Admin Reports"}
                 icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
               />
-            ): null}
+            ) : null}
           </div>
         </div>
         <div className="w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
-            <UserProfile
-              userName={user?.given_name!}
-              userEmail={user?.email!}
-            />
+            <>
+              <UserProfile
+                userName={user?.given_name!}
+                userEmail={user?.email!}
+              />
+              <MyPages user={user} />
+            </>
           )}
           {selectedItem === "Session Notes" && <SessionNotes user={user} />}
           {selectedItem === "Bot Conversations" && (
@@ -158,7 +161,7 @@ const Profile = ({ user }: any) => {
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && <AdminProfile user={user} />}
-          {selectedItem === "My Pages" && <MyPages user={user} />}
+          {/* {selectedItem === "My Pages" && } */}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
           {selectedItem === "Admin Reports" && <AdminReports user={user} />}
