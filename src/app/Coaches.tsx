@@ -328,7 +328,7 @@ const Coaches = ({ user }: any) => {
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
-  }, [connections]);
+  }, [connections, coacheeId]);
 
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
     const [requestLoading, setRequestLoading] = useState(false);
