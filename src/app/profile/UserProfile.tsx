@@ -6,7 +6,12 @@ import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
-import { baseURL, basicAuth } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  capitalizeText,
+  convertTextToCorrectFormat,
+} from "@/lib/utils";
 
 const UserProfile = ({
   userName,
@@ -18,6 +23,7 @@ const UserProfile = ({
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
+  const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
     if (!userEmail) {
@@ -51,6 +57,7 @@ const UserProfile = ({
         .then((response) => response.json())
         .then(async (data) => {
           const userId = data.uid;
+          setUserRole(data.role);
           await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
             method: "POST",
             headers: {
@@ -105,13 +112,18 @@ const UserProfile = ({
             </p>
           </div>
           <div className="flex flex-row items-center mt-4">
-            <p className="text-sm ">Email </p>
+            <p className="text-sm w-fit ">Email </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
               {userEmail}
             </p>
           </div>
+          {/* <div className="flex flex-row items-center mt-4">
+            <p className="text-sm ">User role </p>
+            <Badge className="ml-4">
+              {convertTextToCorrectFormat(userRole)}
+            </Badge>
+          </div> */}
         </div>
-        <hr />
         <div className="my-4 flex flex-row items-center">
           <p className="text-sm">Session Reports</p>
           <>
@@ -136,6 +148,13 @@ const UserProfile = ({
             </Button>
           </>
         </div>
+        <hr />
+        {/* <div className="mt-4 mb-4">
+          <div className="flex flex-row items-center mt-4">
+            <p className="text-sm ">Leaderboard Position </p>
+            <div className="ml-4"></div>
+          </div>
+        </div> */}
       </div>
     </div>
   );
