@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrlStt = "http://127.0.0.1:8001/api/v1"
+// const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -502,7 +502,6 @@ const handleEndFeedback = async () => {
 
     appendMessage2(
       `<b >Here are some recommendations for you : </b> <br>
-          <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
           <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
           `
     );
@@ -3760,7 +3759,6 @@ loadExternalModule().then(() => {
 
                 signals.onResponse({
                   html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
                     `,
                 });
@@ -3925,7 +3923,6 @@ loadExternalModule().then(() => {
 
                 signals.onResponse({
                   html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${fetched_test_code}','${fetched_test}')">${fetched_test}</button>
                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
                     `,
                 });
