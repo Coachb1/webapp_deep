@@ -209,7 +209,7 @@ const MyLibrary = ({ user }: any) => {
       getTestsByCompetencies();
       getRequestedTests();
       getNewManagerTests();
-      
+
       fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",
         headers: {
@@ -346,7 +346,7 @@ const MyLibrary = ({ user }: any) => {
                               });
                           }}
                         >
-                          Custom [{groupList.join(", ")}]
+                          Custom
                         </Button>
                       </>
                     )}

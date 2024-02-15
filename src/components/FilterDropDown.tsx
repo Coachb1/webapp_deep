@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "./ui/checkbox";
 import { ChevronDownIcon, X } from "lucide-react";
+import { convertTextToCorrectFormat } from "@/lib/utils";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 interface FilterCategoriesType {
@@ -68,7 +69,9 @@ const FilterDropDown = ({
                         htmlFor={option}
                         className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
                       >
-                        {option === "accepted" ? "Connected" : option}
+                        {option === "accepted"
+                          ? "Connected"
+                          : convertTextToCorrectFormat(option)}
                       </label>
                     </div>
                   ))}
@@ -82,7 +85,9 @@ const FilterDropDown = ({
         {checkedValues.map((checkedItem) => (
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
             <p className="text-sm px-1">
-              {checkedItem === "accepted" ? "Connected" : checkedItem}
+              {checkedItem === "accepted"
+                ? "Connected"
+                : convertTextToCorrectFormat(checkedItem)}
             </p>{" "}
             <X
               className="h-4 w-4 ml-1 m-[2px] hover:bg-gray-300 rounded-sm cursor-pointer"

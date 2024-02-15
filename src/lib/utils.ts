@@ -185,3 +185,13 @@ export function reportsLinksSelector() {
     return "https://myreportdev.coachbots.com/";
   }
 }
+
+export function convertTextToCorrectFormat(text: string) {
+  return text
+    .replace(/_/g, " ") // Replace underscores with spaces
+    .split(/\s+/)
+    .map((word) =>
+      word.replace(/(?:^|\s)([a-z])/g, (match, group) => group.toUpperCase())
+    )
+    .join(" ");
+}

@@ -100,9 +100,9 @@ const MyPages = ({ user }: any) => {
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "Avatar Pages";
+      return "Avatar";
     } else if (botType === "feedback_bot") {
-      return "Feedback Pages";
+      return "Feedback";
     }
   };
 
@@ -131,7 +131,7 @@ const MyPages = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2">My Pages</div>
+      <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -279,13 +279,16 @@ const MyPages = ({ user }: any) => {
           </div>
         ))}
       </div>
-      {userProfile && userProfile.profile_type === "coachee" && (
+      {!loading && userProfile && userProfile.profile_type === "coachee" && (
         <>
-          <hr />
-          <div className="m-4 text-sm max-sm:m-2">
-            <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
+          <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
+            <p className="text-sm ">Coachee</p>
+            <div className="m-4 my-1 text-sm max-sm:m-2">
               <div className="flex items-center">
-                <p className="text-sm inline">Profile</p>
+                <p className="text-sm inline w-[10%]">1</p>
+                <p className="text-sm inline w-[30%] max-sm:w-[40%]">
+                  {userProfile.name}
+                </p>
                 <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                 <Link
                   href={

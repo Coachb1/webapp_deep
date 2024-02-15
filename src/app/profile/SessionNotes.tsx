@@ -245,9 +245,7 @@ const SessionNotes = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] max-sm:max-h-[75vh] overflow-scroll">
-      <div className="pl-4 max-sm:pl-2 pt-2">
-        Session Notes (For Bot Interactions)
-      </div>
+      <div className="pl-4 max-sm:pl-2 pt-2">Live Session Notes</div>
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-given"

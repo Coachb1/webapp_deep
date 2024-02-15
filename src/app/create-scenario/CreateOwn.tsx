@@ -45,6 +45,7 @@ const CreateOwn = ({ user }: any) => {
 
   const [curatedLearningSearchResults, setCuratedLearningSearchResults] =
     useState<YoutubeResultsType[]>([]);
+  const [messageShown, setMessageShown] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -217,8 +218,8 @@ const CreateOwn = ({ user }: any) => {
           </div>
           <div className="text-sm max-sm:text-xs text-left text-gray-600 ml-2 max-sm:ml-0 max-sm:my-2 flex flex-col justify-between w-full">
             <div>
-              <b>{video_title}</b>
-              <p>{video_description}</p>
+              <b className="my-1">{video_title}</b>
+              <p className="text-xs my-1">{video_description}</p>
             </div>
             <div className="self-end w-full  flex flex-row max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
               <Button
@@ -271,11 +272,13 @@ const CreateOwn = ({ user }: any) => {
             generatedData.length > 0 &&
             generatedData.map((test, i) => (
               <>
-                <div className="w-[50%]  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-                  <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                   <div>
-                    <p className="text-base font-semibold">{test?.title}</p>
-                    <p>{test?.description}</p>
+                    <b className="my-1 text-gray-400">
+                      {i === 0 ? "Simulation" : "Role play"}
+                    </b>
+                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
+                    <p className="text-[12px] mb-2">{test?.description}</p>
                   </div>
                   <div className="flex justify-end mt-2">
                     <CopyToClipboard
@@ -292,18 +295,20 @@ const CreateOwn = ({ user }: any) => {
               saved in "My Library (Requested Scenario Tab)"
             </p>
           )}
-          {generatedData.length === 0 && generatedSummary.length > 0 && (
-            <div className="w-full  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-              <b className="my-1">Summary : </b>
-              <div>
-                <p>
-                  {generatedSummary.split("\n\n").map((text) => (
-                    <p className="max-sm:text-xs text-sm text-gray-800 whitespace-pre-wrap">
-                      {text.trim()}
-                    </p>
-                  ))}
-                </p>
-                {!expanded && (
+          {!generationError &&
+            generatedData.length === 0 &&
+            generatedSummary.length > 0 && (
+              <div className="w-full  max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
+                <b className="my-1">Summary : </b>
+                <div>
+                  <p>
+                    {generatedSummary.split("\n\n").map((text) => (
+                      <p className="max-sm:text-xs text-[12px] my-1 text-gray-600 whitespace-pre-wrap">
+                        {text.trim()}
+                      </p>
+                    ))}
+                  </p>
+                  {/* {!expanded && (
                   <Button
                     variant={"outline"}
                     onClick={() => {
@@ -320,10 +325,10 @@ const CreateOwn = ({ user }: any) => {
                       <>Expand</>
                     )}
                   </Button>
-                )}
+                )} */}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
     );
@@ -440,11 +445,13 @@ const CreateOwn = ({ user }: any) => {
           {!generationError &&
             generatedData.map((test, i) => (
               <>
-                <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm">
-                  <b className="my-1">{i === 0 ? "Simulation" : "Role play"}</b>
+                <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                   <div>
-                    <p className="text-base font-semibold">{test?.title}</p>
-                    <p>{test?.description}</p>
+                    <b className="my-1 text-gray-400">
+                      {i === 0 ? "Simulation" : "Role play"}
+                    </b>
+                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
+                    <p className="text-[12px] mb-2">{test?.description}</p>
                   </div>
                   <div className="flex justify-end mt-2">
                     <CopyToClipboard
@@ -496,7 +503,7 @@ const CreateOwn = ({ user }: any) => {
             setContextPrompt("0 results, Please provide a valid context!");
           }
           setTimeout(() => {
-            setSearchInputText("");
+            // setSearchInputText("");
             setCreateLoading(false);
           }, 500);
         });
@@ -528,7 +535,7 @@ const CreateOwn = ({ user }: any) => {
           }
           setTimeout(() => {
             setCreateLoading(false);
-            setSearchInputText("");
+            // setSearchInputText("");
           }, 500);
         });
     } else if (searchMode === "curated-learning") {
@@ -557,7 +564,7 @@ const CreateOwn = ({ user }: any) => {
           }
           setTimeout(() => {
             setCreateLoading(false);
-            setSearchInputText("");
+            // setSearchInputText("");
           }, 500);
         })
         .catch((error) => {
@@ -597,6 +604,8 @@ const CreateOwn = ({ user }: any) => {
                   value={searchMode}
                   onValueChange={(val) => {
                     setSearchMode(val);
+                    setContextPrompt("Please enter the context and search!");
+                    setMessageShown(false);
                   }}
                 >
                   <TabsList className="grid w-full grid-cols-3 bg-gray-200 rounded-sm">
@@ -619,7 +628,7 @@ const CreateOwn = ({ user }: any) => {
                       className="text-xs p-1 m-1"
                       value="curated-learning"
                     >
-                      Curated Learning
+                      Open Learning
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
