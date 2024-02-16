@@ -95,24 +95,16 @@ const UserProfile = ({ user }: any) => {
 
         const FilteredUserDataForKudos = dataa.group.filter(
           (data: KudosDetailsType) => {
-            if (data.user_id === "a28a9828-c732-457c-b8da-9b8556fc40df") {
+            if (data.user_id === userId) {
               return {
                 ...data,
                 total_users: dataa.group.length,
               };
             }
           }
-        ); //userId)
+        );
         console.log(FilteredUserDataForKudos);
         setTotalUsersForFeedback(dataa.group.length);
-        // if (data.group) {
-        //   const sortedFeedbackData: FeedbacksType[] = data.group.sort(
-        //     (a, b) => b.positive_feedback_count - a.positive_feedback_count
-        //   )
-        //   setFeedbacks(sortedFeedbackData)
-        // } else {
-        //   setFeedbacks([])
-        // }
         setUserKudosData(FilteredUserDataForKudos);
         setKudosLoading(false);
       })
