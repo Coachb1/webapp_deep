@@ -146,10 +146,10 @@ const Profile = ({ user }: any) => {
         </div>
         <div className="w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
-            <>
+            <div className="mb-8">
               <UserProfile user={user} />
               <MyPages user={user} />
-            </>
+            </div>
           )}
           {selectedItem === "Session Notes" && <SessionNotes user={user} />}
           {selectedItem === "Bot Conversations" && (

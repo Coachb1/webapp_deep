@@ -267,7 +267,7 @@ const UserProfile = ({ user }: any) => {
                 ) : (
                   <Badge variant={"destructive"} className="ml-4">
                     {" "}
-                    You don't have an active feedback bot.
+                    You don't have any active feedbacks.
                   </Badge>
                 )}
               </>

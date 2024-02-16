@@ -147,7 +147,7 @@ export const getUserAccount = (user: any) => {
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
-            username: "web_user",
+            username: user.given_name,
             email: user.email,
           },
         },
