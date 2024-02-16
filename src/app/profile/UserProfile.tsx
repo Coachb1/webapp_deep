@@ -7,53 +7,113 @@ import { Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
 import {
+  PartifipantsforLeaderBoardTypes,
   baseURL,
   basicAuth,
   capitalizeText,
   convertTextToCorrectFormat,
+  getUserAccount,
 } from "@/lib/utils";
 
-const UserProfile = ({
-  userName,
-  userEmail,
-}: {
-  userName: string;
-  userEmail: string;
-}) => {
+interface PositionedUserTypes {
+  name: string;
+  user_id: string;
+  total_count: number;
+  rating: number;
+}
+
+interface KudosDetailsType {
+  bot_name: string;
+  owner_name: string;
+  positive_feedback_count: number;
+  negative_feedback_count: number;
+  rating: number;
+  user_id: string;
+}
+
+const UserProfile = ({ user }: any) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
   const [userRole, setUserRole] = useState("");
 
+  const [userPositionDetails, setUserPositionDetails] = useState<
+    PositionedUserTypes[]
+  >([]);
+
+  const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
+
+  const [plLoading, setplLoading] = useState(true);
+  const getLeaderboardPosition = (userId: string) => {
+    fetch(`${baseURL}/accounts/participant-leader-board-report/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((dataa) => {
+        console.log(dataa);
+        const userDetails = dataa.map(
+          (data: PartifipantsforLeaderBoardTypes, i: number) => {
+            return {
+              name: data.name,
+              user_id: data.user_id,
+              total_count: dataa.length,
+              rating: data.rating,
+            };
+          }
+        );
+
+        const positionedUser: PositionedUserTypes[] = userDetails.filter(
+          (userr: PositionedUserTypes) => userr.user_id === userId
+        );
+
+        console.log(positionedUser);
+        setUserPositionDetails(positionedUser);
+        setplLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setplLoading(false);
+      });
+  };
+
+  const [kudosLoading, setKudosLoading] = useState(true);
+  const getKudosCounts = (userId: string) => {
+    fetch(`${baseURL}/accounts/feedback-leaderboard-report/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+
+        // if (data.group) {
+        //   const sortedFeedbackData: FeedbacksType[] = data.group.sort(
+        //     (a, b) => b.positive_feedback_count - a.positive_feedback_count
+        //   )
+        //   setFeedbacks(sortedFeedbackData)
+        // } else {
+        //   setFeedbacks([])
+        // }
+        setUserKudosData([]);
+        setKudosLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setKudosLoading(false);
+      });
+  };
+
   useEffect(() => {
-    if (!userEmail) {
+    if (!user) {
       pathname.push("/api/auth/login");
     }
     try {
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: userName,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: "web_user",
-                email: userEmail,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: userEmail,
-          },
-        }),
-      })
+      getUserAccount(user)
         .then((response) => response.json())
         .then(async (data) => {
           const userId = data.uid;
@@ -94,6 +154,8 @@ const UserProfile = ({
             .catch((error) => {
               console.error("Error getting report", error);
             });
+          getLeaderboardPosition(data.uid);
+          getKudosCounts(data.uid);
         });
     } catch (error) {
       console.log(error);
@@ -108,13 +170,13 @@ const UserProfile = ({
           <div className="flex flex-row items-center">
             <p className="text-md ">Name </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
-              {userName}
+              {user.given_name}
             </p>
           </div>
           <div className="flex flex-row items-center mt-4">
             <p className="text-sm w-fit ">Email </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
-              {userEmail}
+              {user.email}
             </p>
           </div>
           {/* <div className="flex flex-row items-center mt-4">
@@ -149,12 +211,62 @@ const UserProfile = ({
           </>
         </div>
         <hr />
-        {/* <div className="mt-4 mb-4">
+        <div className="mt-4 mb-4">
           <div className="flex flex-row items-center mt-4">
-            <p className="text-sm ">Leaderboard Position </p>
-            <div className="ml-4"></div>
+            <p className="text-sm ">Personal Leaderboard : </p>
+            <Badge variant={"outline"} className="ml-4 p-2">
+              {" "}
+              {plLoading ? (
+                <>
+                  <Loader className="animate-spin m-1 w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  {" "}
+                  {userPositionDetails[0] ? (
+                    <>
+                      {" "}
+                      Position : Top {userPositionDetails[0].rating} out of{" "}
+                      {userPositionDetails[0].total_count}
+                    </>
+                  ) : (
+                    <b className="ml-4">-</b>
+                  )}
+                </>
+              )}
+            </Badge>
           </div>
-        </div> */}
+        </div>
+        <div className="mt-4 mb-4">
+          <div className="flex flex-row items-center mt-4">
+            <p className="text-sm ">Kudos : </p>
+            {kudosLoading ? (
+              <>
+                <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
+              </>
+            ) : (
+              <>
+                {userKudosData[0] ? (
+                  <>
+                    <Badge variant={"outline"} className="ml-4 p-2">
+                      {" "}
+                      Points : 6{" "}
+                    </Badge>
+                    <Badge variant={"outline"} className="ml-4 p-2">
+                      {" "}
+                      Position : Top 4 out of 12
+                    </Badge>
+                  </>
+                ) : (
+                  <Badge variant={"destructive"} className="ml-4">
+                    {" "}
+                    You don't have an active feedback bot.
+                  </Badge>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

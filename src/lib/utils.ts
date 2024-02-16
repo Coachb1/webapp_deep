@@ -216,3 +216,17 @@ export interface CoachesDataType {
   avatar_snippit: string;
   avatar_bot_url: string;
 }
+
+export interface PartifipantsforLeaderBoardTypes {
+  name: string;
+  avatar_bot_count: number;
+  subject_matter_count: number;
+  total_bots: number;
+  total_simulations: number;
+  total_bot_interactions: number;
+  session_notes_count: number;
+  profile_type: string;
+  total_score: number;
+  user_id: string;
+  rating: number;
+}

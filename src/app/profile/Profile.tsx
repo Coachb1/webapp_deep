@@ -147,10 +147,7 @@ const Profile = ({ user }: any) => {
         <div className="w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <>
-              <UserProfile
-                userName={user?.given_name!}
-                userEmail={user?.email!}
-              />
+              <UserProfile user={user} />
               <MyPages user={user} />
             </>
           )}
