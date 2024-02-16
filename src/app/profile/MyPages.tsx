@@ -36,66 +36,70 @@ const MyPages = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUserAccount(user)
-      .then((response) => response.json())
-      .then(async (data) => {
-        console.log(data);
-        const profile = await fetch(
-          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-          {
+    if (user) {
+      getUserAccount(user)
+        .then((response) => response.json())
+        .then(async (data) => {
+          console.log(data);
+          const profile = await fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          );
+
+          const profileJson = await profile.json();
+          // const userProfile = profileJson.data[0]
+          console.log("profile", profileJson.data);
+
+          // const profileType = userProfile.profile_type;
+          setUserProfile(profileJson.data[0]);
+          console.log(profileJson.data[0]);
+
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
             headers: {
               Authorization: basicAuth,
             },
-          }
-        );
-
-        const profileJson = await profile.json();
-        // const userProfile = profileJson.data[0]
-        console.log("profile", profileJson.data);
-
-        // const profileType = userProfile.profile_type;
-        setUserProfile(profileJson.data[0]);
-        console.log(profileJson.data[0]);
-
-        fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("bot data : ", data);
-            data.data.forEach((entry: any) => {
-              const botType = entry.signature_bot.bot_type;
-
-              if (!botTypeMap[botType]) {
-                botTypeMap[botType] = [];
-              }
-              const existingEntry = botTypeMap[botType].find(
-                (bot) => bot.bot_id === entry.signature_bot.bot_id
-              );
-              if (!existingEntry) {
-                botTypeMap[botType].push({
-                  bot_id: entry.signature_bot.bot_id,
-                  uid: entry.signature_bot.uid,
-                  bot_name: entry.bot_attributes.coach_name,
-                });
-              }
-            });
-            const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
-              (botType) => ({
-                bot_type: botType,
-                bots: botTypeMap[botType],
-              })
-            );
-            setBotTypes(result);
-            setLoading(false);
           })
-          .catch((error) => {
-            console.error(error);
-            setLoading(false);
-          });
-      });
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("bot data : ", data);
+              data.data.forEach((entry: any) => {
+                const botType = entry.signature_bot.bot_type;
+
+                if (!botTypeMap[botType]) {
+                  botTypeMap[botType] = [];
+                }
+                const existingEntry = botTypeMap[botType].find(
+                  (bot) => bot.bot_id === entry.signature_bot.bot_id
+                );
+                if (!existingEntry) {
+                  botTypeMap[botType].push({
+                    bot_id: entry.signature_bot.bot_id,
+                    uid: entry.signature_bot.uid,
+                    bot_name: entry.signature_bot.bot_id.includes("feedback")
+                      ? entry.bot_attributes.bot_name
+                      : entry.bot_attributes.coach_name,
+                  });
+                }
+              });
+              const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
+                (botType) => ({
+                  bot_type: botType,
+                  bots: botTypeMap[botType],
+                })
+              );
+              setBotTypes(result);
+              setLoading(false);
+            })
+            .catch((error) => {
+              console.error(error);
+              setLoading(false);
+            });
+        });
+    }
   }, []);
 
   const BotTypesHeading = (botType: string) => {
@@ -125,7 +129,9 @@ const MyPages = ({ user }: any) => {
     if (profile_type === "coach") {
       return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
     } else if (profile_type === "coachee") {
-      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      return `/intake/?type=${
+        botType === "feedback_bot" ? "feedback" : "coachee"
+      }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
     }
   };
 
@@ -153,36 +159,40 @@ const MyPages = ({ user }: any) => {
             </div>
           </>
         )}
-      <div className="m-4 text-sm max-sm:m-2">
+      <div className="my-4 text-sm">
         {botTypes.map((botType) => (
-          <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
+          <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
             <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p>
             {botType.bots.map((bot, i) => (
-              <div>
-                <div className="border border-x-gray-200 flex flex-row gap-3 my-2 items-center">
-                  <p>{i + 1}</p>{" "}
-                  <p className="max-sm:text-xs">{bot.bot_name}</p>{" "}
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant={"secondary"}
-                        className="h-6 text-xs w-fit"
-                      >
-                        <span className="max-sm:hidden"> Code snippet</span>{" "}
-                        <TooltipWrapper
-                          className="hidden max-sm:block text-xs"
-                          tooltipName="Code snippet"
-                          body={<Code className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                        />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
-                      <DialogHeader>
-                        <DialogTitle>Code snippet for your bot</DialogTitle>
-                        <DialogDescription>
-                          <div className="bg-gray-100 rounded-sm my-2 p-2 text-xs overflow-scroll  no-scrollbar">
-                            <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
-                              {`
+              <div className="m-4 my-1 text-sm max-sm:m-2">
+                <div className="flex items-center">
+                  <p className="text-sm inline w-[10%]">{i + 1}</p>{" "}
+                  <p className="text-sm inline w-[30%] max-sm:w-[40%]">
+                    {bot.bot_name}
+                  </p>{" "}
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
+                  <div className="flex flex-row gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant={"secondary"}
+                          className="h-6 text-xs w-fit"
+                        >
+                          <span className="max-sm:hidden"> Code snippet</span>{" "}
+                          <TooltipWrapper
+                            className="hidden max-sm:block text-xs"
+                            tooltipName="Code snippet"
+                            body={<Code className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                        <DialogHeader>
+                          <DialogTitle>Code snippet for your bot</DialogTitle>
+                          <DialogDescription>
+                            <div className="bg-gray-100 rounded-sm my-2 p-2 text-xs overflow-scroll  no-scrollbar">
+                              <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
+                                {`
 <div
     class="deep-chat-poc2"
     data-bot-id="${bot.bot_id}"
@@ -192,14 +202,14 @@ const MyPages = ({ user }: any) => {
     defer
 ></script>
                             `}
-                            </p>
-                          </div>
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter className="-mt-4">
-                        <CopyToClipboard
-                          copyType="code"
-                          textToCopy={`<div
+                              </p>
+                            </div>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="-mt-4">
+                          <CopyToClipboard
+                            copyType="code"
+                            textToCopy={`<div
                                 class="deep-chat-poc2"
                                 data-bot-id="${bot.bot_id}"
                             ></div>
@@ -207,72 +217,72 @@ const MyPages = ({ user }: any) => {
                                 src="https://playground.coachbots.com/widget/coachbots-stt-widget.js"
                                 defer
                             ></script>`}
-                        />
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <Dialog>
-                    <DialogTrigger asChild>
+                          />
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant={"secondary"}
+                          className="h-6 text-xs w-fit"
+                        >
+                          <span className="max-sm:hidden">Link </span>
+                          <TooltipWrapper
+                            className="hidden max-sm:block text-xs"
+                            tooltipName="Link"
+                            body={
+                              <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
+                            }
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                        <DialogHeader>
+                          <DialogTitle>Page link</DialogTitle>
+                          <DialogDescription>
+                            <Link
+                              target="_blank"
+                              href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
+                              className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
+                            >
+                              {BotTypeLinks(botType.bot_type, bot.bot_id)}
+                            </Link>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="-mt-4">
+                          <CopyToClipboard
+                            copyType="link"
+                            textToCopy={
+                              BotTypeLinks(botType.bot_type, bot.bot_id)!
+                            }
+                          />
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Link
+                      href={
+                        intakeBotTypeLinks(
+                          botType.bot_type,
+                          bot.bot_id,
+                          userProfile.uid,
+                          userProfile.profile_type
+                        )! + `&uid=${bot.uid}`
+                      }
+                    >
                       <Button
                         variant={"secondary"}
-                        className="h-6 text-xs w-fit"
+                        className="h-6 text-xs w-fit bg-blue-200 "
                       >
-                        <span className="max-sm:hidden">Link </span>
+                        <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
-                          tooltipName="Link"
-                          body={
-                            <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
-                          }
+                          tooltipName="Edit"
+                          body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
-                      <DialogHeader>
-                        <DialogTitle>Page link</DialogTitle>
-                        <DialogDescription>
-                          <Link
-                            target="_blank"
-                            href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
-                            className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
-                          >
-                            {BotTypeLinks(botType.bot_type, bot.bot_id)}
-                          </Link>
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter className="-mt-4">
-                        <CopyToClipboard
-                          copyType="link"
-                          textToCopy={
-                            BotTypeLinks(botType.bot_type, bot.bot_id)!
-                          }
-                        />
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
-                  <Link
-                    href={
-                      intakeBotTypeLinks(
-                        botType.bot_type,
-                        bot.bot_id,
-                        userProfile.uid,
-                        userProfile.profile_type
-                      )! + `&uid=${bot.uid}`
-                    }
-                  >
-                    <Button
-                      variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 "
-                    >
-                      <span className="max-sm:hidden">Edit</span>{" "}
-                      <TooltipWrapper
-                        className="hidden max-sm:block text-xs"
-                        tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                      />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

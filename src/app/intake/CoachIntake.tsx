@@ -19,8 +19,8 @@ import CharactericticsSelect from "./CharacteristicsSelect";
 import { Switch } from "@/components/ui/switch";
 import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
-import mammoth from 'mammoth';
-import { pdfjs } from 'react-pdf';
+import mammoth from "mammoth";
+import { pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -148,16 +148,16 @@ const CoachIntake = ({ user }: any) => {
     if (selectedFiles) {
       const filesArray = await Promise.all(
         Array.from(selectedFiles).map(async (file: File) => {
-          let textContent: string = '';
+          let textContent: string = "";
           try {
-            if (file.name.includes('.pdf')){
-            textContent = (await extractTextFromPdf(file)) || '';
-            }else if (file.name.includes('.docx')){
-              textContent = (await extractTextFromDocx(file)) || '';
+            if (file.name.includes(".pdf")) {
+              textContent = (await extractTextFromPdf(file)) || "";
+            } else if (file.name.includes(".docx")) {
+              textContent = (await extractTextFromDocx(file)) || "";
             }
-            console.log('text',textContent)
+            console.log("text", textContent);
           } catch (error) {
-            console.error('Error extracting text from DOCX:', error);
+            console.error("Error extracting text from DOCX:", error);
             // If text extraction fails, set textContent to an empty string or handle it as needed
             // textContent = '';
           }
@@ -177,22 +177,23 @@ const CoachIntake = ({ user }: any) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async (event) => {
-        const arrayBuffer = (event.target as FileReader)?.result as ArrayBuffer | null;
-  
+        const arrayBuffer = (event.target as FileReader)
+          ?.result as ArrayBuffer | null;
+
         if (arrayBuffer) {
           try {
             const result = await mammoth.extractRawText({ arrayBuffer });
-            console.log('text',result.value)
+            console.log("text", result.value);
             resolve(result.value);
           } catch (error) {
-            console.error('Error extracting text from DOCX:', error);
+            console.error("Error extracting text from DOCX:", error);
             reject(error);
           }
         } else {
-          reject(new Error('Failed to read file as ArrayBuffer.'));
+          reject(new Error("Failed to read file as ArrayBuffer."));
         }
       };
-  
+
       reader.readAsArrayBuffer(file);
     });
   };
@@ -201,33 +202,34 @@ const CoachIntake = ({ user }: any) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async (event) => {
-        const arrayBuffer = (event.target as FileReader)?.result as ArrayBuffer | null;
+        const arrayBuffer = (event.target as FileReader)
+          ?.result as ArrayBuffer | null;
 
         if (arrayBuffer) {
           try {
             const pdfData = new Uint8Array(await file.arrayBuffer());
             const pdf = await pdfjs.getDocument({ data: pdfData }).promise;
-            let extractedText = '';
+            let extractedText = "";
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const content = await page.getTextContent();
-              extractedText += content.items.map((item: any) => item.str).join(' ') + '\n'; // Type assertion here
+              extractedText +=
+                content.items.map((item: any) => item.str).join(" ") + "\n"; // Type assertion here
             }
 
             resolve(extractedText);
           } catch (error) {
-            console.error('Error extracting text from PDF:', error);
+            console.error("Error extracting text from PDF:", error);
             reject(error);
           }
         } else {
-          reject(new Error('Failed to read file as ArrayBuffer.'));
+          reject(new Error("Failed to read file as ArrayBuffer."));
         }
       };
 
       reader.readAsArrayBuffer(file);
     });
   };
-
 
   function getProfileTypes(data: any) {
     const profileTypes = data.map((profile: any) => profile.profile_type);
@@ -263,6 +265,7 @@ const CoachIntake = ({ user }: any) => {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
           setUserId(data.uid);
         })
         .catch((err) => {
@@ -309,35 +312,48 @@ const CoachIntake = ({ user }: any) => {
                 if (
                   formType === "coach" &&
                   (profileTypes.includes("coach") ||
-                    profileTypes.includes("mentor"))
+                    profileTypes.includes("coachee"))
                 ) {
                   setCanCreateProfile(false);
                   toast.loading(
-                    "Your profile as a Coach/Mentor already exists. You cannot create another one. Redirecting you to the home page"
+                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
                     router.push("/");
                   }, 4000);
-                } else if (formType === "coachee" && !checkIfEdit) {
-                  if (
-                    formType === "coachee" &&
-                    (profileTypes.includes("coachee") ||
-                      profileTypes.includes("mentee"))
-                  ) {
-                    setCanCreateProfile(false);
-                    toast.loading(
-                      "Your profile as a Coachee/Mentee already exists. You cannot create another one. Redirecting you to the home page"
-                    );
-                    setTimeout(() => {
-                      router.push("/");
-                    }, 4000);
-                  }
                 }
               }
             })
             .catch((err) => {
               console.error(err);
             });
+
+          if (formType === "feedback" && !checkIfEdit) {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit", data);
+                const FeedbackBot = data.data.filter(
+                  (data: any) => data.signature_bot.bot_type === "feedback_bot"
+                );
+
+                if (FeedbackBot.length > 0) {
+                  toast.loading(
+                    "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
         });
     }
   }, []);
@@ -520,21 +536,34 @@ const CoachIntake = ({ user }: any) => {
                       //PATCH MEDIA DATA HERE
 
                       const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file ,text}) => {
-                        if (file.name.includes('.pdf')) {
-                          if (text){
-                            filesPatchFormData.append("pdf_data",`file_name:${file.name} text_file:${text}`);
-                            console.log(text)
-
-                          }else{
-                            filesPatchFormData.append(`attached_pdfs`, file, file.name.trim());
-                          }
-                        } else if (file.name.includes('.docx')) {
+                      referenceDocs.forEach(({ file, text }) => {
+                        if (file.name.includes(".pdf")) {
                           if (text) {
-                            filesPatchFormData.append(`doc_data`, `file_name:${file.name} text_file:${text}`);
-                            console.log(text)
+                            filesPatchFormData.append(
+                              "pdf_data",
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
                           } else {
-                            filesPatchFormData.append(`attached_docs`, file, file.name.trim());
+                            filesPatchFormData.append(
+                              `attached_pdfs`,
+                              file,
+                              file.name.trim()
+                            );
+                          }
+                        } else if (file.name.includes(".docx")) {
+                          if (text) {
+                            filesPatchFormData.append(
+                              `doc_data`,
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
+                            filesPatchFormData.append(
+                              `attached_docs`,
+                              file,
+                              file.name.trim()
+                            );
                           }
                         }
                       });
@@ -761,26 +790,38 @@ const CoachIntake = ({ user }: any) => {
                 console.log(data);
                 // setCreateLoading(false);
                 if (!data.error && !data.detail) {
-                  console.log(referenceDocs.length,'length')
+                  console.log(referenceDocs.length, "length");
                   if (referenceDocs.length > 0) {
                     const filesPatchFormData = new FormData();
                     if (referenceDocs.length > 0) {
-                      
                       referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes('.pdf')) {
-                          if (text){
-                            filesPatchFormData.append("pdf_data",`file_name:${file.name} text_file:${text}`);
-                            console.log(text)
-
-                          }else{
-                            filesPatchFormData.append(`attached_pdfs`, file, file.name.trim());
-                          }
-                        } else if (file.name.includes('.docx')) {
+                        if (file.name.includes(".pdf")) {
                           if (text) {
-                            filesPatchFormData.append(`doc_data`, `file_name:${file.name} text_file:${text}`);
-                            console.log(text)
+                            filesPatchFormData.append(
+                              "pdf_data",
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
                           } else {
-                            filesPatchFormData.append(`attached_docs`, file, file.name.trim());
+                            filesPatchFormData.append(
+                              `attached_pdfs`,
+                              file,
+                              file.name.trim()
+                            );
+                          }
+                        } else if (file.name.includes(".docx")) {
+                          if (text) {
+                            filesPatchFormData.append(
+                              `doc_data`,
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
+                            filesPatchFormData.append(
+                              `attached_docs`,
+                              file,
+                              file.name.trim()
+                            );
                           }
                         }
                       });
@@ -951,6 +992,9 @@ const CoachIntake = ({ user }: any) => {
               toast.success("Successfully Updated your feedback bot.", {
                 duration: 6000,
               });
+              setTimeout(() => {
+                router.push("/profile");
+              }, 4000);
             } else {
               toast.success(
                 "Thanks for your request. You will get notified when your Feedback bot is approved and live.",
@@ -1040,9 +1084,8 @@ const CoachIntake = ({ user }: any) => {
                 let resultingBot = getBotById(botIdFromParams!, data.data);
 
                 console.log(resultingBot);
-                resultingBot.signature_bot.bot_details.info = "hello";
-                console.log(resultingBot);
-                setName(resultingBot.bot_attributes.coach_name);
+                setName(resultingBot.bot_attributes.bot_name);
+                console.log(resultingBot.bot_attributes.bot_name);
                 if (botIdFromParams?.includes("feedback")) {
                   setProfileBio(
                     resultingBot.signature_bot.data.additional_data.short_profile_bio?.trim()
@@ -1545,7 +1588,7 @@ const CoachIntake = ({ user }: any) => {
                         name="files"
                         accept=".pdf,.docx"
                         onChange={async (e) => {
-                          handleFileChange(e)
+                          handleFileChange(e);
                         }}
                       />
                     </div>
@@ -1742,7 +1785,7 @@ const CoachIntake = ({ user }: any) => {
                 </div>
               </form>
             </div>
-            <div
+            {/* <div
               id="feedback"
               className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
             >
@@ -1884,7 +1927,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                 </form>
               )}
-            </div>
+            </div> */}
           </div>
         )}
         {formType === "coachee" && (
@@ -2092,7 +2135,7 @@ const CoachIntake = ({ user }: any) => {
                 </div>
               </form>
             </div>
-            <div
+            {/* <div
               id="feedback"
               className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
             >
@@ -2234,6 +2277,148 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                 </form>
               )}
+            </div> */}
+          </div>
+        )}
+        {formType === "feedback" && (
+          <div className="flex flex-col justify-center items-center w-full">
+            <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+              <h1 className="text-xl text-left text-gray-600 font-bold">
+                Feedback Intake
+              </h1>
+              <p className="mb-3 text-left text-sm text-gray-600">
+                Information provided will be used to create feedback bot!
+              </p>
+
+              <form
+                className="text-left"
+                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                  createFeedbackSubmitHandler(e);
+                }}
+              >
+                <div className="flex flex-col gap-2">
+                  <Badge
+                    variant={"secondary"}
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
+                  >
+                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  </Badge>
+                  {checkIfEdit && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800"
+                      variant={"outline"}
+                    >
+                      You are editing your bot. All the earlier inputs will be
+                      replaced by current inputs.
+                    </Badge>
+                  )}
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">Enter your name</p>
+                  <input
+                    value={name}
+                    required
+                    minLength={10}
+                    maxLength={30}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      handleWordLimit(e.target.value, 10, 30, "Name");
+                    }}
+                    placeholder="Aarav Sharma"
+                    type="text"
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                  />
+                  {Object.keys(error).includes("Name") && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {(error as any)["Name"]}
+                    </p>
+                  )}
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please add a short profile bio.
+                  </p>
+                  <textarea
+                    value={profileBio}
+                    required
+                    minLength={200}
+                    maxLength={1500}
+                    onChange={(e) => {
+                      setProfileBio(e.target.value);
+                      handleWordLimit(e.target.value, 200, 1500, "Profile Bio");
+                    }}
+                    placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
+                    rows={3}
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                  />
+                  {Object.keys(error).includes("Profile Bio") && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {(error as any)["Profile Bio"]}
+                    </p>
+                  )}
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please enter your Current Projects
+                  </p>
+                  <textarea
+                    value={currentProjects}
+                    required
+                    onChange={(e) => {
+                      setCurrentProjects(e.target.value);
+                    }}
+                    placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
+                    rows={3}
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                  />
+                </div>
+                {/* <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please enter your Suggested projects/ assignments.
+                  </p>
+                  <textarea
+                    required
+                    value={suggestedProjects}
+                    onChange={(e) => {
+                      setSuggestedProjects(e.target.value);
+                    }}
+                    placeholder="Proposing innovative projects or assignments such as [Project/Assignment 1], [Project/Assignment 2], and [Project/Assignment 3] that align with your expertise and interests..."
+                    rows={3}
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                  />
+                </div> */}
+                <div>
+                  {checkIfEdit ? (
+                    <Button disabled={feedbackCreateLoading} className="h-8">
+                      {" "}
+                      {feedbackCreateLoading ? (
+                        <>
+                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                          Saving
+                        </>
+                      ) : (
+                        <>
+                          Save Changes <PenLine className="ml-2 h-5 w-5" />
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button disabled={feedbackCreateLoading} className="h-8">
+                      {" "}
+                      {feedbackCreateLoading ? (
+                        <>
+                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                          Submitting
+                        </>
+                      ) : (
+                        <>
+                          Submit <SendHorizonal className="ml-2 h-5 w-5" />
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </form>
             </div>
           </div>
         )}

@@ -91,6 +91,7 @@ const Coaches = ({ user }: any) => {
 
   const [coacheeId, setCoacheeId] = useState("");
   const [coachId, setCoachId] = useState("");
+  const [feedbackBots, setFeedbackBots] = useState<[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
 
   const getCoachesData = async () => {
@@ -227,6 +228,23 @@ const Coaches = ({ user }: any) => {
               }
             })
             .then((err) => {
+              console.error(err);
+            });
+
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            headers: {
+              Authorization: basicAuth,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Bot details for edit", data);
+              const FeedbackBot = data.data.filter(
+                (data: any) => data.signature_bot.bot_type === "feedback_bot"
+              );
+              setFeedbackBots(FeedbackBot);
+            })
+            .catch((err) => {
               console.error(err);
             });
         });
@@ -416,7 +434,7 @@ const Coaches = ({ user }: any) => {
           BOTS
         </h1>
         <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-          Coaching & Mentoring community
+          Coaching, Mentoring & Feedback Network
         </h1>
         <p className="my-2 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
           {" "}
@@ -428,24 +446,13 @@ const Coaches = ({ user }: any) => {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger
-              disabled={coachId.length > 0 || coacheeId.length > 0}
+              // disabled={coachId.length > 0 || coacheeId.length > 0}
               asChild
               className="outline-none border-none"
             >
               <div>
                 {" "}
-                <Button
-                  onClick={() => {
-                    console.log(coachId, coacheeId);
-                    if (coachId.length > 0) {
-                      toast.info("You have already enrolled as a Coach!");
-                    } else if (coacheeId.length > 0) {
-                      toast.info("You have already enrolled as a Coachee!");
-                    }
-                  }}
-                  variant={"outline"}
-                  className="h-fit w-fit"
-                >
+                <Button variant={"outline"} className="h-fit w-fit">
                   Join the network <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -453,17 +460,40 @@ const Coaches = ({ user }: any) => {
             <DropdownMenuContent>
               <DropdownMenuItem
                 onClick={() => {
-                  router.push(`/intake/?type=coach`);
+                  if (coachId.length > 0 || coacheeId.length > 0) {
+                    toast.error(
+                      "You have already enrolled as a Coach/Coachee."
+                    );
+                  } else {
+                    router.push(`/intake/?type=coach`);
+                  }
                 }}
               >
                 Join as a Coach
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  router.push(`/intake/?type=coachee`);
+                  if (coachId.length > 0 || coacheeId.length > 0) {
+                    toast.error(
+                      "You have already enrolled as a Coachee/Coach."
+                    );
+                  } else {
+                    router.push(`/intake/?type=coachee`);
+                  }
                 }}
               >
                 Join as a Coachee
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  if (feedbackBots.length > 0) {
+                    toast.error("You already have an active feedback bot.");
+                  } else {
+                    router.push(`/intake/?type=feedback`);
+                  }
+                }}
+              >
+                Join Feedback Network
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
