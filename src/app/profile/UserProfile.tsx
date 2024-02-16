@@ -29,6 +29,7 @@ interface KudosDetailsType {
   negative_feedback_count: number;
   rating: number;
   user_id: string;
+  total_users: number;
 }
 
 const UserProfile = ({ user }: any) => {
@@ -42,6 +43,7 @@ const UserProfile = ({ user }: any) => {
   >([]);
 
   const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
+  const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
 
   const [plLoading, setplLoading] = useState(true);
   const getLeaderboardPosition = (userId: string) => {
@@ -88,9 +90,21 @@ const UserProfile = ({ user }: any) => {
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+      .then((dataa) => {
+        console.log(dataa);
 
+        const FilteredUserDataForKudos = dataa.group.filter(
+          (data: KudosDetailsType) => {
+            if (data.user_id === "a28a9828-c732-457c-b8da-9b8556fc40df") {
+              return {
+                ...data,
+                total_users: dataa.group.length,
+              };
+            }
+          }
+        ); //userId)
+        console.log(FilteredUserDataForKudos);
+        setTotalUsersForFeedback(dataa.group.length);
         // if (data.group) {
         //   const sortedFeedbackData: FeedbacksType[] = data.group.sort(
         //     (a, b) => b.positive_feedback_count - a.positive_feedback_count
@@ -99,7 +113,7 @@ const UserProfile = ({ user }: any) => {
         // } else {
         //   setFeedbacks([])
         // }
-        setUserKudosData([]);
+        setUserKudosData(FilteredUserDataForKudos);
         setKudosLoading(false);
       })
       .catch((err) => {
@@ -250,11 +264,12 @@ const UserProfile = ({ user }: any) => {
                   <>
                     <Badge variant={"outline"} className="ml-4 p-2">
                       {" "}
-                      Points : 6{" "}
+                      Points : {userKudosData[0].positive_feedback_count}{" "}
                     </Badge>
                     <Badge variant={"outline"} className="ml-4 p-2">
                       {" "}
-                      Position : Top 4 out of 12
+                      Position : Top {userKudosData[0].rating} out of{" "}
+                      {totalUsersForFeedback}
                     </Badge>
                   </>
                 ) : (
