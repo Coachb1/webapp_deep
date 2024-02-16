@@ -655,7 +655,7 @@ const getUserBotConversation = async (participant_id) => {
           lastConv.session_id,
           lastConv
         );
-        previousBotConversationId = `${lastConv.uid}:${lastConv.session_id}`;
+        previousBotConversationId = `${lastConv.uid}:${lastConv.session_id}:${lastConv.coach_message_text}`;
       }
     }
   } catch (error) {
@@ -901,9 +901,11 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   return formRadio;
 }
 async function handlePreviousConversation(choice) {
+  let coachMessage = ""
   if (choice === "previous") {
     conversation_id2 = previousBotConversationId.split(":")[0];
     sessionId2 = previousBotConversationId.split(":")[1];
+    coachMessage = previousBotConversationId.split(":")[2];
     isBotInitialized = true;
   }
 
@@ -927,7 +929,7 @@ async function handlePreviousConversation(choice) {
   console.log(botType);
   if (botType === "subject_matter_bot" || choice === "previous") {
     if (choice === "previous") {
-      appendMessage2("Please provide context to continue conversaton.");
+      appendMessage2(coachMessage);
     } else {
       appendMessage2("Please provide context to start conversaton.");
     }
