@@ -107,6 +107,7 @@ const Feedback = ({ user, renderType }: any) => {
 
   const [coachName, setCoachName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
+  const [currentProjects, setCurrentProjects] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   //login walls
@@ -168,7 +169,12 @@ const Feedback = ({ user, renderType }: any) => {
             setInValidCoach(true);
           }
           setCoachName(data.data.bot_details.coach_name);
-          setCoachDescription(data.data.bot_details.info);
+
+          if (data.data.bot_details.info) {
+            setCoachDescription(data.data.bot_details.info);
+          } else if (data.data.additional_data.short_profile_bio) {
+            setCoachDescription(data.data.additional_data.short_profile_bio);
+          }
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -181,7 +187,9 @@ const Feedback = ({ user, renderType }: any) => {
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setUserIdFromBotDetails(data.data.user_id);
-
+        if (data.data.additional_data !== null) {
+          setCurrentProjects(data.data.additional_data?.current_projects);
+        }
         if (!data.data.is_sample_bot && !data.data.is_system_bot) {
           fetch(`${baseURL}/accounts/`, {
             method: "POST",
@@ -292,7 +300,7 @@ const Feedback = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed max-sm:hidden right-[100px] bottom-12">
+          <div className="fixed max-sm:hidden right-[100px] bottom-12 z-50">
             <span className="mr-6 text-sm font-bold">Try Now</span>
             <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
           </div>
@@ -328,8 +336,14 @@ const Feedback = ({ user, renderType }: any) => {
 
               <div className="p-2 mt-4 border border-gray-200 bg-amber-50 rounded-lg">
                 {renderType === "dynamic" ? (
-                  <p className="max-sm:text-xs text-[#2f2323]">
+                  <p className="max-sm:text-xs text-[#2f2323] my-2">
                     {coachDescription}
+                    <br />
+                    {currentProjects && (
+                      <span className="my-2">
+                        <b>Current projects : </b> {currentProjects}
+                      </span>
+                    )}
                   </p>
                 ) : (
                   <p className="max-sm:text-xs text-[#2f2323]">

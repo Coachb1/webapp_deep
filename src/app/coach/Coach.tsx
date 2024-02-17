@@ -117,7 +117,7 @@ const Coach = ({ user, renderType }: any) => {
           }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
-          setProfileImage(data.owner_profile_image);
+          setProfileImage(data.data.owner_profile_image);
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -275,13 +275,13 @@ const Coach = ({ user, renderType }: any) => {
                 // coachDescription
                 <>
                   <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <div className="w-[20%] max-sm:w-fit">
+                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                         src={profileImage}
                       />
                     </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left">
+                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
                       {" "}
                       {coachDescription}
                     </p>
@@ -297,7 +297,7 @@ const Coach = ({ user, renderType }: any) => {
                       }
                     />
                   </div>{" "}
-                  <p className="w-[80%] max-sm:w-full text-left">
+                  <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
                     {" "}
                     I'm Aarav Sharma, a seasoned corporate coach with 15+ years'
                     experience in leadership development. Holding a master's in

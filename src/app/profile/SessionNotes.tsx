@@ -193,7 +193,7 @@ const SessionNotes = ({ user }: any) => {
 
     if (context.split(" ").length > 40) {
       fetch(
-        `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${selectedUserForCommentUserId}&context=${context}&for=mentor`,
+        `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${selectedUserForCommentUserId}&context=${context}&for=mentor&token=${basicAuth}`,
         {
           method: "GET",
           headers: {
