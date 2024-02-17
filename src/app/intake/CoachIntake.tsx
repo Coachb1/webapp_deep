@@ -460,8 +460,8 @@ const CoachIntake = ({ user }: any) => {
                   participant_id: userId,
                   bot_base_url: `${
                     subdomain === "playground"
-                      ? "https://playground.coachbots.com/coach/"
-                      : "https://platform.coachbots.com/coach/"
+                      ? "https://playground.coachbots.com/"
+                      : "https://platform.coachbots.com/"
                   }`,
                   fitment_answer: `${participantLevel},${
                     coachMentInSameDep === "yes" ? true : false
