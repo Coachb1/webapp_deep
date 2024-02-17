@@ -47,7 +47,7 @@ const UserProfile = ({ user }: any) => {
 
   const [plLoading, setplLoading] = useState(true);
   const getLeaderboardPosition = (userId: string) => {
-    fetch(`${baseURL}/accounts/participant-leader-board-report/`, {
+    fetch(`${baseURL}/accounts/participant-leader-board-report/?email=${user.email}`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -83,7 +83,7 @@ const UserProfile = ({ user }: any) => {
 
   const [kudosLoading, setKudosLoading] = useState(true);
   const getKudosCounts = (userId: string) => {
-    fetch(`${baseURL}/accounts/feedback-leaderboard-report/`, {
+    fetch(`${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -91,7 +91,7 @@ const UserProfile = ({ user }: any) => {
     })
       .then((res) => res.json())
       .then((dataa) => {
-        console.log(dataa);
+        console.log("lead",dataa,user.email);
 
         const FilteredUserDataForKudos = dataa.group.filter(
           (data: KudosDetailsType) => {
