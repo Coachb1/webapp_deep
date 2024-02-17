@@ -12,7 +12,7 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/kudosBoard`}
+                href={`https://myreportdev.coachbots.com/kudosBoard/?email=${user.email}`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -27,7 +27,7 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/participantLeaderboardReport`}
+                href={`https://myreportdev.coachbots.com/participantLeaderboardReport/?email=${user.email}`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -42,7 +42,7 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/coachCoacheeMappingReport`}
+                href={`https://myreportdev.coachbots.com/coachCoacheeMappingReport/?email=${user.email}`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />

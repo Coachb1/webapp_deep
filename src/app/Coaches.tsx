@@ -176,7 +176,7 @@ const Coaches = ({ user }: any) => {
   };
 
   const getAllConnections = () => {
-    fetch(`${baseURL}/accounts/coach-coachee-connections/`, {
+    fetch(`${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -185,6 +185,7 @@ const Coaches = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        console.log("email",user.email)
         setConnections(data.data);
       })
       .catch((err) => {
