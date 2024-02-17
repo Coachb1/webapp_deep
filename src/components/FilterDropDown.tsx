@@ -70,7 +70,7 @@ const FilterDropDown = ({
                         className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
                       >
                         {option === "accepted"
-                          ? "Connected"
+                          ? "Connections"
                           : convertTextToCorrectFormat(option)}
                       </label>
                     </div>
@@ -86,7 +86,7 @@ const FilterDropDown = ({
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
             <p className="text-sm px-1">
               {checkedItem === "accepted"
-                ? "Connected"
+                ? "Connections"
                 : convertTextToCorrectFormat(checkedItem)}
             </p>{" "}
             <X

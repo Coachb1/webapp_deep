@@ -113,9 +113,11 @@ const Coaches = ({ user }: any) => {
           new Set(data.map((profile: CoachesDataType) => profile.profile_type))
         );
 
-        const departmentOptions: string[] = Array.from(
-          new Set(data.map((profile: CoachesDataType) => profile.department))
+        const experienceOptions: string[] = Array.from(
+          new Set(data.map((profile: CoachesDataType) => profile.experience))
         );
+
+        console.log(experienceOptions);
 
         const botTypeTypes: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.bot_type))
@@ -124,7 +126,10 @@ const Coaches = ({ user }: any) => {
         setFilterCategories([
           {
             filterName: "Profile Type",
-            filterOptions: [...profileTypeOptions, ...["External", "accepted"]], //, ...["accepted"]
+            filterOptions: [
+              ...profileTypeOptions,
+              ...["External", "accepted"],
+            ].filter((type) => type !== "skill_bot"), //, ...["accepted"]
           },
           {
             filterName: "Experience",
@@ -133,6 +138,7 @@ const Coaches = ({ user }: any) => {
               "5 - 10 years",
               "10 - 15 years",
               "15 - 20 years",
+              "20+ years",
             ],
           },
           {
@@ -146,7 +152,7 @@ const Coaches = ({ user }: any) => {
             ],
           },
           {
-            filterName: "Skills",
+            filterName: "Coach Skills",
             filterOptions: [
               "Technology",
               "Business Operations",
@@ -157,7 +163,7 @@ const Coaches = ({ user }: any) => {
             ],
           },
           {
-            filterName: "Expertise",
+            filterName: "Coach Expertise",
             filterOptions: [
               "Career Management",
               "Work Life Banlance",
@@ -262,17 +268,24 @@ const Coaches = ({ user }: any) => {
     }
 
     return inputArray.filter((obj) => {
-      return filterArray.every((filter) => {
-        for (const prop in obj) {
-          if (obj.hasOwnProperty(prop) && obj[prop as keyof CoachesDataType]) {
-            const propValue = obj[prop as keyof CoachesDataType]!.toString();
-            if (propValue.includes(filter)) {
-              return true;
+      if (filterArray.includes("coach")) {
+        return obj.profile_type && filterArray.includes(obj.profile_type);
+      } else {
+        return filterArray.every((filter) => {
+          for (const prop in obj) {
+            if (
+              obj.hasOwnProperty(prop) &&
+              obj[prop as keyof CoachesDataType]
+            ) {
+              const propValue = obj[prop as keyof CoachesDataType]!.toString();
+              if (propValue.includes(filter)) {
+                return true;
+              }
             }
           }
-        }
-        return false;
-      });
+          return false;
+        });
+      }
     });
   }
 
@@ -460,41 +473,71 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                onClick={() => {
-                  if (coachId.length > 0 || coacheeId.length > 0) {
-                    toast.error(
-                      "You have already enrolled as a Coach/Coachee."
-                    );
-                  } else {
-                    router.push(`/intake/?type=coach`);
-                  }
-                }}
+                disabled={coachId.length > 0 || coacheeId.length > 0}
+                // onClick={() => {
+                //   if (coachId.length > 0 || coacheeId.length > 0) {
+                //     toast.error(
+                //       "You have already enrolled as a Coach/Coachee."
+                //     );
+                //   } else {
+                //     router.push(`/intake/?type=coach`);
+                //   }
+                // }}
+                asChild
               >
-                Join as a Coach
+                <Link
+                  href={"/intake/?type=coach"}
+                  className="flex flex-row justify-center items-center"
+                >
+                  Join as a Coach{" "}
+                  {coachId.length > 0 || coacheeId.length > 0 ? (
+                    <Badge className="ml-2">Already Joined</Badge>
+                  ) : null}
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {
-                  if (coachId.length > 0 || coacheeId.length > 0) {
-                    toast.error(
-                      "You have already enrolled as a Coachee/Coach."
-                    );
-                  } else {
-                    router.push(`/intake/?type=coachee`);
-                  }
-                }}
+                disabled={coachId.length > 0 || coacheeId.length > 0}
+                // onClick={() => {
+                //   if (coachId.length > 0 || coacheeId.length > 0) {
+                //     toast.error(
+                //       "You have already enrolled as a Coachee/Coach."
+                //     );
+                //   } else {
+                //     router.push(`/intake/?type=coachee`);
+                //   }
+                // }}
+                asChild
               >
-                Join as a Coachee
+                <Link
+                  href={"/intake/?type=coachee"}
+                  className="flex flex-row justify-center items-center"
+                >
+                  Join as a Coachee
+                  {coachId.length > 0 || coacheeId.length > 0 ? (
+                    <Badge className="ml-2">Already Joined</Badge>
+                  ) : null}
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {
-                  if (feedbackBots.length > 0) {
-                    toast.error("You already have an active feedback bot.");
-                  } else {
-                    router.push(`/intake/?type=feedback`);
-                  }
-                }}
+                // onClick={() => {
+                //   if (feedbackBots.length > 0) {
+                //     toast.error("You already have an active feedback bot.");
+                //   } else {
+                //     router.push(`/intake/?type=feedback`);
+                //   }
+                // }}
+                disabled={feedbackBots.length > 0}
+                asChild
               >
-                Join Feedback Network
+                <Link
+                  href={"/intake/?type=feedback"}
+                  className="flex flex-row justify-center items-center"
+                >
+                  Join Feedback Network
+                  {feedbackBots.length > 0 ? (
+                    <Badge className="ml-2">Already Joined</Badge>
+                  ) : null}
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
