@@ -289,7 +289,7 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               ) : (
                 <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                  <div className="w-[20%] max-sm:w-fit">
+                  <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                       src={
