@@ -117,7 +117,11 @@ const Coaches = ({ user }: any) => {
           new Set(data.map((profile: CoachesDataType) => profile.experience))
         );
 
-        console.log(experienceOptions);
+        const skillsOptions: string[] = Array.from(
+          new Set(data.map((profile: CoachesDataType) => profile.skills))
+        );
+
+        console.log(skillsOptions);
 
         const botTypeTypes: string[] = Array.from(
           new Set(data.map((profile: CoachesDataType) => profile.bot_type))
@@ -153,14 +157,7 @@ const Coaches = ({ user }: any) => {
           },
           {
             filterName: "Coach Skills",
-            filterOptions: [
-              "Technology",
-              "Business Operations",
-              "Project management & engineering",
-              "HR & People development",
-              "Sales & Marketing",
-              "Finance",
-            ],
+            filterOptions: skillsOptions.filter((skill) => skill !== null),
           },
           {
             filterName: "Coach Expertise",
