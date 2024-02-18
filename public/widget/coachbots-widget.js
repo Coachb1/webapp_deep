@@ -2,7 +2,7 @@ const key = "";
 const secret = "";
 const subdomain = window.location.hostname.split(".")[0];
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "http://127.0.0.1:8001/api/v1"
+// const devUrl = "http://127.0.0.1:8001/api/v1"   / local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === "platform" ? prodUrl : devUrl;
