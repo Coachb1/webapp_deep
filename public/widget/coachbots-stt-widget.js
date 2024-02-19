@@ -3233,7 +3233,7 @@ loadExternalModule().then(() => {
     </div>
     <p style="font-size: ${
       window.innerWidth < 768 ? "8px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:20px">Avatar works based on coach provided background. Click on "Done" at end to inform your coach about this session.</p>
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px">Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>
   </div>
   `;
 
