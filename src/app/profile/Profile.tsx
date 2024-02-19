@@ -41,12 +41,14 @@ const Profile = ({ user }: any) => {
   const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        setUserRole(data.role);
-      });
-  });
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          setUserRole(data.role);
+        });
+    }
+  }, []);
 
   const NavItem = ({ itemName, icon }: any) => {
     return (

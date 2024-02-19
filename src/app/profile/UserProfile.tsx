@@ -47,12 +47,15 @@ const UserProfile = ({ user }: any) => {
 
   const [plLoading, setplLoading] = useState(true);
   const getLeaderboardPosition = (userId: string) => {
-    fetch(`${baseURL}/accounts/participant-leader-board-report/?email=${user.email}`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
+    fetch(
+      `${baseURL}/accounts/participant-leader-board-report/?email=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((dataa) => {
         console.log(dataa);
@@ -83,15 +86,18 @@ const UserProfile = ({ user }: any) => {
 
   const [kudosLoading, setKudosLoading] = useState(true);
   const getKudosCounts = (userId: string) => {
-    fetch(`${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
+    fetch(
+      `${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((dataa) => {
-        console.log("lead",dataa,user.email);
+        console.log("lead", dataa, user.email);
 
         const FilteredUserDataForKudos = dataa.group.filter(
           (data: KudosDetailsType) => {
@@ -119,50 +125,52 @@ const UserProfile = ({ user }: any) => {
       pathname.push("/api/auth/login");
     }
     try {
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then(async (data) => {
-          const userId = data.uid;
-          setUserRole(data.role);
-          await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
-            method: "POST",
-            headers: {
-              Authorization: basicAuth,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user_id: data.uid,
-              report_type: "participantReport",
-              candidate_id: data.uid,
-            }),
-          })
-            .then((response) => response.json())
-            .then(async (data) => {
-              setCandidateReportUrl(data.url);
-              await fetch(
-                `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                    "Content-Type": "application/json",
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  setTestAttemptedCount(data["data"]["total_session"]);
-                })
-                .catch((error) => {
-                  console.error(`Error in getAttemptedTestList: ${error}`);
-                });
+      if (user) {
+        getUserAccount(user)
+          .then((response) => response.json())
+          .then(async (data) => {
+            const userId = data.uid;
+            setUserRole(data.role);
+            await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+              method: "POST",
+              headers: {
+                Authorization: basicAuth,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_id: data.uid,
+                report_type: "participantReport",
+                candidate_id: data.uid,
+              }),
             })
-            .catch((error) => {
-              console.error("Error getting report", error);
-            });
-          getLeaderboardPosition(data.uid);
-          getKudosCounts(data.uid);
-        });
+              .then((response) => response.json())
+              .then(async (data) => {
+                setCandidateReportUrl(data.url);
+                await fetch(
+                  `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                )
+                  .then((response) => response.json())
+                  .then((data) => {
+                    setTestAttemptedCount(data["data"]["total_session"]);
+                  })
+                  .catch((error) => {
+                    console.error(`Error in getAttemptedTestList: ${error}`);
+                  });
+              })
+              .catch((error) => {
+                console.error("Error getting report", error);
+              });
+            getLeaderboardPosition(data.uid);
+            getKudosCounts(data.uid);
+          });
+      }
     } catch (error) {
       console.log(error);
     }

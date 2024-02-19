@@ -197,11 +197,11 @@ const Coaches = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getAllConnections();
-    getCoachesData();
     hideBots();
 
     if (user) {
+      getAllConnections();
+      getCoachesData();
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
