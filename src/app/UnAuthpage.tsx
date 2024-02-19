@@ -7,7 +7,7 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs";
-import { Loader, LogOut, UserCircle2 } from "lucide-react";
+import { Loader, LogIn, LogOut, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 export const UnAuth = ({ user }: any) => {
   return (
     <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
@@ -95,13 +96,25 @@ export const LoginWall = () => {
           </span>
           BOTS
         </h1>
-        <p className="my-2 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
-          {" "}
-          Please login to continue
-        </p>
-        <div>
+        <div className="w-[600px] max-sm:w-[320px]">
+          <img alt="how-it-works" src={"/intro.svg"} />
+        </div>
+
+        <div className="-mt-8 max-sm:mt-0">
           <RegisterLink postLoginRedirectURL={"/"}>
-            <Button variant={"outline"}>Login</Button>
+            <div className="relative group cursor-pointer">
+              <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                <div className="space-y-2">
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 text-gray-600 font-bold text-xl hover:cursor-pointer w-fit"
+                  >
+                    Login <LogIn className="ml-2 h-4 w-4 inline" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           </RegisterLink>
         </div>
       </MaxWidthWrapper>{" "}
