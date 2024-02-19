@@ -178,7 +178,26 @@ const MyLibrary = ({ user }: any) => {
   };
 
   const getNewManagerTests = () => {
-    fetch(`${baseURL}/tests/get-tests-by-tab-category/`, {
+    fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        const group_list: string[] = [];
+        for (const item of data.data.my_lib) {
+          if (item.emails.includes(user?.email)) {
+            group_list.push(item.group);
+          }
+        }
+        setGroupList(group_list);
+
+        console.log("group_list",group_list)
+
+    fetch(`${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,
@@ -202,6 +221,7 @@ const MyLibrary = ({ user }: any) => {
         setDomainOptionsNewManager(tempConversionDomains);
       })
       .catch((err) => console.error("Cannot retrive tests", err));
+    });
   };
 
   useEffect(() => {
@@ -333,7 +353,7 @@ const MyLibrary = ({ user }: any) => {
                     >
                       EQ Mini Course
                     </Button>
-                    {groupList.length > 0 && (
+                    {/* {groupList.length > 0 && (
                       <>
                         <Button
                           variant={"outline"}
@@ -349,7 +369,7 @@ const MyLibrary = ({ user }: any) => {
                           Custom
                         </Button>
                       </>
-                    )}
+                    )} */}
                     <Button
                       onClick={() => {
                         document
