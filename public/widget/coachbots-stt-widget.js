@@ -965,6 +965,38 @@ async function handlePreviousConversation(choice) {
     isBotInitialized = true;
   }
 
+  const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  if (choice === "new") {
+    const previousButton = shadowRoot2.getElementById("previous-conversation");
+    previousButton.disabled = true;
+
+    const conversationProceedOptions = `<div id="conversation-proceed-options" >
+                    <b>New sessions will cancel out any existing intakes and you have to do the intake again.. Do you want to proceed?</b>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('Yes')">Yes</button>
+                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('No')">No</button>
+                    </div>`;
+    appendMessage2(conversationProceedOptions);
+    return;
+  }
+
+  if (choice === "Yes") {
+    const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
+    const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
+    conversationProceedOptionsParent.remove();
+    appendMessage2("Please complete the intake process.")
+  }
+
+
+  if (choice === "No") {
+    const previousButton = shadowRoot2.getElementById("previous-conversation");
+    previousButton.disabled = false;
+
+    const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
+    const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
+    conversationProceedOptionsParent.remove();
+    return;
+  }
+
   botInitialQuestionsIndex = 1;
   optedBeginSession = true;
   if (botType === "avatar_bot") {
@@ -1008,6 +1040,8 @@ async function handlePreviousConversation(choice) {
     appendMessage2(radio_cont);
   }
 }
+
+
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
   if (question == "fitness_analysis") {
@@ -1054,8 +1088,8 @@ async function handleFaqButtonClick(question) {
 
         const div = `<div id="conversation-proceed" >
         <b>Do you want to continue previous conversation or start new conversation?</b>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
+            <button id='previous-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
+            <button id='new-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
         </div>`;
         appendMessage2(div);
         return;
