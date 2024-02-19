@@ -118,6 +118,7 @@ let optedBeginSession = false;
 let botWelcomeMessage = "";
 let previousBotConversationId = "";
 let isBotRecommendationFetched = false;
+let isBotConversationPopulated = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -645,10 +646,17 @@ const getUserBotConversation = async (participant_id) => {
       botConv,
       botConv[0]["results"].length
     );
+    let botConversations
     if (botConv.length > 0) {
-      if (botConv[0]["results"].length > 0) {
+      botConv.forEach(element => {
+        if (element.bot_id === botId){
+          botConversations = element
+          console.log('bot_conv',botConversations)
+        }
+      });
+      if (botConversations["results"].length > 0) {
         const lastConv =
-          botConv[0]["results"][botConv[0]["results"].length - 1];
+          botConversations["results"][botConversations["results"].length - 1];
         console.log(
           "last converstion session",
           lastConv.uid,
@@ -662,6 +670,48 @@ const getUserBotConversation = async (participant_id) => {
     console.error(`Error in getUserBotConversation: ${error}`);
   }
 };
+
+async function populateBotConversation(participant_id){
+  const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      },
+    });
+
+    const botConv = await response.json();
+    console.log(
+      "PRevious conversations",
+      botConv,
+      
+    );
+    if (botConv.length > 0) {
+      console.log('populating conversation')
+      let botConversations
+      botConv.forEach(element => {
+        if (element.bot_id === botId){
+          botConversations = element
+        }
+      });
+      const results = botConversations["results"]
+      results.forEach(element => {
+        const coach_message_text = element['coach_message_text'];
+        const participant_message_text = element['participant_message_text']
+
+        if (coach_message_text && coach_message_text !== ''){
+          appendMessage2(coach_message_text);
+        }
+        if (participant_message_text && participant_message_text !== ''){
+          appendMessageForUser2(participant_message_text)
+        }
+      });
+      isBotConversationPopulated = true
+    }
+  
+};
+
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -680,6 +730,8 @@ const getBotDetails2 = async (botId) => {
     console.log("FAQS => ", botDetails.data.faqs);
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
+    
+
 
     if (botType !== "avatar_bot") {
       botWelcomeMessage = botDetails.data.attributes.heading;
@@ -763,6 +815,10 @@ const getBotDetails2 = async (botId) => {
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
+    console.log('id',userId2,participantId2)
+    if (!isBotConversationPopulated){
+      populateBotConversation(userId2);
+    }
     return botDetails;
   } catch (error) {
     console.error(`Error in getBotDetails: ${error}`);
@@ -928,12 +984,15 @@ async function handlePreviousConversation(choice) {
   }
   console.log(botType);
   if (botType === "subject_matter_bot" || choice === "previous") {
-    if (choice === "previous") {
-      appendMessage2(coachMessage);
-    } else {
-      appendMessage2("Please provide context to start conversaton.");
-    }
+    
+    appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
+    appendMessage2("Please provide context to start conversaton.");
+    
     return;
+  }
+
+  if (botType === 'helper_bot'){
+    appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
   }
 
   isAskingInitialQuestions = true;
@@ -1021,8 +1080,13 @@ async function handleFaqButtonClick(question) {
       }
       console.log(botType);
       if (botType === "subject_matter_bot") {
+        appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
         appendMessage2("Please provide context to start conversaton.");
         return;
+      }
+      if (botType === 'helper_bot'){
+        appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
+
       }
 
       isAskingInitialQuestions = true;
@@ -1453,6 +1517,35 @@ const handleEndCoachingClick2 = async (randomId) => {
     appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
   }
 };
+
+function createMessageNodeUser2(message) {
+  const messageNode = document.createElement("div");
+  messageNode.classList.add("inner-message-container");
+
+  const messageBubble = document.createElement("div");
+  messageBubble.classList.add("message-bubble", "user-message-text");
+  messageBubble.style.maxWidth = "80%";
+  messageBubble.style.marginTop = "4px";
+  messageBubble.style.borderRadius = "4px";
+  messageBubble.style.padding = "4";
+  messageBubble.style.backgroundColor = "#2DC092";
+  messageBubble.style.color = "white";
+
+  const messageText = document.createElement("p");
+  messageText.innerHTML = message;
+
+  messageBubble.appendChild(messageText);
+  messageNode.appendChild(messageBubble);
+
+  return messageNode;
+}
+
+function appendMessageForUser2(message2) {
+  gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const messageNode = createMessageNodeUser2(message2);
+  gShadowRoot2.getElementById("messages").appendChild(messageNode);
+  gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+}
 
 function createMessageNode2(message) {
   const messageNode = document.createElement("div");
