@@ -381,7 +381,7 @@ const SessionNotes = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-h-[70vh] max-sm:max-h-[75vh] overflow-scroll">
+    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll">
       <div className="pl-4 max-sm:pl-2 pt-2">Live Session Notes</div>
       <div className="m-4 max-sm:m-2">
         <Tabs
@@ -794,7 +794,7 @@ const SessionNotes = ({ user }: any) => {
                     <>
                       {filteredRecivedItems.length === 0 && (
                         <div className="text-center mt-4 font-bold ">
-                          You have not given any comments yet
+                          You have not recieved any comments yet
                         </div>
                       )}
                     </>

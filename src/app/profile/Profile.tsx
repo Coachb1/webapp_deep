@@ -94,7 +94,7 @@ const Profile = ({ user }: any) => {
         <hr />
       </div>
       <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-[80vh] flex flex-row justify-between">
-        <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2 ">
+        <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2 fixed">
           <div className="h-full flex flex-col justify-start gap-3 mb-4 overflow-scroll no-scrollbar ">
             <NavItem
               itemName={"Account Information"}
@@ -146,7 +146,7 @@ const Profile = ({ user }: any) => {
             ) : null}
           </div>
         </div>
-        <div className="w-[80%] max-sm:w-[90%]">
+        <div className=" ml-[20%] w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
               <UserProfile user={user} />

@@ -100,3 +100,23 @@ export interface connectionType {
   coachee_user_id: string;
   coach_avatar_bot_id: string;
 }
+
+export interface TestData {
+  title: string;
+  description: string;
+  test_code: string;
+  test_type: string;
+}
+
+export interface DomainData {
+  domain: string;
+  tests: TestData[];
+}
+
+export interface CategoryData {
+  category_name: string;
+  tests_data: DomainData[];
+  domainOptionsForFilter: { value: string; label: string }[];
+}
+
+export type Categories = CategoryData[];
