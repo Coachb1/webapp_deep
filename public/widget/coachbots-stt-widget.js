@@ -560,7 +560,7 @@ const feedbackBotQnAFlow = (flow) => {
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
     setTimeout(() => {
       appendMessage2(
-        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 4px; border: 1px solid darkgray; padding: 4px 8px;" onclick="handleEndFeedback()">End</button>`
       );
     }, 200);
   } else if (flow === "down") {
@@ -594,8 +594,10 @@ const feedbackBotInitialFlow = async (flow) => {
   if (flow === "initial") {
     const anonymous_text = `<div id="anonymous">
         <b>Want to continue as Anonymous?</b>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
+        </br> <div>
+            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
+            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
+            </div>
         </div>`;
     appendMessage2(anonymous_text);
   } else if (flow === "save_email") {
@@ -616,11 +618,12 @@ const feedbackBotInitialFlow = async (flow) => {
     const div_cont = `<div id="thumbsup-down" >
         
         <b>What do you think of our bot?</b>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+            <br>
+            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
             <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
           </svg>
           </i></button>
-            <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('down')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
+            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('down')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
             <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.38 1.38 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51q.205.03.443.051c.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.9 1.9 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2 2 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.2 3.2 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.8 4.8 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591"/>
           </svg>
           </button>
@@ -776,13 +779,13 @@ const getBotDetails2 = async (botId) => {
       }
     }
 
-    faqButtonsGenerator("recommendations", "Recommendations");
+    // faqButtonsGenerator("recommendations", "Recommendations");
     if (
       botDetails.data.fitment_qna &&
       botDetails.data.is_fitment_analysis &&
       botDetails.data.coaching_for_fitment === "anyone"
     ) {
-      faqButtonsGenerator("fitness_analysis", "Fitment Analysis");
+      faqButtonsGenerator("fitness_analysis", "Quick Match");
     }
 
     faqButtonsGenerator("something_else", "Begin session");
@@ -916,7 +919,16 @@ const handleFitmentAnalysis = async () => {
       const msg = gShadowRoot2.getElementById("fitment-analysis");
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
-      que_msg.innerHTML = `<b>Fitness Analysis Result:</b>   <p>${data.score}</p>`; // You can customize the message here
+      let score_result_statement;
+      if(data.score === 1){
+        score_result_statement = "Low - The current score indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
+      } else if (data.score === 2){
+        score_result_statement = "Moderate - The current score suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
+      } else if (data.score === 3){
+        score_result_statement = "High - The score reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
+      }
+
+      que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Fitness Analysis Result:</b>   <p>${data.score} : ${score_result_statement}</p> </div>`; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
 
@@ -1073,7 +1085,24 @@ async function handleFaqButtonClick(question) {
                 <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
               </div>`;
 
-    appendMessage2(formRadio);
+              // formRadio =`
+              //   <div id='fitment-analysis' style="padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
+              //     <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentAnalysisIndex}">
+              //       <b>Q.</b><p>${questiontext}</p>
+              //       <div>
+                      
+              //       </div>
+              //     </div>
+              //   </div>
+              //   `
+
+              appendMessage2(`
+                <div style="display: flex; flex-direction: column;">
+                  <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+                  <div style="margin-top : 8px; padding-top: 0px;">${formRadio}</div>
+                </div>
+              `)
+    // appendMessage2(formRadio);
   } else {
     if (question == "something_else") {
       // appendMessage2('Please ask your question in chat box')
@@ -1090,8 +1119,13 @@ async function handleFaqButtonClick(question) {
         <b>Do you want to continue previous conversation or start new conversation?</b>
             <button id='previous-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
             <button id='new-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
+
         </div>`;
-        appendMessage2(div);
+        const divWithLabel = ` <div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+        <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Begin session"}</div>
+        <div style="margin-top : 8px; padding-top: 0px;">${div}</div>
+      </div>`
+        appendMessage2(divWithLabel);
         return;
       }
 
@@ -1133,6 +1167,7 @@ async function handleFaqButtonClick(question) {
           question["options"],
           question["question"]
         );
+       
         appendMessage2(radio_cont);
       }
       return;
@@ -1181,7 +1216,14 @@ async function handleFaqButtonClick(question) {
       recommendationClicked = true;
       return;
     }
-    appendMessage2(globalBotDetails.data.faqs[question]);
+    console.log(globalBotDetails.data.faqs[question])
+    appendMessage2(`
+      <div style="display: flex; flex-direction: column;">
+        <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${question}</div>
+        <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[question]}</p>
+      </div>
+    `)
+    // appendMessage2(globalBotDetails.data.faqs[question]);
     // appendMessage2(faqHtmlData)
   }
 }
