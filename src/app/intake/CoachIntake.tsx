@@ -676,13 +676,15 @@ const CoachIntake = ({ user }: any) => {
           // Convert the object to JSON
           var formDataJSON = JSON.stringify(formDataObject);
           console.log(formDataObject);
-
+          if (formType === 'coachee'){
+            myHeaders.append("Content-Type", "application/json");
+          }
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
             {
               method: "PATCH",
               headers: myHeaders,
-              body: formType === "coach" ? formDataJSON : formdata,
+              body: formDataJSON,
             }
           )
             .then((res) => res.json())
