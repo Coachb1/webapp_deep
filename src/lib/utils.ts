@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Metadata } from "next";
+import { Categories, DomainData, TestData } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -229,4 +230,37 @@ export interface PartifipantsforLeaderBoardTypes {
   total_score: number;
   user_id: string;
   rating: number;
+}
+
+export function configureTestsData(
+  inputJson: Record<string, Record<string, TestData[]>>
+): Categories {
+  const configuredData: Categories = Object.entries(inputJson).map(
+    ([categoryName, domainTests]) => {
+      let domainFilterOptions: { value: string; label: string }[] = [];
+      const testsData: DomainData[] = Object.entries(domainTests).map(
+        ([domain, tests]) => {
+          const testsArray: TestData[] = tests.map((test) => ({
+            title: test.title,
+            description: test.description,
+            test_code: test.test_code,
+            test_type: test.test_type,
+          }));
+          domainFilterOptions.push({ label: domain, value: domain });
+          return {
+            domain,
+            tests: testsArray,
+          };
+        }
+      );
+
+      return {
+        category_name: categoryName,
+        tests_data: testsData,
+        domainOptionsForFilter: domainFilterOptions,
+      };
+    }
+  );
+
+  return configuredData;
 }
