@@ -32,29 +32,31 @@ const IDP = ({ user }: any) => {
 
   useEffect(() => {
     setLoading(true);
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        fetch(`${baseURL}/accounts/get_or_create_idp/?user_id=${data.uid}`, {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            setUserIDPs(sortByDateDescending(data));
-            setLoading(false);
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(`${baseURL}/accounts/get_or_create_idp/?user_id=${data.uid}`, {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
           })
-          .catch((err) => {
-            console.error(err);
-            setLoading(false);
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setUserIDPs(sortByDateDescending(data));
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.error(err);
+              setLoading(false);
+            });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }, []);
 
   return (

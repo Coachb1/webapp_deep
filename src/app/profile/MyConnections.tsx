@@ -74,45 +74,47 @@ const MyComnnections = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setUserId(data.uid);
-        fetch(
-          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-
-            const isApprovedData = data.data.filter(
-              (coachData: any) => coachData.is_approved === true
-            );
-
-            console.log(isApprovedData);
-            if (findCoacheeUID(isApprovedData).length > 0) {
-              console.log("for coachees");
-              getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setUserId(data.uid);
+          fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
             }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
 
-            if (findCoachUID(isApprovedData).length > 0) {
-              console.log("for coaches");
-              getConnectionsForCoach(findCoachUID(isApprovedData));
-            }
-            setLoading(false);
-          })
-          .then((err) => {
-            console.error(err);
-            setLoading(false);
-          });
-      });
+              const isApprovedData = data.data.filter(
+                (coachData: any) => coachData.is_approved === true
+              );
+
+              console.log(isApprovedData);
+              if (findCoacheeUID(isApprovedData).length > 0) {
+                console.log("for coachees");
+                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+              }
+
+              if (findCoachUID(isApprovedData).length > 0) {
+                console.log("for coaches");
+                getConnectionsForCoach(findCoachUID(isApprovedData));
+              }
+              setLoading(false);
+            })
+            .then((err) => {
+              console.error(err);
+              setLoading(false);
+            });
+        });
+    }
   }, []);
 
   const AcceptRequestComponent = ({
