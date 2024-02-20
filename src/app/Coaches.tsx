@@ -91,7 +91,7 @@ const Coaches = ({ user }: any) => {
 
   const [coacheeId, setCoacheeId] = useState("");
   const [coachId, setCoachId] = useState("");
-  const [feedbackBots, setFeedbackBots] = useState<[]>([]);
+  const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
 
   const getCoachesData = async () => {
@@ -179,22 +179,27 @@ const Coaches = ({ user }: any) => {
   };
 
   const getAllConnections = () => {
-    fetch(`${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
+    fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        console.log("email",user.email)
+        console.log("email", user.email);
         setConnections(data.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
+  const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
 
   useEffect(() => {
     hideBots();
@@ -219,6 +224,8 @@ const Coaches = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
+
+              setAllCoaches(data.data);
 
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
@@ -255,7 +262,6 @@ const Coaches = ({ user }: any) => {
     }
   }, []);
 
-  
   function filterData(
     inputArray: CoachesDataType[],
     filterArray: string[]
@@ -264,7 +270,7 @@ const Coaches = ({ user }: any) => {
     if (filterArray.length === 0) {
       return inputArray;
     }
-  
+
     return inputArray.filter((obj) => {
       if (filterArray.includes("coach")) {
         return (
@@ -278,9 +284,8 @@ const Coaches = ({ user }: any) => {
               obj.hasOwnProperty(prop) &&
               obj[prop as keyof CoachesDataType]
             ) {
-              const propValue = obj[prop as keyof CoachesDataType]!
-                .toString()
-                .toLowerCase();
+              const propValue =
+                obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
               if (propValue.includes(filter.toLowerCase())) {
                 return true;
               }
@@ -291,7 +296,6 @@ const Coaches = ({ user }: any) => {
       }
     });
   }
-  
 
   const handleUpdateCheckedValues = (newValues: string[]) => {
     if (newValues.includes("External")) {
@@ -463,11 +467,7 @@ const Coaches = ({ user }: any) => {
             Group coaching (coming soon)
           </Button> */}
           <DropdownMenu>
-            <DropdownMenuTrigger
-              // disabled={coachId.length > 0 || coacheeId.length > 0}
-              asChild
-              className="outline-none border-none"
-            >
+            <DropdownMenuTrigger asChild className="outline-none border-none">
               <div>
                 {" "}
                 <Button variant={"outline"} className="h-fit w-fit">
@@ -476,71 +476,55 @@ const Coaches = ({ user }: any) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                disabled={coachId.length > 0 || coacheeId.length > 0}
-                // onClick={() => {
-                //   if (coachId.length > 0 || coacheeId.length > 0) {
-                //     toast.error(
-                //       "You have already enrolled as a Coach/Coachee."
-                //     );
-                //   } else {
-                //     router.push(`/intake/?type=coach`);
-                //   }
-                // }}
-                asChild
-              >
+              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                 <Link
                   href={"/intake/?type=coach"}
                   className="flex flex-row justify-center items-center"
                 >
                   Join as a Coach{" "}
-                  {coachId.length > 0 || coacheeId.length > 0 ? (
-                    <Badge className="ml-2">Already Joined</Badge>
-                  ) : null}
+                  {allCoaches.length > 0 && (
+                    <>
+                      {allCoaches[0]?.is_approved ? (
+                        <Badge className="ml-2">Already Joined</Badge>
+                      ) : (
+                        <Badge className="ml-2">Requested</Badge>
+                      )}
+                    </>
+                  )}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                disabled={coachId.length > 0 || coacheeId.length > 0}
-                // onClick={() => {
-                //   if (coachId.length > 0 || coacheeId.length > 0) {
-                //     toast.error(
-                //       "You have already enrolled as a Coachee/Coach."
-                //     );
-                //   } else {
-                //     router.push(`/intake/?type=coachee`);
-                //   }
-                // }}
-                asChild
-              >
+              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                 <Link
                   href={"/intake/?type=coachee"}
                   className="flex flex-row justify-center items-center"
                 >
                   Join as a Coachee
-                  {coachId.length > 0 || coacheeId.length > 0 ? (
-                    <Badge className="ml-2">Already Joined</Badge>
-                  ) : null}
+                  {allCoaches.length > 0 && (
+                    <>
+                      {allCoaches[0]?.is_approved ? (
+                        <Badge className="ml-2">Already Joined</Badge>
+                      ) : (
+                        <Badge className="ml-2">Requested</Badge>
+                      )}
+                    </>
+                  )}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                // onClick={() => {
-                //   if (feedbackBots.length > 0) {
-                //     toast.error("You already have an active feedback bot.");
-                //   } else {
-                //     router.push(`/intake/?type=feedback`);
-                //   }
-                // }}
-                disabled={feedbackBots.length > 0}
-                asChild
-              >
+              <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <Link
                   href={"/intake/?type=feedback"}
                   className="flex flex-row justify-center items-center"
                 >
                   Join Feedback Network
-                  {feedbackBots.length > 0 ? (
-                    <Badge className="ml-2">Already Joined</Badge>
-                  ) : null}
+                  {feedbackBots.length > 0 && (
+                    <>
+                      {feedbackBots[0]?.signature_bot.is_approved ? (
+                        <Badge className="ml-2">Already Joined</Badge>
+                      ) : (
+                        <Badge className="ml-2">Requested</Badge>
+                      )}
+                    </>
+                  )}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
