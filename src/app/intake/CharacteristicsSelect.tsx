@@ -13,13 +13,16 @@ const filterOption = (
 const CharactericticsSelect = ({
   onCharacteristicsSelect,
   options,
+  value,
 }: {
   onCharacteristicsSelect: (val: string) => void;
   options: { label: string; value: string; disabled?: boolean }[];
+  value: string;
 }) => {
   return (
     <>
       <Select
+        value={value}
         className="w-full"
         showSearch
         virtual={false}

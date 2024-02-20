@@ -676,7 +676,7 @@ const CoachIntake = ({ user }: any) => {
           // Convert the object to JSON
           var formDataJSON = JSON.stringify(formDataObject);
           console.log(formDataObject);
-          if (formType === 'coachee'){
+          if (formType === "coachee") {
             myHeaders.append("Content-Type", "application/json");
           }
           fetch(
@@ -1054,9 +1054,29 @@ const CoachIntake = ({ user }: any) => {
   const onCharacteristicsSelectHigh = (val: string) => {
     console.log(val);
     setCharacteristicsRateHigh(val);
+
+    const resetDisabledData = characteristicsList.map((option) => ({
+      ...option,
+      disabled: false,
+    }));
+
+    const selectedValueIndex = resetDisabledData.findIndex(
+      (option) => option.value === val
+    );
+
+    if (selectedValueIndex !== -1) {
+      resetDisabledData[selectedValueIndex] = {
+        ...resetDisabledData[selectedValueIndex],
+        disabled: true,
+      };
+    }
+    setCharacteristicsList(resetDisabledData);
   };
 
   //handling edit
+
+  // const [characteristicsRateHighPrior, setCharacteristicsRateHighPrior] = useState("")
+  // const [characteristicsRateLowPrior, setCharacteristicsRateLowPrior] = useState("")
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
@@ -1202,9 +1222,11 @@ const CoachIntake = ({ user }: any) => {
                 setCharacteristicsRateLows(
                   resultingBot.low_rating_characteristics
                 );
+
                 setCharacteristicsRateHigh(
                   resultingBot.high_rating_characteristics
                 );
+
                 setDepartment(resultingBot.department);
               });
           });
@@ -2064,6 +2086,7 @@ const CoachIntake = ({ user }: any) => {
                       rate yourself near the lows.
                     </p>
                     <CharactericticsSelect
+                      value={characteristicsRateLows}
                       onCharacteristicsSelect={onCharacteristicsSelectLow}
                       options={characteristicsList}
                     />
@@ -2074,6 +2097,7 @@ const CoachIntake = ({ user }: any) => {
                       rate yourself highly.
                     </p>
                     <CharactericticsSelect
+                      value={characteristicsRateHigh}
                       onCharacteristicsSelect={onCharacteristicsSelectHigh}
                       options={characteristicsList}
                     />
