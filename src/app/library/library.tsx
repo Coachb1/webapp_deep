@@ -13,7 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, History, Loader } from "lucide-react";
 import Link from "next/link";
-import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
+import {
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useEffect,
+  useState,
+} from "react";
 import {
   baseURL,
   basicAuth,
@@ -211,12 +219,15 @@ const MyLibrary = ({ user }: any) => {
 
         console.log("group_list", group_list);
 
-        fetch(`${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`, {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
+        fetch(
+          `${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        )
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
@@ -336,25 +347,29 @@ const MyLibrary = ({ user }: any) => {
   //   console.log(filtered);
   //   SetFilteredNewManagerTests(filtered);
   // };
- const [selectedDomain, setSelectedDomain] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState("");
 
-  const onDomainSelectHandler = (value:any) => {
+  const onDomainSelectHandler = (value: any) => {
     setSelectedDomain(value);
   };
-  const [filteredTestsData, setFilteredTestsData] = useState<Record<string, TestData[]>>({});
+  const [filteredTestsData, setFilteredTestsData] = useState<
+    Record<string, TestData[]>
+  >({});
 
   // Handler for domain selection
-  const onDomainSelectHandlerNewManager = (val: string, category: CategoryData) => {
+  const onDomainSelectHandlerNewManager = (
+    val: string,
+    category: CategoryData
+  ) => {
     const filtered = category.tests_data.filter((domain) => {
       return domain.domain.toLowerCase().includes(val.toLowerCase());
     });
 
-    setFilteredTestsData(prevState => ({
+    setFilteredTestsData((prevState) => ({
       ...prevState,
-      [category.category_name]: filtered
+      [category.category_name]: filtered,
     }));
   };
-
 
   const onDomainSearchHandlerNewManager = (
     value: string,
@@ -785,72 +800,127 @@ const MyLibrary = ({ user }: any) => {
                 </div>
                 <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
                 <>
-      {categorisedTests.map((category, index) => (
-        <div key={index} id={category.category_name} className="w-full flex flex-col items-center justify-center">
-          {/* Category Name */}
-          <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
-            {convertTextToCorrectFormat(category.category_name)}
-          </h1>
-          
-          <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
-           
-            <SearchNSelect
-              placeholder="Select by Simulation domain"
-              onSearchHandler={(value) =>
-                onDomainSearchHandlerNewManager(value, category)
-              }
-              onDomainSelectHandler={(value) =>
-                onDomainSelectHandlerNewManager(value, category)
-              }
-              optionDomains={category.domainOptionsForFilter}
-            />
-          </div>
+                  {categorisedTests.map((category, index) => (
+                    <div
+                      key={index}
+                      id={category.category_name}
+                      className="w-full flex flex-col items-center justify-center"
+                    >
+                      {/* Category Name */}
+                      <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
+                        {convertTextToCorrectFormat(category.category_name)}
+                      </h1>
 
-          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-            {(filteredTestsData[category.category_name] || category.tests_data).map((domains, domainIndex) => (
-              <div key={domainIndex}>
-                {domains.tests.length > 0 && (
-                  <>
-                    <div className={`w-full flex justify-center`}>
-                      <Badge variant={"default"} className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate ">
-                        <>✨ {domains.domain}</>
-                      </Badge>
-                    </div>
-                    
-                    <div className="w-full">
-                      <div className="relative isolate mx-auto">
-                        <div>
-                          <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                            <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                              <Accordion type="single" collapsible className="w-full text-gray-500 max-sm:p-4 bg-white px-4">
-                                {domains.tests.map((test: { title: string; description: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; test_code: string; }, i: Key | null | undefined) => (
-                                 <AccordionItem key={i} value={`item-${Number(i) + 1}`} className={i === domains.tests.length - 1 ? "border-none" : "border-b"}>
+                      <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                        <SearchNSelect
+                          placeholder="Select by Simulation domain"
+                          onSearchHandler={(value) =>
+                            onDomainSearchHandlerNewManager(value, category)
+                          }
+                          onDomainSelectHandler={(value) =>
+                            onDomainSelectHandlerNewManager(value, category)
+                          }
+                          optionDomains={category.domainOptionsForFilter}
+                        />
+                      </div>
 
-                                    <AccordionTrigger className="text-left max-sm:text-xs">
-                                      <div>{test.title.split(":")[1].trim()}</div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="max-sm:text-xs">
-                                      <p className="text-left">{test.description}</p>
-                                      <div className="flex justify-end mt-2">
-                                        <CopyToClipboard textToCopy={test.test_code} copyType="code" />
+                      <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                        {(
+                          filteredTestsData[category.category_name] ||
+                          category.tests_data
+                        ).map((domains, domainIndex) => (
+                          <div key={domainIndex}>
+                            {domains.tests.length > 0 && (
+                              <>
+                                <div className={`w-full flex justify-center`}>
+                                  <Badge
+                                    variant={"default"}
+                                    className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                  >
+                                    <>✨ {domains.domain}</>
+                                  </Badge>
+                                </div>
+
+                                <div className="w-full">
+                                  <div className="relative isolate mx-auto">
+                                    <div>
+                                      <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                          <Accordion
+                                            type="single"
+                                            collapsible
+                                            className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                          >
+                                            {domains.tests.map(
+                                              (
+                                                test: {
+                                                  title: string;
+                                                  description:
+                                                    | string
+                                                    | number
+                                                    | boolean
+                                                    | ReactElement<
+                                                        any,
+                                                        | string
+                                                        | JSXElementConstructor<any>
+                                                      >
+                                                    | Iterable<ReactNode>
+                                                    | ReactPortal
+                                                    | null
+                                                    | undefined;
+                                                  test_code: string;
+                                                },
+                                                i: Key | null | undefined
+                                              ) => (
+                                                <AccordionItem
+                                                  key={i}
+                                                  value={`item-${
+                                                    Number(i) + 1
+                                                  }`}
+                                                  className={
+                                                    i ===
+                                                    domains.tests.length - 1
+                                                      ? "border-none"
+                                                      : "border-b"
+                                                  }
+                                                >
+                                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                                    <div>
+                                                      {test.title
+                                                        .split(":")[1]
+                                                        .trim()}
+                                                    </div>
+                                                  </AccordionTrigger>
+                                                  <AccordionContent className="max-sm:text-xs">
+                                                    <p className="text-left">
+                                                      {test.description}
+                                                    </p>
+                                                    <div className="flex justify-end mt-2">
+                                                      <CopyToClipboard
+                                                        textToCopy={
+                                                          test.test_code
+                                                        }
+                                                        copyType="code"
+                                                      />
+                                                    </div>
+                                                  </AccordionContent>
+                                                </AccordionItem>
+                                              )
+                                            )}
+                                          </Accordion>
+                                        </div>
                                       </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                ))}
-                              </Accordion>
-                            </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </>
+                  ))}
+                </>
                 {/* {newManagerTests.length === 0 && (
                       <div className="w-full">
                         <div className="relative isolate mx-auto">
