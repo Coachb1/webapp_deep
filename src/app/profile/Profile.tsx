@@ -120,10 +120,6 @@ const Profile = ({ user }: any) => {
               itemName={"Competencies"}
               icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
             />
-            {/* <NavItem
-              itemName={"My Pages"}
-              icon={<BookCopyIcon className="text-gray-500 h-5 w-5" />}
-            /> */}
             <NavItem
               itemName={"IDP"}
               icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
@@ -146,7 +142,7 @@ const Profile = ({ user }: any) => {
             ) : null}
           </div>
         </div>
-        <div className=" ml-[20%] w-[80%] max-sm:w-[90%]">
+        <div className=" ml-[20%] max-sm:ml-[12%] w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
               <UserProfile user={user} />
