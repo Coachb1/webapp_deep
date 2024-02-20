@@ -126,8 +126,13 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    if (profile_type === "coach") {
-      return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    console.log('profieTyep',profile_type)
+    if (profile_type === "coach" ) {
+      if (botType === 'avatar_bot'){
+        return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType ==='feedback_bot'){
+        return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      }
     } else if (profile_type === "coachee") {
       return `/intake/?type=${
         botType === "feedback_bot" ? "feedback" : "coachee"
@@ -303,7 +308,7 @@ const MyPages = ({ user }: any) => {
                 <Link
                   href={
                     intakeBotTypeLinks(
-                      "profile",
+                      "coachee",
                       "123",
                       userProfile.uid,
                       userProfile.profile_type

@@ -46,6 +46,7 @@ const SessionNotes = ({ user }: any) => {
     recommendations: string;
     mentee_email_id: string;
     mentee_name: string;
+    updated: string
   }
   // const commentsGivenData = [];
   const [commentsGiven, setCommentsGiven] = useState<givenCommentType[]>([]);
@@ -56,6 +57,7 @@ const SessionNotes = ({ user }: any) => {
     recommendations: string;
     mentor_name: string;
     mentor_email_id: string;
+    updated: string;
   }
 
   const [commentsRecieved, setCommmentsRecieved] = useState<
@@ -458,7 +460,7 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {comment.recommendations !== null ? (
+                              {(comment.recommendations !== null && comment.updated !== null) ? (
                                 <>
                                   {comment.recommendations
                                     .split(",")
@@ -509,7 +511,7 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {comment.recommendations !== null ? (
+                              {(comment.recommendations !== null && comment.updated !== null) ? (
                                 <>
                                   {comment.recommendations
                                     .split(",")
@@ -693,7 +695,7 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {comment.recommendations !== null ? (
+                              {(comment.recommendations !== null && comment.updated !== null) ? (
                                 <>
                                   {comment.recommendations
                                     .split(",")
@@ -745,7 +747,7 @@ const SessionNotes = ({ user }: any) => {
                             <div>
                               <p className="mr-2 my-1 mt-2">
                                 <b> Recommended practice access codes </b> :{" "}
-                                {comment.recommendations !== null ? (
+                                {(comment.recommendations !== null && comment.updated !== null) ? (
                                   <>
                                     {comment.recommendations
                                       .split(",")
