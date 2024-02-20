@@ -29,6 +29,7 @@ interface CustomWindow extends Window {
   user?: any;
   locallStorage?: Storage;
   locationn?: Location;
+  userIdFromWebApp?: any
 }
 declare let window: CustomWindow;
 
@@ -74,6 +75,8 @@ export default function RootLayout({
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
+
+              window.userIdFromWebApp = data.uid;
 
               fetch(
                 `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
