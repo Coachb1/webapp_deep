@@ -343,8 +343,8 @@ function getCoachingQuestionData(questionText) {
   return `
           ${questionText}
           <div id="${randomId}">
-            <button style="margin-top:5px; color:white; width:45%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:green;" onclick="handleContinueCoachingClick('${randomId}')">Continue</button>
-            <button style="margin-top:5px; width:45%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndCoachingClick('${randomId}')">End Session</button>
+            <button style="margin-top:5px; color:white; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px; background:green;" onclick="handleContinueCoachingClick('${randomId}')">Continue</button>
+            <button style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px; background:red;" onclick="handleEndCoachingClick('${randomId}')">End Session</button>
           </div>`;
 }
 
@@ -3280,7 +3280,7 @@ loadExternalModule().then(() => {
             optedNo = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                    <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
+                    <button id="surprise-button" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
                     </div>
                     `,
             });
@@ -3911,8 +3911,8 @@ loadExternalModule().then(() => {
                     questionText = `
                     <div id="proceed-option" >
                     <b>Proceed ?</b>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
+                        <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
+                        <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
 
                     if (senarioMediaDescription) {

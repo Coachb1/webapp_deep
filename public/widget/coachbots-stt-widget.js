@@ -503,7 +503,7 @@ const handleEndFeedback = async () => {
 
     appendMessage2(
       `<b >Here are some recommendations for you : </b> <br>
-          <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+          <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
           `
     );
     console.log(
@@ -595,8 +595,8 @@ const feedbackBotInitialFlow = async (flow) => {
     const anonymous_text = `<div id="anonymous">
         <b>Want to continue as Anonymous?</b>
         </br> <div>
-            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
-            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
             </div>
         </div>`;
     appendMessage2(anonymous_text);
@@ -619,11 +619,11 @@ const feedbackBotInitialFlow = async (flow) => {
         
         <b>What do you think of our bot?</b>
             <br>
-            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
             <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
           </svg>
           </i></button>
-            <button style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('down')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('down')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
             <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.38 1.38 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51q.205.03.443.051c.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.9 1.9 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2 2 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.2 3.2 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.8 4.8 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591"/>
           </svg>
           </button>
@@ -744,6 +744,14 @@ const getBotDetails2 = async (botId) => {
     }
     console.log(botType);
 
+    //footer of the bots according to bot type
+    const botFooterElement = document.getElementById('bot-footer') 
+    if(botType === "subject_matter_bot" || botType === "helper_bot") {
+      botFooterElement.innerHTML = "<p>Expert bots work on the curated knowledge. For optimum results use 10 words or more in response.</p>"
+    } else if (botType === "avatar_bot" || botType === "feedback_bot"){
+      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
+    }
+
     let buttons = "";
     let buttonsWrapper = document.createElement("div");
     buttonsWrapper.setAttribute(
@@ -819,8 +827,9 @@ const getBotDetails2 = async (botId) => {
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
     console.log('id',userId2,participantId2)
+    console.log("id from web app", window.userIdFromWebApp)
     if (!isBotConversationPopulated){
-      populateBotConversation(userId2);
+      populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
   } catch (error) {
@@ -978,14 +987,16 @@ async function handlePreviousConversation(choice) {
   }
 
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const newConversationButton = shadowRoot2.getElementById("new-conversation")
   if (choice === "new") {
     const previousButton = shadowRoot2.getElementById("previous-conversation");
     previousButton.disabled = true;
+    previousButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
 
     const conversationProceedOptions = `<div id="conversation-proceed-options" >
-                    <b>New sessions will cancel out any existing intakes and you have to do the intake again.. Do you want to proceed?</b>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('Yes')">Yes</button>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('No')">No</button>
+                    <b>New sessions will cancel out any existing intakes and you have to do the intake again.. Do you want to proceed?</b> <br>
+                        <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('Yes')">Yes</button>
+                        <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('No')">No</button>
                     </div>`;
     appendMessage2(conversationProceedOptions);
     return;
@@ -1027,8 +1038,13 @@ async function handlePreviousConversation(choice) {
     }
   }
   console.log(botType);
-  if (botType === "subject_matter_bot" || choice === "previous") {
-    
+  if (choice === "previous"){
+    newConversationButton.setAttribute("disabled", "true")
+    newConversationButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
+    appendMessage2(`<b>Please scroll above to view the conversation and proceed accordingly.</b>`)
+  } 
+  console.log(botType);
+  if (botType === "subject_matter_bot") {
     appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
     appendMessage2("Please provide context to start conversaton.");
     
@@ -1116,9 +1132,9 @@ async function handleFaqButtonClick(question) {
         console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
-        <b>Do you want to continue previous conversation or start new conversation?</b>
-            <button id='previous-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
-            <button id='new-conversation' style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
+        <b>Do you want to continue previous conversation or start new conversation?</b> <br>
+            <button id='previous-conversation'  onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
+            <button id='new-conversation' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
 
         </div>`;
         const divWithLabel = ` <div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
@@ -1147,6 +1163,7 @@ async function handleFaqButtonClick(question) {
         }
       }
       console.log(botType);
+      console.log(document.getElementById("bot-footer"))
       if (botType === "subject_matter_bot") {
         appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
         appendMessage2("Please provide context to start conversaton.");
@@ -1194,7 +1211,7 @@ async function handleFaqButtonClick(question) {
 
         if (Object.keys(respjson).length > 0) {
           respjson.forEach((element) => {
-            buttons += `<button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${
+            buttons += `<button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:100%; padding:6px 4px;  border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${
               element.test_code
             }','${element.title.replaceAll("'", "")}')">${
               element.title
@@ -3307,9 +3324,9 @@ loadExternalModule().then(() => {
         display: none;
       ">
     </div>
-    <p style="font-size: ${
+    <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "8px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px">Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px"></p>
   </div>
   `;
 
@@ -3930,7 +3947,7 @@ loadExternalModule().then(() => {
 
                 signals.onResponse({
                   html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
                     `,
                 });
                 console.log(
@@ -3950,7 +3967,7 @@ loadExternalModule().then(() => {
               });
               setTimeout(() => {
                 appendMessage2(
-                  `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+                  `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
                 );
               }, 200);
             }
@@ -4097,7 +4114,7 @@ loadExternalModule().then(() => {
 
                 signals.onResponse({
                   html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+                    <button style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
                     `,
                 });
                 console.log(
@@ -4330,7 +4347,7 @@ loadExternalModule().then(() => {
               }
               setTimeout(() => {
                 appendMessage2(
-                  `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`
+                  `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`
                 );
               }, 200);
             }
@@ -4387,7 +4404,7 @@ loadExternalModule().then(() => {
             optedNo2 = true;
             signals.onResponse({
               html: `<div id="option-button-container" >
-                      <button id="surprise-button" style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
+                      <button id="surprise-button" style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
                       </div>
                       `,
             });
@@ -5090,8 +5107,8 @@ loadExternalModule().then(() => {
                     questionText2 = `
                     <div id="proceed-option2" >
                     <b>Proceed ?</b>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('Yes')">Yes</button>
-                        <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClickStt('No')">No</button>
+                        <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
+                        <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
                     console.log(senarioMediaDescription2, "mediadesc");
                     if (senarioMediaDescription2) {

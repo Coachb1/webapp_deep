@@ -209,7 +209,7 @@ const MyLibrary = ({ user }: any) => {
 
         console.log("group_list", group_list);
 
-        fetch(`${baseURL}/tests/get-tests-by-tab-category/`, {
+        fetch(`${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`, {
           method: "GET",
           headers: {
             Authorization: basicAuth,

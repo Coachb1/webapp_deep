@@ -255,6 +255,7 @@ const Coaches = ({ user }: any) => {
     }
   }, []);
 
+  
   function filterData(
     inputArray: CoachesDataType[],
     filterArray: string[]
@@ -263,10 +264,13 @@ const Coaches = ({ user }: any) => {
     if (filterArray.length === 0) {
       return inputArray;
     }
-
+  
     return inputArray.filter((obj) => {
       if (filterArray.includes("coach")) {
-        return obj.profile_type && filterArray.includes(obj.profile_type);
+        return (
+          obj.profile_type &&
+          filterArray.includes(obj.profile_type.toLowerCase())
+        );
       } else {
         return filterArray.every((filter) => {
           for (const prop in obj) {
@@ -274,8 +278,10 @@ const Coaches = ({ user }: any) => {
               obj.hasOwnProperty(prop) &&
               obj[prop as keyof CoachesDataType]
             ) {
-              const propValue = obj[prop as keyof CoachesDataType]!.toString();
-              if (propValue.includes(filter)) {
+              const propValue = obj[prop as keyof CoachesDataType]!
+                .toString()
+                .toLowerCase();
+              if (propValue.includes(filter.toLowerCase())) {
                 return true;
               }
             }
@@ -285,6 +291,7 @@ const Coaches = ({ user }: any) => {
       }
     });
   }
+  
 
   const handleUpdateCheckedValues = (newValues: string[]) => {
     if (newValues.includes("External")) {
@@ -452,9 +459,9 @@ const Coaches = ({ user }: any) => {
           2000+ Strong group of experts & future leaders
         </p>
         <div className="my-4 max-sm:text-xs flex flex-row gap-2 max-sm:flex-wrap justify-center">
-          <Button disabled variant={"outline"} className="h-fit w-fit">
+          {/* <Button disabled variant={"outline"} className="h-fit w-fit">
             Group coaching (coming soon)
-          </Button>
+          </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger
               // disabled={coachId.length > 0 || coacheeId.length > 0}
@@ -538,9 +545,9 @@ const Coaches = ({ user }: any) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button disabled variant={"outline"} className="h-fit w-fit">
+          {/* <Button disabled variant={"outline"} className="h-fit w-fit">
             Whatsapp Community (coming soon)
-          </Button>
+          </Button> */}
         </div>
         <div id="list" className="min-h-screen w-full max-sm:px-2">
           <div className="my-4">
