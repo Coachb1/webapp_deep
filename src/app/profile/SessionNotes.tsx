@@ -8,6 +8,7 @@ import {
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
+  hasPassed48Hours,
 } from "@/lib/utils";
 
 import {
@@ -31,7 +32,10 @@ import { Select, Space } from "antd";
 function filterByValue(array: any, value: any) {
   return array.filter((obj: any) => {
     for (const key in obj) {
-      if (obj[key] && obj[key].toString().includes(value)) {
+      if (
+        obj[key] &&
+        obj[key].toString().toLowerCase().includes(value.toLowerCase())
+      ) {
         return true;
       }
     }
@@ -46,7 +50,7 @@ const SessionNotes = ({ user }: any) => {
     recommendations: string;
     mentee_email_id: string;
     mentee_name: string;
-    updated: string
+    updated: string;
   }
   // const commentsGivenData = [];
   const [commentsGiven, setCommentsGiven] = useState<givenCommentType[]>([]);
@@ -206,8 +210,10 @@ const SessionNotes = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log("Submitted Data", data);
-          if ("Error" in data) {
-            toast.error(data.Error);
+          if (data.error || data.detail) {
+            toast.error(
+              "Error while submitting your comment. Please try again"
+            );
             setSubmitLoading(false);
             return;
           }
@@ -217,6 +223,11 @@ const SessionNotes = ({ user }: any) => {
           setSubmitLoading(false);
           getCommentsGiven(userId);
           setCreateCommentInit(false);
+        })
+        .catch((err) => {
+          setSubmitLoading(false);
+          toast.error("Error while submitting your comment. Please try again");
+          console.error(err);
         });
     } else {
       setContextLengthError(true);
@@ -460,18 +471,30 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {(comment.recommendations !== null && comment.updated !== null) ? (
+                              {comment.recommendations !== null &&
+                              comment.updated !== null ? (
                                 <>
-                                  {comment.recommendations
-                                    .split(",")
-                                    .map((recommendation, i) => (
-                                      <Link
-                                        className="text-semibold text-blue-500"
-                                        href={"/content-library"}
-                                      >
-                                        {recommendation}
-                                      </Link>
-                                    ))}
+                                  {hasPassed48Hours(comment.date) ? (
+                                    <>
+                                      {comment.recommendations
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <Link
+                                            className="text-semibold text-blue-500"
+                                            href={"/content-library"}
+                                          >
+                                            {recommendation}
+                                          </Link>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  )}
                                 </>
                               ) : (
                                 <span>
@@ -509,27 +532,59 @@ const SessionNotes = ({ user }: any) => {
                             </p>
                           </div>
                           <div>
-                            <p className="mr-2 my-1 mt-2">
+                            <div className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {(comment.recommendations !== null && comment.updated !== null) ? (
+                              {comment.recommendations !== null &&
+                              comment.updated !== null ? (
                                 <>
-                                  {comment.recommendations
-                                    .split(",")
-                                    .map((recommendation, i) => (
-                                      <Link
-                                        className="text-semibold text-blue-500"
-                                        href={"/content-library"}
-                                      >
-                                        {recommendation}
-                                      </Link>
-                                    ))}
+                                  {hasPassed48Hours(comment.date) ? (
+                                    <>
+                                      {comment.recommendations
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  )}
                                 </>
                               ) : (
                                 <span>
                                   In process, please check again in a while.{" "}
                                 </span>
                               )}
-                            </p>
+                            </div>
                           </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
@@ -693,27 +748,59 @@ const SessionNotes = ({ user }: any) => {
                             </p>
                           </div>
                           <div>
-                            <p className="mr-2 my-1 mt-2">
+                            <div className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {(comment.recommendations !== null && comment.updated !== null) ? (
+                              {comment.recommendations !== null &&
+                              comment.updated !== null ? (
                                 <>
-                                  {comment.recommendations
-                                    .split(",")
-                                    .map((recommendation, i) => (
-                                      <Link
-                                        className="text-semibold text-blue-500"
-                                        href={"/content-library"}
-                                      >
-                                        {recommendation}
-                                      </Link>
-                                    ))}
+                                  {hasPassed48Hours(comment.date) ? (
+                                    <>
+                                      {comment.recommendations
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  )}
                                 </>
                               ) : (
                                 <span>
                                   In process, please check again in a while.{" "}
                                 </span>
                               )}
-                            </p>
+                            </div>
                           </div>
                           <p className="mt-2">
                             <b> Date</b> : {convertDate(comment.date)}
@@ -747,7 +834,8 @@ const SessionNotes = ({ user }: any) => {
                             <div>
                               <p className="mr-2 my-1 mt-2">
                                 <b> Recommended practice access codes </b> :{" "}
-                                {(comment.recommendations !== null && comment.updated !== null) ? (
+                                {comment.recommendations !== null &&
+                                comment.updated !== null ? (
                                   <>
                                     {comment.recommendations
                                       .split(",")
