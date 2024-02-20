@@ -187,6 +187,15 @@ export function reportsLinksSelector() {
   }
 }
 
+export function hasPassed48Hours(inputDate: string) {
+  const inputDateTime = new Date(inputDate);
+  const currentDateTime = new Date();
+  const timeDifference = currentDateTime.getTime() - inputDateTime.getTime();
+  const millisecondsIn24Hours = 48 * 60 * 60 * 1000;
+
+  return timeDifference >= millisecondsIn24Hours;
+}
+
 export function convertTextToCorrectFormat(text: string) {
   return text
     .replace(/_/g, " ") // Replace underscores with spaces
