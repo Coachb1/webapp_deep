@@ -119,6 +119,11 @@ let botWelcomeMessage = "";
 let previousBotConversationId = "";
 let isBotRecommendationFetched = false;
 let isBotConversationPopulated = false;
+let botIntakeQuestions;
+let isIntakeInProgress = false;
+let isIntakeCompleted = false;
+let isIDPDiscussionOpted = false;
+let botIntakeQna = {};
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -794,8 +799,10 @@ const getBotDetails2 = async (botId) => {
       botDetails.data.coaching_for_fitment === "anyone"
     ) {
       faqButtonsGenerator("fitness_analysis", "Quick Match");
+      
     }
 
+    faqButtonsGenerator("intake", "Intake");
     faqButtonsGenerator("something_else", "Begin session");
 
     console.log("buttons : ", buttons);
@@ -955,7 +962,38 @@ const handleFitmentAnalysis = async () => {
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
+
+function getIntakeReadyBotInitialQuestions(initialQuestions) {
+  data = initialQuestions
+  const firstQuestion =  "Thank you for considering a virtual session. Please let me know more about you as a person that you think might be relevant to our session today."
+
+  // replace first question with new question
+  data[1] = firstQuestion
+
+  const secondQuestion = {"options": ["Yes", "No"], "question": "Is this discussion related to your goal in a way to consider your IDP (individual development plan)? "}
+
+  // shift all questions by 1 index
+  for(let i = 4; i >= 2; i--) {
+      data[i+1] = data[i]
+      }
+
+  // insert after first question and before second question
+  data[2] = secondQuestion
+  // data[6] = "Thank you for completing the intake"
+
+  return data
+}
+
 function sendMessage(item) {
+  if(botInitialQuestionsIndex == 2){
+    if(item === "Yes"){
+      isIDPDiscussionOpted = true;
+    } else {
+      isIDPDiscussionOpted = false;
+    }
+    
+  }
+
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot2.getElementById("text-input").textContent = item;
@@ -989,6 +1027,11 @@ async function handlePreviousConversation(choice) {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const newConversationButton = shadowRoot2.getElementById("new-conversation")
   if (choice === "new") {
+    if( !isIntakeCompleted ){
+      appendMessage2("You can only begin session after intake is complete");
+      return;
+    }
+
     const previousButton = shadowRoot2.getElementById("previous-conversation");
     previousButton.disabled = true;
     previousButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
@@ -1072,6 +1115,7 @@ async function handlePreviousConversation(choice) {
 
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
+  console.log("option selected ==> ",question)
   if (question == "fitness_analysis") {
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
@@ -1083,9 +1127,15 @@ async function handleFaqButtonClick(question) {
     fitmentAnalysisInProgress = true;
     fitmentAnalysisIndex = 1;
     console.log(fitmentAnalysisQuestions, fitmentAnalysisIndex);
-    const questiontext = fitmentAnalysisQuestions[fitmentAnalysisIndex];
-    const questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex];
+    let questiontext = fitmentAnalysisQuestions[fitmentAnalysisIndex];
+    let questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex];
     let optioncont = "";
+
+
+    // console.log("##### botinitialquestions ===> ", botInitialQuestions)
+    console.log("##### questionoptins ===> ", questionoptins)
+
+    /* botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions) */
     questionoptins.forEach((item, index) => {
       optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
       <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
@@ -1120,7 +1170,9 @@ async function handleFaqButtonClick(question) {
               `)
     // appendMessage2(formRadio);
   } else {
-    if (question == "something_else") {
+
+    // something_else => begin_session
+    if (question == "something_else" ) {
       // appendMessage2('Please ask your question in chat box')
       if (isAskingInitialQuestions) {
         return;
@@ -1141,6 +1193,7 @@ async function handleFaqButtonClick(question) {
         <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Begin session"}</div>
         <div style="margin-top : 8px; padding-top: 0px;">${div}</div>
       </div>`
+        if( botType === "avatar_bot")
         appendMessage2(divWithLabel);
         return;
       }
@@ -1174,7 +1227,7 @@ async function handleFaqButtonClick(question) {
 
       }
 
-      isAskingInitialQuestions = true;
+      // isAskingInitialQuestions = true;
 
       const question = botInitialQuestions[botInitialQuestionsIndex];
       if (typeof question === "string") {
@@ -1189,6 +1242,45 @@ async function handleFaqButtonClick(question) {
       }
       return;
     }
+
+    //********************** intake flow start */
+
+    if (question == "intake") {
+      isIntakeInProgress = true;
+      // appendMessage2('Please ask your question in chat box')
+      if (isAskingInitialQuestions) {
+        return;
+      }
+
+      await getUserBotConversation(userId2);
+      console.log(previousBotConversationId, "out");
+  
+
+      botInitialQuestionsIndex = 1;
+      optedBeginSession = true;
+      
+
+      isAskingInitialQuestions = true;
+      botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
+
+      const question = botInitialQuestions[botInitialQuestionsIndex];
+      if (typeof question === "string") {
+        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+      } else {
+        const radio_cont = handleRadioTypeInitialQuestion(
+          question["options"],
+          question["question"]
+        );
+       
+        appendMessage2(radio_cont);
+      }
+      return;
+    }
+
+
+    //********************** intake flow end */
+
+
     if (question == "recommendations") {
       if (botType === "avatar_bot") {
         appendMessage2(
@@ -4197,6 +4289,39 @@ loadExternalModule().then(() => {
                   "all botInitialQuestions submitted : ",
                   botInitialQuestionsQnA
                 );
+                if(isIntakeInProgress) {
+                  isIntakeCompleted = true;
+                  isIntakeInProgress = false;
+
+                  //********** submit intake to backend: start */
+                  const queryparam = new URLSearchParams({
+                    method: "post",
+                    qna: JSON.stringify(botInitialQuestionsQnA),
+                    bot_id: botId,
+                    is_positive: "False",
+                    qna_type: "feedback",
+                    user_id: userId2,
+                  });
+                
+                  const resp = await fetch(
+                    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+                    {
+                      method: "GET",
+                      headers: {
+                        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  )
+                    .then((response) => response.json())
+                    .then((data) => {
+                      console.log(" response : ", data);
+                    });
+
+                  //********** submit intake to backend: end */
+
+                  signals.onResponse({text: "Thank you for completing the intake. You can now proceed to start your session."})
+                }
                 // signals.onResponse({text: "Thank you for your response."})
               } else {
                 const question = botInitialQuestions[botInitialQuestionsIndex];
@@ -4237,6 +4362,7 @@ loadExternalModule().then(() => {
                       ordering: "-id",
                       test_id: botId,
                       is_signature_bot: true,
+                      is_idp_discussion_opted: isIDPDiscussionOpted,
                     }),
                   }
                 );
@@ -4346,6 +4472,7 @@ loadExternalModule().then(() => {
                 });
               }
               setTimeout(() => {
+                if ( botType === "avatar_bot" )
                 appendMessage2(
                   `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`
                 );
