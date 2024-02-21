@@ -116,7 +116,7 @@ export interface DomainData {
 export interface CategoryData {
   category_name: string;
   tests_data: DomainData[];
-  domainOptionsForFilter: { value: string; label: string }[];
+  domainOptionsForFilter?: { value: string; label: string }[];
 }
 
 export type Categories = CategoryData[];

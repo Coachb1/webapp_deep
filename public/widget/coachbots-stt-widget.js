@@ -929,7 +929,7 @@ const handleFitmentAnalysis = async () => {
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
       let score_result_statement;
-      if(data.score === 1){
+      if(data.score === 1 || data.score === 0){
         score_result_statement = "Low - The current score indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
       } else if (data.score === 2){
         score_result_statement = "Moderate - The current score suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
