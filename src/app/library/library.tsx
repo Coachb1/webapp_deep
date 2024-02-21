@@ -31,7 +31,7 @@ import {
 } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import HeroAccordion from "@/components/HeroAccordion";
-import { EQTests } from "@/lib/test";
+import { EQTests, EQTestsCategorised } from "@/lib/test";
 import { Separator } from "@/components/ui/separator";
 import SearchNSelect from "./SearchNSelect";
 import CreateYourOwn from "@/components/CreateYourOwn";
@@ -41,6 +41,7 @@ import {
   competencySkillsTestType,
   newManagerTestsType,
   TestsType,
+  TestData as TestDataType,
 } from "@/lib/types";
 
 interface Test {
@@ -385,10 +386,6 @@ const MyLibrary = ({ user }: any) => {
     // SetFilteredNewManagerTests(filtered);
   };
 
-  // const onDomainSelectFilter = () => {
-
-  // }
-
   return (
     <div>
       <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 !z-[800]">
@@ -397,7 +394,7 @@ const MyLibrary = ({ user }: any) => {
       <main className="bg-gray-100 min-h-[100vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
-            <div className="pb-6 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
+            {/* <div className="pb-6 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
               <p className="text-4xl font-black max-sm:text-4xl flex ite">
                 {" "}
                 <Link href={"v1"} className="hidden max-sm:block">
@@ -406,212 +403,161 @@ const MyLibrary = ({ user }: any) => {
                 </Link>{" "}
                 <span> My Library</span>
               </p>
-            </div>
+            </div> */}
+            <div
+              id="category-navbar"
+              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0  z-[799] grainy w-full"
+            >
+              <div className="pb-4 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
+                <p className="text-4xl font-black max-sm:text-4xl flex ite">
+                  {" "}
+                  <Link href={"v1"} className="hidden max-sm:block">
+                    {" "}
+                    <ChevronLeft className="h-4 w-4 mr-1 inline" />{" "}
+                  </Link>{" "}
+                  <span> My Library</span>
+                </p>
+              </div>
+              <div className="flex max-sm:px-4 justify-center flex-row z-50 gap-2 max-sm:text-xs flex-wrap">
+                <Button
+                  variant={"outline"}
+                  className={`h-8 max-sm:text-sm`}
+                  onClick={() => {
+                    document.getElementById("eq-tests")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                >
+                  EQ Mini Course
+                </Button>
 
+                <Button
+                  onClick={() => {
+                    document
+                      .getElementById("competency-tests")
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                  }}
+                  variant={"outline"}
+                  className={`h-8 max-sm:text-sm`}
+                >
+                  Competency Based Power Skills
+                </Button>
+
+                {categorisedTests.map((category) => (
+                  <Button
+                    onClick={() => {
+                      document
+                        .getElementById(category.category_name)
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                    }}
+                    variant={"outline"}
+                    className={`h-8 max-sm:text-sm`}
+                  >
+                    {category.category_name}
+                  </Button>
+                ))}
+                <Button
+                  onClick={() => {
+                    document.getElementById("requested-tests")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                  variant={"outline"}
+                  className={`h-8 max-sm:text-sm`}
+                >
+                  Requested Scenarios <History className="h-4 w-4 ml-2" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    document.getElementById("create-new")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                  variant={"outline"}
+                  className={`h-8 max-sm:text-sm`}
+                >
+                  Create New Simulation
+                </Button>
+              </div>
+              <hr className="mt-4 bg-gray-500 w-full" />
+            </div>
+            <div
+              id="eq-tests"
+              className="pt-[30vh]  mt-[-30vh] max-sm:pt-[35vh]  w-full flex flex-col items-center justify-center"
+            ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                <div className="flex gap-2 flex-wrap mb-4 bg-red justify-center items-center">
-                  <div className="flex justify-center flex-row mt-4 z-50 gap-2 max-sm:text-xs flex-wrap">
-                    <Button
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
-                      onClick={() => {
-                        document.getElementById("eq-tests")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                    >
-                      EQ Mini Course
-                    </Button>
-                    {/* {groupList.length > 0 && (
+                <div
+                  id="eq-tests"
+                  className="flex flex-col max-sm:flex-col w-full mx-auto"
+                >
+                  {EQTestsCategorised.length > 0 &&
+                    EQTestsCategorised.map((category, index) => (
                       <>
-                        <Button
-                          variant={"outline"}
-                          className={`h-8 max-sm:text-sm`}
-                          onClick={() => {
-                            document
-                              .getElementById("custom-tests")
-                              ?.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                          }}
+                        <div
+                          key={index}
+                          id={category.category_name}
+                          className="w-full flex flex-col items-center justify-center"
                         >
-                          Custom
-                        </Button>
-                      </>
-                    )} */}
-                    <Button
-                      onClick={() => {
-                        document
-                          .getElementById("competency-tests")
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                      }}
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
-                    >
-                      Competency Based Power Skills
-                    </Button>
-                    {/* <Button
-                      onClick={() => {
-                        document.getElementById("new-manager")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
-                    >
-                      New Manager
-                    </Button> */}
-                    {categorisedTests.map((category) => (
-                      <Button
-                        onClick={() => {
-                          document
-                            .getElementById(category.category_name)
-                            ?.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                        }}
-                        variant={"outline"}
-                        className={`h-8 max-sm:text-sm`}
-                      >
-                        {category.category_name}
-                      </Button>
-                    ))}
-                    <Button
-                      onClick={() => {
-                        document
-                          .getElementById("requested-tests")
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                      }}
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
-                    >
-                      Requested Scenarios <History className="h-4 w-4 ml-2" />
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        document.getElementById("create-new")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
-                    >
-                      Create New Simulation
-                    </Button>
-                  </div>
-                </div>
+                          <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
+                            {convertTextToCorrectFormat(category.category_name)}
+                          </h1>
 
-                <hr className="my-4 bg-gray-500 w-full" />
-                <div id="eq-tests" className="w-full">
-                  <div className="w-full mb-10 text-left">
-                    <HeroAccordion
-                      badgeText="EQ mini course"
-                      user={user ? true : false}
-                      tests={EQTests}
-                    />
-                  </div>
-                </div>
-
-                {/* {groupList.length > 0 && (
-                  <>
-                    <Separator className="mt-8 max-sm:my-1.5 bg-gray-400" />
-                    <div
-                      id="custom-tests"
-                      className="w-full pt-12 flex flex-col items-center justify-center"
-                    >
-                      <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
-                        Custom Library{" "}
-                      </h1>
-
-                      {!isLoading ? (
-                        <>
-                          <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
-                            <SearchNSelect
-                              placeholder="Select by Simulation areas"
-                              onSearchHandler={onDomainSearchHandler}
-                              onDomainSelectHandler={onDomainSelectHandler}
-                              optionDomains={domainOptions}
-                            />
-                          </div>
-
-                          <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
-                            {tests.length === 0 && !isLoading && (
-                              <div className="w-[80%] mx-auto">
-                                <div className="relative isolate mx-auto">
-                                  <div>
-                                    <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                                        There are no data yet.
-                                      </div>
+                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                            {(
+                              filteredTestsData[category.category_name] ||
+                              category.tests_data
+                            ).map((domains, domainIndex) => (
+                              <div key={domainIndex}>
+                                {domains.tests.length > 0 && (
+                                  <>
+                                    <div
+                                      className={`w-full flex justify-center`}
+                                    >
+                                      <Badge
+                                        variant={"default"}
+                                        className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                      >
+                                        <>✨ {domains.domain}</>
+                                      </Badge>
                                     </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                            {filteredTests.map((testbyCategory) => (
-                              <>
-                                <div
-                                  id={testbyCategory.category}
-                                  className={`w-full flex justify-center`}
-                                >
-                                  <Badge
-                                    variant={"default"}
-                                    className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
-                                  >
-                                    ✨ {testbyCategory.category}
-                                  </Badge>
-                                </div>
 
-                                <div>
-                                  <div className="relative isolate mx-auto">
-                                    <div>
-                                      <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                                          {testbyCategory.tests.some(
-                                            (test) => test.is_micro === false
-                                          ) && (
-                                            <p className="w-fit text-center text-gray-500 max-sm:text-sm mt-2 bg-accent mx-auto px-2 rounded-lg">
-                                              Regular learning
-                                            </p>
-                                          )}
-                                          <Accordion
-                                            type="single"
-                                            collapsible
-                                            className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
-                                          >
-                                            {testbyCategory.tests.map(
-                                              (test, i) => (
-                                                <>
-                                                  {!test.is_micro && (
+                                    <div className="w-full">
+                                      <div className="relative isolate mx-auto">
+                                        <div>
+                                          <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                            <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                              <Accordion
+                                                type="single"
+                                                collapsible
+                                                className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                              >
+                                                {domains.tests.map(
+                                                  (
+                                                    test: TestDataType,
+                                                    i: number
+                                                  ) => (
                                                     <AccordionItem
                                                       key={i}
-                                                      value={`item-${i + 1}`}
+                                                      value={`item-${
+                                                        Number(i) + 1
+                                                      }`}
                                                       className={
                                                         i ===
-                                                        testbyCategory.tests
-                                                          .length -
-                                                          1
+                                                        domains.tests.length - 1
                                                           ? "border-none"
                                                           : "border-b"
                                                       }
                                                     >
                                                       <AccordionTrigger className="text-left max-sm:text-xs">
-                                                        <div>
-                                                          {
-                                                            test.title.split(
-                                                              ":"
-                                                            )[1]
-                                                          }
-                                                        </div>
+                                                        <div>{test.title}</div>
                                                       </AccordionTrigger>
                                                       <AccordionContent className="max-sm:text-xs">
                                                         <p className="text-left">
-                                                          {" "}
                                                           {test.description}
                                                         </p>
                                                         <div className="flex justify-end mt-2">
@@ -624,95 +570,31 @@ const MyLibrary = ({ user }: any) => {
                                                         </div>
                                                       </AccordionContent>
                                                     </AccordionItem>
-                                                  )}
-                                                </>
-                                              )
-                                            )}
-                                          </Accordion>
-                                          {testbyCategory.tests.some(
-                                            (test) => test.is_micro === true
-                                          ) && (
-                                            <p className="w-fit rounded-lg text-center mt-2 bg-accent mx-auto px-2 text-gray-500 max-sm:text-sm">
-                                              Micro learning
-                                            </p>
-                                          )}
-                                          <Accordion
-                                            type="single"
-                                            collapsible
-                                            className="w-full text-gray-500 max-sm:p-2 bg-white px-4 pt-2 "
-                                          >
-                                            {testbyCategory.tests.map(
-                                              (test, i) => (
-                                                <>
-                                                  {test.is_micro && (
-                                                    <AccordionItem
-                                                      key={i}
-                                                      value={`item-${i + 1}`}
-                                                      className={
-                                                        i ===
-                                                        testbyCategory.tests
-                                                          .length -
-                                                          1
-                                                          ? "border-none"
-                                                          : "border-b"
-                                                      }
-                                                    >
-                                                      <AccordionTrigger className="text-left max-sm:text-xs">
-                                                        <div>
-                                                          {
-                                                            test.title.split(
-                                                              ":"
-                                                            )[1]
-                                                          }
-                                                        </div>
-                                                      </AccordionTrigger>
-                                                      <AccordionContent className="max-sm:text-xs">
-                                                        <p className="text-left">
-                                                          {" "}
-                                                          {test.description}
-                                                        </p>
-                                                        <div className="flex justify-end mt-2">
-                                                          <CopyToClipboard
-                                                            textToCopy={
-                                                              test.test_code
-                                                            }
-                                                            copyType="code"
-                                                          />
-                                                        </div>
-                                                      </AccordionContent>
-                                                    </AccordionItem>
-                                                  )}
-                                                </>
-                                              )
-                                            )}
-                                          </Accordion>
+                                                  )
+                                                )}
+                                              </Accordion>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>
-                              </>
+                                  </>
+                                )}
+                              </div>
                             ))}
                           </div>
-                        </>
-                      ) : (
-                        <div className="bg-gray-100 my-16  grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
-                          <p className="p-2 text-sm max-sm:text-xs">
-                            {" "}
-                            <Loader className="animate-spin inline h-4 w-4 mr-2" />
-                            Loading...
-                          </p>
                         </div>
-                      )}
-                    </div>
-                  </>
-                )} */}
-                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                      </>
+                    ))}
+                </div>
                 <div
                   id="competency-tests"
-                  className="w-full flex flex-col items-center justify-center"
+                  className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh] w-full flex flex-col items-center justify-center"
                 >
-                  <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
+                  {/* <Separator className="w-[80%] bg-gray-200 " /> */}
+                </div>
+                <div className="w-full flex flex-col items-center justify-center">
+                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
                     Competency Based Power Skills{" "}
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
@@ -798,16 +680,23 @@ const MyLibrary = ({ user }: any) => {
                     )}
                   </div>
                 </div>
-                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
+
                 <>
                   {categorisedTests.map((category, index) => (
                     <div
                       key={index}
-                      id={category.category_name}
+                      // id={category.category_name}
                       className="w-full flex flex-col items-center justify-center"
                     >
+                      <div
+                        id={category.category_name}
+                        className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
+                      >
+                        {/* <Separator className="w-[80%] bg-gray-200 " /> */}
+                      </div>
                       {/* Category Name */}
-                      <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
+                      <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
                         {convertTextToCorrectFormat(category.category_name)}
                       </h1>
 
@@ -934,12 +823,15 @@ const MyLibrary = ({ user }: any) => {
                         </div>
                       </div>
                     )} */}
-                <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 <div
                   id="requested-tests"
-                  className="w-full flex flex-col items-center justify-center"
+                  className="pt-[30vh]  max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
                 >
-                  <h1 className="text-4xl pt-12 max-sm:text-xl text-gray-600 font-semibold">
+                  {/* <Separator className="w-[80%] bg-gray-200 " /> */}
+                </div>
+                <div className="w-full flex flex-col items-center justify-center">
+                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
                     Requested Scenarios
                   </h1>
                   {requestedScenariosLoading ? (
@@ -1007,12 +899,18 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   )}
                 </div>
-                <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" />
+                {/* <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 <div
                   id="create-new"
+                  className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
+                >
+                  {/* <Separator className="w-[80%] bg-gray-200 " /> */}
+                </div>
+                <div
+                  // id="create-new"
                   className="w-full flex flex-col items-center justify-center"
                 >
-                  <h1 className="text-4xl max-sm:text-xl text-gray-600 font-semibold">
+                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
                     Create new Scenario{" "}
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">

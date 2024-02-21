@@ -15,7 +15,7 @@ const SearchNSelect = ({
   onDomainSelectHandler: (val: string) => void;
   placeholder: string;
   onSearchHandler: (val: string) => void;
-  optionDomains: { label: string; value: string; disabled?: boolean }[];
+  optionDomains?: { label: string; value: string; disabled?: boolean }[];
 }) => {
   return (
     <>
@@ -28,7 +28,7 @@ const SearchNSelect = ({
         onSelect={onDomainSelectHandler}
         onSearch={onSearchHandler}
         filterOption={filterOption}
-        options={optionDomains.sort((a, b) => a.label.localeCompare(b.label))}
+        options={optionDomains?.sort((a, b) => a.label.localeCompare(b.label))}
       />
     </>
   );
