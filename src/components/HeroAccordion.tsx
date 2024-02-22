@@ -16,7 +16,7 @@ interface testTypes {
 
 const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
   return (
-    <>
+    <div className="pt-20 -mt-20">
       <div className={`w-full flex justify-center`}>
         <Badge
           variant={"secondary"}
@@ -71,7 +71,7 @@ const HeroAccordion = ({ tests, badgeText, user }: testTypes) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -120,3 +120,22 @@ export interface CategoryData {
 }
 
 export type Categories = CategoryData[];
+
+export interface UserClientInfoType {
+  client_name: string;
+  avatar_bot_creation: boolean;
+  feedback_bot_creation: boolean;
+  subject_matter_bot_creation: boolean;
+  monthly_conversation_limit: number;
+  required_form_details: null | any; // You might want to replace 'any' with a more specific type
+  is_restricted: boolean;
+  is_demo_user: boolean;
+  accessed_bot_ids: null | any[]; // You might want to replace 'any' with a more specific type
+  coach_skills: null | any; // You might want to replace 'any' with a more specific type
+  coach_expertise: null | any; // You might want to replace 'any' with a more specific type
+  departments: null | any; // You might want to replace 'any' with a more specific type
+}
+
+export interface UserClientInfoDataType {
+  user_info: UserClientInfoType[];
+}

@@ -28,7 +28,7 @@ const NavProfile = ({ user }: any) => {
               <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent className="z-[999]" align="end">
             <div className="flex items-center justify-center gap-2 p-2">
               <div className="flex flex-col space-x-0.5 leading-none">
                 {user.given_name && (

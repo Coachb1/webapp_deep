@@ -44,7 +44,7 @@ const FilterDropDown = ({
       <div className="w-full flex flex-row gap-2 max-sm:flex-wrap">
         {filtersCategory.map((filter: any) => (
           <>
-            {filter.filterOptions.length > 0 && (
+            {filter.filterOptions?.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -71,6 +71,8 @@ const FilterDropDown = ({
                       >
                         {option === "accepted"
                           ? "Connections"
+                          : option === "feedback_bot"
+                          ? "Feedback Only"
                           : convertTextToCorrectFormat(option)}
                       </label>
                     </div>
@@ -87,6 +89,8 @@ const FilterDropDown = ({
             <p className="text-sm px-1">
               {checkedItem === "accepted"
                 ? "Connections"
+                : checkedItem === "feedback_bot"
+                ? "Feedback Only"
                 : convertTextToCorrectFormat(checkedItem)}
             </p>{" "}
             <X
