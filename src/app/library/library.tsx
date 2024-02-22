@@ -388,7 +388,7 @@ const MyLibrary = ({ user }: any) => {
 
   return (
     <div>
-      <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 !z-[800]">
+      <div className="fixed w-full flex items-center top-0 justify-end p-4 h-6 py-8 !z-[999]">
         <NetworkNav user={user} />
       </div>
       <main className="bg-gray-100 min-h-[100vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
