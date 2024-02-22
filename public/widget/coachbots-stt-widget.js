@@ -124,6 +124,8 @@ let isIntakeInProgress = false;
 let isIntakeCompleted = false;
 let isIDPDiscussionOpted = false;
 let botIntakeQna = {};
+let isIntakeSummaryDisplayed = false;
+let isIntakeClicked = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -802,7 +804,9 @@ const getBotDetails2 = async (botId) => {
       
     }
 
-    faqButtonsGenerator("intake", "Intake");
+    if( botType === "avatar_bot" ){
+      faqButtonsGenerator("intake", "Intake");
+    }
     faqButtonsGenerator("something_else", "Begin session");
 
     console.log("buttons : ", buttons);
@@ -964,6 +968,10 @@ const handleFitmentAnalysis = async () => {
 
 
 function getIntakeReadyBotInitialQuestions(initialQuestions) {
+  if( isIntakeClicked ){
+    return initialQuestions
+  }
+  isIntakeClicked = true;
   data = initialQuestions
   const firstQuestion =  "Thank you for considering a virtual session. Please let me know more about you as a person that you think might be relevant to our session today."
 
@@ -991,7 +999,7 @@ function sendMessage(item) {
     } else {
       isIDPDiscussionOpted = false;
     }
-    
+
   }
 
   gShadowRoot2.getElementById("text-input").focus();
@@ -1064,7 +1072,7 @@ async function handlePreviousConversation(choice) {
   }
 
   botInitialQuestionsIndex = 1;
-  optedBeginSession = true;
+  // optedBeginSession = true;
   if (botType === "avatar_bot") {
     await getFitmentScore(userId2);
     console.log(isBeginSessionProceed);
@@ -1098,18 +1106,18 @@ async function handlePreviousConversation(choice) {
     appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
   }
 
-  isAskingInitialQuestions = true;
+  // isAskingInitialQuestions = true;
 
-  const question = botInitialQuestions[botInitialQuestionsIndex];
-  if (typeof question === "string") {
-    appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
-  } else {
-    const radio_cont = handleRadioTypeInitialQuestion(
-      question["options"],
-      question["question"]
-    );
-    appendMessage2(radio_cont);
-  }
+  // const question = botInitialQuestions[botInitialQuestionsIndex];
+  // if (typeof question === "string") {
+  //   appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+  // } else {
+  //   const radio_cont = handleRadioTypeInitialQuestion(
+  //     question["options"],
+  //     question["question"]
+  //   );
+  //   appendMessage2(radio_cont);
+  // }
 }
 
 
@@ -1175,8 +1183,48 @@ async function handleFaqButtonClick(question) {
     if (question == "something_else" ) {
       // appendMessage2('Please ask your question in chat box')
       if (isAskingInitialQuestions) {
+        console.log("===> yes asking initial questions")
         return;
       }
+
+
+      if( !isIntakeCompleted && botType === "avatar_bot"){
+        appendMessage2("You can only begin session after intake is complete");
+        return;
+      }
+
+      console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
+      if( isIntakeSummaryDisplayed == false && botType === "avatar_bot"){
+        console.log("===> yes fetching intake summary")
+        const queryparam = new URLSearchParams({
+          method: "get",
+          bot_id: botId,
+          is_positive: "False",
+          qna_type: "intake",
+          user_id: userId2,
+        });
+      
+        const resp = await fetch(
+          `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(" response : ", data);
+            appendMessage2(`Welcome to your session. Here is my understanding of the situation: \n ${data.intake_summary} \n Let me know if I missed anything?`)
+          });
+
+        isIntakeSummaryDisplayed = true
+        // return;
+      }
+
+
 
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
@@ -1227,7 +1275,7 @@ async function handleFaqButtonClick(question) {
 
       }
 
-      // isAskingInitialQuestions = true;
+      isAskingInitialQuestions = true;
 
       const question = botInitialQuestions[botInitialQuestionsIndex];
       if (typeof question === "string") {
@@ -3891,6 +3939,7 @@ loadExternalModule().then(() => {
           globalSignals = signals;
 
           if (fitmentAnalysisInProgress) {
+            console.log("NA-1");
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -4242,6 +4291,7 @@ loadExternalModule().then(() => {
               isAttemptingRecommendation == false &&
               optedBeginSession == false
             ) {
+              console.log("NA-1");
               signals.onResponse({
                 html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
               });
@@ -4274,9 +4324,17 @@ loadExternalModule().then(() => {
                 });
               }
 
-              botInitialQuestionsQnA[
-                botInitialQuestions[botInitialQuestionsIndex]
-              ] = latestMessage;
+              if (
+                typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
+              ) {
+                const question =
+                  botInitialQuestions[botInitialQuestionsIndex]["question"];
+                  botInitialQuestionsQnA[question] = latestMessage;
+              } else {
+                botInitialQuestionsQnA[
+                  botInitialQuestions[botInitialQuestionsIndex]
+                ] = latestMessage;
+              }
 
               botInitialQuestionsIndex++;
               if (
@@ -4292,6 +4350,7 @@ loadExternalModule().then(() => {
                 if(isIntakeInProgress) {
                   isIntakeCompleted = true;
                   isIntakeInProgress = false;
+                  isAskingInitialQuestions = false;
 
                   //********** submit intake to backend: start */
                   const queryparam = new URLSearchParams({
@@ -4299,7 +4358,7 @@ loadExternalModule().then(() => {
                     qna: JSON.stringify(botInitialQuestionsQnA),
                     bot_id: botId,
                     is_positive: "False",
-                    qna_type: "feedback",
+                    qna_type: "intake",
                     user_id: userId2,
                   });
                 
@@ -4372,7 +4431,7 @@ loadExternalModule().then(() => {
                 isSessionActiveStt = true;
                 console.log("Session Created => ", sessionId2);
 
-                if (isBotInitialized == false) {
+                if (isBotInitialized == false && isIntakeCompleted == true) {
                   // initialize coaching conversation
                   try {
                     const response = await fetch(
