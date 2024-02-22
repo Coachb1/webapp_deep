@@ -703,11 +703,15 @@ async function populateBotConversation(participant_id){
         const coach_message_text = element['coach_message_text'];
         const participant_message_text = element['participant_message_text']
 
-        if (coach_message_text && coach_message_text !== ''){
+        if (coach_message_text && coach_message_text !== '') {
           appendMessage2(coach_message_text);
-        }
-        if (participant_message_text && participant_message_text !== ''){
-          appendMessageForUser2(participant_message_text)
+  
+          if (participant_message_text && participant_message_text !== '') {
+              appendMessageForUser2(participant_message_text);
+          }
+        } else if (participant_message_text && participant_message_text !== '') {
+            // If there's no coach message, only append participant message
+            appendMessageForUser2(participant_message_text);
         }
       });
       isBotConversationPopulated = true

@@ -25,10 +25,10 @@ const NavProfile = ({ user }: any) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
             <div className=" p-[4px]">
-              <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+              <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999] hover:cursor-pointer" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="z-[999]" align="end">
+          <DropdownMenuContent align="end" className="z-[999]">
             <div className="flex items-center justify-center gap-2 p-2">
               <div className="flex flex-col space-x-0.5 leading-none">
                 {user.given_name && (
