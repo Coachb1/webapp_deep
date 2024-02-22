@@ -14,7 +14,7 @@ import {
   getUserAccount,
   hideBots,
 } from "@/lib/utils";
-import { ChevronDown, Loader, Search } from "lucide-react";
+import { BadgeCent, ChevronDown, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -85,6 +85,9 @@ const Coaches = ({ user }: any) => {
   const [filterCategroies, setFilterCategories] = useState<
     FilterCategoriesType[]
   >([]);
+  const [coachSkillsExpertise, setCoachSkillsExpertise] = useState<string[]>(
+    []
+  );
 
   const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -113,27 +116,35 @@ const Coaches = ({ user }: any) => {
           new Set(data.map((profile: CoachesDataType) => profile.profile_type))
         );
 
-        const experienceOptions: string[] = Array.from(
-          new Set(data.map((profile: CoachesDataType) => profile.experience))
-        );
-
         const skillsOptions: string[] = Array.from(
-          new Set(data.map((profile: CoachesDataType) => profile.skills))
+          new Set(
+            data
+              .filter(
+                (profile: CoachesDataType) =>
+                  profile.profile_type !== "skill_bot"
+              )
+              .map((profile: CoachesDataType) => profile.skills)
+          )
         );
 
-        console.log(skillsOptions);
-
-        const botTypeTypes: string[] = Array.from(
-          new Set(data.map((profile: CoachesDataType) => profile.bot_type))
+        console.log(
+          skillsOptions.filter((skill) => skill !== null && skill !== undefined)
         );
+
+        // setCoachSkillsExpertise([
+        //   ...skillsOptions,
+        //   ...[
+        //     "Career Management",
+        //     "Work Life Banlance",
+        //     "Project Management",
+        //     "Lateral Transfers",
+        //   ],
+        // ]);
 
         setFilterCategories([
           {
             filterName: "Profile Type",
-            filterOptions: [
-              ...profileTypeOptions,
-              ...["External", "accepted"],
-            ].filter((type) => type !== "skill_bot"), //, ...["accepted"]
+            filterOptions: [...profileTypeOptions, ...["External", "accepted"]], //.filter((type) => type !== "skill_bot"), //, ...["accepted"]
           },
           {
             filterName: "Experience",
@@ -157,7 +168,9 @@ const Coaches = ({ user }: any) => {
           },
           {
             filterName: "Coach Skills",
-            filterOptions: skillsOptions.filter((skill) => skill !== null),
+            filterOptions: skillsOptions.filter(
+              (skill) => skill !== null && skill !== undefined
+            ),
           },
           {
             filterName: "Coach Expertise",
@@ -296,12 +309,19 @@ const Coaches = ({ user }: any) => {
       }
     });
   }
-
+  const [connectedCoaches, setConnectedCoaches] = useState<CoachesDataType[]>(
+    []
+  );
   const handleUpdateCheckedValues = (newValues: string[]) => {
     if (newValues.includes("External")) {
       toast.info(
         "You do not have access to external coaches and mentors at this time. Please connect with your administrator."
       );
+    } else if (
+      connectedCoaches.length === 0 &&
+      newValues.includes("accepted")
+    ) {
+      toast.info("You do not have any connections yet. Keep exploring.");
     } else {
       setParentCheckedValues(newValues);
       console.log(newValues);
@@ -315,13 +335,36 @@ const Coaches = ({ user }: any) => {
         console.log("no values selected");
         setCoachesData(savedCoachesData);
       } else {
-        console.log(newValues.includes("Connected"));
-        const filteredData = filterData(
-          newValues.includes("Connected") ? coachesData : savedCoachesData,
-          newValues
-        );
-        console.log(filteredData);
-        setCoachesData(filteredData);
+        if (
+          newValues.some((skill) =>
+            [
+              "Career Management",
+              "Work Life Banlance",
+              "Project Management",
+              "Lateral Transfers",
+            ].includes(skill)
+          )
+        ) {
+          const filteredData = filterData(
+            newValues.includes("Connected")
+              ? coachesData.filter(
+                  (coachData) => coachData.profile_type !== "skill_bot"
+                )
+              : savedCoachesData.filter(
+                  (coachData) => coachData.profile_type !== "skill_bot"
+                ),
+            newValues
+          );
+          console.log(filteredData);
+          setCoachesData(filteredData);
+        } else {
+          const filteredData = filterData(
+            newValues.includes("Connected") ? coachesData : savedCoachesData,
+            newValues
+          );
+          console.log(filteredData);
+          setCoachesData(filteredData);
+        }
       }
     }
   };
@@ -359,6 +402,7 @@ const Coaches = ({ user }: any) => {
 
       console.log("Connected Coaches", connectedCoaches);
 
+      setConnectedCoaches(connectedCoaches);
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
@@ -485,7 +529,18 @@ const Coaches = ({ user }: any) => {
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
-                        <Badge className="ml-2">Already Joined</Badge>
+                        <>
+                          {coachId ? (
+                            <Badge className="ml-2">Already Joined</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
                       ) : (
                         <Badge className="ml-2">Requested</Badge>
                       )}
@@ -502,7 +557,18 @@ const Coaches = ({ user }: any) => {
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
-                        <Badge className="ml-2">Already Joined</Badge>
+                        <>
+                          {coacheeId ? (
+                            <Badge className="ml-2">Already Joined</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
                       ) : (
                         <Badge className="ml-2">Requested</Badge>
                       )}
@@ -607,7 +673,11 @@ const Coaches = ({ user }: any) => {
                         <p className="my-1.5 max-sm:text-sm max-sm:my-1 font-medium text-gray-600">
                           {coach.department}
                         </p>
-                        <Badge className="rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1">
+                        <Badge
+                          className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
+                            coach.profile_type === "skill_bot" && "bg-green-500"
+                          }`}
+                        >
                           {convertTextToCorrectFormat(coach.profile_type)}
                         </Badge>
                         <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
@@ -669,12 +739,14 @@ const Coaches = ({ user }: any) => {
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
                             <div className="w-full ">
-                              <Link href={coach.avatar_bot_url}>
+                              <Link href={coach.avatar_bot_url} target="_blank">
                                 <Button
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
                                 >
-                                  Coach avatar
+                                  {coach.profile_type === "skill_bot"
+                                    ? "Skill Chat"
+                                    : "Coach avatar"}
                                 </Button>
                               </Link>
                             </div>
