@@ -78,9 +78,9 @@ const Profile = ({ user }: any) => {
   return (
     <>
       {" "}
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 pt-8 ">
-        <NetworkNav user={user} />
-      </div>
+      {/* <div className="fixed w-full flex items-center justify-end p-4 h-6 pt-8 "> */}
+      <NetworkNav user={user} />
+      {/* </div> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
           {" "}

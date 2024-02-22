@@ -12,7 +12,13 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { baseURL, basicAuth, getUserAccount, hideBots } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  convertTextToCorrectFormat,
+  getUserAccount,
+  hideBots,
+} from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -62,6 +68,7 @@ const IDPIntake = ({ user }: any) => {
         .then((data) => {
           console.log("USER Data from IDP intake", data);
           setUserId(data.uid);
+          setName(`${user.given_name} ${user.family_name}`);
         });
     } else {
       router.push("/");
@@ -222,14 +229,12 @@ const IDPIntake = ({ user }: any) => {
               <div className="my-3">
                 <p className="text-sm my-1">Enter your name</p>
                 <input
-                  value={name}
+                  value={convertTextToCorrectFormat(name)}
+                  disabled
                   required
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }}
                   placeholder="Aarav Sharma"
                   type="text"
-                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                  className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                 />
               </div>
               <div className="my-3">

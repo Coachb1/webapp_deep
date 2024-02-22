@@ -14,7 +14,7 @@ import {
   getUserAccount,
   hideBots,
 } from "@/lib/utils";
-import { BadgeCent, ChevronDown, Loader, Search } from "lucide-react";
+import { ChevronDown, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
-import { connectionType } from "@/lib/types";
+import { UserClientInfoDataType, connectionType } from "@/lib/types";
 
 interface CoachesDataType {
   id: number;
@@ -97,6 +97,32 @@ const Coaches = ({ user }: any) => {
   const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
 
+  const [userClientInfoData, setUserClientInfoData] =
+    useState<UserClientInfoDataType>();
+
+  const [clientDepartments, setClientDepartments] = useState<string[] | null>(
+    null
+  );
+
+  const getClientInfoForUser = (userEmail: string) => {
+    fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setUserClientInfoData(data.data);
+        console.log(data.data);
+        setClientDepartments(data.data.user_info[0].departments);
+      })
+      .catch((err) => console.error(err));
+  };
+
   const getCoachesData = async () => {
     //GET COACHES
     await fetch(`${baseURL}/accounts/get-directory-informations/`, {
@@ -131,20 +157,23 @@ const Coaches = ({ user }: any) => {
           skillsOptions.filter((skill) => skill !== null && skill !== undefined)
         );
 
-        // setCoachSkillsExpertise([
-        //   ...skillsOptions,
-        //   ...[
-        //     "Career Management",
-        //     "Work Life Banlance",
-        //     "Project Management",
-        //     "Lateral Transfers",
-        //   ],
-        // ]);
+        setCoachSkillsExpertise([
+          ...skillsOptions,
+          ...[
+            "Career Management",
+            "Work Life Banlance",
+            "Project Management",
+            "Lateral Transfers",
+          ],
+        ]);
 
         setFilterCategories([
           {
             filterName: "Profile Type",
-            filterOptions: [...profileTypeOptions, ...["External", "accepted"]], //.filter((type) => type !== "skill_bot"), //, ...["accepted"]
+            filterOptions: [
+              ...profileTypeOptions,
+              ...["External", "accepted", "feedback_bot"],
+            ],
           },
           {
             filterName: "Experience",
@@ -158,13 +187,16 @@ const Coaches = ({ user }: any) => {
           },
           {
             filterName: "Department",
-            filterOptions: [
-              "Sales & Marketing",
-              "Production",
-              "Design",
-              "Engineering",
-              "HR & Training",
-            ],
+            filterOptions:
+              clientDepartments !== null
+                ? clientDepartments
+                : [
+                    "Sales & Marketing",
+                    "Production",
+                    "Design",
+                    "Engineering",
+                    "HR & Training",
+                  ],
           },
           {
             filterName: "Coach Skills",
@@ -218,6 +250,7 @@ const Coaches = ({ user }: any) => {
     hideBots();
 
     if (user) {
+      getClientInfoForUser(user.email);
       getAllConnections();
       getCoachesData();
       getUserAccount(user)
@@ -295,7 +328,8 @@ const Coaches = ({ user }: any) => {
           for (const prop in obj) {
             if (
               obj.hasOwnProperty(prop) &&
-              obj[prop as keyof CoachesDataType]
+              obj[prop as keyof CoachesDataType] &&
+              prop !== "description" // Skip filtering for the "description" property
             ) {
               const propValue =
                 obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
@@ -309,6 +343,7 @@ const Coaches = ({ user }: any) => {
       }
     });
   }
+
   const [connectedCoaches, setConnectedCoaches] = useState<CoachesDataType[]>(
     []
   );
@@ -335,27 +370,35 @@ const Coaches = ({ user }: any) => {
         console.log("no values selected");
         setCoachesData(savedCoachesData);
       } else {
-        if (
-          newValues.some((skill) =>
-            [
-              "Career Management",
-              "Work Life Banlance",
-              "Project Management",
-              "Lateral Transfers",
-            ].includes(skill)
-          )
-        ) {
+        if (newValues.some((skill) => coachSkillsExpertise.includes(skill))) {
           const filteredData = filterData(
             newValues.includes("Connected")
               ? coachesData.filter(
-                  (coachData) => coachData.profile_type !== "skill_bot"
+                  (coachData) =>
+                    coachData.profile_type !== "skill_bot" &&
+                    coachData.profile_type !== "coachee"
                 )
               : savedCoachesData.filter(
-                  (coachData) => coachData.profile_type !== "skill_bot"
+                  (coachData) =>
+                    coachData.profile_type !== "skill_bot" &&
+                    coachData.profile_type !== "coachee"
                 ),
             newValues
           );
-          console.log(filteredData);
+          console.log(filteredData, "coach-only");
+          setCoachesData(filteredData);
+        } else if (newValues.some((skill) => skill === "feedback_bot")) {
+          const filteredData = filterData(
+            newValues.includes("Connected")
+              ? coachesData.filter(
+                  (coachData) => coachData.bot_type === "feedback_bot"
+                )
+              : savedCoachesData.filter(
+                  (coachData) => coachData.bot_type === "feedback_bot"
+                ),
+            newValues
+          );
+          console.log(filteredData, "Feedback Only");
           setCoachesData(filteredData);
         } else {
           const filteredData = filterData(
@@ -457,7 +500,7 @@ const Coaches = ({ user }: any) => {
           });
       } else {
         toast.error(
-          "You are not a valid coachee, Please join a network to make Requests to the Coaches/Mentors."
+          "Only coachees who join the network can send connection requests."
         );
       }
     };
@@ -486,11 +529,7 @@ const Coaches = ({ user }: any) => {
 
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-        <div className="flex flex-row gap-1">
-          <NetworkNav user={user} />
-        </div>
-      </div>
+      <NetworkNav user={user} />
 
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">

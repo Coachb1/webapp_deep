@@ -12,14 +12,34 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
 import { Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
+import { useEffect, useState } from "react";
 
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+
+  const [scrolled, setScrolled] = useState<number>(0);
+
+  function handleScroll() {
+    var scrolledUp = window.scrollY || window.pageYOffset;
+    setScrolled(scrolledUp);
+  }
+
+  window.addEventListener("scroll", handleScroll);
+
   return (
-    <div className="flex flex-row gap-2">
-      <div className="flex flex-row gap-2 max-sm:hidden">
+    <div
+      className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0  !z-[700] ${
+        scrolled > 0 &&
+        pathname !== "/library" &&
+        pathname !== "/profile" &&
+        "backdrop-blur-lg border-b border-gray-400"
+      } `}
+    >
+      {/* <div className="flex flex-row gap-1"></div> */}
+      {/* <div className="flex flex-row gap-2"> */}
+      <div className="flex flex-row gap-2 max-sm:hidden  !z-[701]">
         <Link href="/">
           <Button
             variant={"outline"}
@@ -155,7 +175,10 @@ const NetworkNav = ({ user }: any) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <NavProfile user={user} />
+      <div className="ml-4">
+        <NavProfile user={user} />
+      </div>
+      {/* </div> */}
     </div>
   );
 };

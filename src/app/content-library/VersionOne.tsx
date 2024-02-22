@@ -23,6 +23,7 @@ import {
   questionPro,
   pms,
   pitch,
+  englishSupport,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,7 +119,7 @@ const VersionOne = ({ user }: any) => {
         </p>
 
         <div className="flex flex-row mt-4 z-50 gap-2">
-          <Link href="/coach">
+          <Link href="/coach" target="_blank">
             <Button
               variant={"outline"}
               className={`h-8 text-sm max-sm:text-xs`}
@@ -126,7 +127,7 @@ const VersionOne = ({ user }: any) => {
               Avatar Page (Sample)
             </Button>
           </Link>
-          <Link href="/feedback">
+          <Link href="/feedback" target="_blank">
             <Button
               variant={"outline"}
               className={` h-8 text-sm max-sm:text-xs`}
@@ -136,7 +137,7 @@ const VersionOne = ({ user }: any) => {
           </Link>
         </div>
 
-        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
+        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-50">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Link href={"#managerplus"}>
               <Button
@@ -207,7 +208,7 @@ const VersionOne = ({ user }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Discovery+
+                Discovery+ | MCQ
               </Button>
             </Link>
             <Link href={"#one-to-one"}>
@@ -215,7 +216,7 @@ const VersionOne = ({ user }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                1:1 Check-ins | AI Curated
+                1:1 Check-ins | Dynamic
               </Button>
             </Link>
             <Link href={"#tech"}>
@@ -263,7 +264,7 @@ const VersionOne = ({ user }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Case study | AI Curated
+                Case study | Dynamic
               </Button>
             </Link>
             <Link href={"#presentation"}>
@@ -279,7 +280,7 @@ const VersionOne = ({ user }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Immersive | AI Curated
+                Immersive
               </Button>
             </Link>
             <Link href={"#onboarding"}>
@@ -296,6 +297,14 @@ const VersionOne = ({ user }: any) => {
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Meetings
+              </Button>
+            </Link>
+            <Link href={"#english-support"}>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+              >
+                English Support
               </Button>
             </Link>
 
@@ -379,14 +388,14 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="discoveryPlus">
             <HeroAccordion
-              badgeText="Discovery+"
+              badgeText="Discovery+ | MCQ"
               user={user ? true : false}
               tests={DescoveryPlus}
             />
           </div>
           <div id="one-to-one">
             <HeroAccordion
-              badgeText="1:1 Check-ins | AI Curated"
+              badgeText="1:1 Check-ins | Dynamic"
               user={user ? true : false}
               tests={oneTwoOne}
             />
@@ -428,7 +437,7 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="case-study">
             <HeroAccordion
-              badgeText="Case study | AI Curated"
+              badgeText="Case study | Dynamic"
               user={user ? true : false}
               tests={caseStudy}
             />
@@ -442,7 +451,7 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="immersive">
             <HeroAccordion
-              badgeText="Immersive | AI Curated"
+              badgeText="Immersive "
               user={user ? true : false}
               tests={immersive}
             />
@@ -459,6 +468,13 @@ const VersionOne = ({ user }: any) => {
               badgeText="Meetings"
               user={user ? true : false}
               tests={meetings}
+            />
+          </div>
+          <div id="english-support">
+            <HeroAccordion
+              badgeText="English Support"
+              user={user ? true : false}
+              tests={englishSupport}
             />
           </div>
           {/* {shouldRenderDiv && (

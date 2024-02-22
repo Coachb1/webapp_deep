@@ -847,6 +847,32 @@ export const onBoarding: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+export const englishSupport: Test[] = [
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q38R7BR",
+    title: "Addressing Guest Complaint Regarding Room Cleanliness",
+    description:
+      "Ramesh, a recent guest at a hotel in Mumbai, approaches the receptionist to express dissatisfaction with the cleanliness of his room during his stay. Upon inspection, he discovered dust accumulation in corners, uncleaned bathroom fixtures, and stained linens. He had booked a deluxe room for a four-day stay, expecting high standards of cleanliness. However, the lapse in housekeeping standards left him disappointed and frustrated. Communicate with the guest and assure him that necessary actions will be taken. Respond to this situation as the receptionist. Demonstrate suitable English communication skills as you respond to this business context.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q52S75K",
+    title: "Handling Customer Inquiry Regarding Account Discrepancy",
+    description:
+      "Sarah, a customer at the bank, approaches the customer service representative to inquire about a discrepancy in her account balance. She noticed unauthorized transactions and discrepancies in her recent statements. Sarah expresses concern about the security of her account and seeks clarification on the irregularities. As the customer service representative, you must address her concerns promptly and reassure her that the bank will investigate the matter thoroughly to resolve the issue and ensure the security of her account. Respond to this situation as the customer service representative. Demonstrate suitable English communication skills as you respond to this business context.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q8C4WBS",
+    title: "Resolving Customer Concern Over Damaged Merchandise	",
+    description:
+      "Meena, a customer at a clothing store in Bangalore, approaches the cashier with a pair of jeans she wishes to purchase. However, upon reaching the counter, she notices a small tear in the fabric. She expresses her concern to the cashier, explaining that she had selected the jeans for a special occasion. The cashier listens attentively, assuring Meena that they will promptly exchange the damaged item for a new one. The cashier apologizes for the inconvenience and ensures Meena that her satisfaction is a top priority for the store. Respond to this situation as the cashier. Demonstrate suitable English communication skills as you respond to this business context.",
+    interaction_mode: "Audio",
+  },
+];
 export const questionPro: Test[] = [
   {
     domain: "Navigating Operational Challenges",
