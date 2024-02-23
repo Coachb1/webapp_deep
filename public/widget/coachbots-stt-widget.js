@@ -808,7 +808,7 @@ const getBotDetails2 = async (botId) => {
       
     }
 
-    if( botType === "avatar_bot" ){
+    if( botType === "avatar_bot" || botType === 'helper_bot'){
       faqButtonsGenerator("intake", "Intake");
     }
     faqButtonsGenerator("something_else", "Begin session");
@@ -1034,6 +1034,7 @@ async function handlePreviousConversation(choice) {
     sessionId2 = previousBotConversationId.split(":")[1];
     coachMessage = previousBotConversationId.split(":")[2];
     isBotInitialized = true;
+    isSessionActiveStt = true;
   }
 
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
@@ -1199,13 +1200,13 @@ async function handleFaqButtonClick(question) {
       }
 
 
-      if( !isIntakeCompleted && botType === "avatar_bot"){
+      if( !isIntakeCompleted && ["avatar_bot","helper_bot"].includes(botType)){
         appendMessage2("You can only begin session after intake is complete");
         return;
       }
 
       console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
-      if( isIntakeSummaryDisplayed == false && botType === "avatar_bot"){
+      if( isIntakeSummaryDisplayed == false && ["avatar_bot","helper_bot"].includes(botType)){
         console.log("===> yes fetching intake summary")
         const queryparam = new URLSearchParams({
           method: "get",
@@ -1239,7 +1240,8 @@ async function handleFaqButtonClick(question) {
       optedBeginSession = true;
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
-      if (previousBotConversationId != "") {
+
+      if (previousBotConversationId != "" && botType === 'avatar_bot') {
         console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
@@ -1252,10 +1254,20 @@ async function handleFaqButtonClick(question) {
         <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Begin session"}</div>
         <div style="margin-top : 8px; padding-top: 0px;">${div}</div>
       </div>`
-        if( botType === "avatar_bot")
-        appendMessage2(divWithLabel);
+        if( botType === "avatar_bot"){
+          appendMessage2(divWithLabel);
+        }
         return;
       }
+      else if (previousBotConversationId != "" && ['subject_matter_bot','helper_bot'].includes(botType)){
+        // in helperbot and suject matter bot we are not creating another session
+        conversation_id2 = previousBotConversationId.split(":")[0];
+        sessionId2 = previousBotConversationId.split(":")[1];
+        coachMessage = previousBotConversationId.split(":")[2];
+        isBotInitialized = true;
+        isSessionActiveStt = true;
+      }
+
 
       botInitialQuestionsIndex = 1;
       if (botType === "avatar_bot") {
@@ -1282,22 +1294,26 @@ async function handleFaqButtonClick(question) {
       }
       if (botType === 'helper_bot'){
         appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-
+        
       }
 
-      isAskingInitialQuestions = true;
-
-      const question = botInitialQuestions[botInitialQuestionsIndex];
-      if (typeof question === "string") {
-        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
-      } else {
-        const radio_cont = handleRadioTypeInitialQuestion(
-          question["options"],
-          question["question"]
-        );
-       
-        appendMessage2(radio_cont);
+      if (botType === 'avatar_bot'){
+        appendMessage2("Please provide context to start conversaton.");
       }
+
+      // isAskingInitialQuestions = true;
+
+      // const question = botInitialQuestions[botInitialQuestionsIndex];
+      // if (typeof question === "string") {
+      //   appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+      // } else {
+      //   const radio_cont = handleRadioTypeInitialQuestion(
+      //     question["options"],
+      //     question["question"]
+      //   );
+   
+      //   appendMessage2(radio_cont);
+      // }
       return;
     }
 
@@ -4442,7 +4458,7 @@ loadExternalModule().then(() => {
                 isSessionActiveStt = true;
                 console.log("Session Created => ", sessionId2);
 
-                if (isBotInitialized == false && isIntakeCompleted == true) {
+                if (isBotInitialized == false) {
                   // initialize coaching conversation
                   try {
                     const response = await fetch(
@@ -4549,7 +4565,7 @@ loadExternalModule().then(() => {
               }, 200);
             }
           }
-
+          console.log(botId)
           if (botId != undefined && allowRecommendationTestCode == false) {
             // wait infinitely for bot to initialize
             console.log("returning from here (bot logic)");
