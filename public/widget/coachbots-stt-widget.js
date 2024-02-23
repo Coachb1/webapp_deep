@@ -1061,7 +1061,13 @@ async function handlePreviousConversation(choice) {
     const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
     const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
     conversationProceedOptionsParent.remove();
-    appendMessage2("Please complete the intake process.")
+    if(!isIntakeCompleted){
+      appendMessage2("Please complete the intake process.")
+    }
+    else{
+      appendMessage2("Please provide context to start conversation.")
+    }
+
   }
 
 
@@ -1122,6 +1128,7 @@ async function handlePreviousConversation(choice) {
   //   );
   //   appendMessage2(radio_cont);
   // }
+  console.log("Na-2:",optedBeginSession)
 }
 
 
@@ -1204,7 +1211,7 @@ async function handleFaqButtonClick(question) {
           method: "get",
           bot_id: botId,
           is_positive: "False",
-          qna_type: "intake",
+          qna_type: "initial_qna",
           user_id: userId2,
         });
       
@@ -1220,7 +1227,7 @@ async function handleFaqButtonClick(question) {
         )
           .then((response) => response.json())
           .then((data) => {
-            console.log(" response : ", data);
+            console.log(" response_initial_qna : ", data);
             appendMessage2(`Welcome to your session. Here is my understanding of the situation: \n ${data.intake_summary} \n Let me know if I missed anything?`)
           });
 
@@ -1229,7 +1236,7 @@ async function handleFaqButtonClick(question) {
       }
 
 
-
+      optedBeginSession = true;
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
       if (previousBotConversationId != "") {
@@ -1251,7 +1258,6 @@ async function handleFaqButtonClick(question) {
       }
 
       botInitialQuestionsIndex = 1;
-      optedBeginSession = true;
       if (botType === "avatar_bot") {
         await getFitmentScore(userId2);
         console.log(isBeginSessionProceed);
@@ -4362,7 +4368,7 @@ loadExternalModule().then(() => {
                     qna: JSON.stringify(botInitialQuestionsQnA),
                     bot_id: botId,
                     is_positive: "False",
-                    qna_type: "intake",
+                    qna_type: "initial_qna",
                     user_id: userId2,
                   });
                 
@@ -4384,6 +4390,7 @@ loadExternalModule().then(() => {
                   //********** submit intake to backend: end */
 
                   signals.onResponse({text: "Thank you for completing the intake. You can now proceed to start your session."})
+                  return;
                 }
                 // signals.onResponse({text: "Thank you for your response."})
               } else {
