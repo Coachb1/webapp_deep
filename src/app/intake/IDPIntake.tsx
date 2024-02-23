@@ -68,7 +68,7 @@ const IDPIntake = ({ user }: any) => {
         .then((data) => {
           console.log("USER Data from IDP intake", data);
           setUserId(data.uid);
-          setName(`${user.given_name} ${user.family_name}`);
+          setName(`${user.given_name} ${user.family_name ? user.family_name : ''}`);
         });
     } else {
       router.push("/");
