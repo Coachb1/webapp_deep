@@ -296,7 +296,7 @@ const VersionOne = ({ user }: any) => {
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
-                Meetings
+                Meetings | Dynamic
               </Button>
             </Link>
             <Link href={"#english-support"}>
@@ -465,7 +465,7 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="meetings">
             <HeroAccordion
-              badgeText="Meetings"
+              badgeText="Meetings | Dynamic"
               user={user ? true : false}
               tests={meetings}
             />
