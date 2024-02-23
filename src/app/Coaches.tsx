@@ -223,9 +223,29 @@ const Coaches = ({ user }: any) => {
       .catch((error) => console.log("error", error));
   };
 
-  const getAllConnections = () => {
+  // const getAllConnections = () => {
+  //   fetch(
+  //     `${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`,
+  //     {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: basicAuth,
+  //       },
+  //     }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //       console.log("email", user.email);
+  //       setConnections(data.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+  const getConnectionsForCoachee = (coacheeId: string) => {
     fetch(
-      `${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`,
+      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
       {
         method: "GET",
         headers: {
@@ -236,7 +256,6 @@ const Coaches = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        console.log("email", user.email);
         setConnections(data.data);
       })
       .catch((err) => {
@@ -251,7 +270,7 @@ const Coaches = ({ user }: any) => {
 
     if (user) {
       getClientInfoForUser(user.email);
-      getAllConnections();
+      // getAllConnections();
       getCoachesData();
       getUserAccount(user)
         .then((res) => res.json())
@@ -276,6 +295,11 @@ const Coaches = ({ user }: any) => {
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
               );
+
+              if (findCoacheeUID(isApprovedData)) {
+                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+              }
+
               if (isApprovedData.length > 0) {
                 setCoacheeId(findCoacheeUID(isApprovedData));
                 setCoachId(findCoachUID(isApprovedData));
@@ -487,7 +511,7 @@ const Coaches = ({ user }: any) => {
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
             } else {
-              getAllConnections();
+              getConnectionsForCoachee(coacheeId);
             }
             setTimeout(() => {
               setRequestLoading(false);
@@ -691,9 +715,8 @@ const Coaches = ({ user }: any) => {
             {!loading &&
               coachesData.length > 0 &&
               coachesData.map((coach, i) => (
-                <>
+                <div id={coach.profile_id} className="pt-20 mt-[-5rem] -z-10">
                   <div
-                    id={coach.profile_id}
                     className={`w-full my-3 flex flex-row p-4 max-sm:p-2 ${
                       coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
                     } border border-gray-300 rounded-md`}
@@ -809,7 +832,7 @@ const Coaches = ({ user }: any) => {
                   {/* {coachesData.length !== i + 1 && (
                     <Separator className="my-2 max-sm:my-1.5 bg-gray-300" />
                   )} */}
-                </>
+                </div>
               ))}
             {!loading && coachesData.length === 0 && (
               <div className="w-full flex flex-row items-center justify-center">

@@ -252,8 +252,8 @@ const UserProfile = ({ user }: any) => {
           </div>
         </div>
         <div className="mt-4 mb-4">
-          <div className="flex flex-row items-center mt-4">
-            <p className="text-sm ">Kudos : </p>
+          <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
+            <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
             {kudosLoading ? (
               <>
                 <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
@@ -261,17 +261,23 @@ const UserProfile = ({ user }: any) => {
             ) : (
               <>
                 {userKudosData[0] ? (
-                  <>
+                  <div className="max-sm:flex max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
                     <Badge variant={"outline"} className="ml-4 p-2">
                       {" "}
-                      Points : {userKudosData[0].positive_feedback_count}{" "}
+                      Positive Feedback count :{" "}
+                      {userKudosData[0].positive_feedback_count}{" "}
+                    </Badge>
+                    <Badge variant={"outline"} className="ml-4 p-2">
+                      {" "}
+                      Negetive Feedback count :{" "}
+                      {userKudosData[0].negative_feedback_count}{" "}
                     </Badge>
                     <Badge variant={"outline"} className="ml-4 p-2">
                       {" "}
                       Position : Top {userKudosData[0].rating} out of{" "}
                       {totalUsersForFeedback}
                     </Badge>
-                  </>
+                  </div>
                 ) : (
                   <Badge variant={"destructive"} className="ml-4">
                     {" "}

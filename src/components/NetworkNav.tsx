@@ -33,7 +33,6 @@ const NetworkNav = ({ user }: any) => {
       className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0  !z-[700] ${
         scrolled > 0 &&
         pathname !== "/library" &&
-        pathname !== "/profile" &&
         "backdrop-blur-lg border-b border-gray-400"
       } `}
     >
