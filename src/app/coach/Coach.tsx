@@ -15,7 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth ,convertTextToCorrectFormat} from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -248,7 +248,7 @@ const Coach = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${coachName}'s Avatar🚀`
+                  ? `Welcome to ${convertTextToCorrectFormat(coachName)}'s Avatar🚀`
                   : "Welcome to the Aarav Sharma’s Avatar!🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
@@ -293,7 +293,7 @@ const Coach = ({ user, renderType }: any) => {
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                       src={
-                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1706180818/nvvgijnibqkznjh3d1pi.jpg"
+                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                       }
                     />
                   </div>{" "}
