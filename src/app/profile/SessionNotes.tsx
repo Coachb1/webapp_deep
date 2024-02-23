@@ -635,7 +635,7 @@ const SessionNotes = ({ user }: any) => {
               <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
                 <div className="border-gray-300  p-4">
                   <div className="flex flex-col">
-                    <p className="mr-2 my-1">Email</p>
+                    <p className="mr-2 my-1">Connected User</p>
                     <Select
                       className="w-full"
                       showSearch

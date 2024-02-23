@@ -104,9 +104,9 @@ const MyPages = ({ user }: any) => {
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "Avatar";
+      return "Coach Avatar";
     } else if (botType === "feedback_bot") {
-      return "Feedback";
+      return "Feedback Page";
     }
   };
 
@@ -126,17 +126,17 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    console.log('profieTyep',profile_type)
-    if (profile_type === "coach" ) {
-      if (botType === 'avatar_bot'){
+    console.log("profieTyep", profile_type);
+    if (profile_type === "coach") {
+      if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
-      } else if (botType ==='feedback_bot'){
+      } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       }
     } else if (profile_type === "coachee") {
-      if (botType === 'avatar_bot'){
+      if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
-      } else if (botType ==='feedback_bot'){
+      } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else {
         return `/intake/?type=${
@@ -173,13 +173,14 @@ const MyPages = ({ user }: any) => {
       <div className="my-4 text-sm">
         {botTypes.map((botType) => (
           <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
-            <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p>
+            {/* <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p> */}
             {botType.bots.map((bot, i) => (
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
-                  <p className="text-sm inline w-[10%]">{i + 1}</p>{" "}
+                  {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
                   <p className="text-sm inline w-[30%] max-sm:w-[40%]">
-                    {bot.bot_name}
+                    <> {BotTypesHeading(botType.bot_type)} </>
+                    {/* - {bot.bot_name} */}
                   </p>{" "}
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                   <div className="flex flex-row gap-2">
@@ -303,12 +304,13 @@ const MyPages = ({ user }: any) => {
       {!loading && userProfile && userProfile.profile_type === "coachee" && (
         <>
           <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
-            <p className="text-sm ">Coachee</p>
+            {/* <p className="text-sm ">Coachee</p> */}
             <div className="m-4 my-1 text-sm max-sm:m-2">
               <div className="flex items-center">
-                <p className="text-sm inline w-[10%]">1</p>
+                {/* <p className="text-sm inline w-[10%]">1</p> */}
                 <p className="text-sm inline w-[30%] max-sm:w-[40%]">
-                  {userProfile.name}
+                  <>Coachee</>
+                  {/* - {userProfile.name} */}
                 </p>
                 <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                 <Link
