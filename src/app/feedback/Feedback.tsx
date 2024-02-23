@@ -23,6 +23,33 @@ import { baseURL, basicAuth } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 
+interface Message {
+  question: string;
+  answer: string;
+}
+
+interface feedbackConversationType {
+  participant_name: string;
+  date: string;
+  msg: Message[];
+}
+
+const convertJsonToStateFormat = (jsonData: any) => {
+  return jsonData.map((item: any) => {
+    const { participant_name, date, msg } = item;
+
+    const formattedMsg = Object.entries(msg).map(([question, answer]) => ({
+      question,
+      answer,
+    }));
+
+    return {
+      participant_name,
+      date,
+      msg: formattedMsg,
+    };
+  });
+};
 const howItWorks = [
   {
     heading: "Thumbs Up or Thumbs Down",
@@ -124,12 +151,16 @@ const Feedback = ({ user, renderType }: any) => {
     []
   );
 
+  const [feedbackConversations, setFeedbackConversations] = useState<
+    feedbackConversationType[]
+  >([]);
+
   const [invalidId, setInValidCoach] = useState(false);
 
   //for owner verific
   const [userId, setUserId] = useState<string>("");
   const [userIdFromBotDetails, setUserIdFromBotDetails] = useState<string>("");
-
+  const [profileImage, setProfileImage] = useState("");
   useEffect(() => {
     setIsLoading(true);
 
@@ -186,6 +217,7 @@ const Feedback = ({ user, renderType }: any) => {
         }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
+        setProfileImage(data.data.owner_profile_image);
         setUserIdFromBotDetails(data.data.user_id);
         if (data.data.additional_data !== null) {
           setCurrentProjects(data.data.additional_data?.current_projects);
@@ -290,6 +322,45 @@ const Feedback = ({ user, renderType }: any) => {
       });
   }, []);
 
+  useEffect(() => {
+    fetch(
+      `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${
+        renderType === "dynamic"
+          ? pathname.split("/")[2]
+          : "feedback-d55cd-aravsharma"
+      }&feedback_type=negative`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+
+        if (data.critical_msgs.length > 0) {
+          console.log(convertJsonToStateFormat(data.critical_msgs));
+          const convertedCriticalFeedbacks = convertJsonToStateFormat(
+            data.critical_msgs
+          );
+          const sortedByLatestDates: feedbackConversationType[] =
+            convertedCriticalFeedbacks.sort(
+              (a: any, b: any) =>
+                new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+          console.log(sortedByLatestDates);
+          setFeedbackConversations(sortedByLatestDates);
+        } else {
+          setFeedbackConversations([]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const FeedbackBotBody = () => {
     return (
       <>
@@ -300,66 +371,92 @@ const Feedback = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed max-sm:hidden right-[100px] bottom-12 z-50">
+          <div className="fixed bottom-12 right-[100px] z-50 max-sm:hidden">
             <span className="mr-6 text-sm font-bold">Try Now</span>
             <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
           </div>
         )}
 
         {invalidId && renderType === "dynamic" && (
-          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
-              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+          <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
+            <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
+              <AlertTriangle className="mr-2 inline h-4 w-4" />
               We have encountered an error. Please try again.{" "}
             </div>
           </div>
         )}
-        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-          <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-            {/* <NavProfile user={user} />
-                <BotsNavigation user={user} /> */}
+        <div className="grainy h-full min-h-screen bg-gray-100 pb-16 max-sm:h-full max-sm:min-h-screen">
+          <div className="fixed !z-[800] flex h-6 w-full items-center justify-end p-4 py-8">
             <NetworkNav user={user} />
           </div>
-          <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
-            <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-              <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+          <div className="flex flex-col items-center justify-center px-24 pt-20 text-center max-sm:px-8">
+            <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
+              <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
                 COACH
               </span>
               BOTS
             </h1>
             <div>
-              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+              <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
                 Hey this is{" "}
                 {renderType === "dynamic" ? coachName : "Aarav Sharma"}, Love to
-                hear your feedback
+                hear your feedback!
               </h1>
 
-              <div className="p-2 mt-4 border border-gray-200 bg-amber-50 rounded-lg">
+              <div className="mt-4">
                 {renderType === "dynamic" ? (
-                  <p className="max-sm:text-xs text-[#2f2323] my-2">
-                    {coachDescription}
-                    <br />
-                    {currentProjects && (
-                      <span className="my-2">
-                        <b>Current projects : </b> {currentProjects}
-                      </span>
-                    )}
-                  </p>
+                  <>
+                    <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-gray-200 bg-amber-50 p-2 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
+                      <div className="flex w-[20%] items-center justify-center max-sm:w-fit">
+                        <img
+                          className="h-[200px] w-[200px] rounded-md object-cover max-sm:h-[130px]"
+                          src={profileImage}
+                        />
+                      </div>{" "}
+                      <p className="w-[80%] text-left max-sm:w-full  max-sm:text-center">
+                        {" "}
+                        {coachDescription}
+                      </p>
+                    </div>
+                  </>
                 ) : (
-                  <p className="max-sm:text-xs text-[#2f2323]">
-                    Hi, I am Amit Trivedi, a results-driven senior manager with
-                    over 15 years of experience leading cross-functional teams
-                    across India. I hold an MBA from IIM Ahmedabad and PMP
-                    certification. Currently, I lead the software development
-                    division, managing a team of 35 engineers across cloud
-                    architecture, QA, and agile delivery functions. I value
-                    candid feedback and strive for continuous improvement at
-                    both a personal and organizational level.
-                  </p>
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
+                      <img
+                        className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                        src={
+                          "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                        }
+                      />
+                    </div>{" "}
+                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
+                      {" "}
+                      I'm Aarav Sharma, a seasoned corporate coach with 15+
+                      years' experience in leadership development. Holding a
+                      master's in organizational psychology and certifications
+                      in executive coaching, I've collaborated with top-tier
+                      companies. My coaching style, a unique blend of empathy
+                      and strategic thinking, fosters a growth mindset and
+                      aligns personal values with professional goals. Known for
+                      approachability, I create a safe space for executives,
+                      incorporating mindfulness for self-awareness and
+                      resilience. Tailoring strategies to individual needs, I
+                      aim to be a trusted guide for long-term, sustainable
+                      leadership development in the dynamic corporate landscape.
+                    </p>
+                  </div>
                 )}
               </div>
-              <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+              {currentProjects && (
+                <div className="mt-4 rounded-lg border border-gray-200 bg-teal-50 p-2 max-sm:text-xs">
+                  <p className="my-2">
+                    <b>Current projects : </b> {currentProjects}
+                  </p>
+                </div>
+              )}
+
+              <div className="my-4 text-[#2f2323] max-sm:text-xs">
+                <p className="rounded-lg border border-gray-200 bg-blue-100 p-2">
                   {" "}
                   Thank you for taking the time! Your feedback is invaluable to
                   me. Please take a moment to share your experience by selecting
@@ -370,86 +467,49 @@ const Feedback = ({ user, renderType }: any) => {
                 </p>
               </div>
             </div>
-            <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-              {/* <Link target="_blank" href={coachProfileLink}>
-              <div className="relative group cursor-pointer">
-                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                  <div className="space-y-2">
-                    <Button
-                      variant={"secondary"}
-                      className="border border-gray-200 h-8 hover:cursor-pointer w-fit"
-                    >
-                      Profile {renderType !== "dynamic" && "(sample)"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Link> */}
+            <div className="mt-8 flex flex-row flex-wrap gap-2 max-sm:items-center max-sm:justify-center z-10">
               <Link href={"#kudos"}>
                 <Button
                   variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                  className="h-8 border border-gray-200 hover:cursor-pointer"
                 >
                   Kudos Wall
                 </Button>
               </Link>
-              {/* <Link href={"#wtu"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Where to use
-                </Button>
-              </Link> */}
+
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                  className="h-8 border border-gray-200 hover:cursor-pointer"
                 >
                   How it works
                 </Button>
               </Link>
+              <Link href="#critical-feedback">
+                {userId === userIdFromBotDetails && (
+                  <Button
+                    variant={"secondary"}
+                    className="h-8 border border-gray-200 hover:cursor-pointer"
+                  >
+                    Critical Feedbacks {renderType !== "dynamic" && "(sample)"}
+                  </Button>
+                )}
+              </Link>
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
+                  className="h-8 border border-gray-200 hover:cursor-pointer"
                 >
                   Benefits
                 </Button>
               </Link>
-              <Link
-                target="_blank"
-                href={
-                  reportsLinksSelector() +
-                  "criticalFeedbackReport/" +
-                  `?bot_id=${pathname.split("/")[2]}&bot_name=${coachName}`
-                }
-              >
-                {userId === userIdFromBotDetails && (
-                  <div className="relative group cursor-pointer">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                      <div className="space-y-2">
-                        <Button
-                          variant={"secondary"}
-                          className="border border-gray-200 h-8 hover:cursor-pointer"
-                        >
-                          Critical Feedbacks{" "}
-                          {renderType !== "dynamic" && "(sample)"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </Link>
             </div>
             {/* kudosWall */}
-            <div className="w-full" id="kudos">
-              <div className={`w-full flex justify-center`}>
+            <div className="w-full  pt-20 -mt-20 " id="kudos">
+              <div className={`flex w-full justify-center`}>
                 <Badge
                   variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  className="z-10 mb-8 mt-12 h-6 w-fit bg-[#2DC092] py-3 text-center text-lg text-white hover:bg-[#2DC092] max-sm:mt-8 max-sm:text-sm"
                 >
                   Kudos Wall
                 </Badge>
@@ -457,8 +517,8 @@ const Feedback = ({ user, renderType }: any) => {
               <div className="w-full">
                 <div className="relative isolate mx-auto">
                   <div>
-                    <div className="mx-auto lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl p-2  bg-[url(https://cdn.statically.io/gh/falahh6/coachbots/main/kudoswallbg.svg)] ring-1 ring-inset ring-gray-900/10 lg:-m-4 max-h-[450px] lg:rounded-2xl lg:p-4 max-sm:w-[100%] flex flex-col overflow-scroll no-scrollbar gap-2">
+                    <div className="z-50 mx-auto mt-[-1.5rem] max-sm:w-[100%] lg:px-8">
+                      <div className="no-scrollbar flex  max-h-[450px] flex-col gap-2 overflow-scroll rounded-xl bg-[url(https://cdn.statically.io/gh/falahh6/coachbots/main/kudoswallbg.svg)] p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
                         {renderType === "dynamic" ? (
                           <>
                             {positiveFeedbacks.length > 0 ? (
@@ -473,7 +533,7 @@ const Feedback = ({ user, renderType }: any) => {
                               </>
                             ) : (
                               <>
-                                <p className="text-center text-sm w-full my-5 font-semibold text-gray-600">
+                                <p className="my-5 w-full text-center text-sm font-semibold text-gray-600">
                                   No Feedbacks yet
                                 </p>
                               </>
@@ -496,14 +556,121 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
+            {/* Critical Feedback */}
+            {userId === userIdFromBotDetails && (
+              <div className="w-full pt-20 -mt-20" id="critical-feedback">
+                <div className={`flex w-full justify-center`}>
+                  <Badge
+                    variant={"secondary"}
+                    className="z-10 mb-8 mt-12 h-6 w-fit bg-[#2DC092] py-3 text-center text-lg text-white hover:bg-[#2DC092] max-sm:mt-8 max-sm:text-sm"
+                  >
+                    Critical Feedback
+                  </Badge>
+                </div>
+                <div className="w-full">
+                  <div className="relative isolate mx-auto">
+                    <div>
+                      <div className="z-50 mx-auto mt-[-1.5rem] max-sm:w-[100%] lg:px-8">
+                        <div className="no-scrollbar flex bg-white max-h-[450px] flex-col gap-2 overflow-scroll rounded-xl  p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
+                          {feedbackConversations.length > 0 ? (
+                            <div className="w-full text-left">
+                              <div className="text-sm w-full ml-0  rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
+                                <div className="flex flex-col justify-start items-start rounded-md">
+                                  <div className="flex flex-col w-full">
+                                    {feedbackConversations.map(
+                                      (feedbacks, i) => (
+                                        <div className="w-full border bg-gray-100 my-2 px-2 rounded-sm">
+                                          <Accordion
+                                            type="single"
+                                            collapsible
+                                            className="w-full"
+                                          >
+                                            <AccordionItem
+                                              value="item-1"
+                                              className="border-none"
+                                            >
+                                              <AccordionTrigger>
+                                                <p className="flex flex-row max-sm:flex-col max-sm:text-left">
+                                                  <span>
+                                                    <b>Feedeback provider</b> :{" "}
+                                                    {feedbacks.participant_name}{" "}
+                                                    <span className="max-sm:hidden mx-2">
+                                                      |
+                                                    </span>
+                                                  </span>{" "}
+                                                  <span>
+                                                    <b>Feedback Date</b> :{" "}
+                                                    {convertDate(
+                                                      feedbacks.date
+                                                    )}
+                                                  </span>
+                                                </p>
+                                              </AccordionTrigger>
+                                              <AccordionContent>
+                                                <div>
+                                                  {feedbacks.msg.map(
+                                                    (convo) => (
+                                                      <>
+                                                        <div className="flex justify-start ">
+                                                          <div className="flex flex-col items-start justify-start p-2 w-[80%]">
+                                                            <div className="bg-blue-100 text-sm max-sm:text-xs p-2 rounded-md max-sm:full">
+                                                              <h4 className="font-bold">
+                                                                Question
+                                                              </h4>
+                                                              <p>
+                                                                {convo.question}
+                                                              </p>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div className="flex justify-end">
+                                                          <div className="flex  p-2 w-[80%] flex-col items-end justify-end rounded-2xl">
+                                                            <div className=" bg-blue-100 text-sm max-sm:text-xs p-2 rounded-md  max-sm:w-full">
+                                                              <h4 className="font-bold">
+                                                                Answer
+                                                              </h4>
+                                                              <p>
+                                                                {convo.answer}
+                                                              </p>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </>
+                                                    )
+                                                  )}
+                                                </div>
+                                              </AccordionContent>
+                                            </AccordionItem>
+                                          </Accordion>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className=" w-full h-20 flex items-center justify-center">
+                                <div>No Feedbacks yet.</div>{" "}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* <div id="wtu">
               <WhereToUse />
             </div> */}
-            <div className="w-full" id="howItWorks">
-              <div className={`w-full flex justify-center`}>
+            <div className="w-full  pt-20 -mt-20 " id="howItWorks">
+              <div className={`flex w-full justify-center`}>
                 <Badge
                   variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  className="z-10 mb-8 mt-12 h-6 w-fit bg-[#2DC092] py-3 text-center text-lg text-white hover:bg-[#2DC092] max-sm:mt-8 max-sm:text-sm"
                 >
                   How it works
                 </Badge>
@@ -511,8 +678,8 @@ const Feedback = ({ user, renderType }: any) => {
               <div className="w-full">
                 <div className="relative isolate mx-auto">
                   <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                    <div className="z-50 mx-auto mt-[-1.5rem] max-w-3xl px-6 max-sm:w-[100%] lg:px-8">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
                         <Accordion
                           type="single"
                           collapsible
@@ -533,7 +700,7 @@ const Feedback = ({ user, renderType }: any) => {
                                   <b>{test.heading}</b>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
+                              <AccordionContent className="text-left max-sm:text-xs">
                                 <p> {test.description}</p>
                               </AccordionContent>
                             </AccordionItem>
@@ -545,11 +712,11 @@ const Feedback = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
-            <div className="w-full" id="benefits">
-              <div className={`w-full flex justify-center`}>
+            <div className="w-full  pt-20 -mt-20 " id="benefits">
+              <div className={`flex w-full justify-center`}>
                 <Badge
                   variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  className="z-10 mb-8 mt-12 h-6 w-fit bg-[#2DC092] py-3 text-center text-lg text-white hover:bg-[#2DC092] max-sm:mt-8 max-sm:text-sm"
                 >
                   Benefits
                 </Badge>
@@ -557,8 +724,8 @@ const Feedback = ({ user, renderType }: any) => {
               <div className="w-full">
                 <div className="relative isolate mx-auto">
                   <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                    <div className="z-50 mx-auto mt-[-1.5rem] max-w-3xl px-6 max-sm:w-[100%] lg:px-8">
+                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
                         <Accordion
                           type="single"
                           collapsible
@@ -579,7 +746,7 @@ const Feedback = ({ user, renderType }: any) => {
                                   <b>{test.heading}</b>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
+                              <AccordionContent className="text-left max-sm:text-xs">
                                 <p> {test.description}</p>
                               </AccordionContent>
                             </AccordionItem>
@@ -594,35 +761,14 @@ const Feedback = ({ user, renderType }: any) => {
           </div>
         </div>
       </>
-      //   ) : (
-      //     <>
-      //       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-      //         <NetworkNav user={user} />
-      //       </div>
-      //       <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-      //         <div className="flex flex-col items-center justify-center">
-      //           <p className="font-semibold text-sm mb-2">
-      //             You have not enrolled as a program participant. Please enroll
-      //             and try again.
-      //           </p>
-      //           <Link href="/">
-      //             <Button variant={"outline"} className={` h-8 max-sm:text-sm`}>
-      //               Return to home
-      //             </Button>
-      //           </Link>
-      //         </div>
-      //       </div>
-      //     </>
-      //   )}
-      // </>
     );
   };
   return (
     <>
       {isLoading && (
-        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
-          <div className="p-2 bg-gray-300 rounded-md text-sm">
-            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
+        <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-2xl">
+          <div className="rounded-md bg-gray-300 p-2 text-sm">
+            <Loader className="mr-2 inline h-4 w-4 animate-spin" />
             Please wait while we prepare your coach.
           </div>
         </div>

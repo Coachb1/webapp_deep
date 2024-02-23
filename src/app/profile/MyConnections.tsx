@@ -107,11 +107,15 @@ const MyComnnections = ({ user }: any) => {
                 console.log("for coaches");
                 getConnectionsForCoach(findCoachUID(isApprovedData));
               }
-              setLoading(false);
+              setTimeout(() => {
+                setLoading(false);
+              }, 1000);
             })
             .then((err) => {
               console.error(err);
-              setLoading(false);
+              setTimeout(() => {
+                setLoading(false);
+              }, 1000);
             });
         });
     }

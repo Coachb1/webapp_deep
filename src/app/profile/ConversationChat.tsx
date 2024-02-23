@@ -11,6 +11,7 @@ const ConversationChat = ({
   participant,
   date,
   botName,
+  type,
 }: any) => {
   return (
     <div className="w-full border bg-gray-200 my-2 px-2 rounded-sm">
@@ -20,13 +21,20 @@ const ConversationChat = ({
             <p className="flex flex-row max-sm:flex-col max-sm:text-left">
               <span>
                 {" "}
-                <b>Participant</b> : {participant}{" "}
-                <span className="max-sm:hidden mx-2">|</span>
+                <b>
+                  {" "}
+                  {type === "coachee-interactions"
+                    ? "Coachee name "
+                    : "Participant name"}
+                </b>{" "}
+                : {participant} <span className="max-sm:hidden mx-2">|</span>
               </span>
-              <span>
-                <b>Name</b> : {botName}{" "}
-                <span className="max-sm:hidden mx-2">|</span>
-              </span>{" "}
+              {type === "coach-interactions" && (
+                <span>
+                  <b>Bot Name</b> : {botName}{" "}
+                  <span className="max-sm:hidden mx-2">|</span>
+                </span>
+              )}
               <span>
                 <b>Date</b> : {date}
               </span>
