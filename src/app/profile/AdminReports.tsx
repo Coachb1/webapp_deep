@@ -22,7 +22,7 @@ const AdminReports = ({ user }: any) => {
         </>
       </div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm"> Participant Leaderboard</p>
+        <p className="text-sm"> Participant Usage Leaderboard</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
@@ -37,7 +37,7 @@ const AdminReports = ({ user }: any) => {
         </>
       </div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm">Mapping report</p>
+        <p className="text-sm">Coach-Coachee Mapping Report</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
