@@ -30,7 +30,7 @@ const NetworkNav = ({ user }: any) => {
 
   return (
     <div
-      className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0  !z-[700] ${
+      className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0   ${
         scrolled > 0 &&
         pathname !== "/library" &&
         "backdrop-blur-lg border-b border-gray-400"
@@ -38,53 +38,57 @@ const NetworkNav = ({ user }: any) => {
     >
       {/* <div className="flex flex-row gap-1"></div> */}
       {/* <div className="flex flex-row gap-2"> */}
-      <div className="flex flex-row gap-2 max-sm:hidden  !z-[701]">
-        <Link href="/">
-          <Button
-            variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
-              pathname === "/" ? "border border-gray-500 shadow-md" : ""
-            } `}
-          >
-            Network Directory
-          </Button>
-        </Link>{" "}
-        <Link href="/content-library">
-          <Button
-            variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
-              pathname.includes("/content-library")
-                ? "border border-gray-500 shadow-md"
-                : ""
-            } `}
-          >
-            Explore
-          </Button>
-        </Link>{" "}
-        <Link href="/library">
-          <Button
-            variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
-              pathname.includes("/library")
-                ? "border border-gray-500 shadow-md"
-                : ""
-            } `}
-          >
-            My Library
-          </Button>
-        </Link>{" "}
-        <Link href="/create-scenario">
-          <Button
-            variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
-              pathname.includes("/create-scenario")
-                ? "border border-gray-500 shadow-md"
-                : ""
-            } `}
-          >
-            Open Simulations
-          </Button>
-        </Link>{" "}
+      <div className="flex flex-row gap-2 max-sm:hidden ">
+        <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname === "/" ? "border border-gray-500 shadow-md" : ""
+          } `}
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          Network Directory
+        </Button>
+        <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname.includes("/content-library")
+              ? "border border-gray-500 shadow-md"
+              : ""
+          } `}
+          onClick={() => {
+            router.push("/content-library");
+          }}
+        >
+          Explore
+        </Button>
+        <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname.includes("/library")
+              ? "border border-gray-500 shadow-md"
+              : ""
+          } `}
+          onClick={() => {
+            router.push("/library");
+          }}
+        >
+          My Library
+        </Button>
+        <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname.includes("/create-scenario")
+              ? "border border-gray-500 shadow-md"
+              : ""
+          } `}
+          onClick={() => {
+            router.push("/create-scenario");
+          }}
+        >
+          Open Simulations
+        </Button>
         <TooltipWrapper
           className="w-60 text-xs"
           tooltipName="Individual development Plan Intake (Login required)"
@@ -121,7 +125,14 @@ const NetworkNav = ({ user }: any) => {
               className={`${pathname === "/" ? "bg-gray-200" : null}`}
               asChild
             >
-              <Link href={"/"}> Network directory</Link>
+              <div
+                onClick={() => {
+                  router.push("/");
+                }}
+              >
+                {" "}
+                Network directory
+              </div>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={`${
@@ -129,7 +140,13 @@ const NetworkNav = ({ user }: any) => {
               }`}
               asChild
             >
-              <Link href={"/content-library"}>Explore</Link>
+              <div
+                onClick={() => {
+                  router.push("/content-library");
+                }}
+              >
+                Explore
+              </div>
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -138,7 +155,14 @@ const NetworkNav = ({ user }: any) => {
               }`}
               asChild
             >
-              <Link href={"/library"}> Library</Link>
+              <div
+                onClick={() => {
+                  router.push("/library");
+                }}
+              >
+                {" "}
+                Library
+              </div>
             </DropdownMenuItem>
             <DropdownMenuItem
               className={`${
@@ -146,7 +170,14 @@ const NetworkNav = ({ user }: any) => {
               }`}
               asChild
             >
-              <Link href={"/create-scenario"}> Open Simulations</Link>
+              <div
+                onClick={() => {
+                  router.push("/create-scenario");
+                }}
+              >
+                {" "}
+                Open Simulations
+              </div>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>

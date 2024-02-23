@@ -185,10 +185,11 @@ const Conversations = ({ user }: any) => {
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
-                    <Badge>Others Interaction</Badge>
+                    <Badge>Coachee interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationDataAdmin.map((conversation) => (
                         <ConversationChat
+                          type="coachee-interactions"
                           participant={conversation.participant_name}
                           conversation={conversation.conversation}
                           botName={conversation.bot_name}
@@ -200,15 +201,19 @@ const Conversations = ({ user }: any) => {
                         />
                       ))}
                     </div>
-                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
                   </>
                 )}
+                {conversationDataAdmin.length > 0 &&
+                  conversationData.length > 0 && (
+                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
+                  )}
                 {conversationData.length > 0 && (
                   <>
                     <Badge>My interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationData.map((conversation) => (
                         <ConversationChat
+                          type="coach-interactions"
                           participant={conversation.participant_name}
                           conversation={conversation.conversation}
                           date={

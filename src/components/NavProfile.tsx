@@ -15,10 +15,12 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const NavProfile = ({ user }: any) => {
   const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <>
       {user ? (
@@ -46,34 +48,17 @@ const NavProfile = ({ user }: any) => {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
-              <Link href={"/profile"}>
-                {" "}
+            <DropdownMenuItem
+              onClick={() => {
+                router.push("/profile");
+              }}
+              asChild
+            >
+              <div className="w-full">
                 <User className="h-4 w-4 mr-2" /> Your profile
-              </Link>
+              </div>
             </DropdownMenuItem>
-            {/* {pathname !== "/content-library" && (
-              <DropdownMenuItem asChild>
-                <Link href={"/content-library"}> ⚡️ Content Library</Link>
-              </DropdownMenuItem>
-            )}
-            {pathname !== "/feedback" &&
-              !pathname.includes("/feedback/feedback") && (
-                <DropdownMenuItem asChild>
-                  <Link href={"/feedback"}>
-                    {" "}
-                    <MessageSquarePlusIcon className="h-4 w-4 mr-2" /> Feedback
-                  </Link>
-                </DropdownMenuItem>
-              )}
-            {pathname !== "/" && !pathname.includes("/coach") && (
-              <DropdownMenuItem asChild>
-                <Link href={"/"}>
-                  {" "}
-                  <span className="mr-2">👩‍🏫</span> Coach
-                </Link>
-              </DropdownMenuItem>
-            )} */}
+
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
