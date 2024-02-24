@@ -945,14 +945,14 @@ const handleFitmentAnalysis = async () => {
       const que_msg = document.createElement("div");
       let score_result_statement;
       if(data.score === 1 || data.score === 0){
-        score_result_statement = "Low - The current score indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
+        score_result_statement = "The current score indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
       } else if (data.score === 2){
-        score_result_statement = "Moderate - The current score suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
+        score_result_statement = "The current score suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
       } else if (data.score === 3){
-        score_result_statement = "High - The score reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
+        score_result_statement = "The score reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
       }
 
-      que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Fitness Analysis Result:</b>   <p>${data.score} : ${score_result_statement}</p> </div>`; // You can customize the message here
+      que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
       // Replace the button with the "Thank you" message
       msg.parentNode.replaceChild(que_msg, msg);
 
@@ -978,21 +978,22 @@ function getIntakeReadyBotInitialQuestions(initialQuestions) {
   isIntakeClicked = true;
   data = initialQuestions
   const firstQuestion =  "Thank you for considering a virtual session. Please let me know more about you as a person that you think might be relevant to our session today."
-
+  console.log(data)
   // replace first question with new question
   data[1] = firstQuestion
 
-  const secondQuestion = {"options": ["Yes", "No"], "question": "Is this discussion related to your goal in a way to consider your IDP (individual development plan)? "}
+  const lastQuestion = {"options": ["Yes", "No"], "question": "Is this discussion related to your goal in a way to consider your IDP (individual development plan)? "}
 
   // shift all questions by 1 index
-  for(let i = 4; i >= 2; i--) {
-      data[i+1] = data[i]
-      }
+  // for(let i = 4; i >= 2; i--) {
+  //     data[i+1] = data[i]
+  //     }
 
   // insert after first question and before second question
-  data[2] = secondQuestion
+  data[Object.keys(data).length + 1]=(lastQuestion)
+  // data[2] = lastQuestion
   // data[6] = "Thank you for completing the intake"
-
+  console.log(data)
   return data
 }
 
@@ -1027,6 +1028,26 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
 
   return formRadio;
 }
+
+function SendingFirstInitialQue(){
+  // disabling button 
+  disableOrEnableButtons("initial_question_proceed"); 
+
+  //sending first question 
+  isAskingInitialQuestions = true;
+  botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
+  const question = botInitialQuestions[botInitialQuestionsIndex];
+  if (typeof question === "string") {
+    appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+  } else {
+    const radio_cont = handleRadioTypeInitialQuestion(
+      question["options"],
+      question["question"]
+    );
+   
+    appendMessage2(radio_cont);
+  }
+}
 async function handlePreviousConversation(choice) {
   let coachMessage = ""
   if (choice === "previous") {
@@ -1040,14 +1061,15 @@ async function handlePreviousConversation(choice) {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const newConversationButton = shadowRoot2.getElementById("new-conversation")
   if (choice === "new") {
-    if( !isIntakeCompleted ){
-      appendMessage2("You can only begin session after intake is complete");
-      return;
-    }
+    disableOrEnableButtons("conversation-proceed")
+    // if( !isIntakeCompleted ){
+    //   appendMessage2(addStickerToMessage("System","You can only begin session after intake is complete"));
+    //   return;
+    // }
 
-    const previousButton = shadowRoot2.getElementById("previous-conversation");
-    previousButton.disabled = true;
-    previousButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
+    // const previousButton = shadowRoot2.getElementById("previous-conversation");
+    // previousButton.disabled = true;
+    // previousButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
 
     const conversationProceedOptions = `<div id="conversation-proceed-options" >
                     <b>New sessions will cancel out any existing intakes and you have to do the intake again.. Do you want to proceed?</b> <br>
@@ -1059,22 +1081,21 @@ async function handlePreviousConversation(choice) {
   }
 
   if (choice === "Yes") {
+    disableOrEnableButtons("conversation-proceed-options")
     const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
     const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
     conversationProceedOptionsParent.remove();
     if(!isIntakeCompleted){
-      appendMessage2("Please complete the intake process.")
+      appendMessage2(addStickerToMessage("System","Please complete the intake process by clicking on the intake button."))
+      return;
     }
-    else{
-      appendMessage2("Please provide context to start conversation.")
-    }
-
+    
   }
 
 
   if (choice === "No") {
-    const previousButton = shadowRoot2.getElementById("previous-conversation");
-    previousButton.disabled = false;
+    disableOrEnableButtons("conversation-proceed",is_disable=false)
+
 
     const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
     const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
@@ -1095,26 +1116,32 @@ async function handlePreviousConversation(choice) {
       CoachingForFitment === "anyone"
     ) {
       appendMessage2(
-        "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+        addStickerToMessage("Note","Your fitment score is low or has not been attempted. Please proceed with this in mind.")
+
       );
     }
+
+    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? "));
   }
   console.log(botType);
   if (choice === "previous"){
-    newConversationButton.setAttribute("disabled", "true")
-    newConversationButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
+    disableOrEnableButtons("conversation-proceed")
+    // newConversationButton.setAttribute("disabled", "true")
+    // newConversationButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
     appendMessage2(`<b>Please scroll above to view the conversation and proceed accordingly.</b>`)
   } 
   console.log(botType);
   if (botType === "subject_matter_bot") {
     appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-    appendMessage2("Please provide context to start conversaton.");
+    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
     
     return;
   }
 
   if (botType === 'helper_bot'){
     appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
+    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
+
   }
 
   // isAskingInitialQuestions = true;
@@ -1199,14 +1226,9 @@ async function handleFaqButtonClick(question) {
         return;
       }
 
-
-      if( !isIntakeCompleted && ["avatar_bot","helper_bot"].includes(botType)){
-        appendMessage2("You can only begin session after intake is complete");
-        return;
-      }
-
-      console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
-      if( isIntakeSummaryDisplayed == false && ["avatar_bot","helper_bot"].includes(botType)){
+      
+      let intakeSummery;
+      if( ["avatar_bot","helper_bot"].includes(botType)){
         console.log("===> yes fetching intake summary")
         const queryparam = new URLSearchParams({
           method: "get",
@@ -1215,7 +1237,6 @@ async function handleFaqButtonClick(question) {
           qna_type: "initial_qna",
           user_id: userId2,
         });
-      
         const resp = await fetch(
           `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
           {
@@ -1226,12 +1247,19 @@ async function handleFaqButtonClick(question) {
             },
           }
         )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(" response_initial_qna : ", data);
-            appendMessage2(`Welcome to your session. Here is my understanding of the situation: \n ${data.intake_summary} \n Let me know if I missed anything?`)
-          });
+        const respJson = await resp.json()
+        console.log(" response_initial_qna : ", respJson);
+        intakeSummery = respJson.intake_summary 
+        if (!intakeSummery){
+        appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
+        return;
+        }
+      }
 
+      console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
+      if( isIntakeSummaryDisplayed == false && ["avatar_bot","helper_bot"].includes(botType)){
+        
+        appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
         isIntakeSummaryDisplayed = true
         // return;
       }
@@ -1250,12 +1278,9 @@ async function handleFaqButtonClick(question) {
             <button id='new-conversation' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
 
         </div>`;
-        const divWithLabel = ` <div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-        <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Begin session"}</div>
-        <div style="margin-top : 8px; padding-top: 0px;">${div}</div>
-      </div>`
+        
         if( botType === "avatar_bot"){
-          appendMessage2(divWithLabel);
+          appendMessage2(div);
         }
         return;
       }
@@ -1280,25 +1305,28 @@ async function handleFaqButtonClick(question) {
           isStrictFitment &&
           CoachingForFitment === "anyone"
         ) {
+          
           appendMessage2(
-            "Your fitment score is low or has not been attempted. Please proceed with this in mind."
-          );
+            addStickerToMessage("Note","Your fitment score is low or has not been attempted. Please proceed with this in mind.")
+            );
         }
       }
       console.log(botType);
       console.log(document.getElementById("bot-footer"))
       if (botType === "subject_matter_bot") {
         appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-        appendMessage2("Please provide context to start conversaton.");
+        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
         return;
       }
       if (botType === 'helper_bot'){
         appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
+        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
         
       }
 
       if (botType === 'avatar_bot'){
-        appendMessage2("Please provide context to start conversaton.");
+        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
+
       }
 
       // isAskingInitialQuestions = true;
@@ -1320,34 +1348,21 @@ async function handleFaqButtonClick(question) {
     //********************** intake flow start */
 
     if (question == "intake") {
+      
       isIntakeInProgress = true;
       // appendMessage2('Please ask your question in chat box')
       if (isAskingInitialQuestions) {
         return;
       }
 
-      await getUserBotConversation(userId2);
-      console.log(previousBotConversationId, "out");
-  
-
       botInitialQuestionsIndex = 1;
       optedBeginSession = true;
+      const divCont = `<div id="initial_question_proceed" >
+      <b>Thank you for considering a virtual session. How intake works: It is a series of five fixed questions like a form. Click "OK" to start</b>
+        <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="SendingFirstInitialQue()">OK</button>
+      </div>`
       
-
-      isAskingInitialQuestions = true;
-      botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
-
-      const question = botInitialQuestions[botInitialQuestionsIndex];
-      if (typeof question === "string") {
-        appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
-      } else {
-        const radio_cont = handleRadioTypeInitialQuestion(
-          question["options"],
-          question["question"]
-        );
-       
-        appendMessage2(radio_cont);
-      }
+      appendMessage2(addStickerToMessage("Intake",divCont));
       return;
     }
 
@@ -1826,6 +1841,28 @@ function createMessageNode2(message) {
   messageNode.appendChild(messageBubble);
 
   return messageNode;
+}
+
+function disableOrEnableButtons(id, is_disable = true) {
+  // Get the div container
+  const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const container = shadowRoot2.getElementById(id)
+
+  // Get all buttons inside the container
+  var buttons = container.getElementsByTagName("button");
+
+  // Disable each button
+  for (var i = 0; i < buttons.length; i++) {
+      buttons[i].disabled = is_disable;
+  }
+}
+
+function addStickerToMessage(sticker,msg){
+  const divWithLabel = ` <div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+  <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${sticker}</div>
+  <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
+  </div>`
+  return divWithLabel;
 }
 
 function appendMessage2(message2) {
