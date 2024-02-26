@@ -3319,6 +3319,18 @@ loadExternalModule().then(() => {
   deepChatPocElement2 = document.getElementsByClassName("deep-chat-poc2")?.[0];
   deepChatPocElement2.innerHTML = `
   <div class="chat-wrapper2">
+    <div
+      onclick="closeFromTop2()"
+      id="backdrop"
+      style="
+      display: none;
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: black;
+      opacity: 0.8;
+      z-index: 998;
+      "
+    ></div>
     <button
       type="button"
       onclick="openChatContainer2()"
@@ -6235,6 +6247,9 @@ loadExternalModule().then(() => {
 const openChatContainer2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+  let backdrop = document.getElementById("backdrop")
+  backdrop.style.display = "block"
+  document.body.style.overflowY = "hidden";
 
   user2 = window.user;
   console.log(user2);
@@ -6303,6 +6318,8 @@ const openChatContainer2 = () => {
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
+    document.body.style.overflowY = "scroll";
+    backdrop.style.display = "none"
   } else {
     chatContainer2.style.scale = 1;
     chatContainer2.style["transform-origin"] = "100% 50%";
@@ -6318,6 +6335,9 @@ const openChatContainer2 = () => {
       const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
       chatIcon.src =
         "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+
+        const backdrop2 = document.getElementById("backdrop2")
+        backdrop2.style.display ="none";
     }
   }
 
@@ -6336,7 +6356,9 @@ const openChatContainer2 = () => {
 const closeFromTop2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
-
+  document.body.style.overflowY = "scroll";
+  let backdrop = document.getElementById("backdrop")
+  backdrop.style.display = "none"
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
 
