@@ -126,6 +126,7 @@ let isIDPDiscussionOpted = false;
 let botIntakeQna = {};
 let isIntakeSummaryDisplayed = false;
 let isIntakeClicked = false;
+let IntakeUid = '';
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -945,11 +946,11 @@ const handleFitmentAnalysis = async () => {
       const que_msg = document.createElement("div");
       let score_result_statement;
       if(data.score === 1 || data.score === 0){
-        score_result_statement = "The current score indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
+        score_result_statement = "The analysis indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
       } else if (data.score === 2){
-        score_result_statement = "The current score suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
+        score_result_statement = "The analysis suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
       } else if (data.score === 3){
-        score_result_statement = "The score reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
+        score_result_statement = "The analysis reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
       }
 
       que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
@@ -1221,10 +1222,11 @@ async function handleFaqButtonClick(question) {
     // something_else => begin_session
     if (question == "something_else" ) {
       // appendMessage2('Please ask your question in chat box')
-      if (isAskingInitialQuestions) {
-        console.log("===> yes asking initial questions")
+      if (optedBeginSession) {
+        console.log("===> yes optedBeginSession")
         return;
       }
+      optedBeginSession = true
 
       
       let intakeSummery;
@@ -1249,15 +1251,17 @@ async function handleFaqButtonClick(question) {
         )
         const respJson = await resp.json()
         console.log(" response_initial_qna : ", respJson);
-        intakeSummery = respJson.intake_summary 
+        intakeSummery = respJson.intake_summary
+        IntakeUid = respJson.intake_id 
         if (!intakeSummery){
         appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
+        optedBeginSession = false
         return;
         }
       }
 
       console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
-      if( isIntakeSummaryDisplayed == false && ["avatar_bot","helper_bot"].includes(botType)){
+      if( (isIntakeSummaryDisplayed == false) && ["avatar_bot","helper_bot"].includes(botType)){
         
         appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
         isIntakeSummaryDisplayed = true
@@ -4468,6 +4472,7 @@ loadExternalModule().then(() => {
             }
 
             if (isSessionActiveStt == false && isBotInitialized == false) {
+              console.log("intakeUid",IntakeUid)
               try {
                 const response = await fetch(
                   `${baseURL2}/test-attempt-sessions/`,
@@ -4486,6 +4491,7 @@ loadExternalModule().then(() => {
                       test_id: botId,
                       is_signature_bot: true,
                       is_idp_discussion_opted: isIDPDiscussionOpted,
+                      intake_id : IntakeUid
                     }),
                   }
                 );
