@@ -87,7 +87,7 @@ const NetworkNav = ({ user }: any) => {
             router.push("/create-scenario");
           }}
         >
-          Open Simulations
+          Quick Learn
         </Button>
         {/* <TooltipWrapper
           className="w-60 text-xs"
@@ -176,7 +176,7 @@ const NetworkNav = ({ user }: any) => {
                 }}
               >
                 {" "}
-                Open Simulations
+                Quick Learn
               </div>
             </DropdownMenuItem>
 

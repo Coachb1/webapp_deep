@@ -2,12 +2,13 @@
 
 import CopyToClipboard from "@/components/CopyToClipboard";
 import NetworkNav from "@/components/NetworkNav";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { TabsList } from "@radix-ui/react-tabs";
-import { Link2, Loader, Search } from "lucide-react";
+import { Info, Link2, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -93,77 +94,74 @@ const CreateOwn = ({ user }: any) => {
       //     const video = data.items[0];
 
       //     console.log(video.snippet.description, video.snippet.title);
-      //     const url: any = new URL(
-      //       `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
-      //     );
-      //     const params = new URLSearchParams();
-      //     params.set("mode", "A");
-      //     params.set(
-      //       "information",
-      //       JSON.stringify({
-      //         data: {
-      //           information:
-      //             video.snippet.description.length > 0
-      //               ? video.snippet.description
-      //               : video.snippet.title,
-      //         },
-      //         title: video.snippet.title,
-      //       })
-      //     );
-      //     params.set("url", "");
-      //     params.set("access_token", basicAuth);
-      //     params.set("creator_user_id", userId);
-      //     url.search = params;
-
-      //     console.log(url);
-      //     fetch(url, {
-      //       method: "POST",
-      //       headers: {
-      //         Authorization: basicAuth,
-      //         "Content-Type": "application/json",
-      //       },
-      //     })
-      //       .then((response) => response.json())
-      //       .then((data) => {
-      //         console.log("Result DATA", data);
-      //         setGeneratedData(data);
-      //         setGenerateLoading(false);
-      //         if (data[0].message || data[1].message) {
-      //           setGenerationError(true);
-      //         }
-      //       })
-      //       .catch((err) => {
-      //         console.error(err);
-      //         setGenerationError(true);
-      //         toast.error("Error generating your scenario");
-      //       });
-      //   });
-
-      //GENERATE SIMULATION BASED ON SUMMARY
-      fetch(
-        `${baseURL}/tests/create-test-from-links/?url=${video_link}&creator_user_id=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
+      const url: any = new URL(
+        `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+      );
+      const params = new URLSearchParams();
+      params.set("mode", "A");
+      params.set(
+        "information",
+        JSON.stringify({
+          data: {
+            information: generatedSummary,
           },
-        }
-      )
-        .then((res) => res.json())
+          title: video_title,
+        })
+      );
+      params.set("url", "");
+      params.set("access_token", basicAuth);
+      params.set("creator_user_id", userId);
+      url.search = params;
+
+      console.log(url);
+      fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
         .then((data) => {
-          console.log("Result DATA:", data);
+          console.log("Result DATA", data);
           setGeneratedData(data);
           setGenerateLoading(false);
           if (data[0].message || data[1].message) {
             setGenerationError(true);
           }
-          setGenerateLoading(false);
         })
         .catch((err) => {
+          console.error(err);
           setGenerationError(true);
           toast.error("Error generating your scenario");
-          setGenerateLoading(false);
         });
+      // });
+
+      // //GENERATE SIMULATION BASED ON SUMMARY
+      // fetch(
+      //   `${baseURL}/tests/create-test-from-links/?url=${video_link}&creator_user_id=${userId}`,
+      //   {
+      //     method: "GET",
+      //     headers: {
+      //       Authorization: basicAuth,
+      //     },
+      //   }
+      // )
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     console.log("Result DATA:", data);
+      //     setGeneratedData(data);
+      //     setGenerateLoading(false);
+      //     if (data[0].message || data[1].message) {
+      //       setGenerationError(true);
+      //     }
+      //     setGenerateLoading(false);
+      //   })
+      //   .catch((err) => {
+      //     setGenerationError(true);
+      //     toast.error("Error generating your scenario");
+      //     setGenerateLoading(false);
+      //   });
     };
 
     const generateYoutubeSummary = (choice: string) => {
@@ -184,17 +182,22 @@ const CreateOwn = ({ user }: any) => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          setGeneratedSummary(data.summary);
-          setGeneratedData([]);
+          if (!data.detail) {
+            console.log(data);
+            setGeneratedSummary(data.summary);
+            setGeneratedData([]);
 
-          if (choice === "long") {
-            setExpanded(true);
-            setExpandLoading(false);
-          } else if (choice === "short") {
-            setExpanded(false);
-            setSummaryGenerationLoading(false);
+            if (choice === "long") {
+              setExpanded(true);
+              setExpandLoading(false);
+            } else if (choice === "short") {
+              setExpanded(false);
+              // setSummaryGenerationLoading(false);
+            }
+          } else {
+            toast.error("Error generating your summary, Please try again");
           }
+          setSummaryGenerationLoading(false);
         })
         .catch((err) => {
           console.error(err);
@@ -221,49 +224,65 @@ const CreateOwn = ({ user }: any) => {
               <b className="my-1">{video_title}</b>
               <p className="text-xs my-1">{video_description}</p>
             </div>
-            <div className="self-end w-full  flex flex-row max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
-              <Button
-                disabled={
-                  generatedLoading || summaryGenerationLoading || expandLoading
-                }
-                variant="secondary"
-                className="h-8 border border-gray-200 max-sm:w-full"
-                onClick={() => {
-                  generatedSenarioHandlerYoutube();
-                  toast.info(
-                    "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
-                    { duration: 8000 }
-                  );
-                }}
-              >
-                {generatedLoading ? (
-                  <>
-                    {" "}
-                    <Loader className="animate-spin h-4 w-4 mr-2" /> Generating
-                  </>
-                ) : (
-                  <>Generate Simulation</>
-                )}
-              </Button>
-              <Button
-                disabled={
-                  generatedLoading || summaryGenerationLoading || expandLoading
-                }
-                variant="secondary"
-                className="h-8 border border-gray-200 max-sm:w-full"
-                onClick={() => {
-                  generateYoutubeSummary("short");
-                }}
-              >
-                {summaryGenerationLoading ? (
-                  <>
-                    {" "}
-                    <Loader className="animate-spin h-4 w-4 mr-2" /> Generating
-                  </>
-                ) : (
-                  <>Generate Summary</>
-                )}
-              </Button>
+            <div className="self-end w-full  flex flex-col max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
+              <div className="flex flex-row max-sm:flex-col max-sm:w-full gap-2 self-end w-fit">
+                <Button
+                  disabled={
+                    generatedLoading ||
+                    summaryGenerationLoading ||
+                    expandLoading
+                  }
+                  variant="secondary"
+                  className="h-8 border border-gray-200 max-sm:w-full"
+                  onClick={() => {
+                    generateYoutubeSummary("short");
+                  }}
+                >
+                  {summaryGenerationLoading ? (
+                    <>
+                      {" "}
+                      <Loader className="animate-spin h-4 w-4 mr-2" />{" "}
+                      Generating
+                    </>
+                  ) : (
+                    <>Generate Summary</>
+                  )}
+                </Button>
+                <div className="flex flex-row items-center justify-center max-sm:flex-col  gap-2">
+                  <Button
+                    disabled={!generatedSummary}
+                    variant="secondary"
+                    className={`h-8 border   border-gray-200 max-sm:w-full ${
+                      generatedSummary.length > 0
+                        ? "bg-green-400 hover:bg-green-300 text-white font-semibold"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      console.log("hello");
+                      generatedSenarioHandlerYoutube();
+                      toast.info(
+                        "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
+                        { duration: 8000 }
+                      );
+                    }}
+                  >
+                    {generatedLoading ? (
+                      <>
+                        {" "}
+                        <Loader className="animate-spin h-4 w-4 mr-2" />{" "}
+                        Generating
+                      </>
+                    ) : (
+                      <>Generate Simulation</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+              {!generatedSummary && (
+                <p className="text-xs self-end max-sm:self-center w-fit mt-0">
+                  Simulations can be generated after you generate the summary!
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -202,6 +202,35 @@ const MyLibrary = ({ user }: any) => {
     }
   };
 
+  const getAttemptedTestsList = () => {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(
+            `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data, "getAttemptedTestsList");
+              setAttemptedTests(data.data.codes);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  };
+
   const CreateYourOwnGeneratedHandler = () => {
     getRequestedTests();
   };
@@ -264,6 +293,7 @@ const MyLibrary = ({ user }: any) => {
       getTestsByCompetencies();
       getRequestedTests();
       getNewManagerTests();
+      getAttemptedTestsList();
 
       fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",
@@ -489,13 +519,13 @@ const MyLibrary = ({ user }: any) => {
                   Create New Simulation
                 </Button>
               </div>
-              {/* <div className="my-0 py-0 text-xs flex flex-row items-center">
+              <div className="my-0 py-0 text-xs flex flex-row items-center">
                 <Info
                   color="#9ca3af"
                   className="h-4 w-4 inline text-gray-600 mr-2"
                 />{" "}
                 <span> Grayed bars indicate already attempted simulations</span>
-              </div> */}
+              </div>
               <hr className=" bg-gray-500 w-full" />
             </div>
             <div
