@@ -89,7 +89,7 @@ const NetworkNav = ({ user }: any) => {
         >
           Open Simulations
         </Button>
-        <TooltipWrapper
+        {/* <TooltipWrapper
           className="w-60 text-xs"
           tooltipName="Individual development Plan Intake (Login required)"
           body={
@@ -111,7 +111,7 @@ const NetworkNav = ({ user }: any) => {
               </Button>
             </div>
           }
-        />{" "}
+        />{" "} */}
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
@@ -180,7 +180,7 @@ const NetworkNav = ({ user }: any) => {
               </div>
             </DropdownMenuItem>
 
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <TooltipWrapper
                 className="w-60 text-xs"
                 tooltipName="Individual development Plan Intake (Login required)"
@@ -201,7 +201,7 @@ const NetworkNav = ({ user }: any) => {
                   </div>
                 }
               />
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

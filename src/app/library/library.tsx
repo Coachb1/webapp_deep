@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, History, Loader } from "lucide-react";
+import { ChevronLeft, History, Info, Loader } from "lucide-react";
 import Link from "next/link";
 import {
   JSXElementConstructor,
@@ -123,77 +123,83 @@ const MyLibrary = ({ user }: any) => {
   const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
   const [filteredCategorisedTests, setFilteredCategorisedTests] = useState({});
 
+  const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
+
   const getTestsByCompetencies = () => {
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        fetch(
-          `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
-          {
+    if (user) {
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(
+            `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data[0]);
+              const user_competencies = Object.values(data[0]).join(", ");
+              console.log(user_competencies);
+              fetch(
+                `${baseURL}/tests/get-tests-by-competency/?competencies=${user_competencies.replace(
+                  /"/g,
+                  ""
+                )}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                }
+              )
+                .then((response) => response.json())
+                .then((data: { [key: string]: TestsType[] }) => {
+                  console.log("GET TESTS BY COMPETENCIES : ", data);
+                  const convertedCompetencyTests = Object.entries(data).map(
+                    ([skill, tests]) => ({ skill, tests })
+                  );
+
+                  setCompetencyBasedPowerSkillsTests(convertedCompetencyTests);
+                })
+                .then((err) => {
+                  console.error(err);
+                });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        });
+    }
+  };
+
+  const getRequestedTests = () => {
+    if (user) {
+      setRequestedScenariosLoading(true);
+      getUserAccount(user)
+        .then((res) => res.json())
+        .then((data) => {
+          fetch(`${baseURL}/tests/get-requested-tests/?user_id=${data.uid}`, {
             method: "GET",
             headers: {
               Authorization: basicAuth,
             },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data[0]);
-            const user_competencies = Object.values(data[0]).join(", ");
-            console.log(user_competencies);
-            fetch(
-              `${baseURL}/tests/get-tests-by-competency/?competencies=${user_competencies.replace(
-                /"/g,
-                ""
-              )}`,
-              {
-                method: "GET",
-                headers: {
-                  Authorization: basicAuth,
-                },
-              }
-            )
-              .then((response) => response.json())
-              .then((data: { [key: string]: TestsType[] }) => {
-                console.log("GET TESTS BY COMPETENCIES : ", data);
-                const convertedCompetencyTests = Object.entries(data).map(
-                  ([skill, tests]) => ({ skill, tests })
-                );
-
-                setCompetencyBasedPowerSkillsTests(convertedCompetencyTests);
-              })
-              .then((err) => {
-                console.error(err);
-              });
           })
-          .catch((err) => {
-            console.error(err);
-          });
-      });
-  };
-
-  const getRequestedTests = () => {
-    setRequestedScenariosLoading(true);
-    getUserAccount(user)
-      .then((res) => res.json())
-      .then((data) => {
-        fetch(`${baseURL}/tests/get-requested-tests/?user_id=${data.uid}`, {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            setRequestedScenarios(data);
-            setRequestedScenariosLoading(false);
-          })
-          .catch((err) => {
-            console.error(err);
-            setRequestedScenariosLoading(false);
-          });
-      });
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setRequestedScenarios(data);
+              setRequestedScenariosLoading(false);
+            })
+            .catch((err) => {
+              console.error(err);
+              setRequestedScenariosLoading(false);
+            });
+        });
+    }
   };
 
   const CreateYourOwnGeneratedHandler = () => {
@@ -418,7 +424,7 @@ const MyLibrary = ({ user }: any) => {
                   <span> My Library</span>
                 </p>
               </div>
-              <div className="flex max-sm:px-4 justify-center flex-row z-50 gap-2 max-sm:text-xs flex-wrap">
+              <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
                 <Button
                   variant={"outline"}
                   className={`h-8 max-sm:text-sm`}
@@ -483,11 +489,18 @@ const MyLibrary = ({ user }: any) => {
                   Create New Simulation
                 </Button>
               </div>
-              <hr className="mt-4 bg-gray-500 w-full" />
+              {/* <div className="my-0 py-0 text-xs flex flex-row items-center">
+                <Info
+                  color="#9ca3af"
+                  className="h-4 w-4 inline text-gray-600 mr-2"
+                />{" "}
+                <span> Grayed bars indicate already attempted simulations</span>
+              </div> */}
+              <hr className=" bg-gray-500 w-full" />
             </div>
             <div
               id="eq-tests"
-              className="pt-[30vh]  mt-[-30vh] max-sm:pt-[35vh]  w-full flex flex-col items-center justify-center"
+              className="pt-[30vh] mt-[-30vh] max-sm:pt-[40vh] max-sm:mt-[-40vh]   w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
@@ -503,7 +516,7 @@ const MyLibrary = ({ user }: any) => {
                           id={category.category_name}
                           className="w-full flex flex-col items-center justify-center"
                         >
-                          <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
+                          <h1 className="text-4xl pt-2 max-sm:text-xl text-gray-600 font-semibold">
                             {convertTextToCorrectFormat(category.category_name)}
                           </h1>
 
@@ -520,7 +533,7 @@ const MyLibrary = ({ user }: any) => {
                                     >
                                       <Badge
                                         variant={"default"}
-                                        className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                        className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                       >
                                         <>✨ {domains.domain}</>
                                       </Badge>
@@ -530,11 +543,11 @@ const MyLibrary = ({ user }: any) => {
                                       <div className="relative isolate mx-auto">
                                         <div>
                                           <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                            <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                            <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                               <Accordion
                                                 type="single"
                                                 collapsible
-                                                className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                                className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                               >
                                                 {domains.tests.map(
                                                   (
@@ -546,12 +559,18 @@ const MyLibrary = ({ user }: any) => {
                                                       value={`item-${
                                                         Number(i) + 1
                                                       }`}
-                                                      className={
+                                                      className={`${
                                                         i ===
                                                         domains.tests.length - 1
                                                           ? "border-none"
                                                           : "border-b"
-                                                      }
+                                                      } ${
+                                                        attemptedTests.includes(
+                                                          test.test_code
+                                                        )
+                                                          ? "bg-gray-200"
+                                                          : ""
+                                                      } px-4`}
                                                     >
                                                       <AccordionTrigger className="text-left max-sm:text-xs">
                                                         <div>{test.title}</div>
@@ -606,7 +625,7 @@ const MyLibrary = ({ user }: any) => {
                               <div className={`w-full flex justify-center`}>
                                 <Badge
                                   variant={"default"}
-                                  className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                  className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                 >
                                   <>✨ {skills.skill}</>
                                 </Badge>
@@ -616,24 +635,32 @@ const MyLibrary = ({ user }: any) => {
                                 <div className="relative isolate mx-auto">
                                   <div>
                                     <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                      <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                         <Accordion
                                           type="single"
                                           collapsible
-                                          className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                          className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                         >
                                           {skills.tests.length > 0 &&
                                             skills.tests.map((test, i) => (
                                               <>
                                                 <AccordionItem
                                                   key={i}
-                                                  value={`item-${i + 1}`}
-                                                  className={
+                                                  value={`item-${
+                                                    Number(i) + 1
+                                                  }`}
+                                                  className={`${
                                                     i ===
                                                     skills.tests.length - 1
                                                       ? "border-none"
                                                       : "border-b"
-                                                  }
+                                                  } ${
+                                                    attemptedTests.includes(
+                                                      test.test_code
+                                                    )
+                                                      ? "bg-gray-200"
+                                                      : ""
+                                                  } px-4`}
                                                 >
                                                   <AccordionTrigger className="text-left max-sm:text-xs">
                                                     <div>{test.title}</div>
@@ -724,7 +751,7 @@ const MyLibrary = ({ user }: any) => {
                                 <div className={`w-full flex justify-center`}>
                                   <Badge
                                     variant={"default"}
-                                    className="bg-[#8693d5] h-6 w-fit text-white text-lg py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-xs truncate "
+                                    className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                   >
                                     <>✨ {domains.domain}</>
                                   </Badge>
@@ -734,11 +761,11 @@ const MyLibrary = ({ user }: any) => {
                                   <div className="relative isolate mx-auto">
                                     <div>
                                       <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                                        <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                           <Accordion
                                             type="single"
                                             collapsible
-                                            className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                            className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                           >
                                             {domains.tests.map(
                                               (
@@ -766,12 +793,18 @@ const MyLibrary = ({ user }: any) => {
                                                   value={`item-${
                                                     Number(i) + 1
                                                   }`}
-                                                  className={
+                                                  className={`${
                                                     i ===
                                                     domains.tests.length - 1
                                                       ? "border-none"
                                                       : "border-b"
-                                                  }
+                                                  } ${
+                                                    attemptedTests.includes(
+                                                      test.test_code
+                                                    )
+                                                      ? "bg-gray-200"
+                                                      : ""
+                                                  } px-4`}
                                                 >
                                                   <AccordionTrigger className="text-left max-sm:text-xs">
                                                     <div>
@@ -843,7 +876,7 @@ const MyLibrary = ({ user }: any) => {
                     Requested Scenarios
                   </h1>
                   {requestedScenariosLoading ? (
-                    <div className="bg-gray-100 my-16  grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
+                    <div className="bg-gray-100 my-16 grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
                       <p className="p-2 text-sm max-sm:text-xs">
                         {" "}
                         <Loader className="animate-spin inline h-4 w-4 mr-2" />
@@ -855,24 +888,30 @@ const MyLibrary = ({ user }: any) => {
                       <div className="w-full">
                         <div className="relative isolate mx-auto">
                           <div>
-                            <div className="mx-auto w-full mt-10 max-sm:w-[100%] z-50">
-                              <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                            <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
+                              <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                 {requestedScenarios.length > 0 ? (
                                   <Accordion
                                     type="single"
                                     collapsible
-                                    className="w-full text-gray-500 max-sm:p-4 bg-white px-4"
+                                    className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                   >
                                     {requestedScenarios.map((test, i) => (
                                       <>
                                         <AccordionItem
                                           key={i}
                                           value={`item-${i + 1}`}
-                                          className={
-                                            i === tests.length - 1
+                                          className={`${
+                                            i === requestedScenarios.length - 1
                                               ? "border-none"
                                               : "border-b"
-                                          }
+                                          } ${
+                                            attemptedTests.includes(
+                                              test.test_code
+                                            )
+                                              ? "bg-gray-200"
+                                              : ""
+                                          } px-4`}
                                         >
                                           <AccordionTrigger className="text-left max-sm:text-xs">
                                             <div>{test.title}</div>
