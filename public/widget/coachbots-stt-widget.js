@@ -3382,19 +3382,27 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 0 0;
       margin-bottom: 0.4rem;
     ">
+
     <h1 style="
-      color : white;
-      background-color: #2DC092;
-      border: 2px solid #2DC092;
-      font-size: 1rem;
-      font-weight: bold;
-      margin-top : 12px;
-      margin-left : 4px;
-      margin-bottom: 0.5rem;
-      width: fit-content;
-      padding: 0 8px;
+      margin : 8px;
+      color : #2DC092;
+      border : 2px solid #2DC092;
+      padding : 3px;
+      font-size : 16px;
+      line-height : 20px;
+      font-weight : 800;
     ">
-      C
+      <span style="
+        background-color : #2DC092;
+        color : white;
+        font-size : 14px;
+        font-weight : 700;
+        margin-right : 4px;
+        padding : 4px;
+      ">
+        COACH
+      </span>
+      BOTS
     </h1>
    
     <div 
@@ -3411,12 +3419,7 @@ loadExternalModule().then(() => {
         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
       </svg>
     </div>
-    <h3 id="chatbot-heading2" style="
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 16px;
-      margin-left: 8px;
-    ">Welcome to the Coachbots simulator.</h1>
+    
     </div>
     <deep-chat
       id="chat-element2"
