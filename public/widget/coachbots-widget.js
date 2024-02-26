@@ -1848,6 +1848,18 @@ loadExternalModule().then(() => {
   deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
+      <div
+      onclick="closeFromTop()"
+      id="backdrop2"
+      style="
+      display: none;
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: black;
+      opacity: 0.8;
+      z-index: 998;
+      "
+    ></div>
     <button
       type="button"
       onclick="openChatContainer()"
@@ -1870,7 +1882,7 @@ loadExternalModule().then(() => {
         border-right-width: 0px;
         border-bottom-width: 0px;
         border-left-width: 0px;
-        z-index: 4;
+        z-index: 999;
       "
     >
       <img
@@ -4745,6 +4757,10 @@ const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
 
+  let backdrop2 = document.getElementById("backdrop2")
+  backdrop2.style.display = "block"
+  document.body.style.overflowY = "hidden";
+
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   const sendBtn = chatE.shadowRoot.querySelector(".input-button");
@@ -4892,6 +4908,8 @@ const openChatContainer = () => {
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
     chatContainer.style["transform-origin"] = "0% 100%";
+    document.body.style.overflowY = "scroll";
+    backdrop2.style.display = "none"
   } else {
     chatContainer.style.scale = 1;
     chatContainer.style["transform-origin"] = "100% 0%";
@@ -4900,6 +4918,8 @@ const openChatContainer = () => {
     const chatContainer2 = document.getElementById("chat-container2");
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
+    const backdrop = document.getElementById("backdrop")
+    backdrop.style.display ="none";
 
     const chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
     chatIcon2.src =
@@ -4921,7 +4941,9 @@ const openChatContainer = () => {
 const closeFromTop = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-
+  document.body.style.overflowY = "scroll";
+  let backdrop2 = document.getElementById("backdrop2")
+  backdrop2.style.display = "none"
   chatContainer.style.scale = 0;
   chatContainer.style["transform-origin"] = "0% 100%";
 
