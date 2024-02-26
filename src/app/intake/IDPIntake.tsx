@@ -122,16 +122,16 @@ const IDPIntake = ({ user }: any) => {
       .then((data) => {
         console.log(data);
         if (data.msg.includes("error")) {
-          toast.error("Error while generating your IDP, Please try again!");
-          setOpenDialog(false);
+          // toast.error("Error while generating your IDP, Please try again!");
+          // setOpenDialog(false);
         } else {
           resetAllStates();
           setReportUrl(data.report);
         }
       })
       .catch((err) => {
-        toast.error("Error while generating your IDP, Please try again!");
-        setSubmitLoading(false);
+        // toast.error("Error while generating your IDP, Please try again!");
+        // setSubmitLoading(false);
         console.error(err);
       });
   };
