@@ -422,7 +422,7 @@ const Coaches = ({ user }: any) => {
                 ),
             newValues
           );
-          console.log(filteredData, "Feedback Only");
+          console.log(filteredData, "feedback-only");
           setCoachesData(filteredData);
         } else {
           const filteredData = filterData(
@@ -813,7 +813,7 @@ const Coaches = ({ user }: any) => {
                               </Link>
                             </div>
                           )}
-                        {/* {coach.feedback_wall !== null &&
+                        {coach.feedback_wall !== null &&
                           coach.feedback_wall !== "" && (
                             <div className="w-full">
                               <Link href={coach.feedback_wall}>
@@ -821,11 +821,11 @@ const Coaches = ({ user }: any) => {
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
                                 >
-                                  Feedback Wall
+                                  Feedback Page
                                 </Button>
                               </Link>
                             </div>
-                          )} */}
+                          )}
                       </div>
                     </div>
                   </div>

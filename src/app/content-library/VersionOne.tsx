@@ -275,14 +275,14 @@ const VersionOne = ({ user }: any) => {
                 Presentation
               </Button>
             </Link>
-            <Link href={"#immersive"}>
+            {/* <Link href={"#immersive"}>
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer"
               >
                 Immersive
               </Button>
-            </Link>
+            </Link> */}
             <Link href={"#onboarding"}>
               <Button
                 variant={"secondary"}
@@ -449,13 +449,13 @@ const VersionOne = ({ user }: any) => {
               tests={presentation}
             />
           </div>
-          <div id="immersive">
+          {/* <div id="immersive">
             <HeroAccordion
               badgeText="Immersive "
               user={user ? true : false}
               tests={immersive}
             />
-          </div>
+          </div> */}
           <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
