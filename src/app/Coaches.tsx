@@ -14,7 +14,21 @@ import {
   getUserAccount,
   hideBots,
 } from "@/lib/utils";
-import { ChevronDown, Loader, Search } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from "@/components/ui/pagination";
+
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Loader,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -103,6 +117,23 @@ const Coaches = ({ user }: any) => {
   const [clientDepartments, setClientDepartments] = useState<string[] | null>(
     null
   );
+
+  //pagination logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const indexOfLastCoach = currentPage * itemsPerPage;
+  const indexOfFirstCoach = indexOfLastCoach - itemsPerPage;
+  const currentCoachesData = coachesData.slice(
+    indexOfFirstCoach,
+    indexOfLastCoach
+  );
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+  const totalPages = Math.ceil(coachesData.length / itemsPerPage);
+  const maxPaginationLinks = 5;
 
   const getClientInfoForUser = (userEmail: string) => {
     fetch(
@@ -714,7 +745,7 @@ const Coaches = ({ user }: any) => {
 
             {!loading &&
               coachesData.length > 0 &&
-              coachesData.map((coach, i) => (
+              currentCoachesData.map((coach, i) => (
                 <div id={coach.profile_id} className="pt-20 mt-[-5rem] -z-10">
                   <div
                     className={`w-full my-3 flex flex-row p-4 max-sm:p-2 ${
@@ -829,11 +860,71 @@ const Coaches = ({ user }: any) => {
                       </div>
                     </div>
                   </div>
-                  {/* {coachesData.length !== i + 1 && (
-                    <Separator className="my-2 max-sm:my-1.5 bg-gray-300" />
-                  )} */}
                 </div>
               ))}
+            {coachesData.length > 10 && (
+              <Pagination className="my-10 max-sm:text-xs">
+                <PaginationContent>
+                  <PaginationItem>
+                    <Button
+                      variant={"link"}
+                      disabled={currentPage === 1}
+                      onClick={() => paginate(currentPage - 1)}
+                      className="max-sm:text-xs"
+                    >
+                      {" "}
+                      <ChevronLeft className="mr-2 h-4 w-4" /> Previous{" "}
+                    </Button>
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }).map((_, index) => {
+                    if (
+                      (index < maxPaginationLinks &&
+                        currentPage <= maxPaginationLinks - 3) ||
+                      (index >= currentPage - 2 && index <= currentPage + 2) ||
+                      (index > totalPages - maxPaginationLinks &&
+                        currentPage >= totalPages - maxPaginationLinks + 2)
+                    ) {
+                      return (
+                        <PaginationItem
+                          className="hover:cursor-pointer max-sm:text-xs px-0 w-fit"
+                          key={index}
+                        >
+                          <PaginationLink
+                            // href="#"
+                            isActive={currentPage === index + 1}
+                            onClick={() => paginate(index + 1)}
+                            className="max-sm:text-xs max-sm:px-2 max-sm:w-fit"
+                          >
+                            {index + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (
+                      // (index === maxPaginationLinks - 3 &&
+                      //   currentPage > maxPaginationLinks - 3) ||
+                      (index === 1 && currentPage > 4 && totalPages > 5) ||
+                      (index === totalPages - 2 &&
+                        currentPage < totalPages - 3 &&
+                        totalPages > 5)
+                    ) {
+                      return <PaginationEllipsis key={index} />;
+                    }
+                    return null;
+                  })}
+                  <PaginationItem>
+                    <Button
+                      variant={"link"}
+                      disabled={currentPage === totalPages}
+                      onClick={() => paginate(currentPage + 1)}
+                      className="max-sm:text-xs"
+                    >
+                      {" "}
+                      Next <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
             {!loading && coachesData.length === 0 && (
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">

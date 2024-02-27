@@ -198,7 +198,6 @@ export function hasPassed48Hours(inputDate: string) {
 }
 
 export function convertTextToCorrectFormat(text: string) {
-  console.log(text)
   return text
     .replace(/_/g, " ") // Replace underscores with spaces
     .split(/\s+/)
