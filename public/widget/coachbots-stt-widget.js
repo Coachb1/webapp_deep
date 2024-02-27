@@ -793,26 +793,61 @@ const getBotDetails2 = async (botId) => {
     if (botDetails.data.faqs) {
       let faqs = Object.keys(botDetails.data.faqs);
       if (faqs.length > 0) {
-        faqs.forEach((title) => {
-          faqButtonsGenerator(title, title);
-        });
+        // faqs.forEach((title) => {
+        //   faqButtonsGenerator(title, title);
+        // });
+        faqButtonsGenerator("know_your_coach", "Know your coach")
       }
     }
 
     // faqButtonsGenerator("recommendations", "Recommendations");
+    
+
+    if( botType === "avatar_bot" || botType === 'helper_bot'){
+      faqButtonsGenerator("intake", "Intake");
+    }
+
     if (
       botDetails.data.fitment_qna &&
       botDetails.data.is_fitment_analysis &&
       botDetails.data.coaching_for_fitment === "anyone"
     ) {
-      faqButtonsGenerator("fitness_analysis", "Quick Match");
-      
+      // faqButtonsGenerator("fitness_analysis", "Quick Match");
+      const button = document.createElement("button");
+      button.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #f97316; color : white; `
+      );
+      button.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#fb923c'"
+      );
+      button.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = '#f97316'"
+      );
+      button.setAttribute("onclick", `handleFaqButtonClick('fitness_analysis')`);
+      button.innerText = "Quick Match";
+      buttonsWrapper.appendChild(button);
     }
 
-    if( botType === "avatar_bot" || botType === 'helper_bot'){
-      faqButtonsGenerator("intake", "Intake");
-    }
-    faqButtonsGenerator("something_else", "Begin session");
+    const begginSessionButton = document.createElement("button");
+    begginSessionButton.setAttribute(
+      "style",
+      `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #22c55e; color: white;`
+    );
+    begginSessionButton.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#4ade80'"
+    );
+    begginSessionButton.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#22c55e'"
+    );
+    begginSessionButton.setAttribute("onclick", `handleFaqButtonClick('something_else')`);
+    begginSessionButton.innerText = "Begin session";
+    buttonsWrapper.appendChild(begginSessionButton);
+    // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
     console.log("buttons : ", buttons);
 
@@ -1212,7 +1247,7 @@ async function handleFaqButtonClick(question) {
 
               appendMessage2(`
                 <div style="display: flex; flex-direction: column;">
-                  <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+                  <div style="font-size : 12px; font-weight: bold; background-color : #f97316; color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
                   <div style="margin-top : 8px; padding-top: 0px;">${formRadio}</div>
                 </div>
               `)
@@ -1254,7 +1289,11 @@ async function handleFaqButtonClick(question) {
         intakeSummery = respJson.intake_summary
         IntakeUid = respJson.intake_id 
         if (!intakeSummery){
-        appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
+          const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+          <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
+          <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`
+          appendMessage2(begginSessionMessage)
+        // appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
         optedBeginSession = false
         return;
         }
@@ -1262,8 +1301,13 @@ async function handleFaqButtonClick(question) {
 
       console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
       if( (isIntakeSummaryDisplayed == false) && ["avatar_bot","helper_bot"].includes(botType)){
-        
-        appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
+        const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+        <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
+        <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`
+        appendMessage2(begginSessionMessage)
+
+        // appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
+
         isIntakeSummaryDisplayed = true
         // return;
       }
@@ -1418,13 +1462,29 @@ async function handleFaqButtonClick(question) {
       recommendationClicked = true;
       return;
     }
-    console.log(globalBotDetails.data.faqs[question])
-    appendMessage2(`
-      <div style="display: flex; flex-direction: column;">
-        <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${question}</div>
-        <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[question]}</p>
-      </div>
-    `)
+    if(question === "know_your_coach"){
+      let KnowYourCoachMessage = "";
+      for (const key in globalBotDetails.data.faqs) {
+        if (globalBotDetails.data.faqs.hasOwnProperty(key)) {
+        const template = `
+          <div style="display: flex; flex-direction: column;">
+            <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${key}</div>
+            <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[key]}</p>
+          </div>
+        `;
+          KnowYourCoachMessage += template
+        }
+      }
+      console.log(KnowYourCoachMessage)
+      appendMessage2(`${KnowYourCoachMessage}`)
+    }
+    // console.log(globalBotDetails.data.faqs[question])
+    // appendMessage2(`
+      // <div style="display: flex; flex-direction: column;">
+      //   <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${question}</div>
+      //   <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[question]}</p>
+      // </div>
+    // `)
     // appendMessage2(globalBotDetails.data.faqs[question]);
     // appendMessage2(faqHtmlData)
   }
@@ -1862,7 +1922,7 @@ function disableOrEnableButtons(id, is_disable = true) {
 }
 
 function addStickerToMessage(sticker,msg){
-  const divWithLabel = ` <div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+  const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
   <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`
@@ -4618,7 +4678,7 @@ loadExternalModule().then(() => {
               setTimeout(() => {
                 if ( botType === "avatar_bot" )
                 appendMessage2(
-                  `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndConversation()">End Session</button>`
+                  `<button style="width: fit-content; padding: 6px 12px; border-radius: 4px; border: none; background: #ff7272; color: white;font-weight : 700;" onclick="handleEndConversation()">End Session</button>`
                 );
               }, 200);
             }
