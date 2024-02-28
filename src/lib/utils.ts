@@ -164,7 +164,10 @@ export const getUserAccount = (user: any) => {
 
 export function findCoacheeUID(profiles: any) {
   for (let i = 0; i < profiles.length; i++) {
-    if (profiles[i].profile_type === "coachee") {
+    if (
+      profiles[i].profile_type === "coachee" ||
+      profiles[i].profile_type === "mentee"
+    ) {
       return profiles[i].uid;
     }
   }
@@ -179,7 +182,14 @@ export function findCoachUID(profiles: any) {
   }
   return "";
 }
-
+export function getBotById(botId: string, jsonData: any) {
+  for (const item of jsonData) {
+    if (item.signature_bot && item.signature_bot.bot_id === botId) {
+      return item;
+    }
+  }
+  return null;
+}
 export function reportsLinksSelector() {
   if (subdomain === "platform") {
     return "https://myreportdev.coachbots.com/";
