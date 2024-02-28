@@ -73,8 +73,6 @@ const FilterDropDown = ({
                           ? "Connections"
                           : option === "feedback_bot"
                           ? "Feedback Requests"
-                          : option === "coachee"
-                          ? "Coachee-Mentee"
                           : convertTextToCorrectFormat(option)}
                       </label>
                     </div>
@@ -93,8 +91,6 @@ const FilterDropDown = ({
                 ? "Connections"
                 : checkedItem === "feedback_bot"
                 ? "Feedback Requests"
-                : checkedItem === "coachee"
-                ? "Coachee-Mentee"
                 : convertTextToCorrectFormat(checkedItem)}
             </p>{" "}
             <X

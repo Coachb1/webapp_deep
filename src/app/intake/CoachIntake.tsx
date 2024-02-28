@@ -21,6 +21,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
+import { UserClientInfoDataType } from "@/lib/types";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -54,19 +55,41 @@ const CoachIntake = ({ user }: any) => {
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
   const [feedbackCreateLoading, setFeedbackCreateLoading] = useState(false);
-  const departments = [
+  const [clientInfoData, setClientinfoData] =
+    useState<UserClientInfoDataType>();
+
+  // const departments =
+  //   clientInfoData?.user_info[0].departments !== null
+  //     ? clientInfoData?.user_info[0].departments
+  //     : [
+  // "Sales & Marketing",
+  // "Production",
+  // "Design",
+  // "Engineering",
+  // "HR & Training",
+  //       ];
+  const [departments, setDepartments] = useState<string[]>([
     "Sales & Marketing",
     "Production",
     "Design",
     "Engineering",
     "HR & Training",
-  ];
-  const areaDomains = [
+  ]);
+
+  const [areaDomains, setAreaDomains] = useState<string[]>([
     "Career Management",
     "Work Life Banlance",
     "Project Management",
     "Lateral Transfers",
-  ];
+  ]);
+
+  // const areaDomains = [
+  //   "Career Management",
+  //   "Work Life Banlance",
+  //   "Project Management",
+  //   "Lateral Transfers",
+  // ];
+
   //intake fields state
   const [name, setName] = useState("");
   const [profileId, setProfileId] = useState("");
@@ -140,6 +163,32 @@ const CoachIntake = ({ user }: any) => {
     setProfileBio("");
     setSuggestedProjects("");
     setCurrentProjects("");
+  };
+
+  const getClientInfoForUser = (userEmail: string) => {
+    fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setClientinfoData(data.data);
+
+        if (data.data.user_info[0].departments !== null) {
+          setDepartments(data.data.user_info[0].departments);
+        }
+
+        if (data.data.user_info[0].coach_expertise !== null) {
+          setAreaDomains(data.data.user_info[0].coach_expertise);
+        }
+      })
+      .catch((err) => console.error(err));
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -239,30 +288,8 @@ const CoachIntake = ({ user }: any) => {
   useEffect(() => {
     hideBots();
     if (user) {
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: user.id,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: user.given_name,
-                email: user.email,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: user.email,
-          },
-        }),
-      })
+      getClientInfoForUser(user.email);
+      getUserAccount(user)
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
@@ -308,21 +335,21 @@ const CoachIntake = ({ user }: any) => {
             .then((data) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
-              if (data.data.length > 0 && !checkIfEdit) {
-                if (
-                  formType === "coach" &&
-                  (profileTypes.includes("coach") ||
-                    profileTypes.includes("coachee"))
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (data.data.length > 0 && !checkIfEdit) {
+              //   if (
+              //     formType === "coach" &&
+              //     (profileTypes.includes("coach") ||
+              //       profileTypes.includes("coachee"))
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -1411,7 +1438,7 @@ const CoachIntake = ({ user }: any) => {
                         setDepartment(value);
                       }}
                     >
-                      {departments.map((val, i) => (
+                      {departments.map((val: string, i: number) => (
                         <div key={i} className="flex items-center space-x-2 ">
                           <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                           <label
@@ -2113,7 +2140,7 @@ const CoachIntake = ({ user }: any) => {
                       }}
                       value={department}
                     >
-                      {departments.map((val, i) => (
+                      {departments.map((val: string, i: number) => (
                         <div key={i} className="flex items-center space-x-2 ">
                           <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                           <label
