@@ -639,7 +639,18 @@ const Coaches = ({ user }: any) => {
                           )}
                         </>
                       ) : (
-                        <Badge className="ml-2">Requested</Badge>
+                        <>
+                          {allCoaches[0]?.profile_type === "coach" ? (
+                            <Badge className="ml-2">Requested</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -670,7 +681,19 @@ const Coaches = ({ user }: any) => {
                           )}
                         </>
                       ) : (
-                        <Badge className="ml-2">Requested</Badge>
+                        <>
+                          {allCoaches[0]?.profile_type === "coachee" ||
+                          allCoaches[0]?.profile_type === "mentee" ? (
+                            <Badge className="ml-2">Requested</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </>
                   )}
