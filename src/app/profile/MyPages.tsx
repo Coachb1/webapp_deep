@@ -55,7 +55,11 @@ const MyPages = ({ user }: any) => {
           console.log("profile", profileJson.data);
 
           // const profileType = userProfile.profile_type;
-          setUserProfile(profileJson.data[0]);
+          setUserProfile(
+            profileJson.data.filter(
+              (profile: any) => profile.is_approved === true
+            )[0]
+          );
           console.log(profileJson.data[0]);
 
           fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
