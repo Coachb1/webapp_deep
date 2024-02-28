@@ -126,7 +126,6 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    console.log("profieTyep", profile_type);
     if (profile_type === "coach") {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
@@ -143,6 +142,8 @@ const MyPages = ({ user }: any) => {
           botType === "feedback_bot" ? "feedback" : "coachee"
         }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       }
+    } else if (profile_type === "mentee") {
+      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
     }
   };
 
@@ -277,8 +278,8 @@ const MyPages = ({ user }: any) => {
                         intakeBotTypeLinks(
                           botType.bot_type,
                           bot.bot_id,
-                          userProfile.uid,
-                          userProfile.profile_type
+                          userProfile?.uid,
+                          userProfile?.profile_type
                         )! + `&uid=${bot.uid}`
                       }
                     >
@@ -301,45 +302,50 @@ const MyPages = ({ user }: any) => {
           </div>
         ))}
       </div>
-      {!loading && userProfile && userProfile.profile_type === "coachee" && (
-        <>
-          <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
-            {/* <p className="text-sm ">Coachee</p> */}
-            <div className="m-4 my-1 text-sm max-sm:m-2">
-              <div className="flex items-center">
-                {/* <p className="text-sm inline w-[10%]">1</p> */}
-                <p className="text-sm inline w-[30%] max-sm:w-[40%]">
-                  <>Coachee</>
-                  {/* - {userProfile.name} */}
-                </p>
-                <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                <Link
-                  href={
-                    intakeBotTypeLinks(
-                      "coachee",
-                      "123",
-                      userProfile.uid,
-                      userProfile.profile_type
-                    )! + `&uid=`
-                  }
-                >
-                  <Button
-                    variant={"secondary"}
-                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+      {!loading &&
+        userProfile &&
+        (userProfile.profile_type === "coachee" ||
+          userProfile.profile_type === "mentee") && (
+          <>
+            <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
+              {/* <p className="text-sm ">Coachee</p> */}
+              <div className="m-4 my-1 text-sm max-sm:m-2">
+                <div className="flex items-center">
+                  {/* <p className="text-sm inline w-[10%]">1</p> */}
+                  <p className="text-sm inline w-[30%] max-sm:w-[40%]">
+                    {userProfile.profile_type === "coachee" && <>Coachee</>}
+                    {userProfile.profile_type === "mentee" && <>Mentee</>}
+
+                    {/* - {userProfile.name} */}
+                  </p>
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
+                  <Link
+                    href={
+                      intakeBotTypeLinks(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
                   >
-                    <span className="max-sm:hidden">Edit</span>{" "}
-                    <TooltipWrapper
-                      className="hidden max-sm:block text-xs"
-                      tooltipName="Edit"
-                      body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                    />
-                  </Button>
-                </Link>
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                    >
+                      <span className="max-sm:hidden">Edit</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="Edit"
+                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
     </div>
   );
 };
