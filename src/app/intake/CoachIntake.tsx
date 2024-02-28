@@ -10,6 +10,7 @@ import {
   getUserAccount,
   hideBots,
   subdomain,
+  getBotById,
 } from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import { UserClientInfoDataType } from "@/lib/types";
+import { Radio } from "antd";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -32,7 +34,7 @@ const CoachIntake = ({ user }: any) => {
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
-  const profileType = params.get("profile_type");
+  // const profileType = params.get("profile_type");
   let userProfileId = params.get("profile_id");
 
   const router = useRouter();
@@ -43,31 +45,13 @@ const CoachIntake = ({ user }: any) => {
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
-  function getBotById(botId: string, jsonData: any) {
-    for (const item of jsonData) {
-      if (item.signature_bot && item.signature_bot.bot_id === botId) {
-        return item;
-      }
-    }
-    return null;
-  }
-
+  const [profileType, setProfileType] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
   const [feedbackCreateLoading, setFeedbackCreateLoading] = useState(false);
   const [clientInfoData, setClientinfoData] =
     useState<UserClientInfoDataType>();
 
-  // const departments =
-  //   clientInfoData?.user_info[0].departments !== null
-  //     ? clientInfoData?.user_info[0].departments
-  //     : [
-  // "Sales & Marketing",
-  // "Production",
-  // "Design",
-  // "Engineering",
-  // "HR & Training",
-  //       ];
   const [departments, setDepartments] = useState<string[]>([
     "Sales & Marketing",
     "Production",
@@ -82,13 +66,6 @@ const CoachIntake = ({ user }: any) => {
     "Project Management",
     "Lateral Transfers",
   ]);
-
-  // const areaDomains = [
-  //   "Career Management",
-  //   "Work Life Banlance",
-  //   "Project Management",
-  //   "Lateral Transfers",
-  // ];
 
   //intake fields state
   const [name, setName] = useState("");
@@ -443,7 +420,7 @@ const CoachIntake = ({ user }: any) => {
             `${coachMentInSameDep === "yes" ? true : false}`
           );
         } else if (formType === "coachee") {
-          formdata.append("profile_type", "coachee");
+          formdata.append("profile_type", profileType);
           formdata.append(
             "low_rating_characteristics",
             characteristicsRateLows
@@ -1242,6 +1219,7 @@ const CoachIntake = ({ user }: any) => {
                 setName(resultingBot.name);
                 setAbout(resultingBot.about?.trim());
                 setExperience(resultingBot.experience);
+                setProfileType(resultingBot.profile_type);
                 console.log(
                   resultingBot.low_rating_characteristics,
                   resultingBot.high_rating_characteristics
@@ -2004,6 +1982,29 @@ const CoachIntake = ({ user }: any) => {
                   <Info className="h-4 w-4 mr-1" /> All fields are required.
                 </Badge>
                 <div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">Select your profile type</p>
+                    <Radio.Group
+                      defaultValue={"coachee"}
+                      disabled={checkIfEdit === null ? false : true}
+                      value={profileType}
+                      options={[
+                        {
+                          label: "Coachee",
+                          value: "coachee",
+                        },
+                        {
+                          label: "Mentee",
+                          value: "mentee",
+                        },
+                      ]}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        setProfileType(e.target.value);
+                      }}
+                      optionType="button"
+                    />
+                  </div>
                   <div className="my-3">
                     <p className="text-sm my-1">Enter your name</p>
                     <input
