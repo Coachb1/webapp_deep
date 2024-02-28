@@ -127,6 +127,7 @@ let botIntakeQna = {};
 let isIntakeSummaryDisplayed = false;
 let isIntakeClicked = false;
 let IntakeUid = '';
+let fitmentContainerId = 1;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -893,50 +894,8 @@ const handleFitmentAnalysis = async () => {
     fitmentAnalysisIndex,
     Object.keys(fitmentAnalysisQuestions).length
   );
-  if (fitmentAnalysisIndex < Object.keys(fitmentAnalysisQuestions).length) {
-    // console.log("Answer : ",latestMessage)
-    // console.log("fitment question : ", fitmentAnalysisQuestions[fitmentAnalysisIndex])
-    // signals.onResponse({
-    //     html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
-    // });
-    // console.log("fitmentQuestions : ",fitmentAnalysisQuestions)
 
-    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-    const responseValue = gShadowRoot2
-      .querySelector('input[name="fitment_option"]:checked')
-      .getAttribute("value");
-    console.log(responseValue);
-
-    let fitmentQueIndex = parseInt(
-      gShadowRoot2.getElementById("question-fitment").getAttribute("value")
-    );
-    fitmentAnalysisQnA[fitmentQueIndex] = {
-      coach: fitmentAnalysisQuestions[fitmentQueIndex],
-      cochee: responseValue,
-    };
-    fitmentQueIndex = fitmentQueIndex + 1;
-    const questiontext = fitmentAnalysisQuestions[fitmentQueIndex];
-    const questionoptins = fitmentAnalysisOptions[fitmentQueIndex];
-    let optioncont = "";
-    questionoptins.forEach((item, index) => {
-      optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
-      <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
-      <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
-    </div>`;
-    });
-    formRadio = `
-                <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${fitmentQueIndex}"><b>Q. </b>${questiontext}</div>
-                <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
-                  ${optioncont}
-                </div>
-                <button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
-              `;
-    // appendMessage2(formRadio)
-    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML = formRadio;
-    fitmentAnalysisIndex = fitmentQueIndex;
-    return;
-  } else {
-    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    /* gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     const responseValue = gShadowRoot2
       .querySelector('input[name="fitment_option"]:checked')
       .getAttribute("value");
@@ -947,15 +906,29 @@ const handleFitmentAnalysis = async () => {
     fitmentAnalysisQnA[fitmentQueIndex] = {
       coach: fitmentAnalysisQuestions[fitmentQueIndex],
       cochee: responseValue,
-    };
+    }; */
+
+    // store all the responses in fitmentAnalysisQnA
+    for(let i = 1; i <= fitmentAnalysisIndex; i++){
+      const responseValue = gShadowRoot2
+      .querySelector(`input[name="fitment_option_${i}"]:checked`)
+      .getAttribute("value");
+
+      fitmentAnalysisQnA[i] = {
+        coach: fitmentAnalysisQuestions[i],
+        cochee: responseValue,
+      };
+    }
+
+    console.log("fitmentAnalysisQnA Submission : ", fitmentAnalysisQnA);
 
     fitmentAnalysisInProgress = false;
     fitmentAnalysisIndex = 0;
-    console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
-    gShadowRoot2.getElementById(`fitment-analysis`).innerHTML =
+    // console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
+    gShadowRoot2.getElementById(`fitment-container-${fitmentContainerId}`).innerHTML =
       "<b>Please Wait...</b>";
 
-    console.log(userId2, participantId2);
+    // console.log(userId2, participantId2);
     try {
       const response = await fetch(
         `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
@@ -976,7 +949,8 @@ const handleFitmentAnalysis = async () => {
 
       const data = await response.json();
       console.log("Fitness Analysis Score => ", data);
-      const msg = gShadowRoot2.getElementById("fitment-analysis");
+      // const msg = gShadowRoot2.getElementById("fitment-analysis");
+      const msg = gShadowRoot2.getElementById(`fitment-container-${fitmentContainerId}`);
       // button.parentNode.removeChild(button)
       const que_msg = document.createElement("div");
       let score_result_statement;
@@ -990,7 +964,9 @@ const handleFitmentAnalysis = async () => {
 
       que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
       // Replace the button with the "Thank you" message
-      msg.parentNode.replaceChild(que_msg, msg);
+      // msg.parentNode.replaceChild(que_msg, msg);
+      // replace all the questions with the result
+      msg.innerHTML = que_msg.innerHTML;
 
       // setTimeout(() => {
       //   appendMessage2(faqHtmlData);
@@ -1000,9 +976,9 @@ const handleFitmentAnalysis = async () => {
         `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
       );
     }
-
+    fitmentContainerId += 1;
     return;
-  }
+  
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
@@ -1219,7 +1195,45 @@ async function handleFaqButtonClick(question) {
     console.log("##### questionoptins ===> ", questionoptins)
 
     /* botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions) */
-    questionoptins.forEach((item, index) => {
+
+
+    // start of mess up
+
+    let formRadios = "";
+
+    // render all the questions and options of fitment analysis in a single form and then submit it at once
+    for (let i = 1; i <= Object.keys(fitmentAnalysisQuestions).length; i++) {
+      const questiontext = fitmentAnalysisQuestions[i];
+      const questionoptins = fitmentAnalysisOptions[i];
+      let optioncont = "";
+      questionoptins.forEach((item, index) => {
+        optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
+        <input type="radio" id="option${index}" name="fitment_option_${i}" value="${item}" style="margin-right: 5px;">
+        <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
+      </div>`;
+      });
+
+    formRadios += `
+                  <div id='fitment-analysis-${i}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
+                  <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${i}"><b>Q. </b>${questiontext}</div>
+                    <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+                      ${optioncont}
+                    </div>
+                    ${ (i === Object.keys(fitmentAnalysisQuestions).length ) ?  '<button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>' : ""}
+                  </div>`;
+    }
+    
+
+    appendMessage2(`
+    <div style="display: flex; flex-direction: column;">
+      <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+      <div id="fitment-container-${fitmentContainerId}" style="margin-top : 8px; padding-top: 0px;">${formRadios}</div>
+    </div>
+  `)
+
+    // end of mess up
+
+    /* questionoptins.forEach((item, index) => {
       optioncont += `<div style="display: flex; flex-direction: row; align-items: flex-start;">
       <input type="radio" id="option${index}" name="fitment_option" value="${item}" style="margin-right: 5px;">
       <label for="option${index}" style="font-size: 14px; margin-bottom: 10px; display: block;">${item}</label>
@@ -1250,7 +1264,7 @@ async function handleFaqButtonClick(question) {
                   <div style="font-size : 12px; font-weight: bold; background-color : #f97316; color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
                   <div style="margin-top : 8px; padding-top: 0px;">${formRadio}</div>
                 </div>
-              `)
+              `) */
     // appendMessage2(formRadio);
   } else {
 
