@@ -615,8 +615,11 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                <Link
-                  href={"/intake/?type=coach"}
+                <span
+                  onClick={() => {
+                    router.push("/intake/?type=coach");
+                  }}
+                  // href={"/intake/?type=coach"}
                   className="flex flex-row justify-center items-center"
                 >
                   Join as a Coach{" "}
@@ -640,14 +643,17 @@ const Coaches = ({ user }: any) => {
                       )}
                     </>
                   )}
-                </Link>
+                </span>
               </DropdownMenuItem>
               <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                <Link
-                  href={"/intake/?type=coachee"}
+                <span
+                  onClick={() => {
+                    router.push("/intake/?type=coachee");
+                  }}
+                  // href={"/intake/?type=coachee"}
                   className="flex flex-row justify-center items-center"
                 >
-                  Join as a Coachee
+                  Join as a Coachee-Mentee
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
@@ -668,11 +674,14 @@ const Coaches = ({ user }: any) => {
                       )}
                     </>
                   )}
-                </Link>
+                </span>
               </DropdownMenuItem>
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
-                <Link
-                  href={"/intake/?type=feedback"}
+                <span
+                  // href={"/intake/?type=feedback"}
+                  onClick={() => {
+                    router.push("/intake/?type=feedback");
+                  }}
                   className="flex flex-row justify-center items-center"
                 >
                   Join Feedback Network
@@ -685,7 +694,7 @@ const Coaches = ({ user }: any) => {
                       )}
                     </>
                   )}
-                </Link>
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

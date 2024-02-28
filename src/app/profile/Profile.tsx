@@ -78,15 +78,18 @@ const Profile = ({ user }: any) => {
   return (
     <>
       {" "}
-      {/* <div className="fixed w-full flex items-center justify-end p-4 h-6 pt-8 "> */}
       <NetworkNav user={user} />
-      {/* </div> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
           {" "}
-          <Link href={"/content-library"}>
+          <div
+            onClick={() => {
+              history.back();
+            }}
+            className="hover:cursor-pointer"
+          >
             <ChevronLeft className="h-6 w-6 mr-2 max-sm:h-4 max-sm:w-4" />
-          </Link>
+          </div>
           <h3 className="text-2xl font-mono font-semibold max-sm:text-lg">
             Your profile
           </h3>
@@ -105,7 +108,7 @@ const Profile = ({ user }: any) => {
               icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
             />
             <NavItem
-              itemName={"Session Notes"}
+              itemName={"Action Plan & session notes"}
               icon={<StickyNote className="text-gray-500 h-5 w-5" />}
             />
             <NavItem
@@ -149,14 +152,15 @@ const Profile = ({ user }: any) => {
               <MyPages user={user} />
             </div>
           )}
-          {selectedItem === "Session Notes" && <SessionNotes user={user} />}
+          {selectedItem === "Action Plan & session notes" && (
+            <SessionNotes user={user} />
+          )}
           {selectedItem === "Bot Conversations" && (
             <Conversations user={user} />
           )}
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && <AdminProfile user={user} />}
-          {/* {selectedItem === "My Pages" && } */}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
           {selectedItem === "Admin Reports" && <AdminReports user={user} />}
