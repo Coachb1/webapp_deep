@@ -17,7 +17,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 
@@ -72,30 +72,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
   useEffect(() => {
     setIsLoading(true);
     if (user) {
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: user.given_name,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: "web_user",
-                email: user.email,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: user.email,
-          },
-        }),
-      })
+      getUserAccount(user)
         .then((response) => response.json())
         .then((data) => {
           fetch(

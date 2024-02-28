@@ -653,7 +653,7 @@ const Coaches = ({ user }: any) => {
                   // href={"/intake/?type=coachee"}
                   className="flex flex-row justify-center items-center"
                 >
-                  Join as a Coachee-Mentee
+                  Join as a Coachee
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
