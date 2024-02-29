@@ -295,6 +295,29 @@ const Coaches = ({ user }: any) => {
   };
 
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
+  const [canJoinAs, setCanJoinAs] = useState("");
+
+  async function getCanJoinAs(email:string){
+    try{
+      const resp = await fetch(`http://localhost:8001/api/v1/accounts/user-can-join-as/?email=${email}`,
+        {
+          method: 'GET',
+          headers: {
+              Authorization: basicAuth,
+          },
+        })
+
+      const respJson = await resp.json()
+      console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`)
+      setCanJoinAs(respJson.can_join_as)
+
+    } catch {
+      setCanJoinAs("coachee")
+
+    }
+
+    
+  }
 
   useEffect(() => {
     hideBots();
@@ -308,6 +331,7 @@ const Coaches = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
+          getCanJoinAs(user.email);
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -614,6 +638,7 @@ const Coaches = ({ user }: any) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              { ['coach', 'mentor'].includes(canJoinAs)&&(
               <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                 <span
                   onClick={() => {
@@ -656,6 +681,8 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
+              )}
+              { ['coachee','mentee'].includes(canJoinAs)&&(
               <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                 <span
                   onClick={() => {
@@ -699,6 +726,7 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
+              )}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <span
                   // href={"/intake/?type=feedback"}

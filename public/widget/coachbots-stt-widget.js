@@ -4606,8 +4606,7 @@ loadExternalModule().then(() => {
                         },
                         body: JSON.stringify({
                           test_attempt_session_id: sessionId2,
-                          is_signature_bot: true,
-                          initial_qna: JSON.stringify(botInitialQuestionsQnA),
+                          is_signature_bot: true
                         }),
                       }
                     );
