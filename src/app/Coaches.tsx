@@ -622,7 +622,7 @@ const Coaches = ({ user }: any) => {
                   // href={"/intake/?type=coach"}
                   className="flex flex-row justify-center items-center"
                 >
-                  Join as a Coach{" "}
+                  Join as Coach or Mentor{" "}
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
@@ -664,7 +664,7 @@ const Coaches = ({ user }: any) => {
                   // href={"/intake/?type=coachee"}
                   className="flex flex-row justify-center items-center"
                 >
-                  Join as a Coachee
+                  Join as Coachee or Mentee
                   {allCoaches.length > 0 && (
                     <>
                       {allCoaches[0]?.is_approved ? (
