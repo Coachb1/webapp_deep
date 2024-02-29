@@ -99,6 +99,7 @@ export interface connectionType {
   coach_user_id: string;
   coachee_user_id: string;
   coach_avatar_bot_id: string;
+  allow_coachee_to_create_session: boolean;
 }
 
 export interface TestData {

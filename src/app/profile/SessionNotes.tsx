@@ -276,7 +276,11 @@ const SessionNotes = ({ user }: any) => {
         setConnectionsForCoachee(data.data);
 
         const dataForOptions = data.data
-          .filter((data: connectionType) => data.status === "accepted")
+          .filter(
+            (data: connectionType) =>
+              data.status === "accepted" &&
+              data.allow_coachee_to_create_session === true
+          )
           .map((data: connectionType) => {
             return {
               label: data.coach_name,
@@ -372,10 +376,10 @@ const SessionNotes = ({ user }: any) => {
   }, []);
 
   useEffect(() => {
-    if (coachId.length > 0) {
+    if (connectionsOptions.length > 0) {
       setTabValue("c-given");
     }
-  }, [coachId]);
+  }, [connectionsOptions]);
 
   const searchItemsHandler = (e: any) => {
     if (tabValue === "c-given") {
@@ -421,7 +425,7 @@ const SessionNotes = ({ user }: any) => {
         >
           <div className="flex flex-row  items-center gap-2 justify-between max-sm:flex-col max-sm:justify-start max-sm:items-start">
             <TabsList className="border-2 bg-gray-300">
-              {coachId.length > 0 && (
+              {connectionsOptions.length > 0 && (
                 <TabsTrigger className="text-sm max-sm:text-xs" value="c-given">
                   Comments Given
                 </TabsTrigger>
@@ -446,7 +450,7 @@ const SessionNotes = ({ user }: any) => {
             </div>
           </div>
 
-          {coachId.length > 0 && (
+          {connectionsOptions.length > 0 && (
             <TabsContent value="c-given">
               <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
                 {commentsLoading ? (

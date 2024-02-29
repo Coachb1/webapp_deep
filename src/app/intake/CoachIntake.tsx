@@ -108,6 +108,8 @@ const CoachIntake = ({ user }: any) => {
     }[]
   >([]);
 
+  const [allowSessionNotes, setAllowSessionNotes] = useState("");
+
   //feedbackInputStates
   const [profileBio, setProfileBio] = useState("");
   const [currentProjects, setCurrentProjects] = useState("");
@@ -140,6 +142,7 @@ const CoachIntake = ({ user }: any) => {
     setProfileBio("");
     setSuggestedProjects("");
     setCurrentProjects("");
+    setAllowSessionNotes("");
   };
 
   const getClientInfoForUser = (userEmail: string) => {
@@ -312,11 +315,12 @@ const CoachIntake = ({ user }: any) => {
             .then((data) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
+
               if (data.data.length > 0 && !checkIfEdit) {
                 if (
-                  formType === "coach" &&
-                  (profileTypes.includes("coach") ||
-                    profileTypes.includes("coachee"))
+                  (formType === "coach" && profileTypes.includes("coach")) ||
+                  profileTypes.includes("coachee") ||
+                  profileTypes.includes("mentee")
                 ) {
                   setCanCreateProfile(false);
                   toast.loading(
@@ -418,6 +422,10 @@ const CoachIntake = ({ user }: any) => {
           formdata.append(
             "coach_same_department",
             `${coachMentInSameDep === "yes" ? true : false}`
+          );
+          formdata.append(
+            "allow_coachee_to_create_session",
+            `${allowSessionNotes === "yes" ? true : false}`
           );
         } else if (formType === "coachee") {
           formdata.append("profile_type", profileType);
@@ -1179,6 +1187,9 @@ const CoachIntake = ({ user }: any) => {
                 setVoiceSample(
                   resultingBot.signature_bot.data.additional_data.voice_sample
                 );
+
+                //add sessionnotes Autofill
+
                 setCoachMentSelect(
                   resultingBot.signature_bot.data.additional_data
                     .fitment_answers?.coachmentSelect
@@ -1641,6 +1652,33 @@ const CoachIntake = ({ user }: any) => {
                             <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
                               htmlFor={`r${i}+1 ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Allow coaches and mentors to create their own action
+                      plans?
+                    </p>
+                    <div className="my-2 mb-3">
+                      <RadioGroup
+                        required
+                        value={allowSessionNotes}
+                        onValueChange={(value) => {
+                          setAllowSessionNotes(value);
+                        }}
+                      >
+                        {["Yes", "No"].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem value={val} id={`r${i}+e ${val}`} />
+                            <label
+                              htmlFor={`r${i}+e ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
