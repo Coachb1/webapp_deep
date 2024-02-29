@@ -299,7 +299,7 @@ const Coaches = ({ user }: any) => {
 
   async function getCanJoinAs(email:string){
     try{
-      const resp = await fetch(`http://localhost:8001/api/v1/accounts/user-can-join-as/?email=${email}`,
+      const resp = await fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`,
         {
           method: 'GET',
           headers: {
