@@ -45,7 +45,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
-  const [profileType, setProfileType] = useState("");
+  const [profileType, setProfileType] = useState("coach");
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
   const [feedbackCreateLoading, setFeedbackCreateLoading] = useState(false);
@@ -88,6 +88,29 @@ const CoachIntake = ({ user }: any) => {
 
   const [significantChallenges, setSignificantChallenges] = useState("");
   const [phrasesNExpressions, setPhrasesNExpressions] = useState("");
+
+  //for coaches
+  const [foundationalValues, setFoundationalValues] = useState("");
+  const [developmentFramewrok, setDevelopmentFrameworks] = useState("");
+
+  //coaching faqs
+  const [coachingProcessOverview, setCoachingProcessOverview] = useState("");
+  const [handlingSituations, setHandlingSituations] = useState("");
+  const [integratingLessons, setIntegratongLessons] = useState("");
+  const [guidanceOnCoachingProcess, setGuidanceOnCoachingProcess] =
+    useState("");
+
+  //for mentor
+  const [differentCareerPath, setDifferentCareerPath] = useState("");
+  const [problemSolvingApproachInDomain, setProblemSolvingApproachInDomain] =
+    useState("");
+
+  //mentoring faqs
+  const [overviewofMentoring, setOverviewOfMentoring] = useState("");
+  const [opportunitiesOfGrowth, setOpportunitiesOfGrowth] = useState("");
+  const [commonChallengesOrObstacles, setCommenChallengesOrObstacles] =
+    useState("");
+  const [opinionsAboutKeyQualities, setpinionsAboutKeyQualities] = useState("");
 
   interface FileData {
     file: File;
@@ -147,6 +170,21 @@ const CoachIntake = ({ user }: any) => {
     setSuggestedProjects("");
     setCurrentProjects("");
     setAllowSessionNotes("");
+    setSignificantChallenges("");
+    setPhrasesNExpressions("");
+
+    setFoundationalValues("");
+    setDevelopmentFrameworks("");
+    setCoachingProcessOverview("");
+    setHandlingSituations("");
+    setIntegratongLessons("");
+    setGuidanceOnCoachingProcess("");
+    setDifferentCareerPath("");
+    setProblemSolvingApproachInDomain("");
+    setOverviewOfMentoring("");
+    setOpportunitiesOfGrowth("");
+    setCommenChallengesOrObstacles("");
+    setpinionsAboutKeyQualities("");
   };
 
   const getClientInfoForUser = (userEmail: string) => {
@@ -320,21 +358,21 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              // if (data.data.length > 0 && !checkIfEdit) {
-              //   if (
-              //     (formType === "coach" && profileTypes.includes("coach")) ||
-              //     profileTypes.includes("coachee") ||
-              //     profileTypes.includes("mentee")
-              //   ) {
-              //     setCanCreateProfile(false);
-              //     toast.loading(
-              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-              //     );
-              //     setTimeout(() => {
-              //       router.push("/");
-              //     }, 4000);
-              //   }
-              // }
+              if (data.data.length > 0 && !checkIfEdit) {
+                if (
+                  (formType === "coach" && profileTypes.includes("coach")) ||
+                  profileTypes.includes("coachee") ||
+                  profileTypes.includes("mentee")
+                ) {
+                  setCanCreateProfile(false);
+                  toast.loading(
+                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              }
             })
             .catch((err) => {
               console.error(err);
@@ -397,11 +435,9 @@ const CoachIntake = ({ user }: any) => {
         if (formType == "coach") {
           formdata.append(
             "profile_type",
-            JSON.stringify(
-              profileType === "coach-mentor" || profileType === "coach"
-                ? "coach"
-                : "mentor"
-            )
+            profileType === "coach-mentor" || profileType === "coach"
+              ? "coach"
+              : "mentor"
           );
           formdata.append(
             "is_mentor",
@@ -442,6 +478,90 @@ const CoachIntake = ({ user }: any) => {
             "allow_coachee_to_create_session",
             `${allowSessionNotes === "yes" ? true : false}`
           );
+          formdata.append(
+            "significant_challenges_and_solutions",
+            significantChallenges
+          );
+          formdata.append(
+            "common_phrases_and_expressions",
+            phrasesNExpressions
+          );
+
+          if (profileType === "coach") {
+            formdata.append(
+              "qna_for_coach_mentor",
+              JSON.stringify({
+                coach: {
+                  "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                    foundationalValues,
+                  "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                    developmentFramewrok,
+                  "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                    coachingProcessOverview,
+                  "How do you handle situations where I feel stuck or unsure about my next steps?":
+                    handlingSituations,
+                  "How can I integrate the lessons from these sessions into my daily life?":
+                    integratingLessons,
+                  "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                    guidanceOnCoachingProcess,
+                },
+              })
+            );
+          } else if (profileType === "mentor") {
+            formdata.append(
+              "qna_for_coach_mentor",
+              JSON.stringify({
+                mentor: {
+                  "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                    differentCareerPath,
+                  "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                    problemSolvingApproachInDomain,
+                  "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                    overviewofMentoring,
+                  "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                    opportunitiesOfGrowth,
+                  "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                    commonChallengesOrObstacles,
+                  "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                    opinionsAboutKeyQualities,
+                },
+              })
+            );
+          } else if (profileType === "coach-mentor") {
+            formdata.append(
+              "qna_for_coach_mentor",
+              JSON.stringify({
+                coach: {
+                  "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                    foundationalValues,
+                  "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                    developmentFramewrok,
+                  "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                    coachingProcessOverview,
+                  "How do you handle situations where I feel stuck or unsure about my next steps?":
+                    handlingSituations,
+                  "How can I integrate the lessons from these sessions into my daily life?":
+                    integratingLessons,
+                  "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                    guidanceOnCoachingProcess,
+                },
+                mentor: {
+                  "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                    differentCareerPath,
+                  "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                    problemSolvingApproachInDomain,
+                  "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                    overviewofMentoring,
+                  "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                    opportunitiesOfGrowth,
+                  "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                    commonChallengesOrObstacles,
+                  "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                    opinionsAboutKeyQualities,
+                },
+              })
+            );
+          }
         } else if (formType === "coachee") {
           formdata.append("profile_type", profileType);
           formdata.append(
@@ -1333,7 +1453,6 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
-                      defaultValue={"coach"}
                       disabled={checkIfEdit === null ? false : true}
                       value={profileType}
                       options={[
@@ -1601,40 +1720,44 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                  {/* <div className="my-3">
+                  <div className="my-3">
                     <p className="text-sm my-1">
-                    What were the 3 most significant challenges you encountered in your journey, and how did you successfully navigate and overcome them?
+                      What were the 3 most significant challenges you
+                      encountered in your journey, and how did you successfully
+                      navigate and overcome them?
                     </p>
                     <div>
-                      <input
-                        required
+                      <textarea
+                        rows={4}
                         onChange={(e) => {
                           setSignificantChallenges(e.target.value);
                         }}
-                        value={leaderNames}
-                        placeholder="Bill Gates, Ratan Tata"
-                        type="text"
+                        value={significantChallenges}
+                        placeholder="Explain your top challenges and how you overcame them for example - helped new joiners navigate team conflicts by fostering open communication"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                     </div>
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                    Are there any phrases or expressions you find yourself using often in conversations? These could be catchphrases, favorite quotes, or unique sayings that reflect your personality.
+                      Are there any phrases or expressions you find yourself
+                      using often in conversations? These could be catchphrases,
+                      favorite quotes, or unique sayings that reflect your
+                      personality.
                     </p>
                     <div>
-                      <input
-                        required
+                      <textarea
+                        rows={4}
+                        required={!checkIfEdit}
                         onChange={(e) => {
                           setPhrasesNExpressions(e.target.value);
                         }}
-                        value={leaderNames}
-                        placeholder="Bill Gates, Ratan Tata"
-                        type="text"
+                        value={phrasesNExpressions}
+                        placeholder="Provide a few of your favorite quotes or catch phrases like 'Progress over perfection."
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                     </div>
-                  </div> */}
+                  </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
@@ -1766,6 +1889,266 @@ const CoachIntake = ({ user }: any) => {
                       </RadioGroup>
                     </div>
                   </div>
+
+                  {(profileType === "coach" ||
+                    profileType === "coach-mentor") && (
+                    <>
+                      <hr />
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          As a coach, what foundational values do you believe
+                          individuals should prioritize and strive for in their
+                          personal and professional development journey?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={foundationalValues}
+                            onChange={(e) => {
+                              setFoundationalValues(e.target.value);
+                            }}
+                            placeholder="Identify core principles like integrity, resilience, and empathy essential for personal and professional growth."
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          In your role as a coach, what kind of developmental
+                          framework do you employ, and why do you consider it to
+                          be the optimal framework for facilitating personal
+                          growth ?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={developmentFramewrok}
+                            onChange={(e) => {
+                              setDevelopmentFrameworks(e.target.value);
+                            }}
+                            placeholder="I utilize a blend of reflective practice, goal setting, and accountability to foster holistic personal development.)"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <hr />
+                      <div className="my-2">
+                        <h3 className="font-semibold text-base text-gray-600">
+                          Coaching FAQs
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Note: Answer these in first person as if you are
+                          answering directly to your coachee.
+                        </p>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          Can you provide an overview of your coaching process
+                          and what I can expect from our sessions?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={coachingProcessOverview}
+                            onChange={(e) => {
+                              setCoachingProcessOverview(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          How do you handle situations where I feel stuck or
+                          unsure about my next steps?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={handlingSituations}
+                            onChange={(e) => {
+                              setHandlingSituations(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          How can I integrate the lessons from these sessions
+                          into my daily life?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={integratingLessons}
+                            onChange={(e) => {
+                              setIntegratongLessons(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          Can you provide guidance on how to effectively balance
+                          personal and professional goals during our coaching
+                          process?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={guidanceOnCoachingProcess}
+                            onChange={(e) => {
+                              setGuidanceOnCoachingProcess(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {(profileType === "mentor" ||
+                    profileType === "coach-mentor") && (
+                    <>
+                      <hr />
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          As a mentor, what do you think are the different
+                          career paths available in this field? What are the
+                          core skills and understanding required to continuously
+                          grow in this field?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={differentCareerPath}
+                            onChange={(e) => {
+                              setDifferentCareerPath(e.target.value);
+                            }}
+                            placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          What is the problem solving approach in your domain
+                          and why do you think that is the right construct for
+                          growing in this field?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={problemSolvingApproachInDomain}
+                            onChange={(e) => {
+                              setProblemSolvingApproachInDomain(e.target.value);
+                            }}
+                            placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <hr />
+                      <div className="my-2">
+                        <h3 className="font-semibold text-base text-gray-600">
+                          Mentoring FAQs
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Note: Answer these in first person as if you are
+                          answering directly to your mentee.
+                        </p>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          Can you provide an overview of your mentoring approach
+                          and what I can expect from our sessions?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={overviewofMentoring}
+                            onChange={(e) => {
+                              setOverviewOfMentoring(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          What opportunities for growth or advancement do you
+                          see in this field, and how can I position myself to
+                          capitalize on them?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={opportunitiesOfGrowth}
+                            onChange={(e) => {
+                              setOpportunitiesOfGrowth(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          What are some common challenges or obstacles that
+                          individuals face when pursuing success in this field,
+                          and what strategies do you suggest for overcoming
+                          them?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={commonChallengesOrObstacles}
+                            onChange={(e) => {
+                              setCommenChallengesOrObstacles(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          In your opinion, what are the key qualities or skills
+                          that contribute to success in the field I'm aiming to
+                          excel in, and how can I develop or enhance them?
+                        </p>
+                        <div>
+                          <textarea
+                            rows={4}
+                            required={!checkIfEdit}
+                            value={opinionsAboutKeyQualities}
+                            onChange={(e) => {
+                              setpinionsAboutKeyQualities(e.target.value);
+                            }}
+                            placeholder=""
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <hr />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
