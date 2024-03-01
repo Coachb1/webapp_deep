@@ -1596,6 +1596,8 @@ function handleEndConversation() {
     endSessionButton.disabled = true;
   }
 
+  appendMessage2(`<b><p>Your session is ended. You can restart anytime.</p></b>`)
+
   let emailForm;
   if (window.innerWidth > 768) {
     emailForm = `<div id="bot-transcript-email" style="min-width: 730px;">
