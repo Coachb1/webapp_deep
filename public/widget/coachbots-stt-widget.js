@@ -128,6 +128,7 @@ let isIntakeSummaryDisplayed = false;
 let isIntakeClicked = false;
 let IntakeUid = '';
 let fitmentContainerId = 1;
+let endSessionButton;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -849,7 +850,18 @@ const getBotDetails2 = async (botId) => {
     begginSessionButton.innerText = "Begin session";
     buttonsWrapper.appendChild(begginSessionButton);
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
-
+    
+    if (botType === 'avatar_bot'){
+      endSessionButton = document.createElement("button");
+      endSessionButton.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #d1d5db; color: black;`
+      );
+      
+      endSessionButton.innerText = "End Session";
+      endSessionButton.disabled = true;
+      buttonsWrapper.appendChild(endSessionButton);
+    }
     console.log("buttons : ", buttons);
 
     faqHtmlData = `<div id="option-button-container" >
@@ -1577,6 +1589,12 @@ function handleEndConversation() {
 
   isSessionActiveStt = false;
   optedBeginSession = false;
+
+  if(endSessionButton && !endSessionButton.disabled){
+    endSessionButton.removeAttribute("onmouseover");
+    endSessionButton.removeAttribute("onmouseleave");
+    endSessionButton.disabled = true;
+  }
 
   let emailForm;
   if (window.innerWidth > 768) {
@@ -4668,7 +4686,7 @@ loadExternalModule().then(() => {
                 "Response from Coaching submit response : ",
                 responseData
               );
-
+              
               conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];
 
@@ -4689,10 +4707,30 @@ loadExternalModule().then(() => {
                 });
               }
               setTimeout(() => {
-                if ( botType === "avatar_bot" )
-                appendMessage2(
-                  `<button style="width: fit-content; padding: 6px 12px; border-radius: 4px; border: none; background: #ff7272; color: white;font-weight : 700;" onclick="handleEndConversation()">End Session</button>`
-                );
+                 
+                if (botType === 'avatar_bot'){
+                    console.log("endSessionButton:",endSessionButton.disabled)
+                    if (endSessionButton && endSessionButton.disabled){
+
+                        endSessionButton.setAttribute(
+                          "onmouseover",
+                          "this.style.backgroundColor = '#e5e7eb'"
+                        );
+                        endSessionButton.setAttribute(
+                          "onmouseleave",
+                          "this.style.backgroundColor = '#d1d5db'"
+                        );
+                        endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+
+                        endSessionButton.disabled = false;
+                    }
+
+                }
+
+                // if ( botType === "avatar_bot" )
+                // appendMessage2(
+                //   `<button style="width: fit-content; padding: 6px 12px; border-radius: 4px; border: none; background: #ff7272; color: white;font-weight : 700;" onclick="handleEndConversation()">End Session</button>`
+                // );
               }, 200);
             }
           }

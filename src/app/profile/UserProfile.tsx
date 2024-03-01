@@ -251,6 +251,7 @@ const UserProfile = ({ user }: any) => {
             </Badge>
           </div>
         </div>
+        {userKudosData[0] && (
         <div className="mt-4 mb-4">
           <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
             <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
@@ -288,6 +289,7 @@ const UserProfile = ({ user }: any) => {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
