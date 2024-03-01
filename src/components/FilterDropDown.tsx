@@ -31,12 +31,30 @@ const FilterDropDown = ({
   setParentCheckedValues,
   filtersCategory,
 }: FilterDropDownProps) => {
+  const [disabledFilters, setDisabledFilters] = React.useState<string[]>([]);
   const updateCheckedValues = (value: string, checked: boolean) => {
     if (checked) {
       onUpdateCheckedValues([...checkedValues, value]);
+
+      console.log([...checkedValues, value]);
+      if ([...checkedValues, value].includes("skill_bot")) {
+        const disabledFilters = filtersCategory
+          .filter((val) => val.filterName !== "Profile Type")
+          .flatMap((filter) => filter.filterName);
+
+        console.log(disabledFilters);
+        setDisabledFilters(disabledFilters);
+      }
     } else {
       onUpdateCheckedValues(checkedValues.filter((v) => v !== value));
+      if (value === "skill_bot") {
+        setDisabledFilters([]);
+      }
     }
+  };
+
+  const isFilterDisabled = (filterName: string) => {
+    return disabledFilters.includes(filterName);
   };
 
   return (
@@ -46,7 +64,10 @@ const FilterDropDown = ({
           <>
             {filter.filterOptions?.length > 0 && (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger
+                  disabled={isFilterDisabled(filter.filterName)}
+                  asChild
+                >
                   <Button
                     variant="outline"
                     className="h-8 w-fit p-1 px-2 border border-gray-200"

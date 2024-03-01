@@ -482,7 +482,7 @@ const Coaches = ({ user }: any) => {
                 (coachData) => coachData.feedback_wall !== null
               )
             : savedCoachesData.filter(
-                (coachData) => coachData.bot_type !== null
+                (coachData) => coachData.feedback_wall !== null
               ),
           newValues
         );
