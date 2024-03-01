@@ -129,6 +129,7 @@ let isIntakeClicked = false;
 let IntakeUid = '';
 let fitmentContainerId = 1;
 let endSessionButton;
+let intakeButton;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -701,6 +702,15 @@ async function populateBotConversation(participant_id){
       
     );
     if (botConv.length > 0) {
+      // disabling intakebutton 
+      intakeButton.disabled = true;
+      intakeButton.style.backgroundColor = '#d3d3d3';
+      intakeButton.style.color = '#a0a0a0';
+      intakeButton.removeAttribute('onmouseover')
+      intakeButton.removeAttribute('onmouseleave')
+
+
+
       console.log('populating conversation')
       let botConversations
       botConv.forEach(element => {
@@ -761,8 +771,10 @@ const getBotDetails2 = async (botId) => {
     //footer of the bots according to bot type
     const botFooterElement = document.getElementById('bot-footer') 
     if(botType === "subject_matter_bot" || botType === "helper_bot") {
-      botFooterElement.innerHTML = "<p>Expert bots work on the curated knowledge. For optimum results use 10 words or more in response.</p>"
-    } else if (botType === "avatar_bot" || botType === "feedback_bot"){
+      botFooterElement.innerHTML = "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>"
+    } else if (botType === "avatar_bot"){
+      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
+    } else if (botType === "feedback_bot"){
       botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
     }
 
@@ -806,7 +818,23 @@ const getBotDetails2 = async (botId) => {
     
 
     if( botType === "avatar_bot" || botType === 'helper_bot'){
-      faqButtonsGenerator("intake", "Intake");
+      // faqButtonsGenerator("intake", "Intake");
+      intakeButton = document.createElement("button");
+      intakeButton.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #dc2626; color : white; `
+      );
+      intakeButton.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f87171'"
+      );
+      intakeButton.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = '#dc2626'"
+      );
+      intakeButton.setAttribute("onclick", `handleFaqButtonClick('intake')`);
+      intakeButton.innerText = "Intake";
+      buttonsWrapper.appendChild(intakeButton);
     }
 
     if (
@@ -855,9 +883,10 @@ const getBotDetails2 = async (botId) => {
       endSessionButton = document.createElement("button");
       endSessionButton.setAttribute(
         "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #d1d5db; color: black;`
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #9ca3af; color: black;`
       );
-      
+      endSessionButton.style.backgroundColor = '#d3d3d3';
+      endSessionButton.style.color = '#a0a0a0';
       endSessionButton.innerText = "End Session";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
@@ -1105,6 +1134,20 @@ async function handlePreviousConversation(choice) {
   }
 
   if (choice === "Yes") {
+    // enabling Intake button 
+    intakeButton.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#f87171'"
+    );
+    intakeButton.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#dc2626'"
+    );
+    intakeButton.style.backgroundColor = '#dc2626';
+    intakeButton.style.color = 'white';
+    intakeButton.disabled = false;
+
+
     disableOrEnableButtons("conversation-proceed-options")
     const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
     const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
@@ -1585,7 +1628,7 @@ function sendBotTranscript2() {
 
 function handleEndConversation() {
   console.log("end conversation clicked");
-  appendMessage2("<b>Thanks for interacting with me. Have a great day!</b>");
+  appendMessage2("<b>Your session is ended. You can restart anytime.</b>");
 
   isSessionActiveStt = false;
   optedBeginSession = false;
@@ -1593,10 +1636,10 @@ function handleEndConversation() {
   if(endSessionButton && !endSessionButton.disabled){
     endSessionButton.removeAttribute("onmouseover");
     endSessionButton.removeAttribute("onmouseleave");
+    endSessionButton.style.backgroundColor = '#d3d3d3'; // to set gray color
+    endSessionButton.style.color = '#a0a0a0';
     endSessionButton.disabled = true;
   }
-
-  appendMessage2(`<b><p>Your session is ended. You can restart anytime.</p></b>`)
 
   let emailForm;
   if (window.innerWidth > 768) {
@@ -3547,7 +3590,7 @@ loadExternalModule().then(() => {
       textInput='{
         "styles": {
           "text": {"color": "black", "fontSize" : "14px"},
-          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #d1d5db", "zIndex" : "1"},
+          "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
         "placeholder": {"text": "Welcome, Please follow provided instructions."}
@@ -4720,8 +4763,10 @@ loadExternalModule().then(() => {
                         );
                         endSessionButton.setAttribute(
                           "onmouseleave",
-                          "this.style.backgroundColor = '#d1d5db'"
+                          "this.style.backgroundColor = '#9ca3af'"
                         );
+                        endSessionButton.style.backgroundColor = '#9ca3af'; 
+                        endSessionButton.style.color = 'white';
                         endSessionButton.setAttribute("onclick", `handleEndConversation()`);
 
                         endSessionButton.disabled = false;
