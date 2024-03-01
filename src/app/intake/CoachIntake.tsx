@@ -71,6 +71,7 @@ const CoachIntake = ({ user }: any) => {
   const [name, setName] = useState("");
   const [profileId, setProfileId] = useState("");
   const [userId, setUserId] = useState("");
+  const [isMentor, setIsMentor] = useState<boolean>();
   const [profileImage, setProfileImage] = useState<File>();
   const [department, setDepartment] = useState("");
   const [about, setAbout] = useState("");
@@ -84,6 +85,9 @@ const CoachIntake = ({ user }: any) => {
     useState("");
   const [leaderNames, setLeaderNames] = useState("");
   const [linksReflectyouWished, setLinksReflectyouWished] = useState("");
+
+  const [significantChallenges, setSignificantChallenges] = useState("");
+  const [phrasesNExpressions, setPhrasesNExpressions] = useState("");
 
   interface FileData {
     file: File;
@@ -316,21 +320,21 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (data.data.length > 0 && !checkIfEdit) {
-                if (
-                  (formType === "coach" && profileTypes.includes("coach")) ||
-                  profileTypes.includes("coachee") ||
-                  profileTypes.includes("mentee")
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (data.data.length > 0 && !checkIfEdit) {
+              //   if (
+              //     (formType === "coach" && profileTypes.includes("coach")) ||
+              //     profileTypes.includes("coachee") ||
+              //     profileTypes.includes("mentee")
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -391,7 +395,18 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("bot_type", "avatar_bot");
 
         if (formType == "coach") {
-          formdata.append("profile_type", "coach");
+          formdata.append(
+            "profile_type",
+            JSON.stringify(
+              profileType === "coach-mentor" || profileType === "coach"
+                ? "coach"
+                : "mentor"
+            )
+          );
+          formdata.append(
+            "is_mentor",
+            JSON.stringify(profileType === "coach-mentor" ? true : false)
+          );
           formdata.append("area_domain", areaDomain);
           formdata.append("mentoring_preferences", mentoringPreferences);
           formdata.append("mentoring_frameworks", coachMentFrameworks);
@@ -1150,6 +1165,7 @@ const CoachIntake = ({ user }: any) => {
 
                 console.log(resultingBot);
                 setName(resultingBot.bot_attributes.coach_name);
+                setProfileType(resultingBot.profile_type);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
                 );
@@ -1314,6 +1330,33 @@ const CoachIntake = ({ user }: any) => {
                   )}
                 </div>
                 <div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">Select your profile type</p>
+                    <Radio.Group
+                      defaultValue={"coach"}
+                      disabled={checkIfEdit === null ? false : true}
+                      value={profileType}
+                      options={[
+                        {
+                          label: "Coach",
+                          value: "coach",
+                        },
+                        {
+                          label: "Mentor",
+                          value: "mentor",
+                        },
+                        {
+                          label: "Both",
+                          value: "coach-mentor",
+                        },
+                      ]}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        setProfileType(e.target.value);
+                      }}
+                      optionType="button"
+                    />
+                  </div>
                   <div className="my-3">
                     <p className="text-sm my-1">Enter your name</p>
                     <input
@@ -1558,24 +1601,40 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                  <div className="my-3">
+                  {/* <div className="my-3">
                     <p className="text-sm my-1">
-                      Please enter 1-2 YouTube links that reflect your worldview
-                      on personal & professional development.
+                    What were the 3 most significant challenges you encountered in your journey, and how did you successfully navigate and overcome them?
                     </p>
                     <div>
-                      <textarea
-                        rows={4}
-                        required={!checkIfEdit}
-                        value={linksReflectingWVpersonal}
+                      <input
+                        required
                         onChange={(e) => {
-                          setLinksReflectingWVpersonal(e.target.value);
+                          setSignificantChallenges(e.target.value);
                         }}
-                        placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                        value={leaderNames}
+                        placeholder="Bill Gates, Ratan Tata"
+                        type="text"
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                     </div>
                   </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                    Are there any phrases or expressions you find yourself using often in conversations? These could be catchphrases, favorite quotes, or unique sayings that reflect your personality.
+                    </p>
+                    <div>
+                      <input
+                        required
+                        onChange={(e) => {
+                          setPhrasesNExpressions(e.target.value);
+                        }}
+                        value={leaderNames}
+                        placeholder="Bill Gates, Ratan Tata"
+                        type="text"
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      />
+                    </div>
+                  </div> */}
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
@@ -1594,6 +1653,25 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please enter 1-2 YouTube links that reflect your worldview
+                      on personal & professional development.
+                    </p>
+                    <div>
+                      <textarea
+                        rows={4}
+                        required={!checkIfEdit}
+                        value={linksReflectingWVpersonal}
+                        onChange={(e) => {
+                          setLinksReflectingWVpersonal(e.target.value);
+                        }}
+                        placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                      />
+                    </div>
+                  </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please enter 1-2 article links that reflect what you

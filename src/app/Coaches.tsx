@@ -201,9 +201,19 @@ const Coaches = ({ user }: any) => {
         setFilterCategories([
           {
             filterName: "Profile Type",
+            // filterOptions: [
+            //   ...profileTypeOptions,
+            //   ...["External", "accepted", "feedback_bot"],
+            // ],
             filterOptions: [
-              ...profileTypeOptions,
-              ...["External", "accepted", "feedback_bot"],
+              "coach",
+              "mentor",
+              "skill_bot",
+              "coachee",
+              "mentee",
+              "External",
+              "accepted",
+              "feedback_bot",
             ],
           },
           {
@@ -297,26 +307,24 @@ const Coaches = ({ user }: any) => {
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
-  async function getCanJoinAs(email:string){
-    try{
-      const resp = await fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`,
+  async function getCanJoinAs(email: string) {
+    try {
+      const resp = await fetch(
+        `${baseURL}/accounts/user-can-join-as/?email=${email}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-              Authorization: basicAuth,
+            Authorization: basicAuth,
           },
-        })
+        }
+      );
 
-      const respJson = await resp.json()
-      console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`)
-      setCanJoinAs(respJson.can_join_as)
-
+      const respJson = await resp.json();
+      console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
+      setCanJoinAs(respJson.can_join_as);
     } catch {
-      setCanJoinAs("coachee")
-
+      setCanJoinAs("coachee");
     }
-
-    
   }
 
   useEffect(() => {
@@ -397,29 +405,29 @@ const Coaches = ({ user }: any) => {
     }
 
     return inputArray.filter((obj) => {
-      if (filterArray.includes("coach")) {
-        return (
-          obj.profile_type &&
-          filterArray.includes(obj.profile_type.toLowerCase())
-        );
-      } else {
-        return filterArray.every((filter) => {
-          for (const prop in obj) {
-            if (
-              obj.hasOwnProperty(prop) &&
-              obj[prop as keyof CoachesDataType] &&
-              prop !== "description" // Skip filtering for the "description" property
-            ) {
-              const propValue =
-                obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
-              if (propValue.includes(filter.toLowerCase())) {
-                return true;
-              }
+      // if (filterArray.includes("coach" || "mentor")) {
+      //   return (
+      //     obj.profile_type &&
+      //     filterArray.includes(obj.profile_type.toLowerCase())
+      //   );
+      // } else {
+      return filterArray.every((filter) => {
+        for (const prop in obj) {
+          if (
+            obj.hasOwnProperty(prop) &&
+            obj[prop as keyof CoachesDataType] &&
+            prop !== "description" // Skip filtering for the "description" property
+          ) {
+            const propValue =
+              obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
+            if (propValue.includes(filter.toLowerCase())) {
+              return true;
             }
           }
-          return false;
-        });
-      }
+        }
+        return false;
+      });
+      // }
     });
   }
 
@@ -448,36 +456,55 @@ const Coaches = ({ user }: any) => {
       if (newValues.length === 0) {
         console.log("no values selected");
         setCoachesData(savedCoachesData);
+      } else if (
+        newValues.some((skill) => coachSkillsExpertise.includes(skill))
+      ) {
+        const filteredData = filterData(
+          newValues.includes("Connected")
+            ? coachesData.filter(
+                (coachData) =>
+                  coachData.profile_type !== "skill_bot" &&
+                  coachData.profile_type !== "coachee"
+              )
+            : savedCoachesData.filter(
+                (coachData) =>
+                  coachData.profile_type !== "skill_bot" &&
+                  coachData.profile_type !== "coachee"
+              ),
+          newValues
+        );
+        console.log(filteredData, "coach-only");
+        setCoachesData(filteredData);
+      } else if (newValues.some((skill) => skill === "feedback_bot")) {
+        const filteredData = filterData(
+          newValues.includes("Connected")
+            ? coachesData.filter(
+                (coachData) => coachData.feedback_wall !== null
+              )
+            : savedCoachesData.filter(
+                (coachData) => coachData.bot_type !== null
+              ),
+          newValues
+        );
+        console.log(filteredData, "feedback-only");
+        setCoachesData(filteredData);
       } else {
-        if (newValues.some((skill) => coachSkillsExpertise.includes(skill))) {
+        if (newValues.includes("coach")) {
           const filteredData = filterData(
             newValues.includes("Connected")
               ? coachesData.filter(
                   (coachData) =>
-                    coachData.profile_type !== "skill_bot" &&
-                    coachData.profile_type !== "coachee"
+                    coachData.profile_type === "coach" ||
+                    coachData.profile_type.includes("coach-")
                 )
               : savedCoachesData.filter(
                   (coachData) =>
-                    coachData.profile_type !== "skill_bot" &&
-                    coachData.profile_type !== "coachee"
+                    coachData.profile_type === "coach" ||
+                    coachData.profile_type.includes("coach-")
                 ),
             newValues
           );
-          console.log(filteredData, "coach-only");
-          setCoachesData(filteredData);
-        } else if (newValues.some((skill) => skill === "feedback_bot")) {
-          const filteredData = filterData(
-            newValues.includes("Connected")
-              ? coachesData.filter(
-                  (coachData) => coachData.bot_type === "feedback_bot"
-                )
-              : savedCoachesData.filter(
-                  (coachData) => coachData.bot_type === "feedback_bot"
-                ),
-            newValues
-          );
-          console.log(filteredData, "feedback-only");
+          console.log(filteredData);
           setCoachesData(filteredData);
         } else {
           const filteredData = filterData(
@@ -638,94 +665,94 @@ const Coaches = ({ user }: any) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              { ['coach', 'mentor'].includes(canJoinAs)&&(
-              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=coach");
-                  }}
-                  // href={"/intake/?type=coach"}
-                  className="flex flex-row justify-center items-center"
-                >
-                  Join as Coach or Mentor{" "}
-                  {allCoaches.length > 0 && (
-                    <>
-                      {allCoaches[0]?.is_approved ? (
-                        <>
-                          {coachId ? (
-                            <Badge className="ml-2">Already Joined</Badge>
-                          ) : (
-                            <Badge
-                              variant={"secondary"}
-                              className="ml-2 border border-gray-400"
-                            >
-                              Not Allowed
-                            </Badge>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {allCoaches[0]?.profile_type === "coach" ? (
-                            <Badge className="ml-2">Requested</Badge>
-                          ) : (
-                            <Badge
-                              variant={"secondary"}
-                              className="ml-2 border border-gray-400"
-                            >
-                              Not Allowed
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </span>
-              </DropdownMenuItem>
+              {["coach", "mentor"].includes(canJoinAs) && (
+                <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+                  <span
+                    onClick={() => {
+                      router.push("/intake/?type=coach");
+                    }}
+                    // href={"/intake/?type=coach"}
+                    className="flex flex-row justify-center items-center"
+                  >
+                    Join as Coach or Mentor{" "}
+                    {allCoaches.length > 0 && (
+                      <>
+                        {allCoaches[0]?.is_approved ? (
+                          <>
+                            {coachId ? (
+                              <Badge className="ml-2">Already Joined</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {allCoaches[0]?.profile_type === "coach" ? (
+                              <Badge className="ml-2">Requested</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </span>
+                </DropdownMenuItem>
               )}
-              { ['coachee','mentee'].includes(canJoinAs)&&(
-              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=coachee");
-                  }}
-                  // href={"/intake/?type=coachee"}
-                  className="flex flex-row justify-center items-center"
-                >
-                  Join as Coachee or Mentee
-                  {allCoaches.length > 0 && (
-                    <>
-                      {allCoaches[0]?.is_approved ? (
-                        <>
-                          {coacheeId ? (
-                            <Badge className="ml-2">Already Joined</Badge>
-                          ) : (
-                            <Badge
-                              variant={"secondary"}
-                              className="ml-2 border border-gray-400"
-                            >
-                              Not Allowed
-                            </Badge>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {allCoaches[0]?.profile_type === "coachee" ||
-                          allCoaches[0]?.profile_type === "mentee" ? (
-                            <Badge className="ml-2">Requested</Badge>
-                          ) : (
-                            <Badge
-                              variant={"secondary"}
-                              className="ml-2 border border-gray-400"
-                            >
-                              Not Allowed
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </span>
-              </DropdownMenuItem>
+              {["coachee", "mentee"].includes(canJoinAs) && (
+                <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+                  <span
+                    onClick={() => {
+                      router.push("/intake/?type=coachee");
+                    }}
+                    // href={"/intake/?type=coachee"}
+                    className="flex flex-row justify-center items-center"
+                  >
+                    Join as Coachee or Mentee
+                    {allCoaches.length > 0 && (
+                      <>
+                        {allCoaches[0]?.is_approved ? (
+                          <>
+                            {coacheeId ? (
+                              <Badge className="ml-2">Already Joined</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {allCoaches[0]?.profile_type === "coachee" ||
+                            allCoaches[0]?.profile_type === "mentee" ? (
+                              <Badge className="ml-2">Requested</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </span>
+                </DropdownMenuItem>
               )}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <span
@@ -826,13 +853,32 @@ const Coaches = ({ user }: any) => {
                         <p className="my-1.5 max-sm:text-sm max-sm:my-1 font-medium text-gray-600">
                           {coach.department}
                         </p>
-                        <Badge
-                          className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
-                            coach.profile_type === "skill_bot" && "bg-green-500"
-                          }`}
-                        >
-                          {convertTextToCorrectFormat(coach.profile_type)}
-                        </Badge>
+                        <div className="flex flex-row items-center justify-start gap-2">
+                          {coach.profile_type === "coach-mentor" ? (
+                            <>
+                              <Badge
+                                className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
+                              >
+                                {convertTextToCorrectFormat("coach")}
+                              </Badge>
+                              <Badge
+                                className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
+                              >
+                                {convertTextToCorrectFormat("mentor")}
+                              </Badge>
+                            </>
+                          ) : (
+                            <Badge
+                              className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
+                                coach.profile_type === "skill_bot" &&
+                                "bg-green-500"
+                              }`}
+                            >
+                              {convertTextToCorrectFormat(coach.profile_type)}
+                            </Badge>
+                          )}
+                        </div>
+
                         <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
                           {coach.description}
                         </p>
