@@ -97,8 +97,8 @@ const Profile = ({ user }: any) => {
         <hr />
       </div>
       <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-[80vh] flex flex-row justify-between">
-        <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2 fixed">
-          <div className="h-full flex flex-col justify-start gap-3 mb-4 overflow-scroll no-scrollbar ">
+        <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2">
+          <div className="h-fit flex flex-col justify-start gap-3 mb-8 overflow-scroll no-scrollbar">
             <NavItem
               itemName={"Account Information"}
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
@@ -145,7 +145,7 @@ const Profile = ({ user }: any) => {
             ) : null}
           </div>
         </div>
-        <div className=" ml-[20%] max-sm:ml-[12%] w-[80%] max-sm:w-[90%]">
+        <div className="max-sm:ml-[12%] w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
               <UserProfile user={user} />

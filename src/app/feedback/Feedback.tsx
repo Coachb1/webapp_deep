@@ -518,7 +518,7 @@ const Feedback = ({ user, renderType }: any) => {
                 <div className="relative isolate mx-auto">
                   <div>
                     <div className="z-50 mx-auto mt-[-1.5rem] max-sm:w-[100%] lg:px-8">
-                      <div className="no-scrollbar flex  max-h-[450px] flex-col gap-2 overflow-scroll rounded-xl bg-[url(https://cdn.statically.io/gh/falahh6/coachbots/main/kudoswallbg.svg)] p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
+                      <div className="no-scrollbar flex  max-h-[450px] bg-white flex-col gap-2 overflow-scroll rounded-xl p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
                         {renderType === "dynamic" ? (
                           <>
                             {positiveFeedbacks.length > 0 ? (

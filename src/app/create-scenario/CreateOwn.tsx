@@ -260,10 +260,10 @@ const CreateOwn = ({ user }: any) => {
                     onClick={() => {
                       console.log("hello");
                       generatedSenarioHandlerYoutube();
-                      toast.info(
-                        "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
-                        { duration: 8000 }
-                      );
+                      // toast.info(
+                      //   "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
+                      //   { duration: 8000 }
+                      // );
                     }}
                   >
                     {generatedLoading ? (
@@ -442,10 +442,10 @@ const CreateOwn = ({ user }: any) => {
                 className="h-8 border border-gray-200 max-sm:w-full"
                 onClick={() => {
                   generatedSenarioHandlerGoogle();
-                  toast.info(
-                    "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
-                    { duration: 8000 }
-                  );
+                  // toast.info(
+                  //   "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
+                  //   { duration: 8000 }
+                  // );
                 }}
               >
                 {generatedLoading ? (
@@ -609,7 +609,7 @@ const CreateOwn = ({ user }: any) => {
 
           <div className="w-full">
             <h1 className="text-2xl font-semibold text-gray-600">
-              Create your own scenario
+              Summary and Simulation
             </h1>
             <form
               onSubmit={(e: FormEvent<HTMLFormElement>) => {
