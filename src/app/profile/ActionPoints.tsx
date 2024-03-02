@@ -8,6 +8,7 @@ import {
   Info,
   Loader,
   MailCheck,
+  Milestone,
   Newspaper,
   ShoppingBag,
 } from "lucide-react";
@@ -71,10 +72,11 @@ const ActionPoints = ({ user }: any) => {
         </div>
         <div className="bg-gray-300 h-[2px] w-full mb-2"></div>
         <div className="flex flex-col items-center justify-center">
-          {icon}
-          <p className="my-1 font-bold text-gray-700 text-center text-sm max-sm:text-[10px]">
+          {/* {icon} */}
+          {/* <p className="my-1 font-bold text-gray-700 text-center text-sm max-sm:text-[10px]">
             {name}
-          </p>
+          </p> */}
+          <Milestone className="h-8 mt-3 w-8 text-gray-500 max-sm:h-5 max-sm:w-5" />
         </div>
       </div>
     );
@@ -103,7 +105,7 @@ const ActionPoints = ({ user }: any) => {
             <div className="flex flex-col justify-evenly items-center w-[16%]">
               <p>Points</p>
               <div className=" h-[2px] w-full mb-2"></div>
-              <p>Gifts</p>
+              <p className="mt-10">Gifts</p>
             </div>
             <MileStone
               actionPoint={3}

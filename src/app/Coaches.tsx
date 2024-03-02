@@ -435,87 +435,85 @@ const Coaches = ({ user }: any) => {
     []
   );
   const handleUpdateCheckedValues = (newValues: string[]) => {
-    if (newValues.includes("External")) {
-      toast.info(
-        "You do not have access to external coaches and mentors at this time. Please connect with your administrator."
-      );
-    } else if (
-      connectedCoaches.length === 0 &&
-      newValues.includes("accepted")
-    ) {
-      toast.info("You do not have any connections yet. Keep exploring.");
-    } else {
-      setParentCheckedValues(newValues);
-      console.log(newValues);
-      //for search when empty
-      if (newValues.length > 0 && newValues[0].length === 0) {
-        setParentCheckedValues([]);
-      }
+    // if (newValues.includes("External")) {
+    //   toast.info(
+    //     "You do not have access to external coaches and mentors at this time. Please connect with your administrator."
+    //   );
+    // } else if (
+    //   connectedCoaches.length === 0 &&
+    //   newValues.includes("accepted")
+    // ) {
+    //   toast.info("You do not have any connections yet. Keep exploring.");
+    // } else {
+    setParentCheckedValues(newValues);
+    console.log(newValues);
+    //for search when empty
+    if (newValues.length > 0 && newValues[0].length === 0) {
+      setParentCheckedValues([]);
+    }
 
-      //for dropdown select
-      if (newValues.length === 0) {
-        console.log("no values selected");
-        setCoachesData(savedCoachesData);
-      } else if (
-        newValues.some((skill) => coachSkillsExpertise.includes(skill))
-      ) {
+    //for dropdown select
+    if (newValues.length === 0) {
+      console.log("no values selected");
+      setCoachesData(savedCoachesData);
+    } else if (
+      newValues.some((skill) => coachSkillsExpertise.includes(skill))
+    ) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter(
+              (coachData) =>
+                coachData.profile_type !== "skill_bot" &&
+                coachData.profile_type !== "coachee"
+            )
+          : savedCoachesData.filter(
+              (coachData) =>
+                coachData.profile_type !== "skill_bot" &&
+                coachData.profile_type !== "coachee"
+            ),
+        newValues
+      );
+      console.log(filteredData, "coach-only");
+      setCoachesData(filteredData);
+    } else if (newValues.some((skill) => skill === "feedback_bot")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter((coachData) => coachData.feedback_wall !== null)
+          : savedCoachesData.filter(
+              (coachData) => coachData.feedback_wall !== null
+            ),
+        newValues
+      );
+      console.log(filteredData, "feedback-only");
+      setCoachesData(filteredData);
+    } else {
+      if (newValues.includes("coach")) {
         const filteredData = filterData(
           newValues.includes("Connected")
             ? coachesData.filter(
                 (coachData) =>
-                  coachData.profile_type !== "skill_bot" &&
-                  coachData.profile_type !== "coachee"
+                  coachData.profile_type === "coach" ||
+                  coachData.profile_type.includes("coach-")
               )
             : savedCoachesData.filter(
                 (coachData) =>
-                  coachData.profile_type !== "skill_bot" &&
-                  coachData.profile_type !== "coachee"
+                  coachData.profile_type === "coach" ||
+                  coachData.profile_type.includes("coach-")
               ),
           newValues
         );
-        console.log(filteredData, "coach-only");
-        setCoachesData(filteredData);
-      } else if (newValues.some((skill) => skill === "feedback_bot")) {
-        const filteredData = filterData(
-          newValues.includes("Connected")
-            ? coachesData.filter(
-                (coachData) => coachData.feedback_wall !== null
-              )
-            : savedCoachesData.filter(
-                (coachData) => coachData.feedback_wall !== null
-              ),
-          newValues
-        );
-        console.log(filteredData, "feedback-only");
+        console.log(filteredData);
         setCoachesData(filteredData);
       } else {
-        if (newValues.includes("coach")) {
-          const filteredData = filterData(
-            newValues.includes("Connected")
-              ? coachesData.filter(
-                  (coachData) =>
-                    coachData.profile_type === "coach" ||
-                    coachData.profile_type.includes("coach-")
-                )
-              : savedCoachesData.filter(
-                  (coachData) =>
-                    coachData.profile_type === "coach" ||
-                    coachData.profile_type.includes("coach-")
-                ),
-            newValues
-          );
-          console.log(filteredData);
-          setCoachesData(filteredData);
-        } else {
-          const filteredData = filterData(
-            newValues.includes("Connected") ? coachesData : savedCoachesData,
-            newValues
-          );
-          console.log(filteredData);
-          setCoachesData(filteredData);
-        }
+        const filteredData = filterData(
+          newValues.includes("Connected") ? coachesData : savedCoachesData,
+          newValues
+        );
+        console.log(filteredData);
+        setCoachesData(filteredData);
       }
     }
+    // }
   };
 
   function isConnected(coachStatus: string): boolean {
@@ -1034,13 +1032,26 @@ const Coaches = ({ user }: any) => {
             {!loading && coachesData.length === 0 && (
               <div className="w-full flex flex-row items-center justify-center">
                 <div className="flex items-center mt-12">
-                  {parentCheckedValues.includes("External") ? (
-                    <span>
-                      You do not have access to external coaches and mentors at
-                      this time. Please connect with your administrator.
-                    </span>
+                  {parentCheckedValues.includes("External") ||
+                  parentCheckedValues.includes("accepted") ? (
+                    <div className="flex flex-col gap-2">
+                      {parentCheckedValues.includes("External") && (
+                        <span>
+                          You do not have access to external coaches and mentors
+                          at this time. Please connect with your administrator.
+                        </span>
+                      )}
+                      {parentCheckedValues.includes("accepted") &&
+                        connectedCoaches.length === 0 && (
+                          <span>
+                            You do not have any connections yet. Keep exploring.
+                          </span>
+                        )}
+                    </div>
                   ) : (
-                    <span>No Data</span>
+                    <>
+                      <span>No Data</span>
+                    </>
                   )}
                 </div>
               </div>

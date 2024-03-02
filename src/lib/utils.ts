@@ -176,12 +176,28 @@ export function findCoacheeUID(profiles: any) {
 
 export function findCoachUID(profiles: any) {
   for (let i = 0; i < profiles.length; i++) {
-    if (profiles[i].profile_type === "coach") {
+    if (
+      profiles[i].profile_type === "coach" ||
+      profiles[i].profile_type === "mentor"
+    ) {
       return profiles[i].uid;
     }
   }
   return "";
 }
+
+export function findBotIds(profiles: any) {
+  for (let i = 0; i < profiles.length; i++) {
+    if (
+      profiles[i].profile_type === "coach" ||
+      profiles[i].profile_type === "mentor"
+    ) {
+      return profiles[i].bot_ids;
+    }
+  }
+  return "";
+}
+
 export function getBotById(botId: string, jsonData: any) {
   for (const item of jsonData) {
     if (item.signature_bot && item.signature_bot.bot_id === botId) {

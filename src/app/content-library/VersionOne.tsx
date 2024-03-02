@@ -110,7 +110,7 @@ const VersionOne = ({ user }: any) => {
           </span>
           BOTS
         </h1>
-       
+
         <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
@@ -122,16 +122,14 @@ const VersionOne = ({ user }: any) => {
         <div className="flex flex-row mt-4 z-50 gap-2">
           <Link href="/coach" target="_blank">
             <Button
-              variant={"outline"}
-              className={`h-8 text-sm max-sm:text-xs`}
+              className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Avatar Page (Sample)
             </Button>
           </Link>
           <Link href="/feedback" target="_blank">
             <Button
-              variant={"outline"}
-              className={` h-8 text-sm max-sm:text-xs`}
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Feedback Page (Sample)
             </Button>

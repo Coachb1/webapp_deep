@@ -444,7 +444,7 @@ const MyLibrary = ({ user }: any) => {
               id="category-navbar"
               className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0  z-[799] grainy w-full"
             >
-              <div className="pb-4 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
+              <div className="pb-2 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-12 ">
                 <p className="text-4xl font-black max-sm:text-4xl flex ite">
                   {" "}
                   <Link href={"v1"} className="hidden max-sm:block">
@@ -454,38 +454,24 @@ const MyLibrary = ({ user }: any) => {
                   <span> My Library</span>
                 </p>
               </div>
-              <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
-                <Button
-                  variant={"outline"}
-                  className={`h-8 max-sm:text-sm`}
-                  onClick={() => {
-                    document.getElementById("eq-tests")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                >
-                  EQ Mini Course
-                </Button>
-
-                <Button
-                  onClick={() => {
-                    document
-                      .getElementById("competency-tests")
-                      ?.scrollIntoView({
+              <div className="flex flex-col gap-2 max-sm:gap-1">
+                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                  <Button
+                    variant={"outline"}
+                    className={`h-8 max-sm:text-sm`}
+                    onClick={() => {
+                      document.getElementById("eq-tests")?.scrollIntoView({
                         behavior: "smooth",
                       });
-                  }}
-                  variant={"outline"}
-                  className={`h-8 max-sm:text-sm`}
-                >
-                  Competency Based Power Skills
-                </Button>
+                    }}
+                  >
+                    EQ Mini Course
+                  </Button>
 
-                {categorisedTests.map((category) => (
                   <Button
                     onClick={() => {
                       document
-                        .getElementById(category.category_name)
+                        .getElementById("competency-tests")
                         ?.scrollIntoView({
                           behavior: "smooth",
                         });
@@ -493,31 +479,48 @@ const MyLibrary = ({ user }: any) => {
                     variant={"outline"}
                     className={`h-8 max-sm:text-sm`}
                   >
-                    {category.category_name}
+                    Competency Based Power Skills
                   </Button>
-                ))}
-                <Button
-                  onClick={() => {
-                    document.getElementById("requested-tests")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                  variant={"outline"}
-                  className={`h-8 max-sm:text-sm`}
-                >
-                  Requested Scenarios <History className="h-4 w-4 ml-2" />
-                </Button>
-                <Button
-                  onClick={() => {
-                    document.getElementById("create-new")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                  variant={"outline"}
-                  className={`h-8 max-sm:text-sm`}
-                >
-                  Create New Simulation
-                </Button>
+                  {categorisedTests.map((category) => (
+                    <Button
+                      onClick={() => {
+                        document
+                          .getElementById(category.category_name)
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                      }}
+                      variant={"outline"}
+                      className={`h-8 max-sm:text-sm`}
+                    >
+                      {category.category_name}
+                    </Button>
+                  ))}
+                </div>
+                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                  <Button
+                    onClick={() => {
+                      document
+                        .getElementById("requested-tests")
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                    }}
+                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                  >
+                    Requested Scenarios <History className="h-4 w-4 ml-2" />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      document.getElementById("create-new")?.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                    }}
+                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                  >
+                    Create New Simulation
+                  </Button>
+                </div>
               </div>
               <div className="my-0 py-0 text-xs flex flex-row items-center">
                 <Info
