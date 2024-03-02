@@ -703,13 +703,13 @@ async function populateBotConversation(participant_id){
     );
     if (botConv.length > 0) {
       // disabling intakebutton 
+      if (intakeButton){
       intakeButton.disabled = true;
       intakeButton.style.backgroundColor = '#d3d3d3';
       intakeButton.style.color = '#a0a0a0';
       intakeButton.removeAttribute('onmouseover')
       intakeButton.removeAttribute('onmouseleave')
-
-
+      }
 
       console.log('populating conversation')
       let botConversations
@@ -718,6 +718,28 @@ async function populateBotConversation(participant_id){
           botConversations = element
         }
       });
+
+      if(botType === 'user_bot'){
+        // setting previous session and conversation id 
+        if (botConversations["results"].length > 0) {
+          const lastConv =
+            botConversations["results"][botConversations["results"].length - 1];
+          console.log(
+            "last converstion session",
+            lastConv.uid,
+            lastConv.session_id,
+            lastConv
+          );
+          conversation_id2 = lastConv.uid;
+          sessionId2 = lastConv.session_id;
+          coachMessage = lastConv.coach_message_text;
+          isBotInitialized = true;
+          isSessionActiveStt = true;
+        };
+        
+        }
+      
+      
       const results = botConversations["results"]
       results.forEach(element => {
         const coach_message_text = element['coach_message_text'];
@@ -735,6 +757,11 @@ async function populateBotConversation(participant_id){
         }
       });
       isBotConversationPopulated = true
+    }
+    else{
+      if(botType === 'user_bot'){
+        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"))
+      }
     }
   
 };
@@ -759,18 +786,21 @@ const getBotDetails2 = async (botId) => {
     botType = botDetails.data.bot_type;
     
 
-
-    if (botType !== "avatar_bot") {
-      botWelcomeMessage = botDetails.data.attributes.heading;
-    } else {
+    if ( botType === 'user_bot'){
+      botWelcomeMessage = "Welcome to my custom bot."
+    } else if (botType === 'avatar_bot') {
       botWelcomeMessage =
         "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!";
-    }
+    } else if ( botType === 'feedback_bot'){
+      botWelcomeMessage = addStickerToMessage("Welcome",'Welcome to my feedback bot. I am delighted that you are considering leaveing me a feedback. It really means a lot to me.')
+    }else{
+      botWelcomeMessage = botDetails.data.attributes.heading;
+    } 
     console.log(botType);
 
     //footer of the bots according to bot type
     const botFooterElement = document.getElementById('bot-footer') 
-    if(botType === "subject_matter_bot" || botType === "helper_bot") {
+    if(botType === "subject_matter_bot" || botType === "helper_bot" || botType === 'coachbots') {
       botFooterElement.innerHTML = "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>"
     } else if (botType === "avatar_bot"){
       botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
@@ -804,7 +834,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(button);
     };
 
-    if (botDetails.data.faqs) {
+    if (botDetails.data.faqs && botType !== 'user_bot') {
       let faqs = Object.keys(botDetails.data.faqs);
       if (faqs.length > 0) {
         // faqs.forEach((title) => {
@@ -817,7 +847,7 @@ const getBotDetails2 = async (botId) => {
     // faqButtonsGenerator("recommendations", "Recommendations");
     
 
-    if( botType === "avatar_bot" || botType === 'helper_bot'){
+    if( botType === "avatar_bot" || botType === 'helper_bot' || botType === 'coachbots'){
       // faqButtonsGenerator("intake", "Intake");
       intakeButton = document.createElement("button");
       intakeButton.setAttribute(
@@ -861,6 +891,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(button);
     }
 
+    if (botType !== 'user_bot'){
     const begginSessionButton = document.createElement("button");
     begginSessionButton.setAttribute(
       "style",
@@ -877,6 +908,7 @@ const getBotDetails2 = async (botId) => {
     begginSessionButton.setAttribute("onclick", `handleFaqButtonClick('something_else')`);
     begginSessionButton.innerText = "Begin session";
     buttonsWrapper.appendChild(begginSessionButton);
+    }
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
     
     if (botType === 'avatar_bot'){
@@ -921,7 +953,7 @@ const getBotDetails2 = async (botId) => {
     //   const faqs = botDetails.faq;
     console.log('id',userId2,participantId2)
     console.log("id from web app", window.userIdFromWebApp)
-    if (!isBotConversationPopulated){
+    if (!isBotConversationPopulated && botType !== 'feedback_bot'){
       populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
@@ -1134,18 +1166,21 @@ async function handlePreviousConversation(choice) {
   }
 
   if (choice === "Yes") {
-    // enabling Intake button 
-    intakeButton.setAttribute(
-      "onmouseover",
-      "this.style.backgroundColor = '#f87171'"
-    );
-    intakeButton.setAttribute(
-      "onmouseleave",
-      "this.style.backgroundColor = '#dc2626'"
-    );
-    intakeButton.style.backgroundColor = '#dc2626';
-    intakeButton.style.color = 'white';
-    intakeButton.disabled = false;
+
+    if (intakeButton){
+      // enabling Intake button 
+      intakeButton.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f87171'"
+      );
+      intakeButton.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = '#dc2626'"
+      );
+      intakeButton.style.backgroundColor = '#dc2626';
+      intakeButton.style.color = 'white';
+      intakeButton.disabled = false;
+    }
 
 
     disableOrEnableButtons("conversation-proceed-options")
@@ -1205,7 +1240,7 @@ async function handlePreviousConversation(choice) {
     return;
   }
 
-  if (botType === 'helper_bot'){
+  if (botType === 'helper_bot' || botType === 'coachbots'){
     appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
     appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
 
@@ -1334,7 +1369,7 @@ async function handleFaqButtonClick(question) {
 
       
       let intakeSummery;
-      if( ["avatar_bot","helper_bot"].includes(botType)){
+      if( ["avatar_bot","helper_bot","coachbots"].includes(botType)){
         console.log("===> yes fetching intake summary")
         const queryparam = new URLSearchParams({
           method: "get",
@@ -1369,7 +1404,7 @@ async function handleFaqButtonClick(question) {
       }
 
       console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
-      if( (isIntakeSummaryDisplayed == false) && ["avatar_bot","helper_bot"].includes(botType)){
+      if( (isIntakeSummaryDisplayed == false) && ["avatar_bot","helper_bot","coachbots"].includes(botType)){
         const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
         <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
         <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`
@@ -1401,7 +1436,7 @@ async function handleFaqButtonClick(question) {
         }
         return;
       }
-      else if (previousBotConversationId != "" && ['subject_matter_bot','helper_bot'].includes(botType)){
+      else if (previousBotConversationId != "" && ['subject_matter_bot','helper_bot',"coachbots"].includes(botType)){
         // in helperbot and suject matter bot we are not creating another session
         conversation_id2 = previousBotConversationId.split(":")[0];
         sessionId2 = previousBotConversationId.split(":")[1];
@@ -1435,7 +1470,7 @@ async function handleFaqButtonClick(question) {
         appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
         return;
       }
-      if (botType === 'helper_bot'){
+      if (botType === 'helper_bot' || botType === 'coachbots'){
         appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
         appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
         
@@ -4158,7 +4193,7 @@ loadExternalModule().then(() => {
           globalSignals = signals;
 
           if (fitmentAnalysisInProgress) {
-            console.log("NA-1");
+            console.log("NA-1",fitmentAnalysisInProgress);
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
@@ -4508,7 +4543,8 @@ loadExternalModule().then(() => {
               fitmentAnalysisInProgress == false &&
               isSessionActiveStt == false &&
               isAttemptingRecommendation == false &&
-              optedBeginSession == false
+              optedBeginSession == false &&
+              botType !== 'user_bot'
             ) {
               console.log("NA-1");
               signals.onResponse({
