@@ -806,6 +806,8 @@ const getBotDetails2 = async (botId) => {
       botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
     } else if (botType === "feedback_bot"){
       botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
+    } else if (botType === "user_bot"){
+      botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`
     }
 
     let buttons = "";
