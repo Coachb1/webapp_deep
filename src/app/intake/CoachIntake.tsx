@@ -24,6 +24,7 @@ import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import { UserClientInfoDataType } from "@/lib/types";
 import { Radio } from "antd";
+import UserBotIntake from "./UserBotIntake";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -1415,7 +1416,7 @@ const CoachIntake = ({ user }: any) => {
           </span>
           BOTS
         </h1>
-        {/* {formType === "IDP" && <IDPIntake user={user} />} */}
+        {formType === "user-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
