@@ -15,10 +15,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth ,convertTextToCorrectFormat} from "@/lib/utils";
+import { baseURL, basicAuth, convertTextToCorrectFormat } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
+import NavProfile from "@/components/NavProfile";
 
 const howItWorks = [
   {
@@ -236,7 +237,10 @@ const Coach = ({ user, renderType }: any) => {
         )}
         <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-            <NetworkNav user={user} />
+            {/* <NetworkNav user={user} /> */}
+            <div className="ml-4">
+              <NavProfile user={user} />
+            </div>
           </div>
           <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
             <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
@@ -248,7 +252,9 @@ const Coach = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${convertTextToCorrectFormat(coachName)}'s Avatar🚀`
+                  ? `Welcome to ${convertTextToCorrectFormat(
+                      coachName
+                    )}'s Avatar🚀`
                   : "Welcome to the Aarav Sharma’s Avatar!🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">

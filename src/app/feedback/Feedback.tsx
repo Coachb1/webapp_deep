@@ -14,7 +14,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { convertDate, getUserAccount, reportsLinksSelector } from "@/lib/utils";
-import { AlertTriangle, CornerDownRight, Loader, Quote } from "lucide-react";
+import {
+  AlertTriangle,
+  CornerDownRight,
+  Loader,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -387,7 +391,11 @@ const Feedback = ({ user, renderType }: any) => {
         )}
         <div className="grainy h-full min-h-screen bg-gray-100 pb-16 max-sm:h-full max-sm:min-h-screen">
           <div className="fixed !z-[800] flex h-6 w-full items-center justify-end p-4 py-8">
-            <NetworkNav user={user} />
+            {/* <NetworkNav user={user} /> */}
+
+            <div className="ml-4">
+              <NavProfile user={user} />
+            </div>
           </div>
           <div className="flex flex-col items-center justify-center px-24 pt-20 text-center max-sm:px-8">
             <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
