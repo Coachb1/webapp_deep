@@ -359,7 +359,7 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (data.data.length > 0 && !checkIfEdit) {
+              if (data.data.length > 0 && !checkIfEdit && formType !== "user-bot") {
                 if (
                   (formType === "coach" && profileTypes.includes("coach")) ||
                   profileTypes.includes("coachee") ||
