@@ -159,13 +159,14 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     setReleventDocuments([]);
   };
 
+  const [submitLoading, setSubmitLoading] = useState(false);
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", basicAuth);
     myHeaders.append("Content-Type", "application/json");
-
+    setSubmitLoading(true);
     if (!checkIfEdit) {
       //   var formdata = new FormData();
       //   formdata.append("name", user.given_name!);
@@ -265,9 +266,12 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
+
+          setSubmitLoading(false);
         })
         .catch((err) => {
           console.error(err);
+          setSubmitLoading(false);
         });
       console.log(userBotCreationFormData);
     }
@@ -394,11 +398,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
               />
             </div>
-            <hr className="my-2" />
+            <hr className="mb-2" />
             <div>
               <Button className="h-8">
                 {" "}
-                {false ? (
+                {submitLoading ? (
                   <>
                     <Loader className="h-5 w-5 animate-spin mr-2" /> Submitting
                   </>
