@@ -307,6 +307,8 @@ const Coaches = ({ user }: any) => {
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
+  const [userBotData, setUserBotData] = useState<any>();
+
   async function getCanJoinAs(email: string) {
     try {
       const resp = await fetch(
@@ -383,10 +385,16 @@ const Coaches = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log("Bot details for edit", data);
+
               const FeedbackBot = data.data.filter(
                 (data: any) => data.signature_bot.bot_type === "feedback_bot"
               );
               setFeedbackBots(FeedbackBot);
+
+              const UserBot = data.data.filter(
+                (data: any) => data.signature_bot.bot_type === "user_bot"
+              );
+              setUserBotData(UserBot);
             })
             .catch((err) => {
               console.error(err);
@@ -772,7 +780,7 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
+              <DropdownMenuItem disabled={userBotData?.length > 0} asChild>
                 <span
                   onClick={() => {
                     router.push("/intake/?type=user-bot");
@@ -780,6 +788,15 @@ const Coaches = ({ user }: any) => {
                   className="flex flex-row justify-center items-center"
                 >
                   Create your bot
+                  {userBotData?.length > 0 && (
+                    <>
+                      {userBotData[0]?.signature_bot.is_approved ? (
+                        <Badge className="ml-2">Already Joined</Badge>
+                      ) : (
+                        <Badge className="ml-2">Requested</Badge>
+                      )}
+                    </>
+                  )}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
