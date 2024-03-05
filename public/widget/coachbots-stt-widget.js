@@ -4267,7 +4267,7 @@ loadExternalModule().then(() => {
             feedbackBotIndex += 1;
             const is_last = que_length + 1 === feedbackBotIndex;
             if (is_last) {
-              appendMessage2("<b> Thank you for your feedback.</b>");
+              // appendMessage2("<b> Thank you for your feedback.</b>");
               const queryparams = new URLSearchParams({
                 conversation: JSON.stringify(feedbackBotQnA),
                 bot_id: botId,
@@ -4322,7 +4322,14 @@ loadExternalModule().then(() => {
                 });
 
               // resetAllVariablesStt()
-              appendMessage2(
+
+              signals.onResponse({
+                html: "<b>Thank you for your feedback.</b>",
+              });   
+
+              // ********************* Recommend Test After Feedback *********************
+
+              /* appendMessage2(
                 "please wait while we are getting some recommendations for you..."
               );
 
@@ -4378,9 +4385,13 @@ loadExternalModule().then(() => {
                 isFeedbackConvEnd = true;
               } catch (error) {
                 console.error(`Error in get recommendation tests: ${error}`);
-              }
+              } */
 
-              return;
+              // return;
+
+
+
+              // ********************* Recommend Test After Feedback *********************
             } else {
               signals.onResponse({
                 html: feedbackBotQuestions[feedbackBotIndex],
