@@ -961,7 +961,7 @@ const Coaches = ({ user }: any) => {
                         {coach.feedback_wall !== null &&
                           coach.feedback_wall !== "" && (
                             <div className="w-full">
-                              <Link href={coach.feedback_wall}>
+                              <Link target="_blank" href={coach.feedback_wall}>
                                 <Button
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
