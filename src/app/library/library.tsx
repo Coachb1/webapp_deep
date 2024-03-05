@@ -61,10 +61,12 @@ interface StateType {
   category: string;
   tests: Test[];
 }
+
 type TestData = {
   domain: any;
   tests: any;
 };
+
 const convertToJsonArray = (input: Category): StateType[] => {
   const resultArray: StateType[] = [];
 

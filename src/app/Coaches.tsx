@@ -772,6 +772,16 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
+              <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
+                <span
+                  onClick={() => {
+                    router.push("/intake/?type=user-bot");
+                  }}
+                  className="flex flex-row justify-center items-center"
+                >
+                  Create your bot
+                </span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
