@@ -238,13 +238,18 @@ export default function RootLayout({
       if (pathname === "/profile") {
         coachtalk.setAttribute("style", "display: none;");
         coachScribe.setAttribute("style", "display: none;");
-      } else if (pathname === "/") {
-        coachtalk.setAttribute("style", "display: none;");
-        // coachScribe.setAttribute("style", "display: none;");
       } else if (pathname.includes("intake")) {
         if (coachScribe && coachtalk) {
           coachtalk.setAttribute("style", "display: none;");
           coachScribe.setAttribute("style", "display: none;");
+        }
+      } else if (
+        pathname.includes("feedback") ||
+        pathname.includes("coach") ||
+        pathname.includes("subject")
+      ) {
+        if (coachtalk) {
+          coachtalk.removeAttribute("style");
         }
       } else {
         if (coachScribe && coachtalk) {
@@ -279,7 +284,7 @@ export default function RootLayout({
       if (coachtalk) {
         coachtalk.removeAttribute("style");
       }
-    } else if (pathname === "/content-library"){
+    } else if (pathname === "/content-library") {
       if (coachScribe) {
         coachScribe.removeAttribute("style");
       }
