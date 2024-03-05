@@ -156,7 +156,7 @@ const Coaches = ({ user }: any) => {
 
   const getCoachesData = async () => {
     //GET COACHES
-    await fetch(`${baseURL}/accounts/get-directory-informations/`, {
+    await fetch(`${baseURL}/accounts/get-directory-informations/?email=${user.email}`, {
       method: "GET",
       headers: {
         Authorization: basicAuth,

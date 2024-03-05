@@ -628,7 +628,7 @@ const feedbackBotInitialFlow = async (flow) => {
     feedbackBotIndex = 0;
     const div_cont = `<div id="thumbsup-down" >
         
-        <b>What do you think of our bot?</b>
+        <b>What is your first general impression feedback about me?</b>
             <br>
             <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:20%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="feedbackBotQnAFlow('up')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
             <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
@@ -805,7 +805,7 @@ const getBotDetails2 = async (botId) => {
     } else if (botType === "avatar_bot"){
       botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
     } else if (botType === "feedback_bot"){
-      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
+      botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`
     } else if (botType === "user_bot"){
       botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`
     }
@@ -1122,7 +1122,9 @@ function SendingFirstInitialQue(){
 
   //sending first question 
   isAskingInitialQuestions = true;
-  botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
+  // if (botType === 'avatar_bot'){
+  // botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
+  // }
   const question = botInitialQuestions[botInitialQuestionsIndex];
   if (typeof question === "string") {
     appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
@@ -3958,7 +3960,7 @@ loadExternalModule().then(() => {
   };
 
   // to check word limit
-  function isValidMessageStt(text) {
+  function isValidMessageStt(text, limit = 15) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -3967,7 +3969,7 @@ loadExternalModule().then(() => {
     ) {
       return true;
     }
-    if (words.length < 15) {
+    if (words.length < limit) {
       return false;
     } else {
       return true;
@@ -4260,6 +4262,12 @@ loadExternalModule().then(() => {
           }
 
           if (botType === "feedback_bot" && !isFeedbackConvEnd) {
+            if(!isValidMessageStt(latestMessage,11)){
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>`
+              });
+              return;
+            }
             feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] =
               latestMessage;
             const que_length = Object.keys(feedbackBotQuestions).length;
