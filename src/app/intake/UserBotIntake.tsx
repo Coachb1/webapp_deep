@@ -14,7 +14,8 @@ import { Info, Loader, SendHorizonal } from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import { FormEvent, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
@@ -27,6 +28,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [functionsNTasksOfBot, setFunctionsNTasksOfBot] = useState("");
   const [infoAccessToBot, setInfoAccessToBots] = useState("");
   const [commanFaqs, setCommanFaqs] = useState("");
+
+  const router = useRouter();
 
   interface FileData {
     file: File;
@@ -165,87 +168,40 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", basicAuth);
-    myHeaders.append("Content-Type", "application/json");
+    // myHeaders.append("Content-Type", "application/json");
     setSubmitLoading(true);
     if (!checkIfEdit) {
-      //   var formdata = new FormData();
-      //   formdata.append("name", user.given_name!);
-      //   formdata.append("user_id", userId);
-      //   formdata.append("email", user.email!);
-      //   formdata.append("bot_type", "user_bot");
-      //   formdata.append("profile_type", "skill_bot");
-      //   formdata.append(
-      //     "faqs",
-      //     JSON.stringify({
-      //       "What is the primary purpose of the bot?": primaryPurpose,
-      //       "What tasks or functions should the bot perform?":
-      //         functionsNTasksOfBot,
-      //       "Provide the information the bot should have access to generate responses?":
-      //         infoAccessToBot,
-      //       "Provide a few common FAQs the bot should use for commonly asked questions?":
-      //         commanFaqs,
-      //       "Provide any relevant links and make sure the links are publicly accessible":
-      //         releventLinks,
-      //     })
-      //   );
+      var formdata = new FormData();
+      formdata.append("name", user.given_name!);
+      formdata.append("user_id", userId);
+      formdata.append("bot_name", user.given_name!);
+      formdata.append("participant_id", userId);
+      formdata.append("email", user.email!);
+      formdata.append("bot_type", "user_bot");
+      formdata.append(
+        "profile_image",
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
+      );
 
-      //   releventDocument.forEach(({ file, text }) => {
-      //     if (file.name.includes(".pdf")) {
-      //       if (text) {
-      //         formdata.append(
-      //           "pdf_data",
-      //           `file_name:${file.name} text_file:${text}`
-      //         );
-      //         console.log(text);
-      //       } else {
-      //         formdata.append(`attached_pdfs`, file, file.name.trim());
-      //       }
-      //     } else if (file.name.includes(".docx")) {
-      //       if (text) {
-      //         formdata.append(
-      //           `doc_data`,
-      //           `file_name:${file.name} text_file:${text}`
-      //         );
-      //         console.log(text);
-      //       } else {
-      //         formdata.append(`attached_docs`, file, file.name.trim());
-      //       }
-      //     }
-      //   });
-
-      //   var requestOptions = {
-      //     method: "POST",
-      //     headers: myHeaders,
-      //     body: formdata,
-      //   };
-      //   fetch(
-      //     `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
-      //     requestOptions
-      //   )
-      //     .then((response) => response.json())
-      //     .then((result) => {
-      //       console.log(result);
-      //     })
-      //     .catch((err) => {
-      //       console.error(err);
-      //     });
-
-      const userBotCreationFormData = {
-        bot_type: "user_bot",
-        profile_id: "47fd784d-535a-4f57-bb5b-d8f333062761",
-        email: user.email,
-        bot_name: "user-bot",
-        bot_details: null,
-        attributes: {
+      formdata.append(
+        "attributes",
+        JSON.stringify({
           heading: `welcome to ${user.given_name}'s user bot`,
-        },
-        bot_base_url: `${
+        })
+      );
+
+      formdata.append(
+        "bot_base_url",
+        `${
           subdomain === "playground"
             ? "https://playground.coachbots.com/"
             : "https://platform.coachbots.com/"
-        }`,
-        participant_id: userId,
-        faqs: {
+        }`
+      );
+
+      formdata.append(
+        "faqs",
+        JSON.stringify({
           "What is the primary purpose of the bot?": primaryPurpose,
           "What tasks or functions should the bot perform?":
             functionsNTasksOfBot,
@@ -253,27 +209,83 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             infoAccessToBot,
           "Provide a few common FAQs the bot should use for commonly asked questions?":
             commanFaqs,
-          "Provide any relevant links and make sure the links are publicly accessible":
-            releventLinks,
-        },
-      };
+        })
+      );
 
       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
         method: "POST",
         headers: myHeaders,
-        body: JSON.stringify(userBotCreationFormData),
+        body: formdata,
       })
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
 
+          if (!data.error && !data.detail && !data.msg) {
+            const patchFormData = new FormData();
+            releventDocument.forEach(({ file, text }) => {
+              if (file.name.includes(".pdf")) {
+                if (text) {
+                  patchFormData.append(
+                    "pdf_data",
+                    `file_name:${file.name} text_file:${text}`
+                  );
+                  console.log(text);
+                } else {
+                  patchFormData.append(`attached_pdfs`, file, file.name.trim());
+                }
+              } else if (file.name.includes(".docx")) {
+                if (text) {
+                  patchFormData.append(
+                    `doc_data`,
+                    `file_name:${file.name} text_file:${text}`
+                  );
+                  console.log(text);
+                } else {
+                  patchFormData.append(`attached_docs`, file, file.name.trim());
+                }
+              }
+            });
+
+            patchFormData.append(
+              "provided_links",
+              JSON.stringify({
+                youtube_links: releventLinks,
+              })
+            );
+
+            patchFormData.append("bot_id", data.bot_uid);
+
+            fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+              method: "PATCH",
+              headers: myHeaders,
+              body: patchFormData,
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+
+                resetAllStates();
+
+                toast.success("Successfully Created your user bot.");
+                setTimeout(() => {
+                  router.push("/");
+                }, 4000);
+              })
+              .catch((err) => {
+                console.error(err);
+                toast.error("Error creating your user bot, Please try again.");
+              });
+          } else {
+            toast.error("Error creating your user bot, Please try again.");
+          }
           setSubmitLoading(false);
         })
         .catch((err) => {
           console.error(err);
+          toast.loading("Error creating your user bot, Please try again.");
           setSubmitLoading(false);
         });
-      console.log(userBotCreationFormData);
     }
   };
 

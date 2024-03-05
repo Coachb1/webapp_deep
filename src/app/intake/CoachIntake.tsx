@@ -308,6 +308,8 @@ const CoachIntake = ({ user }: any) => {
     return profileTypes;
   }
 
+  let userIdd: string;
+
   useEffect(() => {
     hideBots();
     if (user) {
@@ -317,6 +319,7 @@ const CoachIntake = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
+          userIdd = data.uid;
         })
         .catch((err) => {
           console.error(err);
@@ -359,7 +362,12 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (data.data.length > 0 && !checkIfEdit && formType !== "user-bot") {
+              if (
+                data.data.length > 0 &&
+                !checkIfEdit &&
+                formType !== "user-bot" &&
+                formType !== "feedback"
+              ) {
                 if (
                   (formType === "coach" && profileTypes.includes("coach")) ||
                   profileTypes.includes("coachee") ||
@@ -380,7 +388,7 @@ const CoachIntake = ({ user }: any) => {
             });
 
           if (formType === "feedback" && !checkIfEdit) {
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
               headers: {
                 Authorization: basicAuth,
               },
@@ -395,6 +403,34 @@ const CoachIntake = ({ user }: any) => {
                 if (FeedbackBot.length > 0) {
                   toast.loading(
                     "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
+
+          if (formType === "user-bot" && !checkIfEdit) {
+            console.log(userIdd);
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit", data);
+                const UserBot = data.data.filter(
+                  (data: any) => data.signature_bot.bot_type === "user_bot"
+                );
+
+                if (UserBot.length > 0) {
+                  toast.loading(
+                    "Your user bot already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
                     router.push("/");
