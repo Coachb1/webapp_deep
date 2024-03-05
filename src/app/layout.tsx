@@ -259,12 +259,12 @@ export default function RootLayout({
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
     if (pathname === "/library") {
-      // if (coachScribe) {
-      //   coachScribe.setAttribute("style", "display: none;");
-      // }
-      // if (coachtalk) {
-      //   coachtalk.setAttribute("style", "display: none;");
-      // }
+      if (coachScribe) {
+        coachScribe.removeAttribute("style");
+      }
+      if (coachtalk) {
+        coachtalk.removeAttribute("style");
+      }
     } else if (pathname === "/profile") {
       if (coachScribe) {
         coachScribe.setAttribute("style", "display: none;");
@@ -273,6 +273,13 @@ export default function RootLayout({
         coachtalk.setAttribute("style", "display: none;");
       }
     } else if (pathname === "/create-scenario") {
+      if (coachScribe) {
+        coachScribe.removeAttribute("style");
+      }
+      if (coachtalk) {
+        coachtalk.removeAttribute("style");
+      }
+    } else if (pathname === "/content-library"){
       if (coachScribe) {
         coachScribe.removeAttribute("style");
       }
