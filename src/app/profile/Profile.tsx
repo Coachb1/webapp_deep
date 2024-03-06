@@ -145,7 +145,7 @@ const Profile = ({ user }: any) => {
             ) : null}
           </div>
         </div>
-        <div className="max-sm:ml-[12%] w-[80%] max-sm:w-[90%]">
+        <div className=" w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
               <UserProfile user={user} />

@@ -111,6 +111,8 @@ const MyPages = ({ user }: any) => {
       return "Coach Avatar";
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
+    } else if (botType === "user_bot") {
+      return "User Bot";
     }
   };
 
@@ -121,6 +123,8 @@ const MyPages = ({ user }: any) => {
       return `https://playground.coachbots.com/feedback/${bot_id}`;
     } else if (botType === "subject_matter_bot") {
       return `https://playground.coachbots.com/subject-expert/${bot_id}`;
+    } else if (botType === "user_bot") {
+      return `https://playground.coachbots.com/custom-bot/${bot_id}`;
     }
   };
 
@@ -148,6 +152,10 @@ const MyPages = ({ user }: any) => {
       }
     } else if (profile_type === "mentee") {
       return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    } else {
+      if (botType === "user_bot") {
+        return `/intake/?type=user-bot&edit=true&bot_id=${bot_id}`;
+      }
     }
   };
 
@@ -239,21 +247,23 @@ const MyPages = ({ user }: any) => {
                       </DialogContent>
                     </Dialog>
                     <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant={"secondary"}
-                          className="h-6 text-xs w-fit"
-                        >
-                          <span className="max-sm:hidden">Link </span>
-                          <TooltipWrapper
-                            className="hidden max-sm:block text-xs"
-                            tooltipName="Link"
-                            body={
-                              <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
-                            }
-                          />
-                        </Button>
-                      </DialogTrigger>
+                      {botType.bot_type !== "user_bot" && (
+                        <DialogTrigger asChild>
+                          <Button
+                            variant={"secondary"}
+                            className="h-6 text-xs w-fit"
+                          >
+                            <span className="max-sm:hidden">Link </span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Link"
+                              body={
+                                <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </DialogTrigger>
+                      )}
                       <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
                         <DialogHeader>
                           <DialogTitle>Page link</DialogTitle>
