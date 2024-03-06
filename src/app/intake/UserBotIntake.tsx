@@ -5,12 +5,13 @@ import {
   baseURL,
   basicAuth,
   convertTextToCorrectFormat,
+  getBotById,
   getUserAccount,
   subdomain,
 } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { Button } from "@/components/ui/button";
-import { Info, Loader, SendHorizonal } from "lucide-react";
+import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import { FormEvent, useEffect, useState } from "react";
@@ -21,6 +22,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
+  const botIdFromParams = params.get("bot_id");
+  const botIUidFromParams = params.get("uid");
 
   const [userId, setUserId] = useState("");
   //user input states
@@ -170,7 +173,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     myHeaders.append("Authorization", basicAuth);
     // myHeaders.append("Content-Type", "application/json");
     setSubmitLoading(true);
-    if (!checkIfEdit) {
+    // if (!checkIfEdit) {
       var formdata = new FormData();
       formdata.append("name", user.given_name!);
       formdata.append("user_id", userId);
@@ -209,11 +212,16 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             infoAccessToBot,
           "Provide a few common FAQs the bot should use for commonly asked questions?":
             commanFaqs,
+          "Provide any relevant links and make sure the links are publicly accessible" : releventLinks
         })
       );
 
+      if(checkIfEdit){
+          formdata.append("bot_id", botIUidFromParams!);
+      }
+    
       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-        method: "POST",
+        method: checkIfEdit ? "PATCH" : "POST",
         headers: myHeaders,
         body: formdata,
       })
@@ -221,7 +229,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         .then((data) => {
           console.log(data);
 
-          if (!data.error && !data.detail && !data.msg) {
+          if (!data.error && !data.detail && (checkIfEdit ? data.msg === "updated" : !data.msg)) {
             const patchFormData = new FormData();
             releventDocument.forEach(({ file, text }) => {
               if (file.name.includes(".pdf")) {
@@ -254,7 +262,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               })
             );
 
-            patchFormData.append("bot_id", data.bot_uid);
+            patchFormData.append("bot_id", checkIfEdit ? botIUidFromParams! : data.bot_uid);
 
             fetch(`${baseURL}/accounts/create-bot-by-details/`, {
               method: "PATCH",
@@ -264,13 +272,25 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               .then((res) => res.json())
               .then((data) => {
                 console.log(data);
+                if(data.error){
 
-                resetAllStates();
+                } else {
+                  resetAllStates();
+                  if(checkIfEdit){
+                    toast.success("Successfully Updated your user bot.");
+                    setTimeout(() => {
+                      router.push("/profile");
+                    }, 4000);
+                  } else {
+                    toast.success("Successfully Created your user bot.");
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 4000);
+                  }
+                }
 
-                toast.success("Successfully Created your user bot.");
-                setTimeout(() => {
-                  router.push("/");
-                }, 4000);
+                
+               
               })
               .catch((err) => {
                 console.error(err);
@@ -286,8 +306,41 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           toast.loading("Error creating your user bot, Please try again.");
           setSubmitLoading(false);
         });
-    }
+    // }
   };
+
+  //handling edit
+  useEffect(() => {
+    if(checkIfEdit === "true"){
+      getUserAccount(user)
+          .then((res) => res.json())
+          .then((data) => {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+              headers: {
+                Authorization: basicAuth,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log("Bot details for edit - User bot  [userBotIntake]", data);
+                let resultingBot = getBotById(botIdFromParams!, data.data);
+
+                console.log(resultingBot);
+
+                const parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs)
+
+                console.log(parsedFaqJson)
+                console.log(parsedFaqJson["Provide a few common FAQs the bot should use for commonly asked questions"])
+
+                setCommanFaqs(parsedFaqJson["Provide a few common FAQs the bot should use for commonly asked questions?"]);
+                setFunctionsNTasksOfBot(parsedFaqJson["What tasks or functions should the bot perform?"]);
+                setInfoAccessToBots(parsedFaqJson["Provide the information the bot should have access to generate responses?"]);
+                setPrimaryPurpose(parsedFaqJson["What is the primary purpose of the bot?"]);
+                setReleventLinks(parsedFaqJson["Provide any relevant links and make sure the links are publicly accessible"]);
+              })
+            })
+    }
+  },[])
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
@@ -309,7 +362,18 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
           >
             <Info className="h-4 w-4 mr-1" /> All fields are required.
+
+            
           </Badge>
+          {checkIfEdit && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800"
+                      variant={"outline"}
+                    >
+                      You are editing your bot. All the earlier inputs will be
+                      replaced by current inputs.
+                    </Badge>
+                  )}
           <div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
@@ -416,11 +480,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 {" "}
                 {submitLoading ? (
                   <>
-                    <Loader className="h-5 w-5 animate-spin mr-2" /> Submitting
+                    <Loader className="h-5 w-5 animate-spin mr-2" /> {checkIfEdit ? "Saving" : "Submitting"}
                   </>
                 ) : (
                   <>
-                    Submit <SendHorizonal className="ml-2 h-4 w-4" />
+                     {checkIfEdit ? "Save changes" : "Submit"} {checkIfEdit ? <PenLine className="ml-2 h-4 w-4" /> : <SendHorizonal className="ml-2 h-4 w-4" />}
                   </>
                 )}
               </Button>
