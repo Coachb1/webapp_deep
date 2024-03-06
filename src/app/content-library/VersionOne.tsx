@@ -124,7 +124,7 @@ const VersionOne = ({ user }: any) => {
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Avatar Page (Sample)
+              AI-Frame (Sample)
             </Button>
           </Link>
           <Link href="/feedback" target="_blank">

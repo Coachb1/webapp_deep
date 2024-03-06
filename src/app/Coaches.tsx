@@ -42,6 +42,7 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
+import GlowyBox from "@/components/glowyBox";
 
 interface CoachesDataType {
   id: number;
@@ -156,17 +157,35 @@ const Coaches = ({ user }: any) => {
 
   const getCoachesData = async () => {
     //GET COACHES
-    await fetch(`${baseURL}/accounts/get-directory-informations/?email=${user.email}`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
+    await fetch(
+      `${baseURL}/accounts/get-directory-informations/?email=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setSavedCoachesData(data);
-        setCoachesData(data);
+
+        const coachbotsProfiles = data.filter(
+          (profile: CoachesDataType) => profile.bot_type === "coachbots"
+        );
+        console.log(coachbotsProfiles, "coachbotsProfiles");
+
+        const allOtherProfiles = data.filter(
+          (profile: CoachesDataType) => profile.bot_type !== "coachbots"
+        );
+
+        console.log(allOtherProfiles, "allOtherProfiles");
+
+        setSavedCoachesData([...coachbotsProfiles, ...allOtherProfiles]);
+        setCoachesData([...coachbotsProfiles, ...allOtherProfiles]);
+
+        // setSavedCoachesData(data);
+        // setCoachesData(data);
         setLoading(false);
 
         const profileTypeOptions: string[] = Array.from(
@@ -214,6 +233,7 @@ const Coaches = ({ user }: any) => {
               "External",
               "accepted",
               "feedback_bot",
+              "coachbots",
             ],
           },
           {
@@ -494,6 +514,19 @@ const Coaches = ({ user }: any) => {
       );
       console.log(filteredData, "feedback-only");
       setCoachesData(filteredData);
+    } else if (newValues.includes("coachbots")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter(
+              (coachData) => coachData.profile_type === "coachbots"
+            )
+          : savedCoachesData.filter(
+              (coachData) => coachData.profile_type === "coachbots"
+            ),
+        newValues
+      );
+      console.log(filteredData);
+      setCoachesData(filteredData);
     } else {
       if (newValues.includes("coach")) {
         const filteredData = filterData(
@@ -639,6 +672,141 @@ const Coaches = ({ user }: any) => {
     );
   };
 
+  const CoachComponent = ({ coach }: { coach: CoachesDataType }) => {
+    return (
+      <div id={coach.profile_id} className="pt-20 mt-[-5rem] -z-10">
+        <div
+          className={`w-full my-3 flex flex-row p-4 max-sm:p-2 ${
+            coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
+          } border border-gray-300 rounded-md`}
+        >
+          <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex flex-col items-center justify-center max-sm:justify-start max-sm:items-start">
+            <img
+              className="w-[250px] h-[250px] max-sm:h-[130px] object-cover"
+              src={coach.profile_pic_url}
+            />
+          </div>
+          <div className="flex flex-row w-[70%] max-sm:w-[70%]  max-sm:flex-col">
+            <div className="w-[70%] max-sm:w-full max-sm:pl-4 max-md:pl-4 flex flex-col justify-start items-start ">
+              <p className="text-xl font-semibold text-gray-700 mt-2 max-sm:mt-0 text-left max-sm:text-lg">
+                {coach.name}
+              </p>
+              <p className="my-1.5 max-sm:text-sm max-sm:my-1 font-medium text-gray-600">
+                {coach.department}
+              </p>
+              <div className="flex flex-row items-center justify-start gap-2">
+                {coach.profile_type === "coach-mentor" ? (
+                  <>
+                    <Badge
+                      className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
+                    >
+                      {convertTextToCorrectFormat("coach")}
+                    </Badge>
+                    <Badge
+                      className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
+                    >
+                      {convertTextToCorrectFormat("mentor")}
+                    </Badge>
+                  </>
+                ) : (
+                  <Badge
+                    className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
+                      (coach.profile_type === "skill_bot" ||
+                        coach.profile_type === "coachbots") &&
+                      "bg-green-500"
+                    }`}
+                  >
+                    {convertTextToCorrectFormat(coach.profile_type)}
+                  </Badge>
+                )}
+              </div>
+
+              <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
+                {coach.description}
+              </p>
+              <Separator className="my-2 max-sm:my-1.5 bg-gray-400" />
+              {coach.profile_type !== "skill_bot" && (
+                <div className="my-1 text-gray-600 max-sm:text-xs">
+                  <p className="text-sm max-sm:text-xs font-light inline">
+                    Experience :
+                  </p>{" "}
+                  <b className="inline">{coach.experience}</b>
+                </div>
+              )}
+              {coach.expertise && (
+                <p className="my-1 text-left text-gray-600 max-sm:text-xs">
+                  <p className="text-sm  max-sm:text-xs font-light inline">
+                    {" "}
+                    Expertise :
+                  </p>{" "}
+                  <b className="inline">{coach.expertise}</b>
+                </p>
+              )}
+            </div>
+            <div className="w-[30%] max-sm:w-full pb-[20%] max-sm:pb-4 flex flex-col items-center justify-center gap-3">
+              {coach.profile_type === "coach" && (
+                <>
+                  {coach.status === "accepted" && (
+                    <Button
+                      disabled
+                      variant={"outline"}
+                      className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-green-300 bg-green-100"
+                    >
+                      Connected
+                    </Button>
+                  )}
+                  {coach.status === "pending" && (
+                    <Button
+                      disabled
+                      variant={"outline"}
+                      className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                    >
+                      Requested
+                    </Button>
+                  )}
+                  {coach.status === "" && (
+                    <RequestionConnection coachId={coach.profile_id} />
+                  )}
+                  {coach.status === "available" && (
+                    <RequestionConnection coachId={coach.profile_id} />
+                  )}
+                  <Separator className="bg-gray-400 w-[80%]" />
+                </>
+              )}
+              {coach.avatar_bot_url !== null && coach.avatar_bot_url !== "" && (
+                <div className="w-full ">
+                  <Link href={coach.avatar_bot_url} target="_blank">
+                    <Button
+                      variant={"outline"}
+                      className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                    >
+                      {coach.profile_type === "skill_bot" ||
+                      coach.profile_type === "coachbots"
+                        ? "Skill Chat"
+                        : "Coach avatar"}
+                    </Button>
+                  </Link>
+                </div>
+              )}
+              {coach.feedback_wall !== null && coach.feedback_wall !== "" && (
+                <div className="w-full">
+                  <Link target="_blank" href={coach.feedback_wall}>
+                    <Button
+                      variant={"outline"}
+                      className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                    >
+                      Feedback Page
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
       <NetworkNav user={user} />
@@ -780,7 +948,7 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={userBotData?.length > 0} asChild>
+              {/* <DropdownMenuItem disabled={userBotData?.length > 0} asChild>
                 <span
                   onClick={() => {
                     router.push("/intake/?type=user-bot");
@@ -798,9 +966,33 @@ const Coaches = ({ user }: any) => {
                     </>
                   )}
                 </span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Button
+            disabled={userBotData?.length > 0}
+            variant={"outline"}
+            className="h-fit w-fit"
+          >
+            <span
+              onClick={() => {
+                router.push("/intake/?type=user-bot");
+              }}
+              className="flex flex-row justify-center items-center"
+            >
+              Create your bot
+              {userBotData?.length > 0 && (
+                <>
+                  {userBotData[0]?.signature_bot.is_approved ? (
+                    <Badge className="ml-2">Already Joined</Badge>
+                  ) : (
+                    <Badge className="ml-2">Requested</Badge>
+                  )}
+                </>
+              )}
+            </span>
+          </Button>
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
             Whatsapp Community (coming soon)
           </Button> */}
@@ -860,8 +1052,10 @@ const Coaches = ({ user }: any) => {
               currentCoachesData.map((coach, i) => (
                 <div id={coach.profile_id} className="pt-20 mt-[-5rem] -z-10">
                   <div
-                    className={`w-full my-3 flex flex-row p-4 max-sm:p-2 ${
-                      coach.status === "booked" ? "bg-blue-50" : "bg-gray-200"
+                    className={`w-full my-3 flex flex-row p-4 max-sm:p-2 bg-gray-200 ${
+                      coach.bot_type === "coachbots"
+                        ? "shadow-lg shadow-green-300"
+                        : ""
                     } border border-gray-300 rounded-md`}
                   >
                     <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex flex-col items-center justify-center max-sm:justify-start max-sm:items-start">
@@ -895,8 +1089,9 @@ const Coaches = ({ user }: any) => {
                           ) : (
                             <Badge
                               className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
-                                coach.profile_type === "skill_bot" &&
-                                "bg-green-500"
+                                (coach.profile_type === "skill_bot" ||
+                                  coach.profile_type === "coachbots") &&
+                                "bg-green-500 hover:bg-green-400"
                               }`}
                             >
                               {convertTextToCorrectFormat(coach.profile_type)}
@@ -968,9 +1163,10 @@ const Coaches = ({ user }: any) => {
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
                                 >
-                                  {coach.profile_type === "skill_bot"
+                                  {coach.profile_type === "skill_bot" ||
+                                  coach.profile_type === "coachbots"
                                     ? "Skill Chat"
-                                    : "Coach avatar"}
+                                    : "AI Frame"}
                                 </Button>
                               </Link>
                             </div>
