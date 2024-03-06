@@ -42,7 +42,6 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
-import GlowyBox from "@/components/glowyBox";
 
 interface CoachesDataType {
   id: number;
