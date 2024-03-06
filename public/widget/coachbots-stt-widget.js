@@ -91,6 +91,8 @@ let feedbackBotIndex = 1;
 let feedbackBotQuestions;
 let feedbackBotQnA = {};
 let isFeedbackConvEnd = false;
+let isFeedbackConvInProcess = false;
+let uniqueSesssionContainerId;
 let FeedbackUserEmail;
 let botId;
 let botType;
@@ -296,19 +298,7 @@ function getOrSetSessionId() {
 
 const getUserOrAnonymousDetails = async (choice) => {
   console.log(choice);
-  const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-  const msg = gshadowRoot.getElementById("anonymous");
-  // // button.parentNode.removeChild(button)
-  // const que_msg = document.createElement("div");
-  // que_msg.innerHTML = "Thank You"; // You can customize the message here
-  // // Replace the button with the "Thank you" message
-  // msg.parentNode.replaceChild(que_msg, msg);
-  const buttons = msg.querySelectorAll("button");
-
-  // Disable each button
-  buttons.forEach((button) => {
-    button.disabled = true;
-  });
+  disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`)
   if (choice === "No") {
     if (!window.user) {
       let emailForm;
@@ -417,6 +407,86 @@ const getUserOrAnonymousDetails = async (choice) => {
     appendMessage2(thumbsupdiv);
   }
 };
+
+const restartFeedbackProcess = async () =>{
+  disableOrEnableButtons(`restart_feedback-${uniqueSesssionContainerId}`)
+  feedbackBotInitialFlow("initial");
+  feedbackBotIndex = 1;
+  feedbackBotQnA = {};
+  isFeedbackConvEnd = false;
+  isFeedbackConvInProcess = false;
+
+}
+
+const handleFeedbackSubmit = async () =>{
+  if (isFeedbackConvInProcess){
+    return;
+  }
+  disableOrEnableButtons(`submit_feedback-${uniqueSesssionContainerId}`)
+
+  appendMessage2("<p> That's it Thank you for your feedback.");
+  appendMessage2(`
+  <div id="restart_feedback-${uniqueSesssionContainerId}">
+  <b>Want to give another feedback?</b>
+  <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="restartFeedbackProcess()">Yes</button>
+  </div>
+    `)
+  increaseActionPointStt(userId2, "feedback_given");
+  const queryparams = new URLSearchParams({
+    conversation: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    type_of_email: "feedback_conv",
+    user_email: FeedbackUserEmail,
+  });
+
+  // sending feedback conversation to bot owner
+  const response = await fetch(
+    `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(
+          key2,
+          secret2
+        )}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamic mcq response : ", data);
+    });
+
+    // saving feedback to database
+  const queryparam = new URLSearchParams({
+    method: "post",
+    qna: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    is_positive: IsPositiveFeedback ? "True" : "False",
+    qna_type: "feedback",
+    user_id: userId2,
+  });
+
+  const resp = await fetch(
+    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(
+          key2,
+          secret2
+        )}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamic mcq response : ", data);
+    });
+
+}
 const handleEndFeedback = async () => {
   if (isFeedbackConvEnd) {
     return;
@@ -540,6 +610,7 @@ function renameKey(obj) {
 }
 
 const feedbackBotQnAFlow = (flow) => {
+  disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`)
   if (flow === "up") {
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
@@ -548,7 +619,7 @@ const feedbackBotQnAFlow = (flow) => {
     const queryparams = new URLSearchParams({
       conversation: "",
       bot_id: botId,
-      type_of_email: "like_or_dislike",
+      type_of_email: "like",
       user_email: FeedbackUserEmail,
     });
     const response = fetch(
@@ -568,42 +639,57 @@ const feedbackBotQnAFlow = (flow) => {
 
     console.log("sent email");
     feedbackBotIndex += 1;
+    isFeedbackConvInProcess = true;
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
-    setTimeout(() => {
-      appendMessage2(
-        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 4px; border: 1px solid darkgray; padding: 4px 8px;" onclick="handleEndFeedback()">End</button>`
-      );
-    }, 200);
+    // setTimeout(() => {
+    //   appendMessage2(
+    //     `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 4px; border: 1px solid darkgray; padding: 4px 8px;" onclick="handleEndFeedback()">End</button>`
+    //   );
+    // }, 200);
   } else if (flow === "down") {
+    
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?";
+    isFeedbackConvInProcess = true;
     feedbackBotIndex += 1;
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
-    setTimeout(() => {
-      appendMessage2(
-        `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
-      );
-    }, 200);
+
+    const queryparams = new URLSearchParams({
+      conversation: "",
+      bot_id: botId,
+      type_of_email: "dislike",
+      user_email: FeedbackUserEmail,
+    });
+    const response = fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dynamic mcq response : ", data);
+      });
+
+    console.log("sent email");
+    // setTimeout(() => {
+    //   appendMessage2(
+    //     `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+    //   );
+    // }, 200);
   }
 
-  const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-  const msg = gshadowRoot.getElementById("thumbsup-down");
-  // button.parentNode.removeChild(button)
-  // const que_msg = document.createElement("div");
-  // que_msg.innerHTML = "Thank You"; // You can customize the message here
-  // // Replace the button with the "Thank you" message
-  // msg.parentNode.replaceChild(que_msg, msg);
-  const buttons = msg.querySelectorAll("button");
-
-  // Disable each button
-  buttons.forEach((button) => {
-    button.disabled = true;
-  });
 };
 
 const feedbackBotInitialFlow = async (flow) => {
   if (flow === "initial") {
-    const anonymous_text = `<div id="anonymous">
+    uniqueSesssionContainerId = generateRandomAlphanumeric(6)
+    console.log('feedbacksessionid: ', uniqueSesssionContainerId)
+    const anonymous_text = `<div id="anonymous-${uniqueSesssionContainerId}">
         <b>Want to continue as Anonymous?</b>
         </br> <div>
             <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
@@ -626,7 +712,7 @@ const feedbackBotInitialFlow = async (flow) => {
       // msg.parentNode.replaceChild(que_msg, msg);
     }
     feedbackBotIndex = 0;
-    const div_cont = `<div id="thumbsup-down" >
+    const div_cont = `<div id="thumbsup-down-${uniqueSesssionContainerId}" >
         
         <b>What is your first general impression feedback about me?</b>
             <br>
@@ -2044,6 +2130,17 @@ function createMessageNode2(message) {
   messageNode.appendChild(messageBubble);
 
   return messageNode;
+}
+function generateRandomAlphanumeric(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+  }
+
+  return result;
 }
 
 function disableOrEnableButtons(id, is_disable = true) {
@@ -4261,7 +4358,7 @@ loadExternalModule().then(() => {
             return;
           }
 
-          if (botType === "feedback_bot" && !isFeedbackConvEnd) {
+          if (botType === "feedback_bot" && isFeedbackConvInProcess) {
             if(!isValidMessageStt(latestMessage,11)){
               signals.onResponse({
                 html: `<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>`
@@ -4275,141 +4372,31 @@ loadExternalModule().then(() => {
             feedbackBotIndex += 1;
             const is_last = que_length + 1 === feedbackBotIndex;
             if (is_last) {
-              // appendMessage2("<b> Thank you for your feedback.</b>");
-              const queryparams = new URLSearchParams({
-                conversation: JSON.stringify(feedbackBotQnA),
-                bot_id: botId,
-                type_of_email: "feedback_conv",
-                user_email: FeedbackUserEmail,
-              });
-
-              // sending feedback conversation to bot owner
-              const response = await fetch(
-                `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("Dynamic mcq response : ", data);
-                });
-
-              const queryparam = new URLSearchParams({
-                method: "post",
-                qna: JSON.stringify(feedbackBotQnA),
-                bot_id: botId,
-                is_positive: IsPositiveFeedback ? "True" : "False",
-                qna_type: "feedback",
-                user_id: userId2,
-              });
-
-              const resp = await fetch(
-                `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("Dynamic mcq response : ", data);
-                });
-
-              // resetAllVariablesStt()
-
+              isFeedbackConvInProcess = false;
+              isFeedbackConvEnd = true;
               signals.onResponse({
-                html: "<b>Thank you for your feedback.</b>",
-              });   
+                html:  `
+                <div id='submit_feedback-${uniqueSesssionContainerId}'>
+                <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleFeedbackSubmit()">Submit</button>
+                </div>
+                `
+              });  
 
-              // ********************* Recommend Test After Feedback *********************
-
-              /* appendMessage2(
-                "please wait while we are getting some recommendations for you..."
-              );
-
-              try {
-                const params = new URLSearchParams({
-                  context: JSON.stringify(feedbackBotQnA),
-                  for: "feedback_bot",
-                });
-                const response = await fetch(
-                  `${baseURL2}/tests/get-recommendetion-tests/?${params}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(
-                        key2,
-                        secret2
-                      )}`,
-                    },
-                  }
-                );
-
-                const recommendation_tests_data = await response.json();
-
-                const fetched_test_code = Object.keys(
-                  recommendation_tests_data.matching_tests
-                )[0];
-                const fetched_test =
-                  recommendation_tests_data.matching_tests[fetched_test_code];
-
-                const created_test_code = Object.keys(
-                  recommendation_tests_data.created_scenario
-                )[0];
-                const created_test =
-                  recommendation_tests_data.created_scenario[created_test_code];
-                console.log(
-                  "fetched_test : ",
-                  fetched_test,
-                  recommendation_tests_data.matching_tests,
-                  "created_test : ",
-                  created_test
-                );
-
-                signals.onResponse({
-                  html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
-                    `,
-                });
-                console.log(
-                  "recommendation_tests_data : ",
-                  recommendation_tests_data.matching_tests
-                );
-                recommendationClicked = false;
-                isFeedbackConvEnd = true;
-              } catch (error) {
-                console.error(`Error in get recommendation tests: ${error}`);
-              } */
-
-              // return;
-
-
-
-              // ********************* Recommend Test After Feedback *********************
             } else {
               signals.onResponse({
                 html: feedbackBotQuestions[feedbackBotIndex],
               });
-              setTimeout(() => {
-                appendMessage2(
-                  `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
-                );
-              }, 200);
+              // setTimeout(() => {
+              //   appendMessage2(
+              //     `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+              //   );
+              // }, 200);
             }
+            return;
+          } else if (botType === 'feedback_bot' && !isFeedbackConvInProcess){
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
             return;
           }
 
