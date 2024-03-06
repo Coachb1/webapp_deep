@@ -108,7 +108,7 @@ const MyPages = ({ user }: any) => {
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "Coach Avatar";
+      return "AI Frame";
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {

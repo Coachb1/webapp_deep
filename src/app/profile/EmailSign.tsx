@@ -268,7 +268,7 @@ const EmailSign = ({ user }: any) => {
                                 fontFamily: "monospace",
                               }}
                             >
-                              👨‍🏫👩‍🏫 My Coach Avatar 🗣️{" "}
+                              👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
                             </a>
                           </div>
                         </div>
@@ -323,7 +323,7 @@ const EmailSign = ({ user }: any) => {
                                 fontFamily: "monospace",
                               }}
                             >
-                              👨‍🏫👩‍🏫 My Coach Avatar 🗣️{" "}
+                              👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
                             </a>
                           </div>
                         </div>
