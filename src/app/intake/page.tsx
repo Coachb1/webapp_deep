@@ -4,7 +4,6 @@ import CoachIntake from "./CoachIntake";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import NetworkNav from "@/components/NetworkNav";
-import MyComponent from "./UploadTest";
 
 export const metadata = constructMetadata({
   title: "Intake - Coachbots",
