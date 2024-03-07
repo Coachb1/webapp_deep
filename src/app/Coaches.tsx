@@ -180,11 +180,9 @@ const Coaches = ({ user }: any) => {
 
         console.log(allOtherProfiles, "allOtherProfiles");
 
-        setSavedCoachesData([...coachbotsProfiles, ...allOtherProfiles]);
-        setCoachesData([...coachbotsProfiles, ...allOtherProfiles]);
+        setSavedCoachesData([...allOtherProfiles]);
+        setCoachesData([...allOtherProfiles]);
 
-        // setSavedCoachesData(data);
-        // setCoachesData(data);
         setLoading(false);
 
         const profileTypeOptions: string[] = Array.from(
@@ -219,20 +217,14 @@ const Coaches = ({ user }: any) => {
         setFilterCategories([
           {
             filterName: "Profile Type",
-            // filterOptions: [
-            //   ...profileTypeOptions,
-            //   ...["External", "accepted", "feedback_bot"],
-            // ],
             filterOptions: [
               "coach",
               "mentor",
-              "skill_bot",
               "coachee",
               "mentee",
               "External",
               "accepted",
               "feedback_bot",
-              "coachbots",
             ],
           },
           {
@@ -283,26 +275,6 @@ const Coaches = ({ user }: any) => {
       .catch((error) => console.log("error", error));
   };
 
-  // const getAllConnections = () => {
-  //   fetch(
-  //     `${baseURL}/accounts/coach-coachee-connections/?email=${user.email}`,
-  //     {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: basicAuth,
-  //       },
-  //     }
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       console.log("email", user.email);
-  //       setConnections(data.data);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
   const getConnectionsForCoachee = (coacheeId: string) => {
     fetch(
       `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
@@ -410,10 +382,10 @@ const Coaches = ({ user }: any) => {
               );
               setFeedbackBots(FeedbackBot);
 
-              const UserBot = data.data.filter(
-                (data: any) => data.signature_bot.bot_type === "user_bot"
-              );
-              setUserBotData(UserBot);
+              // const UserBot = data.data.filter(
+              //   (data: any) => data.signature_bot.bot_type === "user_bot"
+              // );
+              // setUserBotData(UserBot);
             })
             .catch((err) => {
               console.error(err);
@@ -812,33 +784,10 @@ const Coaches = ({ user }: any) => {
                   )}
                 </span>
               </DropdownMenuItem>
-              {/* <DropdownMenuItem disabled={userBotData?.length > 0} asChild>
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=user-bot");
-                  }}
-                  className="flex flex-row justify-center items-center"
-                >
-                  Create your bot
-                  {userBotData?.length > 0 && (
-                    <>
-                      {userBotData[0]?.signature_bot.is_approved ? (
-                        <Badge className="ml-2">Already Joined</Badge>
-                      ) : (
-                        <Badge className="ml-2">Requested</Badge>
-                      )}
-                    </>
-                  )}
-                </span>
-              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            disabled={userBotData?.length > 0}
-            variant={"outline"}
-            className="h-fit w-fit"
-          >
+          <Button variant={"outline"} className="h-fit w-fit">
             <span
               onClick={() => {
                 router.push("/intake/?type=user-bot");
@@ -846,15 +795,6 @@ const Coaches = ({ user }: any) => {
               className="flex flex-row justify-center items-center"
             >
               Create your bot
-              {userBotData?.length > 0 && (
-                <>
-                  {userBotData[0]?.signature_bot.is_approved ? (
-                    <Badge className="ml-2">Already Joined</Badge>
-                  ) : (
-                    <Badge className="ml-2">Requested</Badge>
-                  )}
-                </>
-              )}
             </span>
           </Button>
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
