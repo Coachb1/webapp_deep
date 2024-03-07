@@ -197,8 +197,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         "bot_base_url",
         `${
           subdomain === "playground"
-            ? "https://playground.coachbots.com/"
-            : "https://platform.coachbots.com/"
+            ? "https://playground.coachbots.com"
+            : "https://platform.coachbots.com"
         }`
       );
 
