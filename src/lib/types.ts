@@ -140,3 +140,14 @@ export interface UserClientInfoType {
 export interface UserClientInfoDataType {
   user_info: UserClientInfoType[];
 }
+
+type Message = {
+  question: string;
+  answer: string;
+};
+
+export interface FeedbackConversationType {
+  participant_name: string;
+  date: string;
+  msg: Message;
+}
