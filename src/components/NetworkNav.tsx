@@ -74,7 +74,7 @@ const NetworkNav = ({ user }: any) => {
             router.push("/library");
           }}
         >
-          My Library
+          Simulations
         </Button>
         <Button
           variant={"outline"}
@@ -161,7 +161,7 @@ const NetworkNav = ({ user }: any) => {
                 }}
               >
                 {" "}
-                Library
+                Simulations
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem
