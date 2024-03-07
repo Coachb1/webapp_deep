@@ -110,35 +110,6 @@ export default function RootLayout({
     }
   }, [isLoading]);
 
-  //auto refresh and conditional coach(aravsharma) bot display
-  const hasVisitedContentLibrary =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedContentLibrary")
-      : null;
-  const hasVisitedCoach =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedCoach")
-      : null;
-
-  const hasVisitedFeedback =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedFeedback")
-      : null;
-  const hasVisitedSubject =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedSubject")
-      : null;
-
-  const hasVisitedOpenSimulation =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedOpenSimulation")
-      : null;
-
-  const hasVisitMyLibrary =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("visitedMyLibrary")
-      : null;
-
   useEffect(() => {
     //hide bots from intake
     if (pathname.includes("intake")) {
@@ -147,10 +118,7 @@ export default function RootLayout({
     //ADD LOCALSTORAGE ITEM after user
     if (pathname === "/coach" || pathname.includes("/coach/")) {
       setShowCoachBot(true);
-      // if (!hasVisitedCoach) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedCoach", "true");
-      // }
+
       if (pathname === "/coach") {
         setBotId("coach-d54cd-aravsharma");
       } else {
@@ -162,10 +130,7 @@ export default function RootLayout({
       pathname.includes("/feedback/feedback")
     ) {
       setShowCoachBot(true);
-      // if (!hasVisitedFeedback) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedFeedback", "true"); //2 - visits /feedback or /feedback/[id] and page refreshes
-      // }
+
       if (pathname === "/feedback") {
         setBotId("feedback-d55cd-aravsharma");
       } else {
@@ -174,61 +139,23 @@ export default function RootLayout({
       }
     } else if (pathname.includes("/subject-expert")) {
       setShowCoachBot(true);
-      // if (!hasVisitedSubject) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedSubject", "true");
-      // }
+
       if (pathname === "/subject-expert") {
-        console.log("3RDDDD");
         setBotId("stress-management-0032");
       } else {
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
-    } else if (pathname === "/content-library") {
-      // if (!hasVisitedContentLibrary) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedContentLibrary", "true"); //3 - visits /content-library and page refreshes
-      // }
-      setShowCoachBot(false);
-    } else if (pathname === "/create-scenario") {
-      // if (!hasVisitedOpenSimulation) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedOpenSimulation", "true");
-      // }
-    } else if (pathname === "/library") {
-      // if (!hasVisitMyLibrary) {
-      //   window.location.reload();
-      //   window.localStorage.setItem("visitedMyLibrary", "true");
-      // }
+    } else if (pathname.includes("/knowledge-bot")) {
+      setShowCoachBot(true);
+
+      if (pathname === "/knowledge-bot") {
+        setBotId("");
+      } else {
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
+      }
     }
-
-    // if (pathname !== "/content-library") {
-    //   window.localStorage.removeItem("visitedContentLibrary");
-    // }
-
-    // if (pathname !== "/coach" && !pathname.includes("/coach")) {
-    //   window.localStorage.removeItem("visitedCoach");
-    // }
-
-    // if (pathname !== "/feedback" && !pathname.includes("/feedback/feedback")) {
-    //   window.localStorage.removeItem("visitedFeedback");
-    // }
-
-    // if (pathname !== "/create-scenario") {
-    //   window.localStorage.removeItem("visitedOpenSimulation");
-    // }
-
-    // if (pathname !== "/library") {
-    //   window.localStorage.removeItem("visitedMyLibrary");
-    // }
-
-    // if (
-    //   pathname !== "/subject-expert" &&
-    //   !pathname.includes("/subject-expert")
-    // ) {
-    //   window.localStorage.removeItem("visitedSubject");
-    // }
   }, [pathname]);
 
   useEffect(() => {
