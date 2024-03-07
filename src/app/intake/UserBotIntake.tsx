@@ -148,56 +148,22 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     // myHeaders.append("Content-Type", "application/json");
     setSubmitLoading(true);
     // if (!checkIfEdit) {
-      var formdata = new FormData();
-      formdata.append("name", user.given_name!);
-      formdata.append("user_id", userId);
-      formdata.append("bot_name", user.given_name!);
-      formdata.append("participant_id", userId);
-      formdata.append("email", user.email!);
-      formdata.append("bot_type", "user_bot");
-      formdata.append(
-        "profile_image",
-        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
-      );
+    var formdata = new FormData();
+    formdata.append("name", user.given_name!);
+    formdata.append("user_id", userId);
+    formdata.append("bot_name", user.given_name!);
+    formdata.append("participant_id", userId);
+    formdata.append("email", user.email!);
+    formdata.append("bot_type", "user_bot");
+    formdata.append(
+      "profile_image",
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
+    );
 
-      formdata.append(
-        "attributes",
-        JSON.stringify({
-          heading: `welcome to ${user.given_name}'s user bot`,
-        })
-      );
-
-      formdata.append(
-        "bot_base_url",
-        `${
-          subdomain === "playground"
-            ? "https://playground.coachbots.com"
-            : "https://platform.coachbots.com"
-        }`
-      );
-
-      formdata.append(
-        "faqs",
-        JSON.stringify({
-          "What is the primary purpose of the bot?": primaryPurpose,
-          "What tasks or functions should the bot perform?":
-            functionsNTasksOfBot,
-          "Provide the information the bot should have access to generate responses?":
-            infoAccessToBot,
-          "Provide a few common FAQs the bot should use for commonly asked questions?":
-            commanFaqs,
-          "Provide any relevant links and make sure the links are publicly accessible" : releventLinks
-        })
-      );
-
-      if(checkIfEdit){
-          formdata.append("bot_id", botIUidFromParams!);
-      }
-    
-      fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-        method: checkIfEdit ? "PATCH" : "POST",
-        headers: myHeaders,
-        body: formdata,
+    formdata.append(
+      "attributes",
+      JSON.stringify({
+        heading: `welcome to ${user.given_name}'s user bot`,
       })
     );
 
