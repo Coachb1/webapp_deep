@@ -298,7 +298,7 @@ const Feedback = ({ user, renderType }: any) => {
             });
         }
         fetch(
-          `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${
+          `${baseURL}/accounts/get-user-feedback-data/?method=get&feedback_type=positive&bot_id=${
             renderType === "dynamic"
               ? pathname.split("/")[2]
               : "feedback-d55cd-aravsharma"
