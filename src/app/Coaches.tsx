@@ -794,7 +794,7 @@ const Coaches = ({ user }: any) => {
               }}
               className="flex flex-row justify-center items-center"
             >
-              Create your bot
+              Create your Knowledge bot
             </span>
           </Button>
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
