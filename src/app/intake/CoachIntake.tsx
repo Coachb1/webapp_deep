@@ -25,6 +25,7 @@ import { pdfjs } from "react-pdf";
 import { UserClientInfoDataType } from "@/lib/types";
 import { Radio } from "antd";
 import UserBotIntake from "./UserBotIntake";
+import { Checkbox } from "@/components/ui/checkbox";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -78,6 +79,44 @@ const CoachIntake = ({ user }: any) => {
   const [about, setAbout] = useState("");
   const [areaDomain, setAreaDomain] = useState("");
   const [experience, setExperience] = useState("");
+
+  const models = [
+    "GROW Model",
+    "Situational Leadership Model",
+    "Transformational Coaching",
+    "Cognitive Behavioral Coaching",
+    "Strengths-Based Coaching",
+    "Emotional Intelligence Coaching",
+    "Solution-Focused Coaching",
+    "Others",
+  ];
+  const [mentoringPreferencess, setMentoringPreferencess] = useState<string[]>(
+    []
+  );
+
+  const [otherMentoringFrameworkValue, setOtherMentoringFrameworkValue] =
+    useState("");
+
+  const recordCoachmentFrameworks = (
+    checked: boolean | string,
+    value: string
+  ) => {
+    // console.log("CheckedHandler", checked, value);
+    if (checked) {
+      setMentoringPreferencess([...mentoringPreferencess, value]); //filter Others
+    } else if (!checked) {
+      setMentoringPreferencess((prevState) =>
+        prevState.filter((val) => val !== value)
+      );
+    }
+  };
+
+  useEffect(() => console.log(mentoringPreferencess), [mentoringPreferencess]);
+
+  const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
+    boolean | string
+  >();
+
   const [mentoringPreferences, setMentoringPreferences] = useState("");
   const [coachMentFrameworks, setCoachMentFrameworks] = useState("");
   const [povProgramParticipants, setPovProgramParticipants] = useState("");
@@ -362,26 +401,26 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (
-                data.data.length > 0 &&
-                !checkIfEdit &&
-                formType !== "user-bot" &&
-                formType !== "feedback"
-              ) {
-                if (
-                  (formType === "coach" && profileTypes.includes("coach")) ||
-                  profileTypes.includes("coachee") ||
-                  profileTypes.includes("mentee")
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (
+              //   data.data.length > 0 &&
+              //   !checkIfEdit &&
+              //   formType !== "user-bot" &&
+              //   formType !== "feedback"
+              // ) {
+              //   if (
+              //     (formType === "coach" && profileTypes.includes("coach")) ||
+              //     profileTypes.includes("coachee") ||
+              //     profileTypes.includes("mentee")
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -482,7 +521,10 @@ const CoachIntake = ({ user }: any) => {
           );
           formdata.append("area_domain", areaDomain);
           formdata.append("mentoring_preferences", mentoringPreferences);
-          formdata.append("mentoring_frameworks", coachMentFrameworks);
+          formdata.append(
+            "mentoring_frameworks",
+            JSON.stringify(mentoringPreferencess.join(", "))
+          ); //coachMentFrameworks);
           formdata.append("dominant_point_of_view", povProgramParticipants);
           formdata.append("problem_solving_approach", problemSolvingApproach);
           formdata.append(
@@ -681,7 +723,7 @@ const CoachIntake = ({ user }: any) => {
                     area_domain: areaDomain,
                     experience: experience,
                     mentoring_preferences: mentoringPreferences,
-                    mentoring_frameworks: coachMentFrameworks,
+                    mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
                     dominant_point_of_view: povProgramParticipants,
                     problem_solving_approach: problemSolvingApproach,
                     admired_leaders: leaderNames,
@@ -939,7 +981,7 @@ const CoachIntake = ({ user }: any) => {
                 area_domain: areaDomain,
                 experience: experience,
                 mentoring_preferences: mentoringPreferences,
-                mentoring_frameworks: coachMentFrameworks,
+                mentoring_frameworks: mentoringPreferencess.join(", "),
                 dominant_point_of_view: povProgramParticipants,
                 problem_solving_approach: problemSolvingApproach,
                 admired_leaders: leaderNames,
@@ -1339,8 +1381,13 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data
                     .mentoring_preferences
                 );
-                setCoachMentFrameworks(
-                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.trim()
+                // setCoachMentFrameworks(
+                //   resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.trim()
+                // );
+                setMentoringPreferencess(
+                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.split(
+                    ", "
+                  )
                 );
                 setPovProgramParticipants(
                   resultingBot.signature_bot.data.additional_data.dominant_point_of_view?.trim()
@@ -1708,17 +1755,71 @@ const CoachIntake = ({ user }: any) => {
                       Please mention any coaching & mentoring frameworks or
                       tools that you use in your approach.
                     </p>
-                    <div>
-                      <input
-                        required
-                        value={coachMentFrameworks}
-                        onChange={(e) => {
-                          setCoachMentFrameworks(e.target.value);
-                        }}
-                        placeholder="eg : GROW model"
-                        type="text"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
+                    <div className="my-1">
+                      {models.map((model) => (
+                        <div className="my-1">
+                          {" "}
+                          {model === "Others" ? (
+                            <>
+                              {/* <div className="flex items-center space-x-2 ">
+                                <Checkbox
+                                  id={model}
+                                  disabled={
+                                    !mentoringPreferencess.includes(model) &&
+                                    mentoringPreferencess.length >= 3
+                                  }
+                                  onCheckedChange={(checked) => {
+                                    console.log(checked, model);
+                                    recordCoachmentFrameworks(checked, model);
+                                  }}
+                                />
+                                <input
+                                  required
+                                  disabled={
+                                    !mentoringPreferencess.includes(model)
+                                  }
+                                  onChange={(e) => {
+                                    setOtherMentoringFrameworkValue(
+                                      e.target.value
+                                    );
+                                  }}
+                                  onBlur={(e) => {
+                                    recordCoachmentFrameworks(
+                                      true,
+                                      e.target.value
+                                    );
+                                  }}
+                                  placeholder={model}
+                                  type="text"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                              </div> */}
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex items-center space-x-2 my-1.5 ">
+                                <Checkbox
+                                  disabled={
+                                    !mentoringPreferencess.includes(model) &&
+                                    mentoringPreferencess.length >= 3
+                                  }
+                                  id={model}
+                                  onCheckedChange={(checked) => {
+                                    console.log(checked, model);
+                                    recordCoachmentFrameworks(checked, model);
+                                  }}
+                                />
+                                <label
+                                  htmlFor={model}
+                                  className="text-xs text-gray-700"
+                                >
+                                  {model}
+                                </label>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="my-3">
@@ -1854,7 +1955,9 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please add any document or file that you believe are
                       reference materials that may help your mentees and
-                      participants.
+                      participants. Feel free to upload relevant materials:
+                      guides, templates, and resources that support your mentees
+                      and participants in their learning journey.
                     </p>
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
@@ -2316,9 +2419,28 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
                   <hr className="my-2" />
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
+                      onCheckedChange={(checked) => {
+                        setPrivaciInfoChecked(checked);
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">
+                      We respect your data and privacy. Any data is handled per
+                      the data security and privacy policy of the organization
+                      holding the platform license. Please contact your program
+                      administrator for removal requests. Any AI assets created
+                      by the users are considered the property of the
+                      organization the individuals are affiliated with.
+                    </label>
+                  </div>
                   <div>
                     {checkIfEdit ? (
-                      <Button disabled={createLoading} className="h-8">
+                      <Button
+                        disabled={createLoading || !privacyInfoChecked}
+                        className="h-8"
+                      >
                         {" "}
                         {createLoading ? (
                           <>
@@ -2332,7 +2454,10 @@ const CoachIntake = ({ user }: any) => {
                         )}
                       </Button>
                     ) : (
-                      <Button disabled={createLoading} className="h-8">
+                      <Button
+                        disabled={createLoading || !privacyInfoChecked}
+                        className="h-8"
+                      >
                         {" "}
                         {createLoading ? (
                           <>
@@ -2350,149 +2475,6 @@ const CoachIntake = ({ user }: any) => {
                 </div>
               </form>
             </div>
-            {/* <div
-              id="feedback"
-              className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
-            >
-              <div className="flex items-center space-x-2">
-                <label className="text-sm" htmlFor="feedback-needed">
-                  Do you want to create a feedback bot?
-                </label>
-                <Switch
-                  id="feedback-needed"
-                  checked={isFeedbackNeeded}
-                  onCheckedChange={(checked) => {
-                    console.log("is checked", checked);
-                    setIsFeedbackNeeded(checked);
-                  }}
-                />
-              </div>
-              {isFeedbackNeeded && (
-                <form
-                  className="text-left"
-                  onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                    createFeedbackSubmitHandler(e);
-                  }}
-                >
-                  <Badge
-                    variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2"
-                  >
-                    <Info className="h-4 w-4 mr-1" /> All fields are required.
-                  </Badge>
-                  <div className="my-3">
-                    <p className="text-sm my-1">Enter your name</p>
-                    <input
-                      value={name}
-                      required
-                      minLength={10}
-                      maxLength={30}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        handleWordLimit(e.target.value, 10, 30, "Name");
-                      }}
-                      placeholder="Aarav Sharma"
-                      type="text"
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                    {Object.keys(error).includes("Name") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Name"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add a short profile bio.
-                    </p>
-                    <textarea
-                      value={profileBio}
-                      minLength={200}
-                      maxLength={1500}
-                      required
-                      onChange={(e) => {
-                        setProfileBio(e.target.value);
-                        handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
-                          "Profile Bio"
-                        );
-                      }}
-                      placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("Profile Bio") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Profile Bio"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter your Current Projects
-                    </p>
-                    <textarea
-                      value={currentProjects}
-                      required
-                      onChange={(e) => {
-                        setCurrentProjects(e.target.value);
-                      }}
-                      placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter your Suggested projects/ assignments.
-                    </p>
-                    <textarea
-                      required
-                      value={suggestedProjects}
-                      onChange={(e) => {
-                        setSuggestedProjects(e.target.value);
-                      }}
-                      placeholder="Proposing innovative projects or assignments such as [Project/Assignment 1], [Project/Assignment 2], and [Project/Assignment 3] that align with your expertise and interests..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                  </div>
-                  <div>
-                    {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
-                        ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          <>
-                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              )}
-            </div> */}
           </div>
         )}
         {formType === "coachee" && (
@@ -2691,9 +2673,28 @@ const CoachIntake = ({ user }: any) => {
                     </RadioGroup>
                   </div>
                   <hr className="my-2" />
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
+                      onCheckedChange={(checked) => {
+                        setPrivaciInfoChecked(checked);
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">
+                      We respect your data and privacy. Any data is handled per
+                      the data security and privacy policy of the organization
+                      holding the platform license. Please contact your program
+                      administrator for removal requests. Any AI assets created
+                      by the users are considered the property of the
+                      organization the individuals are affiliated with.
+                    </label>
+                  </div>
                   <div>
                     {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
+                      <Button
+                        disabled={feedbackCreateLoading || !privacyInfoChecked}
+                        className="h-8"
+                      >
                         {" "}
                         {feedbackCreateLoading ? (
                           <>
@@ -2707,7 +2708,10 @@ const CoachIntake = ({ user }: any) => {
                         )}
                       </Button>
                     ) : (
-                      <Button disabled={createLoading} className="h-8">
+                      <Button
+                        disabled={createLoading || !privacyInfoChecked}
+                        className="h-8"
+                      >
                         {" "}
                         {createLoading ? (
                           <>
@@ -2977,9 +2981,29 @@ const CoachIntake = ({ user }: any) => {
                     className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                   />
                 </div> */}
+                <hr className="my-2" />
+                <div className="flex items-start space-x-2 my-1.5 ">
+                  <Checkbox
+                    checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
+                    onCheckedChange={(checked) => {
+                      setPrivaciInfoChecked(checked);
+                    }}
+                  />
+                  <label className="text-xs text-gray-700">
+                    We respect your data and privacy. Any data is handled per
+                    the data security and privacy policy of the organization
+                    holding the platform license. Please contact your program
+                    administrator for removal requests. Any AI assets created by
+                    the users are considered the property of the organization
+                    the individuals are affiliated with.
+                  </label>
+                </div>
                 <div>
                   {checkIfEdit ? (
-                    <Button disabled={feedbackCreateLoading} className="h-8">
+                    <Button
+                      disabled={feedbackCreateLoading || !privacyInfoChecked}
+                      className="h-8"
+                    >
                       {" "}
                       {feedbackCreateLoading ? (
                         <>
@@ -2993,7 +3017,10 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </Button>
                   ) : (
-                    <Button disabled={feedbackCreateLoading} className="h-8">
+                    <Button
+                      disabled={feedbackCreateLoading || !privacyInfoChecked}
+                      className="h-8"
+                    >
                       {" "}
                       {feedbackCreateLoading ? (
                         <>
