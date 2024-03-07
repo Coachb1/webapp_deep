@@ -432,31 +432,31 @@ const MyLibrary = ({ user }: any) => {
       <main className="bg-gray-100 min-h-[100vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
-            {/* <div className="pb-6 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-20 ">
-              <p className="text-4xl font-black max-sm:text-4xl flex ite">
-                {" "}
-                <Link href={"v1"} className="hidden max-sm:block">
-                  {" "}
-                  <ChevronLeft className="h-4 w-4 mr-1 inline" />{" "}
-                </Link>{" "}
-                <span> My Library</span>
-              </p>
-            </div> */}
             <div
               id="category-navbar"
               className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0  z-[799] grainy w-full"
             >
-              <div className="pb-2 max-sm:pb-3 flex flex-row justify-center items-center text-center mt-12 ">
-                <p className="text-4xl font-black max-sm:text-4xl flex ite">
+              <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
+                <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
                   {" "}
-                  <Link href={"v1"} className="hidden max-sm:block">
+                  <Link href={"v1"} className="hidden ">
                     {" "}
                     <ChevronLeft className="h-4 w-4 mr-1 inline" />{" "}
                   </Link>{" "}
-                  <span> My Library</span>
+                  <span>Simulations & Roleplays</span>
                 </p>
               </div>
-              <div className="flex flex-col gap-2 max-sm:gap-1">
+              <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
+                <span>
+                  {" "}
+                  Simulations and roleplays replicate real-world situations and
+                  interactions, evaluating our aptitude for success in the
+                  workplace. By mimicking scenarios we may encounter, they
+                  assess our interpersonal skills and provide detailed feedback
+                  on our performance and potential areas for improvement.
+                </span>
+              </div>
+              <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
                   <Button
                     variant={"outline"}
@@ -467,7 +467,7 @@ const MyLibrary = ({ user }: any) => {
                       });
                     }}
                   >
-                    EQ Mini Course
+                    EQ Areas
                   </Button>
 
                   <Button
@@ -499,6 +499,7 @@ const MyLibrary = ({ user }: any) => {
                     </Button>
                   ))}
                 </div>
+                <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
                 <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
                   <Button
                     onClick={() => {
@@ -524,18 +525,12 @@ const MyLibrary = ({ user }: any) => {
                   </Button>
                 </div>
               </div>
-              <div className="my-0 py-0 text-xs flex flex-row items-center">
-                <Info
-                  color="#9ca3af"
-                  className="h-4 w-4 inline text-gray-600 mr-2"
-                />{" "}
-                <span> Grayed bars indicate already attempted simulations</span>
-              </div>
+
               <hr className=" bg-gray-500 w-full" />
             </div>
             <div
               id="eq-tests"
-              className="pt-[30vh] mt-[-30vh] max-sm:pt-[40vh] max-sm:mt-[-40vh]   w-full flex flex-col items-center justify-center"
+              className="pt-[40vh] mt-[-38vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
@@ -551,9 +546,20 @@ const MyLibrary = ({ user }: any) => {
                           id={category.category_name}
                           className="w-full flex flex-col items-center justify-center"
                         >
-                          <h1 className="text-4xl pt-2 max-sm:text-xl text-gray-600 font-semibold">
-                            {convertTextToCorrectFormat(category.category_name)}
+                          <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                            {/* {convertTextToCorrectFormat(category.category_name)} */}
+                            EQ Areas
                           </h1>
+                          <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                            <Info
+                              color="#9ca3af"
+                              className="h-4 w-4 inline text-gray-600 mr-2"
+                            />{" "}
+                            <span>
+                              {" "}
+                              Grayed bars indicate already attempted simulations
+                            </span>
+                          </div>
 
                           <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                             {(
@@ -568,7 +574,7 @@ const MyLibrary = ({ user }: any) => {
                                     >
                                       <Badge
                                         variant={"default"}
-                                        className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                        className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                       >
                                         <>✨ {domains.domain}</>
                                       </Badge>
@@ -643,14 +649,24 @@ const MyLibrary = ({ user }: any) => {
                 </div>
                 <div
                   id="competency-tests"
-                  className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh] w-full flex flex-col items-center justify-center"
+                  className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh] w-full flex flex-col items-center justify-center"
                 >
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
+                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     Competency Based Power Skills{" "}
                   </h1>
+                  <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                    <Info
+                      color="#9ca3af"
+                      className="h-4 w-4 inline text-gray-600 mr-2"
+                    />{" "}
+                    <span>
+                      {" "}
+                      Grayed bars indicate already attempted simulations
+                    </span>
+                  </div>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                     {competencyBasedPowerSkillsTests.length > 0 &&
                       competencyBasedPowerSkillsTests.map((skills) => (
@@ -660,7 +676,7 @@ const MyLibrary = ({ user }: any) => {
                               <div className={`w-full flex justify-center`}>
                                 <Badge
                                   variant={"default"}
-                                  className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                  className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                 >
                                   <>✨ {skills.skill}</>
                                 </Badge>
@@ -753,14 +769,24 @@ const MyLibrary = ({ user }: any) => {
                     >
                       <div
                         id={category.category_name}
-                        className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
+                        className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
                       >
                         {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                       </div>
                       {/* Category Name */}
-                      <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
+                      <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         {convertTextToCorrectFormat(category.category_name)}
                       </h1>
+                      <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                        <Info
+                          color="#9ca3af"
+                          className="h-4 w-4 inline text-gray-600 mr-2"
+                        />{" "}
+                        <span>
+                          {" "}
+                          Grayed bars indicate already attempted simulations
+                        </span>
+                      </div>
 
                       <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
                         <SearchNSelect
@@ -786,7 +812,7 @@ const MyLibrary = ({ user }: any) => {
                                 <div className={`w-full flex justify-center`}>
                                   <Badge
                                     variant={"default"}
-                                    className="bg-[#8693d5] h-6 w-fit text-white text-sm py-3 hover:bg-[#5a7eca] z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                   >
                                     <>✨ {domains.domain}</>
                                   </Badge>
@@ -902,14 +928,24 @@ const MyLibrary = ({ user }: any) => {
                 {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 <div
                   id="requested-tests"
-                  className="pt-[30vh]  max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
+                  className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
                 >
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
+                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     Requested Scenarios
                   </h1>
+                  <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                    <Info
+                      color="#9ca3af"
+                      className="h-4 w-4 inline text-gray-600 mr-2"
+                    />{" "}
+                    <span>
+                      {" "}
+                      Grayed bars indicate already attempted simulations
+                    </span>
+                  </div>
                   {requestedScenariosLoading ? (
                     <div className="bg-gray-100 my-16 grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
                       <p className="p-2 text-sm max-sm:text-xs">
@@ -981,19 +1017,13 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   )}
                 </div>
-                {/* <Separator className="my-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 <div
                   id="create-new"
-                  className="pt-[30vh] max-sm:pt-[40vh] max-sm:mt-[-35vh] mt-[-20vh]  w-full flex flex-col items-center justify-center"
-                >
-                  {/* <Separator className="w-[80%] bg-gray-200 " /> */}
-                </div>
-                <div
-                  // id="create-new"
-                  className="w-full flex flex-col items-center justify-center"
-                >
-                  <h1 className="text-4xl pt-6 max-sm:text-xl text-gray-600 font-semibold">
-                    Create new Scenario{" "}
+                  className="pt-[40vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
+                ></div>
+                <div className="w-full flex flex-col items-center justify-center">
+                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                    Create new Scenario
                   </h1>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                     <CreateYourOwn
