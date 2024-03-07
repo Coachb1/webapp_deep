@@ -453,33 +453,33 @@ const CoachIntake = ({ user }: any) => {
               });
           }
 
-          if (formType === "user-bot" && !checkIfEdit) {
-            console.log(userIdd);
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
-              headers: {
-                Authorization: basicAuth,
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                console.log("Bot details for edit", data);
-                const UserBot = data.data.filter(
-                  (data: any) => data.signature_bot.bot_type === "user_bot"
-                );
+          // if (formType === "user-bot" && !checkIfEdit) {
+          //   console.log(userIdd);
+          //   fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
+          //     headers: {
+          //       Authorization: basicAuth,
+          //     },
+          //   })
+          //     .then((res) => res.json())
+          //     .then((data) => {
+          //       console.log("Bot details for edit", data);
+          //       const UserBot = data.data.filter(
+          //         (data: any) => data.signature_bot.bot_type === "user_bot"
+          //       );
 
-                if (UserBot.length > 0) {
-                  toast.loading(
-                    "Your user bot already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          }
+          //       if (UserBot.length > 0) {
+          //         toast.loading(
+          //           "Your user bot already exists. You cannot create another one. Redirecting you to the home page"
+          //         );
+          //         setTimeout(() => {
+          //           router.push("/");
+          //         }, 4000);
+          //       }
+          //     })
+          //     .catch((err) => {
+          //       console.error(err);
+          //     });
+          // }
         });
     }
   }, []);
@@ -2437,10 +2437,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div>
                     {checkIfEdit ? (
-                      <Button
-                        disabled={createLoading || !privacyInfoChecked}
-                        className="h-8"
-                      >
+                      <Button disabled={createLoading} className="h-8">
                         {" "}
                         {createLoading ? (
                           <>
@@ -2691,10 +2688,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div>
                     {checkIfEdit ? (
-                      <Button
-                        disabled={feedbackCreateLoading || !privacyInfoChecked}
-                        className="h-8"
-                      >
+                      <Button disabled={feedbackCreateLoading} className="h-8">
                         {" "}
                         {feedbackCreateLoading ? (
                           <>
@@ -3000,10 +2994,7 @@ const CoachIntake = ({ user }: any) => {
                 </div>
                 <div>
                   {checkIfEdit ? (
-                    <Button
-                      disabled={feedbackCreateLoading || !privacyInfoChecked}
-                      className="h-8"
-                    >
+                    <Button disabled={feedbackCreateLoading} className="h-8">
                       {" "}
                       {feedbackCreateLoading ? (
                         <>

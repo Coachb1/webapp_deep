@@ -83,9 +83,11 @@ const MyPages = ({ user }: any) => {
                   botTypeMap[botType].push({
                     bot_id: entry.signature_bot.bot_id,
                     uid: entry.signature_bot.uid,
-                    bot_name: entry.signature_bot.bot_id.includes("feedback")
-                      ? entry.bot_attributes.bot_name
-                      : entry.bot_attributes.coach_name,
+                    bot_name:
+                      entry.signature_bot.bot_id.includes("feedback") ||
+                      entry.signature_bot.bot_id.includes("knowledge")
+                        ? entry.bot_attributes.bot_name
+                        : entry.bot_attributes.coach_name,
                   });
                 }
               });
@@ -112,7 +114,7 @@ const MyPages = ({ user }: any) => {
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {
-      return "User Bot";
+      return "Knowledge Bot";
     }
   };
 
@@ -191,9 +193,20 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
-                  <p className="text-sm inline w-[30%] max-sm:w-[40%]">
-                    <> {BotTypesHeading(botType.bot_type)} </>
-                    {/* - {bot.bot_name} */}
+                  <p
+                    className={`text-sm inline  ${
+                      botType.bot_type === "user_bot"
+                        ? "w-[45%] max-sm:w-[70%]"
+                        : "w-[30%] max-sm:w-[45%]"
+                    } `}
+                  >
+                    <>
+                      {" "}
+                      {BotTypesHeading(botType.bot_type)}{" "}
+                      {botType.bot_type === "user_bot" && (
+                        <b className="text-gray-600"> - {bot.bot_name}</b>
+                      )}{" "}
+                    </>
                   </p>{" "}
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                   <div className="flex flex-row gap-2">
