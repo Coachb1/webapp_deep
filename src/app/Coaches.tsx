@@ -568,7 +568,13 @@ const Coaches = ({ user }: any) => {
   }, [connections, coacheeId]);
 
   const handleLinks = (link: string) => {
-    console.log(link);
+    if (link.includes("playground")) {
+      return link.replace("https://playground.coachbots.com", "");
+    } else if (link.includes("platform")) {
+      return link.replace("https://platform.coachbots.com", "");
+    } else {
+      return link;
+    }
   };
 
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
@@ -966,7 +972,10 @@ const Coaches = ({ user }: any) => {
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
                             <div className="w-full ">
-                              <Link href={coach.avatar_bot_url} target="_blank">
+                              <Link
+                                href={handleLinks(coach.avatar_bot_url)}
+                                target="_blank"
+                              >
                                 <Button
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
@@ -982,7 +991,10 @@ const Coaches = ({ user }: any) => {
                         {coach.feedback_wall !== null &&
                           coach.feedback_wall !== "" && (
                             <div className="w-full">
-                              <Link target="_blank" href={coach.feedback_wall}>
+                              <Link
+                                target="_blank"
+                                href={handleLinks(coach.feedback_wall)}
+                              >
                                 <Button
                                   variant={"outline"}
                                   className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
