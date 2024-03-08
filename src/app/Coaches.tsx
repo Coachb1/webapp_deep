@@ -567,6 +567,10 @@ const Coaches = ({ user }: any) => {
     }
   }, [connections, coacheeId]);
 
+  const handleLinks = (link: string) => {
+    console.log(link);
+  };
+
   const RequestionConnection = ({ coachId }: { coachId: string }) => {
     const [requestLoading, setRequestLoading] = useState(false);
     const [status, setStatus] = useState("");
@@ -790,7 +794,7 @@ const Coaches = ({ user }: any) => {
           <Button variant={"outline"} className="h-fit w-fit">
             <span
               onClick={() => {
-                router.push("/intake/?type=user-bot");
+                router.push("/intake/?type=knowledge-bot");
               }}
               className="flex flex-row justify-center items-center"
             >
