@@ -128,7 +128,7 @@ let isIDPDiscussionOpted = false;
 let botIntakeQna = {};
 let isIntakeSummaryDisplayed = false;
 let isIntakeClicked = false;
-let IntakeUid = '';
+let IntakeUid = "";
 let fitmentContainerId = 1;
 let endSessionButton;
 let intakeButton;
@@ -298,7 +298,7 @@ function getOrSetSessionId() {
 
 const getUserOrAnonymousDetails = async (choice) => {
   console.log(choice);
-  disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`)
+  disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
   if (choice === "No") {
     if (!window.user) {
       let emailForm;
@@ -408,21 +408,20 @@ const getUserOrAnonymousDetails = async (choice) => {
   }
 };
 
-const restartFeedbackProcess = async () =>{
-  disableOrEnableButtons(`restart_feedback-${uniqueSesssionContainerId}`)
+const restartFeedbackProcess = async () => {
+  disableOrEnableButtons(`restart_feedback-${uniqueSesssionContainerId}`);
   feedbackBotInitialFlow("initial");
   feedbackBotIndex = 1;
   feedbackBotQnA = {};
   isFeedbackConvEnd = false;
   isFeedbackConvInProcess = false;
+};
 
-}
-
-const handleFeedbackSubmit = async () =>{
-  if (isFeedbackConvInProcess){
+const handleFeedbackSubmit = async () => {
+  if (isFeedbackConvInProcess) {
     return;
   }
-  disableOrEnableButtons(`submit_feedback-${uniqueSesssionContainerId}`)
+  disableOrEnableButtons(`submit_feedback-${uniqueSesssionContainerId}`);
 
   appendMessage2("<p> That's it Thank you for your feedback.");
   appendMessage2(`
@@ -430,7 +429,7 @@ const handleFeedbackSubmit = async () =>{
   <b>Want to give another feedback?</b>
   <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="restartFeedbackProcess()">Yes</button>
   </div>
-    `)
+    `);
   increaseActionPointStt(userId2, "feedback_given");
   const queryparams = new URLSearchParams({
     conversation: JSON.stringify(feedbackBotQnA),
@@ -445,10 +444,7 @@ const handleFeedbackSubmit = async () =>{
     {
       method: "GET",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken2(
-          key2,
-          secret2
-        )}`,
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
     }
@@ -458,7 +454,7 @@ const handleFeedbackSubmit = async () =>{
       console.log("Dynamic mcq response : ", data);
     });
 
-    // saving feedback to database
+  // saving feedback to database
   const queryparam = new URLSearchParams({
     method: "post",
     qna: JSON.stringify(feedbackBotQnA),
@@ -473,10 +469,7 @@ const handleFeedbackSubmit = async () =>{
     {
       method: "GET",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken2(
-          key2,
-          secret2
-        )}`,
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
     }
@@ -485,8 +478,7 @@ const handleFeedbackSubmit = async () =>{
     .then((data) => {
       console.log("Dynamic mcq response : ", data);
     });
-
-}
+};
 const handleEndFeedback = async () => {
   if (isFeedbackConvEnd) {
     return;
@@ -610,7 +602,7 @@ function renameKey(obj) {
 }
 
 const feedbackBotQnAFlow = (flow) => {
-  disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`)
+  disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`);
   if (flow === "up") {
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
@@ -647,7 +639,6 @@ const feedbackBotQnAFlow = (flow) => {
     //   );
     // }, 200);
   } else if (flow === "down") {
-    
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?";
     isFeedbackConvInProcess = true;
@@ -682,13 +673,12 @@ const feedbackBotQnAFlow = (flow) => {
     //   );
     // }, 200);
   }
-
 };
 
 const feedbackBotInitialFlow = async (flow) => {
   if (flow === "initial") {
-    uniqueSesssionContainerId = generateRandomAlphanumeric(6)
-    console.log('feedbacksessionid: ', uniqueSesssionContainerId)
+    uniqueSesssionContainerId = generateRandomAlphanumeric(6);
+    console.log("feedbacksessionid: ", uniqueSesssionContainerId);
     const anonymous_text = `<div id="anonymous-${uniqueSesssionContainerId}">
         <b>Want to continue as Anonymous?</b>
         </br> <div>
@@ -746,12 +736,12 @@ const getUserBotConversation = async (participant_id) => {
       botConv,
       botConv[0]["results"].length
     );
-    let botConversations
+    let botConversations;
     if (botConv.length > 0) {
-      botConv.forEach(element => {
-        if (element.bot_id === botId){
-          botConversations = element
-          console.log('bot_conv',botConversations)
+      botConv.forEach((element) => {
+        if (element.bot_id === botId) {
+          botConversations = element;
+          console.log("bot_conv", botConversations);
         }
       });
       if (botConversations["results"].length > 0) {
@@ -771,87 +761,83 @@ const getUserBotConversation = async (participant_id) => {
   }
 };
 
-async function populateBotConversation(participant_id){
+async function populateBotConversation(participant_id) {
   const url = `${baseURL2}/coaching-conversations/bot-conversation-data/?for=user&user_id=${participant_id}&bot_id=${botId}`;
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-      },
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+    },
+  });
+
+  const botConv = await response.json();
+  console.log("PRevious conversations", botConv);
+  if (botConv.length > 0) {
+    // disabling intakebutton
+    if (intakeButton) {
+      intakeButton.disabled = true;
+      intakeButton.style.backgroundColor = "#d3d3d3";
+      intakeButton.style.color = "#a0a0a0";
+      intakeButton.removeAttribute("onmouseover");
+      intakeButton.removeAttribute("onmouseleave");
+    }
+
+    console.log("populating conversation");
+    let botConversations;
+    botConv.forEach((element) => {
+      if (element.bot_id === botId) {
+        botConversations = element;
+      }
     });
 
-    const botConv = await response.json();
-    console.log(
-      "PRevious conversations",
-      botConv,
-      
-    );
-    if (botConv.length > 0) {
-      // disabling intakebutton 
-      if (intakeButton){
-      intakeButton.disabled = true;
-      intakeButton.style.backgroundColor = '#d3d3d3';
-      intakeButton.style.color = '#a0a0a0';
-      intakeButton.removeAttribute('onmouseover')
-      intakeButton.removeAttribute('onmouseleave')
-      }
-
-      console.log('populating conversation')
-      let botConversations
-      botConv.forEach(element => {
-        if (element.bot_id === botId){
-          botConversations = element
-        }
-      });
-
-      if(botType === 'user_bot'){
-        // setting previous session and conversation id 
-        if (botConversations["results"].length > 0) {
-          const lastConv =
-            botConversations["results"][botConversations["results"].length - 1];
-          console.log(
-            "last converstion session",
-            lastConv.uid,
-            lastConv.session_id,
-            lastConv
-          );
-          conversation_id2 = lastConv.uid;
-          sessionId2 = lastConv.session_id;
-          coachMessage = lastConv.coach_message_text;
-          isBotInitialized = true;
-          isSessionActiveStt = true;
-        };
-        
-        }
-      
-      
-      const results = botConversations["results"]
-      results.forEach(element => {
-        const coach_message_text = element['coach_message_text'];
-        const participant_message_text = element['participant_message_text']
-
-        if (coach_message_text && coach_message_text !== '') {
-          appendMessage2(coach_message_text);
-  
-          if (participant_message_text && participant_message_text !== '') {
-              appendMessageForUser2(participant_message_text);
-          }
-        } else if (participant_message_text && participant_message_text !== '') {
-            // If there's no coach message, only append participant message
-            appendMessageForUser2(participant_message_text);
-        }
-      });
-      isBotConversationPopulated = true
-    }
-    else{
-      if(botType === 'user_bot'){
-        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"))
+    if (botType === "user_bot") {
+      // setting previous session and conversation id
+      if (botConversations["results"].length > 0) {
+        const lastConv =
+          botConversations["results"][botConversations["results"].length - 1];
+        console.log(
+          "last converstion session",
+          lastConv.uid,
+          lastConv.session_id,
+          lastConv
+        );
+        conversation_id2 = lastConv.uid;
+        sessionId2 = lastConv.session_id;
+        coachMessage = lastConv.coach_message_text;
+        isBotInitialized = true;
+        isSessionActiveStt = true;
       }
     }
-  
-};
 
+    const results = botConversations["results"];
+    results.forEach((element) => {
+      const coach_message_text = element["coach_message_text"];
+      const participant_message_text = element["participant_message_text"];
+
+      if (coach_message_text && coach_message_text !== "") {
+        appendMessage2(coach_message_text);
+
+        if (participant_message_text && participant_message_text !== "") {
+          appendMessageForUser2(participant_message_text);
+        }
+      } else if (participant_message_text && participant_message_text !== "") {
+        // If there's no coach message, only append participant message
+        appendMessageForUser2(participant_message_text);
+      }
+    });
+    isBotConversationPopulated = true;
+  } else {
+    if (botType === "user_bot") {
+      appendMessage2(
+        addStickerToMessage(
+          "Welcome",
+          "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"
+        )
+      );
+    }
+  }
+}
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -870,30 +856,37 @@ const getBotDetails2 = async (botId) => {
     console.log("FAQS => ", botDetails.data.faqs);
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
-    
 
-    if ( botType === 'user_bot'){
-      botWelcomeMessage = "Welcome to my custom bot."
-    } else if (botType === 'avatar_bot') {
+    if (botType === "user_bot") {
+      botWelcomeMessage = "Welcome to my custom bot.";
+    } else if (botType === "avatar_bot") {
       botWelcomeMessage =
         "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!";
-    } else if ( botType === 'feedback_bot'){
-      botWelcomeMessage = addStickerToMessage("Welcome",'Welcome to my feedback bot. I am delighted that you are considering leaveing me a feedback. It really means a lot to me.')
-    }else{
+    } else if (botType === "feedback_bot") {
+      botWelcomeMessage = addStickerToMessage(
+        "Welcome",
+        "Welcome to my feedback bot. I am delighted that you are considering leaveing me a feedback. It really means a lot to me."
+      );
+    } else {
       botWelcomeMessage = botDetails.data.attributes.heading;
-    } 
+    }
     console.log(botType);
 
     //footer of the bots according to bot type
-    const botFooterElement = document.getElementById('bot-footer') 
-    if(botType === "subject_matter_bot" || botType === "helper_bot" || botType === 'coachbots') {
-      botFooterElement.innerHTML = "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>"
-    } else if (botType === "avatar_bot"){
-      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`
-    } else if (botType === "feedback_bot"){
-      botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`
-    } else if (botType === "user_bot"){
-      botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`
+    const botFooterElement = document.getElementById("bot-footer");
+    if (
+      botType === "subject_matter_bot" ||
+      botType === "helper_bot" ||
+      botType === "coachbots"
+    ) {
+      botFooterElement.innerHTML =
+        "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>";
+    } else if (botType === "avatar_bot") {
+      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`;
+    } else if (botType === "feedback_bot") {
+      botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
+    } else if (botType === "user_bot") {
+      botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`;
     }
 
     let buttons = "";
@@ -922,20 +915,23 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(button);
     };
 
-    if (botDetails.data.faqs && botType !== 'user_bot') {
+    if (botDetails.data.faqs && botType !== "user_bot") {
       let faqs = Object.keys(botDetails.data.faqs);
       if (faqs.length > 0) {
         // faqs.forEach((title) => {
         //   faqButtonsGenerator(title, title);
         // });
-        faqButtonsGenerator("know_your_coach", "Know your coach")
+        faqButtonsGenerator("know_your_coach", "Know your coach");
       }
     }
 
     // faqButtonsGenerator("recommendations", "Recommendations");
-    
 
-    if( botType === "avatar_bot" || botType === 'helper_bot' || botType === 'coachbots'){
+    if (
+      botType === "avatar_bot" ||
+      botType === "helper_bot" ||
+      botType === "coachbots"
+    ) {
       // faqButtonsGenerator("intake", "Intake");
       intakeButton = document.createElement("button");
       intakeButton.setAttribute(
@@ -974,39 +970,45 @@ const getBotDetails2 = async (botId) => {
         "onmouseleave",
         "this.style.backgroundColor = '#f97316'"
       );
-      button.setAttribute("onclick", `handleFaqButtonClick('fitness_analysis')`);
+      button.setAttribute(
+        "onclick",
+        `handleFaqButtonClick('fitness_analysis')`
+      );
       button.innerText = "Quick Match";
       buttonsWrapper.appendChild(button);
     }
 
-    if (botType !== 'user_bot'){
-    const begginSessionButton = document.createElement("button");
-    begginSessionButton.setAttribute(
-      "style",
-      `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #22c55e; color: white;`
-    );
-    begginSessionButton.setAttribute(
-      "onmouseover",
-      "this.style.backgroundColor = '#4ade80'"
-    );
-    begginSessionButton.setAttribute(
-      "onmouseleave",
-      "this.style.backgroundColor = '#22c55e'"
-    );
-    begginSessionButton.setAttribute("onclick", `handleFaqButtonClick('something_else')`);
-    begginSessionButton.innerText = "Begin session";
-    buttonsWrapper.appendChild(begginSessionButton);
+    if (botType !== "user_bot") {
+      const begginSessionButton = document.createElement("button");
+      begginSessionButton.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #22c55e; color: white;`
+      );
+      begginSessionButton.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#4ade80'"
+      );
+      begginSessionButton.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = '#22c55e'"
+      );
+      begginSessionButton.setAttribute(
+        "onclick",
+        `handleFaqButtonClick('something_else')`
+      );
+      begginSessionButton.innerText = "Begin session";
+      buttonsWrapper.appendChild(begginSessionButton);
     }
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
-    
-    if (botType === 'avatar_bot'){
+
+    if (botType === "avatar_bot") {
       endSessionButton = document.createElement("button");
       endSessionButton.setAttribute(
         "style",
         `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #9ca3af; color: black;`
       );
-      endSessionButton.style.backgroundColor = '#d3d3d3';
-      endSessionButton.style.color = '#a0a0a0';
+      endSessionButton.style.backgroundColor = "#d3d3d3";
+      endSessionButton.style.color = "#a0a0a0";
       endSessionButton.innerText = "End Session";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
@@ -1039,9 +1041,9 @@ const getBotDetails2 = async (botId) => {
 
     //   appendMessage2('jiks')
     //   const faqs = botDetails.faq;
-    console.log('id',userId2,participantId2)
-    console.log("id from web app", window.userIdFromWebApp)
-    if (!isBotConversationPopulated && botType !== 'feedback_bot'){
+    console.log("id", userId2, participantId2);
+    console.log("id from web app", window.userIdFromWebApp);
+    if (!isBotConversationPopulated && botType !== "feedback_bot") {
       populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
@@ -1056,7 +1058,7 @@ const handleFitmentAnalysis = async () => {
     Object.keys(fitmentAnalysisQuestions).length
   );
 
-    /* gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  /* gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     const responseValue = gShadowRoot2
       .querySelector('input[name="fitment_option"]:checked')
       .getAttribute("value");
@@ -1069,93 +1071,103 @@ const handleFitmentAnalysis = async () => {
       cochee: responseValue,
     }; */
 
-    // store all the responses in fitmentAnalysisQnA
-    for(let i = 1; i <= fitmentAnalysisIndex; i++){
-      const responseValue = gShadowRoot2
+  // store all the responses in fitmentAnalysisQnA
+  for (let i = 1; i <= fitmentAnalysisIndex; i++) {
+    const responseValue = gShadowRoot2
       .querySelector(`input[name="fitment_option_${i}"]:checked`)
       .getAttribute("value");
 
-      fitmentAnalysisQnA[i] = {
-        coach: fitmentAnalysisQuestions[i],
-        cochee: responseValue,
-      };
-    }
+    fitmentAnalysisQnA[i] = {
+      coach: fitmentAnalysisQuestions[i],
+      cochee: responseValue,
+    };
+  }
 
-    console.log("fitmentAnalysisQnA Submission : ", fitmentAnalysisQnA);
+  console.log("fitmentAnalysisQnA Submission : ", fitmentAnalysisQnA);
 
-    fitmentAnalysisInProgress = false;
-    fitmentAnalysisIndex = 0;
-    // console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
-    gShadowRoot2.getElementById(`fitment-container-${fitmentContainerId}`).innerHTML =
-      "<b>Please Wait...</b>";
+  fitmentAnalysisInProgress = false;
+  fitmentAnalysisIndex = 0;
+  // console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
+  gShadowRoot2.getElementById(
+    `fitment-container-${fitmentContainerId}`
+  ).innerHTML = "<b>Please Wait...</b>";
 
-    // console.log(userId2, participantId2);
-    try {
-      const response = await fetch(
-        `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            participant_id: participantId2,
-            bot_id: botId,
-            is_signature_bot: true,
-            fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("Fitness Analysis Score => ", data);
-      // const msg = gShadowRoot2.getElementById("fitment-analysis");
-      const msg = gShadowRoot2.getElementById(`fitment-container-${fitmentContainerId}`);
-      // button.parentNode.removeChild(button)
-      const que_msg = document.createElement("div");
-      let score_result_statement;
-      if(data.score === 1 || data.score === 0){
-        score_result_statement = "The analysis indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship."
-      } else if (data.score === 2){
-        score_result_statement = "The analysis suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time."
-      } else if (data.score === 3){
-        score_result_statement = "The analysis reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement."
+  // console.log(userId2, participantId2);
+  try {
+    const response = await fetch(
+      `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          participant_id: participantId2,
+          bot_id: botId,
+          is_signature_bot: true,
+          fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
+        }),
       }
+    );
 
-      que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
-      // Replace the button with the "Thank you" message
-      // msg.parentNode.replaceChild(que_msg, msg);
-      // replace all the questions with the result
-      msg.innerHTML = que_msg.innerHTML;
-
-      // setTimeout(() => {
-      //   appendMessage2(faqHtmlData);
-      // }, 200);
-    } catch (err) {
-      appendMessage2(
-        `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
-      );
+    const data = await response.json();
+    console.log("Fitness Analysis Score => ", data);
+    // const msg = gShadowRoot2.getElementById("fitment-analysis");
+    const msg = gShadowRoot2.getElementById(
+      `fitment-container-${fitmentContainerId}`
+    );
+    // button.parentNode.removeChild(button)
+    const que_msg = document.createElement("div");
+    let score_result_statement;
+    if (data.score === 1 || data.score === 0) {
+      score_result_statement =
+        "The analysis indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship.";
+    } else if (data.score === 2) {
+      score_result_statement =
+        "The analysis suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time.";
+    } else if (data.score === 3) {
+      score_result_statement =
+        "The analysis reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement.";
     }
-    fitmentContainerId += 1;
-    return;
-  
+
+    que_msg.innerHTML = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
+    // Replace the button with the "Thank you" message
+    // msg.parentNode.replaceChild(que_msg, msg);
+    // replace all the questions with the result
+    msg.innerHTML = que_msg.innerHTML;
+
+    // setTimeout(() => {
+    //   appendMessage2(faqHtmlData);
+    // }, 200);
+  } catch (err) {
+    appendMessage2(
+      `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
+    );
+  }
+  fitmentContainerId += 1;
+  return;
+
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
-
 function getIntakeReadyBotInitialQuestions(initialQuestions) {
-  if( isIntakeClicked ){
-    return initialQuestions
+  if (isIntakeClicked) {
+    return initialQuestions;
   }
   isIntakeClicked = true;
-  data = initialQuestions
-  const firstQuestion =  "Thank you for considering a virtual session. Please let me know more about you as a person that you think might be relevant to our session today."
-  console.log(data)
+  data = initialQuestions;
+  const firstQuestion =
+    "Thank you for considering a virtual session. Please let me know more about you as a person that you think might be relevant to our session today.";
+  console.log(data);
   // replace first question with new question
-  data[1] = firstQuestion
+  data[1] = firstQuestion;
 
-  const lastQuestion = {"options": ["Yes", "No"], "question": "Is this discussion related to your goal in a way to consider your IDP (individual development plan)? "}
+  const lastQuestion = {
+    options: ["Yes", "No"],
+    question:
+      "Is this discussion related to your goal in a way to consider your IDP (individual development plan)? ",
+  };
 
   // shift all questions by 1 index
   // for(let i = 4; i >= 2; i--) {
@@ -1163,21 +1175,20 @@ function getIntakeReadyBotInitialQuestions(initialQuestions) {
   //     }
 
   // insert after first question and before second question
-  data[Object.keys(data).length + 1]=(lastQuestion)
+  data[Object.keys(data).length + 1] = lastQuestion;
   // data[2] = lastQuestion
   // data[6] = "Thank you for completing the intake"
-  console.log(data)
-  return data
+  console.log(data);
+  return data;
 }
 
 function sendMessage(item) {
-  if(botInitialQuestionsIndex == 2){
-    if(item === "Yes"){
+  if (botInitialQuestionsIndex == 2) {
+    if (item === "Yes") {
       isIDPDiscussionOpted = true;
     } else {
       isIDPDiscussionOpted = false;
     }
-
   }
 
   gShadowRoot2.getElementById("text-input").focus();
@@ -1202,11 +1213,11 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   return formRadio;
 }
 
-function SendingFirstInitialQue(){
-  // disabling button 
-  disableOrEnableButtons("initial_question_proceed"); 
+function SendingFirstInitialQue() {
+  // disabling button
+  disableOrEnableButtons("initial_question_proceed");
 
-  //sending first question 
+  //sending first question
   isAskingInitialQuestions = true;
   // if (botType === 'avatar_bot'){
   // botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
@@ -1219,12 +1230,12 @@ function SendingFirstInitialQue(){
       question["options"],
       question["question"]
     );
-   
+
     appendMessage2(radio_cont);
   }
 }
 async function handlePreviousConversation(choice) {
-  let coachMessage = ""
+  let coachMessage = "";
   if (choice === "previous") {
     conversation_id2 = previousBotConversationId.split(":")[0];
     sessionId2 = previousBotConversationId.split(":")[1];
@@ -1234,9 +1245,9 @@ async function handlePreviousConversation(choice) {
   }
 
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const newConversationButton = shadowRoot2.getElementById("new-conversation")
+  const newConversationButton = shadowRoot2.getElementById("new-conversation");
   if (choice === "new") {
-    disableOrEnableButtons("conversation-proceed")
+    disableOrEnableButtons("conversation-proceed");
     // if( !isIntakeCompleted ){
     //   appendMessage2(addStickerToMessage("System","You can only begin session after intake is complete"));
     //   return;
@@ -1256,9 +1267,8 @@ async function handlePreviousConversation(choice) {
   }
 
   if (choice === "Yes") {
-
-    if (intakeButton){
-      // enabling Intake button 
+    if (intakeButton) {
+      // enabling Intake button
       intakeButton.setAttribute(
         "onmouseover",
         "this.style.backgroundColor = '#f87171'"
@@ -1267,30 +1277,37 @@ async function handlePreviousConversation(choice) {
         "onmouseleave",
         "this.style.backgroundColor = '#dc2626'"
       );
-      intakeButton.style.backgroundColor = '#dc2626';
-      intakeButton.style.color = 'white';
+      intakeButton.style.backgroundColor = "#dc2626";
+      intakeButton.style.color = "white";
       intakeButton.disabled = false;
     }
 
-
-    disableOrEnableButtons("conversation-proceed-options")
-    const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
-    const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
+    disableOrEnableButtons("conversation-proceed-options");
+    const conversationProceedOptions = shadowRoot2.getElementById(
+      "conversation-proceed-options"
+    );
+    const conversationProceedOptionsParent =
+      conversationProceedOptions.parentElement.parentElement.parentElement;
     conversationProceedOptionsParent.remove();
-    if(!isIntakeCompleted){
-      appendMessage2(addStickerToMessage("System","Please complete the intake process by clicking on the intake button."))
+    if (!isIntakeCompleted) {
+      appendMessage2(
+        addStickerToMessage(
+          "System",
+          "Please complete the intake process by clicking on the intake button."
+        )
+      );
       return;
     }
-    
   }
 
-
   if (choice === "No") {
-    disableOrEnableButtons("conversation-proceed",is_disable=false)
+    disableOrEnableButtons("conversation-proceed", (is_disable = false));
 
-
-    const conversationProceedOptions = shadowRoot2.getElementById("conversation-proceed-options");
-    const conversationProceedOptionsParent = conversationProceedOptions.parentElement.parentElement.parentElement;
+    const conversationProceedOptions = shadowRoot2.getElementById(
+      "conversation-proceed-options"
+    );
+    const conversationProceedOptionsParent =
+      conversationProceedOptions.parentElement.parentElement.parentElement;
     conversationProceedOptionsParent.remove();
     return;
   }
@@ -1308,32 +1325,54 @@ async function handlePreviousConversation(choice) {
       CoachingForFitment === "anyone"
     ) {
       appendMessage2(
-        addStickerToMessage("Note","Your fitment score is low or has not been attempted. Please proceed with this in mind.")
-
+        addStickerToMessage(
+          "Note",
+          "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+        )
       );
     }
 
-    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? "));
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? "
+      )
+    );
   }
   console.log(botType);
-  if (choice === "previous"){
-    disableOrEnableButtons("conversation-proceed")
+  if (choice === "previous") {
+    disableOrEnableButtons("conversation-proceed");
     // newConversationButton.setAttribute("disabled", "true")
     // newConversationButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
-    appendMessage2(`<b>Please scroll above to view the conversation and proceed accordingly.</b>`)
-  } 
+    appendMessage2(
+      `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
+    );
+  }
   console.log(botType);
   if (botType === "subject_matter_bot") {
-    appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
-    
+    appendMessage2(
+      `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+    );
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+      )
+    );
+
     return;
   }
 
-  if (botType === 'helper_bot' || botType === 'coachbots'){
-    appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-    appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
-
+  if (botType === "helper_bot" || botType === "coachbots") {
+    appendMessage2(
+      `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+    );
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+      )
+    );
   }
 
   // isAskingInitialQuestions = true;
@@ -1348,13 +1387,12 @@ async function handlePreviousConversation(choice) {
   //   );
   //   appendMessage2(radio_cont);
   // }
-  console.log("Na-2:",optedBeginSession)
+  console.log("Na-2:", optedBeginSession);
 }
-
 
 async function handleFaqButtonClick(question) {
   optedBeginSession = false;
-  console.log("option selected ==> ",question)
+  console.log("option selected ==> ", question);
   if (question == "fitness_analysis") {
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
@@ -1370,12 +1408,10 @@ async function handleFaqButtonClick(question) {
     let questionoptins = fitmentAnalysisOptions[fitmentAnalysisIndex];
     let optioncont = "";
 
-
     // console.log("##### botinitialquestions ===> ", botInitialQuestions)
-    console.log("##### questionoptins ===> ", questionoptins)
+    console.log("##### questionoptins ===> ", questionoptins);
 
     /* botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions) */
-
 
     // start of mess up
 
@@ -1393,23 +1429,26 @@ async function handleFaqButtonClick(question) {
       </div>`;
       });
 
-    formRadios += `
+      formRadios += `
                   <div id='fitment-analysis-${i}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
                   <div id='question-fitment' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${i}"><b>Q. </b>${questiontext}</div>
                     <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
                       ${optioncont}
                     </div>
-                    ${ (i === Object.keys(fitmentAnalysisQuestions).length ) ?  '<button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>' : ""}
+                    ${
+                      i === Object.keys(fitmentAnalysisQuestions).length
+                        ? '<button id="submit-btn" onclick="handleFitmentAnalysis()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>'
+                        : ""
+                    }
                   </div>`;
     }
-    
 
     appendMessage2(`
     <div style="display: flex; flex-direction: column;">
       <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
       <div id="fitment-container-${fitmentContainerId}" style="margin-top : 8px; padding-top: 0px;">${formRadios}</div>
     </div>
-  `)
+  `);
 
     // end of mess up
 
@@ -1447,43 +1486,49 @@ async function handleFaqButtonClick(question) {
               `) */
     // appendMessage2(formRadio);
   } else {
-
     // something_else => begin_session
-    if (question == "something_else" ) {
+    if (question == "something_else") {
       // appendMessage2('Please ask your question in chat box')
       if (optedBeginSession) {
-        console.log("===> yes optedBeginSession")
+        console.log("===> yes optedBeginSession");
         return;
       }
-      optedBeginSession = true
+      optedBeginSession = true;
 
       // ****** Check connection logic : start
 
-        const connectionresp = await fetch(
-          `${baseURL2}/accounts/user-bot-connection-status/?user_id=${userId2}&coach_user_id=${globalBotDetails.data.user_id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            },
-          }
-        );
-    
-        // Continue with your code after the response is fetched
-        const connectionData = await connectionresp.json();
-        console.log("user bot connection status : ",connectionData.connected,connectionData.connected == false );
-        if( connectionData.connected == false ){
-          appendMessage2(addStickerToMessage("System","Your connection request must be approved first for begining a session."));
-          return;
+      const connectionresp = await fetch(
+        `${baseURL2}/accounts/user-bot-connection-status/?user_id=${userId2}&coach_user_id=${globalBotDetails.data.user_id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          },
         }
+      );
 
-      
+      // Continue with your code after the response is fetched
+      const connectionData = await connectionresp.json();
+      console.log(
+        "user bot connection status : ",
+        connectionData.connected,
+        connectionData.connected == false
+      );
+      if (connectionData.connected == false) {
+        appendMessage2(
+          addStickerToMessage(
+            "System",
+            "Your connection request must be approved first for begining a session."
+          )
+        );
+        return;
+      }
+
       // ****** Check connection logic : end
-      
-      
+
       let intakeSummery;
-      if( ["avatar_bot","helper_bot","coachbots"].includes(botType)){
-        console.log("===> yes fetching intake summary")
+      if (["avatar_bot", "helper_bot", "coachbots"].includes(botType)) {
+        console.log("===> yes fetching intake summary");
         const queryparam = new URLSearchParams({
           method: "get",
           bot_id: botId,
@@ -1500,41 +1545,48 @@ async function handleFaqButtonClick(question) {
               "Content-Type": "application/json",
             },
           }
-        )
-        const respJson = await resp.json()
+        );
+        const respJson = await resp.json();
         console.log(" response_initial_qna : ", respJson);
-        intakeSummery = respJson.intake_summary
-        IntakeUid = respJson.intake_id 
-        if (!intakeSummery){
+        intakeSummery = respJson.intake_summary;
+        IntakeUid = respJson.intake_id;
+        if (!intakeSummery) {
           const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
           <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
-          <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`
-          appendMessage2(begginSessionMessage)
-        // appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
-        optedBeginSession = false
-        return;
+          <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
+          appendMessage2(begginSessionMessage);
+          // appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
+          optedBeginSession = false;
+          return;
         }
       }
 
-      console.log("===> isIntakeSummaryDisplayed", isIntakeSummaryDisplayed, botType, botType === "avatar_bot")
-      if( (isIntakeSummaryDisplayed == false) && ["avatar_bot","helper_bot","coachbots"].includes(botType)){
+      console.log(
+        "===> isIntakeSummaryDisplayed",
+        isIntakeSummaryDisplayed,
+        botType,
+        botType === "avatar_bot"
+      );
+      if (
+        isIntakeSummaryDisplayed == false &&
+        ["avatar_bot", "helper_bot", "coachbots"].includes(botType)
+      ) {
         const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
         <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
-        <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`
-        appendMessage2(begginSessionMessage)
+        <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`;
+        appendMessage2(begginSessionMessage);
 
         // appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
 
-        isIntakeSummaryDisplayed = true
+        isIntakeSummaryDisplayed = true;
         // return;
       }
-
 
       optedBeginSession = true;
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
 
-      if (previousBotConversationId != "" && botType === 'avatar_bot') {
+      if (previousBotConversationId != "" && botType === "avatar_bot") {
         console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
@@ -1543,13 +1595,15 @@ async function handleFaqButtonClick(question) {
             <button id='new-conversation' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
 
         </div>`;
-        
-        if( botType === "avatar_bot"){
+
+        if (botType === "avatar_bot") {
           appendMessage2(div);
         }
         return;
-      }
-      else if (previousBotConversationId != "" && ['subject_matter_bot','helper_bot',"coachbots"].includes(botType)){
+      } else if (
+        previousBotConversationId != "" &&
+        ["subject_matter_bot", "helper_bot", "coachbots"].includes(botType)
+      ) {
         // in helperbot and suject matter bot we are not creating another session
         conversation_id2 = previousBotConversationId.split(":")[0];
         sessionId2 = previousBotConversationId.split(":")[1];
@@ -1557,7 +1611,6 @@ async function handleFaqButtonClick(question) {
         isBotInitialized = true;
         isSessionActiveStt = true;
       }
-
 
       botInitialQuestionsIndex = 1;
       if (botType === "avatar_bot") {
@@ -1570,28 +1623,47 @@ async function handleFaqButtonClick(question) {
           isStrictFitment &&
           CoachingForFitment === "anyone"
         ) {
-          
           appendMessage2(
-            addStickerToMessage("Note","Your fitment score is low or has not been attempted. Please proceed with this in mind.")
-            );
+            addStickerToMessage(
+              "Note",
+              "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+            )
+          );
         }
       }
       console.log(botType);
-      console.log(document.getElementById("bot-footer"))
+      console.log(document.getElementById("bot-footer"));
       if (botType === "subject_matter_bot") {
-        appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
+        appendMessage2(
+          `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+        );
+        appendMessage2(
+          addStickerToMessage(
+            "Welcome",
+            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+          )
+        );
         return;
       }
-      if (botType === 'helper_bot' || botType === 'coachbots'){
-        appendMessage2(`Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`)
-        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
-        
+      if (botType === "helper_bot" || botType === "coachbots") {
+        appendMessage2(
+          `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+        );
+        appendMessage2(
+          addStickerToMessage(
+            "Welcome",
+            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+          )
+        );
       }
 
-      if (botType === 'avatar_bot'){
-        appendMessage2(addStickerToMessage("Welcome","Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "));
-
+      if (botType === "avatar_bot") {
+        appendMessage2(
+          addStickerToMessage(
+            "Welcome",
+            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+          )
+        );
       }
 
       // isAskingInitialQuestions = true;
@@ -1604,7 +1676,7 @@ async function handleFaqButtonClick(question) {
       //     question["options"],
       //     question["question"]
       //   );
-   
+
       //   appendMessage2(radio_cont);
       // }
       return;
@@ -1613,7 +1685,6 @@ async function handleFaqButtonClick(question) {
     //********************** intake flow start */
 
     if (question == "intake") {
-      
       isIntakeInProgress = true;
       // appendMessage2('Please ask your question in chat box')
       if (isAskingInitialQuestions) {
@@ -1625,15 +1696,13 @@ async function handleFaqButtonClick(question) {
       const divCont = `<div id="initial_question_proceed" >
       <b>Thank you for considering a virtual session. How intake works: It is a series of five fixed questions like a form. Click "OK" to start</b>
         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="SendingFirstInitialQue()">OK</button>
-      </div>`
-      
-      appendMessage2(addStickerToMessage("Intake",divCont));
+      </div>`;
+
+      appendMessage2(addStickerToMessage("Intake", divCont));
       return;
     }
 
-
     //********************** intake flow end */
-
 
     if (question == "recommendations") {
       if (botType === "avatar_bot") {
@@ -1679,28 +1748,28 @@ async function handleFaqButtonClick(question) {
       recommendationClicked = true;
       return;
     }
-    if(question === "know_your_coach"){
+    if (question === "know_your_coach") {
       let KnowYourCoachMessage = "";
       for (const key in globalBotDetails.data.faqs) {
         if (globalBotDetails.data.faqs.hasOwnProperty(key)) {
-        const template = `
+          const template = `
           <div style="display: flex; flex-direction: column;">
             <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${key}</div>
             <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[key]}</p>
           </div>
         `;
-          KnowYourCoachMessage += template
+          KnowYourCoachMessage += template;
         }
       }
-      console.log(KnowYourCoachMessage)
-      appendMessage2(`${KnowYourCoachMessage}`)
+      console.log(KnowYourCoachMessage);
+      appendMessage2(`${KnowYourCoachMessage}`);
     }
     // console.log(globalBotDetails.data.faqs[question])
     // appendMessage2(`
-      // <div style="display: flex; flex-direction: column;">
-      //   <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${question}</div>
-      //   <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[question]}</p>
-      // </div>
+    // <div style="display: flex; flex-direction: column;">
+    //   <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${question}</div>
+    //   <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[question]}</p>
+    // </div>
     // `)
     // appendMessage2(globalBotDetails.data.faqs[question]);
     // appendMessage2(faqHtmlData)
@@ -1781,11 +1850,11 @@ function handleEndConversation() {
   isSessionActiveStt = false;
   optedBeginSession = false;
 
-  if(endSessionButton && !endSessionButton.disabled){
+  if (endSessionButton && !endSessionButton.disabled) {
     endSessionButton.removeAttribute("onmouseover");
     endSessionButton.removeAttribute("onmouseleave");
-    endSessionButton.style.backgroundColor = '#d3d3d3'; // to set gray color
-    endSessionButton.style.color = '#a0a0a0';
+    endSessionButton.style.backgroundColor = "#d3d3d3"; // to set gray color
+    endSessionButton.style.color = "#a0a0a0";
     endSessionButton.disabled = true;
   }
 
@@ -2132,12 +2201,13 @@ function createMessageNode2(message) {
   return messageNode;
 }
 function generateRandomAlphanumeric(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
 
   for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters.charAt(randomIndex);
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
   }
 
   return result;
@@ -2146,22 +2216,22 @@ function generateRandomAlphanumeric(length) {
 function disableOrEnableButtons(id, is_disable = true) {
   // Get the div container
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  const container = shadowRoot2.getElementById(id)
+  const container = shadowRoot2.getElementById(id);
 
   // Get all buttons inside the container
   var buttons = container.getElementsByTagName("button");
 
   // Disable each button
   for (var i = 0; i < buttons.length; i++) {
-      buttons[i].disabled = is_disable;
+    buttons[i].disabled = is_disable;
   }
 }
 
-function addStickerToMessage(sticker,msg){
+function addStickerToMessage(sticker, msg) {
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
   <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
-  </div>`
+  </div>`;
   return divWithLabel;
 }
 
@@ -4283,2155 +4353,2089 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
+  const OpenAiResponse = (userInputMessage, signals) => {
+    const API_URL = "https://api.openai.com/v1/chat/completions";
+    const API_KEY = "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";
+
+    const messageNode = document.createElement("div");
+    messageNode.classList.add("inner-message-container");
+
+    const messageBubble = document.createElement("div");
+    messageBubble.classList.add("message-bubble", "ai-message-text");
+    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.marginTop = "4px";
+    messageBubble.style.borderRadius = "4px";
+    messageBubble.style.padding = "4";
+    messageBubble.style.backgroundColor = "#f3f4f6";
+    messageBubble.style.color = "#374151";
+
+    const messageText = document.createElement("p");
+
+    messageBubble.appendChild(messageText);
+    messageNode.appendChild(messageBubble);
+
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    gShadowRoot2.getElementById("messages").appendChild(messageNode);
+    gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+    fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: userInputMessage }],
+        max_tokens: 1000,
+        stream: true, // For streaming responses
+      }),
+    }).then(async (response) => {
+      console.log(response);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      signals.onResponse({
+        html: "...",
+      });
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        const parsedLines = lines
+          .map((line) => line.replace("data: ", "")) // Remove the "data: " prefix
+          .filter((line) => line !== "" && line !== "[DONE]") // Remove empty lines and "[DONE]"
+          .map((line) => {
+            try {
+              return JSON.parse(line);
+            } catch (err) {
+              return "";
+            }
+          });
+
+        for (const parsedLine of parsedLines) {
+          if (parsedLine !== "") {
+            const { choices } = parsedLine;
+            const { delta } = choices[0];
+            const { content } = delta;
+            // Update the UI with the new content
+            if (content) {
+              messageText.innerText += content;
+              shadowRoot.getElementById("messages").scrollBy(0, 500);
+            }
+          }
+        }
+      }
+      allMessages.forEach((indvMessage) => {
+        console.log(indvMessage.innerText);
+
+        if (indvMessage.innerText === "...") {
+          indvMessage.remove();
+        }
+      });
+    });
+  };
+
   //No condition STT pending
   chatElementRef2.request = {
     handler: async (body, signals) => {
       try {
         if (body instanceof FormData) {
         } else {
-          // TEXT RESPONSES
-
-          //change mic state active to default on send
-          var chatElement = document.getElementById("chat-element2");
-          //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
-
-          console.log("Bot ID: ", botId);
-
-          if (chatElement) {
-            var shadowRootMic = chatElement.shadowRoot;
-
-            if (shadowRootMic) {
-              var microphoneButton =
-                shadowRootMic.querySelector("#microphone-button");
-              if (
-                microphoneButton
-                  .querySelector("svg")
-                  .classList.contains("active-microphone-icon")
-              ) {
-                const clickEvent = new Event("click");
-                microphoneButton.dispatchEvent(clickEvent);
-              }
-            }
-          }
-
-          globalSignals = signals;
-
-          if (fitmentAnalysisInProgress) {
-            console.log("NA-1",fitmentAnalysisInProgress);
-            signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-            });
-            return;
-          }
-          // to check session active or not
-
-          // get latest message
-          const latestMessage = body.messages[body.messages.length - 1].text;
-
-          if (isEmailFormstt) {
-            await proceedFormFlowStt(latestMessage);
-            if (formFieldsstt.length > 0) {
-              signals.onResponse({
-                html: `<b>Please enter your ${formFieldsstt[0]}<b>`,
-              });
-            } else {
-              isEmailFormstt = false;
-              if (botId != undefined && botType !== "feedback_bot") {
-                sendBotTranscript2();
-                signals.onResponse({ html: faqHtmlData });
-              } else if (botId != undefined && botType === "feedback_bot") {
-                const thumbsupdiv = await feedbackBotInitialFlow("save_email");
-                signals.onResponse({
-                  html: thumbsupdiv,
-                });
-              } else {
-                const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                appendMessage2(message);
-                // //* send message to start new session
-
-                signals.onResponse({
-                  html: "<b>Please enter another access code to start a new interaction.</b>",
-                });
-                submitEmailAndName2();
-              }
-            }
-            return;
-          }
-
-          if (botType === "feedback_bot" && isFeedbackConvInProcess) {
-            if(!isValidMessageStt(latestMessage,11)){
-              signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>`
-              });
-              return;
-            }
-            feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] =
-              latestMessage;
-            const que_length = Object.keys(feedbackBotQuestions).length;
-
-            feedbackBotIndex += 1;
-            const is_last = que_length + 1 === feedbackBotIndex;
-            if (is_last) {
-              isFeedbackConvInProcess = false;
-              isFeedbackConvEnd = true;
-              signals.onResponse({
-                html:  `
-                <div id='submit_feedback-${uniqueSesssionContainerId}'>
-                <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleFeedbackSubmit()">Submit</button>
-                </div>
-                `
-              });  
-
-            } else {
-              signals.onResponse({
-                html: feedbackBotQuestions[feedbackBotIndex],
-              });
-              // setTimeout(() => {
-              //   appendMessage2(
-              //     `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
-              //   );
-              // }, 200);
-            }
-            return;
-          } else if (botType === 'feedback_bot' && !isFeedbackConvInProcess){
-            signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-            });
-            return;
-          }
-
-          if (botId != undefined && allowRecommendationTestCode == false) {
-            if (fitmentAnalysisInProgress == true) {
-              fitmentAnalysisQnA[fitmentAnalysisIndex] = {
-                coach: fitmentAnalysisQuestions[fitmentAnalysisIndex],
-                cochee: latestMessage,
-              };
-              fitmentAnalysisIndex += 1;
-              console.log(
-                "fitmentAnalysisIndex : ",
-                fitmentAnalysisIndex,
-                Object.keys(fitmentAnalysisQuestions).length
-              );
-              if (
-                fitmentAnalysisIndex <=
-                Object.keys(fitmentAnalysisQuestions).length
-              ) {
-                console.log("Answer : ", latestMessage);
-                console.log(
-                  "fitment question : ",
-                  fitmentAnalysisQuestions[fitmentAnalysisIndex]
-                );
-                signals.onResponse({
-                  html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
-                });
-                return;
-              } else {
-                fitmentAnalysisInProgress = false;
-                fitmentAnalysisIndex = 0;
-                console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
-
-                try {
-                  const response = await fetch(
-                    `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(
-                          key2,
-                          secret2
-                        )}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        participant_id: participantId2,
-                        bot_id: botId,
-                        is_signature_bot: true,
-                        user_id: userId2,
-                        fitness_analysis_data:
-                          JSON.stringify(fitmentAnalysisQnA),
-                      }),
-                    }
-                  );
-
-                  const data = await response.json();
-                  console.log("Fitness Analysis Score => ", data);
-                  score = ' {"Fitment score":"3"}';
-                  signals.onResponse({
-                    html: `<b >Fitment score is : ${data.data["Fitment score"]} </b>`,
-                  });
-                  setTimeout(() => {
-                    appendMessage2(faqHtmlData);
-                  }, 200);
-                } catch (err) {
-                  signals.onResponse({
-                    html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
-                  });
-                }
-
-                return;
-              }
-            }
-
-            if (recommendationClicked == true) {
-              // show warning if user message is less than 5 words
-              if (latestMessage.split(" ").length < 5) {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Please provide atleast more than 5 words.</p>",
-                });
-                return;
-              }
-              appendMessage2(
-                "Please wait while we are getting some recommendations for you..."
-              );
-
-              // if isBotRecommendationFetched is not true after 1 minute, then show error message
-              setTimeout(() => {
-                if (!isBotRecommendationFetched) {
-                  recommendationClicked = false;
-                  signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'>Failed to fetch scenarios. we have got your request, scenario will be created and will be available in 'Requested Scenario' in 'My Library'. You can retry after some time</p>",
-                  });
-                  return;
-                }
-              }, 90000);
-
-              try {
-                const response = await fetch(
-                  `${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}&creator_user_id=${userId2}&test_type=test`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(
-                        key2,
-                        secret2
-                      )}`,
-                    },
-                  }
-                );
-
-                const recommendation_tests_data = await response.json();
-
-                console.log(
-                  "recommendation_tests_data : ",
-                  recommendation_tests_data
-                );
-                if (recommendation_tests_data.success === true) {
-                  isBotRecommendationFetched = true;
-                }
-
-                const fetched_test_code = Object.keys(
-                  recommendation_tests_data.matching_tests
-                )[0];
-                const fetched_test =
-                  recommendation_tests_data.matching_tests[fetched_test_code];
-
-                const created_test_code = Object.keys(
-                  recommendation_tests_data.created_scenario
-                )[0];
-                const created_test =
-                  recommendation_tests_data.created_scenario[created_test_code];
-                console.log(
-                  "fetched_test : ",
-                  fetched_test,
-                  recommendation_tests_data.matching_tests,
-                  "created_test : ",
-                  created_test
-                );
-
-                signals.onResponse({
-                  html: `<b >Here are some recommendations for you : </b> <br>
-                    <button style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
-                    `,
-                });
-                console.log(
-                  "recommendation_tests_data : ",
-                  recommendation_tests_data.matching_tests
-                );
-                recommendationClicked = false;
-              } catch (error) {
-                console.error(`Error in get recommendation tests: ${error}`);
-              }
-
-              return;
-            }
-
-            console.log("Yes OMG control is reaching here");
-
-            console.log(
-              "isAskingInitialQuestions : ",
-              isAskingInitialQuestions,
-              "fitmentAnalysisInProgress : ",
-              fitmentAnalysisInProgress,
-              "isSessionActiveStt : ",
-              isSessionActiveStt,
-              "isAttemptingRecommendation : ",
-              isAttemptingRecommendation,
-              "optedBeginSession : ",
-              optedBeginSession
-            );
-            if (
-              isAskingInitialQuestions == false &&
-              fitmentAnalysisInProgress == false &&
-              isSessionActiveStt == false &&
-              isAttemptingRecommendation == false &&
-              optedBeginSession == false &&
-              botType !== 'user_bot'
-            ) {
-              console.log("NA-1");
-              signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-              });
-              return;
-            }
-
-            if (isAskingInitialQuestions == true) {
-              // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
-              // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
-
-              if (
-                typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
-              ) {
-                const options =
-                  botInitialQuestions[botInitialQuestionsIndex]["options"];
-                if (!options.includes(latestMessage)) {
-                  signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-                  });
-                  return;
-                }
-                const shadowRoot =
-                  document.getElementById("chat-element2").shadowRoot;
-                const initialOptionDiv =
-                  shadowRoot.getElementById("intial-options");
-                console.log(initialOptionDiv);
-                const buttons = initialOptionDiv.querySelectorAll("button");
-                buttons.forEach((button) => {
-                  button.disabled = true;
-                });
-              }
-
-              if (
-                typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
-              ) {
-                const question =
-                  botInitialQuestions[botInitialQuestionsIndex]["question"];
-                  botInitialQuestionsQnA[question] = latestMessage;
-              } else {
-                botInitialQuestionsQnA[
-                  botInitialQuestions[botInitialQuestionsIndex]
-                ] = latestMessage;
-              }
-
-              botInitialQuestionsIndex++;
-              if (
-                botInitialQuestionsIndex >
-                Object.keys(botInitialQuestions).length
-              ) {
-                // isAskingInitialQuestions = false;
-                // botInitialQuestionsIndex = 0;
-                console.log(
-                  "all botInitialQuestions submitted : ",
-                  botInitialQuestionsQnA
-                );
-                if(isIntakeInProgress) {
-                  isIntakeCompleted = true;
-                  isIntakeInProgress = false;
-                  isAskingInitialQuestions = false;
-
-                  //********** submit intake to backend: start */
-                  const queryparam = new URLSearchParams({
-                    method: "post",
-                    qna: JSON.stringify(botInitialQuestionsQnA),
-                    bot_id: botId,
-                    is_positive: "False",
-                    qna_type: "initial_qna",
-                    user_id: userId2,
-                  });
-                
-                  const resp = await fetch(
-                    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-                    {
-                      method: "GET",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  )
-                    .then((response) => response.json())
-                    .then((data) => {
-                      console.log(" response : ", data);
-                    });
-
-                  //********** submit intake to backend: end */
-
-                  signals.onResponse({text: "Thank you for completing the intake. You can now proceed to start your session."})
-                  return;
-                }
-                // signals.onResponse({text: "Thank you for your response."})
-              } else {
-                const question = botInitialQuestions[botInitialQuestionsIndex];
-                if (typeof question === "string") {
-                  // appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
-                  signals.onResponse({
-                    text: question,
-                  });
-                } else {
-                  const radioCont = handleRadioTypeInitialQuestion(
-                    question["options"],
-                    question["question"]
-                  );
-                  signals.onResponse({
-                    html: radioCont,
-                  });
-                }
-
-                return;
-              }
-            }
-
-            if (isSessionActiveStt == false && isBotInitialized == false) {
-              console.log("intakeUid",IntakeUid)
-              try {
-                const response = await fetch(
-                  `${baseURL2}/test-attempt-sessions/`,
-                  {
-                    method: "POST",
-                    headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(
-                        key2,
-                        secret2
-                      )}`,
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      participant_id: participantId2,
-                      ordering: "-id",
-                      test_id: botId,
-                      is_signature_bot: true,
-                      is_idp_discussion_opted: isIDPDiscussionOpted,
-                      intake_id : IntakeUid
-                    }),
-                  }
-                );
-
-                const data = await response.json();
-                sessionId2 = data.uid;
-                isSessionActiveStt = true;
-                console.log("Session Created => ", sessionId2);
-
-                if (isBotInitialized == false) {
-                  // initialize coaching conversation
-                  try {
-                    const response = await fetch(
-                      `${baseURL2}/coaching-conversations/initialize/`,
-                      {
-                        method: "POST",
-                        headers: {
-                          Authorization: `Basic ${createBasicAuthToken2(
-                            key2,
-                            secret2
-                          )}`,
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          test_attempt_session_id: sessionId2,
-                          is_signature_bot: true
-                        }),
-                      }
-                    );
-
-                    const data = await response.json();
-                    console.log("Coaching Conversation Created => ", data);
-                    conversation_id2 = data.uid;
-                    questionLength2 = 999;
-                    console.log("conversation_id", conversation_id2);
-                    isBotInitialized = true;
-
-                    if (
-                      isAskingInitialQuestions == true &&
-                      botInitialQuestionsIndex != 0
-                    ) {
-                      isAskingInitialQuestions = false;
-                      botInitialQuestionsIndex = 0;
-                      if (isBotAudioResponse) {
-                        const audioDiv = await TTSContainerSTT(
-                          data.coach_message_text
-                        );
-                        signals.onResponse({ html: audioDiv });
-                      } else {
-                        signals.onResponse({ html: data.coach_message_text });
-                      }
-                      return;
-                    }
-                  } catch (err) {
-                    console.log("Error while creating session : ", err);
-                    isSessionActiveStt = false;
-                  }
-                }
-              } catch (err) {
-                console.log(err);
-                isSessionActiveStt = false;
-              }
-            }
-            if (isBotInitialized == true) {
-              const response = await fetch(
-                `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
-                {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    participant_message_text: latestMessage,
-                    participant_message_url: "",
-                    is_signature_bot: true,
-                  }),
-                }
-              );
-              const responseData = await response.json();
-              console.log(
-                "Response from Coaching submit response : ",
-                responseData
-              );
-              
-              conversation_id2 = responseData["uid"];
-              let coachResponse = responseData["coach_message_text"];
-
-              if (coachResponse.split(":").length > 1) {
-                coachResponse = coachResponse
-                  .split(":")
-                  .slice(1)
-                  .join(":")
-                  .trim();
-              }
-
-              if (isBotAudioResponse) {
-                const audioDiv = await TTSContainerSTT(coachResponse);
-                signals.onResponse({ html: audioDiv });
-              } else {
-                signals.onResponse({
-                  html: coachResponse,
-                });
-              }
-              setTimeout(() => {
-                 
-                if (botType === 'avatar_bot'){
-                    console.log("endSessionButton:",endSessionButton.disabled)
-                    if (endSessionButton && endSessionButton.disabled){
-
-                        endSessionButton.setAttribute(
-                          "onmouseover",
-                          "this.style.backgroundColor = '#e5e7eb'"
-                        );
-                        endSessionButton.setAttribute(
-                          "onmouseleave",
-                          "this.style.backgroundColor = '#9ca3af'"
-                        );
-                        endSessionButton.style.backgroundColor = '#9ca3af'; 
-                        endSessionButton.style.color = 'white';
-                        endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-
-                        endSessionButton.disabled = false;
-                    }
-
-                }
-
-                // if ( botType === "avatar_bot" )
-                // appendMessage2(
-                //   `<button style="width: fit-content; padding: 6px 12px; border-radius: 4px; border: none; background: #ff7272; color: white;font-weight : 700;" onclick="handleEndConversation()">End Session</button>`
-                // );
-              }, 200);
-            }
-          }
-          console.log(botId)
-          if (botId != undefined && allowRecommendationTestCode == false) {
-            // wait infinitely for bot to initialize
-            console.log("returning from here (bot logic)");
-            return;
-          }
-
-          if (
-            isProceedStt === "false" &&
-            latestMessage.toUpperCase() != "STOP"
-          ) {
-            signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-            });
-            return;
-          }
-
-          if (
-            (testType2 === "mcq" || testType2 === "dynamic_mcq") &&
-            latestMessage.toUpperCase() != "STOP"
-          ) {
-            signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
-            });
-            return;
-          }
-
-          console.log("Latest Message ===> ", latestMessage);
-          if (isTestCode(latestMessage)) {
-            //* check if a session is already running
-            console.log("responsesDone2", responsesDone2, questionIndex2);
-            if (responsesDone2 === false && questionIndex2 > 0) {
-              signals.onResponse({
-                html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
-              });
-              return;
-            }
-            await cancelTestStt(participantId2); // cancelling session
-            //* reset all variables : start
-            resetAllVariablesStt(); // reseting session
-          }
-
-          const userAcessAvailability2 = body.messages[0].text;
-          if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
-            signals.onResponse({
-              html: "<b>Please enter the access code to get started.</b>",
-            });
-            return;
-          } else if (userAcessAvailability2 === "No" && !isSessionActiveStt) {
-            optedNo2 = true;
-            signals.onResponse({
-              html: `<div id="option-button-container" >
-                      <button id="surprise-button" style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
-                      </div>
-                      `,
-            });
-            // signals.onResponse({
-            //   text: "No problem , here are a few samples you can try out (Experimental):",
-            //   html: `
-            //                   <div id="option-button-container" >
-            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2('Integrating a New Team Member')">Integrating a New Team Member</button>
-
-            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Effective Customer Service Management')">Effective Customer Service Management</button>
-
-            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
-
-            //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
-
-            //                   <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-            //               </div>
-            //                           `,
-            // });
-            return;
-          }
-
-          if (body.messages[0].text.toUpperCase() === "STOP") {
-            await cancelTestStt(participantId2); // cancelling session
-            if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
-              const shadowRoot =
-                document.getElementById("chat-element2").shadowRoot;
-              const button = shadowRoot.getElementById(
-                `mcq-option-stt-${mcqFormIdStt}`
-              );
-              // button.parentNode.removeChild(button)
-              const thankYouMessage = document.createElement("div");
-              thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
-
-              // Replace the button with the "Thank you" message
-              button.parentNode.replaceChild(thankYouMessage, button);
-            }
-            if (isProceedStt === "false") {
-              const gshadowRoot =
-                document.getElementById("chat-element2").shadowRoot;
-              const msg = gshadowRoot.getElementById("proceed-option2");
-              // button.parentNode.removeChild(button)
-              const que_msg = document.createElement("div");
-              que_msg.innerHTML = "Thank You"; // You can customize the message here
-              // Replace the button with the "Thank you" message
-              msg.parentNode.replaceChild(que_msg, msg);
-            }
-
-            // resetAllVariablesStt(); //reseting variables
-            // signals.onResponse({
-            //   html: "<b>Your session is terminated. You can restart again!</b>",
-            // });
-            resetAllVariablesStt().then(() => {
-              console.log("Your session is terminated. You can restart again!");
-
-              signals.onResponse({
-                html: "<b>Your session is terminated. You can restart again!</b>",
-              });
-            });
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 2000);
-            return;
-          }
-
-          // to check session is active or not
-          if (!isTestCode(latestMessage)) {
-            await getSessionStatusStt(sessionId2);
-
-            // getting text which is from option-button-container
-            const shadowRoot =
-              document.getElementById("chat-element2").shadowRoot;
-            const option_buttons = shadowRoot.querySelectorAll(
-              "#option-button-container button"
-            );
-
-            const buttonTextArray = [];
-
-            option_buttons.forEach((button) => {
-              const buttonText = button.textContent.trim();
-              buttonTextArray.push(buttonText);
-            });
-
-            // adding sample test code title
-            const sampleTestCodesValues = Object.values(sampleTestCodesStt);
-            sampleTestCodesValues.forEach((value) => {
-              buttonTextArray.push(value.trim());
-            });
-            //end
-
-            console.log(
-              "isAttemptingRecommendation : ",
-              isAttemptingRecommendation,
-              "isValidMessageStt(latestMessage) : ",
-              isValidMessageStt(latestMessage),
-              "isProceedstt",
-              isProceedStt
-            );
-            if (isAttemptingRecommendation == true && isProceedStt == "true") {
-              if (isValidMessageStt(latestMessage) == false) {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
-                });
-                return;
-              }
-
-              if (isDuplicateResponse(latestMessage)) {
-                DuplicateResponseCount2 += 1;
-                if (DuplicateResponseCount2 > 1) {
-                  resetAllVariablesStt().then(() => {
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
-                    });
-                  });
-                  return;
-                }
-
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
-                });
-                return;
-              } else {
-                userResponses2.push(latestMessage);
-              }
-            }
-
-            if (
-              !buttonTextArray.includes(latestMessage) &&
-              allowRecommendationTestCode == false
-            ) {
-              if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Not allowed! choose option to continue. </b></p>",
-                });
-                return;
-              }
-              if (sessionStatusStt != "in_progress") {
-                signals.onResponse({
-                  html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
-                });
-                return;
-              } else if (
-                sessionStatusStt === "in_progress" &&
-                isSessionExpiredStt
-              ) {
-                // checking sessionexpiry
-                await cancelTestStt(participantId2);
-                resetAllVariablesStt();
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
-                });
-                return;
-              }
-
-              //************* check if user message is atleast 10 words */
-
-              if (!isValidMessageStt(latestMessage)) {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
-                });
-                return;
-              }
-
-              if (isDuplicateResponse(latestMessage)) {
-                DuplicateResponseCount2 += 1;
-                if (DuplicateResponseCount2 > 1) {
-                  resetAllVariablesStt();
-                  signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
-                  });
-                  return;
-                }
-
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
-                });
-                return;
-              } else {
-                userResponses2.push(latestMessage);
-              }
-            }
-          }
-
-          let isTestcodeValid2;
-          const validTestCodes2 = [
-            "QU7G2X3",
-            "QPN48NO",
-            "QLW2EVP",
-            "Q16EWL2",
-            "QWLHI90",
-            "Q2GGMFP",
-            "QJ3RTFF",
-            "QBEWUOM",
-          ];
-
-          console.log(
-            "questionIndex2",
-            questionIndex2,
-            "userAcessAvailability2",
-            userAcessAvailability2
-          );
-          if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
-            if (optedNo2 === false) {
-              testCode2 = body.messages[0].text;
-              appendMessage2("Please wait while we are processing ...");
-            } else {
-              appendMessage2("Please wait while we are processing ...");
-              // //wait while test code is being processed
-              // while (!codeAvailabilityUserChoice2) {
-              //   await new Promise((resolve) => setTimeout(resolve, 500));
-              // }
-            }
-            codeAvailabilityUserChoice2 = true;
-          }
-
-          if (questionIndex2 > 0 && !responsesDone2) {
-            userResponse2 = body.messages[0].text;
-          }
-
-          if (
-            !responsesDone2 &&
-            userName2.length === 0 &&
-            userEmail2.length === 0 &&
-            codeAvailabilityUserChoice2
-          ) {
-            try {
-              if (questionIndex2 === 0) {
-                const response = await fetch(
-                  `${baseURL2}/tests/?test_code=${testCode2}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: `Basic ${createBasicAuthToken2(
-                        key2,
-                        secret2
-                      )}`,
-                    },
-                  }
-                );
-
-                questionData2 = await response.json();
-                if (questionData2.results.length === 0) {
-                  signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
-                  });
-                  return;
-                }
-                console.log("test-data = >", questionData2);
-                questionLength2 = questionData2.results[0].questions.length;
-                testId2 = questionData2.results[0].uid;
-                interactionMode2 = questionData2.results[0].interaction_mode;
-                is_free2 = questionData2.results[0].is_free;
-                senarioDescription2 = questionData2.results[0].description;
-                senarioTitle2 = questionData2.results[0].title;
-                senarioCase2 = questionData2.results[0].scenario_case;
-                senarioMediaDescription2 =
-                  questionData2.results[0].description_media;
-                testUIInfoStt = questionData2.results[0].ui_information;
-                console.log(senarioMediaDescription2);
-
-                testType2 = questionData2.results[0].test_type;
-                orch_details2 =
-                  questionData2.results[0].orchestrated_conversation_details;
-                clientNameStt = questionData2.results[0].client_name;
-                isTestSignedInStt = questionData2.results[0].is_logged_in;
-                isImmersiveStt = questionData2.results[0].is_immersive;
-                mediaPropsStt = questionData2.results[0].media_props;
-                console.log(mediaPropsStt, "props");
-                isTranscriptOnlyStt =
-                  questionData2.results[0].is_transcript_only;
-
-                if (testUIInfoStt) {
-                  if (Object.keys(testUIInfoStt).length > 0) {
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
-                    });
-                    return;
-                  }
-                }
-
-                if (testType2 === "mcq") {
-                  globalQuestionLengthStt = Math.log2(questionLength2 + 1);
-                  globalQuestionDataStt = questionData2;
-                }
-
-                if (testType2 === "dynamic_mcq") {
-                  globalQuestionLengthStt = questionLength2;
-                  globalQuestionDataStt = questionData2;
-                }
-
-                //signed user rules
-
-                if (user2) {
-                  // const signedUserTestCode = await getTestCodesByRule('signed_user')
-                  // if (!signedUserTestCode.includes(testCode) ){
-                  //   signals.onResponse({
-                  //     text: 'not allowed'
-                  //   })
-                  // const companyName = user2.email.split("@")[1].split(".")[0];
-                  // const companyTestCode = await getTestCodesByRule2(
-                  //   companyName
-                  // );
-                  // console.log(companyName);
-                  // if (companyTestCode.length > 0) {
-                  //   if (!companyTestCode.includes(testCode2)) {
-                  //     signals.onResponse({
-                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                  //     });
-                  //     return;
-                  //   }
-
-                  const group_list = ["Demo", "free", "Free"];
-                  // const my_lib = await getTestCodesByRule2("my_lib");
-                  const my_lib = await getClientInformationStt("my_lib");
-                  for (const item of my_lib) {
-                    if (item.emails.includes(user2.email)) {
-                      group_list.push(item.group);
-                    }
-                  }
-
-                  if (!group_list.includes(clientNameStt)) {
-                    // clientName Demo means Free type test
-                    signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                    });
-                    return;
-                  }
-                } else {
-                  // const unSignedUserTestCode = await getTestCodesByRule2(
-                  //   "unsigned_user"
-                  // );
-                  // if (unSignedUserTestCode.length > 0) {
-                  //   if (!unSignedUserTestCode.includes(testCode2)) {
-                  //     signals.onResponse({
-                  //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                  //     });
-                  //   }
-                  // }
-
-                  if (isTestSignedInStt) {
-                    signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                    });
-                    return;
-                  }
-                  const group_list = ["Demo", "free", "Free"];
-                  if (!group_list.includes(clientNameStt)) {
-                    signals.onResponse({
-                      html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                    });
-                    return;
-                  }
-                }
-
-                // restriction check like monthly test allowed start
-                // await getAttemptedTestList2(participantId2);
-                await getIsRepeatStatus2(participantId2);
-                await getTestPrevilage2(participantId2);
-
-                if (isRepeatStatus2["monthly_remaining_tests"] < 1) {
-                  signals.onResponse({
-                    html: "<b>You have reached your monthly limit. Please contact your coach/administrator to get more simulations.</b>",
-                  });
-                  return;
-                }
-
-                // Test privilege
-                if (
-                  testPrevilage2 &&
-                  testPrevilage2.active &&
-                  !testPrevilage2.data.includes(testCode2)
-                ) {
-                  signals.onResponse({
-                    html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                  });
-                  return;
-                }
-
-                // User cannot attempt the test more than once if it is active
-                console.log(userRole2);
-                if (userRole2 && userRole2 !== "admin") {
-                  if (!isRepeatStatus2.is_repeat) {
-                    await getAttemptedTestList2(participantId2);
-                    if (testCodeList2.includes(testCode2)) {
-                      signals.onResponse({
-                        html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
-                      });
-                      return;
-                    }
-                  }
-                }
-                //end
-
-                try {
-                  const response = await fetch(
-                    `${baseURL2}/test-attempt-sessions/`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(
-                          key2,
-                          secret2
-                        )}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        participant_id: participantId2,
-                        ordering: "-id",
-                        test_id: testId2,
-                      }),
-                    }
-                  );
-
-                  const data = await response.json();
-                  sessionId2 = data.uid;
-                  isSessionActiveStt = true;
-                  console.log("Session Created => ", sessionId2);
-                  // initialize coaching conversation if test is coaching type
-                  try {
-                    if (testType2 === "coaching") {
-                      const response = await fetch(
-                        `${baseURL2}/coaching-conversations/initialize/`,
-                        {
-                          method: "POST",
-                          headers: {
-                            Authorization: `Basic ${createBasicAuthToken2(
-                              key2,
-                              secret2
-                            )}`,
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            test_attempt_session_id: sessionId2,
-                          }),
-                        }
-                      );
-
-                      const data = await response.json();
-                      console.log("Coaching Conversation Created => ", data);
-                      conversation_id2 = data.uid;
-                      questionLength2 = 999;
-                      console.log("conversation_id", conversation_id2);
-                    }
-                  } catch (err) {
-                    console.log("Error while creating session : ", err);
-                    isSessionActiveStt = false;
-                  }
-                } catch (err) {
-                  console.log(err);
-                  isSessionActiveStt = false;
-                }
-              }
-
-              if (questionIndex2 <= questionLength2) {
-                if (questionIndex2 < questionLength2) {
-                  if (
-                    testType2 === "dynamic_discussion_thread" ||
-                    testType2 === "orchestrated_conversation"
-                  ) {
-                    if (questionIndex2 === 0) {
-                      let initial_msg2 = orch_details2["initial_messages"];
-                      let start_with_user2 =
-                        orch_details2["start_with_user"] ?? "none";
-
-                      if (start_with_user2 != "none") {
-                        if (start_with_user2 === "manager-team") {
-                          questionText2 =
-                            "Start the discussion as a manager to support the team member.";
-                        } else if (start_with_user2 === "team-manager") {
-                          questionText2 =
-                            "Start the discussion as a team member and engage with your manager.";
-                        } else if (start_with_user2 === "sales-customer") {
-                          questionText2 =
-                            "Start the discussion as a sales and service manager to interact with the customer.";
-                        } else if (start_with_user2 === "customer-sales") {
-                          questionText2 =
-                            "Start the discussion as a customer to interact with the sales & service manager.";
-                        } else {
-                          questionText2 =
-                            "Start the discussion by commenting your thoughts on this.";
-                        }
-                      } else {
-                        let resultString2 = "";
-
-                        for (let i = 0; i < initial_msg2.length; i++) {
-                          resultString2 += "<p>" + initial_msg2[i] + "</p>";
-
-                          if (i < initial_msg2.length - 1) {
-                            resultString2 += "<br>";
-                          }
-                        }
-                        questionText2 = resultString2;
-                      }
-                    }
-                  } else {
-                    if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
-                      questionText2 =
-                        questionData2.results[0].questions[questionIndex2]
-                          .question;
-
-                      questionMediaLinkStt =
-                        questionData2.results[0].questions[questionIndex2]
-                          .media_link;
-
-                      questionId2 =
-                        questionData2.results[0].questions[questionIndex2].uid;
-                      const mcqOptionsStt =
-                        questionData2.results[0].questions[questionIndex2]
-                          .mcq_options;
-                      const optionNameStt = Object.keys(mcqOptionsStt);
-                      console.log(mcqOptionsStt, optionNameStt, questionData2);
-                      const option1Name = optionNameStt[0];
-                      const option2Name = optionNameStt[1];
-                      const option1Text = mcqOptionsStt[option1Name]["opt"];
-                      const option2Text = mcqOptionsStt[option2Name]["opt"];
-
-                      if (questionMediaLinkStt) {
-                        let embeddingUrl = "";
-                        if (questionMediaLinkStt.length > 0) {
-                          if (questionMediaLinkStt.includes("youtube.com")) {
-                            const videoId = questionMediaLinkStt.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("vimeo.com")
-                          ) {
-                            const videoId = questionMediaLinkStt
-                              .split("/")
-                              .pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("twitter.com")
-                          ) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-                          }
-
-                          if (embeddingUrl) {
-                            questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                          `;
-                          }
-                          const urlList = questionMediaLinkStt.split(",");
-                          console.log("list", urlList);
-                          if (urlList.length > 1) {
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
-                                let url =
-                                  element.split("edit?")[0] +
-                                  "embed?start=true&loop=true&delayms=3000";
-                                console.log(url);
-                                questionText2 =
-                                  questionText2 +
-                                  "\n" +
-                                  `<iframe src=${url}
-                                                frameborder="0" 
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                allowfullscreen="true" 
-                                                mozallowfullscreen="true" 
-                                                webkitallowfullscreen="true"
-                                                ></iframe>`;
-                              } else {
-                                console.log(element);
-                                questionText2 =
-                                  questionText2 +
-                                  "\n" +
-                                  `<div ><audio style="${
-                                    window.innerWidth < 600
-                                      ? "width: 200px; max-width: 200px !important;"
-                                      : " min-width: 50vw !important;"
-                                  }" controls autoplay>
-                                <source src=${element} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`;
-                              }
-                            });
-                          } else {
-                            if (
-                              questionMediaLinkStt.includes("docs.google.com")
-                            ) {
-                              let url =
-                                questionMediaLinkStt.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              questionText2 = questionText2.replaceAll(":", "");
-                              if (isImmersiveStt) {
-                                console.log(questionText2);
-                                const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
-                                const response = await fetch(urltts, {
-                                  method: "GET",
-                                  headers: {
-                                    Authorization: `Basic ${createBasicAuthToken2(
-                                      key2,
-                                      secret2
-                                    )}`,
-                                  },
-                                });
-
-                                const blob = await response.blob();
-                                console.log("respnse", blob);
-
-                                const objectUrl = URL.createObjectURL(blob);
-
-                                console.log(objectUrl, "url");
-                                questionText2 = `<div ><audio style="${
-                                  window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
-                                }" controls autoplay>
-                                <source src=${objectUrl} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`;
-                                console.log(questionText2);
-                              }
-                              console.log("last", questionText2);
-
-                              questionText2 =
-                                questionText2 +
-                                `<iframe src=${url}
-                                              frameborder="0" 
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                              allowfullscreen="true" 
-                                              mozallowfullscreen="true" 
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`;
-                            }
-                          }
-                        }
-                      }
-
-                      if (isImmersiveStt && !questionMediaLinkStt) {
-                        questionText2 = questionText2.replaceAll(":", "");
-                        console.log("first", questionText2);
-
-                        const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
-                        const response = await fetch(urltts, {
-                          method: "GET",
-                          headers: {
-                            Authorization: `Basic ${createBasicAuthToken2(
-                              key2,
-                              secret2
-                            )}`,
-                          },
-                        });
-
-                        const blob = await response.blob();
-                        console.log("respnse", blob);
-
-                        const objectUrl = URL.createObjectURL(blob);
-
-                        console.log(objectUrl, "url");
-                        questionText2 = `<div ><audio style="${
-                          window.innerWidth < 600
-                            ? "width: 200px; max-width: 200px !important;"
-                            : " min-width: 50vw !important;"
-                        }" controls autoplay>
-                          <source src=${objectUrl} type="audio/mpeg" />
-                          Your browser does not support the audio element.
-                          </audio></div>`;
-                        console.log(questionText2);
-                      }
-                      console.log("last", questionText2);
-
-                      formRadio = `
-                      <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
-                        <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
-                        <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
-                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
-                            <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
-                            <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
-                          </div>
-                          <div style="display: flex; flex-direction: row; align-items: flex-start;">
-                            <input type="radio" id="${option2Name}" name="mcq_option_stt" value="${option2Text}" style="margin-right: 5px;">
-                            <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
-                          </div>
-                        </div>
-                        <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
-                      </div>`;
-                      questionText2 = formRadio;
-                    } else {
-                      if (testType2 != "coaching" || questionIndex2 == 0) {
-                        questionText2 =
-                          questionData2.results[0].questions[questionIndex2]
-                            .question;
-                        questionMediaLinkStt =
-                          questionData2.results[0].questions[questionIndex2]
-                            .media_link;
-                      }
-                    }
-                  }
-                  console.log(questionText2);
-                  if (questionIndex2 === 0) {
-                    initialQuestionTextStt = questionText2;
-                    initialIndexStt = questionIndex2 + 1;
-                    isProceedStt = "false";
-                    questionText2 = `
-                    <div id="proceed-option2" >
-                    <b>Proceed ?</b>
-                        <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
-                        <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
-                    </div>`;
-                    console.log(senarioMediaDescription2, "mediadesc");
-                    if (senarioMediaDescription2) {
-                      let embeddingUrl2 = "";
-                      if (senarioMediaDescription2.length > 0) {
-                        console.log(senarioMediaDescription2);
-                        if (senarioMediaDescription2.includes("youtube.com")) {
-                          const videoId =
-                            senarioMediaDescription2.split("v=")[1];
-                          embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
-
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media  <iframe
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                                          src=${embeddingUrl2}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                              `
-                          );
-                        } else if (
-                          senarioMediaDescription2.includes("vimeo.com")
-                        ) {
-                          const videoId = senarioMediaDescription2
-                            .split("/")
-                            .pop();
-                          embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
-
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                               ▪ Description : ${senarioDescription2} <br><br>
-                               ▪ Instructions : Response should be at least 15 words. <br><br>
-                               ▪ Media  <iframe
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                                          src=${embeddingUrl2}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                              `
-                          );
-                        } else if (
-                          senarioMediaDescription2.includes("twitter.com")
-                        ) {
-                          // console.log(tweetId);
-                          embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
-
-                          appendMessage2(
-                            `▪ Title : ${senarioTitle2} <br><br>
-                                 ▪ Description : ${senarioDescription2} <br><br>
-                                 ▪ Instructions : Response should be at least 15 words. <br><br>
-                                 ▪ Media  <iframe
-                                            allow="autoplay; encrypted-media; fullscreen;
-                                            style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                                            src=${embeddingUrl2}
-                                            frameborder="0"
-                                            allowfullscreen
-                                          >
-                                `
-                          );
-                        } else {
-                          const urlList = senarioMediaDescription2.split(",");
-                          console.log("list", urlList);
-                          if (urlList.length > 1) {
-                            appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
-                                ▪ Description : ${senarioDescription2} <br><br>
-                                ▪ Instructions : Response should be at least 15 words. <br><br>`);
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
-                                let url =
-                                  element.split("edit?")[0] +
-                                  "embed?start=true&loop=true&delayms=3000";
-                                console.log(url);
-                                appendMessage2(`<iframe src=${url}
-                                                frameborder="0" 
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                allowfullscreen="true" 
-                                                mozallowfullscreen="true" 
-                                                webkitallowfullscreen="true"
-                                                ></iframe>`);
-                              } else {
-                                console.log(element);
-                                appendMessage2(
-                                  `<div ><audio style="${
-                                    window.innerWidth < 600
-                                      ? "width: 200px; max-width: 200px !important;"
-                                      : " min-width: 50vw !important;"
-                                  }" controls autoplay>
-                                  <source src=${element} type="audio/mpeg" />
-                                  Your browser does not support the audio element.
-                                  </audio></div>`
-                                );
-                              }
-                            });
-                          } else {
-                            if (
-                              senarioMediaDescription2.includes(
-                                "docs.google.com"
-                              )
-                            ) {
-                              let url =
-                                senarioMediaDescription2.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                              ▪ Description : ${senarioDescription2} <br><br>
-                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                              `
-                              );
-                              appendMessage2(`<iframe src=${url}
-                                              frameborder="0" 
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                              allowfullscreen="true" 
-                                              mozallowfullscreen="true" 
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`);
-                            } else if (
-                              senarioMediaDescription2.includes("guidejar.com")
-                            ) {
-                              const guidejarId = senarioMediaDescription2
-                                .split("/")
-                                .pop();
-                              appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                              ▪ Description : ${senarioDescription2} <br><br>
-                              ▪ Instructions : Response should be at least 15 words. <br><br>
-                              `
-                              );
-                              appendMessage2(`
-                              <div style="width:640px">
-                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-                              ></div></div>
-                              `);
-                            } else {
-                              appendMessage2(
-                                `▪ Title : ${senarioTitle2} <br><br>
-                                    ▪ Description : ${senarioDescription2} <br><br>
-                                    ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
-                                    ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
-                                    `
-                              );
-                            }
-                          }
-                        }
-
-                        // if (!senarioMediaDescription2.includes("twitter.com")) {
-                        //    appendMessage2(
-                        //      `▪ Title : ${senarioTitle2} <br><br>
-                        //        ▪ Description : ${senarioDescription2} <br><br>
-                        //        ▪ Instructions : Response should be at least 15 words. <br><br>
-                        //        ▪ Media  <iframe
-                        //                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
-                        //                   src=${embeddingUrl2}
-                        //                   frameborder="0"
-                        //                   allowfullscreen
-                        //                 >
-                        //       `
-                        //    );
-                        // }
-                      } else {
-                        appendMessage2(
-                          `▪ Title : ${senarioTitle2} <br><br>
-                             ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Response should be at least 15 words.`
-                        );
-                      }
-                      // proceed buttion will show
-                      signals.onResponse({
-                        html: questionText2,
-                      });
-                    } else if (
-                      mediaPropsStt &&
-                      Object.keys(mediaPropsStt).includes("test_image")
-                    ) {
-                      console.log("Media props here", mediaPropsStt);
-                      console.log("SHOW MEDIA PROPS here", mediaPropsStt);
-                      // const [imageUrlStt, coords] = Object.entries(
-                      //   mediaPropsStt.test_image
-                      // )[0];
-                      const url = Object.keys(mediaPropsStt["test_image"])[0];
-                      let narration;
-                      let coords = [];
-                      const coordAndTitleNarrationList =
-                        mediaPropsStt["test_image"][url];
-
-                      coordAndTitleNarrationList.forEach((element) => {
-                        if (typeof element === "string") {
-                          narration = element;
-                        } else {
-                          coords.push(element);
-                        }
-                      });
-
-                      const testImage = {
-                        image: url,
-                        coords: coords,
-                        narration: narration,
-                      };
-
-                      console.log(testImage);
-                      const imageUrlStt = testImage.image;
-                      const coordsStt = [
-                        {
-                          coord: "109.70.257.89|55.34.131.43",
-                          title: "Hand Wheel",
-                        },
-                        { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
-                        {
-                          coord: "128.208.246.242 | 63.97.125.125",
-                          title: "Gear Unit",
-                        },
-                      ];
-                      const narrationStt = testImage.narration;
-
-                      const ttsNarration = await TTSContainerSTT(narrationStt);
-                      const imageIdStt = "mediaImageStt";
-                      const imageMapNameStt = "image-mapStt";
-                      const imageTooltipIdStt = "tooltip-stt";
-
-                      appendMessage2(
-                        `▪ Title : ${senarioTitle2} <br><br>
-                             ▪ Description : ${senarioDescription2} <br><br>
-                             ▪ Instructions : Response should be at least 15 words. <br><br>
-                             ▪ <img src=${imageUrlStt} ${
-                          window.innerWidth < 768
-                            ? "width='200'"
-                            : "width='400'"
-                        } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                             ▪ ${ttsNarration}`
-                      );
-                      signals.onResponse({
-                        html: questionText2,
-                      });
-
-                      // pass - coords, imagemap-name,
-                      setHoverPointsStt(
-                        coordsStt,
-                        imageIdStt,
-                        imageMapNameStt,
-                        imageTooltipIdStt
-                      );
-                      console.log("IMAGE MAPPED WITH COORDS");
-                    } else {
-                      // proceed buttion will show
-                      signals.onResponse({
-                        html: questionText2,
-                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
-                      });
-                    }
-                  } else {
-                    if (
-                      testType2 != "orchestrated_conversation" &&
-                      testType2 != "dynamic_discussion_thread" &&
-                      testType2 != "coaching"
-                    ) {
-                      let responderName;
-                      let strList = questionText2
-                        .replaceAll("*", "")
-                        .split(":");
-                      if (strList.length > 1) {
-                        questionText2 = strList[1];
-                        responderName = `<b>${strList[0]}:</b><br>`;
-                      }
-                      if (isImmersiveStt) {
-                        questionText2 = await TTSContainerSTT(questionText2);
-                      }
-
-                      if (responderName) {
-                        questionText2 = responderName + questionText2;
-                      }
-                      if (questionMediaLinkStt) {
-                        console.log(questionText2);
-                        let embeddingUrl = "";
-                        if (questionMediaLinkStt.length > 0) {
-                          if (questionMediaLinkStt.includes("youtube.com")) {
-                            const videoId = questionMediaLinkStt.split("v=")[1];
-                            embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("vimeo.com")
-                          ) {
-                            const videoId = questionMediaLinkStt
-                              .split("/")
-                              .pop();
-                            embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
-                          } else if (
-                            questionMediaLinkStt.includes("twitter.com")
-                          ) {
-                            embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
-                          }
-
-                          if (embeddingUrl) {
-                            questionText2 = `▪ Media <br>  <iframe
-                                          allow="autoplay; encrypted-media; fullscreen;"
-                                          style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                          src=${embeddingUrl}
-                                          frameborder="0"
-                                          allowfullscreen
-                                        >
-                          `;
-                          }
-                          const urlList = questionMediaLinkStt.split(",");
-                          console.log("list", urlList);
-                          if (urlList.length > 1) {
-                            urlList.forEach((element) => {
-                              element = element.trim();
-                              if (element.includes("docs.google.com")) {
-                                let url =
-                                  element.split("edit?")[0] +
-                                  "embed?start=true&loop=true&delayms=3000";
-                                console.log(url);
-                                appendMessage2(`<iframe src=${url}
-                                                frameborder="0" 
-                                                style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
-                                                allowfullscreen="true" 
-                                                mozallowfullscreen="true" 
-                                                webkitallowfullscreen="true"
-                                                ></iframe>`);
-                              } else {
-                                console.log(element);
-                                appendMessage2(`<div ><audio style="${
-                                  window.innerWidth < 600
-                                    ? "width: 200px; max-width: 200px !important;"
-                                    : " min-width: 50vw !important;"
-                                }" controls autoplay>
-                                <source src=${element} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                                </audio></div>`);
-                              }
-                            });
-                          } else {
-                            if (
-                              questionMediaLinkStt.includes("docs.google.com")
-                            ) {
-                              let url =
-                                questionMediaLinkStt.split("edit?")[0] +
-                                "embed?start=true&loop=true&delayms=3000";
-                              console.log(url);
-                              appendMessage2(`<iframe src=${url}
-                                              frameborder="0" 
-                                              style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;" 
-                                              allowfullscreen="true" 
-                                              mozallowfullscreen="true" 
-                                              webkitallowfullscreen="true"
-                                              ></iframe>`);
-                            } else if (
-                              questionMediaLinkStt.includes("guidejar.com")
-                            ) {
-                              const guidejarId = questionMediaLinkStt
-                                .split("/")
-                                .pop();
-                              appendMessage2(`
-                              <div style="width:640px">
-                              <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
-                              <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
-                              ></div></div>
-                              `);
-                            }
-                          }
-                        }
-                      }
-                      if (questionText2) {
-                        console.log(`que_image ${questionIndex2 + 1}`);
-                        if (
-                          mediaPropsStt &&
-                          Object.keys(mediaPropsStt).includes(
-                            `que_image ${questionIndex2 + 1}`
-                          )
-                        ) {
-                          const questionpropName = `que_image ${
-                            questionIndex2 + 1
-                          }`;
-
-                          const url = Object.keys(
-                            mediaPropsStt[questionpropName]
-                          )[0];
-                          let narration;
-                          let coords = [];
-                          const coordAndTitleNarrationList =
-                            mediaPropsStt[questionpropName][url];
-
-                          coordAndTitleNarrationList.forEach((element) => {
-                            if (typeof element === "string") {
-                              narration = element;
-                            } else {
-                              coords.push(element);
-                            }
-                          });
-
-                          const testImage = {
-                            image: url,
-                            coords: coords,
-                            narration: narration,
-                          };
-                          console.log(testImage);
-                          const imageUrlStt = testImage.image;
-                          const coordsStt = testImage.coords;
-                          const narrationStt = testImage.narration;
-
-                          const ttsNarration = await TTSContainerSTT(
-                            narrationStt
-                          );
-                          const imageIdStt = `mediaImageStt${questionIndex2}`;
-                          const imageMapNameStt = `image-mapStt${questionIndex2}`;
-                          const imageTooltipIdStt = `tooltip-stt${questionIndex2}`;
-
-                          questionText2 = `▪ ${ttsNarration}<br><br>
-                                           <br> <img src=${imageUrlStt} ${
-                            window.innerWidth < 768
-                              ? "width='200'"
-                              : "width='400'"
-                          } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
-                                            ▪ Question : <br> ${questionText2}
-                                          `;
-
-                          signals.onResponse({
-                            html: questionText2,
-                          });
-                          setHoverPointsStt(
-                            coordsStt,
-                            imageIdStt,
-                            imageMapNameStt,
-                            imageTooltipIdStt
-                          );
-                          console.log(testImage, "IMAGE MAPPED WITH COORDS ", {
-                            questionIndex2,
-                          });
-
-                          // questionText2 = questionText2 + imageDiv
-                        } else {
-                          signals.onResponse({
-                            html: questionText2,
-                          });
-                        }
-                      }
-                    }
-                  }
-                }
-
-                if (
-                  questionIndex2 === questionLength2 &&
-                  userResponse2.length > 0
-                ) {
-                  const shadowRoot =
-                    document.getElementById("chat-element2").shadowRoot;
-                  const messageNode = document.createElement("div");
-                  messageNode.classList.add("inner-message-container");
-                  const messageBubble = document.createElement("div");
-                  messageBubble.classList.add(
-                    "message-bubble",
-                    "ai-message-text"
-                  );
-                  messageBubble.style.maxWidth = "80%";
-                  messageBubble.style.marginTop = "4px";
-                  messageBubble.style.borderRadius = "4px";
-                  messageBubble.style.padding = "4";
-                  messageBubble.style.backgroundColor = "#f3f4f6";
-                  messageBubble.style.color = "#374151";
-
-                  const messageText = document.createElement("p");
-                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
-                    user2 ? "" : "<b> Hang tight for next steps</b>"
-                  }`;
-                  messageBubble.appendChild(messageText);
-                  messageNode.appendChild(messageBubble);
-                  shadowRoot
-                    .getElementById("messages")
-                    .appendChild(messageNode);
-                  shadowRoot.getElementById("messages").scrollBy(0, 100);
-                }
-
-                if (questionIndex2 > 0) {
-                  if (testType2 != "coaching" || questionIndex2 == 0) {
-                    questionId2 =
-                      questionData2.results[0].questions[questionIndex2 - 1]
-                        .uid;
-                  }
-
-                  questionIndex2++;
-
-                  if (testType2 === "coaching") {
-                    const response = await fetch(
-                      `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
-                      {
-                        method: "POST",
-                        headers: {
-                          Authorization: `Basic ${createBasicAuthToken2(
-                            key2,
-                            secret2
-                          )}`,
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          participant_message_text: userResponse2,
-                          participant_message_url: "",
-                        }),
-                      }
-                    );
-                    const responseData = await response.json();
-                    console.log(
-                      "Response from Coaching submit response : ",
-                      responseData
-                    );
-
-                    questionText2 = responseData["coach_message_text"];
-                    conversation_id2 = responseData["uid"];
-                    console.log("coaching question Text: ", questionText2);
-
-                    let responderName;
-                    const strList = questionText2.split(":", 2);
-                    if (strList.length > 1) {
-                      responderName = `<b>${strList[0]}:</b><br>`;
-                      questionText2 = strList[1];
-                    }
-                    if (isImmersiveStt) {
-                      questionText2 = await TTSContainerStt(questionText2);
-                    }
-
-                    if (responderName) {
-                      questionText2 = responderName + questionText2;
-                    }
-                    const dataToShow2 = getCoachingQuestionData2(questionText2);
-                    signals.onResponse({
-                      html: dataToShow2,
-                    });
-                    console.log(questionData2);
-                  } else {
-                    const response = await fetch(
-                      `${baseURL2}/test-responses/`,
-                      {
-                        method: "POST",
-                        headers: {
-                          Authorization: `Basic ${createBasicAuthToken2(
-                            key2,
-                            secret2
-                          )}`,
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          test_attempt_session_id: sessionId2,
-                          question_id: questionId2,
-                          response_text: userResponse2,
-                          response_file: "",
-                          user_attributes: {
-                            tag: "deepchat_profile",
-                            attributes: {
-                              username: "web_user",
-                              email: user2 ? user2.email : getAnonymousEmail(),
-                            },
-                          },
-                        }),
-                      }
-                    );
-
-                    const responseData = await response.json();
-                    resQuestionNumber2 = responseData.question.question_number;
-                  }
-
-                  if (questionIndex2 < questionLength2) {
-                    if (
-                      testType2 === "dynamic_discussion_thread" ||
-                      testType2 === "orchestrated_conversation"
-                    ) {
-                      questionId2 =
-                        questionData2.results[0].questions[questionIndex2 - 1]
-                          .uid;
-
-                      questionIndex2++;
-
-                      const questionResponse2 = await fetch(
-                        `${baseURL2}/test-responses/`,
-                        {
-                          method: "POST",
-                          headers: {
-                            Authorization: `Basic ${createBasicAuthToken2(
-                              key2,
-                              secret2
-                            )}`,
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            test_attempt_session_id: sessionId2,
-                            question_id: questionId2,
-                            response_text: "",
-                            response_file: "",
-                            user_attributes: {
-                              tag: "deepchat_profile",
-                              attributes: {
-                                username: "web_user",
-                                email: user2
-                                  ? user2.email
-                                  : getAnonymousEmail(),
-                              },
-                            },
-                          }),
-                        }
-                      );
-
-                      const qRespnse2 = await questionResponse2.json();
-                      questionText2 = qRespnse2["response_text"];
-
-                      // checking if botname is present or not
-                      const responder_name2 = qRespnse2.responder_display_name;
-                      if (!questionText2.includes(responder_name2)) {
-                        questionText2 = responder_name2 + " : " + questionText2;
-                      }
-
-                      if (isImmersiveStt) {
-                        questionText2 = questionText2.replace(
-                          `${responder_name2}`,
-                          ""
-                        );
-                        questionText2 = questionText2.replace(`:`, "");
-                        questionText2 = responder_name2 + " : " + questionText2;
-                      }
-
-                      resQuestionNumber2 = qRespnse2.question.question_number;
-                    }
-                  }
-                }
-
-                if (resQuestionNumber2 != questionLength2) {
-                  if (
-                    testType2 === "orchestrated_conversation" ||
-                    testType2 === "dynamic_discussion_thread"
-                  ) {
-                    console.log("ismmersive", isImmersiveStt, questionText2);
-
-                    const stringList = questionText2.split(":", 2);
-                    console.log(stringList);
-                    let responderName;
-                    if (stringList.length > 1) {
-                      questionText2 = stringList[1];
-                      responderName = `<b>${stringList[0]}:</b><br>`;
-                    }
-                    if (isImmersiveStt && questionIndex2 != 0) {
-                      questionText2 = await TTSContainerSTT(questionText2);
-                    }
-                    if (responderName) {
-                      questionText2 = responderName + questionText2;
-                    }
-                    signals.onResponse({
-                      html: questionText2,
-                    });
-                  }
-                }
-
-                userResponse2 = "";
-
-                if (questionIndex2 === 0) {
-                  questionIndex2++;
-                }
-                if (resQuestionNumber2 === questionLength2) {
-                  responsesDone2 = true;
-
-                  const isCheckStt = await SessionCheckStt(sessionId2);
-                  if (!isCheckStt) {
-                    console.log("failed to populate session data", isCheckStt);
-                    if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
-                      const shadowRoot =
-                        document.getElementById("chat-element2").shadowRoot;
-                      const button = shadowRoot.getElementById(
-                        `mcq-option-stt-${mcqFormIdStt}`
-                      );
-                      // button.parentNode.removeChild(button)
-                      const thankYouMessage = document.createElement("div");
-                      thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
-
-                      // Replace the button with the "Thank you" message
-                      button.parentNode.replaceChild(thankYouMessage, button);
-                    }
-                    if (isProceedStt === "false") {
-                      const gshadowRoot =
-                        document.getElementById("chat-element2").shadowRoot;
-                      const msg = gshadowRoot.getElementById("proceed-option2");
-                      // button.parentNode.removeChild(button)
-                      const que_msg = document.createElement("div");
-                      que_msg.innerHTML = "Thank You"; // You can customize the message here
-                      // Replace the button with the "Thank you" message
-                      msg.parentNode.replaceChild(que_msg, msg);
-                    }
-
-                    resetAllVariablesStt();
-
-                    signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
-                    });
-                    return;
-                  }
-
-                  if (!window.user) {
-                    isEmailFormstt = true;
-                    formFieldsstt = ["name", "email"];
-                    signals.onResponse({
-                      html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
-                    });
-                  }
-
-                  let getReportBody2 = {
-                    user_id: participantId2,
-                    report_type: reportType2,
-                    session_id: sessionId2,
-                    interaction_id: testId2,
-                  };
-
-                  if (is_free2) {
-                    reportType2 = "summaryFeedbackReport";
-                    getReportBody2 = {
-                      user_id: participantId2,
-                      report_type: reportType2,
-                      session_id: sessionId2,
-                      interaction_id: testId2,
-                    };
-                  } else if (testType2 === "dynamic_discussion_thread") {
-                    reportType2 = "dynamicDiscussionReport";
-                    getReportBody2 = {
-                      user_id: participantId2,
-                      report_type: reportType2,
-                      test_attempt_session_id: sessionId2,
-                      interaction_id: testId2,
-                    };
-                  } else if (testType2 === "orchestrated_conversation") {
-                    reportType2 = "meetingAnalysisReport";
-                    getReportBody2 = {
-                      user_id: participantId2,
-                      report_type: reportType2,
-                      test_attempt_session_id: sessionId2,
-                    };
-                  } else if (senarioCase2 === "process_training") {
-                    reportType2 = "processTrainingReport";
-                    getReportBody2 = {
-                      user_id: participantId2,
-                      report_type: reportType2,
-                      session_id: sessionId2,
-                      interaction_id: testId2,
-                    };
-                  }
-                  console.log(senarioCase2, getReportBody2);
-
-                  const reportResponse = await fetch(
-                    `${baseURL2}/frontend-auth/get-report-url/`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Basic ${createBasicAuthToken2(
-                          key2,
-                          secret2
-                        )}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify(getReportBody2),
-                    }
-                  );
-
-                  const reportData2 = await reportResponse.json();
-                  reportUrl2 = reportData2.url;
-                  globalReportUrl2 = reportData2.url;
-                  console.log("Report URL ===> ", reportUrl2);
-                  if (reportData2) {
-                    responsesDone2 = true;
-                  }
-
-                  // const urlObject = new URL(reportUrl2);
-                  // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
-                  // console.log(baseurl)
-
-                  // const resp = await fetch(baseurl)
-                  // console.log(resp)
-                  // if (!resp.ok){
-                  //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
-                  //   })
-                  // }
-
-                  if (window.user) {
-                    // sendEmail();
-                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    appendMessage2(message);
-                    // //* send message to start new session
-
-                    signals.onResponse({
-                      html: "<b>Please enter another access code to start a new interaction.</b>",
-                    });
-                    submitEmailAndName2();
-                    return;
-                  }
-                }
-              }
-            } catch (err) {
-              console.log(err);
-              if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
-                const shadowRoot =
-                  document.getElementById("chat-element2").shadowRoot;
-                const button = shadowRoot.getElementById(
-                  `mcq-option-stt-${mcqFormIdStt}`
-                );
-                // button.parentNode.removeChild(button)
-                const thankYouMessage = document.createElement("div");
-                thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
-
-                // Replace the button with the "Thank you" message
-                button.parentNode.replaceChild(thankYouMessage, button);
-              }
-              if (isProceedStt === "false") {
-                const gshadowRoot =
-                  document.getElementById("chat-element2").shadowRoot;
-                const msg = gshadowRoot.getElementById("proceed-option2");
-                // button.parentNode.removeChild(button)
-                const que_msg = document.createElement("div");
-                que_msg.innerHTML = "Thank You"; // You can customize the message here
-                // Replace the button with the "Thank you" message
-                msg.parentNode.replaceChild(que_msg, msg);
-              }
-
-              resetAllVariablesStt();
-
-              if (body.messages[0].text.toUpperCase() !== "STOP") {
-                signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
-                });
-              }
-            }
-          }
+          OpenAiResponse(body.messages[0].text, signals);
+          // // TEXT RESPONSES
+          // //change mic state active to default on send
+          // var chatElement = document.getElementById("chat-element2");
+          // //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
+          // console.log("Bot ID: ", botId);
+          // if (chatElement) {
+          //   var shadowRootMic = chatElement.shadowRoot;
+          //   if (shadowRootMic) {
+          //     var microphoneButton =
+          //       shadowRootMic.querySelector("#microphone-button");
+          //     if (
+          //       microphoneButton
+          //         .querySelector("svg")
+          //         .classList.contains("active-microphone-icon")
+          //     ) {
+          //       const clickEvent = new Event("click");
+          //       microphoneButton.dispatchEvent(clickEvent);
+          //     }
+          //   }
+          // }
+          // globalSignals = signals;
+          // if (fitmentAnalysisInProgress) {
+          //   console.log("NA-1", fitmentAnalysisInProgress);
+          //   signals.onResponse({
+          //     html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //   });
+          //   return;
+          // }
+          // // to check session active or not
+          // // get latest message
+          // const latestMessage = body.messages[body.messages.length - 1].text;
+          // if (isEmailFormstt) {
+          //   await proceedFormFlowStt(latestMessage);
+          //   if (formFieldsstt.length > 0) {
+          //     signals.onResponse({
+          //       html: `<b>Please enter your ${formFieldsstt[0]}<b>`,
+          //     });
+          //   } else {
+          //     isEmailFormstt = false;
+          //     if (botId != undefined && botType !== "feedback_bot") {
+          //       sendBotTranscript2();
+          //       signals.onResponse({ html: faqHtmlData });
+          //     } else if (botId != undefined && botType === "feedback_bot") {
+          //       const thumbsupdiv = await feedbackBotInitialFlow("save_email");
+          //       signals.onResponse({
+          //         html: thumbsupdiv,
+          //       });
+          //     } else {
+          //       const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+          //       appendMessage2(message);
+          //       // //* send message to start new session
+          //       signals.onResponse({
+          //         html: "<b>Please enter another access code to start a new interaction.</b>",
+          //       });
+          //       submitEmailAndName2();
+          //     }
+          //   }
+          //   return;
+          // }
+          // if (botType === "feedback_bot" && isFeedbackConvInProcess) {
+          //   if (!isValidMessageStt(latestMessage, 11)) {
+          //     signals.onResponse({
+          //       html: `<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>`,
+          //     });
+          //     return;
+          //   }
+          //   feedbackBotQnA[feedbackBotQuestions[feedbackBotIndex]] =
+          //     latestMessage;
+          //   const que_length = Object.keys(feedbackBotQuestions).length;
+          //   feedbackBotIndex += 1;
+          //   const is_last = que_length + 1 === feedbackBotIndex;
+          //   if (is_last) {
+          //     isFeedbackConvInProcess = false;
+          //     isFeedbackConvEnd = true;
+          //     signals.onResponse({
+          //       html: `
+          //       <div id='submit_feedback-${uniqueSesssionContainerId}'>
+          //       <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleFeedbackSubmit()">Submit</button>
+          //       </div>
+          //       `,
+          //     });
+          //   } else {
+          //     signals.onResponse({
+          //       html: feedbackBotQuestions[feedbackBotIndex],
+          //     });
+          //     // setTimeout(() => {
+          //     //   appendMessage2(
+          //     //     `<button style="margin-top:5px;  width:fit-content; padding:6px 12px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
+          //     //   );
+          //     // }, 200);
+          //   }
+          //   return;
+          // } else if (botType === "feedback_bot" && !isFeedbackConvInProcess) {
+          //   signals.onResponse({
+          //     html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //   });
+          //   return;
+          // }
+          // if (botId != undefined && allowRecommendationTestCode == false) {
+          //   if (fitmentAnalysisInProgress == true) {
+          //     fitmentAnalysisQnA[fitmentAnalysisIndex] = {
+          //       coach: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+          //       cochee: latestMessage,
+          //     };
+          //     fitmentAnalysisIndex += 1;
+          //     console.log(
+          //       "fitmentAnalysisIndex : ",
+          //       fitmentAnalysisIndex,
+          //       Object.keys(fitmentAnalysisQuestions).length
+          //     );
+          //     if (
+          //       fitmentAnalysisIndex <=
+          //       Object.keys(fitmentAnalysisQuestions).length
+          //     ) {
+          //       console.log("Answer : ", latestMessage);
+          //       console.log(
+          //         "fitment question : ",
+          //         fitmentAnalysisQuestions[fitmentAnalysisIndex]
+          //       );
+          //       signals.onResponse({
+          //         html: fitmentAnalysisQuestions[fitmentAnalysisIndex],
+          //       });
+          //       return;
+          //     } else {
+          //       fitmentAnalysisInProgress = false;
+          //       fitmentAnalysisIndex = 0;
+          //       console.log("fitmentAnalysisQnA : ", fitmentAnalysisQnA);
+          //       try {
+          //         const response = await fetch(
+          //           `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+          //           {
+          //             method: "POST",
+          //             headers: {
+          //               Authorization: `Basic ${createBasicAuthToken2(
+          //                 key2,
+          //                 secret2
+          //               )}`,
+          //               "Content-Type": "application/json",
+          //             },
+          //             body: JSON.stringify({
+          //               participant_id: participantId2,
+          //               bot_id: botId,
+          //               is_signature_bot: true,
+          //               user_id: userId2,
+          //               fitness_analysis_data:
+          //                 JSON.stringify(fitmentAnalysisQnA),
+          //             }),
+          //           }
+          //         );
+          //         const data = await response.json();
+          //         console.log("Fitness Analysis Score => ", data);
+          //         score = ' {"Fitment score":"3"}';
+          //         signals.onResponse({
+          //           html: `<b >Fitment score is : ${data.data["Fitment score"]} </b>`,
+          //         });
+          //         setTimeout(() => {
+          //           appendMessage2(faqHtmlData);
+          //         }, 200);
+          //       } catch (err) {
+          //         signals.onResponse({
+          //           html: `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`,
+          //         });
+          //       }
+          //       return;
+          //     }
+          //   }
+          //   if (recommendationClicked == true) {
+          //     // show warning if user message is less than 5 words
+          //     if (latestMessage.split(" ").length < 5) {
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'>Please provide atleast more than 5 words.</p>",
+          //       });
+          //       return;
+          //     }
+          //     appendMessage2(
+          //       "Please wait while we are getting some recommendations for you..."
+          //     );
+          //     // if isBotRecommendationFetched is not true after 1 minute, then show error message
+          //     setTimeout(() => {
+          //       if (!isBotRecommendationFetched) {
+          //         recommendationClicked = false;
+          //         signals.onResponse({
+          //           html: "<p style='font-size: 14px;color: #991b1b;'>Failed to fetch scenarios. we have got your request, scenario will be created and will be available in 'Requested Scenario' in 'My Library'. You can retry after some time</p>",
+          //         });
+          //         return;
+          //       }
+          //     }, 90000);
+          //     try {
+          //       const response = await fetch(
+          //         `${baseURL2}/tests/get-recommendetion-tests/?context=${latestMessage}&creator_user_id=${userId2}&test_type=test`,
+          //         {
+          //           method: "GET",
+          //           headers: {
+          //             Authorization: `Basic ${createBasicAuthToken2(
+          //               key2,
+          //               secret2
+          //             )}`,
+          //           },
+          //         }
+          //       );
+          //       const recommendation_tests_data = await response.json();
+          //       console.log(
+          //         "recommendation_tests_data : ",
+          //         recommendation_tests_data
+          //       );
+          //       if (recommendation_tests_data.success === true) {
+          //         isBotRecommendationFetched = true;
+          //       }
+          //       const fetched_test_code = Object.keys(
+          //         recommendation_tests_data.matching_tests
+          //       )[0];
+          //       const fetched_test =
+          //         recommendation_tests_data.matching_tests[fetched_test_code];
+          //       const created_test_code = Object.keys(
+          //         recommendation_tests_data.created_scenario
+          //       )[0];
+          //       const created_test =
+          //         recommendation_tests_data.created_scenario[created_test_code];
+          //       console.log(
+          //         "fetched_test : ",
+          //         fetched_test,
+          //         recommendation_tests_data.matching_tests,
+          //         "created_test : ",
+          //         created_test
+          //       );
+          //       signals.onResponse({
+          //         html: `<b >Here are some recommendations for you : </b> <br>
+          //           <button style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick2('${created_test_code}','${created_test}')">${created_test}      (experimental)</button>
+          //           `,
+          //       });
+          //       console.log(
+          //         "recommendation_tests_data : ",
+          //         recommendation_tests_data.matching_tests
+          //       );
+          //       recommendationClicked = false;
+          //     } catch (error) {
+          //       console.error(`Error in get recommendation tests: ${error}`);
+          //     }
+          //     return;
+          //   }
+          //   console.log("Yes OMG control is reaching here");
+          //   console.log(
+          //     "isAskingInitialQuestions : ",
+          //     isAskingInitialQuestions,
+          //     "fitmentAnalysisInProgress : ",
+          //     fitmentAnalysisInProgress,
+          //     "isSessionActiveStt : ",
+          //     isSessionActiveStt,
+          //     "isAttemptingRecommendation : ",
+          //     isAttemptingRecommendation,
+          //     "optedBeginSession : ",
+          //     optedBeginSession
+          //   );
+          //   if (
+          //     isAskingInitialQuestions == false &&
+          //     fitmentAnalysisInProgress == false &&
+          //     isSessionActiveStt == false &&
+          //     isAttemptingRecommendation == false &&
+          //     optedBeginSession == false &&
+          //     botType !== "user_bot"
+          //   ) {
+          //     console.log("NA-1");
+          //     signals.onResponse({
+          //       html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //     });
+          //     return;
+          //   }
+          //   if (isAskingInitialQuestions == true) {
+          //     // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
+          //     // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
+          //     if (
+          //       typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
+          //     ) {
+          //       const options =
+          //         botInitialQuestions[botInitialQuestionsIndex]["options"];
+          //       if (!options.includes(latestMessage)) {
+          //         signals.onResponse({
+          //           html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //         });
+          //         return;
+          //       }
+          //       const shadowRoot =
+          //         document.getElementById("chat-element2").shadowRoot;
+          //       const initialOptionDiv =
+          //         shadowRoot.getElementById("intial-options");
+          //       console.log(initialOptionDiv);
+          //       const buttons = initialOptionDiv.querySelectorAll("button");
+          //       buttons.forEach((button) => {
+          //         button.disabled = true;
+          //       });
+          //     }
+          //     if (
+          //       typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
+          //     ) {
+          //       const question =
+          //         botInitialQuestions[botInitialQuestionsIndex]["question"];
+          //       botInitialQuestionsQnA[question] = latestMessage;
+          //     } else {
+          //       botInitialQuestionsQnA[
+          //         botInitialQuestions[botInitialQuestionsIndex]
+          //       ] = latestMessage;
+          //     }
+          //     botInitialQuestionsIndex++;
+          //     if (
+          //       botInitialQuestionsIndex >
+          //       Object.keys(botInitialQuestions).length
+          //     ) {
+          //       // isAskingInitialQuestions = false;
+          //       // botInitialQuestionsIndex = 0;
+          //       console.log(
+          //         "all botInitialQuestions submitted : ",
+          //         botInitialQuestionsQnA
+          //       );
+          //       if (isIntakeInProgress) {
+          //         isIntakeCompleted = true;
+          //         isIntakeInProgress = false;
+          //         isAskingInitialQuestions = false;
+          //         //********** submit intake to backend: start */
+          //         const queryparam = new URLSearchParams({
+          //           method: "post",
+          //           qna: JSON.stringify(botInitialQuestionsQnA),
+          //           bot_id: botId,
+          //           is_positive: "False",
+          //           qna_type: "initial_qna",
+          //           user_id: userId2,
+          //         });
+          //         const resp = await fetch(
+          //           `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+          //           {
+          //             method: "GET",
+          //             headers: {
+          //               Authorization: `Basic ${createBasicAuthToken2(
+          //                 key2,
+          //                 secret2
+          //               )}`,
+          //               "Content-Type": "application/json",
+          //             },
+          //           }
+          //         )
+          //           .then((response) => response.json())
+          //           .then((data) => {
+          //             console.log(" response : ", data);
+          //           });
+          //         //********** submit intake to backend: end */
+          //         signals.onResponse({
+          //           text: "Thank you for completing the intake. You can now proceed to start your session.",
+          //         });
+          //         return;
+          //       }
+          //       // signals.onResponse({text: "Thank you for your response."})
+          //     } else {
+          //       const question = botInitialQuestions[botInitialQuestionsIndex];
+          //       if (typeof question === "string") {
+          //         // appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+          //         signals.onResponse({
+          //           text: question,
+          //         });
+          //       } else {
+          //         const radioCont = handleRadioTypeInitialQuestion(
+          //           question["options"],
+          //           question["question"]
+          //         );
+          //         signals.onResponse({
+          //           html: radioCont,
+          //         });
+          //       }
+          //       return;
+          //     }
+          //   }
+          //   if (isSessionActiveStt == false && isBotInitialized == false) {
+          //     console.log("intakeUid", IntakeUid);
+          //     try {
+          //       const response = await fetch(
+          //         `${baseURL2}/test-attempt-sessions/`,
+          //         {
+          //           method: "POST",
+          //           headers: {
+          //             Authorization: `Basic ${createBasicAuthToken2(
+          //               key2,
+          //               secret2
+          //             )}`,
+          //             "Content-Type": "application/json",
+          //           },
+          //           body: JSON.stringify({
+          //             participant_id: participantId2,
+          //             ordering: "-id",
+          //             test_id: botId,
+          //             is_signature_bot: true,
+          //             is_idp_discussion_opted: isIDPDiscussionOpted,
+          //             intake_id: IntakeUid,
+          //           }),
+          //         }
+          //       );
+          //       const data = await response.json();
+          //       sessionId2 = data.uid;
+          //       isSessionActiveStt = true;
+          //       console.log("Session Created => ", sessionId2);
+          //       if (isBotInitialized == false) {
+          //         // initialize coaching conversation
+          //         try {
+          //           const response = await fetch(
+          //             `${baseURL2}/coaching-conversations/initialize/`,
+          //             {
+          //               method: "POST",
+          //               headers: {
+          //                 Authorization: `Basic ${createBasicAuthToken2(
+          //                   key2,
+          //                   secret2
+          //                 )}`,
+          //                 "Content-Type": "application/json",
+          //               },
+          //               body: JSON.stringify({
+          //                 test_attempt_session_id: sessionId2,
+          //                 is_signature_bot: true,
+          //               }),
+          //             }
+          //           );
+          //           const data = await response.json();
+          //           console.log("Coaching Conversation Created => ", data);
+          //           conversation_id2 = data.uid;
+          //           questionLength2 = 999;
+          //           console.log("conversation_id", conversation_id2);
+          //           isBotInitialized = true;
+          //           if (
+          //             isAskingInitialQuestions == true &&
+          //             botInitialQuestionsIndex != 0
+          //           ) {
+          //             isAskingInitialQuestions = false;
+          //             botInitialQuestionsIndex = 0;
+          //             if (isBotAudioResponse) {
+          //               const audioDiv = await TTSContainerSTT(
+          //                 data.coach_message_text
+          //               );
+          //               signals.onResponse({ html: audioDiv });
+          //             } else {
+          //               signals.onResponse({ html: data.coach_message_text });
+          //             }
+          //             return;
+          //           }
+          //         } catch (err) {
+          //           console.log("Error while creating session : ", err);
+          //           isSessionActiveStt = false;
+          //         }
+          //       }
+          //     } catch (err) {
+          //       console.log(err);
+          //       isSessionActiveStt = false;
+          //     }
+          //   }
+          //   if (isBotInitialized == true) {
+          //     const response = await fetch(
+          //       `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
+          //       {
+          //         method: "POST",
+          //         headers: {
+          //           Authorization: `Basic ${createBasicAuthToken2(
+          //             key2,
+          //             secret2
+          //           )}`,
+          //           "Content-Type": "application/json",
+          //         },
+          //         body: JSON.stringify({
+          //           participant_message_text: latestMessage,
+          //           participant_message_url: "",
+          //           is_signature_bot: true,
+          //         }),
+          //       }
+          //     );
+          //     const responseData = await response.json();
+          //     console.log(
+          //       "Response from Coaching submit response : ",
+          //       responseData
+          //     );
+          //     conversation_id2 = responseData["uid"];
+          //     let coachResponse = responseData["coach_message_text"];
+          //     if (coachResponse.split(":").length > 1) {
+          //       coachResponse = coachResponse
+          //         .split(":")
+          //         .slice(1)
+          //         .join(":")
+          //         .trim();
+          //     }
+          //     if (isBotAudioResponse) {
+          //       const audioDiv = await TTSContainerSTT(coachResponse);
+          //       signals.onResponse({ html: audioDiv });
+          //     } else {
+          //       signals.onResponse({
+          //         html: coachResponse,
+          //       });
+          //     }
+          //     setTimeout(() => {
+          //       if (botType === "avatar_bot") {
+          //         console.log("endSessionButton:", endSessionButton.disabled);
+          //         if (endSessionButton && endSessionButton.disabled) {
+          //           endSessionButton.setAttribute(
+          //             "onmouseover",
+          //             "this.style.backgroundColor = '#e5e7eb'"
+          //           );
+          //           endSessionButton.setAttribute(
+          //             "onmouseleave",
+          //             "this.style.backgroundColor = '#9ca3af'"
+          //           );
+          //           endSessionButton.style.backgroundColor = "#9ca3af";
+          //           endSessionButton.style.color = "white";
+          //           endSessionButton.setAttribute(
+          //             "onclick",
+          //             `handleEndConversation()`
+          //           );
+          //           endSessionButton.disabled = false;
+          //         }
+          //       }
+          //       // if ( botType === "avatar_bot" )
+          //       // appendMessage2(
+          //       //   `<button style="width: fit-content; padding: 6px 12px; border-radius: 4px; border: none; background: #ff7272; color: white;font-weight : 700;" onclick="handleEndConversation()">End Session</button>`
+          //       // );
+          //     }, 200);
+          //   }
+          // }
+          // console.log(botId);
+          // if (botId != undefined && allowRecommendationTestCode == false) {
+          //   // wait infinitely for bot to initialize
+          //   console.log("returning from here (bot logic)");
+          //   return;
+          // }
+          // if (
+          //   isProceedStt === "false" &&
+          //   latestMessage.toUpperCase() != "STOP"
+          // ) {
+          //   signals.onResponse({
+          //     html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //   });
+          //   return;
+          // }
+          // if (
+          //   (testType2 === "mcq" || testType2 === "dynamic_mcq") &&
+          //   latestMessage.toUpperCase() != "STOP"
+          // ) {
+          //   signals.onResponse({
+          //     html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+          //   });
+          //   return;
+          // }
+          // console.log("Latest Message ===> ", latestMessage);
+          // if (isTestCode(latestMessage)) {
+          //   //* check if a session is already running
+          //   console.log("responsesDone2", responsesDone2, questionIndex2);
+          //   if (responsesDone2 === false && questionIndex2 > 0) {
+          //     signals.onResponse({
+          //       html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
+          //     });
+          //     return;
+          //   }
+          //   await cancelTestStt(participantId2); // cancelling session
+          //   //* reset all variables : start
+          //   resetAllVariablesStt(); // reseting session
+          // }
+          // const userAcessAvailability2 = body.messages[0].text;
+          // if (userAcessAvailability2 === "Yes" && !isSessionActiveStt) {
+          //   signals.onResponse({
+          //     html: "<b>Please enter the access code to get started.</b>",
+          //   });
+          //   return;
+          // } else if (userAcessAvailability2 === "No" && !isSessionActiveStt) {
+          //   optedNo2 = true;
+          //   signals.onResponse({
+          //     html: `<div id="option-button-container" >
+          //             <button id="surprise-button" style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
+          //             </div>
+          //             `,
+          //   });
+          //   // signals.onResponse({
+          //   //   text: "No problem , here are a few samples you can try out (Experimental):",
+          //   //   html: `
+          //   //                   <div id="option-button-container" >
+          //   //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2('Integrating a New Team Member')">Integrating a New Team Member</button>
+          //   //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Effective Customer Service Management')">Effective Customer Service Management</button>
+          //   //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
+          //   //                   <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
+          //   //                   <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick2('Managing Meeting Momentum')">Managing Meeting Momentum</button>
+          //   //               </div>
+          //   //                           `,
+          //   // });
+          //   return;
+          // }
+          // if (body.messages[0].text.toUpperCase() === "STOP") {
+          //   await cancelTestStt(participantId2); // cancelling session
+          //   if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+          //     const shadowRoot =
+          //       document.getElementById("chat-element2").shadowRoot;
+          //     const button = shadowRoot.getElementById(
+          //       `mcq-option-stt-${mcqFormIdStt}`
+          //     );
+          //     // button.parentNode.removeChild(button)
+          //     const thankYouMessage = document.createElement("div");
+          //     thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+          //     // Replace the button with the "Thank you" message
+          //     button.parentNode.replaceChild(thankYouMessage, button);
+          //   }
+          //   if (isProceedStt === "false") {
+          //     const gshadowRoot =
+          //       document.getElementById("chat-element2").shadowRoot;
+          //     const msg = gshadowRoot.getElementById("proceed-option2");
+          //     // button.parentNode.removeChild(button)
+          //     const que_msg = document.createElement("div");
+          //     que_msg.innerHTML = "Thank You"; // You can customize the message here
+          //     // Replace the button with the "Thank you" message
+          //     msg.parentNode.replaceChild(que_msg, msg);
+          //   }
+          //   // resetAllVariablesStt(); //reseting variables
+          //   // signals.onResponse({
+          //   //   html: "<b>Your session is terminated. You can restart again!</b>",
+          //   // });
+          //   resetAllVariablesStt().then(() => {
+          //     console.log("Your session is terminated. You can restart again!");
+          //     signals.onResponse({
+          //       html: "<b>Your session is terminated. You can restart again!</b>",
+          //     });
+          //   });
+          //   // setTimeout(() => {
+          //   //   window.location.reload();
+          //   // }, 2000);
+          //   return;
+          // }
+          // // to check session is active or not
+          // if (!isTestCode(latestMessage)) {
+          //   await getSessionStatusStt(sessionId2);
+          //   // getting text which is from option-button-container
+          //   const shadowRoot =
+          //     document.getElementById("chat-element2").shadowRoot;
+          //   const option_buttons = shadowRoot.querySelectorAll(
+          //     "#option-button-container button"
+          //   );
+          //   const buttonTextArray = [];
+          //   option_buttons.forEach((button) => {
+          //     const buttonText = button.textContent.trim();
+          //     buttonTextArray.push(buttonText);
+          //   });
+          //   // adding sample test code title
+          //   const sampleTestCodesValues = Object.values(sampleTestCodesStt);
+          //   sampleTestCodesValues.forEach((value) => {
+          //     buttonTextArray.push(value.trim());
+          //   });
+          //   //end
+          //   console.log(
+          //     "isAttemptingRecommendation : ",
+          //     isAttemptingRecommendation,
+          //     "isValidMessageStt(latestMessage) : ",
+          //     isValidMessageStt(latestMessage),
+          //     "isProceedstt",
+          //     isProceedStt
+          //   );
+          //   if (isAttemptingRecommendation == true && isProceedStt == "true") {
+          //     if (isValidMessageStt(latestMessage) == false) {
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+          //       });
+          //       return;
+          //     }
+          //     if (isDuplicateResponse(latestMessage)) {
+          //       DuplicateResponseCount2 += 1;
+          //       if (DuplicateResponseCount2 > 1) {
+          //         resetAllVariablesStt().then(() => {
+          //           signals.onResponse({
+          //             html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+          //           });
+          //         });
+          //         return;
+          //       }
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+          //       });
+          //       return;
+          //     } else {
+          //       userResponses2.push(latestMessage);
+          //     }
+          //   }
+          //   if (
+          //     !buttonTextArray.includes(latestMessage) &&
+          //     allowRecommendationTestCode == false
+          //   ) {
+          //     if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'><b>Not allowed! choose option to continue. </b></p>",
+          //       });
+          //       return;
+          //     }
+          //     if (sessionStatusStt != "in_progress") {
+          //       signals.onResponse({
+          //         html: "<b>To Start Your Session Please Enter Interaction Code..</b>",
+          //       });
+          //       return;
+          //     } else if (
+          //       sessionStatusStt === "in_progress" &&
+          //       isSessionExpiredStt
+          //     ) {
+          //       // checking sessionexpiry
+          //       await cancelTestStt(participantId2);
+          //       resetAllVariablesStt();
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'>Your Session is expired. Please restart again.</p>",
+          //       });
+          //       return;
+          //     }
+          //     //************* check if user message is atleast 10 words */
+          //     if (!isValidMessageStt(latestMessage)) {
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+          //       });
+          //       return;
+          //     }
+          //     if (isDuplicateResponse(latestMessage)) {
+          //       DuplicateResponseCount2 += 1;
+          //       if (DuplicateResponseCount2 > 1) {
+          //         resetAllVariablesStt();
+          //         signals.onResponse({
+          //           html: "<p style='font-size: 14px;color: #991b1b;'><b> Your session has terminated because of multiple duplicate responses. please try again with unique responses </b></p>",
+          //         });
+          //         return;
+          //       }
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #d3a008;'><b>Duplicate Response detected. this may lead to inaccuracies and session termination. please proceed with caution.</b></p>",
+          //       });
+          //       return;
+          //     } else {
+          //       userResponses2.push(latestMessage);
+          //     }
+          //   }
+          // }
+          // let isTestcodeValid2;
+          // const validTestCodes2 = [
+          //   "QU7G2X3",
+          //   "QPN48NO",
+          //   "QLW2EVP",
+          //   "Q16EWL2",
+          //   "QWLHI90",
+          //   "Q2GGMFP",
+          //   "QJ3RTFF",
+          //   "QBEWUOM",
+          // ];
+          // console.log(
+          //   "questionIndex2",
+          //   questionIndex2,
+          //   "userAcessAvailability2",
+          //   userAcessAvailability2
+          // );
+          // if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
+          //   if (optedNo2 === false) {
+          //     testCode2 = body.messages[0].text;
+          //     appendMessage2("Please wait while we are processing ...");
+          //   } else {
+          //     appendMessage2("Please wait while we are processing ...");
+          //     // //wait while test code is being processed
+          //     // while (!codeAvailabilityUserChoice2) {
+          //     //   await new Promise((resolve) => setTimeout(resolve, 500));
+          //     // }
+          //   }
+          //   codeAvailabilityUserChoice2 = true;
+          // }
+          // if (questionIndex2 > 0 && !responsesDone2) {
+          //   userResponse2 = body.messages[0].text;
+          // }
+          // if (
+          //   !responsesDone2 &&
+          //   userName2.length === 0 &&
+          //   userEmail2.length === 0 &&
+          //   codeAvailabilityUserChoice2
+          // ) {
+          //   try {
+          //     if (questionIndex2 === 0) {
+          //       const response = await fetch(
+          //         `${baseURL2}/tests/?test_code=${testCode2}`,
+          //         {
+          //           method: "GET",
+          //           headers: {
+          //             Authorization: `Basic ${createBasicAuthToken2(
+          //               key2,
+          //               secret2
+          //             )}`,
+          //           },
+          //         }
+          //       );
+          //       questionData2 = await response.json();
+          //       if (questionData2.results.length === 0) {
+          //         signals.onResponse({
+          //           html: "<p style='font-size: 14px;color: #991b1b;'><b>Code is Invalid. Please enter a valid code.</b></p>",
+          //         });
+          //         return;
+          //       }
+          //       console.log("test-data = >", questionData2);
+          //       questionLength2 = questionData2.results[0].questions.length;
+          //       testId2 = questionData2.results[0].uid;
+          //       interactionMode2 = questionData2.results[0].interaction_mode;
+          //       is_free2 = questionData2.results[0].is_free;
+          //       senarioDescription2 = questionData2.results[0].description;
+          //       senarioTitle2 = questionData2.results[0].title;
+          //       senarioCase2 = questionData2.results[0].scenario_case;
+          //       senarioMediaDescription2 =
+          //         questionData2.results[0].description_media;
+          //       testUIInfoStt = questionData2.results[0].ui_information;
+          //       console.log(senarioMediaDescription2);
+          //       testType2 = questionData2.results[0].test_type;
+          //       orch_details2 =
+          //         questionData2.results[0].orchestrated_conversation_details;
+          //       clientNameStt = questionData2.results[0].client_name;
+          //       isTestSignedInStt = questionData2.results[0].is_logged_in;
+          //       isImmersiveStt = questionData2.results[0].is_immersive;
+          //       mediaPropsStt = questionData2.results[0].media_props;
+          //       console.log(mediaPropsStt, "props");
+          //       isTranscriptOnlyStt =
+          //         questionData2.results[0].is_transcript_only;
+          //       if (testUIInfoStt) {
+          //         if (Object.keys(testUIInfoStt).length > 0) {
+          //           signals.onResponse({
+          //             html: "<p style='font-size: 14px;color: #991b1b;'>Alert! Please use other bot <b>CoachTalk</b> for this interaction.</p>",
+          //           });
+          //           return;
+          //         }
+          //       }
+          //       if (testType2 === "mcq") {
+          //         globalQuestionLengthStt = Math.log2(questionLength2 + 1);
+          //         globalQuestionDataStt = questionData2;
+          //       }
+          //       if (testType2 === "dynamic_mcq") {
+          //         globalQuestionLengthStt = questionLength2;
+          //         globalQuestionDataStt = questionData2;
+          //       }
+          //       //signed user rules
+          //       if (user2) {
+          //         // const signedUserTestCode = await getTestCodesByRule('signed_user')
+          //         // if (!signedUserTestCode.includes(testCode) ){
+          //         //   signals.onResponse({
+          //         //     text: 'not allowed'
+          //         //   })
+          //         // const companyName = user2.email.split("@")[1].split(".")[0];
+          //         // const companyTestCode = await getTestCodesByRule2(
+          //         //   companyName
+          //         // );
+          //         // console.log(companyName);
+          //         // if (companyTestCode.length > 0) {
+          //         //   if (!companyTestCode.includes(testCode2)) {
+          //         //     signals.onResponse({
+          //         //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //         //     });
+          //         //     return;
+          //         //   }
+          //         const group_list = ["Demo", "free", "Free"];
+          //         // const my_lib = await getTestCodesByRule2("my_lib");
+          //         const my_lib = await getClientInformationStt("my_lib");
+          //         for (const item of my_lib) {
+          //           if (item.emails.includes(user2.email)) {
+          //             group_list.push(item.group);
+          //           }
+          //         }
+          //         if (!group_list.includes(clientNameStt)) {
+          //           // clientName Demo means Free type test
+          //           signals.onResponse({
+          //             html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //           });
+          //           return;
+          //         }
+          //       } else {
+          //         // const unSignedUserTestCode = await getTestCodesByRule2(
+          //         //   "unsigned_user"
+          //         // );
+          //         // if (unSignedUserTestCode.length > 0) {
+          //         //   if (!unSignedUserTestCode.includes(testCode2)) {
+          //         //     signals.onResponse({
+          //         //       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //         //     });
+          //         //   }
+          //         // }
+          //         if (isTestSignedInStt) {
+          //           signals.onResponse({
+          //             html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //           });
+          //           return;
+          //         }
+          //         const group_list = ["Demo", "free", "Free"];
+          //         if (!group_list.includes(clientNameStt)) {
+          //           signals.onResponse({
+          //             html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //           });
+          //           return;
+          //         }
+          //       }
+          //       // restriction check like monthly test allowed start
+          //       // await getAttemptedTestList2(participantId2);
+          //       await getIsRepeatStatus2(participantId2);
+          //       await getTestPrevilage2(participantId2);
+          //       if (isRepeatStatus2["monthly_remaining_tests"] < 1) {
+          //         signals.onResponse({
+          //           html: "<b>You have reached your monthly limit. Please contact your coach/administrator to get more simulations.</b>",
+          //         });
+          //         return;
+          //       }
+          //       // Test privilege
+          //       if (
+          //         testPrevilage2 &&
+          //         testPrevilage2.active &&
+          //         !testPrevilage2.data.includes(testCode2)
+          //       ) {
+          //         signals.onResponse({
+          //           html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //         });
+          //         return;
+          //       }
+          //       // User cannot attempt the test more than once if it is active
+          //       console.log(userRole2);
+          //       if (userRole2 && userRole2 !== "admin") {
+          //         if (!isRepeatStatus2.is_repeat) {
+          //           await getAttemptedTestList2(participantId2);
+          //           if (testCodeList2.includes(testCode2)) {
+          //             signals.onResponse({
+          //               html: "<b>You are not allowed to attempt this interaction again. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
+          //             });
+          //             return;
+          //           }
+          //         }
+          //       }
+          //       //end
+          //       try {
+          //         const response = await fetch(
+          //           `${baseURL2}/test-attempt-sessions/`,
+          //           {
+          //             method: "POST",
+          //             headers: {
+          //               Authorization: `Basic ${createBasicAuthToken2(
+          //                 key2,
+          //                 secret2
+          //               )}`,
+          //               "Content-Type": "application/json",
+          //             },
+          //             body: JSON.stringify({
+          //               participant_id: participantId2,
+          //               ordering: "-id",
+          //               test_id: testId2,
+          //             }),
+          //           }
+          //         );
+          //         const data = await response.json();
+          //         sessionId2 = data.uid;
+          //         isSessionActiveStt = true;
+          //         console.log("Session Created => ", sessionId2);
+          //         // initialize coaching conversation if test is coaching type
+          //         try {
+          //           if (testType2 === "coaching") {
+          //             const response = await fetch(
+          //               `${baseURL2}/coaching-conversations/initialize/`,
+          //               {
+          //                 method: "POST",
+          //                 headers: {
+          //                   Authorization: `Basic ${createBasicAuthToken2(
+          //                     key2,
+          //                     secret2
+          //                   )}`,
+          //                   "Content-Type": "application/json",
+          //                 },
+          //                 body: JSON.stringify({
+          //                   test_attempt_session_id: sessionId2,
+          //                 }),
+          //               }
+          //             );
+          //             const data = await response.json();
+          //             console.log("Coaching Conversation Created => ", data);
+          //             conversation_id2 = data.uid;
+          //             questionLength2 = 999;
+          //             console.log("conversation_id", conversation_id2);
+          //           }
+          //         } catch (err) {
+          //           console.log("Error while creating session : ", err);
+          //           isSessionActiveStt = false;
+          //         }
+          //       } catch (err) {
+          //         console.log(err);
+          //         isSessionActiveStt = false;
+          //       }
+          //     }
+          //     if (questionIndex2 <= questionLength2) {
+          //       if (questionIndex2 < questionLength2) {
+          //         if (
+          //           testType2 === "dynamic_discussion_thread" ||
+          //           testType2 === "orchestrated_conversation"
+          //         ) {
+          //           if (questionIndex2 === 0) {
+          //             let initial_msg2 = orch_details2["initial_messages"];
+          //             let start_with_user2 =
+          //               orch_details2["start_with_user"] ?? "none";
+          //             if (start_with_user2 != "none") {
+          //               if (start_with_user2 === "manager-team") {
+          //                 questionText2 =
+          //                   "Start the discussion as a manager to support the team member.";
+          //               } else if (start_with_user2 === "team-manager") {
+          //                 questionText2 =
+          //                   "Start the discussion as a team member and engage with your manager.";
+          //               } else if (start_with_user2 === "sales-customer") {
+          //                 questionText2 =
+          //                   "Start the discussion as a sales and service manager to interact with the customer.";
+          //               } else if (start_with_user2 === "customer-sales") {
+          //                 questionText2 =
+          //                   "Start the discussion as a customer to interact with the sales & service manager.";
+          //               } else {
+          //                 questionText2 =
+          //                   "Start the discussion by commenting your thoughts on this.";
+          //               }
+          //             } else {
+          //               let resultString2 = "";
+          //               for (let i = 0; i < initial_msg2.length; i++) {
+          //                 resultString2 += "<p>" + initial_msg2[i] + "</p>";
+          //                 if (i < initial_msg2.length - 1) {
+          //                   resultString2 += "<br>";
+          //                 }
+          //               }
+          //               questionText2 = resultString2;
+          //             }
+          //           }
+          //         } else {
+          //           if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+          //             questionText2 =
+          //               questionData2.results[0].questions[questionIndex2]
+          //                 .question;
+          //             questionMediaLinkStt =
+          //               questionData2.results[0].questions[questionIndex2]
+          //                 .media_link;
+          //             questionId2 =
+          //               questionData2.results[0].questions[questionIndex2].uid;
+          //             const mcqOptionsStt =
+          //               questionData2.results[0].questions[questionIndex2]
+          //                 .mcq_options;
+          //             const optionNameStt = Object.keys(mcqOptionsStt);
+          //             console.log(mcqOptionsStt, optionNameStt, questionData2);
+          //             const option1Name = optionNameStt[0];
+          //             const option2Name = optionNameStt[1];
+          //             const option1Text = mcqOptionsStt[option1Name]["opt"];
+          //             const option2Text = mcqOptionsStt[option2Name]["opt"];
+          //             if (questionMediaLinkStt) {
+          //               let embeddingUrl = "";
+          //               if (questionMediaLinkStt.length > 0) {
+          //                 if (questionMediaLinkStt.includes("youtube.com")) {
+          //                   const videoId = questionMediaLinkStt.split("v=")[1];
+          //                   embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          //                 } else if (
+          //                   questionMediaLinkStt.includes("vimeo.com")
+          //                 ) {
+          //                   const videoId = questionMediaLinkStt
+          //                     .split("/")
+          //                     .pop();
+          //                   embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+          //                 } else if (
+          //                   questionMediaLinkStt.includes("twitter.com")
+          //                 ) {
+          //                   embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+          //                 }
+          //                 if (embeddingUrl) {
+          //                   questionText2 = `▪ Media <br>  <iframe
+          //                                 allow="autoplay; encrypted-media; fullscreen;"
+          //                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                 src=${embeddingUrl}
+          //                                 frameborder="0"
+          //                                 allowfullscreen
+          //                               >
+          //                 `;
+          //                 }
+          //                 const urlList = questionMediaLinkStt.split(",");
+          //                 console.log("list", urlList);
+          //                 if (urlList.length > 1) {
+          //                   urlList.forEach((element) => {
+          //                     element = element.trim();
+          //                     if (element.includes("docs.google.com")) {
+          //                       let url =
+          //                         element.split("edit?")[0] +
+          //                         "embed?start=true&loop=true&delayms=3000";
+          //                       console.log(url);
+          //                       questionText2 =
+          //                         questionText2 +
+          //                         "\n" +
+          //                         `<iframe src=${url}
+          //                                       frameborder="0"
+          //                                       style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                       allowfullscreen="true"
+          //                                       mozallowfullscreen="true"
+          //                                       webkitallowfullscreen="true"
+          //                                       ></iframe>`;
+          //                     } else {
+          //                       console.log(element);
+          //                       questionText2 =
+          //                         questionText2 +
+          //                         "\n" +
+          //                         `<div ><audio style="${
+          //                           window.innerWidth < 600
+          //                             ? "width: 200px; max-width: 200px !important;"
+          //                             : " min-width: 50vw !important;"
+          //                         }" controls autoplay>
+          //                       <source src=${element} type="audio/mpeg" />
+          //                       Your browser does not support the audio element.
+          //                       </audio></div>`;
+          //                     }
+          //                   });
+          //                 } else {
+          //                   if (
+          //                     questionMediaLinkStt.includes("docs.google.com")
+          //                   ) {
+          //                     let url =
+          //                       questionMediaLinkStt.split("edit?")[0] +
+          //                       "embed?start=true&loop=true&delayms=3000";
+          //                     console.log(url);
+          //                     questionText2 = questionText2.replaceAll(":", "");
+          //                     if (isImmersiveStt) {
+          //                       console.log(questionText2);
+          //                       const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
+          //                       const response = await fetch(urltts, {
+          //                         method: "GET",
+          //                         headers: {
+          //                           Authorization: `Basic ${createBasicAuthToken2(
+          //                             key2,
+          //                             secret2
+          //                           )}`,
+          //                         },
+          //                       });
+          //                       const blob = await response.blob();
+          //                       console.log("respnse", blob);
+          //                       const objectUrl = URL.createObjectURL(blob);
+          //                       console.log(objectUrl, "url");
+          //                       questionText2 = `<div ><audio style="${
+          //                         window.innerWidth < 600
+          //                           ? "width: 200px; max-width: 200px !important;"
+          //                           : " min-width: 50vw !important;"
+          //                       }" controls autoplay>
+          //                       <source src=${objectUrl} type="audio/mpeg" />
+          //                       Your browser does not support the audio element.
+          //                       </audio></div>`;
+          //                       console.log(questionText2);
+          //                     }
+          //                     console.log("last", questionText2);
+          //                     questionText2 =
+          //                       questionText2 +
+          //                       `<iframe src=${url}
+          //                                     frameborder="0"
+          //                                     style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                     allowfullscreen="true"
+          //                                     mozallowfullscreen="true"
+          //                                     webkitallowfullscreen="true"
+          //                                     ></iframe>`;
+          //                   }
+          //                 }
+          //               }
+          //             }
+          //             if (isImmersiveStt && !questionMediaLinkStt) {
+          //               questionText2 = questionText2.replaceAll(":", "");
+          //               console.log("first", questionText2);
+          //               const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${questionText2}`;
+          //               const response = await fetch(urltts, {
+          //                 method: "GET",
+          //                 headers: {
+          //                   Authorization: `Basic ${createBasicAuthToken2(
+          //                     key2,
+          //                     secret2
+          //                   )}`,
+          //                 },
+          //               });
+          //               const blob = await response.blob();
+          //               console.log("respnse", blob);
+          //               const objectUrl = URL.createObjectURL(blob);
+          //               console.log(objectUrl, "url");
+          //               questionText2 = `<div ><audio style="${
+          //                 window.innerWidth < 600
+          //                   ? "width: 200px; max-width: 200px !important;"
+          //                   : " min-width: 50vw !important;"
+          //               }" controls autoplay>
+          //                 <source src=${objectUrl} type="audio/mpeg" />
+          //                 Your browser does not support the audio element.
+          //                 </audio></div>`;
+          //               console.log(questionText2);
+          //             }
+          //             console.log("last", questionText2);
+          //             formRadio = `
+          //             <div id='mcq-option-stt-${mcqFormIdStt}' style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; max-width: 100%; width: 100%; box-sizing: border-box;">
+          //               <div id='question-stt' style="font-size: 16px; margin-bottom: 20px; color: #333;" value="${questionId2}:${sessionId2}"><b>Q. </b>${questionText2}</div>
+          //               <div style="display: flex; flex-direction: row; justify-contents: space-around; gap: 8px; flex-wrap: wrap;">
+          //                 <div style="display: flex; flex-direction: row; align-items: flex-start;">
+          //                   <input type="radio" id="${option1Name}" name="mcq_option_stt" value="${option1Text}" style="margin-right: 5px;">
+          //                   <label for="${option1Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option1Text}</label>
+          //                 </div>
+          //                 <div style="display: flex; flex-direction: row; align-items: flex-start;">
+          //                   <input type="radio" id="${option2Name}" name="mcq_option_stt" value="${option2Text}" style="margin-right: 5px;">
+          //                   <label for="${option2Name}" style="font-size: 14px; margin-bottom: 10px; display: block;">${option2Text}</label>
+          //                 </div>
+          //               </div>
+          //               <button id="submit-btn" onclick="setMcqVariablesStt()" style="margin-top: 15px; padding: 10px 15px; width: 100%; border: 1px solid #1984ff; border-radius: 5px; color: white; background-color: #1984ff; cursor: pointer; font-size: 16px;">Submit</button>
+          //             </div>`;
+          //             questionText2 = formRadio;
+          //           } else {
+          //             if (testType2 != "coaching" || questionIndex2 == 0) {
+          //               questionText2 =
+          //                 questionData2.results[0].questions[questionIndex2]
+          //                   .question;
+          //               questionMediaLinkStt =
+          //                 questionData2.results[0].questions[questionIndex2]
+          //                   .media_link;
+          //             }
+          //           }
+          //         }
+          //         console.log(questionText2);
+          //         if (questionIndex2 === 0) {
+          //           initialQuestionTextStt = questionText2;
+          //           initialIndexStt = questionIndex2 + 1;
+          //           isProceedStt = "false";
+          //           questionText2 = `
+          //           <div id="proceed-option2" >
+          //           <b>Proceed ?</b>
+          //               <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
+          //               <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
+          //           </div>`;
+          //           console.log(senarioMediaDescription2, "mediadesc");
+          //           if (senarioMediaDescription2) {
+          //             let embeddingUrl2 = "";
+          //             if (senarioMediaDescription2.length > 0) {
+          //               console.log(senarioMediaDescription2);
+          //               if (senarioMediaDescription2.includes("youtube.com")) {
+          //                 const videoId =
+          //                   senarioMediaDescription2.split("v=")[1];
+          //                 embeddingUrl2 = `https://www.youtube.com/embed/${videoId}`;
+          //                 appendMessage2(
+          //                   `▪ Title : ${senarioTitle2} <br><br>
+          //                      ▪ Description : ${senarioDescription2} <br><br>
+          //                      ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                      ▪ Media  <iframe
+          //                                 style="width: 100%; border-radius: 8px; min-height: 50vh;"
+          //                                 src=${embeddingUrl2}
+          //                                 frameborder="0"
+          //                                 allowfullscreen
+          //                               >
+          //                     `
+          //                 );
+          //               } else if (
+          //                 senarioMediaDescription2.includes("vimeo.com")
+          //               ) {
+          //                 const videoId = senarioMediaDescription2
+          //                   .split("/")
+          //                   .pop();
+          //                 embeddingUrl2 = `https://player.vimeo.com/video/${videoId}`;
+          //                 appendMessage2(
+          //                   `▪ Title : ${senarioTitle2} <br><br>
+          //                      ▪ Description : ${senarioDescription2} <br><br>
+          //                      ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                      ▪ Media  <iframe
+          //                                 style="width: 100%; border-radius: 8px; min-height: 50vh;"
+          //                                 src=${embeddingUrl2}
+          //                                 frameborder="0"
+          //                                 allowfullscreen
+          //                               >
+          //                     `
+          //                 );
+          //               } else if (
+          //                 senarioMediaDescription2.includes("twitter.com")
+          //               ) {
+          //                 // console.log(tweetId);
+          //                 embeddingUrl2 = `https://twitframe.com/show?url=${senarioMediaDescription2}`;
+          //                 appendMessage2(
+          //                   `▪ Title : ${senarioTitle2} <br><br>
+          //                        ▪ Description : ${senarioDescription2} <br><br>
+          //                        ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                        ▪ Media  <iframe
+          //                                   allow="autoplay; encrypted-media; fullscreen;
+          //                                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+          //                                   src=${embeddingUrl2}
+          //                                   frameborder="0"
+          //                                   allowfullscreen
+          //                                 >
+          //                       `
+          //                 );
+          //               } else {
+          //                 const urlList = senarioMediaDescription2.split(",");
+          //                 console.log("list", urlList);
+          //                 if (urlList.length > 1) {
+          //                   appendMessage2(`▪ Title : ${senarioTitle2} <br><br>
+          //                       ▪ Description : ${senarioDescription2} <br><br>
+          //                       ▪ Instructions : Response should be at least 15 words. <br><br>`);
+          //                   urlList.forEach((element) => {
+          //                     element = element.trim();
+          //                     if (element.includes("docs.google.com")) {
+          //                       let url =
+          //                         element.split("edit?")[0] +
+          //                         "embed?start=true&loop=true&delayms=3000";
+          //                       console.log(url);
+          //                       appendMessage2(`<iframe src=${url}
+          //                                       frameborder="0"
+          //                                       style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                       allowfullscreen="true"
+          //                                       mozallowfullscreen="true"
+          //                                       webkitallowfullscreen="true"
+          //                                       ></iframe>`);
+          //                     } else {
+          //                       console.log(element);
+          //                       appendMessage2(
+          //                         `<div ><audio style="${
+          //                           window.innerWidth < 600
+          //                             ? "width: 200px; max-width: 200px !important;"
+          //                             : " min-width: 50vw !important;"
+          //                         }" controls autoplay>
+          //                         <source src=${element} type="audio/mpeg" />
+          //                         Your browser does not support the audio element.
+          //                         </audio></div>`
+          //                       );
+          //                     }
+          //                   });
+          //                 } else {
+          //                   if (
+          //                     senarioMediaDescription2.includes(
+          //                       "docs.google.com"
+          //                     )
+          //                   ) {
+          //                     let url =
+          //                       senarioMediaDescription2.split("edit?")[0] +
+          //                       "embed?start=true&loop=true&delayms=3000";
+          //                     console.log(url);
+          //                     appendMessage2(
+          //                       `▪ Title : ${senarioTitle2} <br><br>
+          //                     ▪ Description : ${senarioDescription2} <br><br>
+          //                     ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                     `
+          //                     );
+          //                     appendMessage2(`<iframe src=${url}
+          //                                     frameborder="0"
+          //                                     style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                     allowfullscreen="true"
+          //                                     mozallowfullscreen="true"
+          //                                     webkitallowfullscreen="true"
+          //                                     ></iframe>`);
+          //                   } else if (
+          //                     senarioMediaDescription2.includes("guidejar.com")
+          //                   ) {
+          //                     const guidejarId = senarioMediaDescription2
+          //                       .split("/")
+          //                       .pop();
+          //                     appendMessage2(
+          //                       `▪ Title : ${senarioTitle2} <br><br>
+          //                     ▪ Description : ${senarioDescription2} <br><br>
+          //                     ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                     `
+          //                     );
+          //                     appendMessage2(`
+          //                     <div style="width:640px">
+          //                     <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+          //                     <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+          //                     ></div></div>
+          //                     `);
+          //                   } else {
+          //                     appendMessage2(
+          //                       `▪ Title : ${senarioTitle2} <br><br>
+          //                           ▪ Description : ${senarioDescription2} <br><br>
+          //                           ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+          //                           ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
+          //                           `
+          //                     );
+          //                   }
+          //                 }
+          //               }
+          //               // if (!senarioMediaDescription2.includes("twitter.com")) {
+          //               //    appendMessage2(
+          //               //      `▪ Title : ${senarioTitle2} <br><br>
+          //               //        ▪ Description : ${senarioDescription2} <br><br>
+          //               //        ▪ Instructions : Response should be at least 15 words. <br><br>
+          //               //        ▪ Media  <iframe
+          //               //                   style="width: 100%; border-radius: 8px; min-height: 50vh;"
+          //               //                   src=${embeddingUrl2}
+          //               //                   frameborder="0"
+          //               //                   allowfullscreen
+          //               //                 >
+          //               //       `
+          //               //    );
+          //               // }
+          //             } else {
+          //               appendMessage2(
+          //                 `▪ Title : ${senarioTitle2} <br><br>
+          //                    ▪ Description : ${senarioDescription2} <br><br>
+          //                    ▪ Instructions : Response should be at least 15 words.`
+          //               );
+          //             }
+          //             // proceed buttion will show
+          //             signals.onResponse({
+          //               html: questionText2,
+          //             });
+          //           } else if (
+          //             mediaPropsStt &&
+          //             Object.keys(mediaPropsStt).includes("test_image")
+          //           ) {
+          //             console.log("Media props here", mediaPropsStt);
+          //             console.log("SHOW MEDIA PROPS here", mediaPropsStt);
+          //             // const [imageUrlStt, coords] = Object.entries(
+          //             //   mediaPropsStt.test_image
+          //             // )[0];
+          //             const url = Object.keys(mediaPropsStt["test_image"])[0];
+          //             let narration;
+          //             let coords = [];
+          //             const coordAndTitleNarrationList =
+          //               mediaPropsStt["test_image"][url];
+          //             coordAndTitleNarrationList.forEach((element) => {
+          //               if (typeof element === "string") {
+          //                 narration = element;
+          //               } else {
+          //                 coords.push(element);
+          //               }
+          //             });
+          //             const testImage = {
+          //               image: url,
+          //               coords: coords,
+          //               narration: narration,
+          //             };
+          //             console.log(testImage);
+          //             const imageUrlStt = testImage.image;
+          //             const coordsStt = [
+          //               {
+          //                 coord: "109.70.257.89|55.34.131.43",
+          //                 title: "Hand Wheel",
+          //               },
+          //               { coord: "170.112.197.194|85.56.99.80", title: "Stem" },
+          //               {
+          //                 coord: "128.208.246.242 | 63.97.125.125",
+          //                 title: "Gear Unit",
+          //               },
+          //             ];
+          //             const narrationStt = testImage.narration;
+          //             const ttsNarration = await TTSContainerSTT(narrationStt);
+          //             const imageIdStt = "mediaImageStt";
+          //             const imageMapNameStt = "image-mapStt";
+          //             const imageTooltipIdStt = "tooltip-stt";
+          //             appendMessage2(
+          //               `▪ Title : ${senarioTitle2} <br><br>
+          //                    ▪ Description : ${senarioDescription2} <br><br>
+          //                    ▪ Instructions : Response should be at least 15 words. <br><br>
+          //                    ▪ <img src=${imageUrlStt} ${
+          //                 window.innerWidth < 768
+          //                   ? "width='200'"
+          //                   : "width='400'"
+          //               } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+          //                    ▪ ${ttsNarration}`
+          //             );
+          //             signals.onResponse({
+          //               html: questionText2,
+          //             });
+          //             // pass - coords, imagemap-name,
+          //             setHoverPointsStt(
+          //               coordsStt,
+          //               imageIdStt,
+          //               imageMapNameStt,
+          //               imageTooltipIdStt
+          //             );
+          //             console.log("IMAGE MAPPED WITH COORDS");
+          //           } else {
+          //             // proceed buttion will show
+          //             signals.onResponse({
+          //               html: questionText2,
+          //               text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
+          //             });
+          //           }
+          //         } else {
+          //           if (
+          //             testType2 != "orchestrated_conversation" &&
+          //             testType2 != "dynamic_discussion_thread" &&
+          //             testType2 != "coaching"
+          //           ) {
+          //             let responderName;
+          //             let strList = questionText2
+          //               .replaceAll("*", "")
+          //               .split(":");
+          //             if (strList.length > 1) {
+          //               questionText2 = strList[1];
+          //               responderName = `<b>${strList[0]}:</b><br>`;
+          //             }
+          //             if (isImmersiveStt) {
+          //               questionText2 = await TTSContainerSTT(questionText2);
+          //             }
+          //             if (responderName) {
+          //               questionText2 = responderName + questionText2;
+          //             }
+          //             if (questionMediaLinkStt) {
+          //               console.log(questionText2);
+          //               let embeddingUrl = "";
+          //               if (questionMediaLinkStt.length > 0) {
+          //                 if (questionMediaLinkStt.includes("youtube.com")) {
+          //                   const videoId = questionMediaLinkStt.split("v=")[1];
+          //                   embeddingUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+          //                 } else if (
+          //                   questionMediaLinkStt.includes("vimeo.com")
+          //                 ) {
+          //                   const videoId = questionMediaLinkStt
+          //                     .split("/")
+          //                     .pop();
+          //                   embeddingUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1`;
+          //                 } else if (
+          //                   questionMediaLinkStt.includes("twitter.com")
+          //                 ) {
+          //                   embeddingUrl = `https://twitframe.com/show?url=${questionMediaLinkStt}`;
+          //                 }
+          //                 if (embeddingUrl) {
+          //                   questionText2 = `▪ Media <br>  <iframe
+          //                                 allow="autoplay; encrypted-media; fullscreen;"
+          //                                 style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                 src=${embeddingUrl}
+          //                                 frameborder="0"
+          //                                 allowfullscreen
+          //                               >
+          //                 `;
+          //                 }
+          //                 const urlList = questionMediaLinkStt.split(",");
+          //                 console.log("list", urlList);
+          //                 if (urlList.length > 1) {
+          //                   urlList.forEach((element) => {
+          //                     element = element.trim();
+          //                     if (element.includes("docs.google.com")) {
+          //                       let url =
+          //                         element.split("edit?")[0] +
+          //                         "embed?start=true&loop=true&delayms=3000";
+          //                       console.log(url);
+          //                       appendMessage2(`<iframe src=${url}
+          //                                       frameborder="0"
+          //                                       style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                       allowfullscreen="true"
+          //                                       mozallowfullscreen="true"
+          //                                       webkitallowfullscreen="true"
+          //                                       ></iframe>`);
+          //                     } else {
+          //                       console.log(element);
+          //                       appendMessage2(`<div ><audio style="${
+          //                         window.innerWidth < 600
+          //                           ? "width: 200px; max-width: 200px !important;"
+          //                           : " min-width: 50vw !important;"
+          //                       }" controls autoplay>
+          //                       <source src=${element} type="audio/mpeg" />
+          //                       Your browser does not support the audio element.
+          //                       </audio></div>`);
+          //                     }
+          //                   });
+          //                 } else {
+          //                   if (
+          //                     questionMediaLinkStt.includes("docs.google.com")
+          //                   ) {
+          //                     let url =
+          //                       questionMediaLinkStt.split("edit?")[0] +
+          //                       "embed?start=true&loop=true&delayms=3000";
+          //                     console.log(url);
+          //                     appendMessage2(`<iframe src=${url}
+          //                                     frameborder="0"
+          //                                     style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+          //                                     allowfullscreen="true"
+          //                                     mozallowfullscreen="true"
+          //                                     webkitallowfullscreen="true"
+          //                                     ></iframe>`);
+          //                   } else if (
+          //                     questionMediaLinkStt.includes("guidejar.com")
+          //                   ) {
+          //                     const guidejarId = questionMediaLinkStt
+          //                       .split("/")
+          //                       .pop();
+          //                     appendMessage2(`
+          //                     <div style="width:640px">
+          //                     <div style="position:relative;height:0;width:100%;overflow:hidden;box-sizing:border-box;padding-bottom:calc(100% - 0px)">
+          //                     <iframe src="https://www.guidejar.com/embed/${guidejarId}?type=1&controls=off" width="100%" height="100%" style="position:absolute;inset:0" allowfullscreen frameborder="0"></iframe
+          //                     ></div></div>
+          //                     `);
+          //                   }
+          //                 }
+          //               }
+          //             }
+          //             if (questionText2) {
+          //               console.log(`que_image ${questionIndex2 + 1}`);
+          //               if (
+          //                 mediaPropsStt &&
+          //                 Object.keys(mediaPropsStt).includes(
+          //                   `que_image ${questionIndex2 + 1}`
+          //                 )
+          //               ) {
+          //                 const questionpropName = `que_image ${
+          //                   questionIndex2 + 1
+          //                 }`;
+          //                 const url = Object.keys(
+          //                   mediaPropsStt[questionpropName]
+          //                 )[0];
+          //                 let narration;
+          //                 let coords = [];
+          //                 const coordAndTitleNarrationList =
+          //                   mediaPropsStt[questionpropName][url];
+          //                 coordAndTitleNarrationList.forEach((element) => {
+          //                   if (typeof element === "string") {
+          //                     narration = element;
+          //                   } else {
+          //                     coords.push(element);
+          //                   }
+          //                 });
+          //                 const testImage = {
+          //                   image: url,
+          //                   coords: coords,
+          //                   narration: narration,
+          //                 };
+          //                 console.log(testImage);
+          //                 const imageUrlStt = testImage.image;
+          //                 const coordsStt = testImage.coords;
+          //                 const narrationStt = testImage.narration;
+          //                 const ttsNarration = await TTSContainerSTT(
+          //                   narrationStt
+          //                 );
+          //                 const imageIdStt = `mediaImageStt${questionIndex2}`;
+          //                 const imageMapNameStt = `image-mapStt${questionIndex2}`;
+          //                 const imageTooltipIdStt = `tooltip-stt${questionIndex2}`;
+          //                 questionText2 = `▪ ${ttsNarration}<br><br>
+          //                                  <br> <img src=${imageUrlStt} ${
+          //                   window.innerWidth < 768
+          //                     ? "width='200'"
+          //                     : "width='400'"
+          //                 } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
+          //                                   ▪ Question : <br> ${questionText2}
+          //                                 `;
+          //                 signals.onResponse({
+          //                   html: questionText2,
+          //                 });
+          //                 setHoverPointsStt(
+          //                   coordsStt,
+          //                   imageIdStt,
+          //                   imageMapNameStt,
+          //                   imageTooltipIdStt
+          //                 );
+          //                 console.log(testImage, "IMAGE MAPPED WITH COORDS ", {
+          //                   questionIndex2,
+          //                 });
+          //                 // questionText2 = questionText2 + imageDiv
+          //               } else {
+          //                 signals.onResponse({
+          //                   html: questionText2,
+          //                 });
+          //               }
+          //             }
+          //           }
+          //         }
+          //       }
+          //       if (
+          //         questionIndex2 === questionLength2 &&
+          //         userResponse2.length > 0
+          //       ) {
+          //         const shadowRoot =
+          //           document.getElementById("chat-element2").shadowRoot;
+          //         const messageNode = document.createElement("div");
+          //         messageNode.classList.add("inner-message-container");
+          //         const messageBubble = document.createElement("div");
+          //         messageBubble.classList.add(
+          //           "message-bubble",
+          //           "ai-message-text"
+          //         );
+          //         messageBubble.style.maxWidth = "80%";
+          //         messageBubble.style.marginTop = "4px";
+          //         messageBubble.style.borderRadius = "4px";
+          //         messageBubble.style.padding = "4";
+          //         messageBubble.style.backgroundColor = "#f3f4f6";
+          //         messageBubble.style.color = "#374151";
+          //         const messageText = document.createElement("p");
+          //         messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+          //           user2 ? "" : "<b> Hang tight for next steps</b>"
+          //         }`;
+          //         messageBubble.appendChild(messageText);
+          //         messageNode.appendChild(messageBubble);
+          //         shadowRoot
+          //           .getElementById("messages")
+          //           .appendChild(messageNode);
+          //         shadowRoot.getElementById("messages").scrollBy(0, 100);
+          //       }
+          //       if (questionIndex2 > 0) {
+          //         if (testType2 != "coaching" || questionIndex2 == 0) {
+          //           questionId2 =
+          //             questionData2.results[0].questions[questionIndex2 - 1]
+          //               .uid;
+          //         }
+          //         questionIndex2++;
+          //         if (testType2 === "coaching") {
+          //           const response = await fetch(
+          //             `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
+          //             {
+          //               method: "POST",
+          //               headers: {
+          //                 Authorization: `Basic ${createBasicAuthToken2(
+          //                   key2,
+          //                   secret2
+          //                 )}`,
+          //                 "Content-Type": "application/json",
+          //               },
+          //               body: JSON.stringify({
+          //                 participant_message_text: userResponse2,
+          //                 participant_message_url: "",
+          //               }),
+          //             }
+          //           );
+          //           const responseData = await response.json();
+          //           console.log(
+          //             "Response from Coaching submit response : ",
+          //             responseData
+          //           );
+          //           questionText2 = responseData["coach_message_text"];
+          //           conversation_id2 = responseData["uid"];
+          //           console.log("coaching question Text: ", questionText2);
+          //           let responderName;
+          //           const strList = questionText2.split(":", 2);
+          //           if (strList.length > 1) {
+          //             responderName = `<b>${strList[0]}:</b><br>`;
+          //             questionText2 = strList[1];
+          //           }
+          //           if (isImmersiveStt) {
+          //             questionText2 = await TTSContainerStt(questionText2);
+          //           }
+          //           if (responderName) {
+          //             questionText2 = responderName + questionText2;
+          //           }
+          //           const dataToShow2 = getCoachingQuestionData2(questionText2);
+          //           signals.onResponse({
+          //             html: dataToShow2,
+          //           });
+          //           console.log(questionData2);
+          //         } else {
+          //           const response = await fetch(
+          //             `${baseURL2}/test-responses/`,
+          //             {
+          //               method: "POST",
+          //               headers: {
+          //                 Authorization: `Basic ${createBasicAuthToken2(
+          //                   key2,
+          //                   secret2
+          //                 )}`,
+          //                 "Content-Type": "application/json",
+          //               },
+          //               body: JSON.stringify({
+          //                 test_attempt_session_id: sessionId2,
+          //                 question_id: questionId2,
+          //                 response_text: userResponse2,
+          //                 response_file: "",
+          //                 user_attributes: {
+          //                   tag: "deepchat_profile",
+          //                   attributes: {
+          //                     username: "web_user",
+          //                     email: user2 ? user2.email : getAnonymousEmail(),
+          //                   },
+          //                 },
+          //               }),
+          //             }
+          //           );
+          //           const responseData = await response.json();
+          //           resQuestionNumber2 = responseData.question.question_number;
+          //         }
+          //         if (questionIndex2 < questionLength2) {
+          //           if (
+          //             testType2 === "dynamic_discussion_thread" ||
+          //             testType2 === "orchestrated_conversation"
+          //           ) {
+          //             questionId2 =
+          //               questionData2.results[0].questions[questionIndex2 - 1]
+          //                 .uid;
+          //             questionIndex2++;
+          //             const questionResponse2 = await fetch(
+          //               `${baseURL2}/test-responses/`,
+          //               {
+          //                 method: "POST",
+          //                 headers: {
+          //                   Authorization: `Basic ${createBasicAuthToken2(
+          //                     key2,
+          //                     secret2
+          //                   )}`,
+          //                   "Content-Type": "application/json",
+          //                 },
+          //                 body: JSON.stringify({
+          //                   test_attempt_session_id: sessionId2,
+          //                   question_id: questionId2,
+          //                   response_text: "",
+          //                   response_file: "",
+          //                   user_attributes: {
+          //                     tag: "deepchat_profile",
+          //                     attributes: {
+          //                       username: "web_user",
+          //                       email: user2
+          //                         ? user2.email
+          //                         : getAnonymousEmail(),
+          //                     },
+          //                   },
+          //                 }),
+          //               }
+          //             );
+          //             const qRespnse2 = await questionResponse2.json();
+          //             questionText2 = qRespnse2["response_text"];
+          //             // checking if botname is present or not
+          //             const responder_name2 = qRespnse2.responder_display_name;
+          //             if (!questionText2.includes(responder_name2)) {
+          //               questionText2 = responder_name2 + " : " + questionText2;
+          //             }
+          //             if (isImmersiveStt) {
+          //               questionText2 = questionText2.replace(
+          //                 `${responder_name2}`,
+          //                 ""
+          //               );
+          //               questionText2 = questionText2.replace(`:`, "");
+          //               questionText2 = responder_name2 + " : " + questionText2;
+          //             }
+          //             resQuestionNumber2 = qRespnse2.question.question_number;
+          //           }
+          //         }
+          //       }
+          //       if (resQuestionNumber2 != questionLength2) {
+          //         if (
+          //           testType2 === "orchestrated_conversation" ||
+          //           testType2 === "dynamic_discussion_thread"
+          //         ) {
+          //           console.log("ismmersive", isImmersiveStt, questionText2);
+          //           const stringList = questionText2.split(":", 2);
+          //           console.log(stringList);
+          //           let responderName;
+          //           if (stringList.length > 1) {
+          //             questionText2 = stringList[1];
+          //             responderName = `<b>${stringList[0]}:</b><br>`;
+          //           }
+          //           if (isImmersiveStt && questionIndex2 != 0) {
+          //             questionText2 = await TTSContainerSTT(questionText2);
+          //           }
+          //           if (responderName) {
+          //             questionText2 = responderName + questionText2;
+          //           }
+          //           signals.onResponse({
+          //             html: questionText2,
+          //           });
+          //         }
+          //       }
+          //       userResponse2 = "";
+          //       if (questionIndex2 === 0) {
+          //         questionIndex2++;
+          //       }
+          //       if (resQuestionNumber2 === questionLength2) {
+          //         responsesDone2 = true;
+          //         const isCheckStt = await SessionCheckStt(sessionId2);
+          //         if (!isCheckStt) {
+          //           console.log("failed to populate session data", isCheckStt);
+          //           if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+          //             const shadowRoot =
+          //               document.getElementById("chat-element2").shadowRoot;
+          //             const button = shadowRoot.getElementById(
+          //               `mcq-option-stt-${mcqFormIdStt}`
+          //             );
+          //             // button.parentNode.removeChild(button)
+          //             const thankYouMessage = document.createElement("div");
+          //             thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+          //             // Replace the button with the "Thank you" message
+          //             button.parentNode.replaceChild(thankYouMessage, button);
+          //           }
+          //           if (isProceedStt === "false") {
+          //             const gshadowRoot =
+          //               document.getElementById("chat-element2").shadowRoot;
+          //             const msg = gshadowRoot.getElementById("proceed-option2");
+          //             // button.parentNode.removeChild(button)
+          //             const que_msg = document.createElement("div");
+          //             que_msg.innerHTML = "Thank You"; // You can customize the message here
+          //             // Replace the button with the "Thank you" message
+          //             msg.parentNode.replaceChild(que_msg, msg);
+          //           }
+          //           resetAllVariablesStt();
+          //           signals.onResponse({
+          //             html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+          //           });
+          //           return;
+          //         }
+          //         if (!window.user) {
+          //           isEmailFormstt = true;
+          //           formFieldsstt = ["name", "email"];
+          //           signals.onResponse({
+          //             html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
+          //           });
+          //         }
+          //         let getReportBody2 = {
+          //           user_id: participantId2,
+          //           report_type: reportType2,
+          //           session_id: sessionId2,
+          //           interaction_id: testId2,
+          //         };
+          //         if (is_free2) {
+          //           reportType2 = "summaryFeedbackReport";
+          //           getReportBody2 = {
+          //             user_id: participantId2,
+          //             report_type: reportType2,
+          //             session_id: sessionId2,
+          //             interaction_id: testId2,
+          //           };
+          //         } else if (testType2 === "dynamic_discussion_thread") {
+          //           reportType2 = "dynamicDiscussionReport";
+          //           getReportBody2 = {
+          //             user_id: participantId2,
+          //             report_type: reportType2,
+          //             test_attempt_session_id: sessionId2,
+          //             interaction_id: testId2,
+          //           };
+          //         } else if (testType2 === "orchestrated_conversation") {
+          //           reportType2 = "meetingAnalysisReport";
+          //           getReportBody2 = {
+          //             user_id: participantId2,
+          //             report_type: reportType2,
+          //             test_attempt_session_id: sessionId2,
+          //           };
+          //         } else if (senarioCase2 === "process_training") {
+          //           reportType2 = "processTrainingReport";
+          //           getReportBody2 = {
+          //             user_id: participantId2,
+          //             report_type: reportType2,
+          //             session_id: sessionId2,
+          //             interaction_id: testId2,
+          //           };
+          //         }
+          //         console.log(senarioCase2, getReportBody2);
+          //         const reportResponse = await fetch(
+          //           `${baseURL2}/frontend-auth/get-report-url/`,
+          //           {
+          //             method: "POST",
+          //             headers: {
+          //               Authorization: `Basic ${createBasicAuthToken2(
+          //                 key2,
+          //                 secret2
+          //               )}`,
+          //               "Content-Type": "application/json",
+          //             },
+          //             body: JSON.stringify(getReportBody2),
+          //           }
+          //         );
+          //         const reportData2 = await reportResponse.json();
+          //         reportUrl2 = reportData2.url;
+          //         globalReportUrl2 = reportData2.url;
+          //         console.log("Report URL ===> ", reportUrl2);
+          //         if (reportData2) {
+          //           responsesDone2 = true;
+          //         }
+          //         // const urlObject = new URL(reportUrl2);
+          //         // const baseurl = `${urlObject.protocol}//${urlObject.host}`;
+          //         // console.log(baseurl)
+          //         // const resp = await fetch(baseurl)
+          //         // console.log(resp)
+          //         // if (!resp.ok){
+          //         //   signals.onResponse({
+          //         //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+          //         //   })
+          //         // }
+          //         if (window.user) {
+          //           // sendEmail();
+          //           const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+          //           appendMessage2(message);
+          //           // //* send message to start new session
+          //           signals.onResponse({
+          //             html: "<b>Please enter another access code to start a new interaction.</b>",
+          //           });
+          //           submitEmailAndName2();
+          //           return;
+          //         }
+          //       }
+          //     }
+          //   } catch (err) {
+          //     console.log(err);
+          //     if (testType2 === "mcq" || testType2 === "dynamic_mcq") {
+          //       const shadowRoot =
+          //         document.getElementById("chat-element2").shadowRoot;
+          //       const button = shadowRoot.getElementById(
+          //         `mcq-option-stt-${mcqFormIdStt}`
+          //       );
+          //       // button.parentNode.removeChild(button)
+          //       const thankYouMessage = document.createElement("div");
+          //       thankYouMessage.innerHTML = "<b>Thank you!</b>"; // You can customize the message here
+          //       // Replace the button with the "Thank you" message
+          //       button.parentNode.replaceChild(thankYouMessage, button);
+          //     }
+          //     if (isProceedStt === "false") {
+          //       const gshadowRoot =
+          //         document.getElementById("chat-element2").shadowRoot;
+          //       const msg = gshadowRoot.getElementById("proceed-option2");
+          //       // button.parentNode.removeChild(button)
+          //       const que_msg = document.createElement("div");
+          //       que_msg.innerHTML = "Thank You"; // You can customize the message here
+          //       // Replace the button with the "Thank you" message
+          //       msg.parentNode.replaceChild(que_msg, msg);
+          //     }
+          //     resetAllVariablesStt();
+          //     if (body.messages[0].text.toUpperCase() !== "STOP") {
+          //       signals.onResponse({
+          //         html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+          //       });
+          //     }
+          //   }
+          // }
         }
       } catch (e) {
         console.log(e);
@@ -6472,8 +6476,8 @@ loadExternalModule().then(() => {
 const openChatContainer2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
-  let backdrop = document.getElementById("backdrop")
-  backdrop.style.display = "block"
+  let backdrop = document.getElementById("backdrop");
+  backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
 
   user2 = window.user;
@@ -6544,7 +6548,7 @@ const openChatContainer2 = () => {
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
     document.body.style.overflowY = "scroll";
-    backdrop.style.display = "none"
+    backdrop.style.display = "none";
   } else {
     chatContainer2.style.scale = 1;
     chatContainer2.style["transform-origin"] = "100% 50%";
@@ -6561,8 +6565,8 @@ const openChatContainer2 = () => {
       chatIcon.src =
         "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
 
-        const backdrop2 = document.getElementById("backdrop2")
-        backdrop2.style.display ="none";
+      const backdrop2 = document.getElementById("backdrop2");
+      backdrop2.style.display = "none";
     }
   }
 
@@ -6582,8 +6586,8 @@ const closeFromTop2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
   document.body.style.overflowY = "scroll";
-  let backdrop = document.getElementById("backdrop")
-  backdrop.style.display = "none"
+  let backdrop = document.getElementById("backdrop");
+  backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
 
