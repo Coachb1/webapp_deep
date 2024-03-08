@@ -1,7 +1,7 @@
 "use client";
 
 import BotsNavigation from "@/components/BotsNavigation";
-import NavProfile from "@/components/NavProfile";
+import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 import NoLoginFlag from "@/components/NoLoginFlag";
 import WhereToUse from "@/components/WhereToUse";
 import {
@@ -191,7 +191,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
                 <BotsNavigation user={user} /> */}
             {/* <NetworkNav user={user} /> */}
             <div className="ml-4">
-              <NavProfile user={user} />
+              <NavProfileWoProfile user={user} />
             </div>
           </div>
           <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">

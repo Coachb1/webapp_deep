@@ -2,7 +2,7 @@
 
 import BotsNavigation from "@/components/BotsNavigation";
 import KudosWall from "@/components/KudosWall";
-import NavProfile from "@/components/NavProfile";
+import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 import NoLoginFlag from "@/components/NoLoginFlag";
 import WhereToUse from "@/components/WhereToUse";
 import {
@@ -14,11 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { convertDate, getUserAccount, reportsLinksSelector } from "@/lib/utils";
-import {
-  AlertTriangle,
-  CornerDownRight,
-  Loader,
-} from "lucide-react";
+import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -394,7 +390,7 @@ const Feedback = ({ user, renderType }: any) => {
             {/* <NetworkNav user={user} /> */}
 
             <div className="ml-4">
-              <NavProfile user={user} />
+              <NavProfileWoProfile user={user} />
             </div>
           </div>
           <div className="flex flex-col items-center justify-center px-24 pt-20 text-center max-sm:px-8">

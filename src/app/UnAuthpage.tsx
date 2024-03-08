@@ -98,6 +98,8 @@ export const UnAuth = ({ user }: any) => {
 };
 
 export const LoginWall = () => {
+  const pathname = usePathname();
+
   return (
     <div className="bg-gray-100 mt-4 max-sm:mt-16 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -173,7 +175,7 @@ export const LoginWall = () => {
           </div>
         </div>
         <div className="my-4 max-sm:mb-12">
-          <RegisterLink postLoginRedirectURL={"/"}>
+          <RegisterLink postLoginRedirectURL={pathname}>
             <div className="relative group cursor-pointer">
               <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
