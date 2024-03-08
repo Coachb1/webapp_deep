@@ -404,7 +404,7 @@ const CoachIntake = ({ user }: any) => {
               if (
                 data.data.length > 0 &&
                 !checkIfEdit &&
-                formType !== "user-bot" &&
+                formType !== "knowledge-bot" &&
                 formType !== "feedback"
               ) {
                 if (
@@ -1499,7 +1499,7 @@ const CoachIntake = ({ user }: any) => {
           </span>
           BOTS
         </h1>
-        {formType === "user-bot" && <UserBotIntake user={user} />}
+        {formType === "knowledge-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
@@ -1808,6 +1808,9 @@ const CoachIntake = ({ user }: any) => {
                                     console.log(checked, model);
                                     recordCoachmentFrameworks(checked, model);
                                   }}
+                                  checked={mentoringPreferencess.includes(
+                                    model
+                                  )}
                                 />
                                 <label
                                   htmlFor={model}

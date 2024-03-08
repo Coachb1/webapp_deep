@@ -156,7 +156,7 @@ const MyPages = ({ user }: any) => {
       return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
     } else {
       if (botType === "user_bot") {
-        return `/intake/?type=user-bot&edit=true&bot_id=${bot_id}`;
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
       }
     }
   };
