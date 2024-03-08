@@ -1,7 +1,6 @@
 "use client";
 
 import NoLoginFlag from "@/components/NoLoginFlag";
-import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
   AccordionContent,
@@ -63,7 +62,7 @@ const benefitsData = [
 const KnowledgeBot = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
-  const [coachName, setCoachName] = useState<string>("");
+  const [botName, setBotName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
@@ -118,6 +117,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
             setInValidCoach(true);
           }
 
+          setBotName(data.data.bot_name);
           setPrimaryPurpose(
             parsedFaqJson["What is the primary purpose of the bot?"]
           );
@@ -194,8 +194,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
   const KnowlegeBotBody = () => {
     return (
       <>
-        {/* {enrolled ? (
-          <> */}
         {renderType === "static" && (
           <Script src="../widget/coachbots-stt-widget.js" />
         )}
@@ -230,45 +228,24 @@ const KnowledgeBot = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+              <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to Aarav Sharma's Avatar🚀`
-                  : "Welcome to the Aarav Sharma's Avatar!🚀"}
+                  ? `Welcome to ${botName} Bot! 🚀`
+                  : "Welcome to CrossFit Elevation Support Bot! 🚀"}
               </h1>
-              {/* <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
-                  {" "}
-                  <b> Purpose : </b> This is your coach/mentor’s personalized
-                  bot. Here, you would typically find a detailed description of
-                  your coach/mentor—highlighting their expertise, approach, and
-                  unique coaching/mentoring style. Dive into the detailed
-                  sections to explore the benefits and learn how it works. Our
-                  bot is trained on the coach/ mentor’s style, ideologies, and
-                  coaching/mentoring style, ensuring a tailored and effective
-                  coaching experience.{" "}
-                </div>
-              </p> */}
+
               {renderType === "dynamic" ? (
-                // coachDescription
                 <>
-                  <div className="max-sm:text-xs my-2 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <p className="w-full p-2 text-center  max-sm:text-center">
+                  <div className="max-sm:text-xs mt-4 my-2 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                    <p className="w-full p-2 text-center   max-sm:text-xs">
                       {" "}
                       <b> Purpose : </b> {primaryPurpose}
                     </p>
                   </div>
                 </>
               ) : (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                  <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
-                    <img
-                      className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                      src={
-                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                      }
-                    />
-                  </div>{" "}
-                  <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
+                <div className="max-sm:text-xs mt-4 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                  <p className="w-full text-center p-2  max-sm:text-xs">
                     {" "}
                     <b> Purpose : </b> The primary purpose of the bot is to
                     enhance customer engagement and support for CrossFit
@@ -461,22 +438,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           </div>
         </div>
       </>
-      // ) : (
-      //   <>
-      //     <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-      //       <NetworkNav user={user} />
-      //     </div>
-      //     <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-      //       <div className="flex flex-col items-center justify-center">
-      //         <p className="font-semibold text-sm">
-      //           You have not enrolled as a program participant. Please enroll
-      //           and try again.
-      //         </p>
-      //       </div>
-      //     </div>
-      //   </>
-      // )}
-      // </>
     );
   };
   return (
