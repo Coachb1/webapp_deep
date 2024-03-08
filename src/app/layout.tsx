@@ -150,7 +150,7 @@ export default function RootLayout({
       setShowCoachBot(true);
 
       if (pathname === "/knowledge-bot") {
-        setBotId("");
+        setBotId("knowledge-a8d26-crossfit-elevation-support");
       } else {
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
@@ -173,7 +173,8 @@ export default function RootLayout({
       } else if (
         pathname.includes("feedback") ||
         pathname.includes("coach") ||
-        pathname.includes("subject")
+        pathname.includes("subject") ||
+        pathname.includes("knowledge")
       ) {
         if (coachtalk) {
           coachtalk.removeAttribute("style");

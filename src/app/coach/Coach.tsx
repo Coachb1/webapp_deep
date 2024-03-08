@@ -19,7 +19,7 @@ import { baseURL, basicAuth, convertTextToCorrectFormat } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
-import NavProfile from "@/components/NavProfile";
+import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
@@ -239,7 +239,7 @@ const Coach = ({ user, renderType }: any) => {
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
             {/* <NetworkNav user={user} /> */}
             <div className="ml-4">
-              <NavProfile user={user} />
+              <NavProfileWoProfile user={user} />
             </div>
           </div>
           <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
