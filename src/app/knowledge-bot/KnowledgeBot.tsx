@@ -15,14 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import {
-  baseURL,
-  basicAuth,
-  convertTextToCorrectFormat,
-  getUserAccount,
-} from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
-import Image from "next/image";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 import NavProfile from "@/components/NavProfile";
 
@@ -85,6 +78,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
   );
 
   const [invalidId, setInValidCoach] = useState(false);
+  const [primaryPurpose, setPrimaryPurpose] = useState("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,7 +87,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
           ? pathname.split("/")[2]
-          : "coach-d54cd-aravsharma"
+          : "knowledge-a8d26-crossfit-elevation-support"
       }`,
       {
         method: "GET",
@@ -104,7 +98,11 @@ const KnowledgeBot = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("BOT DETAILS : ", data);
+        console.log("KNOWLEDGE BOT DETAILS : ", data);
+
+        const parsedFaqJson = JSON.parse(data.data.faqs);
+        console.log(parsedFaqJson);
+
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
         console.log(
@@ -114,16 +112,15 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         );
         setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
-          console.log("DYNAMIC COACH DATA ", data);
-
           console.log(coachScribe);
           if (data.error) {
             coachScribe.setAttribute("style", "display: none;");
             setInValidCoach(true);
           }
-          setCoachName(data.data.bot_details.coach_name);
-          setCoachDescription(data.data.bot_details.info);
-          setProfileImage(data.data.owner_profile_image);
+
+          setPrimaryPurpose(
+            parsedFaqJson["What is the primary purpose of the bot?"]
+          );
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -191,7 +188,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       .catch((err) => {
         console.error(err);
         setIsLoading(false);
-        setInValidCoach(true);
       });
   }, []);
 
@@ -211,14 +207,14 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           </div>
         )}
 
-        {invalidId && renderType === "dynamic" && (
+        {/* {invalidId && renderType === "dynamic" && (
           <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
               We have encountered an error. Please try again.{" "}
             </div>
           </div>
-        )}
+        )} */}
         <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
             {/* <NetworkNav user={user} /> */}
@@ -236,44 +232,29 @@ const KnowledgeBot = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${convertTextToCorrectFormat(
-                      coachName
-                    )}'s Avatar🚀`
-                  : "Welcome to the Aarav Sharma’s Avatar!🚀"}
+                  ? `Welcome to Aarav Sharma's Avatar🚀`
+                  : "Welcome to the Aarav Sharma's Avatar!🚀"}
               </h1>
-              <p className="my-4 max-sm:text-xs text-[#2f2323]">
+              {/* <p className="my-4 max-sm:text-xs text-[#2f2323]">
                 <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                   {" "}
-                  This is your coach/mentor’s personalized bot. Here, you would
-                  typically find a detailed description of your
-                  coach/mentor—highlighting their expertise, approach, and
+                  <b> Purpose : </b> This is your coach/mentor’s personalized
+                  bot. Here, you would typically find a detailed description of
+                  your coach/mentor—highlighting their expertise, approach, and
                   unique coaching/mentoring style. Dive into the detailed
                   sections to explore the benefits and learn how it works. Our
                   bot is trained on the coach/ mentor’s style, ideologies, and
                   coaching/mentoring style, ensuring a tailored and effective
                   coaching experience.{" "}
                 </div>
-              </p>
-              {/* {renderType !== "dynamic" && (
-                    <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                      This is where you will see the summary information of the
-                      particular coach avatar. The bot on this page demonstrates
-                      a conversation based on this profile.
-                    </p>
-                  )} */}
+              </p> */}
               {renderType === "dynamic" ? (
                 // coachDescription
                 <>
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
-                      <img
-                        className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                        src={profileImage}
-                      />
-                    </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
+                  <div className="max-sm:text-xs my-2 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                    <p className="w-full p-2 text-center  max-sm:text-center">
                       {" "}
-                      {coachDescription}
+                      <b> Purpose : </b> {primaryPurpose}
                     </p>
                   </div>
                 </>
@@ -289,18 +270,14 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   </div>{" "}
                   <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
                     {" "}
-                    I'm Aarav Sharma, a seasoned corporate coach with 15+ years'
-                    experience in leadership development. Holding a master's in
-                    organizational psychology and certifications in executive
-                    coaching, I've collaborated with top-tier companies. My
-                    coaching style, a unique blend of empathy and strategic
-                    thinking, fosters a growth mindset and aligns personal
-                    values with professional goals. Known for approachability, I
-                    create a safe space for executives, incorporating
-                    mindfulness for self-awareness and resilience. Tailoring
-                    strategies to individual needs, I aim to be a trusted guide
-                    for long-term, sustainable leadership development in the
-                    dynamic corporate landscape.
+                    <b> Purpose : </b> The primary purpose of the bot is to
+                    enhance customer engagement and support for CrossFit
+                    Elevation. It aims to provide assistance and information to
+                    current and potential members, as well as promote the
+                    services and offerings of the gym. Additionally, the bot
+                    seeks to streamline communication processes and improve
+                    accessibility for users seeking information about CrossFit
+                    Elevation.
                   </p>
                 </div>
               )}
@@ -338,14 +315,14 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 </Button>
               </Link>
 
-              <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
+              {/* <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   Feedback center
                 </Button>
-              </Link>
+              </Link> */}
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
