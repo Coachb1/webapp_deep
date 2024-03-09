@@ -4411,6 +4411,35 @@ loadExternalModule().then(() => {
             messageText.innerText,
             conversationId
           );
+
+          const response = fetch(
+            `${baseURL2}/coaching-conversations/save-ai-response/`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ai_response: messageText.innerText,
+                conversation_id: conversationId,
+              }),
+            }
+          );
+
+          console.log("response : ", response);
+          console.log(response);
+
+          response
+            .then((res) => {
+              console.log("res : ", res);
+              console.log(res);
+              return res.json();
+            })
+            .then((data) => {
+              console.log("data : ", data);
+              console.log(data);
+            });
           break;
         }
 
