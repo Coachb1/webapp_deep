@@ -119,8 +119,9 @@ const staticPositiveFeedbacks = [
 
 const feedbackJsonConversion = (jsonData: any) => {
   return jsonData.positive_msgs.map((msg: any) => {
+    console.log('anonymous',msg.is_anonymous)
     return {
-      name: msg.participant_name,
+      name: msg.is_anonymous ? 'Anonymous User' : msg.participant_name,
       date: msg.date,
       feedback_message: msg.msg["Why are you giving me a thumbs up today?"],
     };

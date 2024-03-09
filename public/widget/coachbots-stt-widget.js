@@ -132,6 +132,7 @@ let IntakeUid = "";
 let fitmentContainerId = 1;
 let endSessionButton;
 let intakeButton;
+let isAnonymous = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -403,6 +404,7 @@ const getUserOrAnonymousDetails = async (choice) => {
   } else if (choice === "Yes") {
     console.log("hi");
     FeedbackUserEmail = "Anonymous User";
+    isAnonymous = true
     const thumbsupdiv = await feedbackBotInitialFlow("save_email");
     appendMessage2(thumbsupdiv);
   }
@@ -462,6 +464,7 @@ const handleFeedbackSubmit = async () => {
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
     user_id: userId2,
+    is_anonymous: isAnonymous ? 'True' : "False"
   });
 
   const resp = await fetch(
@@ -515,6 +518,7 @@ const handleEndFeedback = async () => {
     bot_id: botId,
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
+    is_anonymous: isAnonymous ? 'True' : "False",
     user_id: userId2,
   });
 
