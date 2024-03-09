@@ -33,6 +33,8 @@ const NetworkNav = ({ user }: any) => {
       className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0   ${
         scrolled > 0 &&
         pathname !== "/library" &&
+        pathname !== "/skill-bots" &&
+        pathname !== "/role-bots" &&
         "backdrop-blur-lg border-b border-gray-400"
       } `}
     >
@@ -74,7 +76,33 @@ const NetworkNav = ({ user }: any) => {
             router.push("/library");
           }}
         >
-          Simulation Bots
+          Simulation bots
+        </Button>
+        {/* <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname.includes("/skill-bots")
+              ? "border border-gray-500 shadow-md"
+              : ""
+          } `}
+          onClick={() => {
+            router.push("/skill-bots");
+          }}
+        >
+          Skill bots
+        </Button> */}
+        <Button
+          variant={"outline"}
+          className={` h-8 max-sm:text-sm ${
+            pathname.includes("/role-bots")
+              ? "border border-gray-500 shadow-md"
+              : ""
+          } `}
+          onClick={() => {
+            router.push("/role-bots");
+          }}
+        >
+          Role bots
         </Button>
         <Button
           variant={"outline"}
@@ -161,7 +189,37 @@ const NetworkNav = ({ user }: any) => {
                 }}
               >
                 {" "}
-                Simulation Bots
+                Simulation bots
+              </div>
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem
+              className={`${
+                pathname.includes("/skill-bots") ? "bg-gray-200" : null
+              }`}
+              asChild
+            >
+              <div
+                onClick={() => {
+                  router.push("/skill-bots");
+                }}
+              >
+                {" "}
+                Skill bots
+              </div>
+            </DropdownMenuItem> */}
+            <DropdownMenuItem
+              className={`${
+                pathname.includes("/role-bots") ? "bg-gray-200" : null
+              }`}
+              asChild
+            >
+              <div
+                onClick={() => {
+                  router.push("/role-bots");
+                }}
+              >
+                {" "}
+                Role bots
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem

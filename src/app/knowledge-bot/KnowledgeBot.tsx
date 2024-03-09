@@ -63,7 +63,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
   const [botName, setBotName] = useState<string>("");
-  const [coachDescription, setCoachDescription] = useState<string>("");
+  const [botDescription, setBotDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
   const [enrolled, SetEnrolled] = useState(true);
@@ -118,6 +118,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           }
 
           setBotName(data.data.bot_name);
+          setBotDescription(data.data.description);
           setPrimaryPurpose(
             parsedFaqJson["What is the primary purpose of the bot?"]
           );
@@ -239,7 +240,13 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   <div className="max-sm:text-xs mt-4 my-2 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
                     <p className="w-full p-2 text-center   max-sm:text-xs">
                       {" "}
-                      <b> Purpose : </b> {primaryPurpose}
+                      {primaryPurpose.length > 0 ? (
+                        <>
+                          <b>Purpose : </b> {primaryPurpose}
+                        </>
+                      ) : (
+                        <>{botDescription}</>
+                      )}
                     </p>
                   </div>
                 </>
