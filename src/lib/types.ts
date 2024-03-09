@@ -151,3 +151,11 @@ export interface FeedbackConversationType {
   date: string;
   msg: Message;
 }
+
+export interface SkillnRoleBotsType {
+  bot_id: string;
+  bot_name: string;
+  bot_type: string;
+  description: string;
+  scenario_case: string;
+}

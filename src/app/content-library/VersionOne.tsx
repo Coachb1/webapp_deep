@@ -119,7 +119,7 @@ const VersionOne = ({ user }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        <div className="flex flex-row mt-4 z-50 gap-2">
+        <div className="flex flex-row max-sm:flex-wrap max-sm:justify-center mt-4 z-50 gap-2">
           <Link href="/coach" target="_blank">
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
@@ -127,11 +127,35 @@ const VersionOne = ({ user }: any) => {
               AI-Frame (Sample)
             </Button>
           </Link>
+          <Link
+            href="/coach/coach-d54cd-aravsharma?is_audio=true"
+            target="_blank"
+          >
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              AI-Frame (Audio enabled)
+            </Button>
+          </Link>
           <Link href="/feedback" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Feedback Page (Sample)
+            </Button>
+          </Link>
+          <Link href="/knowledge-bot" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              knowledge bot
+            </Button>
+          </Link>
+          <Link href="/knowledge-bot" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              New Manager (Skill bot)
             </Button>
           </Link>
         </div>
