@@ -124,7 +124,7 @@ const VersionOne = ({ user }: any) => {
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              AI-Frame (Sample)
+              AI-Frame
             </Button>
           </Link>
           <Link
@@ -141,21 +141,21 @@ const VersionOne = ({ user }: any) => {
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Feedback Page (Sample)
+              Feedback Page
             </Button>
           </Link>
           <Link href="/knowledge-bot" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              knowledge bot
+              Knowledge bot (User generated)
             </Button>
           </Link>
           <Link href="/knowledge-bot" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              New Manager (Skill bot)
+              New Manager (Role bot)
             </Button>
           </Link>
         </div>
