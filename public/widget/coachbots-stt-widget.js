@@ -132,6 +132,7 @@ let IntakeUid = "";
 let fitmentContainerId = 1;
 let endSessionButton;
 let intakeButton;
+let isAnonymous = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -403,6 +404,7 @@ const getUserOrAnonymousDetails = async (choice) => {
   } else if (choice === "Yes") {
     console.log("hi");
     FeedbackUserEmail = "Anonymous User";
+    isAnonymous = true
     const thumbsupdiv = await feedbackBotInitialFlow("save_email");
     appendMessage2(thumbsupdiv);
   }
@@ -462,6 +464,7 @@ const handleFeedbackSubmit = async () => {
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
     user_id: userId2,
+    is_anonymous: isAnonymous ? 'True' : "False"
   });
 
   const resp = await fetch(
@@ -515,6 +518,7 @@ const handleEndFeedback = async () => {
     bot_id: botId,
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
+    is_anonymous: isAnonymous ? 'True' : "False",
     user_id: userId2,
   });
 
@@ -1072,7 +1076,7 @@ const handleFitmentAnalysis = async () => {
     }; */
 
   // store all the responses in fitmentAnalysisQnA
-  for (let i = 1; i <= fitmentAnalysisIndex; i++) {
+  for (let i = 1; i <= Object.keys(fitmentAnalysisQuestions).length; i++) {
     const responseValue = gShadowRoot2
       .querySelector(`input[name="fitment_option_${i}"]:checked`)
       .getAttribute("value");
@@ -1094,6 +1098,27 @@ const handleFitmentAnalysis = async () => {
 
   // console.log(userId2, participantId2);
   try {
+      const queryparam = new URLSearchParams({
+        method: "post",
+        qna: JSON.stringify(fitmentAnalysisQnA),
+        qna_type: "fitment",
+        user_id: participantId2,
+      });
+    
+      const resp = await fetch(
+        `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+
+    const respJsn = await resp.json();
+    console.log('saving fitment', respJsn)
+
     const response = await fetch(
       `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
       {
@@ -1105,8 +1130,6 @@ const handleFitmentAnalysis = async () => {
         body: JSON.stringify({
           participant_id: participantId2,
           bot_id: botId,
-          is_signature_bot: true,
-          fitness_analysis_data: JSON.stringify(fitmentAnalysisQnA),
         }),
       }
     );
@@ -1141,6 +1164,7 @@ const handleFitmentAnalysis = async () => {
     //   appendMessage2(faqHtmlData);
     // }, 200);
   } catch (err) {
+    console.log(err)
     appendMessage2(
       `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
     );
@@ -1394,6 +1418,55 @@ async function handleFaqButtonClick(question) {
   optedBeginSession = false;
   console.log("option selected ==> ", question);
   if (question == "fitness_analysis") {
+      if (fitmentAnalysisInProgress){
+        return;
+      }
+      fitmentAnalysisInProgress = true;
+      appendMessage2(`<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage('Quick Match','Please Wait...')}</div>`)
+      
+      const response = await fetch(
+        `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            participant_id: participantId2,
+            bot_id: botId,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      console.log("Fitness Analysis Score => ", data, Object.keys(data).length);
+
+
+      if (Object.keys(data).length > 0){
+      let score_result_statement;
+      if (data.score === 1 || data.score === 0) {
+        score_result_statement =
+          "The analysis indicates some challenges in coaching dynamics. Consider discussing and addressing these concerns openly with your coach. While there are areas for improvement, continued collaboration may lead to positive adjustments and a more aligned coaching relationship.";
+      } else if (data.score === 2) {
+        score_result_statement =
+          "The analysis suggests a moderately positive fit in coaching dynamics. Identify specific areas for improvement and work together to enhance the coaching experience. Your joint efforts can lead to a stronger, more effective coaching partnership over time.";
+      } else if (data.score === 3) {
+        score_result_statement =
+          "The analysis reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement.";
+      }
+  
+      que_msg = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
+      // appendMessage2()
+      gShadowRoot2.getElementById(
+        `fitment-container-${fitmentContainerId}`
+      ).innerHTML = addStickerToMessage('Quick Match',que_msg);
+      fitmentAnalysisInProgress = false
+      return;
+
+      }
+
+    console.log("flow reaching here")
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
     // let buttons = '';
@@ -1443,12 +1516,17 @@ async function handleFaqButtonClick(question) {
                   </div>`;
     }
 
-    appendMessage2(`
+    msg = `
     <div style="display: flex; flex-direction: column;">
       <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
       <div id="fitment-container-${fitmentContainerId}" style="margin-top : 8px; padding-top: 0px;">${formRadios}</div>
     </div>
-  `);
+  `;
+    gShadowRoot2.getElementById(
+      `fitment-container-${fitmentContainerId}`
+    ).innerHTML = msg;
+    // appendMessage2(msg)
+    
 
     // end of mess up
 
@@ -2242,9 +2320,9 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
-function deleteAndReplaceContainerStt(old, new_cont) {
+function deleteAndReplaceContainerStt(id, new_cont) {
   const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
-  const msg = gshadowRoot.getElementById(`${old}`);
+  const msg = gshadowRoot.getElementById(`${id}`);
   // button.parentNode.removeChild(button)
   const que_msg = document.createElement("div");
   que_msg.innerHTML = `${new_cont}`; // You can customize the message here

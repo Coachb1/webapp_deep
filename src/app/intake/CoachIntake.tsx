@@ -669,6 +669,39 @@ const CoachIntake = ({ user }: any) => {
             .then((response) => response.json())
             .then((result) => {
               console.log(result);
+              
+              const queryparam = new URLSearchParams({
+                method: "post",
+                qna: JSON.stringify({
+                  "1": {
+                      "coach": "What level of coach/mentor do you want to interact with ?",
+                      "cochee": participantLevel
+                  },
+                  "2": {
+                      "coach": "I want a coach & mentor someone from the same department.",
+                      "cochee": coachMentInSameDep === "Yes" ? true : false
+                  },
+                  "3": {
+                      "coach": "What kind of outcome do you want from these sessions the most?",
+                      "cochee": outcomeSupported
+                  }
+              }),
+                qna_type: "fitment",
+                user_id: userId,
+              });
+            
+              const resp = fetch(
+                `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: basicAuth,
+                    "Content-Type": "application/json",
+                  },
+                }
+              )
+
+              
               setProfileId(result.data.uid);
               userProfileId = result.data.uid;
 
@@ -695,8 +728,7 @@ const CoachIntake = ({ user }: any) => {
                   fitment_data: {
                     options: {
                       "1": [
-                        "Anyone above me",
-                        "Same or up to two level below",
+                        "Someone Senior",
                         "Any level",
                       ],
                       "2": ["Yes", "No"],
@@ -953,8 +985,7 @@ const CoachIntake = ({ user }: any) => {
               fitment_data: {
                 options: {
                   "1": [
-                    "Anyone above me",
-                    "Same or up to two level below",
+                    "Someone Senior",
                     "Any level",
                   ],
                   "2": ["Yes", "No"],
@@ -2331,7 +2362,7 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      What level of participant do you want to coach & mentor?
+                      What level of participant you want to interact with ?
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2342,8 +2373,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {[
-                          "Anyone above me",
-                          "Same or upto two level below ",
+                          "Some Junior",
                           "Any level",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
@@ -2672,6 +2702,107 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </RadioGroup>
                   </div>
+                  <hr className="my-2" />
+                  <div className="my-2">
+                    <h3 className="font-semibold text-base text-gray-600">
+                      Fitment Analysis
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      This section analyzes your fitment with the coach & mentor,
+                      as if it were a face to face engagement.
+                    </p>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                    What level of coach/mentor do you want to interact with?
+                    </p>
+                    <div className="my-2 mb-3">
+                      <RadioGroup
+                        required
+                        value={participantLevel}
+                        onValueChange={(value) => {
+                          setParticipantLevel(value);
+                        }}
+                      >
+                        {[
+                          "Someone Senior",
+                          "Any level",
+                        ].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                            <label
+                              htmlFor={`r${i}+1 ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      I want a coach & mentor someone from the same department.
+                    </p>
+                    <div className="my-2 mb-3">
+                      <RadioGroup
+                        required
+                        value={coachMentInSameDep}
+                        onValueChange={(value) => {
+                          setCochMentInSameDep(value);
+                        }}
+                      >
+                        {["Yes", "No"].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
+                            <label
+                              htmlFor={`r${i}+1 ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                    What kind of outcome do you want from these sessions the most?
+                    </p>
+                    <div className="my-2 mb-3">
+                      <RadioGroup
+                        value={outcomeSupported}
+                        required
+                        onValueChange={(value) => {
+                          setOutcomeSupported(value);
+                        }}
+                      >
+                        {[
+                          "Careeer advancement",
+                          "Skill development",
+                          "Introspection & reflectiom",
+                          "Networking & leadership",
+                        ].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem
+                              className="rounded-sm"
+                              value={val}
+                              id={`r${i}+1 ${val}`}
+                            />
+                            <label
+                              htmlFor={`r${i}+1 ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  
                   <hr className="my-2" />
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox

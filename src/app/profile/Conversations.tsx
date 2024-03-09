@@ -184,7 +184,7 @@ const Conversations = ({ user }: any) => {
 
                     const FeedbackConvo: FeedbackConversationType[] =
                       data.message.map((entry: any) => ({
-                        participant_name: entry.participant_name,
+                        participant_name: entry.is_anonymous ? "Anonymous User":entry.participant_name,
                         date: entry.date,
                         msg: {
                           question: Object.keys(entry.msg)[0],
