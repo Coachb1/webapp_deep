@@ -65,11 +65,12 @@ const RoleBots = ({ user }: any) => {
               <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
                 <span>
                   {" "}
-                  Simulations and roleplays replicate real-world situations and
-                  interactions, evaluating our aptitude for success in the
-                  workplace. By mimicking scenarios we may encounter, they
-                  assess our interpersonal skills and provide detailed feedback
-                  on our performance and potential areas for improvement.
+                  Introducing our Role-Specific Bots! These bots are tailored to
+                  guide you through the intricacies of specific roles,
+                  leveraging established general frameworks. Just like
+                  simulations and roleplays replicate real-world scenarios,
+                  these bots provide practical guidelines for success in your
+                  designated role.
                 </span>
               </div>
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1"></div>
