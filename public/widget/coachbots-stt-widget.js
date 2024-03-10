@@ -302,6 +302,7 @@ const getUserOrAnonymousDetails = async (choice) => {
   disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
   if (choice === "No") {
     if (!window.user) {
+      isAnonymous = false;
       let emailForm;
       if (window.innerWidth > 768) {
         emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
@@ -404,7 +405,7 @@ const getUserOrAnonymousDetails = async (choice) => {
   } else if (choice === "Yes") {
     console.log("hi");
     FeedbackUserEmail = "Anonymous User";
-    isAnonymous = true
+    isAnonymous = true;
     const thumbsupdiv = await feedbackBotInitialFlow("save_email");
     appendMessage2(thumbsupdiv);
   }
@@ -607,6 +608,7 @@ function renameKey(obj) {
 
 const feedbackBotQnAFlow = (flow) => {
   disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`);
+  console.log("isAnonymous",isAnonymous)
   if (flow === "up") {
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
