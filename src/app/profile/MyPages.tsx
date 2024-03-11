@@ -194,10 +194,10 @@ const MyPages = ({ user }: any) => {
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
                   <p
-                    className={`text-sm inline  ${
+                    className={`text-sm inline ${
                       botType.bot_type === "user_bot"
                         ? "w-[45%] max-sm:w-[70%]"
-                        : "w-[30%] max-sm:w-[45%]"
+                        : "w-[45%] max-sm:w-[70%]"
                     } `}
                   >
                     <>

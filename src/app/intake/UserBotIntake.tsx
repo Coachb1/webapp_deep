@@ -276,12 +276,16 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               } else {
                 resetAllStates();
                 if (checkIfEdit) {
-                  toast.success("Successfully Updated your user bot.");
+                  toast.success("Successfully Updated your user bot.", {
+                    duration: 6000,
+                  });
                   setTimeout(() => {
                     router.push("/profile");
                   }, 4000);
                 } else {
-                  toast.success("Successfully Created your user bot.");
+                  toast.success("Successfully Created your user bot.", {
+                    duration: 6000,
+                  });
                   setTimeout(() => {
                     router.push("/");
                   }, 4000);
