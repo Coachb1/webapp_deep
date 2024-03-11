@@ -219,6 +219,11 @@ export default function RootLayout({
       if (coachtalk) {
         coachtalk.removeAttribute("style");
       }
+    } else if (pathname === "/") {
+      if (coachScribe && coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
+        coachScribe.setAttribute("style", "display: none;");
+      }
     }
   }, [pathname]);
 

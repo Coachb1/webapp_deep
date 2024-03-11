@@ -119,9 +119,9 @@ const staticPositiveFeedbacks = [
 
 const feedbackJsonConversion = (jsonData: any) => {
   return jsonData.positive_msgs.map((msg: any) => {
-    console.log('anonymous',msg.is_anonymous)
+    console.log("anonymous", msg.is_anonymous);
     return {
-      name: msg.is_anonymous ? 'Anonymous User' : msg.participant_name,
+      name: msg.is_anonymous ? "Anonymous User" : msg.participant_name,
       date: msg.date,
       feedback_message: msg.msg["Why are you giving me a thumbs up today?"],
     };
@@ -208,14 +208,14 @@ const Feedback = ({ user, renderType }: any) => {
             setCoachDescription(data.data.additional_data.short_profile_bio);
           }
         }
-        if (data.data.bot_details.is_strict_login_required && !user) {
-          coachScribe.setAttribute("style", "display: none;");
-        }
-        if (data.data.bot_details.is_login_required) {
-          if (!user) {
-            coachScribe.setAttribute("style", "display: none;");
-          }
-        }
+        // if (data.data.bot_details.is_strict_login_required && !user) {
+        //   coachScribe.setAttribute("style", "display: none;");
+        // }
+        // if (data.data.bot_details.is_login_required) {
+        //   if (!user) {
+        //     coachScribe.setAttribute("style", "display: none;");
+        //   }
+        // }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setProfileImage(data.data.owner_profile_image);
@@ -223,77 +223,78 @@ const Feedback = ({ user, renderType }: any) => {
         if (data.data.additional_data !== null) {
           setCurrentProjects(data.data.additional_data?.current_projects);
         }
-        if (!data.data.is_sample_bot && !data.data.is_system_bot) {
-          fetch(`${baseURL}/accounts/`, {
-            method: "POST",
-            headers: {
-              Authorization: basicAuth,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user_context: {
-                name: user.given_name,
-                role: "member",
-                user_attributes: {
-                  tag: "deepchat_profile",
-                  attributes: {
-                    username: "web_user",
-                    email: user.email,
-                  },
-                },
-              },
-              identity_context: {
-                identity_type: "deepchat_unique_id",
-                value: user.email,
-              },
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              fetch(
-                `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                }
-              )
-                .then((res) => res.json())
-                .then((data) => {
-                  console.log("xyz-data", data);
-                  if (data.data.length === 0) {
-                    const coachScribe =
-                      document.getElementsByClassName("deep-chat-poc2")[0];
+        setIsLoading(false);
+        // if (!data.data.is_sample_bot && !data.data.is_system_bot) {
+        //   fetch(`${baseURL}/accounts/`, {
+        //     method: "POST",
+        //     headers: {
+        //       Authorization: basicAuth,
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       user_context: {
+        //         name: user.given_name,
+        //         role: "member",
+        //         user_attributes: {
+        //           tag: "deepchat_profile",
+        //           attributes: {
+        //             username: "web_user",
+        //             email: user.email,
+        //           },
+        //         },
+        //       },
+        //       identity_context: {
+        //         identity_type: "deepchat_unique_id",
+        //         value: user.email,
+        //       },
+        //     }),
+        //   })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //       fetch(
+        //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+        //         {
+        //           method: "GET",
+        //           headers: {
+        //             Authorization: basicAuth,
+        //           },
+        //         }
+        //       )
+        //         .then((res) => res.json())
+        //         .then((data) => {
+        //           console.log("xyz-data", data);
+        //           if (data.data.length === 0) {
+        //             const coachScribe =
+        //               document.getElementsByClassName("deep-chat-poc2")[0];
 
-                    console.log(coachScribe);
-                    const botButton = document.getElementsByClassName(
-                      "chat-icon-container2"
-                    )[0];
-                    botButton.removeAttribute("onclick");
+        //             console.log(coachScribe);
+        //             const botButton = document.getElementsByClassName(
+        //               "chat-icon-container2"
+        //             )[0];
+        //             botButton.removeAttribute("onclick");
 
-                    const chatIcon =
-                      document.getElementsByClassName("chat-icon2")[0];
-                    const showEnrollmentToast = () => {
-                      chatIcon.addEventListener("click", () => {
-                        toast.error(
-                          "You have not enrolled as a program participant. Please enroll and try again."
-                        );
-                      });
-                    };
-                    if (!chatIcon.getAttribute("onclick")) {
-                      chatIcon.setAttribute(
-                        "onclick",
-                        `${showEnrollmentToast()}`
-                      );
-                    }
-                  }
-                })
-                .catch((err) => {
-                  console.error(err);
-                });
-            });
-        }
+        //             const chatIcon =
+        //               document.getElementsByClassName("chat-icon2")[0];
+        //             const showEnrollmentToast = () => {
+        //               chatIcon.addEventListener("click", () => {
+        //                 toast.error(
+        //                   "You have not enrolled as a program participant. Please enroll and try again."
+        //                 );
+        //               });
+        //             };
+        //             if (!chatIcon.getAttribute("onclick")) {
+        //               chatIcon.setAttribute(
+        //                 "onclick",
+        //                 `${showEnrollmentToast()}`
+        //               );
+        //             }
+        //           }
+        //         })
+        //         .catch((err) => {
+        //           console.error(err);
+        //         });
+        //     });
+        // }
         fetch(
           `${baseURL}/accounts/get-user-feedback-data/?method=get&feedback_type=positive&bot_id=${
             renderType === "dynamic"
@@ -314,10 +315,12 @@ const Feedback = ({ user, renderType }: any) => {
             setPositiveFeedbacks(feedbackJsonConversion(data));
           })
           .catch((err) => {
+            setIsLoading(false);
             console.log(err);
           });
       })
       .catch((err) => {
+        setIsLoading(false);
         console.error(err);
         setInValidCoach(true);
       });
@@ -778,14 +781,14 @@ const Feedback = ({ user, renderType }: any) => {
           </div>
         </div>
       )}
-
-      {!strictLoginRequired && user && <FeedbackBotBody />}
+      {!isLoading && <FeedbackBotBody />}
+      {/* {!strictLoginRequired && user && <FeedbackBotBody />}
       {strictLoginRequired && user && <FeedbackBotBody />}
       {strictLoginRequired && !user && (
         <>
           <NoLoginFlag />
         </>
-      )}
+      )} */}
     </>
   );
 };

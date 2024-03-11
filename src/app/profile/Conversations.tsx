@@ -125,6 +125,7 @@ const Conversations = ({ user }: any) => {
                   convertJsonToExpectedFormat(data);
                 setConvertsationDataAdmin(convertedData);
               }
+              // setLoading(false);
             })
             .catch((err) => {
               console.error(err);
@@ -151,7 +152,7 @@ const Conversations = ({ user }: any) => {
             })
             .catch((err) => {
               console.error(err);
-              // setLoading(false);
+              setLoading(false);
               setFetchError(true);
             });
 
@@ -184,7 +185,9 @@ const Conversations = ({ user }: any) => {
 
                     const FeedbackConvo: FeedbackConversationType[] =
                       data.message.map((entry: any) => ({
-                        participant_name: entry.is_anonymous ? "Anonymous User":entry.participant_name,
+                        participant_name: entry.is_anonymous
+                          ? "Anonymous User"
+                          : entry.participant_name,
                         date: entry.date,
                         msg: {
                           question: Object.keys(entry.msg)[0],
