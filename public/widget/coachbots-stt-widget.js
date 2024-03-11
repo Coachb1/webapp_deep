@@ -4433,10 +4433,7 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
-  const OpenAiResponse = (userInputMessage, signals, conversationId) => {
-    const API_URL = "https://api.openai.com/v1/chat/completions";
-    const API_KEY = "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";
-
+  const anthropicAiResponse = (userInputMessage, signals, conversationId) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -4461,23 +4458,14 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
-    fetch(API_URL, {
+    fetch("/api/anthropic", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: userInputMessage }],
-        max_tokens: 1000,
-        stream: true, // For streaming responses
+        userInput: userInputMessage,
       }),
     }).then(async (response) => {
-      console.log(response);
-
       const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
+      const textDecoder = new TextDecoder("utf-8");
 
       signals.onResponse({
         html: "...",
@@ -4486,77 +4474,124 @@ loadExternalModule().then(() => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
-          console.log(
-            "REGISTER - RESPONSE OF OPEN_AI",
-            messageText.innerText,
-            conversationId
-          );
+          allMessages.forEach((indvMessage) => {
+            console.log(indvMessage.innerText);
 
-          const response = fetch(
-            `${baseURL2}/coaching-conversations/save-ai-response/`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                ai_response: messageText.innerText,
-                conversation_id: conversationId,
-              }),
-            }
-          );
-
-          console.log("response : ", response);
-          console.log(response);
-
-          response
-            .then((res) => {
-              console.log("res : ", res);
-              console.log(res);
-              return res.json();
-            })
-            .then((data) => {
-              console.log("data : ", data);
-              console.log(data);
-            });
-          break;
-        }
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        const parsedLines = lines
-          .map((line) => line.replace("data: ", "")) // Remove the "data: " prefix
-          .filter((line) => line !== "" && line !== "[DONE]") // Remove empty lines and "[DONE]"
-          .map((line) => {
-            try {
-              return JSON.parse(line);
-            } catch (err) {
-              return "";
+            if (
+              indvMessage.innerText === "." ||
+              indvMessage.innerText === "..."
+            ) {
+              indvMessage.remove();
             }
           });
 
-        for (const parsedLine of parsedLines) {
-          if (parsedLine !== "") {
-            const { choices } = parsedLine;
-            const { delta } = choices[0];
-            const { content } = delta;
-            // Update the UI with the new content
-            if (content) {
-              messageText.innerText += content;
-              shadowRoot.getElementById("messages").scrollBy(0, 500);
-            }
-          }
-        }
-      }
-      allMessages.forEach((indvMessage) => {
-        console.log(indvMessage.innerText);
+          fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ai_response: messageText.innerText,
+              conversation_id: conversationId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
 
-        if (indvMessage.innerText === "." || indvMessage.innerText === "...") {
-          indvMessage.remove();
+          return;
         }
+        const decodedText = textDecoder.decode(value);
+
+        messageText.innerText += decodedText;
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
+      }
+    });
+  };
+
+  const OpenAiResponse = (userInputMessage, signals, conversationId) => {
+    const messageNode = document.createElement("div");
+    messageNode.classList.add("inner-message-container");
+
+    const messageBubble = document.createElement("div");
+    messageBubble.classList.add("message-bubble", "ai-message-text");
+    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.marginTop = "4px";
+    messageBubble.style.borderRadius = "4px";
+    messageBubble.style.padding = "4";
+    messageBubble.style.backgroundColor = "#f3f4f6";
+    messageBubble.style.color = "#374151";
+
+    const messageText = document.createElement("p");
+
+    messageBubble.appendChild(messageText);
+    messageNode.appendChild(messageBubble);
+
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    gShadowRoot2.getElementById("messages").appendChild(messageNode);
+    gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+    fetch("/api/openai", {
+      method: "POST",
+      body: JSON.stringify({
+        userInput: userInputMessage,
+      }),
+    }).then(async (response) => {
+      const reader = response.body.getReader();
+      const textDecoder = new TextDecoder("utf-8");
+
+      signals.onResponse({
+        html: "...",
       });
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          allMessages.forEach((indvMessage) => {
+            console.log(indvMessage.innerText);
+
+            if (
+              indvMessage.innerText === "." ||
+              indvMessage.innerText === "..."
+            ) {
+              indvMessage.remove();
+            }
+          });
+
+          fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ai_response: messageText.innerText,
+              conversation_id: conversationId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+
+          return;
+        }
+        const decodedText = textDecoder.decode(value);
+
+        messageText.innerText += decodedText;
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
+      }
     });
   };
 
@@ -4567,6 +4602,7 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           //
+
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
@@ -5044,7 +5080,7 @@ loadExternalModule().then(() => {
               console.log(responseData.coach_message_metadata.prompt);
 
               //streaming responses
-              OpenAiResponse(
+              anthropicAiResponse(
                 responseData.coach_message_metadata.prompt,
                 signals,
                 conversation_id2
