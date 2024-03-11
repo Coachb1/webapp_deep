@@ -34,7 +34,7 @@ const NetworkNav = ({ user }: any) => {
         scrolled > 0 &&
         pathname !== "/library" &&
         pathname !== "/skill-bots" &&
-        pathname !== "/role-bots" &&
+        pathname !== "/guides" &&
         "backdrop-blur-lg border-b border-gray-400"
       } `}
     >
@@ -94,15 +94,15 @@ const NetworkNav = ({ user }: any) => {
         <Button
           variant={"outline"}
           className={` h-8 max-sm:text-sm ${
-            pathname.includes("/role-bots")
+            pathname.includes("/guides")
               ? "border border-gray-500 shadow-md"
               : ""
           } `}
           onClick={() => {
-            router.push("/role-bots");
+            router.push("/guides");
           }}
         >
-          Role bots
+          Guides
         </Button>
         <Button
           variant={"outline"}
@@ -209,17 +209,17 @@ const NetworkNav = ({ user }: any) => {
             </DropdownMenuItem> */}
             <DropdownMenuItem
               className={`${
-                pathname.includes("/role-bots") ? "bg-gray-200" : null
+                pathname.includes("/guides") ? "bg-gray-200" : null
               }`}
               asChild
             >
               <div
                 onClick={() => {
-                  router.push("/role-bots");
+                  router.push("/guides");
                 }}
               >
                 {" "}
-                Role bots
+                Guides
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem

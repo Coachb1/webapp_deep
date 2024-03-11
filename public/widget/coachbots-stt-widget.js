@@ -465,7 +465,7 @@ const handleFeedbackSubmit = async () => {
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
     user_id: userId2,
-    is_anonymous: isAnonymous ? 'True' : "False"
+    is_anonymous: isAnonymous ? "True" : "False",
   });
 
   const resp = await fetch(
@@ -519,7 +519,7 @@ const handleEndFeedback = async () => {
     bot_id: botId,
     is_positive: IsPositiveFeedback ? "True" : "False",
     qna_type: "feedback",
-    is_anonymous: isAnonymous ? 'True' : "False",
+    is_anonymous: isAnonymous ? "True" : "False",
     user_id: userId2,
   });
 
@@ -608,7 +608,7 @@ function renameKey(obj) {
 
 const feedbackBotQnAFlow = (flow) => {
   disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`);
-  console.log("isAnonymous",isAnonymous)
+  console.log("isAnonymous", isAnonymous);
   if (flow === "up") {
     feedbackBotQuestions = renameKey(feedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
@@ -942,7 +942,7 @@ const getBotDetails2 = async (botId) => {
       intakeButton = document.createElement("button");
       intakeButton.setAttribute(
         "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #dc2626; color : white; `
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #dc2626; color : white;`
       );
       intakeButton.setAttribute(
         "onmouseover",
@@ -953,7 +953,7 @@ const getBotDetails2 = async (botId) => {
         "this.style.backgroundColor = '#dc2626'"
       );
       intakeButton.setAttribute("onclick", `handleFaqButtonClick('intake')`);
-      intakeButton.innerText = "Intake";
+      intakeButton.innerText = "Pre-Check";
       buttonsWrapper.appendChild(intakeButton);
     }
 
@@ -1100,26 +1100,26 @@ const handleFitmentAnalysis = async () => {
 
   // console.log(userId2, participantId2);
   try {
-      const queryparam = new URLSearchParams({
-        method: "post",
-        qna: JSON.stringify(fitmentAnalysisQnA),
-        qna_type: "fitment",
-        user_id: participantId2,
-      });
-    
-      const resp = await fetch(
-        `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    const queryparam = new URLSearchParams({
+      method: "post",
+      qna: JSON.stringify(fitmentAnalysisQnA),
+      qna_type: "fitment",
+      user_id: participantId2,
+    });
+
+    const resp = await fetch(
+      `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const respJsn = await resp.json();
-    console.log('saving fitment', respJsn)
+    console.log("saving fitment", respJsn);
 
     const response = await fetch(
       `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
@@ -1166,7 +1166,7 @@ const handleFitmentAnalysis = async () => {
     //   appendMessage2(faqHtmlData);
     // }, 200);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     appendMessage2(
       `<b style='font-size: 14px;color: #991b1b;'>Error while calculating Fitment score</b>`
     );
@@ -1319,7 +1319,7 @@ async function handlePreviousConversation(choice) {
       appendMessage2(
         addStickerToMessage(
           "System",
-          "Please complete the intake process by clicking on the intake button."
+          "You must complete the pre-check before begning the session"
         )
       );
       return;
@@ -1420,32 +1420,36 @@ async function handleFaqButtonClick(question) {
   optedBeginSession = false;
   console.log("option selected ==> ", question);
   if (question == "fitness_analysis") {
-      if (fitmentAnalysisInProgress){
-        return;
+    if (fitmentAnalysisInProgress) {
+      return;
+    }
+    fitmentAnalysisInProgress = true;
+    appendMessage2(
+      `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
+        "Quick Match",
+        "Please Wait..."
+      )}</div>`
+    );
+
+    const response = await fetch(
+      `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          participant_id: participantId2,
+          bot_id: botId,
+        }),
       }
-      fitmentAnalysisInProgress = true;
-      appendMessage2(`<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage('Quick Match','Please Wait...')}</div>`)
-      
-      const response = await fetch(
-        `${baseURL2}/test-attempt-sessions/get-fitness-analysis-score/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            participant_id: participantId2,
-            bot_id: botId,
-          }),
-        }
-      );
-  
-      const data = await response.json();
-      console.log("Fitness Analysis Score => ", data, Object.keys(data).length);
+    );
 
+    const data = await response.json();
+    console.log("Fitness Analysis Score => ", data, Object.keys(data).length);
 
-      if (Object.keys(data).length > 0){
+    if (Object.keys(data).length > 0) {
       let score_result_statement;
       if (data.score === 1 || data.score === 0) {
         score_result_statement =
@@ -1457,18 +1461,17 @@ async function handleFaqButtonClick(question) {
         score_result_statement =
           "The analysis reflects a strong alignment laying a solid foundation for success. Nurture open communication and collaboration to sustain excellence. The optimal coaching dynamic provides a supportive environment for continued growth and achievement.";
       }
-  
+
       que_msg = `<div style="margin: 0; padding: 0;"><b>Result:</b>   <p>${score_result_statement}</p> </div>`; // You can customize the message here
       // appendMessage2()
       gShadowRoot2.getElementById(
         `fitment-container-${fitmentContainerId}`
-      ).innerHTML = addStickerToMessage('Quick Match',que_msg);
-      fitmentAnalysisInProgress = false
+      ).innerHTML = addStickerToMessage("Quick Match", que_msg);
+      fitmentAnalysisInProgress = false;
       return;
+    }
 
-      }
-
-    console.log("flow reaching here")
+    console.log("flow reaching here");
     // console.log("question clicked : ",question, globalBotDetails.data.faqs[question])
     // console.log("fitness analysis clicked :",fitment_analysis[])
     // let buttons = '';
@@ -1528,7 +1531,6 @@ async function handleFaqButtonClick(question) {
       `fitment-container-${fitmentContainerId}`
     ).innerHTML = msg;
     // appendMessage2(msg)
-    
 
     // end of mess up
 
@@ -1598,7 +1600,7 @@ async function handleFaqButtonClick(question) {
         appendMessage2(
           addStickerToMessage(
             "System",
-            "Your connection request must be approved first for begining a session."
+            "Your connection request must be accepted before you can start the session."
           )
         );
         return;

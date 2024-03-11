@@ -136,13 +136,13 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    if (profile_type === "coach") {
+    if (profile_type === "coach" || profile_type === "mentor") {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       }
-    } else if (profile_type === "coachee") {
+    } else if (profile_type === "coachee" || profile_type === "mentee") {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
