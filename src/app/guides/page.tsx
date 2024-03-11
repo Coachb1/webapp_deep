@@ -1,10 +1,10 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { constructMetadata } from "@/lib/utils";
 import Widgets from "@/components/Widgets";
-import RoleBots from "./RoleBots";
+import Guides from "./Guides";
 
 export const metadata = constructMetadata({
-  title: "Role bots",
+  title: "Guides",
 });
 
 const Page = async () => {
@@ -13,7 +13,7 @@ const Page = async () => {
 
   return (
     <div>
-      <RoleBots user={user} />
+      <Guides user={user} />
     </div>
   );
 };

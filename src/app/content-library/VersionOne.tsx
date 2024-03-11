@@ -151,7 +151,7 @@ const VersionOne = ({ user }: any) => {
               Knowledge bot (User generated)
             </Button>
           </Link>
-          <Link href="/knowledge-bot" target="_blank">
+          <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
