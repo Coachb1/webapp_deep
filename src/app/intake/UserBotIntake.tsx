@@ -253,7 +253,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           });
 
           patchFormData.append(
-            "provided_links",
+            "media_data",
             JSON.stringify({
               youtube_links: releventLinks,
             })
