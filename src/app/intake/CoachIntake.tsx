@@ -828,14 +828,14 @@ const CoachIntake = ({ user }: any) => {
 
                       filesPatchFormData.append("bot_id", data.bot_uid);
 
-                      // const media_data = {
-                      //   youtube_links: linksReflectingWVpersonal,
-                      //   article_links: linksReflectyouWished,
-                      // };
-                      // filesPatchFormData.append(
-                      //   "media_data",
-                      //   JSON.stringify(media_data)
-                      // );
+                      const media_data = {
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
+                      };
+                      filesPatchFormData.append(
+                        "media_data",
+                        JSON.stringify(media_data)
+                      );
 
                       console.log(referenceDocs);
                       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
@@ -1087,14 +1087,14 @@ const CoachIntake = ({ user }: any) => {
                     }
 
                     filesPatchFormData.append("bot_id", botIUidFromParams!);
-                    // const media_data = {
-                    //   youtube_links: linksReflectingWVpersonal,
-                    //   article_links: linksReflectyouWished,
-                    // };
-                    // filesPatchFormData.append(
-                    //   "media_data",
-                    //   JSON.stringify(media_data)
-                    // );
+                    const media_data = {
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                    };
+                    filesPatchFormData.append(
+                      "media_data",
+                      JSON.stringify(media_data)
+                    );
 
                     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                       method: "PATCH",
