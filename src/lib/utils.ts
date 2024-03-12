@@ -223,6 +223,15 @@ export function hasPassed48Hours(inputDate: string) {
   return timeDifference >= millisecondsIn24Hours;
 }
 
+export function hasPassed5Days(inputDate: string) {
+  const inputDateTime = new Date(inputDate);
+  const currentDateTime = new Date();
+  const timeDifference = currentDateTime.getTime() - inputDateTime.getTime();
+  const millisecondsIn5Days = 5 * 24 * 60 * 60 * 1000;
+
+  return timeDifference >= millisecondsIn5Days;
+}
+
 export function convertTextToCorrectFormat(text: string) {
   return text
     .replace(/_/g, " ") // Replace underscores with spaces
