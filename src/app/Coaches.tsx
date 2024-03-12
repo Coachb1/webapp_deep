@@ -12,6 +12,7 @@ import {
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
+  hasPassed5Days,
   hideBots,
 } from "@/lib/utils";
 import {
@@ -62,6 +63,8 @@ interface CoachesDataType {
   is_approved: boolean;
   avatar_snippit: string;
   avatar_bot_url: string;
+  admirer_ids: string[];
+  created: string;
 }
 
 interface FilterCategoriesType {
@@ -222,7 +225,7 @@ const Coaches = ({ user }: any) => {
               "mentor",
               "coachee",
               "mentee",
-              "External",
+              "Icons by AI",
               "accepted",
               "feedback_bot",
             ],
@@ -880,11 +883,16 @@ const Coaches = ({ user }: any) => {
                     </div>
                     <div className="flex flex-row w-[70%] max-sm:w-[70%]  max-sm:flex-col">
                       <div className="w-[70%] max-sm:w-full max-sm:pl-4 max-md:pl-4 flex flex-col justify-start items-start ">
-                        <p className="text-xl font-semibold text-gray-700 mt-2 max-sm:mt-0 text-left max-sm:text-lg">
-                          {coach.name}
+                        <p className="text-xl font-semibold text-gray-700 mt-2 max-sm:mt-0 text-left max-sm:text-lg flex items-center gap-2 justify-center">
+                          {coach.name}{" "}
+                          {hasPassed5Days(coach.created) ? null : (
+                            <Badge className="bg-amber-600 hover:bg-amber-500 px-1 h-fit">
+                              New
+                            </Badge>
+                          )}
                         </p>
                         <p className="my-1.5 max-sm:text-sm max-sm:my-1 font-medium text-gray-600">
-                          {coach.department}
+                          {coach.department}{" "}
                         </p>
                         <div className="flex flex-row items-center justify-start gap-2">
                           {coach.profile_type === "coach-mentor" ? (
@@ -1078,12 +1086,12 @@ const Coaches = ({ user }: any) => {
                   {parentCheckedValues.includes("External") ||
                   parentCheckedValues.includes("accepted") ? (
                     <div className="flex flex-col gap-2">
-                      {parentCheckedValues.includes("External") && (
+                      {/* {parentCheckedValues.includes("External") && (
                         <span>
                           You do not have access to external coaches and mentors
                           at this time. Please connect with your administrator.
                         </span>
-                      )}
+                      )} */}
                       {parentCheckedValues.includes("accepted") &&
                         connectedCoaches.length === 0 && (
                           <span>
