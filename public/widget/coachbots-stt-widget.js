@@ -1579,32 +1579,32 @@ async function handleFaqButtonClick(question) {
 
       // ****** Check connection logic : start
 
-      const connectionresp = await fetch(
-        `${baseURL2}/accounts/user-bot-connection-status/?user_id=${userId2}&coach_user_id=${globalBotDetails.data.user_id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          },
-        }
-      );
+      // const connectionresp = await fetch(
+      //   `${baseURL2}/accounts/user-bot-connection-status/?user_id=${userId2}&coach_user_id=${globalBotDetails.data.user_id}`,
+      //   {
+      //     method: "GET",
+      //     headers: {
+      //       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      //     },
+      //   }
+      // );
 
-      // Continue with your code after the response is fetched
-      const connectionData = await connectionresp.json();
-      console.log(
-        "user bot connection status : ",
-        connectionData.connected,
-        connectionData.connected == false
-      );
-      if (connectionData.connected == false) {
-        appendMessage2(
-          addStickerToMessage(
-            "System",
-            "Your connection request must be accepted before you can start the session."
-          )
-        );
-        return;
-      }
+      // // Continue with your code after the response is fetched
+      // const connectionData = await connectionresp.json();
+      // console.log(
+      //   "user bot connection status : ",
+      //   connectionData.connected,
+      //   connectionData.connected == false
+      // );
+      // if (connectionData.connected == false) {
+      //   appendMessage2(
+      //     addStickerToMessage(
+      //       "System",
+      //       "Your connection request must be accepted before you can start the session."
+      //     )
+      //   );
+      //   return;
+      // }
 
       // ****** Check connection logic : end
 
