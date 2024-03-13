@@ -214,7 +214,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
             </div>
           </div>
         )} */}
-        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+        <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
             {/* <NetworkNav user={user} /> */}
             <div className="ml-4">

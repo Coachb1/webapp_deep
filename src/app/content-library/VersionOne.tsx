@@ -86,7 +86,7 @@ const VersionOne = ({ user }: any) => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+    <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
         {!user && (
           <Badge
@@ -119,7 +119,7 @@ const VersionOne = ({ user }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        <div className="flex flex-row max-sm:flex-wrap max-sm:justify-center mt-4 z-50 gap-2">
+        <div className="flex flex-row flex-wrap justify-center mt-4 z-50 gap-2">
           <Link href="/coach" target="_blank">
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}

@@ -395,7 +395,7 @@ const Feedback = ({ user, renderType }: any) => {
             </div>
           </div>
         )}
-        <div className="grainy h-full min-h-screen bg-gray-100 pb-16 max-sm:h-full max-sm:min-h-screen">
+        <div className="h-full min-h-screen bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
           <div className="fixed !z-[800] flex h-6 w-full items-center justify-end p-4 py-8">
             {/* <NetworkNav user={user} /> */}
 

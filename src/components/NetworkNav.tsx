@@ -30,12 +30,12 @@ const NetworkNav = ({ user }: any) => {
 
   return (
     <div
-      className={`fixed w-full flex items-center justify-end p-4 h-6 py-8 top-0 right-0   ${
+      className={`fixed right-0 top-0 z-40 flex h-6 w-full items-center justify-end p-4 py-8   ${
         scrolled > 0 &&
         pathname !== "/library" &&
         pathname !== "/skill-bots" &&
         pathname !== "/guides" &&
-        "backdrop-blur-lg border-b border-gray-400"
+        "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
       {/* <div className="flex flex-row gap-1"></div> */}
@@ -143,8 +143,8 @@ const NetworkNav = ({ user }: any) => {
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
-            <div className="w-fit h-fit p-[4px] bg-gray-200 rounded-md">
+          <DropdownMenuTrigger asChild className="!z-[999] overflow-visible">
+            <div className="h-fit w-fit rounded-md bg-gray-200 p-[4px]">
               <Menu className="h-6 w-6" />
             </div>
           </DropdownMenuTrigger>
