@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const anthropic = new Anthropic({
   // apiKey: "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", //process.env.ANTHROPIC_API_KEY,
-  apiKey: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 export async function POST(req: Request) {
