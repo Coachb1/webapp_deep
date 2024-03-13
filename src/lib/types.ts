@@ -57,18 +57,12 @@ export interface TestsType {
   description: string;
   test_code: string;
   test_type?: string;
+  is_recommended: boolean;
 }
 
 export interface competencySkillsTestType {
   skill: string;
   tests: TestsType[];
-}
-
-export interface TestsType {
-  title: string;
-  description: string;
-  test_code: string;
-  test_type?: string;
 }
 
 export interface newManagerTestsType {
@@ -107,6 +101,7 @@ export interface TestData {
   description: string;
   test_code: string;
   test_type: string;
+  is_recommended: boolean;
 }
 
 export interface DomainData {

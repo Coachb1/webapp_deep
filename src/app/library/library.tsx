@@ -51,6 +51,7 @@ interface Test {
   test_code: string;
   interaction_mode: string;
   is_micro: boolean;
+  is_recommended: boolean;
 }
 
 interface Category {
@@ -80,6 +81,7 @@ const convertToJsonArray = (input: Category): StateType[] => {
           test_code: test.test_code,
           interaction_mode: test.interaction_mode,
           is_micro: test.is_micro,
+          is_recommended: test.is_recommended,
         };
       });
 
@@ -714,7 +716,17 @@ const MyLibrary = ({ user }: any) => {
                                                   } px-4`}
                                                 >
                                                   <AccordionTrigger className="text-left max-sm:text-xs">
-                                                    <div>{test.title}</div>
+                                                    <div>
+                                                      {test.title}{" "}
+                                                      {test.is_recommended && (
+                                                        <Badge
+                                                          variant={"secondary"}
+                                                          className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
+                                                        >
+                                                          Recommended
+                                                        </Badge>
+                                                      )}
+                                                    </div>
                                                   </AccordionTrigger>
                                                   <AccordionContent className="max-sm:text-xs">
                                                     <p className="text-left">
@@ -846,6 +858,7 @@ const MyLibrary = ({ user }: any) => {
                                                     | null
                                                     | undefined;
                                                   test_code: string;
+                                                  is_recommended: boolean;
                                                 },
                                                 i: Key | null | undefined
                                               ) => (
@@ -879,6 +892,14 @@ const MyLibrary = ({ user }: any) => {
                                                         </>
                                                       ) : (
                                                         <>{test.title}</>
+                                                      )}
+                                                      {test.is_recommended && (
+                                                        <Badge
+                                                          variant={"secondary"}
+                                                          className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
+                                                        >
+                                                          Recommended
+                                                        </Badge>
                                                       )}
                                                     </div>
                                                   </AccordionTrigger>
@@ -985,7 +1006,17 @@ const MyLibrary = ({ user }: any) => {
                                           } px-4`}
                                         >
                                           <AccordionTrigger className="text-left max-sm:text-xs">
-                                            <div>{test.title}</div>
+                                            <div>
+                                              {test.title}{" "}
+                                              {test.is_recommended && (
+                                                <Badge
+                                                  variant={"secondary"}
+                                                  className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
+                                                >
+                                                  Recommended
+                                                </Badge>
+                                              )}
+                                            </div>
                                           </AccordionTrigger>
                                           <AccordionContent className="max-sm:text-xs">
                                             <p className="text-left">
