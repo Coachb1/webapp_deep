@@ -27,8 +27,11 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
   Loader,
   Search,
+  Star,
+  ThumbsUp,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -43,6 +46,7 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 
 interface CoachesDataType {
   id: number;
@@ -65,6 +69,9 @@ interface CoachesDataType {
   avatar_bot_url: string;
   admirer_ids: string[];
   created: string;
+  time_value_in_days: string;
+  timer_enabled: boolean;
+  timer_reset: boolean;
 }
 
 interface FilterCategoriesType {
@@ -638,14 +645,14 @@ const Coaches = ({ user }: any) => {
         <Button
           disabled={requestLoading}
           variant={"outline"}
-          className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+          className="max-sm:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
             requestConnectHandler();
           }}
         >
           {requestLoading ? (
             <>
-              <Loader className="h-4 w-4 animate-spin mr-2" />
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
               Requesting
             </>
           ) : (
@@ -656,30 +663,98 @@ const Coaches = ({ user }: any) => {
     );
   };
 
-  return (
-    <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-      <NetworkNav user={user} />
+  const ReviewComponent = () => {
+    return (
+      <div className="flex flex-row items-end">
+        <div className="flex flex-row items-center gap-1 mr-1 max-sm:mt-2">
+          <Star color="#f59e0b" className="h-4 w-4 " />
+          <Star color="#f59e0b" className="h-4 w-4 " />
+          <Star color="#f59e0b" className="h-4 w-4 " />
+          <Star color="#f59e0b" className="h-4 w-4 " />
+          <Star color="#f59e0b" className="h-4 w-4 " />
+        </div>{" "}
+        <p className="text-[14px] max-sm:text-xs max-sm:pt-2">(0 Reviews)</p>
+      </div>
+    );
+  };
 
-      <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-          <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+  const LikeComponent = () => {
+    const LikeHandler = () => {
+      fetch(`${baseURL}/accounts/accounts/save-liked-bot/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+        },
+        body: JSON.stringify({
+          bot_id: "creativity-and-innovation-eb1a3",
+          user_id: "a28a9828-c732-457c-b8da-9b8556fc40df",
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {})
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+
+    return (
+      <>
+        <Button className="rounded-3xl px-6" variant={"outline"}>
+          <TooltipWrapper
+            className=""
+            tooltipName="Like"
+            body={
+              <ThumbsUp
+                className="h-5 w-5 hover:fill-green-500"
+                strokeWidth={1}
+                stroke={"#22c55e"}
+                fill={"transparent"}
+              />
+            }
+          />
+          {/* <TooltipWrapper
+            className=""
+            tooltipName="Dislike"
+            body={
+              <ThumbsUp
+                className="h-5 w-5 stroke-green-500 hover:fill-transparent"
+                strokeWidth={1}
+                stroke={"#22c55e"}
+                fill={"#22c55e"}
+              />
+            }
+          /> */}
+          <span className="ml-2">0</span>
+        </Button>
+      </>
+    );
+  };
+
+  return (
+    <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
+      <div className="z-[999]">
+        <NetworkNav user={user} />
+      </div>
+      <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
+        <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
+          <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
             COACH
           </span>
           BOTS
         </h1>
-        <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+        <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
           Coaching, Mentoring & Feedback Network
         </h1>
-        <p className="my-2 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
+        <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
           {" "}
           2000+ Strong group of experts & future leaders
         </p>
-        <div className="my-4 max-sm:text-xs flex flex-row gap-2 max-sm:flex-wrap justify-center">
+        <div className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs">
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
             Group coaching (coming soon)
           </Button> */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild className="outline-none border-none">
+            <DropdownMenuTrigger asChild className="border-none outline-none">
               <div>
                 {" "}
                 <Button variant={"outline"} className="h-fit w-fit">
@@ -695,7 +770,7 @@ const Coaches = ({ user }: any) => {
                       router.push("/intake/?type=coach");
                     }}
                     // href={"/intake/?type=coach"}
-                    className="flex flex-row justify-center items-center"
+                    className="flex flex-row items-center justify-center"
                   >
                     Join as Coach or Mentor{" "}
                     {allCoaches.length > 0 && (
@@ -738,8 +813,7 @@ const Coaches = ({ user }: any) => {
                     onClick={() => {
                       router.push("/intake/?type=coachee");
                     }}
-                    // href={"/intake/?type=coachee"}
-                    className="flex flex-row justify-center items-center"
+                    className="flex flex-row items-center justify-center"
                   >
                     Join as Coachee or Mentee
                     {allCoaches.length > 0 && (
@@ -779,11 +853,10 @@ const Coaches = ({ user }: any) => {
               )}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <span
-                  // href={"/intake/?type=feedback"}
                   onClick={() => {
                     router.push("/intake/?type=feedback");
                   }}
-                  className="flex flex-row justify-center items-center"
+                  className="flex flex-row items-center justify-center"
                 >
                   Join Feedback Network
                   {feedbackBots.length > 0 && (
@@ -805,7 +878,7 @@ const Coaches = ({ user }: any) => {
               onClick={() => {
                 router.push("/intake/?type=knowledge-bot");
               }}
-              className="flex flex-row justify-center items-center"
+              className="flex flex-row items-center justify-center"
             >
               Create your Knowledge bot
             </span>
@@ -822,11 +895,11 @@ const Coaches = ({ user }: any) => {
             </p>
           </div>
           <div className="my-4">
-            <div className="bg-white flex flex-row items-center p-1.5 py-3 rounded-md shadow-md  ">
-              <Search className="h-4 w-4 mr-1 inline" />
+            <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
+              <Search className="mr-1 inline h-4 w-4" />
               <input
                 placeholder="What are you looking for?"
-                className="border-l pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full"
+                className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
                 type="text"
                 onChange={(e) => {
                   console.log(e.target.value);
@@ -847,18 +920,10 @@ const Coaches = ({ user }: any) => {
           </div>
           <hr className="mt-2" />
           <div className="mt-2 ">
-            {/* <div className="w-fit">
-              <Badge
-                variant={"outline"}
-                className="text-lg text-white bg-[#2DC092]"
-              >
-                My Connects
-              </Badge>
-            </div> */}
             {loading && (
-              <div className="w-full flex flex-row items-center justify-center">
-                <div className="flex items-center mt-12">
-                  <Loader className="animate-spin h-4 w-4 inline mr-2" />{" "}
+              <div className="flex w-full flex-row items-center justify-center">
+                <div className="mt-12 flex items-center">
+                  <Loader className="mr-2 inline h-4 w-4 animate-spin" />{" "}
                   <span>loading...</span>
                 </div>
               </div>
@@ -867,90 +932,135 @@ const Coaches = ({ user }: any) => {
             {!loading &&
               coachesData.length > 0 &&
               currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="pt-20 mt-[-5rem] -z-10">
-                  <div
-                    className={`w-full my-3 flex flex-row p-4 max-sm:p-2 bg-gray-200 ${
-                      coach.bot_type === "coachbots"
-                        ? "shadow-lg shadow-green-300"
-                        : ""
-                    } border border-gray-300 rounded-md`}
-                  >
-                    <div className="w-[30%] max-sm:px-2 max-sm:w-[30%] flex flex-col items-center justify-center max-sm:justify-start max-sm:items-start">
+                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20">
+                  <div className="relative top-[26px]  flex w-full flex-row justify-end">
+                    {coach.timer_enabled && (
+                      <span className="z-[1] mr-4 rounded-2xl border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                        {coach.time_value_in_days} Days remaining
+                      </span>
+                    )}
+                  </div>
+                  <div className="my-3 flex w-full flex-row gap-6 rounded-lg border border-r-gray-300 p-8">
+                    <div className="">
                       <img
-                        className="w-[250px] h-[250px] max-sm:h-[130px] object-cover"
+                        className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
                         src={coach.profile_pic_url}
                       />
+                      <div className="mt-4">
+                        <LikeComponent />
+                      </div>
+                      <Badge
+                        variant={"secondary"}
+                        className="mt-4 rounded-sm bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200"
+                      >
+                        ICF Affiated
+                      </Badge>
                     </div>
-                    <div className="flex flex-row w-[70%] max-sm:w-[70%]  max-sm:flex-col">
-                      <div className="w-[70%] max-sm:w-full max-sm:pl-4 max-md:pl-4 flex flex-col justify-start items-start ">
-                        <p className="text-xl font-semibold text-gray-700 mt-2 max-sm:mt-0 text-left max-sm:text-lg flex items-center gap-2 justify-center">
-                          {coach.name}{" "}
-                          {hasPassed5Days(coach.created) ? null : (
-                            <Badge className="bg-amber-600 hover:bg-amber-500 px-1 h-fit">
-                              New
-                            </Badge>
-                          )}
-                        </p>
-                        <p className="my-1.5 max-sm:text-sm max-sm:my-1 font-medium text-gray-600">
-                          {coach.department}{" "}
-                        </p>
-                        <div className="flex flex-row items-center justify-start gap-2">
-                          {coach.profile_type === "coach-mentor" ? (
-                            <>
-                              <Badge
-                                className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
-                              >
-                                {convertTextToCorrectFormat("coach")}
-                              </Badge>
-                              <Badge
-                                className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1`}
-                              >
-                                {convertTextToCorrectFormat("mentor")}
-                              </Badge>
-                            </>
-                          ) : (
-                            <Badge
-                              className={`rounded-sm px-2 my-1.5 text-base  max-sm:text-sm max-sm:px-1.5 max-sm:my-1 ${
-                                (coach.profile_type === "skill_bot" ||
-                                  coach.profile_type === "coachbots") &&
-                                "bg-green-500 hover:bg-green-400"
-                              }`}
-                            >
-                              {convertTextToCorrectFormat(coach.profile_type)}
-                            </Badge>
-                          )}
-                        </div>
-
-                        <p className="text-left text-sm font-light my-1.5 max-sm:text-xs max-sm:my-1">
-                          {coach.description}
-                        </p>
-                        <Separator className="my-2 max-sm:my-1.5 bg-gray-400" />
-                        {coach.profile_type !== "skill_bot" && (
-                          <div className="my-1 text-gray-600 max-sm:text-xs">
-                            <p className="text-sm max-sm:text-xs font-light inline">
-                              Experience :
-                            </p>{" "}
-                            <b className="inline">{coach.experience}</b>
-                          </div>
+                    <div className=" flex flex-col items-start justify-start ">
+                      <p className="flex items-center justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
+                        {coach.name}{" "}
+                        {hasPassed5Days(coach.created) ? null : (
+                          <Badge className="bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200">
+                            <Star color="#047857" className="mr-1 h-4 w-4 " />{" "}
+                            New
+                          </Badge>
                         )}
-                        {coach.expertise && (
-                          <p className="my-1 text-left text-gray-600 max-sm:text-xs">
-                            <p className="text-sm  max-sm:text-xs font-light inline">
-                              {" "}
-                              Expertise :
-                            </p>{" "}
-                            <b className="inline">{coach.expertise}</b>
-                          </p>
+                      </p>{" "}
+                      <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
+                        {coach.department} -
+                        <Badge
+                          variant={"secondary"}
+                          className="my-1 ml-2 bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200"
+                        >
+                          Popular
+                        </Badge>
+                      </p>
+                      <div className="flex flex-row items-center justify-start gap-2">
+                        {coach.profile_type === "coach-mentor" ? (
+                          <>
+                            <Badge
+                              variant={"secondary"}
+                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
+                            >
+                              {convertTextToCorrectFormat("coach")}
+                            </Badge>
+                            <Badge
+                              variant={"secondary"}
+                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
+                            >
+                              {convertTextToCorrectFormat("mentor")}
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge
+                            variant={"secondary"}
+                            className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
+                              (coach.profile_type === "skill_bot" ||
+                                coach.profile_type === "coachbots") &&
+                              "bg-green-500 hover:bg-green-400"
+                            }`}
+                          >
+                            {convertTextToCorrectFormat(coach.profile_type)}
+                          </Badge>
                         )}
                       </div>
-                      <div className="w-[30%] max-sm:w-full pb-[20%] max-sm:pb-4 flex flex-col items-center justify-center gap-3">
-                        {coach.profile_type === "coach" && (
+                      <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
+                        <div className="flex flex-row items-center"></div>
+                        <ReviewComponent />
+                        <div>
+                          {coach.feedback_wall !== null &&
+                            coach.feedback_wall !== "" && (
+                              <>
+                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                                  ●
+                                </span>
+                                <Link
+                                  target="_blank"
+                                  href={handleLinks(coach.feedback_wall)}
+                                >
+                                  <Button
+                                    variant={"link"}
+                                    className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
+                                  >
+                                    Feedback{" "}
+                                    <ExternalLink className="h-4 w-4 ml-1" />
+                                  </Button>
+                                </Link>
+                              </>
+                            )}
+                        </div>
+                      </div>
+                      <p className="my-1.5 text-left text-sm font-light max-sm:my-1 max-sm:text-xs">
+                        {coach.description}
+                      </p>
+                      <div className="mt-4 flex flex-row flex-wrap gap-2">
+                        {coach.profile_type !== "skill_bot" && (
+                          <Badge
+                            variant={"secondary"}
+                            className=" my-1 text-sm text-gray-600"
+                          >
+                            {coach.experience}
+                          </Badge>
+                        )}
+                        {coach.expertise && (
+                          <Badge
+                            variant={"secondary"}
+                            className="my-1 text-sm text-gray-600"
+                          >
+                            {coach.expertise}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-4 flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
+                        {(coach.profile_type === "coach" ||
+                          coach.profile_type === "mentor" ||
+                          coach.profile_type === "coach-mentor") && (
                           <>
                             {coach.status === "accepted" && (
                               <Button
                                 disabled
                                 variant={"outline"}
-                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-green-300 bg-green-100"
+                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
                               >
                                 Connected
                               </Button>
@@ -959,7 +1069,7 @@ const Coaches = ({ user }: any) => {
                               <Button
                                 disabled
                                 variant={"outline"}
-                                className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                                className=" max-sm:text-sm max-sm:w-full border border-gray-300"
                               >
                                 Requested
                               </Button>
@@ -974,40 +1084,23 @@ const Coaches = ({ user }: any) => {
                                 coachId={coach.profile_id}
                               />
                             )}
-                            <Separator className="bg-gray-400 w-[80%]" />
                           </>
                         )}
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
-                            <div className="w-full ">
+                            <div className="max-sm:w-full">
                               <Link
                                 href={handleLinks(coach.avatar_bot_url)}
                                 target="_blank"
                               >
                                 <Button
-                                  variant={"outline"}
-                                  className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
+                                  variant={"secondary"}
+                                  className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
                                 >
                                   {coach.profile_type === "skill_bot" ||
                                   coach.profile_type === "coachbots"
                                     ? "Skill Chat"
                                     : "AI Frame"}
-                                </Button>
-                              </Link>
-                            </div>
-                          )}
-                        {coach.feedback_wall !== null &&
-                          coach.feedback_wall !== "" && (
-                            <div className="w-full">
-                              <Link
-                                target="_blank"
-                                href={handleLinks(coach.feedback_wall)}
-                              >
-                                <Button
-                                  variant={"outline"}
-                                  className="w-[80%] max-sm:w-[90%] max-sm:text-sm border border-gray-300"
-                                >
-                                  Feedback Page
                                 </Button>
                               </Link>
                             </div>
@@ -1041,14 +1134,14 @@ const Coaches = ({ user }: any) => {
                     ) {
                       return (
                         <PaginationItem
-                          className="hover:cursor-pointer max-sm:text-xs px-0 w-fit"
+                          className="w-fit px-0 hover:cursor-pointer max-sm:text-xs"
                           key={index}
                         >
                           <PaginationLink
                             // href="#"
                             isActive={currentPage === index + 1}
                             onClick={() => paginate(index + 1)}
-                            className="max-sm:text-xs max-sm:px-2 max-sm:w-fit"
+                            className="max-sm:w-fit max-sm:px-2 max-sm:text-xs"
                           >
                             {index + 1}
                           </PaginationLink>
@@ -1081,8 +1174,8 @@ const Coaches = ({ user }: any) => {
               </Pagination>
             )}
             {!loading && coachesData.length === 0 && (
-              <div className="w-full flex flex-row items-center justify-center">
-                <div className="flex items-center mt-12">
+              <div className="flex w-full flex-row items-center justify-center">
+                <div className="mt-12 flex items-center">
                   {parentCheckedValues.includes("External") ||
                   parentCheckedValues.includes("accepted") ? (
                     <div className="flex flex-col gap-2">

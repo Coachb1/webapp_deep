@@ -360,7 +360,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+      <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
         <h1 className="text-xl text-left text-gray-600 font-bold">
           Knowledge bot intake
         </h1>

@@ -669,27 +669,30 @@ const CoachIntake = ({ user }: any) => {
             .then((response) => response.json())
             .then((result) => {
               console.log(result);
-              
+
               const queryparam = new URLSearchParams({
                 method: "post",
                 qna: JSON.stringify({
                   "1": {
-                      "coach": "What level of coach/mentor do you want to interact with ?",
-                      "cochee": participantLevel
+                    coach:
+                      "What level of coach/mentor do you want to interact with ?",
+                    cochee: participantLevel,
                   },
                   "2": {
-                      "coach": "I want a coach & mentor someone from the same department.",
-                      "cochee": coachMentInSameDep === "Yes" ? true : false
+                    coach:
+                      "I want a coach & mentor someone from the same department.",
+                    cochee: coachMentInSameDep === "Yes" ? true : false,
                   },
                   "3": {
-                      "coach": "What kind of outcome do you want from these sessions the most?",
-                      "cochee": outcomeSupported
-                  }
-              }),
+                    coach:
+                      "What kind of outcome do you want from these sessions the most?",
+                    cochee: outcomeSupported,
+                  },
+                }),
                 qna_type: "fitment",
                 user_id: userId,
               });
-            
+
               const resp = fetch(
                 `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
                 {
@@ -699,9 +702,8 @@ const CoachIntake = ({ user }: any) => {
                     "Content-Type": "application/json",
                   },
                 }
-              )
+              );
 
-              
               setProfileId(result.data.uid);
               userProfileId = result.data.uid;
 
@@ -727,10 +729,7 @@ const CoachIntake = ({ user }: any) => {
                   },${outcomeSupported}`,
                   fitment_data: {
                     options: {
-                      "1": [
-                        "Someone Senior",
-                        "Any level",
-                      ],
+                      "1": ["Someone Senior", "Any level"],
                       "2": ["Yes", "No"],
                       "3": [
                         "Career advancement",
@@ -984,10 +983,7 @@ const CoachIntake = ({ user }: any) => {
               },${outcomeSupported}`,
               fitment_data: {
                 options: {
-                  "1": [
-                    "Someone Senior",
-                    "Any level",
-                  ],
+                  "1": ["Someone Senior", "Any level"],
                   "2": ["Yes", "No"],
                   "3": [
                     "Career advancement",
@@ -1522,7 +1518,7 @@ const CoachIntake = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+    <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -1532,8 +1528,8 @@ const CoachIntake = ({ user }: any) => {
         </h1>
         {formType === "knowledge-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
-          <div className="flex flex-col justify-center items-center w-full">
-            <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+          <div className="flex flex-col justify-center items-center w-full ">
+            <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Coach & Mentor Intake
               </h1>
@@ -2372,10 +2368,7 @@ const CoachIntake = ({ user }: any) => {
                           setParticipantLevel(value);
                         }}
                       >
-                        {[
-                          "Some Junior",
-                          "Any level",
-                        ].map((val, i) => (
+                        {["Some Junior", "Any level"].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
@@ -2509,7 +2502,7 @@ const CoachIntake = ({ user }: any) => {
         )}
         {formType === "coachee" && (
           <div className="flex flex-col justify-center items-center w-full">
-            <div className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+            <div className="bg-white border w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Coachee & Mentee Intake
               </h1>
@@ -2708,13 +2701,13 @@ const CoachIntake = ({ user }: any) => {
                       Fitment Analysis
                     </h3>
                     <p className="text-sm text-gray-600">
-                      This section analyzes your fitment with the coach & mentor,
-                      as if it were a face to face engagement.
+                      This section analyzes your fitment with the coach &
+                      mentor, as if it were a face to face engagement.
                     </p>
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                    What level of coach/mentor do you want to interact with?
+                      What level of coach/mentor do you want to interact with?
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2724,10 +2717,7 @@ const CoachIntake = ({ user }: any) => {
                           setParticipantLevel(value);
                         }}
                       >
-                        {[
-                          "Someone Senior",
-                          "Any level",
-                        ].map((val, i) => (
+                        {["Someone Senior", "Any level"].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                             <label
@@ -2769,7 +2759,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                    What kind of outcome do you want from these sessions the most?
+                      What kind of outcome do you want from these sessions the
+                      most?
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2802,7 +2793,7 @@ const CoachIntake = ({ user }: any) => {
                       </RadioGroup>
                     </div>
                   </div>
-                  
+
                   <hr className="my-2" />
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox

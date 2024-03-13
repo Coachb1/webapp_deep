@@ -34,7 +34,7 @@ import Widgets from "@/components/Widgets";
 import Script from "next/script";
 export const UnAuth = ({ user }: any) => {
   return (
-    <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
+    <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
       <div className="fixed w-full top-0 flex items-center justify-end p-4 h-6 py-8 !z-[800]">
         <div className="flex flex-row gap-1">
           <DropdownMenu>
@@ -121,7 +121,7 @@ export const LoginWall = () => {
   return (
     <>
       {!pathname.includes("/feedback") && !pathname.includes("/feedback/") && (
-        <div className="bg-gray-100 mt-4 max-sm:mt-16 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
+        <div className="bg-white mt-4 max-sm:mt-16 min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
           <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
             <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
               <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -232,7 +232,7 @@ export const LoginWall = () => {
 
 export const LoadingComponent = () => {
   return (
-    <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
+    <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
         <div className="flex items-center">
           <Loader className="animate-spin h-4 w-4 inline mr-2" />{" "}

@@ -59,12 +59,12 @@ const Guides = ({ user }: any) => {
       <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
         <NetworkNav user={user} />
       </div>
-      <main className="bg-gray-100  h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+      <main className="bg-white  h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
             <div
               id="category-navbar"
-              className="flex flex-col gap-2 mb-4 bg-red justify-center items-center  sticky top-0  z-[799] grainy w-full"
+              className="flex flex-col gap-2 mb-4 bg-red justify-center items-center  sticky top-0 bg-white  z-[799] w-full"
             >
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[90px] ">
                 <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
@@ -112,7 +112,7 @@ const Guides = ({ user }: any) => {
               <div className="w-full">
                 {loading && (
                   <div>
-                    <div className="bg-gray-100 my-16 grainy max-sm:h-full pb-16 flex justify-center items-center">
+                    <div className="bg-white my-16 max-sm:h-full pb-16 flex justify-center items-center">
                       <p className="p-2 text-sm max-sm:text-xs">
                         {" "}
                         <Loader className="animate-spin inline h-4 w-4 mr-2" />
@@ -191,7 +191,7 @@ const Guides = ({ user }: any) => {
               <div className="w-full">
                 {loading && (
                   <div>
-                    <div className="bg-gray-100 my-16 grainy max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
+                    <div className="bg-white my-16 max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
                       <p className="p-2 text-sm max-sm:text-xs">
                         {" "}
                         <Loader className="animate-spin inline h-4 w-4 mr-2" />

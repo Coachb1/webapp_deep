@@ -228,7 +228,7 @@ export default function RootLayout({
   }, [pathname]);
 
   return (
-    <html lang="en" className="bg-gray-100 grainy">
+    <html lang="en" className="bg-white">
       <UserContextProvider>
         <body className={inter.className} suppressHydrationWarning={true}>
           <>
