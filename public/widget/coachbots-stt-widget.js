@@ -845,6 +845,22 @@ async function populateBotConversation(participant_id) {
   }
 }
 
+const saveBotEngagement = (bot_id,user_id,field_name) =>{
+
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Basic ${createBasicAuthToken2(key2, secret2)}`);
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+  };
+
+  fetch(`${baseURL2}/test-attempt-sessions/create-or-get-bot-engagements/?bot_id=${bot_id}&user_id=${user_id}&field_name=${field_name}`, requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log('bot engagement button clicked',result))
+    .catch((error) => console.error('got error in bot engagement button clicked',error));
+}
+
 const getBotDetails2 = async (botId) => {
   try {
     const response = await fetch(
@@ -958,7 +974,6 @@ const getBotDetails2 = async (botId) => {
     }
 
     if (
-      botDetails.data.fitment_qna &&
       botDetails.data.is_fitment_analysis &&
       botDetails.data.coaching_for_fitment === "anyone"
     ) {
@@ -1423,6 +1438,12 @@ async function handleFaqButtonClick(question) {
     if (fitmentAnalysisInProgress) {
       return;
     }
+    saveBotEngagement(botId,userId2,"num_of_clicked_button")
+    console.log('profile_type', globalBotDetails.data.profile_details.profile_type)
+    if (globalBotDetails.data.profile_details.profile_type === 'icons_by_ai'){
+      appendMessage2(addStickerToMessage('Quick Match','These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field.'))
+      return;
+    }
     fitmentAnalysisInProgress = true;
     appendMessage2(
       `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
@@ -1575,6 +1596,8 @@ async function handleFaqButtonClick(question) {
         console.log("===> yes optedBeginSession");
         return;
       }
+      saveBotEngagement(botId,userId2,"num_of_clicked_button")
+
       optedBeginSession = true;
 
       // ****** Check connection logic : start
@@ -1772,6 +1795,8 @@ async function handleFaqButtonClick(question) {
       if (isAskingInitialQuestions) {
         return;
       }
+      saveBotEngagement(botId,userId2,"num_of_clicked_button")
+
 
       botInitialQuestionsIndex = 1;
       optedBeginSession = true;
