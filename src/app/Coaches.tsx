@@ -179,19 +179,21 @@ const Coaches = ({ user }: any) => {
       .then((data) => {
         console.log(data);
 
-        const coachbotsProfiles = data.filter(
-          (profile: CoachesDataType) => profile.bot_type === "coachbots"
+        const iconsByAiProfiles = data.filter(
+          (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
         );
-        console.log(coachbotsProfiles, "coachbotsProfiles");
+        console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
         const allOtherProfiles = data.filter(
-          (profile: CoachesDataType) => profile.bot_type !== "coachbots"
+          (profile: CoachesDataType) =>
+            profile.bot_type !== "coachbots" &&
+            profile.profile_type !== "icons_by_ai"
         );
 
         console.log(allOtherProfiles, "allOtherProfiles");
 
-        setSavedCoachesData([...allOtherProfiles]);
-        setCoachesData([...allOtherProfiles]);
+        setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
+        setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
 
         setLoading(false);
 
@@ -232,7 +234,7 @@ const Coaches = ({ user }: any) => {
               "mentor",
               "coachee",
               "mentee",
-              "Icons by AI",
+              "icons_by_ai",
               "accepted",
               "feedback_bot",
             ],
@@ -495,14 +497,14 @@ const Coaches = ({ user }: any) => {
       );
       console.log(filteredData, "feedback-only");
       setCoachesData(filteredData);
-    } else if (newValues.includes("coachbots")) {
+    } else if (newValues.includes("Icons by AI")) {
       const filteredData = filterData(
         newValues.includes("Connected")
           ? coachesData.filter(
-              (coachData) => coachData.profile_type === "coachbots"
+              (coachData) => coachData.profile_type === "icons_by_ai"
             )
           : savedCoachesData.filter(
-              (coachData) => coachData.profile_type === "coachbots"
+              (coachData) => coachData.profile_type === "icons_by_ai"
             ),
         newValues
       );
@@ -678,20 +680,68 @@ const Coaches = ({ user }: any) => {
     );
   };
 
-  const LikeComponent = () => {
+  const LikeComponent = ({
+    profile_id,
+    likesInfo,
+  }: {
+    profile_id: string;
+    likesInfo: string[];
+  }) => {
+    const [saved, setSaved] = useState();
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [likeCount, setLikeCount] = useState<number>(0);
+
+    useEffect(() => {
+      // Set initial like status and count based on likesInfo
+      const userLiked = likesInfo.includes(userId);
+      setIsLiked(userLiked);
+      setLikeCount(likesInfo.length);
+    }, [likesInfo, profile_id]);
+
     const LikeHandler = () => {
-      fetch(`${baseURL}/accounts/accounts/save-liked-bot/`, {
+      console.log(profile_id, userId);
+      fetch(`${baseURL}/accounts/save-liked-profile/`, {
         method: "POST",
         headers: {
           Authorization: basicAuth,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          bot_id: "creativity-and-innovation-eb1a3",
-          user_id: "a28a9828-c732-457c-b8da-9b8556fc40df",
+          profile_id: profile_id,
+          user_id: userId,
         }),
       })
         .then((res) => res.json())
-        .then((data) => {})
+        .then((data) => {
+          console.log(data);
+
+          setIsLiked(true);
+          setLikeCount((prevCount) => prevCount + 1);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+
+    const revertLikeHandler = () => {
+      fetch(`${baseURL}/accounts/save-liked-profile/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          profile_id: profile_id,
+          user_id: userId,
+          is_reverted: true,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setIsLiked(false);
+          setLikeCount((prevCount) => Math.max(prevCount - 1, 0));
+        })
         .catch((err) => {
           console.error(err);
         });
@@ -702,29 +752,20 @@ const Coaches = ({ user }: any) => {
         <Button className="rounded-3xl px-6" variant={"outline"}>
           <TooltipWrapper
             className=""
-            tooltipName="Like"
+            tooltipName={isLiked ? "Unlike" : "Like"}
             body={
               <ThumbsUp
-                className="h-5 w-5 hover:fill-green-500"
+                onClick={isLiked ? revertLikeHandler : LikeHandler}
+                className={`h-5 w-5 ${
+                  isLiked ? "stroke-green-500" : "hover:fill-green-500"
+                }`}
                 strokeWidth={1}
-                stroke={"#22c55e"}
-                fill={"transparent"}
+                stroke="#22c55e"
+                fill={isLiked ? "#22c55e" : "transparent"}
               />
             }
           />
-          {/* <TooltipWrapper
-            className=""
-            tooltipName="Dislike"
-            body={
-              <ThumbsUp
-                className="h-5 w-5 stroke-green-500 hover:fill-transparent"
-                strokeWidth={1}
-                stroke={"#22c55e"}
-                fill={"#22c55e"}
-              />
-            }
-          /> */}
-          <span className="ml-2">0</span>
+          <span className="ml-2">{likeCount}</span>
         </Button>
       </>
     );
@@ -947,7 +988,10 @@ const Coaches = ({ user }: any) => {
                         src={coach.profile_pic_url}
                       />
                       <div className="mt-4">
-                        <LikeComponent />
+                        <LikeComponent
+                          profile_id={coach.profile_id}
+                          likesInfo={coach.admirer_ids}
+                        />
                       </div>
                       <Badge
                         variant={"secondary"}
@@ -956,7 +1000,7 @@ const Coaches = ({ user }: any) => {
                         ICF Affiated
                       </Badge>
                     </div>
-                    <div className=" flex flex-col items-start justify-start ">
+                    <div className=" flex flex-col items-start justify-start w-full">
                       <p className="flex items-center justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
                         {coach.name}{" "}
                         {hasPassed5Days(coach.created) ? null : (
@@ -1030,7 +1074,7 @@ const Coaches = ({ user }: any) => {
                             )}
                         </div>
                       </div>
-                      <p className="my-1.5 text-left text-sm font-light max-sm:my-1 max-sm:text-xs">
+                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
                         {coach.description}
                       </p>
                       <div className="mt-4 flex flex-row flex-wrap gap-2">
@@ -1051,7 +1095,7 @@ const Coaches = ({ user }: any) => {
                           </Badge>
                         )}
                       </div>
-                      <div className="mt-4 flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
+                      <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
                         {(coach.profile_type === "coach" ||
                           coach.profile_type === "mentor" ||
                           coach.profile_type === "coach-mentor") && (
