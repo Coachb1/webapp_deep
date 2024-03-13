@@ -122,7 +122,7 @@ const Guides = ({ user }: any) => {
                   </div>
                 )}
                 {!loading && (
-                  <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+                  <div className="max-sm:pb-10 ">
                     <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                       <div
                         id="skill-bots"
@@ -184,6 +184,11 @@ const Guides = ({ user }: any) => {
                     </MaxWidthWrapper>
                   </div>
                 )}
+                <div className="w-full mt-12">
+                  <p className="text-center font-bold text-gray-500">
+                    More Role guides coming soon...
+                  </p>
+                </div>
               </div>
             )}
 
@@ -201,7 +206,7 @@ const Guides = ({ user }: any) => {
                   </div>
                 )}
                 {!loading && (
-                  <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+                  <div className="max-sm:pb-10">
                     <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                       <div className="flex flex-col max-sm:flex-col w-full mx-auto">
                         <div className="w-full flex flex-col items-center justify-center">
@@ -260,6 +265,11 @@ const Guides = ({ user }: any) => {
                     </MaxWidthWrapper>
                   </div>
                 )}
+                <div className="w-full mt-12">
+                  <p className="text-center font-bold text-gray-500">
+                    More Skill guides coming soon...
+                  </p>
+                </div>
               </div>
             )}
           </div>
