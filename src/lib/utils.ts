@@ -290,6 +290,7 @@ export function configureTestsData(
             description: test.description,
             test_code: test.test_code,
             test_type: test.test_type,
+            is_recommended: test.is_recommended,
           }));
           domainFilterOptions.push({ label: domain, value: domain });
           return {
