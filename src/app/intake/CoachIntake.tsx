@@ -36,7 +36,7 @@ const CoachIntake = ({ user }: any) => {
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
-  // const profileType = params.get("profile_type");
+  const profileTypeFromParams = params.get("profile_type");
   let userProfileId = params.get("profile_id");
 
   const router = useRouter();
@@ -416,6 +416,7 @@ const CoachIntake = ({ user }: any) => {
               ) {
                 if (
                   (formType === "coach" && profileTypes.includes("coach")) ||
+                  profileTypes.includes("mentor") ||
                   profileTypes.includes("coachee") ||
                   profileTypes.includes("mentee")
                 ) {
@@ -459,34 +460,6 @@ const CoachIntake = ({ user }: any) => {
                 console.error(err);
               });
           }
-
-          // if (formType === "user-bot" && !checkIfEdit) {
-          //   console.log(userIdd);
-          //   fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
-          //     headers: {
-          //       Authorization: basicAuth,
-          //     },
-          //   })
-          //     .then((res) => res.json())
-          //     .then((data) => {
-          //       console.log("Bot details for edit", data);
-          //       const UserBot = data.data.filter(
-          //         (data: any) => data.signature_bot.bot_type === "user_bot"
-          //       );
-
-          //       if (UserBot.length > 0) {
-          //         toast.loading(
-          //           "Your user bot already exists. You cannot create another one. Redirecting you to the home page"
-          //         );
-          //         setTimeout(() => {
-          //           router.push("/");
-          //         }, 4000);
-          //       }
-          //     })
-          //     .catch((err) => {
-          //       console.error(err);
-          //     });
-          // }
         });
     }
   }, []);
@@ -542,14 +515,7 @@ const CoachIntake = ({ user }: any) => {
             })
           );
           formdata.append("admired_leaders", leaderNames);
-          // if (!checkIfEdit) {
-          //   formdata.append(
-          //     "reference_docs",
-          //     //@ts-ignore
-          //     referenceDocs,
-          //     user.given_name + "reference" + referenceDocs?.type
-          //   );
-          // }
+
           formdata.append(
             "voice_sample",
             `${voiceSample === "yes" ? true : false}`
@@ -1345,8 +1311,6 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
 
-  // const [characteristicsRateHighPrior, setCharacteristicsRateHighPrior] = useState("")
-  // const [characteristicsRateLowPrior, setCharacteristicsRateLowPrior] = useState("")
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
@@ -1408,7 +1372,7 @@ const CoachIntake = ({ user }: any) => {
 
                 console.log(resultingBot);
                 setName(resultingBot.bot_attributes.coach_name);
-                setProfileType(resultingBot.profile_type);
+                setProfileType(profileTypeFromParams!);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
                 );
@@ -2051,8 +2015,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Allow coaches and mentors to create their own action
-                      plans?
+                      Allow Coachee and Mentee to update action plan and session
+                      notes?
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2388,14 +2352,14 @@ const CoachIntake = ({ user }: any) => {
                   <hr />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Fitment Analysis
+                      Quick Match Analysis
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the participant,
                       as if it were a face to face engagement.
                     </p>
                   </div>
-                  <div className="my-3">
+                  {/* <div className="my-3">
                     <p className="text-sm my-1">
                       Do you want to coach/mentor anyone or only participants
                       who have a basic fitment?
@@ -2421,7 +2385,7 @@ const CoachIntake = ({ user }: any) => {
                         ))}
                       </RadioGroup>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="my-3">
                     <p className="text-sm my-1">
                       What level of participant you want to interact with ?
@@ -2764,7 +2728,7 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="my-2" />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Fitment Analysis
+                      Quick Match Analysis
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the coach &
