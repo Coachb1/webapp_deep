@@ -917,7 +917,7 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant={"outline"} className="h-fit w-fit">
+          {/* <Button variant={"outline"} className="h-fit w-fit">
             <span
               onClick={() => {
                 router.push("/intake/?type=knowledge-bot");
@@ -926,7 +926,7 @@ const Coaches = ({ user }: any) => {
             >
               Create your Knowledge bot
             </span>
-          </Button>
+          </Button> */}
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">
             Whatsapp Community (coming soon)
           </Button> */}

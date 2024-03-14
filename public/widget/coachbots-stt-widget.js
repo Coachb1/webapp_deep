@@ -974,8 +974,7 @@ const getBotDetails2 = async (botId) => {
     }
 
     if (
-      botDetails.data.is_fitment_analysis &&
-      botDetails.data.coaching_for_fitment === "anyone"
+      botDetails.data.is_fitment_analysis
     ) {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
       const button = document.createElement("button");
@@ -1362,8 +1361,8 @@ async function handlePreviousConversation(choice) {
     if (
       !isBeginSessionProceed &&
       isFitmentAllowed &&
-      isStrictFitment &&
-      CoachingForFitment === "anyone"
+      isStrictFitment
+      
     ) {
       appendMessage2(
         addStickerToMessage(
@@ -1725,8 +1724,7 @@ async function handleFaqButtonClick(question) {
         if (
           !isBeginSessionProceed &&
           isFitmentAllowed &&
-          isStrictFitment &&
-          CoachingForFitment === "anyone"
+          isStrictFitment
         ) {
           appendMessage2(
             addStickerToMessage(
