@@ -262,6 +262,7 @@ const Coaches = ({ user }: any) => {
                     "Design",
                     "Engineering",
                     "HR & Training",
+                    "External",
                   ],
           },
           {
@@ -274,7 +275,7 @@ const Coaches = ({ user }: any) => {
             filterName: "Coach Expertise",
             filterOptions: [
               "Career Management",
-              "Work Life Banlance",
+              "Work Life Balance",
               "Project Management",
               "Lateral Transfers",
             ],

@@ -129,6 +129,11 @@ const CoachIntake = ({ user }: any) => {
   const [significantChallenges, setSignificantChallenges] = useState("");
   const [phrasesNExpressions, setPhrasesNExpressions] = useState("");
 
+  const [provideAnswersUsingEmojis, setProvideAnswersUsingEmojis] =
+    useState("");
+
+  const [discussInCARformat, setDiscussInCARformat] = useState("");
+
   //for coaches
   const [foundationalValues, setFoundationalValues] = useState("");
   const [developmentFramewrok, setDevelopmentFrameworks] = useState("");
@@ -212,6 +217,8 @@ const CoachIntake = ({ user }: any) => {
     setAllowSessionNotes("");
     setSignificantChallenges("");
     setPhrasesNExpressions("");
+    setDiscussInCARformat("");
+    setProvideAnswersUsingEmojis("");
 
     setFoundationalValues("");
     setDevelopmentFrameworks("");
@@ -763,6 +770,11 @@ const CoachIntake = ({ user }: any) => {
                     youtube_links: linksReflectingWVpersonal,
                     article_links: linksReflectyouWished,
                     voice_sample: voiceSample,
+                    discuss_how_you_helped_others_in_coachMentoring:
+                      discussInCARformat,
+                    provide_answers_using_emojis: `${
+                      provideAnswersUsingEmojis === "yes" ? true : false
+                    }`,
                     fitment_answers: {
                       coachmentSelect,
                       participantLevel,
@@ -1017,6 +1029,11 @@ const CoachIntake = ({ user }: any) => {
                 youtube_links: linksReflectingWVpersonal,
                 article_links: linksReflectyouWished,
                 voice_sample: voiceSample,
+                discuss_how_you_helped_others_in_coachMentoring:
+                  discussInCARformat,
+                provide_answers_using_emojis: `${
+                  provideAnswersUsingEmojis === "yes" ? true : false
+                }`,
                 fitment_answers: {
                   coachmentSelect,
                   participantLevel,
@@ -2050,6 +2067,55 @@ const CoachIntake = ({ user }: any) => {
                             <RadioGroupItem value={val} id={`r${i}+e ${val}`} />
                             <label
                               htmlFor={`r${i}+e ${val}`}
+                              className="text-xs text-gray-700"
+                            >
+                              {capitalizeText(val)}
+                            </label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  </div>
+
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please discuss how you have helped others as a
+                      coach/mentor or in other professional capacity.
+                    </p>
+                    <div>
+                      <textarea
+                        rows={4}
+                        required={!checkIfEdit}
+                        value={discussInCARformat}
+                        onChange={(e) => {
+                          setDiscussInCARformat(e.target.value);
+                        }}
+                        placeholder="Please mentions these personal transformation stories in CAR format - Context, Action and Result achieved."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Would you like your AI Avatar to provide expressive
+                      answers using emojis?
+                    </p>
+                    <div className="my-2 mb-3">
+                      <RadioGroup
+                        required
+                        value={provideAnswersUsingEmojis}
+                        onValueChange={(value) => {
+                          setProvideAnswersUsingEmojis(value);
+                        }}
+                      >
+                        {["Yes", "No"].map((val, i) => (
+                          <div key={i} className="flex items-center space-x-2 ">
+                            <RadioGroupItem
+                              value={val}
+                              id={`r${i}+emojis ${val}`}
+                            />
+                            <label
+                              htmlFor={`r${i}+emojis ${val}`}
                               className="text-xs text-gray-700"
                             >
                               {capitalizeText(val)}
