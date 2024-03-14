@@ -47,6 +47,8 @@ import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
+import { profile } from "console";
+import Coach from "./coach/Coach";
 
 interface CoachesDataType {
   id: number;
@@ -72,6 +74,8 @@ interface CoachesDataType {
   time_value_in_days: string;
   timer_enabled: boolean;
   timer_reset: boolean;
+  rating: number;
+  total_rating: number;
 }
 
 interface FilterCategoriesType {
@@ -120,6 +124,7 @@ const Coaches = ({ user }: any) => {
   const [coachId, setCoachId] = useState("");
   const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
+  // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const [userClientInfoData, setUserClientInfoData] =
     useState<UserClientInfoDataType>();
@@ -665,20 +670,98 @@ const Coaches = ({ user }: any) => {
     );
   };
 
-  const ReviewComponent = () => {
+  interface ReviewComponentProps {
+    stars: number;
+    totalRatings: number;
+    coachId: string;
+  }
+  
+  const ReviewComponent: React.FC<ReviewComponentProps> = ({ stars, totalRatings, coachId }) => {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [starCount, setStarCount] = useState<number>(stars);
+    const [totalReviews, setTotalRating] = useState<number>(totalRatings);
+
+    const handleStarMouseEnter = (starIndex: number) => {
+      setHoveredIndex(starIndex);
+      console.log(`Hovered over star ${starIndex}`);
+      console.log(starCount, totalReviews);
+    };
+  
+    const handleStarMouseLeave = () => {
+      setHoveredIndex(null);
+      console.log('Mouse left stars');
+    };
+
+    const handleStarClick = (starIndex: number) => {
+      console.log(`Clicked on star ${starIndex}`);
+      console.log(coachId, coacheeId, starIndex );
+      fetch(
+          `${baseURL}/accounts/coach-rating/`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: basicAuth,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              "coach_id": coachId,
+              "coachee_id": coacheeId,
+              "rating": starIndex + 1,
+            })
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            /* console.log(data);
+            console.log(data.average_rating); */
+            setStarCount(data.average_rating);
+            setTotalRating(data.total_rating);
+            console.log(starCount, totalReviews);
+            setHoveredIndex(null);
+
+
+          }
+          )
+    };
+
+    const renderStars = () => {
+      const stars = [];
+      for (let i = 0; i < 5; i++) {
+        stars.push(
+          <Star
+            key={i}
+            // color={i < starCount ? '#f59e0b' : '#CBD5E0'}
+            /* color={i < starCount ? (hoveredIndex !== null && i < hoveredIndex ? '#f59e0b' : '#CBD5E0') : '#CBD5E0'} */
+            color={
+              i < starCount
+                ? '#f59e0b' // Filled star if the index is less than the rating
+                : hoveredIndex !== null && i < hoveredIndex
+                ? '#f9ac04' // Highlighted star if hovered over
+                : '#CBD5E0' // Empty star otherwise
+            }
+            className="h-4 w-4"
+            onClick={() => { handleStarClick(i + 1)}}
+            style={{ cursor: 'pointer' }} // Add cursor pointer for hover effect
+            onMouseEnter={() => handleStarMouseEnter(i + 1)} // Handle mouse enter event
+            onMouseLeave={() => handleStarMouseLeave()} // Handle mouse leave event
+          />
+        );
+      }
+      return stars;
+    };
+  
     return (
       <div className="flex flex-row items-end">
         <div className="flex flex-row items-center gap-1 mr-1 max-sm:mt-2">
-          <Star color="#f59e0b" className="h-4 w-4 " />
-          <Star color="#f59e0b" className="h-4 w-4 " />
-          <Star color="#f59e0b" className="h-4 w-4 " />
-          <Star color="#f59e0b" className="h-4 w-4 " />
-          <Star color="#f59e0b" className="h-4 w-4 " />
+          {renderStars()}
         </div>{" "}
-        <p className="text-[14px] max-sm:text-xs max-sm:pt-2">(0 Reviews)</p>
+        <p className="text-[14px] max-sm:text-xs max-sm:pt-2">
+          ({totalReviews} Reviews)
+        </p>
       </div>
     );
   };
+  
 
   const LikeComponent = ({
     profile_id,
@@ -1050,7 +1133,7 @@ const Coaches = ({ user }: any) => {
                       </div>
                       <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
                         <div className="flex flex-row items-center"></div>
-                        <ReviewComponent />
+                        <ReviewComponent stars={coach.rating} totalRatings={coach.total_rating} coachId={coach.profile_id} />
                         <div>
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
