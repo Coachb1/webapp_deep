@@ -72,6 +72,8 @@ interface CoachesDataType {
   time_value_in_days: string;
   timer_enabled: boolean;
   timer_reset: boolean;
+  total_engagement_with_question_count: number | null;
+  total_without_question_count: number | null;
 }
 
 interface FilterCategoriesType {
@@ -1051,6 +1053,18 @@ const Coaches = ({ user }: any) => {
                       <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
                         <div className="flex flex-row items-center"></div>
                         <ReviewComponent />
+
+                        {coach.total_without_question_count && (
+                          <div className="max-sm:mt-2 flex flex-row items-center">
+                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                              ●
+                            </span>
+                            <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
+                              {coach.total_without_question_count} + Engagements
+                            </p>
+                          </div>
+                        )}
+                        
                         <div>
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
