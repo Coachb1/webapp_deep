@@ -1228,7 +1228,7 @@ function getIntakeReadyBotInitialQuestions(initialQuestions) {
 }
 
 function sendMessage(item) {
-  if (botInitialQuestionsIndex == 2) {
+  if (botInitialQuestionsIndex == 5) {
     if (item === "Yes") {
       isIDPDiscussionOpted = true;
     } else {
