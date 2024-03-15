@@ -24,7 +24,7 @@ const ConversationChat = ({
                 <b>
                   {" "}
                   {type === "coachee-interactions"
-                    ? "Coachee name "
+                    ? "Name "
                     : "Participant name"}
                 </b>{" "}
                 : {participant} <span className="max-sm:hidden mx-2">|</span>

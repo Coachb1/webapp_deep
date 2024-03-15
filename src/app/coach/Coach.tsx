@@ -254,8 +254,8 @@ const Coach = ({ user, renderType }: any) => {
                 {renderType === "dynamic"
                   ? `Welcome to ${convertTextToCorrectFormat(
                       coachName
-                    )}'s Avatar🚀`
-                  : "Welcome to the Aarav Sharma’s Avatar!🚀"}
+                    )}'s AI Frame🚀`
+                  : "Welcome to the Aarav Sharma’s AI Frame!🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
                 <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
@@ -350,7 +350,7 @@ const Coach = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
-                  How Avatar works
+                  How AI Frame works
                 </Button>
               </Link>
 
@@ -395,7 +395,7 @@ const Coach = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
                 >
-                  How Avatar works
+                  How AI Frame works
                 </Badge>
               </div>
               <div className="w-full">
