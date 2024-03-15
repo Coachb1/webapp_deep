@@ -675,53 +675,48 @@ const Coaches = ({ user }: any) => {
     totalRatings: number;
     coachId: string;
   }
-  
-  const ReviewComponent: React.FC<ReviewComponentProps> = ({ stars, totalRatings, coachId }) => {
+
+  const ReviewComponent: React.FC<ReviewComponentProps> = ({
+    stars,
+    totalRatings,
+    coachId,
+  }) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [starCount, setStarCount] = useState<number>(stars);
-    const [totalReviews, setTotalRating] = useState<number>(totalRatings);
+    const [totalReviews, setTotalRating] = useState<number>();
 
+    useEffect(() => {
+      setTotalRating(totalRatings);
+    }, []);
     const handleStarMouseEnter = (starIndex: number) => {
       setHoveredIndex(starIndex);
-      console.log(`Hovered over star ${starIndex}`);
-      console.log(starCount, totalReviews);
     };
-  
+
     const handleStarMouseLeave = () => {
       setHoveredIndex(null);
-      console.log('Mouse left stars');
     };
 
     const handleStarClick = (starIndex: number) => {
       console.log(`Clicked on star ${starIndex}`);
-      console.log(coachId, coacheeId, starIndex );
-      fetch(
-          `${baseURL}/accounts/coach-rating/`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: basicAuth,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              "coach_id": coachId,
-              "coachee_id": coacheeId,
-              "rating": starIndex + 1,
-            })
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            /* console.log(data);
-            console.log(data.average_rating); */
-            setStarCount(data.average_rating);
-            setTotalRating(data.total_rating);
-            console.log(starCount, totalReviews);
-            setHoveredIndex(null);
-
-
-          }
-          )
+      fetch(`${baseURL}/accounts/coach-rating/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coach_id: coachId,
+          coachee_id: coacheeId,
+          rating: starIndex,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setStarCount(data.average_rating);
+          setTotalRating(data.total_ratings);
+          setHoveredIndex(null);
+        });
     };
 
     const renderStars = () => {
@@ -730,26 +725,33 @@ const Coaches = ({ user }: any) => {
         stars.push(
           <Star
             key={i}
-            // color={i < starCount ? '#f59e0b' : '#CBD5E0'}
-            /* color={i < starCount ? (hoveredIndex !== null && i < hoveredIndex ? '#f59e0b' : '#CBD5E0') : '#CBD5E0'} */
+            fill={
+              i < starCount
+                ? "#f59e0b"
+                : hoveredIndex !== null && i < hoveredIndex
+                ? "#f9ac04"
+                : "#CBD5E0"
+            }
             color={
               i < starCount
-                ? '#f59e0b' // Filled star if the index is less than the rating
+                ? "#f59e0b"
                 : hoveredIndex !== null && i < hoveredIndex
-                ? '#f9ac04' // Highlighted star if hovered over
-                : '#CBD5E0' // Empty star otherwise
+                ? "#f9ac04"
+                : "#CBD5E0"
             }
             className="h-4 w-4"
-            onClick={() => { handleStarClick(i + 1)}}
-            style={{ cursor: 'pointer' }} // Add cursor pointer for hover effect
-            onMouseEnter={() => handleStarMouseEnter(i + 1)} // Handle mouse enter event
-            onMouseLeave={() => handleStarMouseLeave()} // Handle mouse leave event
+            onClick={() => {
+              handleStarClick(i + 1);
+            }}
+            style={{ cursor: "pointer" }}
+            onMouseEnter={() => handleStarMouseEnter(i + 1)}
+            onMouseLeave={() => handleStarMouseLeave()}
           />
         );
       }
       return stars;
     };
-  
+
     return (
       <div className="flex flex-row items-end">
         <div className="flex flex-row items-center gap-1 mr-1 max-sm:mt-2">
@@ -761,7 +763,6 @@ const Coaches = ({ user }: any) => {
       </div>
     );
   };
-  
 
   const LikeComponent = ({
     profile_id,
@@ -1133,7 +1134,11 @@ const Coaches = ({ user }: any) => {
                       </div>
                       <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
                         <div className="flex flex-row items-center"></div>
-                        <ReviewComponent stars={coach.rating} totalRatings={coach.total_rating} coachId={coach.profile_id} />
+                        <ReviewComponent
+                          stars={coach.rating}
+                          totalRatings={coach.total_rating}
+                          coachId={coach.profile_id}
+                        />
                         <div>
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
