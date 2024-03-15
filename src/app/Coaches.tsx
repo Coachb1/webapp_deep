@@ -1160,6 +1160,7 @@ const Coaches = ({ user }: any) => {
                               {coach.total_without_question_count} Engagements
                             </p>
                           </div>
+                        )}
                         <div>
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
