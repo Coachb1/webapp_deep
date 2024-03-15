@@ -74,6 +74,7 @@ interface CoachesDataType {
   timer_reset: boolean;
   total_engagement_with_question_count: number | null;
   total_without_question_count: number | null;
+  visual_tag: string;
 }
 
 interface FilterCategoriesType {
@@ -130,6 +131,8 @@ const Coaches = ({ user }: any) => {
     null
   );
 
+  const [clientExpertise, setClientExpertise] = useState<string[] | null>(null);
+
   //pagination logic
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -162,6 +165,7 @@ const Coaches = ({ user }: any) => {
         setUserClientInfoData(data.data);
         console.log(data.data);
         setClientDepartments(data.data.user_info[0].departments);
+        setClientExpertise(data.data.user_info[0].coach_expertise);
       })
       .catch((err) => console.error(err));
   };
@@ -218,15 +222,17 @@ const Coaches = ({ user }: any) => {
           skillsOptions.filter((skill) => skill !== null && skill !== undefined)
         );
 
-        setCoachSkillsExpertise([
-          ...skillsOptions,
-          ...[
-            "Career Management",
-            "Work Life Banlance",
-            "Project Management",
-            "Lateral Transfers",
-          ],
-        ]);
+        const totalExpertise =
+          clientExpertise !== null
+            ? clientExpertise
+            : [
+                "Career Management",
+                "Work Life Banlance",
+                "Project Management",
+                "Lateral Transfers",
+              ];
+
+        setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
 
         setFilterCategories([
           {
@@ -265,20 +271,23 @@ const Coaches = ({ user }: any) => {
                     "External",
                   ],
           },
+          // {
+          //   filterName: "Coach Skills",
+          //   filterOptions: skillsOptions.filter(
+          //     (skill) => skill !== null && skill !== undefined
+          //   ),
+          // },
           {
-            filterName: "Coach Skills",
-            filterOptions: skillsOptions.filter(
-              (skill) => skill !== null && skill !== undefined
-            ),
-          },
-          {
-            filterName: "Coach Expertise",
-            filterOptions: [
-              "Career Management",
-              "Work Life Balance",
-              "Project Management",
-              "Lateral Transfers",
-            ],
+            filterName: "Expertise",
+            filterOptions:
+              clientExpertise !== null
+                ? clientExpertise
+                : [
+                    "Career Management",
+                    "Work Life Balance",
+                    "Project Management",
+                    "Lateral Transfers",
+                  ],
           },
         ]);
         if (coacheeIdFromParams) {
@@ -703,6 +712,7 @@ const Coaches = ({ user }: any) => {
 
     const LikeHandler = () => {
       console.log(profile_id, userId);
+
       fetch(`${baseURL}/accounts/save-liked-profile/`, {
         method: "POST",
         headers: {
@@ -717,7 +727,6 @@ const Coaches = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-
           setIsLiked(true);
           setLikeCount((prevCount) => prevCount + 1);
         })
@@ -743,7 +752,7 @@ const Coaches = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setIsLiked(false);
-          setLikeCount((prevCount) => Math.max(prevCount - 1, 0));
+          setLikeCount((prevCount) => prevCount - 1);
         })
         .catch((err) => {
           console.error(err);
@@ -996,31 +1005,30 @@ const Coaches = ({ user }: any) => {
                           likesInfo={coach.admirer_ids}
                         />
                       </div>
-                      <Badge
-                        variant={"secondary"}
-                        className="mt-4 rounded-sm bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200"
-                      >
-                        ICF Affiated
-                      </Badge>
                     </div>
                     <div className=" flex flex-col items-start justify-start w-full">
-                      <p className="flex items-center justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                        {coach.name}{" "}
+                      <div className="mb-2 flex flex-row items-center gap-1">
+                        {" "}
                         {hasPassed5Days(coach.created) ? null : (
-                          <Badge className="bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200">
+                          <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
                             <Star color="#047857" className="mr-1 h-4 w-4 " />{" "}
                             New
                           </Badge>
                         )}
+                        {coach.visual_tag !== null &&
+                          coach.visual_tag
+                            .split(", ")
+                            .map((tag) => (
+                              <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
+                                {convertTextToCorrectFormat(tag)}
+                              </Badge>
+                            ))}
+                      </div>
+                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
+                        {coach.name}{" "}
                       </p>{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
-                        {coach.department} -
-                        <Badge
-                          variant={"secondary"}
-                          className="my-1 ml-2 bg-emerald-100 text-sm text-emerald-700 hover:bg-emerald-200"
-                        >
-                          Popular
-                        </Badge>
+                        {coach.department}
                       </p>
                       <div className="flex flex-row items-center justify-start gap-2">
                         {coach.profile_type === "coach-mentor" ? (

@@ -845,21 +845,28 @@ async function populateBotConversation(participant_id) {
   }
 }
 
-const saveBotEngagement = (bot_id,user_id,field_name) =>{
-
+const saveBotEngagement = (bot_id, user_id, field_name) => {
   const myHeaders = new Headers();
-  myHeaders.append("Authorization", `Basic ${createBasicAuthToken2(key2, secret2)}`);
+  myHeaders.append(
+    "Authorization",
+    `Basic ${createBasicAuthToken2(key2, secret2)}`
+  );
 
   const requestOptions = {
     method: "POST",
     headers: myHeaders,
   };
 
-  fetch(`${baseURL2}/test-attempt-sessions/create-or-get-bot-engagements/?bot_id=${bot_id}&user_id=${user_id}&field_name=${field_name}`, requestOptions)
+  fetch(
+    `${baseURL2}/test-attempt-sessions/create-or-get-bot-engagements/?bot_id=${bot_id}&user_id=${user_id}&field_name=${field_name}`,
+    requestOptions
+  )
     .then((response) => response.text())
-    .then((result) => console.log('bot engagement button clicked',result))
-    .catch((error) => console.error('got error in bot engagement button clicked',error));
-}
+    .then((result) => console.log("bot engagement button clicked", result))
+    .catch((error) =>
+      console.error("got error in bot engagement button clicked", error)
+    );
+};
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -883,7 +890,7 @@ const getBotDetails2 = async (botId) => {
       botWelcomeMessage = "Welcome to my custom bot.";
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
-        "Welcome to my Coach Avatar. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my Avatar gets something wrong, I will correct it. We all are learning after all!";
+        "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -904,7 +911,7 @@ const getBotDetails2 = async (botId) => {
       botFooterElement.innerHTML =
         "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>";
     } else if (botType === "avatar_bot") {
-      botFooterElement.innerHTML = `<p>Avatar works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`;
+      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`;
     } else if (botType === "feedback_bot") {
       botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
     } else if (botType === "user_bot") {
@@ -973,9 +980,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(intakeButton);
     }
 
-    if (
-      botDetails.data.is_fitment_analysis
-    ) {
+    if (botDetails.data.is_fitment_analysis) {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1358,12 +1363,7 @@ async function handlePreviousConversation(choice) {
     await getFitmentScore(userId2);
     console.log(isBeginSessionProceed);
 
-    if (
-      !isBeginSessionProceed &&
-      isFitmentAllowed &&
-      isStrictFitment
-      
-    ) {
+    if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment) {
       appendMessage2(
         addStickerToMessage(
           "Note",
@@ -1437,10 +1437,18 @@ async function handleFaqButtonClick(question) {
     if (fitmentAnalysisInProgress) {
       return;
     }
-    saveBotEngagement(botId,userId2,"num_of_clicked_button")
-    console.log('profile_type', globalBotDetails.data.profile_details.profile_type)
-    if (globalBotDetails.data.profile_details.profile_type === 'icons_by_ai'){
-      appendMessage2(addStickerToMessage('Quick Match','These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field.'))
+    saveBotEngagement(botId, userId2, "num_of_clicked_button");
+    console.log(
+      "profile_type",
+      globalBotDetails.data.profile_details.profile_type
+    );
+    if (globalBotDetails.data.profile_details.profile_type === "icons_by_ai") {
+      appendMessage2(
+        addStickerToMessage(
+          "Quick Match",
+          "These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field."
+        )
+      );
       return;
     }
     fitmentAnalysisInProgress = true;
@@ -1595,7 +1603,7 @@ async function handleFaqButtonClick(question) {
         console.log("===> yes optedBeginSession");
         return;
       }
-      saveBotEngagement(botId,userId2,"num_of_clicked_button")
+      saveBotEngagement(botId, userId2, "num_of_clicked_button");
 
       optedBeginSession = true;
 
@@ -1721,11 +1729,7 @@ async function handleFaqButtonClick(question) {
         await getFitmentScore(userId2);
         console.log(isBeginSessionProceed);
 
-        if (
-          !isBeginSessionProceed &&
-          isFitmentAllowed &&
-          isStrictFitment
-        ) {
+        if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment) {
           appendMessage2(
             addStickerToMessage(
               "Note",
@@ -1793,8 +1797,7 @@ async function handleFaqButtonClick(question) {
       if (isAskingInitialQuestions) {
         return;
       }
-      saveBotEngagement(botId,userId2,"num_of_clicked_button")
-
+      saveBotEngagement(botId, userId2, "num_of_clicked_button");
 
       botInitialQuestionsIndex = 1;
       optedBeginSession = true;

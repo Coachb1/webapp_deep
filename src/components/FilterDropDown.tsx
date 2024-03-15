@@ -37,9 +37,12 @@ const FilterDropDown = ({
       onUpdateCheckedValues([...checkedValues, value]);
 
       console.log([...checkedValues, value]);
-      if ([...checkedValues, value].includes("skill_bot")) {
+      if (
+        [...checkedValues, value].includes("coachee") ||
+        [...checkedValues, value].includes("mentee")
+      ) {
         const disabledFilters = filtersCategory
-          .filter((val) => val.filterName !== "Profile Type")
+          .filter((val) => val.filterName === "Expertise")
           .flatMap((filter) => filter.filterName);
 
         console.log(disabledFilters);
@@ -47,7 +50,10 @@ const FilterDropDown = ({
       }
     } else {
       onUpdateCheckedValues(checkedValues.filter((v) => v !== value));
-      if (value === "skill_bot") {
+      if (value === "coachee" && !checkedValues.includes("mentee")) {
+        setDisabledFilters([]);
+      }
+      if (value === "mentee" && !checkedValues.includes("coachee")) {
         setDisabledFilters([]);
       }
     }
@@ -69,31 +75,12 @@ const FilterDropDown = ({
                     disabled={isFilterDisabled(filter.filterName)}
                     asChild
                   >
-                    {/* <div className="relative group z-[]">
-                      <div className="absolute  -inset-1 bg-gradient-to-r from-green-200 to-green-200 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                      <div className="border-2 border-green-400 relative bg-white ring-1 ring-gray-900/5 rounded-md leading-none flex items-top justify-start space-x-6 ">
-                        <Button
-                          variant="outline"
-                          className="h-8 w-fit p-1 px-2 border border-gray-200 shadow-lg"
-                        >
-                          Profile Type{" "}
-                          <ChevronDownIcon className="h-4 w-5 ml-2" />
-                        </Button>
-                      </div>
-                    </div> */}
                     <Button
                       variant="outline"
                       className="h-8 border-2 border-blue-400 w-fit p-1 px-2 shadow-lg shadow-blue-200"
                     >
                       Profile Type <ChevronDownIcon className="h-4 w-5 ml-2" />
                     </Button>
-                    {/* <Button
-                      variant="outline"
-                      className="h-8 w-fit p-1 px-2 border border-gray-200 shadow-lg"
-                    >
-                      Profile Type
-                      <ChevronDownIcon className="h-4 w-5 ml-2" />
-                    </Button> */}
                   </DropdownMenuTrigger>
                 ) : (
                   <DropdownMenuTrigger

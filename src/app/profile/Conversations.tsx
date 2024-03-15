@@ -218,7 +218,7 @@ const Conversations = ({ user }: any) => {
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
-                    <Badge>Coachee interactions</Badge>
+                    <Badge>Coachee & Mentee Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationDataAdmin.map((conversation) => (
                         <ConversationChat
