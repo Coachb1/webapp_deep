@@ -154,3 +154,15 @@ export interface SkillnRoleBotsType {
   description: string;
   scenario_case: string;
 }
+
+export interface knowledgeBotJson {
+  signature_bot: {
+      bot_id: string;
+      faqs: string;
+      bot_type: string;
+      scenario_case: string;
+  };
+  bot_attributes: {
+      bot_name: string;
+  };
+}

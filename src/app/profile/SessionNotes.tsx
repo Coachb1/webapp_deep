@@ -126,7 +126,14 @@ const SessionNotes = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("COMMENTS GIVEN RES : ", data.data);
-        setCommentsGiven(data.data);
+
+        const sortedData = data.data.sort(
+          (a: any, b: any) =>
+            new Date(b.date as string).getTime() -
+            new Date(a.date as string).getTime()
+        );
+
+        setCommentsGiven(sortedData);
         setCommentsLoading(false);
       })
       .catch((err) => {
@@ -151,7 +158,14 @@ const SessionNotes = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("COMMENTS Recieved RES : ", data);
-        setCommmentsRecieved(data.data);
+
+        const sortedData = data.data.sort(
+          (a: any, b: any) =>
+            new Date(b.date as string).getTime() -
+            new Date(a.date as string).getTime()
+        );
+
+        setCommmentsRecieved(sortedData);
         setCommentsLoading(false);
       })
       .catch((err) => {
@@ -179,18 +193,12 @@ const SessionNotes = ({ user }: any) => {
 
   const [contextLengthError, setContextLengthError] = useState(false);
 
+  const [coachId, setCoachId] = useState("");
+  const [coacheeId, setCoacheeId] = useState("");
+
   const createCommentHandler = async () => {
     setSubmitLoading(true);
     const context: string = commentRef.current.value;
-    // fetch(`${baseURL}/accounts/identities/deepchat_unique_id/${menteeEmail}/`, {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: basicAuth,
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log(data);
     console.log(context);
     console.log(
       "MENTOR ID - ",
@@ -233,15 +241,6 @@ const SessionNotes = ({ user }: any) => {
     } else {
       setContextLengthError(true);
     }
-    //   if (data.detail) {
-    //     console.error("user not available");
-    //     toast.error("Entered email is not your valid mentee.");
-    //     setSubmitLoading(false);
-    //   }
-    // })
-    // .catch((err) => {
-    //   return err;
-    // });
   };
 
   const [connectionsForCoach, setConnectionsForCoach] = useState<
@@ -329,7 +328,6 @@ const SessionNotes = ({ user }: any) => {
       });
   };
 
-  const [coachId, setCoachId] = useState("");
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -357,6 +355,7 @@ const SessionNotes = ({ user }: any) => {
               console.log(isApprovedData);
               if (findCoacheeUID(isApprovedData).length > 0) {
                 console.log("for coachees");
+                setCoacheeId(findCoacheeUID(isApprovedData));
                 getConnectionsForCoachee(findCoacheeUID(isApprovedData));
               }
 
@@ -408,7 +407,7 @@ const SessionNotes = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll">
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & session notes</div>
+      <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & session notes</div>{" "}
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
@@ -474,7 +473,12 @@ const SessionNotes = ({ user }: any) => {
                             <div className="flex flex-col">
                               <p className="mr-2 my-1">
                                 {" "}
-                                <b>Mentee Name</b> : {comment.mentee_name}
+                                <b>
+                                  {coachId.length > 0
+                                    ? "Coachee/Mentee Name"
+                                    : "Coach/Mentor Name"}{" "}
+                                </b>{" "}
+                                : {comment.mentee_name}
                               </p>
                             </div>
                             <div className="flex flex-col">
@@ -592,7 +596,12 @@ const SessionNotes = ({ user }: any) => {
                             <div className="flex flex-col">
                               <p className="mr-2 my-1">
                                 {" "}
-                                <b>Mentee Name</b> : {comment.mentee_name}
+                                <b>
+                                  {coachId.length > 0
+                                    ? "Coachee/Mentee Name"
+                                    : "Coach/Mentor Name"}{" "}
+                                </b>{" "}
+                                : {comment.mentee_name}
                               </p>
                             </div>
                             <div className="flex flex-col">
@@ -841,7 +850,12 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Mentor name</b> : {comment.mentor_name}
+                              <b>
+                                {coachId.length > 0
+                                  ? "Coachee/Mentee Name"
+                                  : "Coach/Mentor Name"}{" "}
+                              </b>{" "}
+                              : {comment.mentor_name}
                             </p>
                           </div>
                           <div className="flex flex-col">
@@ -956,7 +970,12 @@ const SessionNotes = ({ user }: any) => {
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Mentor name</b> : {comment.mentor_name}
+                              <b>
+                                {coachId.length > 0
+                                  ? "Coachee/Mentee Name"
+                                  : "Coach/Mentor Name"}{" "}
+                              </b>{" "}
+                              : {comment.mentor_name}
                             </p>
                           </div>
                           <div className="flex flex-col">

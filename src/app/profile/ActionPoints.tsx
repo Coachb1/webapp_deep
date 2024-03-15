@@ -77,6 +77,9 @@ const ActionPoints = ({ user }: any) => {
             {name}
           </p> */}
           <Milestone className="h-8 mt-3 w-8 text-gray-500 max-sm:h-5 max-sm:w-5" />
+          {actionPoint === 50 && (
+            <p className="text-xs text-center">Invite Previleges</p>
+          )}
         </div>
       </div>
     );
@@ -103,9 +106,9 @@ const ActionPoints = ({ user }: any) => {
           </p>
           <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:pr-1 rounded-md">
             <div className="flex flex-col justify-evenly items-center w-[16%]">
-              <p>Points</p>
+              <p className="max-sm:text-xs ">Points</p>
               <div className=" h-[2px] w-full mb-2"></div>
-              <p className="mt-10">Gifts</p>
+              <p className="mt-10 max-sm:mt-2 max-sm:text-xs ">Gifts</p>
             </div>
             <MileStone
               actionPoint={3}
