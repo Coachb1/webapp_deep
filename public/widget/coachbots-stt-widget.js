@@ -1286,7 +1286,7 @@ async function handlePreviousConversation(choice) {
 
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const newConversationButton = shadowRoot2.getElementById("new-conversation");
-  if (choice === "new") {
+  if (choice === "new" && !isIntakeCompleted) {
     disableOrEnableButtons("conversation-proceed");
     // if( !isIntakeCompleted ){
     //   appendMessage2(addStickerToMessage("System","You can only begin session after intake is complete"));
@@ -1690,7 +1690,7 @@ async function handleFaqButtonClick(question) {
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
 
-      if (previousBotConversationId != "" && botType === "avatar_bot") {
+      if (previousBotConversationId != "" && botType === "avatar_bot" && isIntakeCompleted == false) {
         console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
