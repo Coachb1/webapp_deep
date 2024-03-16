@@ -334,11 +334,15 @@ const EmailSign = ({ user }: any) => {
                     </div>
                   </>
                 ) : (
-                  <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
-                    <div>
-                      Your custom email signature is currently not active.
-                    </div>{" "}
-                  </div>
+                  <>
+                    {coacheeId.length === 0 && (
+                      <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
+                        <div>
+                          Your custom email signature is currently not active. A
+                        </div>{" "}
+                      </div>
+                    )}
+                  </>
                 )}
                 {coacheeId.length > 0 && (
                   <>

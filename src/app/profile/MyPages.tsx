@@ -339,7 +339,7 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm inline w-[30%] max-sm:w-[40%]">
+                  <p className="text-sm inline w-[45%] max-sm:w-[50%]">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
 

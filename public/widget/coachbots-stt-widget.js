@@ -911,7 +911,7 @@ const getBotDetails2 = async (botId) => {
       botFooterElement.innerHTML =
         "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>";
     } else if (botType === "avatar_bot") {
-      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 10 words or more in response. Click on "End Session" to inform the coach and send them the transcript.</p>`;
+      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 10 words or more in response.</p>`;
     } else if (botType === "feedback_bot") {
       botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
     } else if (botType === "user_bot") {
@@ -1034,7 +1034,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
-      endSessionButton.innerText = "End Session";
+      endSessionButton.innerText = "End Session & Summarize";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
     }
@@ -1698,7 +1698,11 @@ async function handleFaqButtonClick(question) {
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
 
-      if (previousBotConversationId != "" && botType === "avatar_bot" && isIntakeCompleted == false) {
+      if (
+        previousBotConversationId != "" &&
+        botType === "avatar_bot" &&
+        isIntakeCompleted == false
+      ) {
         console.log(previousBotConversationId, "in");
 
         const div = `<div id="conversation-proceed" >
