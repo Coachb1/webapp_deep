@@ -751,11 +751,17 @@ const Coaches = ({ user }: any) => {
                 ? "#f9ac04"
                 : "#CBD5E0"
             }
-            className="h-4 w-4"
+            className={`h-4 w-4 ${
+              coacheeId.length === 0 && "hover:cursor-not-allowed"
+            }`}
             onClick={() => {
-              handleStarClick(i + 1);
+              if (coacheeId.length > 0) {
+                handleStarClick(i + 1);
+              }
             }}
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: coacheeId.length === 0 ? "not-allowed" : "pointer",
+            }}
             onMouseEnter={() => handleStarMouseEnter(i + 1)}
             onMouseLeave={() => handleStarMouseLeave()}
           />
@@ -765,8 +771,16 @@ const Coaches = ({ user }: any) => {
     };
 
     return (
-      <div className="flex flex-row items-end">
-        <div className="flex flex-row items-center gap-1 mr-1 max-sm:mt-2">
+      <div
+        className={`flex flex-row items-center ${
+          coacheeId.length === 0 && "hover:cursor-not-allowed"
+        }`}
+      >
+        <div
+          className={`flex flex-row items-center gap-1 mr-1 max-sm:mt-2 ${
+            coacheeId.length === 0 && "hover:cursor-not-allowed"
+          }`}
+        >
           {renderStars()}
         </div>{" "}
         <p className="text-[14px] max-sm:text-xs max-sm:pt-2">

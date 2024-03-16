@@ -295,7 +295,7 @@ export default function RootLayout({
                     )}
                   </>
                 )}
-                {loading && (
+                {loading && isLoading && (
                   <>
                     <LoadingComponent />
                   </>
