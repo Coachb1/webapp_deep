@@ -408,27 +408,27 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (
-                data.data.length > 0 &&
-                !checkIfEdit &&
-                formType !== "knowledge-bot" &&
-                formType !== "feedback"
-              ) {
-                if (
-                  (formType === "coach" && profileTypes.includes("coach")) ||
-                  profileTypes.includes("mentor") ||
-                  profileTypes.includes("coachee") ||
-                  profileTypes.includes("mentee")
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (
+              //   data.data.length > 0 &&
+              //   !checkIfEdit &&
+              //   formType !== "knowledge-bot" &&
+              //   formType !== "feedback"
+              // ) {
+              //   if (
+              //     (formType === "coach" && profileTypes.includes("coach")) ||
+              //     profileTypes.includes("mentor") ||
+              //     profileTypes.includes("coachee") ||
+              //     profileTypes.includes("mentee")
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -1498,6 +1498,23 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
+  const handleWordLimitMin = (
+    input_value: string,
+    minLimit: number,
+    fieldName: string
+  ) => {
+    const inputValue = input_value;
+
+    if (inputValue.split(" ").length >= minLimit) {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    } else {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Minimum ${minLimit} words are required.`,
+      }));
+    }
+  };
+
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -1845,11 +1862,24 @@ const CoachIntake = ({ user }: any) => {
                         value={povProgramParticipants}
                         onChange={(e) => {
                           setPovProgramParticipants(e.target.value);
+
+                          handleWordLimitMin(
+                            e.target.value,
+                            10,
+                            "povProgramParticipants"
+                          );
                         }}
                         placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
                         type="text"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
+                      {Object.keys(error).includes(
+                        "povProgramParticipants"
+                      ) && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["povProgramParticipants"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -1862,11 +1892,24 @@ const CoachIntake = ({ user }: any) => {
                         value={problemSolvingApproach}
                         onChange={(e) => {
                           setProblemSolvingApproach(e.target.value);
+
+                          handleWordLimitMin(
+                            e.target.value,
+                            10,
+                            "problemSolvingApproach"
+                          );
                         }}
                         placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
                         type="text"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
+                      {Object.keys(error).includes(
+                        "problemSolvingApproach"
+                      ) && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["problemSolvingApproach"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -1880,11 +1923,22 @@ const CoachIntake = ({ user }: any) => {
                         rows={4}
                         onChange={(e) => {
                           setSignificantChallenges(e.target.value);
+
+                          handleWordLimitMin(
+                            e.target.value,
+                            50,
+                            "significantChallenges"
+                          );
                         }}
                         value={significantChallenges}
                         placeholder="Explain your top challenges and how you overcame them for example - helped new joiners navigate team conflicts by fostering open communication"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
+                      {Object.keys(error).includes("significantChallenges") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["significantChallenges"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -1900,11 +1954,21 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         onChange={(e) => {
                           setPhrasesNExpressions(e.target.value);
+                          handleWordLimitMin(
+                            e.target.value,
+                            20,
+                            "phrasesNExpressions"
+                          );
                         }}
                         value={phrasesNExpressions}
                         placeholder="Provide a few of your favorite quotes or catch phrases like 'Progress over perfection."
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
+                      {Object.keys(error).includes("phrasesNExpressions") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["phrasesNExpressions"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -2053,10 +2117,21 @@ const CoachIntake = ({ user }: any) => {
                         value={discussInCARformat}
                         onChange={(e) => {
                           setDiscussInCARformat(e.target.value);
+
+                          handleWordLimitMin(
+                            e.target.value,
+                            100,
+                            "discussInCARformat"
+                          );
                         }}
                         placeholder="Please mentions these personal transformation stories in CAR format - Context, Action and Result achieved."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                       />
+                      {Object.keys(error).includes("discussInCARformat") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["discussInCARformat"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -2107,10 +2182,22 @@ const CoachIntake = ({ user }: any) => {
                             value={foundationalValues}
                             onChange={(e) => {
                               setFoundationalValues(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "foundationalValues"
+                              );
                             }}
                             placeholder="Identify core principles like integrity, resilience, and empathy essential for personal and professional growth."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "foundationalValues"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["foundationalValues"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2127,10 +2214,22 @@ const CoachIntake = ({ user }: any) => {
                             value={developmentFramewrok}
                             onChange={(e) => {
                               setDevelopmentFrameworks(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "developmentFramewrok"
+                              );
                             }}
                             placeholder="I utilize a blend of reflective practice, goal setting, and accountability to foster holistic personal development.)"
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "developmentFramewrok"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["developmentFramewrok"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <hr />
@@ -2155,10 +2254,22 @@ const CoachIntake = ({ user }: any) => {
                             value={coachingProcessOverview}
                             onChange={(e) => {
                               setCoachingProcessOverview(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "coachingProcessOverview"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "coachingProcessOverview"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["coachingProcessOverview"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2173,10 +2284,23 @@ const CoachIntake = ({ user }: any) => {
                             value={handlingSituations}
                             onChange={(e) => {
                               setHandlingSituations(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "handlingSituations"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "handlingSituations"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["handlingSituations"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2191,10 +2315,22 @@ const CoachIntake = ({ user }: any) => {
                             value={integratingLessons}
                             onChange={(e) => {
                               setIntegratongLessons(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "integratingLessons"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "integratingLessons"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["integratingLessons"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2210,10 +2346,22 @@ const CoachIntake = ({ user }: any) => {
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
                               setGuidanceOnCoachingProcess(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "guidanceOnCoachingProcess"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
+                          {Object.keys(error).includes(
+                            "guidanceOnCoachingProcess"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["guidanceOnCoachingProcess"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </>
@@ -2236,10 +2384,22 @@ const CoachIntake = ({ user }: any) => {
                             value={differentCareerPath}
                             onChange={(e) => {
                               setDifferentCareerPath(e.target.value);
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "differentCareerPath"
+                              );
                             }}
                             placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "differentCareerPath"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["differentCareerPath"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2255,10 +2415,23 @@ const CoachIntake = ({ user }: any) => {
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
                               setProblemSolvingApproachInDomain(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "problemSolvingApproachInDomain"
+                              );
                             }}
                             placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "problemSolvingApproachInDomain"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["problemSolvingApproachInDomain"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <hr />
@@ -2283,10 +2456,23 @@ const CoachIntake = ({ user }: any) => {
                             value={overviewofMentoring}
                             onChange={(e) => {
                               setOverviewOfMentoring(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "overviewofMentoring"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "overviewofMentoring"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["overviewofMentoring"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2302,10 +2488,23 @@ const CoachIntake = ({ user }: any) => {
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
                               setOpportunitiesOfGrowth(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "opportunitiesOfGrowth"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "opportunitiesOfGrowth"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["opportunitiesOfGrowth"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
@@ -2324,7 +2523,7 @@ const CoachIntake = ({ user }: any) => {
                               setCommenChallengesOrObstacles(e.target.value);
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
                         </div>
                       </div>
@@ -2341,10 +2540,23 @@ const CoachIntake = ({ user }: any) => {
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
                               setpinionsAboutKeyQualities(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                100,
+                                "opinionsAboutKeyQualities"
+                              );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "opinionsAboutKeyQualities"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["opinionsAboutKeyQualities"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </>
@@ -2619,7 +2831,7 @@ const CoachIntake = ({ user }: any) => {
                       }}
                       placeholder="Briefly share your background, goals, and what you're seeking in a coaching or mentoring relationship."
                       rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
                     {Object.keys(error).includes("Profile Description") && (
                       <p className="text-red-500 text-xs mt-1">
@@ -2655,6 +2867,7 @@ const CoachIntake = ({ user }: any) => {
                             </label>
                           </div>
                         ))}
+                        <br />
                       </RadioGroup>
                     </div>
                   </div>
@@ -2878,154 +3091,11 @@ const CoachIntake = ({ user }: any) => {
                 </div>
               </form>
             </div>
-            {/* <div
-              id="feedback"
-              className="bg-white w-[60%] max-lg:w-[80%] max-sm:w-[90%]  h-fit p-4 rounded-md mb-20"
-            >
-              <div className="flex items-center space-x-2">
-                <label className="text-sm" htmlFor="feedback-needed">
-                  Do you want to create a feedback bot?
-                </label>
-                <Switch
-                  id="feedback-needed"
-                  checked={isFeedbackNeeded}
-                  onCheckedChange={(checked) => {
-                    console.log("is checked", checked);
-                    setIsFeedbackNeeded(checked);
-                  }}
-                />
-              </div>
-              {isFeedbackNeeded && (
-                <form
-                  className="text-left"
-                  onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                    createFeedbackSubmitHandler(e);
-                  }}
-                >
-                  <Badge
-                    variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2"
-                  >
-                    <Info className="h-4 w-4 mr-1" /> All fields are required.
-                  </Badge>
-                  <div className="my-3">
-                    <p className="text-sm my-1">Enter your name</p>
-                    <input
-                      value={name}
-                      required
-                      minLength={10}
-                      maxLength={30}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        handleWordLimit(e.target.value, 10, 30, "Name");
-                      }}
-                      placeholder="Aarav Sharma"
-                      type="text"
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                    {Object.keys(error).includes("Name") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Name"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add a short profile bio.
-                    </p>
-                    <textarea
-                      value={profileBio}
-                      required
-                      minLength={200}
-                      maxLength={1500}
-                      onChange={(e) => {
-                        setProfileBio(e.target.value);
-                        handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
-                          "Profile Bio"
-                        );
-                      }}
-                      placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("Profile Bio") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Profile Bio"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter your Current Projects
-                    </p>
-                    <textarea
-                      value={currentProjects}
-                      required
-                      onChange={(e) => {
-                        setCurrentProjects(e.target.value);
-                      }}
-                      placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter your Suggested projects/ assignments.
-                    </p>
-                    <textarea
-                      required
-                      value={suggestedProjects}
-                      onChange={(e) => {
-                        setSuggestedProjects(e.target.value);
-                      }}
-                      placeholder="Proposing innovative projects or assignments such as [Project/Assignment 1], [Project/Assignment 2], and [Project/Assignment 3] that align with your expertise and interests..."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                  </div>
-                  <div>
-                    {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
-                        ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          <>
-                            Submit <SendHorizonal className="ml-2 h-5 w-5" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              )}
-            </div> */}
           </div>
         )}
         {formType === "feedback" && (
           <div className="flex flex-col justify-center items-center w-full">
-            <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+            <div className="bg-white border  w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4 ">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Feedback Intake
               </h1>
@@ -3092,7 +3162,7 @@ const CoachIntake = ({ user }: any) => {
                     }}
                     placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                     rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                   />
                   {Object.keys(error).includes("Profile Bio") && (
                     <p className="text-red-500 text-xs mt-1">
@@ -3109,27 +3179,18 @@ const CoachIntake = ({ user }: any) => {
                     required
                     onChange={(e) => {
                       setCurrentProjects(e.target.value);
+                      handleWordLimitMin(e.target.value, 20, "currentProjects");
                     }}
                     placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
                     rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                   />
+                  {Object.keys(error).includes("currentProjects") && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {(error as any)["currentProjects"]}
+                    </p>
+                  )}
                 </div>
-                {/* <div className="my-3">
-                  <p className="text-sm my-1">
-                    Please enter your Suggested projects/ assignments.
-                  </p>
-                  <textarea
-                    required
-                    value={suggestedProjects}
-                    onChange={(e) => {
-                      setSuggestedProjects(e.target.value);
-                    }}
-                    placeholder="Proposing innovative projects or assignments such as [Project/Assignment 1], [Project/Assignment 2], and [Project/Assignment 3] that align with your expertise and interests..."
-                    rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                  />
-                </div> */}
                 <hr className="my-2" />
                 <div className="flex items-start space-x-2 my-1.5 ">
                   <Checkbox
