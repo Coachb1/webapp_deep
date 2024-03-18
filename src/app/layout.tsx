@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, isLoading } = useKindeBrowserClient();
+  const { user, isLoading, error } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
@@ -63,6 +63,11 @@ export default function RootLayout({
     setLogSessionStarted(true);
     console.log("LOG SESSION STARTED");
   }
+
+  const refreshedOnce =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem(`refreshed-once`)
+      : null;
 
   //Unauth check
   useEffect(() => {
@@ -107,6 +112,25 @@ export default function RootLayout({
     } catch (error) {
       console.error(error);
       setLoading(false);
+    }
+
+    if (!refreshedOnce) {
+      if (user === null) {
+        document.cookie.split(";").forEach(function (c) {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(
+              /=.*/,
+              "=;expires=" + new Date().toUTCString() + ";path=/"
+            );
+        });
+
+        localStorage.setItem("refreshed-once", "true");
+        window.location.reload();
+      }
+    }
+    if (user) {
+      localStorage.removeItem("refreshed-once");
     }
   }, [isLoading]);
 
@@ -295,7 +319,7 @@ export default function RootLayout({
                     )}
                   </>
                 )}
-                {loading && isLoading && (
+                {loading && (
                   <>
                     <LoadingComponent />
                   </>
