@@ -133,6 +133,7 @@ let fitmentContainerId = 1;
 let endSessionButton;
 let intakeButton;
 let isAnonymous = false;
+let UserProfileInfo;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -867,6 +868,31 @@ const saveBotEngagement = (bot_id, user_id, field_name) => {
       console.error("got error in bot engagement button clicked", error)
     );
 };
+
+
+const getUserProfile = async (user_id) =>{
+
+  await fetch(
+    `${baseURL2}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${user_id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+      },
+    }
+  )
+  .then((resp) => resp.json())
+  .then((result) => {
+    console.log("user profile",result.data);
+      if(result.data.length > 0){
+        const userProfile = result.data[0];
+        console.log(userProfile)
+        UserProfileInfo = userProfile
+      }
+    })
+  .catch((error) => console.error('got error in user_profile',error));
+
+}
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -1637,6 +1663,20 @@ async function handleFaqButtonClick(question) {
       // }
 
       // ****** Check connection logic : end
+
+      // *** checking profile type: ==============================================================
+
+      await getUserProfile(userId2);
+
+      if (UserProfileInfo){
+        console.log("======profileType: ", UserProfileInfo.profile_type)
+        if (['coach', 'mentor'].includes(UserProfileInfo.profile_type)){
+          appendMessage2(addStickerToMessage("Begin Session", `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`))
+        }
+      }
+
+      // *** checking profile_type logic ends here==================================================
+      
 
       let intakeSummery;
       if (["avatar_bot", "helper_bot", "coachbots"].includes(botType)) {
