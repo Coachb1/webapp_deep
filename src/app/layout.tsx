@@ -19,8 +19,6 @@ import {
 } from "@/lib/utils";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { LoadingComponent, LoginWall, UnAuth } from "./UnAuthpage";
-import { Loader } from "lucide-react";
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, isLoading, error } = useKindeBrowserClient();
+  const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
@@ -75,7 +73,6 @@ export default function RootLayout({
     try {
       if (!isLoading) {
         if (user) {
-          console.log(user.email);
           getUserAccount(user)
             .then((res) => res.json())
             .then((data) => {
@@ -114,25 +111,30 @@ export default function RootLayout({
       setLoading(false);
     }
 
-    if (!refreshedOnce) {
-      if (user === null) {
-        document.cookie.split(";").forEach(function (c) {
-          document.cookie = c
-            .replace(/^ +/, "")
-            .replace(
-              /=.*/,
-              "=;expires=" + new Date().toUTCString() + ";path=/"
-            );
-        });
+    // console.log(isAuthenticated);
+    // if (!isAuthenticated) {
+    //   if (!refreshedOnce && pathname === "/") {
+    //     document.cookie.split(";").forEach(function (c) {
+    //       document.cookie = c
+    //         .replace(/^ +/, "")
+    //         .replace(
+    //           /=.*/,
+    //           "=;expires=" + new Date().toUTCString() + ";path=/"
+    //         );
+    //     });
 
-        localStorage.setItem("refreshed-once", "true");
-        window.location.reload();
-      }
-    }
-    if (user) {
-      localStorage.removeItem("refreshed-once");
-    }
+    //     localStorage.setItem("refreshed-once", "true");
+    //     window.location.reload();
+    //   }
+    // }
+    // if (user) {
+    //   localStorage.removeItem("refreshed-once");
+    // }
   }, [isLoading]);
+
+  // useEffect(() => {
+  //   console.log(isAuthenticated);
+  // }, [isAuthenticated]);
 
   useEffect(() => {
     //hide bots from intake
