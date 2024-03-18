@@ -79,6 +79,7 @@ const CoachIntake = ({ user }: any) => {
   const [about, setAbout] = useState("");
   const [areaDomain, setAreaDomain] = useState("");
   const [experience, setExperience] = useState("");
+  const [journeyAndBackground, setJourneyAndBackground] = useState("");
 
   const models = [
     "GROW Model",
@@ -195,6 +196,7 @@ const CoachIntake = ({ user }: any) => {
     setAbout("");
     setAreaDomain("");
     setExperience("");
+    setJourneyAndBackground("");
     setMentoringPreferences("");
     setCoachMentFrameworks("");
     setPovProgramParticipants("");
@@ -738,6 +740,7 @@ const CoachIntake = ({ user }: any) => {
                     voice_sample: voiceSample,
                     discuss_how_you_helped_others_in_coachMentoring:
                       discussInCARformat,
+                    journey_and_background: journeyAndBackground,
                     provide_answers_using_emojis: `${
                       provideAnswersUsingEmojis === "yes" ? true : false
                     }`,
@@ -997,6 +1000,7 @@ const CoachIntake = ({ user }: any) => {
                 voice_sample: voiceSample,
                 discuss_how_you_helped_others_in_coachMentoring:
                   discussInCARformat,
+                journey_and_background: journeyAndBackground,
                 provide_answers_using_emojis: `${
                   provideAnswersUsingEmojis === "yes" ? true : false
                 }`,
@@ -1686,6 +1690,34 @@ const CoachIntake = ({ user }: any) => {
                         Upload image with (240px * 240px) under 2MB
                       </p>
                     </div>
+                  </div>
+                  <div className="my-4">
+                    <p className="text-sm my-1">
+                      Please share your journey and background story,
+                      highlighting experiences that have shaped your path to
+                      where you are today?
+                    </p>
+
+                    <textarea
+                      rows={4}
+                      onChange={(e) => {
+                        setJourneyAndBackground(e.target.value);
+
+                        handleWordLimitMin(
+                          e.target.value,
+                          50,
+                          "journeyAndBackground"
+                        );
+                      }}
+                      value={journeyAndBackground}
+                      placeholder="Seeking guidance to enhance leadership skills, manage work-life balance, and navigate career transitions as a marketing professional."
+                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                    />
+                    {Object.keys(error).includes("journeyAndBackground") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["journeyAndBackground"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
