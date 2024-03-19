@@ -31,7 +31,7 @@ import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount, scrollToView } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 
 const VersionOne = ({ user }: any) => {
@@ -162,174 +162,157 @@ const VersionOne = ({ user }: any) => {
 
         <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-50">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
-            <Link href={"#managerplus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Manager+
-              </Button>
-            </Link>
-            <Link href={"#ijp"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                IJP/Succession
-              </Button>
-            </Link>
-            <Link href={"#reflection"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Reflection
-              </Button>
-            </Link>
-            <Link href={"#diversityPlus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Diversity+
-              </Button>
-            </Link>
-            <Link href={"#qp"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Questions Pro
-              </Button>
-            </Link>
-            <Link href={"#pms"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                PMS enabled
-              </Button>
-            </Link>
-            {/* <Link href={"#coachingplus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Coaching+
-              </Button>
-            </Link> */}
-            <Link href={"#pitch"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Pitch+
-              </Button>
-            </Link>
-            <Link href={"#discoveryPlus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Discovery+ | MCQ
-              </Button>
-            </Link>
-            <Link href={"#one-to-one"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                1:1 Check-ins | Dynamic
-              </Button>
-            </Link>
-            <Link href={"#tech"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Technology
-              </Button>
-            </Link>
-            <Link href={"#sales"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Sales
-              </Button>
-            </Link>
-            <Link href={"#frontline-staff"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Frontline Staff &#40;Hindi&#41;
-              </Button>
-            </Link>
-            <Link href={"#service-c"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Service/Consulting
-              </Button>
-            </Link>
-            <Link href={"#360-feedback"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                360 Feedback
-              </Button>
-            </Link>
-            <Link href={"#case-study"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Case study | Dynamic
-              </Button>
-            </Link>
-            <Link href={"#presentation"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Presentation
-              </Button>
-            </Link>
-            {/* <Link href={"#immersive"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Immersive
-              </Button>
-            </Link> */}
-            <Link href={"#onboarding"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Onboarding
-              </Button>
-            </Link>
-            <Link href={"#meetings"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Meetings | Dynamic
-              </Button>
-            </Link>
-            <Link href={"#english-support"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                English Support
-              </Button>
-            </Link>
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("managerplus")}
+            >
+              Manager+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("ijp")}
+            >
+              IJP/Succession
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("reflection")}
+            >
+              Reflection
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("diversityPlus")}
+            >
+              Diversity+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("qp")}
+            >
+              Questions Pro
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("pms")}
+            >
+              PMS enabled
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("pitch")}
+            >
+              Pitch+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("discoveryPlus")}
+            >
+              Discovery+ | MCQ
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("one-to-one")}
+            >
+              1:1 Check-ins | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("tech")}
+            >
+              Technology
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("sales")}
+            >
+              Sales
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("frontline-staff")}
+            >
+              Frontline Staff (Hindi)
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("service-c")}
+            >
+              Service/Consulting
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("360-feedback")}
+            >
+              360 Feedback
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("case-study")}
+            >
+              Case study | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("presentation")}
+            >
+              Presentation
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("onboarding")}
+            >
+              Onboarding
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("meetings")}
+            >
+              Meetings | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("english-support")}
+            >
+              English Support
+            </Button>
 
             {/* {shouldRenderDiv && (
               <Link href={"/create-scenario"}>
