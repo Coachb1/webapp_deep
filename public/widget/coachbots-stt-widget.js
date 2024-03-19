@@ -134,6 +134,7 @@ let endSessionButton;
 let intakeButton;
 let isAnonymous = false;
 let UserProfileInfo;
+let sessionQnAdata = [];
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -1988,11 +1989,12 @@ function sendBotTranscript2() {
       fetch(
         `${baseURL2}/test-attempt-sessions/send-bot-transcript-email/?${queryParamsEmail2}`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ "session_qna_data": sessionQnAdata }),
         }
       )
         .then((response) => response.json())
@@ -4529,7 +4531,7 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
-  const anthropicAiResponse = (userInputMessage, signals, conversationId) => {
+  const anthropicAiResponse = (userInputMessage, signals, conversationId, latestMessage) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -4581,6 +4583,10 @@ loadExternalModule().then(() => {
             }
           });
 
+          // add user question and bot answer to the session
+          sessionQnAdata.push({"user": latestMessage, "coach": messageText.innerText});
+          console.log("sessionQnAdata :", sessionQnAdata);
+
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
             headers: {
@@ -4598,6 +4604,21 @@ loadExternalModule().then(() => {
             })
             .catch((err) => {
               console.error(err);
+              fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ai_response: messageText.innerText,
+                  conversation_id: conversationId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                })
             });
 
           return;
@@ -4610,7 +4631,7 @@ loadExternalModule().then(() => {
     });
   };
 
-  const OpenAiResponse = (userInputMessage, signals, conversationId) => {
+  const OpenAiResponse = (userInputMessage, signals, conversationId, latestMessage) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -4634,6 +4655,8 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
+    sessionQnAdata.push({"user": latestMessage, "coach": messageText.innerText});
+    console.log("sessionQnAdata :", sessionQnAdata);
 
     fetch("/api/openai", {
       method: "POST",
@@ -4678,7 +4701,19 @@ loadExternalModule().then(() => {
               console.log(data);
             })
             .catch((err) => {
-              console.error(err);
+              console.error("Error occured : ", err);
+
+              fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ai_response: messageText.innerText,
+                  conversation_id: conversationId,
+                }),
+              })
             });
 
           return;
@@ -5179,7 +5214,8 @@ loadExternalModule().then(() => {
               anthropicAiResponse(
                 responseData.coach_message_metadata.prompt,
                 signals,
-                conversation_id2
+                conversation_id2,
+                latestMessage
               );
               conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];
