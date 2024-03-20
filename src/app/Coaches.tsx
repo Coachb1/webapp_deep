@@ -361,7 +361,7 @@ const Coaches = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
-          getCanJoinAs(user.email);
+          // getCanJoinAs(user.email);
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -914,7 +914,7 @@ const Coaches = ({ user }: any) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {["coach", "mentor"].includes(canJoinAs) && (
+              {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
                 <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                   <span
                     onClick={() => {
@@ -957,8 +957,8 @@ const Coaches = ({ user }: any) => {
                     )}
                   </span>
                 </DropdownMenuItem>
-              )}
-              {["coachee", "mentee"].includes(canJoinAs) && (
+              {/* )} */}
+              {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
                 <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
                   <span
                     onClick={() => {
@@ -1001,7 +1001,7 @@ const Coaches = ({ user }: any) => {
                     )}
                   </span>
                 </DropdownMenuItem>
-              )}
+              {/* )} */}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <span
                   onClick={() => {
