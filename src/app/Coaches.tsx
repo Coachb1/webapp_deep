@@ -527,6 +527,32 @@ const Coaches = ({ user }: any) => {
       );
       console.log(filteredData);
       setCoachesData(filteredData);
+    } else if (newValues.includes("mentor")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter(
+              (coachData) => coachData.profile_type === "mentor"
+            )
+          : savedCoachesData.filter(
+              (coachData) => coachData.profile_type === "mentor"
+            ),
+        newValues
+      );
+      console.log(filteredData);
+      setCoachesData(filteredData);
+    } else if (newValues.includes("mentee")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter(
+              (coachData) => coachData.profile_type === "mentee"
+            )
+          : savedCoachesData.filter(
+              (coachData) => coachData.profile_type === "mentee"
+            ),
+        newValues
+      );
+      console.log(filteredData);
+      setCoachesData(filteredData);
     } else {
       if (newValues.includes("coach")) {
         const filteredData = filterData(
@@ -898,7 +924,7 @@ const Coaches = ({ user }: any) => {
         </h1>
         <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
           {" "}
-          2000+ Strong group of experts & future leaders
+          Peer to Peer network of leaders for growth.
         </p>
         <div className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs">
           {/* <Button disabled variant={"outline"} className="h-fit w-fit">

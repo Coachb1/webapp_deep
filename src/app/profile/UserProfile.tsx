@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   PartifipantsforLeaderBoardTypes,
   baseURL,
@@ -65,7 +65,7 @@ const UserProfile = ({ user }: any) => {
               name: data.name,
               user_id: data.user_id,
               total_count: dataa.length,
-              rating: data.rating,
+              rating: data.total_score === 0 ? dataa.length : data.rating,
             };
           }
         );
@@ -252,43 +252,43 @@ const UserProfile = ({ user }: any) => {
           </div>
         </div>
         {userKudosData[0] && (
-        <div className="mt-4 mb-4">
-          <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
-            <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
-            {kudosLoading ? (
-              <>
-                <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
-              </>
-            ) : (
-              <>
-                {userKudosData[0] ? (
-                  <div className="max-sm:flex max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
-                    <Badge variant={"outline"} className="ml-4 p-2">
+          <div className="mt-4 mb-4">
+            <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
+              <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
+              {kudosLoading ? (
+                <>
+                  <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  {userKudosData[0] ? (
+                    <div className="max-sm:flex max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
+                      <Badge variant={"outline"} className="ml-4 p-2">
+                        {" "}
+                        Positive Feedback count :{" "}
+                        {userKudosData[0].positive_feedback_count}{" "}
+                      </Badge>
+                      <Badge variant={"outline"} className="ml-4 p-2">
+                        {" "}
+                        Negetive Feedback count :{" "}
+                        {userKudosData[0].negative_feedback_count}{" "}
+                      </Badge>
+                      <Badge variant={"outline"} className="ml-4 p-2">
+                        {" "}
+                        Position : Top {userKudosData[0].rating} out of{" "}
+                        {totalUsersForFeedback}
+                      </Badge>
+                    </div>
+                  ) : (
+                    <Badge variant={"destructive"} className="ml-4">
                       {" "}
-                      Positive Feedback count :{" "}
-                      {userKudosData[0].positive_feedback_count}{" "}
+                      You don't have any active feedbacks.
                     </Badge>
-                    <Badge variant={"outline"} className="ml-4 p-2">
-                      {" "}
-                      Negetive Feedback count :{" "}
-                      {userKudosData[0].negative_feedback_count}{" "}
-                    </Badge>
-                    <Badge variant={"outline"} className="ml-4 p-2">
-                      {" "}
-                      Position : Top {userKudosData[0].rating} out of{" "}
-                      {totalUsersForFeedback}
-                    </Badge>
-                  </div>
-                ) : (
-                  <Badge variant={"destructive"} className="ml-4">
-                    {" "}
-                    You don't have any active feedbacks.
-                  </Badge>
-                )}
-              </>
-            )}
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>
