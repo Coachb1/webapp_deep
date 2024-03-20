@@ -782,12 +782,14 @@ async function populateBotConversation(participant_id) {
   console.log("PRevious conversations", botConv);
   if (botConv.length > 0) {
     // disabling intakebutton
-    if (intakeButton) {
-      intakeButton.disabled = true;
-      intakeButton.style.backgroundColor = "#d3d3d3";
-      intakeButton.style.color = "#a0a0a0";
-      intakeButton.removeAttribute("onmouseover");
-      intakeButton.removeAttribute("onmouseleave");
+    if (botType === 'avatar_bot'){
+      if (intakeButton) {
+        intakeButton.disabled = true;
+        intakeButton.style.backgroundColor = "#d3d3d3";
+        intakeButton.style.color = "#a0a0a0";
+        intakeButton.removeAttribute("onmouseover");
+        intakeButton.removeAttribute("onmouseleave");
+      }
     }
 
     console.log("populating conversation");
