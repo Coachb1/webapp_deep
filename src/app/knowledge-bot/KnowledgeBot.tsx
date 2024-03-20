@@ -134,57 +134,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setIsLoading(false);
-        if (!data.data.is_sample_bot && !data.data.is_system_bot) {
-          if (user) {
-            getUserAccount(user)
-              .then((response) => response.json())
-              .then((data) => {
-                setIsLoading(false);
-                fetch(
-                  `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                    },
-                  }
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log("xyz-data", data);
-                    if (data.data.length === 0) {
-                      const coachScribe =
-                        document.getElementsByClassName("deep-chat-poc2")[0];
-
-                      console.log(coachScribe);
-                      const botButton = document.getElementsByClassName(
-                        "chat-icon-container2"
-                      )[0];
-                      botButton.removeAttribute("onclick");
-
-                      const chatIcon =
-                        document.getElementsByClassName("chat-icon2")[0];
-                      const showEnrollmentToast = () => {
-                        chatIcon.addEventListener("click", () => {
-                          toast.error(
-                            "You have not enrolled as a program participant. Please enroll and try again."
-                          );
-                        });
-                      };
-                      if (!chatIcon.getAttribute("onclick")) {
-                        chatIcon.setAttribute(
-                          "onclick",
-                          `${showEnrollmentToast()}`
-                        );
-                      }
-                    }
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                  });
-              });
-          }
-        }
       })
       .catch((err) => {
         console.error(err);

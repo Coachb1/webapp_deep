@@ -171,7 +171,11 @@ const Coach = ({ user, renderType }: any) => {
                 .then((res) => res.json())
                 .then((data) => {
                   console.log("xyz-data", data);
-                  if (data.data.length === 0) {
+                  if (
+                    data.data.length === 0 &&
+                    renderType === "dynamic" &&
+                    pathname !== "/coach/coach-d54cd-aravsharma"
+                  ) {
                     const coachScribe =
                       document.getElementsByClassName("deep-chat-poc2")[0];
 

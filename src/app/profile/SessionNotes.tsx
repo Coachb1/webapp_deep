@@ -18,7 +18,7 @@ import {
   TabsTrigger,
 } from "../../components/ui/tabs";
 import { Separator } from "../../components/ui/separator";
-import { Info, Loader, Plus, Search } from "lucide-react";
+import { ExternalLink, Info, Loader, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { convertDate } from "@/lib/utils";
@@ -51,6 +51,7 @@ const SessionNotes = ({ user }: any) => {
     mentee_email_id: string;
     mentee_name: string;
     updated: string;
+    simulation_codes: string;
   }
   // const commentsGivenData = [];
   const [commentsGiven, setCommentsGiven] = useState<givenCommentType[]>([]);
@@ -62,6 +63,7 @@ const SessionNotes = ({ user }: any) => {
     mentor_name: string;
     mentor_email_id: string;
     updated: string;
+    simulation_codes: string;
   }
 
   const [commentsRecieved, setCommmentsRecieved] = useState<
@@ -77,6 +79,8 @@ const SessionNotes = ({ user }: any) => {
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [userId, setUserId] = useState<string>("");
 
+  const accessCodeRef = useRef<any>();
+  const [accessCodeLengthError, setAccessCodeLengthError] = useState(false);
   //pagination fro givenItems
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
@@ -103,7 +107,7 @@ const SessionNotes = ({ user }: any) => {
     recievedCommentType[]
   >([]);
 
-  const [tabValue, setTabValue] = useState("c-recieved");
+  const [tabValue, setTabValue] = useState("c-given");
 
   const handlePageChange = (page: any) => {
     setCurrentPage(page);
@@ -199,6 +203,7 @@ const SessionNotes = ({ user }: any) => {
   const createCommentHandler = async () => {
     setSubmitLoading(true);
     const context: string = commentRef.current.value;
+    const accessSimulationCodes: string = accessCodeRef.current.value;
     console.log(context);
     console.log(
       "MENTOR ID - ",
@@ -208,7 +213,7 @@ const SessionNotes = ({ user }: any) => {
 
     if (context.split(" ").length > 40) {
       fetch(
-        `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${selectedUserForCommentUserId}&context=${context}&for=mentor&token=${basicAuth}`,
+        `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userId}&user_id=${selectedUserForCommentUserId}&context=${context}&for=mentor&token=${basicAuth}&simulation_codes=${accessSimulationCodes}`,
         {
           method: "GET",
           headers: {
@@ -424,11 +429,11 @@ const SessionNotes = ({ user }: any) => {
         >
           <div className="flex flex-row  items-center gap-2 justify-between max-sm:flex-col max-sm:justify-start max-sm:items-start">
             <TabsList className="border-2 bg-gray-300">
-              {connectionsOptions.length > 0 && (
-                <TabsTrigger className="text-sm max-sm:text-xs" value="c-given">
-                  Comments Given
-                </TabsTrigger>
-              )}
+              {/* {connectionsOptions.length > 0 && ( */}
+              <TabsTrigger className="text-sm max-sm:text-xs" value="c-given">
+                Comments Given
+              </TabsTrigger>
+              {/* )} */}
               <div>
                 <TabsTrigger
                   className="text-sm max-sm:text-xs hover:cursor-pointer"
@@ -449,403 +454,23 @@ const SessionNotes = ({ user }: any) => {
             </div>
           </div>
 
-          {connectionsOptions.length > 0 && (
-            <TabsContent value="c-given">
-              <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
-                {commentsLoading ? (
-                  <>
-                    <div className="text-xs w-full h-20 flex items-center justify-center">
-                      <div>
-                        <Loader className="h-4 w-4 mr-2 animate-spin inline" />{" "}
-                        Loading
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {searchTriggered && (
-                      <>
-                        {filteredGivenItems.map((comment, i) => (
-                          <div
-                            key={i}
-                            className="border-b-2 border-gray-300 p-4"
-                          >
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1">
-                                {" "}
-                                <b>
-                                  {coachId.length > 0
-                                    ? "Coachee/Mentee Name"
-                                    : "Coach/Mentor Name"}{" "}
-                                </b>{" "}
-                                : {comment.mentee_name}
-                              </p>
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1">
-                                {" "}
-                                <b>Email</b> : {comment.mentee_email_id}
-                              </p>
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
-                                <b>Comment</b> : {comment.context}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="mr-2 my-1 mt-2">
-                                <b> Recommended practice access codes </b> :{" "}
-                                {comment.recommendations !== null ? (
-                                  <>
-                                    {hasPassed48Hours(comment.date) ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : comment.updated !== null ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <span>
-                                          In process, please check again in a
-                                          while.{" "}
-                                        </span>
-                                      </>
-                                    )}
-                                  </>
-                                ) : (
-                                  <span>
-                                    In process, please check again in a while.{" "}
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                            <p className="mt-2">
-                              <b> Date</b> : {convertDate(comment.date)}
-                            </p>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                    {commentsGiven.length > 0 && !searchTriggered ? (
-                      <>
-                        {currentItems.map((comment, i) => (
-                          <div
-                            key={i}
-                            className="border-b-2 border-gray-300 p-4"
-                          >
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1">
-                                {" "}
-                                <b>
-                                  {coachId.length > 0
-                                    ? "Coachee/Mentee Name"
-                                    : "Coach/Mentor Name"}{" "}
-                                </b>{" "}
-                                : {comment.mentee_name}
-                              </p>
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1">
-                                {" "}
-                                <b>Email</b> : {comment.mentee_email_id}
-                              </p>
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
-                                <b>Comment</b> : {comment.context}
-                              </p>
-                            </div>
-                            <div>
-                              <div className="mr-2 my-1 mt-2">
-                                <b> Recommended practice access codes </b> :{" "}
-                                {comment.recommendations !== null ? (
-                                  <>
-                                    {hasPassed48Hours(comment.date) ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : comment.updated !== null ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <span>
-                                          In process, please check again in a
-                                          while.{" "}
-                                        </span>
-                                      </>
-                                    )}
-                                  </>
-                                ) : (
-                                  <span>
-                                    In process, please check again in a while.{" "}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <p className="mt-2">
-                              <b> Date</b> : {convertDate(comment.date)}
-                            </p>
-                          </div>
-                        ))}
-                        <div className="py-4 flex justify-center">
-                          {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                              key={index + 1}
-                              className={`mx-2 max-sm:mx-1 max-sm:px-2 rounded-md px-4 py-2 ${
-                                currentPage === index + 1
-                                  ? "bg-black text-white"
-                                  : "bg-white text-black"
-                              }`}
-                              onClick={() => handlePageChange(index + 1)}
-                            >
-                              {index + 1}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {filteredGivenItems.length === 0 && (
-                          <div className="text-center mt-4 font-bold ">
-                            You have not given any comments yet
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-              {!createCommentInit && (
-                <div className="ml-2 w-full flex justify-center">
-                  <Button
-                    className="max-sm:p-2 h-8 mt-2 hover:brightness-105 text-sm bg-green-800"
-                    onClick={() => {
-                      setCreateCommentInit(true);
-                    }}
-                  >
-                    New Comment <Plus className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-              {createCommentInit && (
-                <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
-                  <div className="border-gray-300  p-4">
-                    <div className="flex flex-col">
-                      <p className="mr-2 my-1">Connected User</p>
-                      <Select
-                        className="w-full"
-                        showSearch
-                        virtual={false}
-                        // optionFilterProp="children"
-                        onChange={(value: string) => {
-                          // setSelectedUserForComment(value);
-                          console.log(value.split("/")[1]);
-                          setSelectedUserForCommentUserId(value.split("/")[1]);
-                        }}
-                        onSearch={(val) => {
-                          console.log(val);
-                        }}
-                        options={connectionsOptions}
-                      />
-                      {/* <input
-                      onChange={(e) => {
-                        const email = e.target.value;
-                        if (email.length > 8 && !email.includes("@")) {
-                          setEmailError(true);
-                        } else {
-                          setEmailError(false);
-                        }
-                      }}
-                      ref={emailRef}
-                      type="email"
-                      className={`w-full p-2 bg-gray-100 rounded-md outline-none border focus-visible:border-gray-400 ${
-                        emailError ? "border border-red-300" : ""
-                      }`}
-                    /> */}
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="mr-2 my-1 mt-2">Comment</p>
-                      <textarea
-                        onChange={() => {
-                          setContextLengthError(false);
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value.split(" ").length < 40) {
-                            setContextLengthError(true);
-                          }
-                        }}
-                        ref={commentRef}
-                        rows={4}
-                        className="w-full p-2 bg-[#FFFFFF] rounded-md outline-none border focus-visible:border-gray-400"
-                      />
-                      {contextLengthError && (
-                        <p className="text-red-500 text-xs m-2">
-                          Comment should be atleast 40 words!
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-full  flex flex-row justify-end gap-2">
-                      <Button
-                        variant={"destructive"}
-                        className="max-sm:p-2 h-6 mt-2 hover:brightness-105 "
-                        onClick={() => {
-                          setCreateCommentInit(false);
-                          setSubmitLoading(false);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={createCommentHandler}
-                        className="max-sm:p-2 h-6 mt-2 hover:brightness-105"
-                        disabled={emailError}
-                      >
-                        {submitLoading ? (
-                          <>
-                            <Loader className="h-3 w-3 mr-1 animate-spin" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          "Submit"
-                        )}
-                      </Button>
+          {/* {connectionsOptions.length > 0 && ( */}
+          <TabsContent value="c-given">
+            <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
+              {commentsLoading ? (
+                <>
+                  <div className="text-xs w-full h-20 flex items-center justify-center">
+                    <div>
+                      <Loader className="h-4 w-4 mr-2 animate-spin inline" />{" "}
+                      Loading
                     </div>
                   </div>
-                </div>
-              )}
-            </TabsContent>
-          )}
-          <TabsContent value="c-recieved">
-            <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs  min-h-[109px]">
-              {commentsLoading ? (
-                <div className="flex justify-center pt-8">
-                  <Loader className="h-5 w-5 animate-spin" />
-                </div>
+                </>
               ) : (
                 <>
                   {searchTriggered && (
                     <>
-                      {filteredRecivedItems.map((comment, i) => (
+                      {filteredGivenItems.map((comment, i) => (
                         <div key={i} className="border-b-2 border-gray-300 p-4">
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
@@ -855,13 +480,13 @@ const SessionNotes = ({ user }: any) => {
                                   ? "Coachee/Mentee Name"
                                   : "Coach/Mentor Name"}{" "}
                               </b>{" "}
-                              : {comment.mentor_name}
+                              : {comment.mentee_name}
                             </p>
                           </div>
                           <div className="flex flex-col">
                             <p className="mr-2 my-1">
                               {" "}
-                              <b>Email</b> : {comment.mentor_email_id}
+                              <b>Email</b> : {comment.mentee_email_id}
                             </p>
                           </div>
                           <div className="flex flex-col">
@@ -870,9 +495,50 @@ const SessionNotes = ({ user }: any) => {
                             </p>
                           </div>
                           <div>
-                            <div className="mr-2 my-1 mt-2">
+                            <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {comment.recommendations !== null ? (
+                              {comment.simulation_codes !== null ? (
+                                <>
+                                  {comment.simulation_codes
+                                    .split(",")
+                                    .map((recommendation, i) => (
+                                      <span
+                                        className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                        onClick={() => {
+                                          navigator.clipboard
+                                            .writeText(recommendation)
+                                            .then(() => {
+                                              toast.success(
+                                                "Test code copied to clipboard",
+                                                {
+                                                  duration: 4000,
+                                                }
+                                              );
+                                            })
+                                            .catch((err) => {
+                                              toast.error(
+                                                "Error copying test code",
+                                                {
+                                                  duration: 4000,
+                                                }
+                                              );
+                                            });
+                                        }}
+                                      >
+                                        {recommendation}
+                                      </span>
+                                    ))}
+                                </>
+                              ) : (
+                                <>
+                                  <>
+                                    <span>
+                                      In process, please check again in a while.{" "}
+                                    </span>
+                                  </>
+                                </>
+                              )}
+                              {/* {comment.recommendations !== null ? (
                                 <>
                                   {hasPassed48Hours(comment.date) ? (
                                     <>
@@ -953,6 +619,492 @@ const SessionNotes = ({ user }: any) => {
                                 <span>
                                   In process, please check again in a while.{" "}
                                 </span>
+                              )} */}
+                            </p>
+                          </div>
+                          <p className="mt-2">
+                            <b> Date</b> : {convertDate(comment.date)}
+                          </p>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                  {commentsGiven.length > 0 && !searchTriggered ? (
+                    <>
+                      {currentItems.map((comment, i) => (
+                        <div key={i} className="border-b-2 border-gray-300 p-4">
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>
+                                {coachId.length > 0
+                                  ? "Coachee/Mentee Name"
+                                  : "Coach/Mentor Name"}{" "}
+                              </b>{" "}
+                              : {comment.mentee_name}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentee_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
+                              <b>Comment</b> : {comment.context}
+                            </p>
+                          </div>
+                          <div>
+                            <div className="mr-2 my-1 mt-2">
+                              <b> Recommended practice access codes </b> :{" "}
+                              <>
+                                {comment.simulation_codes !== null ? (
+                                  <>
+                                    {comment.simulation_codes
+                                      .split(",")
+                                      .map((recommendation, i) => (
+                                        <span
+                                          className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                          onClick={() => {
+                                            navigator.clipboard
+                                              .writeText(recommendation)
+                                              .then(() => {
+                                                toast.success(
+                                                  "Test code copied to clipboard",
+                                                  {
+                                                    duration: 4000,
+                                                  }
+                                                );
+                                              })
+                                              .catch((err) => {
+                                                toast.error(
+                                                  "Error copying test code",
+                                                  {
+                                                    duration: 4000,
+                                                  }
+                                                );
+                                              });
+                                          }}
+                                        >
+                                          {recommendation}
+                                        </span>
+                                      ))}
+                                  </>
+                                ) : (
+                                  <>
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  </>
+                                )}
+                              </>
+                              {/* {comment.recommendation !== null ? ( // earlier : recommendation
+                                <>
+                                  {hasPassed48Hours(comment.date) ? (
+                                    <>
+                                      {comment.simulation_codes
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : comment.updated !== null ? (
+                                    <>
+                                      {comment.simulation_codes
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <span>
+                                  In process, please check again in a while.{" "}
+                                </span>
+                              )} */}
+                            </div>
+                          </div>
+                          <p className="mt-2">
+                            <b> Date</b> : {convertDate(comment.date)}
+                          </p>
+                        </div>
+                      ))}
+                      <div className="py-4 flex justify-center">
+                        {Array.from({ length: totalPages }, (_, index) => (
+                          <button
+                            key={index + 1}
+                            className={`mx-2 max-sm:mx-1 max-sm:px-2 rounded-md px-4 py-2 ${
+                              currentPage === index + 1
+                                ? "bg-black text-white"
+                                : "bg-white text-black"
+                            }`}
+                            onClick={() => handlePageChange(index + 1)}
+                          >
+                            {index + 1}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {filteredGivenItems.length === 0 && (
+                        <div className="text-center mt-4 font-bold ">
+                          You have not given any comments yet
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+            {!commentsLoading && (
+              <>
+                {!createCommentInit && (
+                  <div className="ml-2 w-full flex flex-col items-center justify-center">
+                    <Button
+                      className="max-sm:p-2 w-fit h-8 mt-2 hover:brightness-105 text-sm bg-green-800"
+                      onClick={() => {
+                        setCreateCommentInit(true);
+                      }}
+                      disabled={connectionsOptions.length === 0}
+                    >
+                      New Comment <Plus className="ml-2 h-4 w-4" />
+                    </Button>
+                    {connectionsOptions.length === 0 && (
+                      <p className="text-red-600 text-xs mt-2">
+                        You don't have any connections yet.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+            {createCommentInit && (
+              <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
+                <div className="border-gray-300  p-4">
+                  <div className="flex flex-col">
+                    <p className="mr-2 my-1">Connected User</p>
+                    <Select
+                      className="w-full"
+                      showSearch
+                      virtual={false}
+                      // optionFilterProp="children"
+                      onChange={(value: string) => {
+                        // setSelectedUserForComment(value);
+                        console.log(value.split("/")[1]);
+                        setSelectedUserForCommentUserId(value.split("/")[1]);
+                      }}
+                      onSearch={(val) => {
+                        console.log(val);
+                      }}
+                      options={connectionsOptions}
+                    />
+                  </div>
+                  <div className="flex flex-col my-2 w-full">
+                    <div className="flex flex-row items-center">
+                      <p className="mr-2 my-1 mt-2">
+                        Recommended Simulation access codes (comma separated){" "}
+                      </p>{" "}
+                      <Link
+                        href={"/library?scrollView=create-new"}
+                        target="_blank"
+                        className="bg-blue-200 h-fit text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-md "
+                      >
+                        Generate{" "}
+                        <ExternalLink className="ml-1 h-3 w-3 inline" />
+                      </Link>
+                    </div>
+                    <input
+                      onChange={(e) => {
+                        setAccessCodeLengthError(false);
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value.length < 6) {
+                          setAccessCodeLengthError(true);
+                        }
+                      }}
+                      ref={accessCodeRef}
+                      className={`w-full p-2 bg-white rounded-md outline-none border focus-visible:border-gray-400`}
+                    />
+                    {accessCodeLengthError && (
+                      <p className="text-red-500 text-xs m-2">
+                        Atleast include one test code
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="mr-2 my-1 mt-2">Comment</p>
+                    <textarea
+                      onChange={() => {
+                        setContextLengthError(false);
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value.split(" ").length < 40) {
+                          setContextLengthError(true);
+                        }
+                      }}
+                      ref={commentRef}
+                      rows={4}
+                      className="w-full p-2 bg-[#FFFFFF] rounded-md outline-none border focus-visible:border-gray-400"
+                    />
+                    {contextLengthError && (
+                      <p className="text-red-500 text-xs m-2">
+                        Comment should be atleast 40 words!
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-full  flex flex-row justify-end gap-2">
+                    <Button
+                      variant={"destructive"}
+                      className="max-sm:p-2 h-6 mt-2 hover:brightness-105 "
+                      onClick={() => {
+                        setCreateCommentInit(false);
+                        setSubmitLoading(false);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={createCommentHandler}
+                      className="max-sm:p-2 h-6 mt-2 hover:brightness-105"
+                      disabled={emailError}
+                    >
+                      {submitLoading ? (
+                        <>
+                          <Loader className="h-3 w-3 mr-1 animate-spin" />{" "}
+                          Submitting
+                        </>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+          {/* )} */}
+          <TabsContent value="c-recieved">
+            <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs  min-h-[109px]">
+              {commentsLoading ? (
+                <div className="flex justify-center pt-8">
+                  <Loader className="h-5 w-5 animate-spin" />
+                </div>
+              ) : (
+                <>
+                  {searchTriggered && (
+                    <>
+                      {filteredRecivedItems.map((comment, i) => (
+                        <div key={i} className="border-b-2 border-gray-300 p-4">
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>
+                                {coachId.length > 0
+                                  ? "Coachee/Mentee Name"
+                                  : "Coach/Mentor Name"}{" "}
+                              </b>{" "}
+                              : {comment.mentor_name}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1">
+                              {" "}
+                              <b>Email</b> : {comment.mentor_email_id}
+                            </p>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="mr-2 my-1 mt-2 overflow-scroll no-scrollbar">
+                              <b>Comment</b> : {comment.context}
+                            </p>
+                          </div>
+                          <div>
+                            <div className="mr-2 my-1 mt-2">
+                              <b> Recommended practice access codes </b> :{" "}
+                              {/* {comment.recommendations !== null ? (
+                                <>
+                                  {hasPassed48Hours(comment.date) ? (
+                                    <>
+                                      {comment.recommendations
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : comment.updated !== null ? (
+                                    <>
+                                      {comment.recommendations
+                                        .split(",")
+                                        .map((recommendation, i) => (
+                                          <span
+                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                            // href={"/content-library"}
+                                            onClick={() => {
+                                              navigator.clipboard
+                                                .writeText(recommendation)
+                                                .then(() => {
+                                                  toast.success(
+                                                    "Test code copied to clipboard",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                })
+                                                .catch((err) => {
+                                                  toast.error(
+                                                    "Error copying test code",
+                                                    {
+                                                      duration: 4000,
+                                                    }
+                                                  );
+                                                });
+                                            }}
+                                          >
+                                            {recommendation}
+                                          </span>
+                                        ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <span>
+                                  In process, please check again in a while.{" "}
+                                </span>
+                              )} */}
+                              {comment.simulation_codes !== null ? (
+                                <>
+                                  {comment.simulation_codes
+                                    .split(",")
+                                    .map((recommendation, i) => (
+                                      <span
+                                        className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                        onClick={() => {
+                                          navigator.clipboard
+                                            .writeText(recommendation)
+                                            .then(() => {
+                                              toast.success(
+                                                "Test code copied to clipboard",
+                                                {
+                                                  duration: 4000,
+                                                }
+                                              );
+                                            })
+                                            .catch((err) => {
+                                              toast.error(
+                                                "Error copying test code",
+                                                {
+                                                  duration: 4000,
+                                                }
+                                              );
+                                            });
+                                        }}
+                                      >
+                                        {recommendation}
+                                      </span>
+                                    ))}
+                                </>
+                              ) : (
+                                <>
+                                  <>
+                                    <span>
+                                      In process, please check again in a while.{" "}
+                                    </span>
+                                  </>
+                                </>
                               )}
                             </div>
                           </div>
@@ -993,7 +1145,49 @@ const SessionNotes = ({ user }: any) => {
                             <div>
                               <p className="mr-2 my-1 mt-2">
                                 <b> Recommended practice access codes </b> :{" "}
-                                {comment.recommendations !== null ? (
+                                {comment.simulation_codes !== null ? (
+                                  <>
+                                    {comment.simulation_codes
+                                      .split(",")
+                                      .map((recommendation, i) => (
+                                        <span
+                                          className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
+                                          onClick={() => {
+                                            navigator.clipboard
+                                              .writeText(recommendation)
+                                              .then(() => {
+                                                toast.success(
+                                                  "Test code copied to clipboard",
+                                                  {
+                                                    duration: 4000,
+                                                  }
+                                                );
+                                              })
+                                              .catch((err) => {
+                                                toast.error(
+                                                  "Error copying test code",
+                                                  {
+                                                    duration: 4000,
+                                                  }
+                                                );
+                                              });
+                                          }}
+                                        >
+                                          {recommendation}
+                                        </span>
+                                      ))}
+                                  </>
+                                ) : (
+                                  <>
+                                    <>
+                                      <span>
+                                        In process, please check again in a
+                                        while.{" "}
+                                      </span>
+                                    </>
+                                  </>
+                                )}
+                                {/* {comment.recommendations !== null ? (
                                   <>
                                     {hasPassed48Hours(comment.date) ? (
                                       <>
@@ -1074,7 +1268,7 @@ const SessionNotes = ({ user }: any) => {
                                   <span>
                                     In process, please check again in a while.{" "}
                                   </span>
-                                )}
+                                )} */}
                               </p>
                             </div>
                           </div>
