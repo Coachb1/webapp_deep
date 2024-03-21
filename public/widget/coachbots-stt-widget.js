@@ -135,6 +135,7 @@ let intakeButton;
 let isAnonymous = false;
 let UserProfileInfo;
 let sessionQnAdata = [];
+let intakebuttonText = 'Pre-Check'
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -1004,6 +1005,9 @@ const getBotDetails2 = async (botId) => {
       botType === "helper_bot" ||
       botType === "coachbots"
     ) {
+      if(['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) ){
+        intakebuttonText = 'Orientation'
+      }
       // faqButtonsGenerator("intake", "Intake");
       intakeButton = document.createElement("button");
       intakeButton.setAttribute(
@@ -1019,7 +1023,7 @@ const getBotDetails2 = async (botId) => {
         "this.style.backgroundColor = '#dc2626'"
       );
       intakeButton.setAttribute("onclick", `handleFaqButtonClick('intake')`);
-      intakeButton.innerText = "Pre-Check";
+      intakeButton.innerText = intakebuttonText;
       buttonsWrapper.appendChild(intakeButton);
     }
 
@@ -1347,7 +1351,7 @@ async function handlePreviousConversation(choice) {
     // previousButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
 
     const conversationProceedOptions = `<div id="conversation-proceed-options" >
-                    <b>New sessions will cancel out any existing intakes and you have to do the intake again.. Do you want to proceed?</b> <br>
+                    <b>New sessions will cancel out any existing intakes and you have to do the ${intakebuttonText} again.. Do you want to proceed?</b> <br>
                         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('Yes')">Yes</button>
                         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('No')">No</button>
                     </div>`;
@@ -1381,7 +1385,7 @@ async function handlePreviousConversation(choice) {
     appendMessage2(
       addStickerToMessage(
         "System",
-        "You must complete the pre-check before beginning the session",
+        `You must complete the ${intakebuttonText} before beginning the session`,
         '#22c55e'
       )
     );
@@ -1410,7 +1414,7 @@ async function handlePreviousConversation(choice) {
       appendMessage2(
         addStickerToMessage(
           "Note",
-          "Your fitment score is low or has not been attempted. Please proceed with this in mind.",
+          "Your quick match score is low or not calculated. Please proceed with caution",
           "#22c55e"
         )
       );
@@ -1493,7 +1497,7 @@ async function handleFaqButtonClick(question) {
       appendMessage2(
         addStickerToMessage(
           "Quick Match",
-          "These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field.",
+          "These profiles are not enabled for any offline interaction and matching.",
           "#fb923c"
         )
       );
@@ -1736,7 +1740,7 @@ async function handleFaqButtonClick(question) {
           // <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
           // <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
           // appendMessage2(begginSessionMessage);
-          appendMessage2(addStickerToMessage("Begin Session","You can only begin session after pre-check is complete",'#22c55e'));
+          appendMessage2(addStickerToMessage("Begin Session",`You can only begin session after ${intakebuttonText} is complete`,'#22c55e'));
           optedBeginSession = false;
           return;
         }
@@ -1806,7 +1810,7 @@ async function handleFaqButtonClick(question) {
           appendMessage2(
             addStickerToMessage(
               "Note",
-              "Your fitment score is low or has not been attempted. Please proceed with this in mind.",
+              "Your quick match score is low or not calculated. Please proceed with caution",
               '#22c55e'
             )
           );
@@ -1886,11 +1890,11 @@ async function handleFaqButtonClick(question) {
       botInitialQuestionsIndex = 1;
       optedBeginSession = true;
       const divCont = `<div id="initial_question_proceed" >
-      <b>Thank you for considering a virtual session. How intake works: It is a series of five fixed questions like a form. Click "OK" to start</b>
+      <b>Thank you for considering a virtual session. Please answer the following questions that appear for ${intakebuttonText}. Click "OK" to start</b>
         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="SendingFirstInitialQue()">OK</button>
       </div>`;
 
-      appendMessage2(addStickerToMessage("Intake", divCont,'#d3d3d3'));
+      appendMessage2(addStickerToMessage(intakebuttonText, divCont,'#dc2626'));
       return;
     }
 
@@ -2038,7 +2042,7 @@ function sendBotTranscript2() {
 
 function handleEndConversation() {
   console.log("end conversation clicked");
-  appendMessage2("<b>Your session is ended. You can restart anytime.</b>");
+  appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
 
   const begginSessionButton = document.getElementById("begin-session-button");
   begginSessionButton.disabled = false;
@@ -5112,7 +5116,7 @@ loadExternalModule().then(() => {
                     });
                   //********** submit intake to backend: end */
                   signals.onResponse({
-                    text: "Thank you for completing the intake. You can now proceed to start your session.",
+                    text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                   });
                   // ****** enabling begin session button
                   const begginSessionButton = document.getElementById("begin-session-button");
