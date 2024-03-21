@@ -304,6 +304,10 @@ const Coaches = ({ user }: any) => {
       .catch((error) => console.log("error", error));
   };
 
+  const getFormattedCoachName = (name:string) => {
+      return name.replace(/([^a-zA-Z0-9])\1+/g, '$1');
+  }
+
   const getConnectionsForCoachee = (coacheeId: string) => {
     fetch(
       `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
@@ -1141,7 +1145,7 @@ const Coaches = ({ user }: any) => {
                             ))}
                       </div>
                       <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                        {coach.name}{" "}
+                        {getFormattedCoachName(coach.name)  }{" "}
                       </p>{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
