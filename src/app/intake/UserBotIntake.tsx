@@ -283,7 +283,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                     router.push("/profile");
                   }, 4000);
                 } else {
-                  toast.success("Successfully Created your user bot.", {
+                  toast.success("Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.", {
                     duration: 6000,
                   });
                   setTimeout(() => {

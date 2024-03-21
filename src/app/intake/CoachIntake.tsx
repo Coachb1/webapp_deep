@@ -834,7 +834,7 @@ const CoachIntake = ({ user }: any) => {
                           setCreateLoading(false);
                           if (!data.error && !data.detail) {
                             toast.success(
-                              "Thanks for your request. You will get notified when your profile is approved and live.",
+                              "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
                               {
                                 duration: 6000,
                               }
@@ -890,7 +890,7 @@ const CoachIntake = ({ user }: any) => {
                 resetAllStates();
                 setCreateLoading(false);
                 toast.success(
-                  "Thanks for your request. You will get notified when your profile is approved and live.",
+                  "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
                   {
                     duration: 6000,
                   }
@@ -1242,7 +1242,7 @@ const CoachIntake = ({ user }: any) => {
               }, 4000);
             } else {
               toast.success(
-                "Thanks for your request. You will get notified when your Feedback bot is approved and live.",
+                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
                 {
                   duration: 6000,
                 }
