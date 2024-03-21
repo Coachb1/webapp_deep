@@ -46,7 +46,7 @@ const Guides = ({ user }: any) => {
         setRoleBots(filteredRoleBots);
 
         const filteredSkillBots = data.filter(
-          (bot: SkillnRoleBotsType) => bot.scenario_case === "general"
+          (bot: SkillnRoleBotsType) => bot.scenario_case === "skill_guide"
         );
         setSkillBots(filteredSkillBots);
       })

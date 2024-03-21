@@ -1023,7 +1023,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(intakeButton);
     }
 
-    if (botDetails.data.is_fitment_analysis) {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case)) {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1335,7 +1335,7 @@ async function handlePreviousConversation(choice) {
 
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   const newConversationButton = shadowRoot2.getElementById("new-conversation");
-  if (choice === "new" && !isIntakeCompleted) {
+  if (choice === "new") {
     disableOrEnableButtons("conversation-proceed");
     // if( !isIntakeCompleted ){
     //   appendMessage2(addStickerToMessage("System","You can only begin session after intake is complete"));
@@ -1378,15 +1378,14 @@ async function handlePreviousConversation(choice) {
     const conversationProceedOptionsParent =
       conversationProceedOptions.parentElement.parentElement.parentElement;
     conversationProceedOptionsParent.remove();
-    if (!isIntakeCompleted) {
-      appendMessage2(
-        addStickerToMessage(
-          "System",
-          "You must complete the pre-check before begning the session"
-        )
-      );
-      return;
-    }
+    appendMessage2(
+      addStickerToMessage(
+        "System",
+        "You must complete the pre-check before beginning the session",
+        '#22c55e'
+      )
+    );
+    return;
   }
 
   if (choice === "No") {
@@ -1407,11 +1406,12 @@ async function handlePreviousConversation(choice) {
     await getFitmentScore(userId2);
     console.log(isBeginSessionProceed);
 
-    if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment) {
+    if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && globalBotDetails.data.scenario_case != 'icons_by_ai' && !['coach', 'mentor'].includes(UserProfileInfo.profile_type)) {
       appendMessage2(
         addStickerToMessage(
           "Note",
-          "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+          "Your fitment score is low or has not been attempted. Please proceed with this in mind.",
+          "#22c55e"
         )
       );
     }
@@ -1419,7 +1419,8 @@ async function handlePreviousConversation(choice) {
     appendMessage2(
       addStickerToMessage(
         "Welcome",
-        "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? "
+        "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? ",
+        "#22c55e"
       )
     );
   }
@@ -1440,7 +1441,8 @@ async function handlePreviousConversation(choice) {
     appendMessage2(
       addStickerToMessage(
         "Welcome",
-        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? ",
+        "#22c55e"
       )
     );
 
@@ -1454,7 +1456,8 @@ async function handlePreviousConversation(choice) {
     appendMessage2(
       addStickerToMessage(
         "Welcome",
-        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? ",
+        "#22c55e"
       )
     );
   }
@@ -1490,7 +1493,8 @@ async function handleFaqButtonClick(question) {
       appendMessage2(
         addStickerToMessage(
           "Quick Match",
-          "These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field."
+          "These profiles are not enabled for any offline interaction and matching is not relevant as they are purely AI icons i.e representations of experts in the field.",
+          "#fb923c"
         )
       );
       return;
@@ -1499,7 +1503,8 @@ async function handleFaqButtonClick(question) {
     appendMessage2(
       `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
         "Quick Match",
-        "Please Wait..."
+        "Please Wait...",
+        "#fb923c"
       )}</div>`
     );
 
@@ -1538,7 +1543,7 @@ async function handleFaqButtonClick(question) {
       // appendMessage2()
       gShadowRoot2.getElementById(
         `fitment-container-${fitmentContainerId}`
-      ).innerHTML = addStickerToMessage("Quick Match", que_msg);
+      ).innerHTML = addStickerToMessage("Quick Match", que_msg,"#fb923c");
       fitmentAnalysisInProgress = false;
       return;
     }
@@ -1595,7 +1600,7 @@ async function handleFaqButtonClick(question) {
 
     msg = `
     <div style="display: flex; flex-direction: column;">
-      <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+      <div style="font-size : 12px; font-weight: bold; background-color : #fb923c;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
       <div id="fitment-container-${fitmentContainerId}" style="margin-top : 8px; padding-top: 0px;">${formRadios}</div>
     </div>
   `;
@@ -1643,6 +1648,7 @@ async function handleFaqButtonClick(question) {
     // something_else => begin_session
     if (question == "something_else") {
       // appendMessage2('Please ask your question in chat box')
+      console.log('scenario case',globalBotDetails.data.scenario_case)
       if (optedBeginSession) {
         console.log("===> yes optedBeginSession");
         return;
@@ -1693,8 +1699,8 @@ async function handleFaqButtonClick(question) {
 
       if (UserProfileInfo){
         console.log("======profileType: ", UserProfileInfo.profile_type)
-        if (['coach', 'mentor'].includes(UserProfileInfo.profile_type)){
-          appendMessage2(addStickerToMessage("Begin Session", `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`))
+        if (['coach', 'mentor'].includes(UserProfileInfo.profile_type) && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(globalBotDetails.data.scenario_case)){
+          appendMessage2(addStickerToMessage("Begin Session", `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,'#22c55e'))
         }
       }
 
@@ -1725,15 +1731,15 @@ async function handleFaqButtonClick(question) {
         console.log(" response_initial_qna : ", respJson);
         intakeSummery = respJson.intake_summary;
         IntakeUid = respJson.intake_id;
-        // if (!intakeSummery) {
-        //   const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-        //   <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
-        //   <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
-        //   appendMessage2(begginSessionMessage);
-        //   // appendMessage2(addStickerToMessage("Begin Session","You can only begin session after intake is complete"));
-        //   optedBeginSession = false;
-        //   return;
-        // }
+        if (!intakeSummery) {
+          // const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+          // <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
+          // <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
+          // appendMessage2(begginSessionMessage);
+          appendMessage2(addStickerToMessage("Begin Session","You can only begin session after pre-check is complete",'#22c55e'));
+          optedBeginSession = false;
+          return;
+        }
       }
 
       console.log(
@@ -1744,14 +1750,15 @@ async function handleFaqButtonClick(question) {
       );
       if (
         isIntakeSummaryDisplayed == false &&
-        ["avatar_bot", "helper_bot", "coachbots"].includes(botType)
+        ["avatar_bot", "helper_bot", "coachbots"].includes(botType) &&
+        !['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)
       ) {
-        const begginSessionMessage = `<div  style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-        <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
-        <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`;
-        appendMessage2(begginSessionMessage);
+        // const begginSessionMessage = `<div  style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+        // <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
+        // <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`;
+        // appendMessage2(begginSessionMessage);
 
-        // appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`))
+        appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`,'#22c55e'))
 
         isIntakeSummaryDisplayed = true;
         // return;
@@ -1763,8 +1770,7 @@ async function handleFaqButtonClick(question) {
 
       if (
         previousBotConversationId != "" &&
-        botType === "avatar_bot" &&
-        isIntakeCompleted == false
+        botType === "avatar_bot"
       ) {
         console.log(previousBotConversationId, "in");
 
@@ -1796,11 +1802,12 @@ async function handleFaqButtonClick(question) {
         await getFitmentScore(userId2);
         console.log(isBeginSessionProceed);
 
-        if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment) {
+        if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && globalBotDetails.data.scenario_case != 'icons_by_ai' && !['coach', 'mentor'].includes(UserProfileInfo.profile_type)) {
           appendMessage2(
             addStickerToMessage(
               "Note",
-              "Your fitment score is low or has not been attempted. Please proceed with this in mind."
+              "Your fitment score is low or has not been attempted. Please proceed with this in mind.",
+              '#22c55e'
             )
           );
         }
@@ -1811,34 +1818,44 @@ async function handleFaqButtonClick(question) {
         appendMessage2(
           `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
         );
-        appendMessage2(
-          addStickerToMessage(
-            "Welcome",
-            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
-          )
-        );
+        // appendMessage2(
+        //   addStickerToMessage(
+        //     "Welcome",
+        //     "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+        //   )
+        // );
         return;
       }
       if (botType === "helper_bot" || botType === "coachbots") {
-        appendMessage2(
-          `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
-        );
-        appendMessage2(
-          addStickerToMessage(
-            "Welcome",
-            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
-          )
-        );
+        if (['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)){
+          appendMessage2(
+            addStickerToMessage(
+              "Begin Session",
+              `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`,
+              '#22c55e'
+            )
+          );
+        } else{
+          appendMessage2(
+            `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+          );
+        }
+        // appendMessage2(
+        //   addStickerToMessage(
+        //     "Welcome",
+        //     "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+        //   )
+        // );
       }
 
-      if (botType === "avatar_bot") {
-        appendMessage2(
-          addStickerToMessage(
-            "Welcome",
-            "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
-          )
-        );
-      }
+      // if (botType === "avatar_bot") {
+      //   appendMessage2(
+      //     addStickerToMessage(
+      //       "Welcome",
+      //       "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? "
+      //     )
+      //   );
+      // }
 
       // isAskingInitialQuestions = true;
 
@@ -1873,7 +1890,7 @@ async function handleFaqButtonClick(question) {
         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="SendingFirstInitialQue()">OK</button>
       </div>`;
 
-      appendMessage2(addStickerToMessage("Intake", divCont));
+      appendMessage2(addStickerToMessage("Intake", divCont,'#d3d3d3'));
       return;
     }
 
@@ -1929,7 +1946,7 @@ async function handleFaqButtonClick(question) {
         if (globalBotDetails.data.faqs.hasOwnProperty(key)) {
           const template = `
           <div style="display: flex; flex-direction: column;">
-            <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${key}</div>
+            <div style="font-size : 12px; font-weight: bold; background-color : #e5e7eb;color: black; padding: 4px; border-radius:4px; width: fit-content;">${key}</div>
             <p style="margin-top : 8px; padding-top: 0px;">${globalBotDetails.data.faqs[key]}</p>
           </div>
         `;
@@ -2407,9 +2424,10 @@ function disableOrEnableButtons(id, is_disable = true) {
   }
 }
 
-function addStickerToMessage(sticker, msg) {
+function addStickerToMessage(sticker, msg, color='#3b82f6') {
+  
   const divWithLabel = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-  <div style="font-size : 12px; font-weight: bold; background-color : #3b82f6;color: white; padding: 4px; border-radius:4px; width: fit-content;">${sticker}</div>
+  <div style="font-size : 12px; font-weight: bold; background-color : ${color};color: white; padding: 4px; border-radius:4px; width: fit-content;">${sticker}</div>
   <div style="margin-top : 8px; padding-top: 0px;">${msg}</div>
   </div>`;
   return divWithLabel;
@@ -5017,6 +5035,12 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                if(!isValidMessageStt(latestMessage,11) && !options.includes(latestMessage)){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>",
+                  });
+                  return;
+                }
                 const shadowRoot =
                   document.getElementById("chat-element2").shadowRoot;
                 const initialOptionDiv =
@@ -5026,6 +5050,13 @@ loadExternalModule().then(() => {
                 buttons.forEach((button) => {
                   button.disabled = true;
                 });
+              } else {
+                if(!isValidMessageStt(latestMessage,11)){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>",
+                  });
+                  return;
+                }
               }
               if (
                 typeof botInitialQuestions[botInitialQuestionsIndex] != "string"
@@ -5083,6 +5114,20 @@ loadExternalModule().then(() => {
                   signals.onResponse({
                     text: "Thank you for completing the intake. You can now proceed to start your session.",
                   });
+                  // ****** enabling begin session button
+                  const begginSessionButton = document.getElementById("begin-session-button");
+                  begginSessionButton.disabled = false;
+                  begginSessionButton.style.cursor = "pointer";
+
+                  // ***** enabling intake button
+                  if (intakeButton) {
+                    intakeButton.disabled = true;
+                    intakeButton.style.backgroundColor = "#d3d3d3";
+                    intakeButton.style.color = "#a0a0a0";
+                    intakeButton.removeAttribute("onmouseover");
+                    intakeButton.removeAttribute("onmouseleave");
+                  }
+                  isIntakeSummaryDisplayed = false
                   return;
                 }
                 // signals.onResponse({text: "Thank you for your response."})

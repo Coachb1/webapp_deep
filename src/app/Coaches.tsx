@@ -365,7 +365,7 @@ const Coaches = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
-          // getCanJoinAs(user.email);
+          getCanJoinAs(user.email);
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -938,7 +938,7 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
-              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+              <DropdownMenuItem disabled={allCoaches.length > 0 || !["coach", "mentor"].includes(canJoinAs)} asChild>
                 <span
                   onClick={() => {
                     router.push("/intake/?type=coach");
@@ -947,7 +947,7 @@ const Coaches = ({ user }: any) => {
                   className="flex flex-row items-center justify-center"
                 >
                   Join as Coach or Mentor{" "}
-                  {allCoaches.length > 0 && (
+                  {allCoaches.length > 0 ? (
                     <>
                       {allCoaches[0]?.is_approved ? (
                         <>
@@ -977,12 +977,22 @@ const Coaches = ({ user }: any) => {
                         </>
                       )}
                     </>
+                  ) : (
+                    !["coach", "mentor"].includes(canJoinAs) ? (
+                      <Badge
+                        variant={"secondary"}
+                        className="ml-2 border border-gray-400"
+                      >
+                        Not Allowed
+                      </Badge>
+                    ) : null 
                   )}
+
                 </span>
               </DropdownMenuItem>
               {/* )} */}
               {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
-              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+              <DropdownMenuItem disabled={allCoaches.length > 0 || !["coachee", "mentee"].includes(canJoinAs)} asChild>
                 <span
                   onClick={() => {
                     router.push("/intake/?type=coachee");
@@ -990,7 +1000,7 @@ const Coaches = ({ user }: any) => {
                   className="flex flex-row items-center justify-center"
                 >
                   Join as Coachee or Mentee
-                  {allCoaches.length > 0 && (
+                  {allCoaches.length > 0 ? (
                     <>
                       {allCoaches[0]?.is_approved ? (
                         <>
@@ -1021,6 +1031,15 @@ const Coaches = ({ user }: any) => {
                         </>
                       )}
                     </>
+                  ) : (
+                    !["coachee", "mentee"].includes(canJoinAs) ? (
+                      <Badge
+                        variant={"secondary"}
+                        className="ml-2 border border-gray-400"
+                      >
+                        Not Allowed
+                      </Badge>
+                    ) : null 
                   )}
                 </span>
               </DropdownMenuItem>
