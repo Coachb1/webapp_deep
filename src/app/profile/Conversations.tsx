@@ -123,7 +123,12 @@ const Conversations = ({ user }: any) => {
               if (data[0] != "Bot not Found") {
                 const convertedData: ConvertedConversation[] =
                   convertJsonToExpectedFormat(data);
-                setConvertsationDataAdmin(convertedData);
+                setConvertsationDataAdmin(
+                  convertedData.sort(
+                    (a, b) =>
+                      new Date(b.date).getTime() - new Date(a.date).getTime()
+                  )
+                );
               }
               // setLoading(false);
             })
@@ -147,7 +152,12 @@ const Conversations = ({ user }: any) => {
               console.log("FOR USER : ", data);
               const convertedData: ConvertedConversation[] =
                 convertJsonToExpectedFormat(data);
-              setConvertsationData(convertedData);
+              setConvertsationData(
+                convertedData.sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime()
+                )
+              );
               // setLoading(false);
             })
             .catch((err) => {
@@ -195,7 +205,13 @@ const Conversations = ({ user }: any) => {
                         },
                       }));
                     console.log(FeedbackConvo, "FeedbackConvo");
-                    setFeedbackConversations(FeedbackConvo);
+                    setFeedbackConversations(
+                      FeedbackConvo.sort(
+                        (a, b) =>
+                          new Date(b.date).getTime() -
+                          new Date(a.date).getTime()
+                      )
+                    );
                     setLoading(false);
                   })
                   .catch((err) => {

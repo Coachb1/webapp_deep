@@ -184,7 +184,7 @@ const UserProfile = ({ user }: any) => {
           <div className="flex flex-row items-center">
             <p className="text-md ">Name </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
-              {user.given_name}
+              {`${user.given_name} ${user.family_name ? user.family_name : ""}`}
             </p>
           </div>
           <div className="flex flex-row items-center mt-4">

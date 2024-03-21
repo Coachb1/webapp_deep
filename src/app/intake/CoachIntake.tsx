@@ -368,6 +368,9 @@ const CoachIntake = ({ user }: any) => {
           console.log(data);
           setUserId(data.uid);
           userIdd = data.uid;
+          setName(
+            `${user.given_name} ${user.family_name ? user.family_name : ""}`
+          );
         })
         .catch((err) => {
           console.error(err);
@@ -410,27 +413,27 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (
-                data.data.length > 0 &&
-                !checkIfEdit &&
-                formType !== "knowledge-bot" &&
-                formType !== "feedback"
-              ) {
-                if (
-                  (formType === "coach" && profileTypes.includes("coach")) ||
-                  profileTypes.includes("mentor") ||
-                  profileTypes.includes("coachee") ||
-                  profileTypes.includes("mentee")
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (
+              //   data.data.length > 0 &&
+              //   !checkIfEdit &&
+              //   formType !== "knowledge-bot" &&
+              //   formType !== "feedback"
+              // ) {
+              //   if (
+              //     (formType === "coach" && profileTypes.includes("coach")) ||
+              //     profileTypes.includes("mentor") ||
+              //     profileTypes.includes("coachee") ||
+              //     profileTypes.includes("mentee")
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -1600,15 +1603,16 @@ const CoachIntake = ({ user }: any) => {
                         setName(e.target.value);
                         handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
+                      disabled
                       placeholder="Aarav Sharma"
                       type="text"
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
-                    {Object.keys(error).includes("Name") && (
+                    {/* {Object.keys(error).includes("Name") && (
                       <p className="text-red-500 text-xs mt-1">
                         {(error as any)["Name"]}
                       </p>
-                    )}
+                    )} */}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -2827,19 +2831,20 @@ const CoachIntake = ({ user }: any) => {
                       value={name}
                       minLength={10}
                       maxLength={30}
+                      disabled
                       onChange={(e) => {
                         setName(e.target.value);
                         handleWordLimit(e.target.value, 10, 30, "Name");
                       }}
                       placeholder="Aarav Sharma"
                       type="text"
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                     />
-                    {Object.keys(error).includes("Name") && (
+                    {/* {Object.keys(error).includes("Name") && (
                       <p className="text-red-500 text-xs mt-1">
                         {(error as any)["Name"]}
                       </p>
-                    )}
+                    )} */}
 
                     {/* {error && <p className="text-red-500 text-xs mt-1">{error}</p>} */}
                   </div>
@@ -3165,19 +3170,20 @@ const CoachIntake = ({ user }: any) => {
                     required
                     minLength={10}
                     maxLength={30}
+                    disabled
                     onChange={(e) => {
                       setName(e.target.value);
                       handleWordLimit(e.target.value, 10, 30, "Name");
                     }}
                     placeholder="Aarav Sharma"
                     type="text"
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                    className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                   />
-                  {Object.keys(error).includes("Name") && (
+                  {/* {Object.keys(error).includes("Name") && (
                     <p className="text-red-500 text-xs mt-1">
                       {(error as any)["Name"]}
                     </p>
-                  )}
+                  )} */}
                 </div>
                 <div className="my-3">
                   <p className="text-sm my-1">

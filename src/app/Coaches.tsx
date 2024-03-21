@@ -324,6 +324,26 @@ const Coaches = ({ user }: any) => {
       });
   };
 
+  const getConnectionsForCoach = (coachId: string) => {
+    fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setConnections(data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
@@ -380,9 +400,11 @@ const Coaches = ({ user }: any) => {
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
               );
-
+              console.log(findCoachUID(isApprovedData));
               if (findCoacheeUID(isApprovedData)) {
                 getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+              } else if (findCoachUID(isApprovedData)) {
+                getConnectionsForCoach(findCoachUID(isApprovedData));
               }
 
               if (isApprovedData.length > 0) {
@@ -600,6 +622,35 @@ const Coaches = ({ user }: any) => {
       setConnectedCoaches(connectedCoaches);
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+    } else if (coachId.length > 0) {
+      console.log(savedCoachesData, connections);
+      const coachesWithStatus = savedCoachesData.map(
+        (coach: CoachesDataType) => {
+          const connection = connections.find(
+            (connection) => connection.coachee_id === coach.profile_id
+          );
+          return {
+            ...coach,
+            status: connection ? connection.status : "", // Set status to empty string if not found
+          };
+        }
+      );
+
+      console.log("Coaches with status : ", coachesWithStatus);
+
+      const connectedCoaches = coachesWithStatus.filter(
+        (coach) => coach.status === "accepted"
+      );
+
+      const unconnectedCoaches = coachesWithStatus.filter(
+        (coach) => !isConnected(coach.status)
+      );
+
+      console.log("Connected Coaches", connectedCoaches);
+
+      setConnectedCoaches(connectedCoaches);
+      setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+      setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
 
     //default filter for - icons by ai
@@ -616,7 +667,7 @@ const Coaches = ({ user }: any) => {
     );
     console.log(filteredData, "coach-only");
     setCoachesData(filteredData);
-  }, [connections, coacheeId]);
+  }, [connections, coacheeId, coachId]);
 
   const handleLinks = (link: string) => {
     if (link.includes("playground")) {
@@ -1177,11 +1228,14 @@ const Coaches = ({ user }: any) => {
                       </div>
                       <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
                         <div className="flex flex-row items-center"></div>
-                        <ReviewComponent
-                          stars={coach.rating}
-                          totalRatings={coach.total_rating}
-                          coachId={coach.profile_id}
-                        />
+                        {coach.profile_type !== "coachee" &&
+                          coach.profile_type !== "mentee" && (
+                            <ReviewComponent
+                              stars={coach.rating}
+                              totalRatings={coach.total_rating}
+                              coachId={coach.profile_id}
+                            />
+                          )}
                         {(coach.profile_type === "coach" ||
                           coach.profile_type === "mentor") && (
                           <div className="max-sm:mt-2 flex flex-row items-center">
@@ -1191,15 +1245,15 @@ const Coaches = ({ user }: any) => {
                             <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
                               {coach.total_without_question_count} Engagements
                             </p>
+                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                              ●
+                            </span>
                           </div>
                         )}
                         <div>
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
                               <>
-                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                                  ●
-                                </span>
                                 <Link
                                   target="_blank"
                                   href={handleLinks(coach.feedback_wall)}
@@ -1238,19 +1292,19 @@ const Coaches = ({ user }: any) => {
                         )}
                       </div>
                       <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
+                        {coach.status === "accepted" && (
+                          <Button
+                            disabled
+                            variant={"outline"}
+                            className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                          >
+                            Connected
+                          </Button>
+                        )}
                         {(coach.profile_type === "coach" ||
                           coach.profile_type === "mentor" ||
                           coach.profile_type === "coach-mentor") && (
                           <>
-                            {coach.status === "accepted" && (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                              >
-                                Connected
-                              </Button>
-                            )}
                             {coach.status === "pending" && (
                               <Button
                                 disabled
