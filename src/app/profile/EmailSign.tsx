@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 const EmailSign = ({ user }: any) => {
   const [totalActionPoints, setTotalActionPoints] = useState(0);
 
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [coachId, setCoachId] = useState("");
@@ -27,6 +29,10 @@ const EmailSign = ({ user }: any) => {
 
   useEffect(() => {
     if (user) {
+      setUserName(
+        `${user.given_name} ${user.family_name ? user.family_name : ""}`
+      );
+      setUserEmail(user.email);
       getUserAccount(user)
         .then((response) => response.json())
         .then((userdata) => {
@@ -173,7 +179,7 @@ const EmailSign = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
+    <div className="bg-accent p-2 mt-2 rounded-md  mb-6">
       <div className="pl-4 max-sm:pl-2 pt-2">Email Signature</div>
       <>
         {loading && (
@@ -202,8 +208,8 @@ const EmailSign = ({ user }: any) => {
                             className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
                           >
                             <div>With best Regards,</div>
-                            <div>Mala Kumari</div>
-                            <div>Employee Experience Manager </div>
+                            <div>{userName}</div>
+                            <div>[Designation] </div>
                             <div>
                               Email:{" "}
                               <a
@@ -211,12 +217,12 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href="maito:mala@world.com"
+                                href={`mailto:${userEmail}`}
                               >
-                                mala@world.com
+                                {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: +91-889988998 </div>
+                            <div>Phone: [ph-number] </div>
                             <a
                               href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
                               style={{
@@ -244,8 +250,8 @@ const EmailSign = ({ user }: any) => {
                             className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
                           >
                             <div>With best Regards,</div>
-                            <div>Mala Kumari</div>
-                            <div>Operations Director </div>
+                            <div>{userName}</div>
+                            <div>[Designation]</div>
                             <div>
                               Email:{" "}
                               <a
@@ -253,12 +259,12 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href="maito:mala@world.com"
+                                href={`mailto:${userEmail}`}
                               >
-                                mala@world.com
+                                {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: +91-889988998 </div>
+                            <div>Phone: [ph-number] </div>
                             <a
                               href={`https://playground.coachbots.com/coach/${avatarBotId}`}
                               style={{
@@ -286,8 +292,8 @@ const EmailSign = ({ user }: any) => {
                             className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
                           >
                             <div>With best Regards,</div>
-                            <div>Mala Kumari</div>
-                            <div>Employee Experience Manager </div>
+                            <div>{userName}</div>
+                            <div>[Designation]</div>
                             <div>
                               Email:{" "}
                               <a
@@ -295,12 +301,12 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href="maito:mala@world.com"
+                                href={`mailto:${userEmail}`}
                               >
-                                mala@world.com
+                                {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: +91-889988998 </div>
+                            <div>Phone: [ph-number] </div>
 
                             <a
                               href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
@@ -359,8 +365,8 @@ const EmailSign = ({ user }: any) => {
                                 className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
                               >
                                 <div>With best Regards,</div>
-                                <div>Mala Kumari</div>
-                                <div>Employee Experience Manager </div>
+                                <div>{userName}</div>
+                                <div>[Designation] </div>
                                 <div>
                                   Email:{" "}
                                   <a
@@ -368,12 +374,12 @@ const EmailSign = ({ user }: any) => {
                                       color: "#2563eb",
                                       textDecoration: "underline",
                                     }}
-                                    href="maito:mala@world.com"
+                                    href={`mailto:${userEmail}`}
                                   >
-                                    mala@world.com
+                                    {userEmail}
                                   </a>{" "}
                                 </div>
-                                <div>Phone: +91-889988998 </div>
+                                <div>Phone: [ph-number] </div>
                                 <a
                                   href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
                                   style={{

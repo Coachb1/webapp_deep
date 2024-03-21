@@ -19,16 +19,18 @@ const ConversationChat = ({
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
             <p className="flex flex-row max-sm:flex-col max-sm:text-left">
-              <span>
-                {" "}
-                <b>
+              {type !== "coach-interactions" && (
+                <span>
                   {" "}
-                  {type === "coachee-interactions"
-                    ? "Name "
-                    : "Participant name"}
-                </b>{" "}
-                : {participant} <span className="max-sm:hidden mx-2">|</span>
-              </span>
+                  <b>
+                    {" "}
+                    {type === "coachee-interactions"
+                      ? "Name "
+                      : "Participant name"}
+                  </b>{" "}
+                  : {participant} <span className="max-sm:hidden mx-2">|</span>
+                </span>
+              )}
               {type === "coach-interactions" && (
                 <span>
                   <b>Bot Name</b> : {botName}{" "}

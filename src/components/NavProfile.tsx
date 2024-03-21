@@ -35,7 +35,9 @@ const NavProfile = ({ user }: any) => {
               <div className="flex flex-col space-x-0.5 leading-none">
                 {user.given_name && (
                   <p className="font-medium text-sm text-black">
-                    {user.given_name}
+                    {`${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`}
                   </p>
                 )}
                 {user.email && (
@@ -96,7 +98,9 @@ export const NavProfileWoProfile = ({ user }: any) => {
               <div className="flex flex-col space-x-0.5 leading-none">
                 {user.given_name && (
                   <p className="font-medium text-sm text-black">
-                    {user.given_name}
+                    {`${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`}
                   </p>
                 )}
                 {user.email && (
@@ -106,22 +110,7 @@ export const NavProfileWoProfile = ({ user }: any) => {
                 )}
               </div>
             </div>
-
             <DropdownMenuSeparator />
-
-            {/* <DropdownMenuItem
-              onClick={() => {
-                router.push("/profile");
-              }}
-              asChild
-            >
-              <div className="w-full">
-                <User className="h-4 w-4 mr-2" /> Your profile
-              </div>
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator /> */}
-
             <DropdownMenuItem asChild>
               <LogoutLink>
                 {" "}

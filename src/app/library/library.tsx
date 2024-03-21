@@ -574,6 +574,19 @@ const MyLibrary = ({ user }: any) => {
                             </span>
                           </div>
 
+                          <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                            <SearchNSelect
+                              placeholder="Select by Simulation domain"
+                              onSearchHandler={(value) =>
+                                onDomainSearchHandlerNewManager(value, category)
+                              }
+                              onDomainSelectHandler={(value) =>
+                                onDomainSelectHandlerNewManager(value, category)
+                              }
+                              optionDomains={category.domainOptionsForFilter}
+                            />
+                          </div>
+
                           <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                             {(
                               filteredTestsData[category.category_name] ||
