@@ -307,7 +307,7 @@ const Guides = ({ user }: any) => {
                                           className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                         >
                                           {knowledgeBot.length === 0 ? (
-                                            <p>No user created guides available.</p>
+                                            <p>There are no community created guides yet!</p>
                                           ) : (
                                             knowledgeBot.map((bot, i) => (
                                               <AccordionItem
