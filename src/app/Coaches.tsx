@@ -433,12 +433,6 @@ const Coaches = ({ user }: any) => {
     }
 
     return inputArray.filter((obj) => {
-      // if (filterArray.includes("coach" || "mentor")) {
-      //   return (
-      //     obj.profile_type &&
-      //     filterArray.includes(obj.profile_type.toLowerCase())
-      //   );
-      // } else {
       return filterArray.every((filter) => {
         for (const prop in obj) {
           if (
@@ -455,7 +449,6 @@ const Coaches = ({ user }: any) => {
         }
         return false;
       });
-      // }
     });
   }
 
@@ -463,24 +456,12 @@ const Coaches = ({ user }: any) => {
     []
   );
   const handleUpdateCheckedValues = (newValues: string[]) => {
-    // if (newValues.includes("External")) {
-    //   toast.info(
-    //     "You do not have access to external coaches and mentors at this time. Please connect with your administrator."
-    //   );
-    // } else if (
-    //   connectedCoaches.length === 0 &&
-    //   newValues.includes("accepted")
-    // ) {
-    //   toast.info("You do not have any connections yet. Keep exploring.");
-    // } else {
     setParentCheckedValues(newValues);
     console.log(newValues);
-    //for search when empty
     if (newValues.length > 0 && newValues[0].length === 0) {
       setParentCheckedValues([]);
     }
 
-    //for dropdown select
     if (newValues.length === 0) {
       console.log("no values selected");
       setCoachesData(savedCoachesData);
@@ -620,6 +601,21 @@ const Coaches = ({ user }: any) => {
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
+
+    //default filter for - icons by ai
+    handleUpdateCheckedValues(["icons_by_ai"]);
+    const filteredData = filterData(
+      ["icons_by_ai"].includes("Connected")
+        ? coachesData.filter(
+            (coachData) => coachData.profile_type === "icons_by_ai"
+          )
+        : savedCoachesData.filter(
+            (coachData) => coachData.profile_type === "icons_by_ai"
+          ),
+      ["icons_by_ai"]
+    );
+    console.log(filteredData, "coach-only");
+    setCoachesData(filteredData);
   }, [connections, coacheeId]);
 
   const handleLinks = (link: string) => {
@@ -920,16 +916,13 @@ const Coaches = ({ user }: any) => {
           BOTS
         </h1>
         <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
-          Coaching, Mentoring & Feedback Network
+          Coaching & Performance Workbench
         </h1>
         <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
           {" "}
           Peer to Peer network of leaders for growth.
         </p>
         <div className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs">
-          {/* <Button disabled variant={"outline"} className="h-fit w-fit">
-            Group coaching (coming soon)
-          </Button> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="border-none outline-none">
               <div>
@@ -941,92 +934,92 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
-                <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                  <span
-                    onClick={() => {
-                      router.push("/intake/?type=coach");
-                    }}
-                    // href={"/intake/?type=coach"}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    Join as Coach or Mentor{" "}
-                    {allCoaches.length > 0 && (
-                      <>
-                        {allCoaches[0]?.is_approved ? (
-                          <>
-                            {coachId ? (
-                              <Badge className="ml-2">Already Joined</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {allCoaches[0]?.profile_type === "coach" ? (
-                              <Badge className="ml-2">Requested</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </span>
-                </DropdownMenuItem>
+              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+                <span
+                  onClick={() => {
+                    router.push("/intake/?type=coach");
+                  }}
+                  // href={"/intake/?type=coach"}
+                  className="flex flex-row items-center justify-center"
+                >
+                  Join as Coach or Mentor{" "}
+                  {allCoaches.length > 0 && (
+                    <>
+                      {allCoaches[0]?.is_approved ? (
+                        <>
+                          {coachId ? (
+                            <Badge className="ml-2">Already Joined</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {allCoaches[0]?.profile_type === "coach" ? (
+                            <Badge className="ml-2">Requested</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </span>
+              </DropdownMenuItem>
               {/* )} */}
               {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
-                <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
-                  <span
-                    onClick={() => {
-                      router.push("/intake/?type=coachee");
-                    }}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    Join as Coachee or Mentee
-                    {allCoaches.length > 0 && (
-                      <>
-                        {allCoaches[0]?.is_approved ? (
-                          <>
-                            {coacheeId ? (
-                              <Badge className="ml-2">Already Joined</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {allCoaches[0]?.profile_type === "coachee" ||
-                            allCoaches[0]?.profile_type === "mentee" ? (
-                              <Badge className="ml-2">Requested</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </span>
-                </DropdownMenuItem>
+              <DropdownMenuItem disabled={allCoaches.length > 0} asChild>
+                <span
+                  onClick={() => {
+                    router.push("/intake/?type=coachee");
+                  }}
+                  className="flex flex-row items-center justify-center"
+                >
+                  Join as Coachee or Mentee
+                  {allCoaches.length > 0 && (
+                    <>
+                      {allCoaches[0]?.is_approved ? (
+                        <>
+                          {coacheeId ? (
+                            <Badge className="ml-2">Already Joined</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {allCoaches[0]?.profile_type === "coachee" ||
+                          allCoaches[0]?.profile_type === "mentee" ? (
+                            <Badge className="ml-2">Requested</Badge>
+                          ) : (
+                            <Badge
+                              variant={"secondary"}
+                              className="ml-2 border border-gray-400"
+                            >
+                              Not Allowed
+                            </Badge>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+                </span>
+              </DropdownMenuItem>
               {/* )} */}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
                 <span
@@ -1049,20 +1042,6 @@ const Coaches = ({ user }: any) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* <Button variant={"outline"} className="h-fit w-fit">
-            <span
-              onClick={() => {
-                router.push("/intake/?type=knowledge-bot");
-              }}
-              className="flex flex-row items-center justify-center"
-            >
-              Create your Knowledge bot
-            </span>
-          </Button> */}
-          {/* <Button disabled variant={"outline"} className="h-fit w-fit">
-            Whatsapp Community (coming soon)
-          </Button> */}
         </div>
         <div id="list" className="min-h-screen w-full max-sm:px-2">
           <div className="my-4">
@@ -1093,6 +1072,9 @@ const Coaches = ({ user }: any) => {
                 checkedValues={parentCheckedValues}
                 onUpdateCheckedValues={handleUpdateCheckedValues}
               />
+              <p className="text-left text-sm max-sm:text-xs text-gray-600 mt-2">
+                Each menu is single-select only.
+              </p>
             </div>
           </div>
           <hr className="mt-2" />
@@ -1109,15 +1091,25 @@ const Coaches = ({ user }: any) => {
             {!loading &&
               coachesData.length > 0 &&
               currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20">
-                  <div className="relative top-[26px]  flex w-full flex-row justify-end">
+                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
+                  <div className="relative top-[26px]  flex w-full flex-row justify-between">
+                    {coach.profile_type !== "icons_by_ai" && (
+                      <span className="z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                        User Created
+                      </span>
+                    )}
                     {coach.timer_enabled && (
-                      <span className="z-[1] mr-4 rounded-2xl border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                      <span className="z-[1] mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
                         {coach.time_value_in_days} Days remaining
                       </span>
                     )}
                   </div>
-                  <div className="my-3 flex w-full flex-row gap-6 rounded-lg border border-r-gray-300 p-8">
+                  <div
+                    className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
+                      coach.profile_type === "icons_by_ai" &&
+                      "border-gray-800 shadow-lg"
+                    }`}
+                  >
                     <div className="">
                       <img
                         className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
