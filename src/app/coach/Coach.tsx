@@ -258,8 +258,8 @@ const Coach = ({ user, renderType }: any) => {
                 {renderType === "dynamic"
                   ? `Welcome to ${convertTextToCorrectFormat(
                       coachName
-                    )}'s AI Frame🚀`
-                  : "Welcome to the Aarav Sharma’s AI Frame!🚀"}
+                    )} 🚀`
+                  : "Welcome to the Aarav Sharma !🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
                 <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">

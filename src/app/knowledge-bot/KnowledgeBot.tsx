@@ -180,8 +180,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${botName} Bot! 🚀`
-                  : "Welcome to CrossFit Elevation Support Bot! 🚀"}
+                  ? `Welcome to ${botName} 🚀`
+                  : "Welcome to CrossFit Elevation Support 🚀"}
               </h1>
 
               {renderType === "dynamic" ? (
