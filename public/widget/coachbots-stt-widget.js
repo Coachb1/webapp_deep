@@ -782,7 +782,7 @@ async function populateBotConversation(participant_id) {
   console.log("PRevious conversations", botConv);
   if (botConv.length > 0) {
     // disabling intakebutton
-    if (botType === 'avatar_bot'){
+    if (botType === "avatar_bot") {
       if (intakeButton) {
         intakeButton.disabled = true;
         intakeButton.style.backgroundColor = "#d3d3d3";
@@ -886,30 +886,27 @@ const saveBotEngagement = (bot_id, user_id, field_name) => {
     );
 };
 
-
-const getUserProfile = async (user_id) =>{
-
+const getUserProfile = async (user_id) => {
   await fetch(
     `${baseURL2}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${user_id}`,
     {
       method: "GET",
       headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
       },
     }
   )
-  .then((resp) => resp.json())
-  .then((result) => {
-    console.log("user profile",result.data);
-      if(result.data.length > 0){
+    .then((resp) => resp.json())
+    .then((result) => {
+      console.log("user profile", result.data);
+      if (result.data.length > 0) {
         const userProfile = result.data[0];
-        console.log(userProfile)
-        UserProfileInfo = userProfile
+        console.log(userProfile);
+        UserProfileInfo = userProfile;
       }
     })
-  .catch((error) => console.error('got error in user_profile',error));
-
-}
+    .catch((error) => console.error("got error in user_profile", error));
+};
 
 const getBotDetails2 = async (botId) => {
   try {
@@ -1691,15 +1688,19 @@ async function handleFaqButtonClick(question) {
 
       await getUserProfile(userId2);
 
-      if (UserProfileInfo){
-        console.log("======profileType: ", UserProfileInfo.profile_type)
-        if (['coach', 'mentor'].includes(UserProfileInfo.profile_type)){
-          appendMessage2(addStickerToMessage("Begin Session", `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`))
+      if (UserProfileInfo) {
+        console.log("======profileType: ", UserProfileInfo.profile_type);
+        if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
+          appendMessage2(
+            addStickerToMessage(
+              "Begin Session",
+              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`
+            )
+          );
         }
       }
 
       // *** checking profile_type logic ends here==================================================
-      
 
       let intakeSummery;
       if (["avatar_bot", "helper_bot", "coachbots"].includes(botType)) {
@@ -1996,7 +1997,7 @@ function sendBotTranscript2() {
             Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ "session_qna_data": sessionQnAdata }),
+          body: JSON.stringify({ session_qna_data: sessionQnAdata }),
         }
       )
         .then((response) => response.json())
@@ -3399,7 +3400,7 @@ async function setMcqVariablesStt() {
     console.log("user logged in, so sending email");
     gShadowRoot2.getElementById(
       `mcq-option-stt-${mcqFormIdStt}`
-    ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
+    ).innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>`;
 
     // // submitting response
     const testResponse = await fetch(`${baseURL2}/test-responses/`, {
@@ -4260,7 +4261,7 @@ loadExternalModule().then(() => {
   if (botId == undefined) {
     chatElementRef2.initialMessages = [
       {
-        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)</p>`,
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation?</p>`,
         role: "ai",
       },
     ];
@@ -4533,7 +4534,12 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
-  const anthropicAiResponse = (userInputMessage, signals, conversationId, latestMessage) => {
+  const anthropicAiResponse = (
+    userInputMessage,
+    signals,
+    conversationId,
+    latestMessage
+  ) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -4586,7 +4592,10 @@ loadExternalModule().then(() => {
           });
 
           // add user question and bot answer to the session
-          sessionQnAdata.push({"user": latestMessage, "coach": messageText.innerText});
+          sessionQnAdata.push({
+            user: latestMessage,
+            coach: messageText.innerText,
+          });
           console.log("sessionQnAdata :", sessionQnAdata);
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
@@ -4609,7 +4618,10 @@ loadExternalModule().then(() => {
               fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
                 method: "POST",
                 headers: {
-                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  Authorization: `Basic ${createBasicAuthToken2(
+                    key2,
+                    secret2
+                  )}`,
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -4620,7 +4632,7 @@ loadExternalModule().then(() => {
                 .then((response) => response.json())
                 .then((data) => {
                   console.log(data);
-                })
+                });
             });
 
           return;
@@ -4633,7 +4645,12 @@ loadExternalModule().then(() => {
     });
   };
 
-  const OpenAiResponse = (userInputMessage, signals, conversationId, latestMessage) => {
+  const OpenAiResponse = (
+    userInputMessage,
+    signals,
+    conversationId,
+    latestMessage
+  ) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -4657,7 +4674,7 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
-    sessionQnAdata.push({"user": latestMessage, "coach": messageText.innerText});
+    sessionQnAdata.push({ user: latestMessage, coach: messageText.innerText });
     console.log("sessionQnAdata :", sessionQnAdata);
 
     fetch("/api/openai", {
@@ -4708,14 +4725,17 @@ loadExternalModule().then(() => {
               fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
                 method: "POST",
                 headers: {
-                  Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                  Authorization: `Basic ${createBasicAuthToken2(
+                    key2,
+                    secret2
+                  )}`,
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                   ai_response: messageText.innerText,
                   conversation_id: conversationId,
                 }),
-              })
+              });
             });
 
           return;
@@ -6400,7 +6420,7 @@ loadExternalModule().then(() => {
                   messageBubble.style.backgroundColor = "#f3f4f6";
                   messageBubble.style.color = "#374151";
                   const messageText = document.createElement("p");
-                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+                  messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
                     user2 ? "" : "<b> Hang tight for next steps</b>"
                   }`;
                   messageBubble.appendChild(messageText);
