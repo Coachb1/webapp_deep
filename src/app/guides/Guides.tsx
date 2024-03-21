@@ -38,7 +38,7 @@ const Guides = ({ user }: any) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('data',data);
+        console.log("data", data);
 
         const filteredRoleBots = data.filter(
           (bot: SkillnRoleBotsType) => bot.scenario_case === "role_bot"
@@ -54,62 +54,65 @@ const Guides = ({ user }: any) => {
         console.error(err);
         setLoading(false);
       });
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
+    fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    )
       .then((resp) => resp.json())
       .then((client_info) => {
-        console.log('client', client_info)
+        console.log("client", client_info);
         let client_name;
         try {
-          client_name = client_info.data.user_info[0].client_name
-        }catch{
-          client_name = 'Not Found'
+          client_name = client_info.data.user_info[0].client_name;
+        } catch {
+          client_name = "Not Found";
         }
 
-        fetch(`${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${client_name}`, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-        .then((resp) => resp.json())
-        .then((result) =>{
-          console.log('knowledge-bot',result)
-          let knowledgeBots: {
-            bot_id: string;
-            bot_name: string;
-            description: string;
-            bot_type: string;
-            scenario_case: string;
-          }[] = [];
-          result.data.forEach((item:knowledgeBotJson) => {
-            const botJson = item.signature_bot
-            const description = JSON.parse(botJson.faqs)['What is the primary purpose of the bot?'];
-            knowledgeBots.push({
-              bot_id: botJson.bot_id,
-              bot_name: item.bot_attributes.bot_name,
-              bot_type: botJson.bot_type,
-              description: description,
-              scenario_case: botJson.scenario_case,
-            })
+        fetch(
+          `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${client_name}`,
+          {
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        )
+          .then((resp) => resp.json())
+          .then((result) => {
+            console.log("knowledge-bot", result);
+            let knowledgeBots: {
+              bot_id: string;
+              bot_name: string;
+              description: string;
+              bot_type: string;
+              scenario_case: string;
+            }[] = [];
+            result.data.forEach((item: knowledgeBotJson) => {
+              const botJson = item.signature_bot;
+              const description = JSON.parse(botJson.faqs)[
+                "What is the primary purpose of the bot?"
+              ];
+              knowledgeBots.push({
+                bot_id: botJson.bot_id,
+                bot_name: item.bot_attributes.bot_name,
+                bot_type: botJson.bot_type,
+                description: description,
+                scenario_case: botJson.scenario_case,
+              });
+            });
+            console.log(knowledgeBot);
 
+            setknowledgebot(knowledgeBots);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
           });
-          console.log(knowledgeBot)
-
-          setknowledgebot(knowledgeBots)
-          setLoading(false);
-
-        })
-        .catch((err) => {
-          console.error(err);
-          setLoading(false);
-        });
       })
       .catch((err) => {
         console.error(err);
@@ -137,11 +140,12 @@ const Guides = ({ user }: any) => {
               <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
                 <span>
                   {" "}
-                  Introducing Guides! These bots are tailored to guide you
-                  through the intricacies of specific roles, leveraging
-                  established general frameworks. Just like simulations and
-                  roleplays replicate real-world scenarios, these bots provide
-                  practical guidelines for success in your designated role.
+                  Introducing Guides! These are multi-purpose creative bots.
+                  Knowledge bots are user-created bots for any purpose e.g.
+                  providing project updates or querying documents. Guides for
+                  roles or skills follow a curated collection of frameworks that
+                  are scientifically proven to enhance skills and role
+                  effectiveness.
                 </span>
               </div>
 
