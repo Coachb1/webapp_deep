@@ -912,6 +912,29 @@ const getUserProfile = async (user_id) =>{
 
 }
 
+const getIdps = async (user_id) =>{
+  try{
+    const resp = await fetch(`${baseURL2}/accounts/get_or_create_idp/?user_id=${user_id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${createBasicAuthToken2(key2,secret2)}`,
+      },
+    })
+    result = await resp.json()
+    if(result.length > 0){
+      return true; // means there is idp so proceed idp related question
+    }else{
+      return false;
+    }
+  } catch (error) {
+    console.error("Error while fetching idp details", error);
+    return false;
+  }
+  
+
+    
+}
+
 const getBotDetails2 = async (botId) => {
   try {
     const response = await fetch(
@@ -1244,6 +1267,29 @@ const handleFitmentAnalysis = async () => {
   // fitmentAnalysisQuestions = fitment_analysis[type]
 };
 
+function handleIdpsRelatedQuestions(initialQue) {
+  const questions = Object.entries(initialQue);
+
+  // Filter out questions containing "idp" or "individual development plan"
+  const filteredQuestions = questions.filter(([key, question]) => {
+    if (typeof question === 'string') {
+      return !(question.toLowerCase().includes('idp') || question.toLowerCase().includes('individual development plan'));
+    } else if (question.hasOwnProperty('question')) {
+      const que = question['question'];
+      return !(que.toLowerCase().includes('idp') || que.toLowerCase().includes('individual development plan'));
+    }
+    return true; // Keep non-string values (like options object)
+  });
+
+  // Convert the filtered questions into an object
+  const filteredObj = {};
+  filteredQuestions.forEach(([key, question]) => {
+    filteredObj[key] = question;
+  });
+  return filteredObj;
+}
+
+
 function getIntakeReadyBotInitialQuestions(initialQuestions) {
   if (isIntakeClicked) {
     return initialQuestions;
@@ -1306,7 +1352,7 @@ function handleRadioTypeInitialQuestion(questionOptions, question_text) {
   return formRadio;
 }
 
-function SendingFirstInitialQue() {
+async function SendingFirstInitialQue() {
   // disabling button
   disableOrEnableButtons("initial_question_proceed");
 
@@ -1315,6 +1361,14 @@ function SendingFirstInitialQue() {
   // if (botType === 'avatar_bot'){
   // botInitialQuestions = getIntakeReadyBotInitialQuestions(botInitialQuestions)
   // }
+  console.log(botInitialQuestions,'botInitialQuestions')
+
+  isIdp = await getIdps(userId2);
+  console.log('isIdp',isIdp)
+  if (!isIdp){
+  botInitialQuestions = handleIdpsRelatedQuestions(botInitialQuestions)
+  }
+  console.log(botInitialQuestions,'botInitialQuestions')
   const question = botInitialQuestions[botInitialQuestionsIndex];
   if (typeof question === "string") {
     appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);

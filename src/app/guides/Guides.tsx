@@ -302,36 +302,41 @@ const Guides = ({ user }: any) => {
                                           collapsible
                                           className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                         >
-                                          {knowledgeBot.map((bot, i) => (
-                                            <AccordionItem
-                                              key={i}
-                                              value={`${i}-knowledge-bot`}
-                                              className={`px-4`}
-                                            >
-                                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                                <div>{bot.bot_name}</div>
-                                              </AccordionTrigger>
-                                              <AccordionContent className="max-sm:text-xs">
-                                                <p className="text-left">
-                                                  {bot.description}
-                                                </p>
-                                                <div className="flex justify-end mt-2">
-                                                  <Link
-                                                    target="_blank"
-                                                    href={`/knowledge-bot/${bot.bot_id}`}
-                                                  >
-                                                    <Button
-                                                      variant={"secondary"}
-                                                      className="p-2 h-8 border border-gray-200"
+                                          {knowledgeBot.length === 0 ? (
+                                            <p>No user created guides available.</p>
+                                          ) : (
+                                            knowledgeBot.map((bot, i) => (
+                                              <AccordionItem
+                                                key={i}
+                                                value={`${i}-knowledge-bot`}
+                                                className={`px-4`}
+                                              >
+                                                <AccordionTrigger className="text-left max-sm:text-xs">
+                                                  <div>{bot.bot_name}</div>
+                                                </AccordionTrigger>
+                                                <AccordionContent className="max-sm:text-xs">
+                                                  <p className="text-left">
+                                                    {bot.description}
+                                                  </p>
+                                                  <div className="flex justify-end mt-2">
+                                                    <Link
+                                                      target="_blank"
+                                                      href={`/knowledge-bot/${bot.bot_id}`}
                                                     >
-                                                      Visit bot{" "}
-                                                      <ExternalLinkIcon className="h-4 w-4 ml-2" />
-                                                    </Button>
-                                                  </Link>
-                                                </div>
-                                              </AccordionContent>
-                                            </AccordionItem>
-                                          ))}
+                                                      <Button
+                                                        variant={"secondary"}
+                                                        className="p-2 h-8 border border-gray-200"
+                                                      >
+                                                        Visit bot{" "}
+                                                        <ExternalLinkIcon className="h-4 w-4 ml-2" />
+                                                      </Button>
+                                                    </Link>
+                                                  </div>
+                                                </AccordionContent>
+                                              </AccordionItem>
+                                            ))
+                                          )}
+
                                         </Accordion>
                                       </div>
                                     </div>
@@ -345,6 +350,11 @@ const Guides = ({ user }: any) => {
                     </MaxWidthWrapper>
                   </div>
                 )}
+                {/* <div className="w-full mt-12">
+                  <p className="text-center font-bold text-gray-500">
+                    More user created guides coming soon...
+                  </p>
+                </div> */}
               </div>
             )}
 
