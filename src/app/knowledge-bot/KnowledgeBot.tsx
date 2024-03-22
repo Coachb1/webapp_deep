@@ -181,7 +181,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
               <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
                   ? `Welcome to ${botName} 🚀`
-                  : "Welcome to CrossFit Elevation Support 🚀"}
+                  : "Welcome to Flyover Project Tracker 🚀"}
               </h1>
 
               {renderType === "dynamic" ? (
@@ -203,14 +203,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 <div className="max-sm:text-xs mt-4 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
                   <p className="w-full text-center p-2  max-sm:text-xs">
                     {" "}
-                    <b> Purpose : </b> The primary purpose of the bot is to
-                    enhance customer engagement and support for CrossFit
-                    Elevation. It aims to provide assistance and information to
-                    current and potential members, as well as promote the
-                    services and offerings of the gym. Additionally, the bot
-                    seeks to streamline communication processes and improve
-                    accessibility for users seeking information about CrossFit
-                    Elevation.
+                    <b> Purpose : </b> To answer any project related questions and give project related updates
                   </p>
                 </div>
               )}
