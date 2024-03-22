@@ -209,7 +209,7 @@ const EmailSign = ({ user }: any) => {
                           >
                             <div>With best Regards,</div>
                             <div>{userName}</div>
-                            <div>[Designation] </div>
+                            <div>{"<<Add your designation>>"} </div>
                             <div>
                               Email:{" "}
                               <a
@@ -222,7 +222,7 @@ const EmailSign = ({ user }: any) => {
                                 {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: [ph-number] </div>
+                            <div>Phone: {"<<+91-Add your own>>"} </div>
                             <a
                               href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
                               style={{
@@ -251,7 +251,7 @@ const EmailSign = ({ user }: any) => {
                           >
                             <div>With best Regards,</div>
                             <div>{userName}</div>
-                            <div>[Designation]</div>
+                            <div>{"<<Add your designation>>"}</div>
                             <div>
                               Email:{" "}
                               <a
@@ -264,7 +264,7 @@ const EmailSign = ({ user }: any) => {
                                 {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: [ph-number] </div>
+                            <div>Phone: {"<<+91-Add your own>>"} </div>
                             <a
                               href={`https://playground.coachbots.com/coach/${avatarBotId}`}
                               style={{
@@ -293,7 +293,7 @@ const EmailSign = ({ user }: any) => {
                           >
                             <div>With best Regards,</div>
                             <div>{userName}</div>
-                            <div>[Designation]</div>
+                            <div>{"<<Add your designation>>"}</div>
                             <div>
                               Email:{" "}
                               <a
@@ -306,7 +306,7 @@ const EmailSign = ({ user }: any) => {
                                 {userEmail}
                               </a>{" "}
                             </div>
-                            <div>Phone: [ph-number] </div>
+                            <div>Phone: {"<<+91-Add your own>>"} </div>
 
                             <a
                               href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
@@ -366,7 +366,7 @@ const EmailSign = ({ user }: any) => {
                               >
                                 <div>With best Regards,</div>
                                 <div>{userName}</div>
-                                <div>[Designation] </div>
+                                <div>{"<<Add your designation>>"} </div>
                                 <div>
                                   Email:{" "}
                                   <a
@@ -379,7 +379,7 @@ const EmailSign = ({ user }: any) => {
                                     {userEmail}
                                   </a>{" "}
                                 </div>
-                                <div>Phone: [ph-number] </div>
+                                <div>Phone: {"<<+91-Add your own>>"} </div>
                                 <a
                                   href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
                                   style={{

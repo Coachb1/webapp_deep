@@ -26,6 +26,7 @@ import {
   baseURL,
   basicAuth,
   configureTestsData,
+  convertTestsData,
   convertTextToCorrectFormat,
   getUserAccount,
 } from "@/lib/utils";
@@ -42,6 +43,7 @@ import {
   newManagerTestsType,
   TestsType,
   TestData as TestDataType,
+  DomainData,
 } from "@/lib/types";
 import { useSearchParams } from "next/navigation";
 
@@ -111,7 +113,7 @@ const MyLibrary = ({ user }: any) => {
     useState(true);
 
   const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
-    useState<competencySkillsTestType[]>([]);
+    useState<CategoryData[]>([]);
   const [newManagerTests, setNewManagerTests] = useState<newManagerTestsType[]>(
     []
   );
@@ -165,13 +167,14 @@ const MyLibrary = ({ user }: any) => {
                 }
               )
                 .then((response) => response.json())
-                .then((data: { [key: string]: TestsType[] }) => {
+                .then((data) => {
                   console.log("GET TESTS BY COMPETENCIES : ", data);
-                  const convertedCompetencyTests = Object.entries(data).map(
-                    ([skill, tests]) => ({ skill, tests })
-                  );
 
-                  setCompetencyBasedPowerSkillsTests(convertedCompetencyTests);
+                  const convertedCompetencyTests = convertTestsData(data);
+                  console.log(convertedCompetencyTests);
+                  setCompetencyBasedPowerSkillsTests([
+                    convertedCompetencyTests,
+                  ]);
                 })
                 .then((err) => {
                   console.error(err);
@@ -693,93 +696,126 @@ const MyLibrary = ({ user }: any) => {
                       Grayed bars indicate already attempted simulations
                     </span>
                   </div>
+                  <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                    {competencyBasedPowerSkillsTests.length > 0 && (
+                      <SearchNSelect
+                        placeholder="Select by Simulation domain"
+                        onSearchHandler={(value) =>
+                          onDomainSearchHandlerNewManager(
+                            value,
+                            competencyBasedPowerSkillsTests[0]
+                          )
+                        }
+                        onDomainSelectHandler={(value) =>
+                          onDomainSelectHandlerNewManager(
+                            value,
+                            competencyBasedPowerSkillsTests[0]
+                          )
+                        }
+                        optionDomains={
+                          competencyBasedPowerSkillsTests[0]
+                            ?.domainOptionsForFilter
+                        }
+                      />
+                    )}
+                  </div>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                    {competencyBasedPowerSkillsTests.length > 0 &&
-                      competencyBasedPowerSkillsTests.map((skills) => (
-                        <>
-                          {skills.tests.length > 0 && (
-                            <>
-                              <div className={`w-full flex justify-center`}>
-                                <Badge
-                                  variant={"default"}
-                                  className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
-                                >
-                                  <>✨ {skills.skill}</>
-                                </Badge>
-                              </div>
+                    {competencyBasedPowerSkillsTests.length > 0 && (
+                      <>
+                        {(
+                          filteredTestsData["Competency based power skills"] ||
+                          competencyBasedPowerSkillsTests[0]?.tests_data
+                        ).map((skills) => (
+                          <>
+                            {skills.tests.length > 0 && (
+                              <>
+                                <div className={`w-full flex justify-center`}>
+                                  <Badge
+                                    variant={"default"}
+                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                  >
+                                    <>✨ {skills.domain}</>
+                                  </Badge>
+                                </div>
 
-                              <div className="w-full">
-                                <div className="relative isolate mx-auto">
-                                  <div>
-                                    <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                        <Accordion
-                                          type="single"
-                                          collapsible
-                                          className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                        >
-                                          {skills.tests.length > 0 &&
-                                            skills.tests.map((test, i) => (
-                                              <>
-                                                <AccordionItem
-                                                  key={i}
-                                                  value={`item-${
-                                                    Number(i) + 1
-                                                  }`}
-                                                  className={`${
-                                                    i ===
-                                                    skills.tests.length - 1
-                                                      ? "border-none"
-                                                      : "border-b"
-                                                  } ${
-                                                    attemptedTests.includes(
-                                                      test.test_code
-                                                    )
-                                                      ? "bg-gray-200"
-                                                      : ""
-                                                  } px-4`}
-                                                >
-                                                  <AccordionTrigger className="text-left max-sm:text-xs">
-                                                    <div>
-                                                      {test.title}{" "}
-                                                      {test.is_recommended && (
-                                                        <Badge
-                                                          variant={"secondary"}
-                                                          className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-                                                        >
-                                                          Recommended
-                                                        </Badge>
-                                                      )}
-                                                    </div>
-                                                  </AccordionTrigger>
-                                                  <AccordionContent className="max-sm:text-xs">
-                                                    <p className="text-left">
-                                                      {" "}
-                                                      {test.description}
-                                                    </p>
-                                                    <div className="flex justify-end mt-2">
-                                                      <CopyToClipboard
-                                                        textToCopy={
+                                <div className="w-full">
+                                  <div className="relative isolate mx-auto">
+                                    <div>
+                                      <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                        <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                          <Accordion
+                                            type="single"
+                                            collapsible
+                                            className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                          >
+                                            {skills.tests.length > 0 &&
+                                              skills.tests.map(
+                                                (test: any, i: number) => (
+                                                  <>
+                                                    <AccordionItem
+                                                      key={i}
+                                                      value={`item-${
+                                                        Number(i) + 1
+                                                      }`}
+                                                      className={`${
+                                                        i ===
+                                                        skills.tests.length - 1
+                                                          ? "border-none"
+                                                          : "border-b"
+                                                      } ${
+                                                        attemptedTests.includes(
                                                           test.test_code
-                                                        }
-                                                        copyType="code"
-                                                      />
-                                                    </div>
-                                                  </AccordionContent>
-                                                </AccordionItem>
-                                              </>
-                                            ))}
-                                        </Accordion>
+                                                        )
+                                                          ? "bg-gray-200"
+                                                          : ""
+                                                      } px-4`}
+                                                    >
+                                                      <AccordionTrigger className="text-left max-sm:text-xs">
+                                                        <div>
+                                                          {test.title}{" "}
+                                                          {test.is_recommended && (
+                                                            <Badge
+                                                              variant={
+                                                                "secondary"
+                                                              }
+                                                              className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
+                                                            >
+                                                              Recommended
+                                                            </Badge>
+                                                          )}
+                                                        </div>
+                                                      </AccordionTrigger>
+                                                      <AccordionContent className="max-sm:text-xs">
+                                                        <p className="text-left">
+                                                          {" "}
+                                                          {test.description}
+                                                        </p>
+                                                        <div className="flex justify-end mt-2">
+                                                          <CopyToClipboard
+                                                            textToCopy={
+                                                              test.test_code
+                                                            }
+                                                            copyType="code"
+                                                          />
+                                                        </div>
+                                                      </AccordionContent>
+                                                    </AccordionItem>
+                                                  </>
+                                                )
+                                              )}
+                                          </Accordion>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </>
-                          )}
-                        </>
-                      ))}
-                    {competencyBasedPowerSkillsTests.length === 0 && (
+                              </>
+                            )}
+                          </>
+                        ))}
+                      </>
+                    )}
+                    {/* {competencyBasedPowerSkillsTests.length === 0 && (
                       <div className="w-full">
                         <div className="relative isolate mx-auto">
                           <div>
@@ -791,7 +827,7 @@ const MyLibrary = ({ user }: any) => {
                           </div>
                         </div>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
