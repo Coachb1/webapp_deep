@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Metadata } from "next";
-import { Categories, DomainData, TestData } from "./types";
+import { Categories, CategoryData, DomainData, TestData } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -318,3 +318,41 @@ export const scrollToView = (id: string) => {
     behavior: "smooth",
   });
 };
+
+export function convertTestsData(inputData: Record<string, TestData[]>) {
+  let outputData: {
+    category_name: string;
+    tests_data: DomainData[];
+    domainOptionsForFilter: { value: string; label: string }[];
+  } = {
+    category_name: "Competency based power skills",
+    tests_data: [],
+    domainOptionsForFilter: [],
+  };
+
+  const domains = Object.keys(inputData);
+
+  domains.forEach((domain) => {
+    const tests = inputData[domain].map((item) => {
+      return {
+        title: `${item.title}`,
+        description: item.description,
+        test_code: item.test_code,
+        test_type: item.test_type,
+        is_recommended: item.is_recommended,
+      };
+    });
+
+    outputData.tests_data.push({
+      domain: domain,
+      tests: tests,
+    });
+
+    outputData.domainOptionsForFilter.push({
+      label: domain,
+      value: domain,
+    });
+  });
+
+  return outputData;
+}

@@ -878,6 +878,8 @@ const Coaches = ({ user }: any) => {
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [likeCount, setLikeCount] = useState<number>(0);
 
+    const [initaited, setInitiated] = useState(false);
+
     useEffect(() => {
       // Set initial like status and count based on likesInfo
       const userLiked = likesInfo.includes(userId);
@@ -887,7 +889,7 @@ const Coaches = ({ user }: any) => {
 
     const LikeHandler = () => {
       console.log(profile_id, userId);
-
+      setInitiated(true);
       fetch(`${baseURL}/accounts/save-liked-profile/`, {
         method: "POST",
         headers: {
@@ -904,6 +906,8 @@ const Coaches = ({ user }: any) => {
           console.log(data);
           setIsLiked(true);
           setLikeCount((prevCount) => prevCount + 1);
+
+          setInitiated(false);
         })
         .catch((err) => {
           console.error(err);
@@ -911,6 +915,7 @@ const Coaches = ({ user }: any) => {
     };
 
     const revertLikeHandler = () => {
+      setInitiated(true);
       fetch(`${baseURL}/accounts/save-liked-profile/`, {
         method: "POST",
         headers: {
@@ -928,6 +933,8 @@ const Coaches = ({ user }: any) => {
           console.log(data);
           setIsLiked(false);
           setLikeCount((prevCount) => prevCount - 1);
+
+          setInitiated(false);
         })
         .catch((err) => {
           console.error(err);
@@ -936,13 +943,17 @@ const Coaches = ({ user }: any) => {
 
     return (
       <>
-        <Button className="rounded-3xl px-6" variant={"outline"}>
+        <Button
+          className="rounded-3xl px-6"
+          variant={"outline"}
+          disabled={initaited}
+          onClick={isLiked ? revertLikeHandler : LikeHandler}
+        >
           <TooltipWrapper
             className=""
             tooltipName={isLiked ? "Unlike" : "Like"}
             body={
               <ThumbsUp
-                onClick={isLiked ? revertLikeHandler : LikeHandler}
                 className={`h-5 w-5 ${
                   isLiked ? "stroke-green-500" : "hover:fill-green-500"
                 }`}
