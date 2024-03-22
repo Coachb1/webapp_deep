@@ -47,7 +47,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
-  const [profileType, setProfileType] = useState("coach");
+  const [profileType, setProfileType] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
   const [isFeedbackNeeded, setIsFeedbackNeeded] = useState(false);
   const [feedbackCreateLoading, setFeedbackCreateLoading] = useState(false);
@@ -360,6 +360,11 @@ const CoachIntake = ({ user }: any) => {
 
   useEffect(() => {
     hideBots();
+    if (formType === "coach") {
+      setProfileType("coach");
+    } else if (formType === "coachee") {
+      setProfileType("coachee");
+    }
     if (user) {
       getClientInfoForUser(user.email);
       getUserAccount(user)
