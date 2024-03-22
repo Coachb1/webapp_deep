@@ -304,9 +304,9 @@ const Coaches = ({ user }: any) => {
       .catch((error) => console.log("error", error));
   };
 
-  const getFormattedCoachName = (name:string) => {
-      return name.replace(/([^a-zA-Z0-9])\1+/g, '$1');
-  }
+  const getFormattedCoachName = (name: string) => {
+    return name.replace(/([^a-zA-Z0-9])\1+/g, "$1");
+  };
 
   const getConnectionsForCoachee = (coacheeId: string) => {
     fetch(
@@ -355,21 +355,31 @@ const Coaches = ({ user }: any) => {
 
   async function getCanJoinAs(email: string) {
     try {
-      const resp = await fetch(
-        `${baseURL}/accounts/user-can-join-as/?email=${email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      );
+      fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`, {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data.error) {
+            setCanJoinAs("");
+          } else {
+            setCanJoinAs(data.can_join_as);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
 
-      const respJson = await resp.json();
-      console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
-      setCanJoinAs(respJson.can_join_as);
+      // const respJson = await resp.json();
+      // console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
+      // setCanJoinAs(respJson.can_join_as);
     } catch {
-      setCanJoinAs("coachee");
+      // console.log("CANNOT JOIN ANYTHING")
+      // setCanJoinAs("coachee");
     }
   }
 
@@ -1000,7 +1010,14 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
-              <DropdownMenuItem disabled={allCoaches.length > 0 || !["coach", "mentor"].includes(canJoinAs)} asChild>
+              <DropdownMenuItem
+                disabled={
+                  allCoaches.length > 0 ||
+                  (canJoinAs?.length !== 0 &&
+                    !["coach", "mentor"].includes(canJoinAs))
+                }
+                asChild
+              >
                 <span
                   onClick={() => {
                     router.push("/intake/?type=coach");
@@ -1039,22 +1056,27 @@ const Coaches = ({ user }: any) => {
                         </>
                       )}
                     </>
-                  ) : (
+                  ) : canJoinAs?.length !== 0 &&
                     !["coach", "mentor"].includes(canJoinAs) ? (
-                      <Badge
-                        variant={"secondary"}
-                        className="ml-2 border border-gray-400"
-                      >
-                        Not Allowed
-                      </Badge>
-                    ) : null 
-                  )}
-
+                    <Badge
+                      variant={"secondary"}
+                      className="ml-2 border border-gray-400"
+                    >
+                      Not Allowed
+                    </Badge>
+                  ) : null}
                 </span>
               </DropdownMenuItem>
               {/* )} */}
               {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
-              <DropdownMenuItem disabled={allCoaches.length > 0 || !["coachee", "mentee"].includes(canJoinAs)} asChild>
+              <DropdownMenuItem
+                disabled={
+                  allCoaches.length > 0 ||
+                  (canJoinAs?.length !== 0 &&
+                    !["coachee", "mentee"].includes(canJoinAs))
+                }
+                asChild
+              >
                 <span
                   onClick={() => {
                     router.push("/intake/?type=coachee");
@@ -1093,16 +1115,15 @@ const Coaches = ({ user }: any) => {
                         </>
                       )}
                     </>
-                  ) : (
+                  ) : canJoinAs?.length !== 0 &&
                     !["coachee", "mentee"].includes(canJoinAs) ? (
-                      <Badge
-                        variant={"secondary"}
-                        className="ml-2 border border-gray-400"
-                      >
-                        Not Allowed
-                      </Badge>
-                    ) : null 
-                  )}
+                    <Badge
+                      variant={"secondary"}
+                      className="ml-2 border border-gray-400"
+                    >
+                      Not Allowed
+                    </Badge>
+                  ) : null}
                 </span>
               </DropdownMenuItem>
               {/* )} */}
@@ -1226,7 +1247,7 @@ const Coaches = ({ user }: any) => {
                             ))}
                       </div>
                       <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                        {getFormattedCoachName(coach.name)  }{" "}
+                        {getFormattedCoachName(coach.name)}{" "}
                       </p>{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
