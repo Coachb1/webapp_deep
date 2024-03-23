@@ -4672,7 +4672,7 @@ loadExternalModule().then(() => {
             user: latestMessage,
             coach: messageText.innerText,
           });
-          console.log("sessionQnAdata :", sessionQnAdata);
+          console.log("sessionQnAdata :", sessionQnAdata, 'conversationId :', conversationId);
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
@@ -5335,6 +5335,7 @@ loadExternalModule().then(() => {
               );
               console.log(responseData.coach_message_metadata.prompt);
 
+              conversation_id2 = responseData["uid"];
               //streaming responses
               anthropicAiResponse(
                 responseData.coach_message_metadata.prompt,
@@ -5342,7 +5343,7 @@ loadExternalModule().then(() => {
                 conversation_id2,
                 latestMessage
               );
-              conversation_id2 = responseData["uid"];
+              // conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];
               if (coachResponse.split(":").length > 1) {
                 coachResponse = coachResponse
