@@ -86,8 +86,8 @@ const VersionOne = ({ user }: any) => {
   }
 
   return (
-    <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+    <>
+      {/* <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16"> <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
         {!user && (
           <Badge
             variant={"secondary"}
@@ -101,7 +101,7 @@ const VersionOne = ({ user }: any) => {
         <>
           <NetworkNav user={user} />
         </>
-      </div>
+      </div> */}
 
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
@@ -119,7 +119,7 @@ const VersionOne = ({ user }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        <div className="flex flex-row flex-wrap justify-center mt-4 z-50 gap-2">
+        <div className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2">
           <Link href="/coach" target="_blank">
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
@@ -160,7 +160,7 @@ const VersionOne = ({ user }: any) => {
           </Link>
         </div>
 
-        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-50">
+        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2]">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Button
               variant={"secondary"}
@@ -525,7 +525,7 @@ const VersionOne = ({ user }: any) => {
         </div>
       </div>
       {/* <Widgets /> */}
-    </div>
+    </>
   );
 };
 

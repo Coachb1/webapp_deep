@@ -19,6 +19,7 @@ import {
 } from "@/lib/utils";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { LoadingComponent, LoginWall, UnAuth } from "./UnAuthpage";
+import NetworkNav from "@/components/NetworkNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -291,7 +292,19 @@ export default function RootLayout({
                                 ) : (
                                   <div className="deep-chat-poc2"></div>
                                 )}
-                                {children}
+                                {!pathname.includes("/feedback") &&
+                                !pathname.includes("/coach") &&
+                                !pathname.includes("/subject-expert") &&
+                                !pathname.includes("/knowledge-bot") ? (
+                                  <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
+                                    <div className="z-[999]">
+                                      <NetworkNav user={user} />
+                                    </div>
+                                    {children}
+                                  </div>
+                                ) : (
+                                  <>{children}</>
+                                )}
                               </>
                             ) : (
                               <>
@@ -314,7 +327,19 @@ export default function RootLayout({
                             ) : (
                               <div className="deep-chat-poc2"></div>
                             )}
-                            {children}
+                            {!pathname.includes("/feedback") &&
+                            !pathname.includes("/coach") &&
+                            !pathname.includes("/subject-expert") &&
+                            !pathname.includes("/knowledge-bot") ? (
+                              <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
+                                <div className="z-[999]">
+                                  <NetworkNav user={user} />
+                                </div>
+                                {children}
+                              </div>
+                            ) : (
+                              <>{children}</>
+                            )}
                           </>
                         )}
                       </>

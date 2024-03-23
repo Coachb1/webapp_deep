@@ -15,11 +15,11 @@ const Page = async () => {
 
   return (
     <div>
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800] ">
+      {/* <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800] ">
         <div className="flex flex-row gap-1">
           <NetworkNav user={user} />
         </div>
-      </div>
+      </div> */}
       {/* <div className="pt-20">
         <MyComponent />
       </div> */}

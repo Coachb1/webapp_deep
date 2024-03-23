@@ -13,13 +13,32 @@ import NavProfile from "./NavProfile";
 import { Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
 import { useEffect, useState } from "react";
+import { getClientUserInfo } from "@/lib/utils";
 
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
+  //client based restrictions
+  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+    null
+  );
+
   const [scrolled, setScrolled] = useState<number>(0);
+  useEffect(() => {
+    if (user) {
+      getClientUserInfo(user.email)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data, "getClientUserInfo - NetworkNav");
+
+          setRestrictedPages(data.data.user_info[0].restricted_pages);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
+        });
+    }
+  }, []);
 
   function handleScroll() {
     var scrolledUp = window.scrollY || window.pageYOffset;
@@ -38,108 +57,80 @@ const NetworkNav = ({ user }: any) => {
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
-      {/* <div className="flex flex-row gap-1"></div> */}
-      {/* <div className="flex flex-row gap-2"> */}
       <div className="flex flex-row gap-2 max-sm:hidden ">
-        <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname === "/" ? "border border-gray-500 shadow-md" : ""
-          } `}
-          onClick={() => {
-            router.push("/");
-          }}
-        >
-          Network Directory
-        </Button>
-        <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname.includes("/content-library")
-              ? "border border-gray-500 shadow-md"
-              : ""
-          } `}
-          onClick={() => {
-            router.push("/content-library");
-          }}
-        >
-          Explore
-        </Button>
-        <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname.includes("/library")
-              ? "border border-gray-500 shadow-md"
-              : ""
-          } `}
-          onClick={() => {
-            router.push("/library");
-          }}
-        >
-          Simulation
-        </Button>
-        {/* <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname.includes("/skill-bots")
-              ? "border border-gray-500 shadow-md"
-              : ""
-          } `}
-          onClick={() => {
-            router.push("/skill-bots");
-          }}
-        >
-          Skill bots
-        </Button> */}
-        <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname.includes("/guides")
-              ? "border border-gray-500 shadow-md"
-              : ""
-          } `}
-          onClick={() => {
-            router.push("/guides");
-          }}
-        >
-          Guides
-        </Button>
-        <Button
-          variant={"outline"}
-          className={` h-8 max-sm:text-sm ${
-            pathname.includes("/create-scenario")
-              ? "border border-gray-500 shadow-md"
-              : ""
-          } `}
-          onClick={() => {
-            router.push("/create-scenario");
-          }}
-        >
-          Quick Learn
-        </Button>
-        {/* <TooltipWrapper
-          className="w-60 text-xs"
-          tooltipName="Individual development Plan Intake (Login required)"
-          body={
-            <div>
-              <Button
-                onClick={() => {
-                  router.push("/intake/?type=IDP");
-                  console.log(pathname, params.toString());
-                }}
-                disabled={!user}
-                variant={"outline"}
-                className={` h-8 max-sm:text-sm ${
-                  params.toString().includes("IDP")
-                    ? "border border-gray-500 shadow-md"
-                    : ""
-                } `}
-              >
-                IDP <Info className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          }
-        />{" "} */}
+        {!restrictedPages?.includes("Network Directory") && (
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname === "/" ? "border border-gray-500 shadow-md" : ""
+            } `}
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            Network Directory
+          </Button>
+        )}
+        {!restrictedPages?.includes("Explore") && (
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname.includes("/content-library")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+            onClick={() => {
+              router.push("/content-library");
+            }}
+          >
+            Explore
+          </Button>
+        )}
+        {!restrictedPages?.includes("Simulation") && (
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname.includes("/library")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+            onClick={() => {
+              router.push("/library");
+            }}
+          >
+            Simulation
+          </Button>
+        )}
+        {!restrictedPages?.includes("Guides") && (
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname.includes("/guides")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+            onClick={() => {
+              router.push("/guides");
+            }}
+          >
+            Guides
+          </Button>
+        )}
+        {!restrictedPages?.includes("Quick Learn") && (
+          <Button
+            variant={"outline"}
+            className={` h-8 max-sm:text-sm ${
+              pathname.includes("/create-scenario")
+                ? "border border-gray-500 shadow-md"
+                : ""
+            } `}
+            onClick={() => {
+              router.push("/create-scenario");
+            }}
+          >
+            Quick Learn
+          </Button>
+        )}
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
@@ -149,124 +140,96 @@ const NetworkNav = ({ user }: any) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="z-[999] w-fit">
-            <DropdownMenuItem
-              className={`${pathname === "/" ? "bg-gray-200" : null}`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/");
-                }}
+            {!restrictedPages?.includes("Network Directory") && (
+              <DropdownMenuItem
+                className={`${pathname === "/" ? "bg-gray-200" : null}`}
+                asChild
               >
-                {" "}
-                Network directory
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`${
-                pathname === "/content-library" ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/content-library");
-                }}
+                <div
+                  onClick={() => {
+                    router.push("/");
+                  }}
+                >
+                  {" "}
+                  Network directory
+                </div>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Explore") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname === "/content-library" ? "bg-gray-200" : null
+                }`}
+                asChild
               >
-                Explore
-              </div>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/library") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/library");
-                }}
+                <div
+                  onClick={() => {
+                    router.push("/content-library");
+                  }}
+                >
+                  Explore
+                </div>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Simulation") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/library") ? "bg-gray-200" : null
+                }`}
+                asChild
               >
-                {" "}
-                Simulation
-              </div>
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem
-              className={`${
-                pathname.includes("/skill-bots") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/skill-bots");
-                }}
+                <div
+                  onClick={() => {
+                    router.push("/library");
+                  }}
+                >
+                  {" "}
+                  Simulation
+                </div>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Guides") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/guides") ? "bg-gray-200" : null
+                }`}
+                asChild
               >
-                {" "}
-                Skill bots
-              </div>
-            </DropdownMenuItem> */}
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/guides") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/guides");
-                }}
+                <div
+                  onClick={() => {
+                    router.push("/guides");
+                  }}
+                >
+                  {" "}
+                  Guides
+                </div>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Quick Learn") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/create-scenario") ? "bg-gray-200" : null
+                }`}
+                asChild
               >
-                {" "}
-                Guides
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/create-scenario") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <div
-                onClick={() => {
-                  router.push("/create-scenario");
-                }}
-              >
-                {" "}
-                Quick Learn
-              </div>
-            </DropdownMenuItem>
-
-            {/* <DropdownMenuItem asChild>
-              <TooltipWrapper
-                className="w-60 text-xs"
-                tooltipName="Individual development Plan Intake (Login required)"
-                body={
-                  <div>
-                    <Button
-                      onClick={() => {
-                        router.push("/intake/?type=IDP");
-                      }}
-                      disabled={!user}
-                      variant={"outline"}
-                      className={`h-8 w-full text-start flex flex-row justify-start p-0 pl-2 max-sm:text-sm border-none  ${
-                        params.toString().includes("IDP") ? "bg-gray-200" : ""
-                      }`}
-                    >
-                      IDP <Info className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                }
-              />
-            </DropdownMenuItem> */}
+                <div
+                  onClick={() => {
+                    router.push("/create-scenario");
+                  }}
+                >
+                  {" "}
+                  Quick Learn
+                </div>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="ml-4">
-        <NavProfile user={user} />
-      </div>
-      {/* </div> */}
+      {!restrictedPages?.includes("Quick Learn") && (
+        <div className="ml-4">
+          <NavProfile user={user} />
+        </div>
+      )}
     </div>
   );
 };
