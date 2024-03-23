@@ -1797,6 +1797,11 @@ async function handleFaqButtonClick(question) {
           // appendMessage2(begginSessionMessage);
           appendMessage2(addStickerToMessage("Begin Session",`You can only begin session after ${intakebuttonText} is complete`,'#22c55e'));
           optedBeginSession = false;
+          if (botType != 'avatar_bot'){
+            const begginSessionButton = document.getElementById("begin-session-button");
+            begginSessionButton.disabled = false;
+            begginSessionButton.style.cursor = "pointer";
+          }
           return;
         }
       }
@@ -5193,12 +5198,18 @@ loadExternalModule().then(() => {
                     text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                   });
                   // ****** enabling begin session button
-                  const begginSessionButton = document.getElementById("begin-session-button");
-                  begginSessionButton.disabled = false;
-                  begginSessionButton.style.cursor = "pointer";
+                  if (botType === "avatar_bot") {
+                    const begginSessionButton = document.getElementById("begin-session-button");
+                    begginSessionButton.disabled = false;
+                    begginSessionButton.style.cursor = "pointer";
+                  } else{
+                    
+                      appendMessage2(`<b>Please scroll above to view the conversation and proceed accordingly.</b>`)
+                    
+                  }
 
                   // ***** enabling intake button
-                  if (intakeButton) {
+                  if (intakeButton && botType === "avatar_bot") {
                     intakeButton.disabled = true;
                     intakeButton.style.backgroundColor = "#d3d3d3";
                     intakeButton.style.color = "#a0a0a0";
