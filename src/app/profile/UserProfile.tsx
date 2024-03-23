@@ -46,7 +46,7 @@ const UserProfile = ({ user }: any) => {
   const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
 
   const [plLoading, setplLoading] = useState(true);
-  const getLeaderboardPosition = (userId: string) => {
+  const getLeaderboardPosition = (userId: string, profileType: string) => {
     fetch(
       `${baseURL}/accounts/participant-leader-board-report/?email=${user.email}`,
       {
@@ -59,7 +59,18 @@ const UserProfile = ({ user }: any) => {
       .then((res) => res.json())
       .then((dataa) => {
         console.log(dataa);
-        const userDetails = dataa.map(
+        const userDetails = dataa
+        .filter((userprofile:PartifipantsforLeaderBoardTypes) => {
+          if (profileType === "coach" || profileType === "mentor") {
+            return userprofile.profile_type === "coach" || userprofile.profile_type === "mentor";
+          } else if (profileType === "coachee" || profileType === "mentee") {
+            return userprofile.profile_type === "coachee" || userprofile.profile_type === "mentor";
+          }
+          else {
+            return userprofile.profile_type === profileType;
+          }
+        })
+        .map(
           (data: PartifipantsforLeaderBoardTypes, i: number) => {
             return {
               name: data.name,
@@ -167,7 +178,7 @@ const UserProfile = ({ user }: any) => {
               .catch((error) => {
                 console.error("Error getting report", error);
               });
-            getLeaderboardPosition(data.uid);
+            getLeaderboardPosition(data.uid,data.profile_type);
             getKudosCounts(data.uid);
           });
       }
