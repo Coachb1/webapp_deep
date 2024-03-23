@@ -49,16 +49,16 @@ const SkillBot = ({ user }: any) => {
       });
   }, []);
   return (
-    <div>
-      <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
+    <>
+      {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
         <NetworkNav user={user} />
-      </div>
+      </div> */}
       <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
             <div
               id="category-navbar"
-              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0  z-[799] bg-white w-full"
+              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0  z-[2] bg-white w-full"
             >
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
                 <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
@@ -156,7 +156,7 @@ const SkillBot = ({ user }: any) => {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 };
 

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/app/profile/Competencies";
 import MyPages from "@/app/profile/MyPages";
-import { getUserAccount } from "@/lib/utils";
+import { getClientUserInfo, getUserAccount } from "@/lib/utils";
 import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
@@ -40,12 +40,29 @@ const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
   const [userRole, setUserRole] = useState("");
 
+  //client based restrictions
+  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+    null
+  );
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
           setUserRole(data.role);
+        });
+    }
+
+    if (user) {
+      getClientUserInfo(user.email)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data, "getClientUserInfo - userProfile");
+
+          setRestrictedPages(data.data.user_info[0].restricted_pages);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
         });
     }
   }, []);
@@ -78,7 +95,7 @@ const Profile = ({ user }: any) => {
   return (
     <>
       {" "}
-      <NetworkNav user={user} />
+      {/* <NetworkNav user={user} /> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
           {" "}
@@ -103,46 +120,68 @@ const Profile = ({ user }: any) => {
               itemName={"Account Information"}
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
             />
-            <NavItem
-              itemName={"My Connections"}
-              icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"Action Plan & session notes"}
-              icon={<StickyNote className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"Bot Conversations"}
-              icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"My Rewards"}
-              icon={<PocketIcon className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"Competencies"}
-              icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"IDP"}
-              icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
-            />
-            <NavItem
-              itemName={"Email Signature"}
-              icon={<MailCheck className="text-gray-500 h-5 w-5" />}
-            />
-            {userRole === "super_admin" ? (
+            {!restrictedFeatures?.includes("My Connections") && (
               <NavItem
-                itemName={"Admin"}
-                icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
+                itemName={"My Connections"}
+                icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
               />
-            ) : null}
-            {userRole === "super_admin" || userRole === "client_admin" ? (
+            )}
+            {!restrictedFeatures?.includes("Action Plan & session notes") && (
               <NavItem
-                itemName={"Admin Reports"}
-                icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
+                itemName={"Action Plan & session notes"}
+                icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
-            ) : null}
+            )}
+            {!restrictedFeatures?.includes("Bot Conversations") && (
+              <NavItem
+                itemName={"Bot Conversations"}
+                icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
+              />
+            )}
+            {!restrictedFeatures?.includes("My Rewards") && (
+              <NavItem
+                itemName={"My Rewards"}
+                icon={<PocketIcon className="text-gray-500 h-5 w-5" />}
+              />
+            )}
+            {!restrictedFeatures?.includes("Competencies") && (
+              <NavItem
+                itemName={"Competencies"}
+                icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
+              />
+            )}
+            {!restrictedFeatures?.includes("IDP") && (
+              <NavItem
+                itemName={"IDP"}
+                icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
+              />
+            )}
+            {!restrictedFeatures?.includes("Email Signature") && (
+              <NavItem
+                itemName={"Email Signature"}
+                icon={<MailCheck className="text-gray-500 h-5 w-5" />}
+              />
+            )}
+            {!restrictedFeatures?.includes("Platform-Admin") && (
+              <>
+                {userRole === "super_admin" ? (
+                  <NavItem
+                    itemName={"Admin"}
+                    icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
+                  />
+                ) : null}
+              </>
+            )}
+            {!restrictedFeatures?.includes("Client - Admin Reports") && (
+              <>
+                {userRole === "super_admin" || userRole === "client_admin" ? (
+                  <NavItem
+                    itemName={"Admin Reports"}
+                    icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
+                  />
+                ) : null}
+              </>
+            )}
           </div>
         </div>
         <div className=" w-[80%] max-sm:w-[90%]">

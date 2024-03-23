@@ -129,6 +129,12 @@ const Coaches = ({ user }: any) => {
   const [connections, setConnections] = useState<connectionType[]>([]);
   // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  //client based restrictions
+  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+    null
+  );
+
   const [userClientInfoData, setUserClientInfoData] =
     useState<UserClientInfoDataType>();
 
@@ -168,9 +174,12 @@ const Coaches = ({ user }: any) => {
       .then((res) => res.json())
       .then((data) => {
         setUserClientInfoData(data.data);
-        console.log(data.data);
+        console.log(data, "client user info");
         setClientDepartments(data.data.user_info[0].departments);
         setClientExpertise(data.data.user_info[0].coach_expertise);
+
+        setRestrictedPages(data.data.user_info[0].restricted_pages);
+        setRestrictedFeatures(data.data.user_info[0].restricted_features);
       })
       .catch((err) => console.error(err));
   };
@@ -980,24 +989,25 @@ const Coaches = ({ user }: any) => {
   };
 
   return (
-    <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
-      <div className="z-[999]">
-        <NetworkNav user={user} />
-      </div>
-      <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
-        <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
-          <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
-            COACH
-          </span>
-          BOTS
-        </h1>
-        <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
-          Coaching & Performance Workbench
-        </h1>
-        <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
-          {" "}
-          Peer to Peer network of leaders for growth.
-        </p>
+    // <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
+    //   <div className="z-[999]">
+    //     <NetworkNav user={user} />
+    //   </div>
+    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
+      <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
+        <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
+          COACH
+        </span>
+        BOTS
+      </h1>
+      <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
+        Coaching & Performance Workbench
+      </h1>
+      <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
+        {" "}
+        Peer to Peer network of leaders for growth.
+      </p>
+      {!restrictedFeatures?.includes("Join the network") && (
         <div className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs">
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="border-none outline-none">
@@ -1149,356 +1159,352 @@ const Coaches = ({ user }: any) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div id="list" className="min-h-screen w-full max-sm:px-2">
-          <div className="my-4">
-            <p className="font-semibold text-gray-500 max-sm:text-sm">
-              We enable deep and meaningful coaching conversations with AI
-              assistance even when life gets busy!
+      )}
+      <div id="list" className="min-h-screen w-full max-sm:px-2">
+        <div className="my-4">
+          <p className="font-semibold text-gray-500 max-sm:text-sm">
+            We enable deep and meaningful coaching conversations with AI
+            assistance even when life gets busy!
+          </p>
+        </div>
+        <div className="my-4">
+          <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
+            <Search className="mr-1 inline h-4 w-4" />
+            <input
+              placeholder="What are you looking for?"
+              className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+              type="text"
+              onChange={(e) => {
+                console.log(e.target.value);
+                handleUpdateCheckedValues([e.target.value]);
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <div>
+            <FilterDropDown
+              filtersCategory={filterCategroies}
+              setParentCheckedValues={setParentCheckedValues}
+              checkedValues={parentCheckedValues}
+              onUpdateCheckedValues={handleUpdateCheckedValues}
+            />
+            <p className="text-left text-sm max-sm:text-xs text-gray-600 mt-2">
+              Each menu is single-select only.
             </p>
           </div>
-          <div className="my-4">
-            <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
-              <Search className="mr-1 inline h-4 w-4" />
-              <input
-                placeholder="What are you looking for?"
-                className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
-                type="text"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  handleUpdateCheckedValues([e.target.value]);
-                }}
-              />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div>
-              <FilterDropDown
-                filtersCategory={filterCategroies}
-                setParentCheckedValues={setParentCheckedValues}
-                checkedValues={parentCheckedValues}
-                onUpdateCheckedValues={handleUpdateCheckedValues}
-              />
-              <p className="text-left text-sm max-sm:text-xs text-gray-600 mt-2">
-                Each menu is single-select only.
-              </p>
-            </div>
-          </div>
-          <hr className="mt-2" />
-          <div className="mt-2 ">
-            {loading && (
-              <div className="flex w-full flex-row items-center justify-center">
-                <div className="mt-12 flex items-center">
-                  <Loader className="mr-2 inline h-4 w-4 animate-spin" />{" "}
-                  <span>loading...</span>
-                </div>
+        </div>
+        <hr className="mt-2" />
+        <div className="mt-2 ">
+          {loading && (
+            <div className="flex w-full flex-row items-center justify-center">
+              <div className="mt-12 flex items-center">
+                <Loader className="mr-2 inline h-4 w-4 animate-spin" />{" "}
+                <span>loading...</span>
               </div>
-            )}
+            </div>
+          )}
 
-            {!loading &&
-              coachesData.length > 0 &&
-              currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
-                  <div className="relative top-[26px]  flex w-full flex-row justify-between">
-                    {coach.profile_type !== "icons_by_ai" && (
-                      <span className="z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                        User Created
-                      </span>
-                    )}
-                    {coach.timer_enabled && (
-                      <span className="z-[1] mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                        {coach.time_value_in_days} Days remaining
-                      </span>
-                    )}
-                  </div>
-                  <div
-                    className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
-                      coach.profile_type === "icons_by_ai" &&
-                      "border-gray-800 shadow-lg"
-                    }`}
-                  >
-                    <div className="">
-                      <img
-                        className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
-                        src={coach.profile_pic_url}
+          {!loading &&
+            coachesData.length > 0 &&
+            currentCoachesData.map((coach, i) => (
+              <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
+                <div className="relative top-[26px]  flex w-full flex-row justify-between">
+                  {coach.profile_type !== "icons_by_ai" && (
+                    <span className="z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                      User Created
+                    </span>
+                  )}
+                  {coach.timer_enabled && (
+                    <span className="z-[1] mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                      {coach.time_value_in_days} Days remaining
+                    </span>
+                  )}
+                </div>
+                <div
+                  className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
+                    coach.profile_type === "icons_by_ai" &&
+                    "border-gray-800 shadow-lg"
+                  }`}
+                >
+                  <div className="">
+                    <img
+                      className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
+                      src={coach.profile_pic_url}
+                    />
+                    <div className="mt-4">
+                      <LikeComponent
+                        profile_id={coach.profile_id}
+                        likesInfo={coach.admirer_ids}
                       />
-                      <div className="mt-4">
-                        <LikeComponent
-                          profile_id={coach.profile_id}
-                          likesInfo={coach.admirer_ids}
-                        />
-                      </div>
                     </div>
-                    <div className=" flex flex-col items-start justify-start w-full">
-                      <div className="mb-2 flex flex-row items-center gap-1">
-                        {" "}
-                        {hasPassed5Days(coach.created) ? null : (
-                          <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                            <Star color="#047857" className="mr-1 h-4 w-4 " />{" "}
-                            New
-                          </Badge>
-                        )}
-                        {coach.visual_tag !== null &&
-                          coach.visual_tag
-                            .split(", ")
-                            .map((tag) => (
-                              <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                                {convertTextToCorrectFormat(tag)}
-                              </Badge>
-                            ))}
-                      </div>
-                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                        {getFormattedCoachName(coach.name)}{" "}
-                      </p>{" "}
-                      <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
-                        {coach.department}
-                      </p>
-                      <div className="flex flex-row items-center justify-start gap-2">
-                        {coach.profile_type === "coach-mentor" ? (
-                          <>
-                            <Badge
-                              variant={"secondary"}
-                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                            >
-                              {convertTextToCorrectFormat("coach")}
+                  </div>
+                  <div className=" flex flex-col items-start justify-start w-full">
+                    <div className="mb-2 flex flex-row items-center gap-1">
+                      {" "}
+                      {hasPassed5Days(coach.created) ? null : (
+                        <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
+                          <Star color="#047857" className="mr-1 h-4 w-4 " /> New
+                        </Badge>
+                      )}
+                      {coach.visual_tag !== null &&
+                        coach.visual_tag
+                          .split(", ")
+                          .map((tag) => (
+                            <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
+                              {convertTextToCorrectFormat(tag)}
                             </Badge>
-                            <Badge
-                              variant={"secondary"}
-                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                            >
-                              {convertTextToCorrectFormat("mentor")}
-                            </Badge>
-                          </>
-                        ) : (
+                          ))}
+                    </div>
+                    <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
+                      {getFormattedCoachName(coach.name)}{" "}
+                    </p>{" "}
+                    <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
+                      {coach.department}
+                    </p>
+                    <div className="flex flex-row items-center justify-start gap-2">
+                      {coach.profile_type === "coach-mentor" ? (
+                        <>
                           <Badge
                             variant={"secondary"}
-                            className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
-                              (coach.profile_type === "skill_bot" ||
-                                coach.profile_type === "coachbots") &&
-                              "bg-green-500 hover:bg-green-400"
-                            }`}
+                            className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
                           >
-                            {convertTextToCorrectFormat(coach.profile_type)}
+                            {convertTextToCorrectFormat("coach")}
                           </Badge>
+                          <Badge
+                            variant={"secondary"}
+                            className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
+                          >
+                            {convertTextToCorrectFormat("mentor")}
+                          </Badge>
+                        </>
+                      ) : (
+                        <Badge
+                          variant={"secondary"}
+                          className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
+                            (coach.profile_type === "skill_bot" ||
+                              coach.profile_type === "coachbots") &&
+                            "bg-green-500 hover:bg-green-400"
+                          }`}
+                        >
+                          {convertTextToCorrectFormat(coach.profile_type)}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
+                      <div className="flex flex-row items-center"></div>
+                      {coach.profile_type !== "coachee" &&
+                        coach.profile_type !== "mentee" && (
+                          <ReviewComponent
+                            stars={coach.rating}
+                            totalRatings={coach.total_rating}
+                            coachId={coach.profile_id}
+                          />
                         )}
-                      </div>
-                      <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
-                        <div className="flex flex-row items-center"></div>
-                        {coach.profile_type !== "coachee" &&
-                          coach.profile_type !== "mentee" && (
-                            <ReviewComponent
-                              stars={coach.rating}
-                              totalRatings={coach.total_rating}
-                              coachId={coach.profile_id}
-                            />
-                          )}
-                        {(coach.profile_type === "coach" ||
-                          coach.profile_type === "mentor") && (
-                          <div className="max-sm:mt-2 flex flex-row items-center">
-                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                              ●
-                            </span>
-                            <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
-                              {coach.total_without_question_count} Engagements
-                            </p>
-                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                              ●
-                            </span>
-                          </div>
-                        )}
-                        <div>
-                          {coach.feedback_wall !== null &&
-                            coach.feedback_wall !== "" && (
-                              <>
-                                <Link
-                                  target="_blank"
-                                  href={handleLinks(coach.feedback_wall)}
-                                >
-                                  <Button
-                                    variant={"link"}
-                                    className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
-                                  >
-                                    Feedback{" "}
-                                    <ExternalLink className="h-4 w-4 ml-1" />
-                                  </Button>
-                                </Link>
-                              </>
-                            )}
+                      {(coach.profile_type === "coach" ||
+                        coach.profile_type === "mentor") && (
+                        <div className="max-sm:mt-2 flex flex-row items-center">
+                          <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                            ●
+                          </span>
+                          <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
+                            {coach.total_without_question_count} Engagements
+                          </p>
+                          <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                            ●
+                          </span>
                         </div>
-                      </div>
-                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
-                        {coach.description}
-                      </p>
-                      <div className="mt-4 flex flex-row flex-wrap gap-2">
-                        {coach.profile_type !== "skill_bot" && (
-                          <Badge
-                            variant={"secondary"}
-                            className=" my-1 text-sm text-gray-600"
-                          >
-                            {coach.experience}
-                          </Badge>
-                        )}
-                        {coach.expertise && (
-                          <Badge
-                            variant={"secondary"}
-                            className="my-1 text-sm text-gray-600"
-                          >
-                            {coach.expertise}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
-                        {coach.status === "accepted" && (
-                          <Button
-                            disabled
-                            variant={"outline"}
-                            className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                          >
-                            Connected
-                          </Button>
-                        )}
-                        {(coach.profile_type === "coach" ||
-                          coach.profile_type === "mentor" ||
-                          coach.profile_type === "coach-mentor") && (
-                          <>
-                            {coach.status === "pending" && (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className=" max-sm:text-sm max-sm:w-full border border-gray-300"
-                              >
-                                Requested
-                              </Button>
-                            )}
-                            {coach.status === "" && (
-                              <RequestionConnection
-                                coachId={coach.profile_id}
-                              />
-                            )}
-                            {coach.status === "available" && (
-                              <RequestionConnection
-                                coachId={coach.profile_id}
-                              />
-                            )}
-                          </>
-                        )}
-                        {coach.avatar_bot_url !== null &&
-                          coach.avatar_bot_url !== "" && (
-                            <div className="max-sm:w-full">
+                      )}
+                      <div>
+                        {coach.feedback_wall !== null &&
+                          coach.feedback_wall !== "" && (
+                            <>
                               <Link
-                                href={handleLinks(coach.avatar_bot_url)}
                                 target="_blank"
+                                href={handleLinks(coach.feedback_wall)}
                               >
                                 <Button
-                                  variant={"secondary"}
-                                  className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
+                                  variant={"link"}
+                                  className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
                                 >
-                                  {coach.profile_type === "skill_bot" ||
-                                  coach.profile_type === "coachbots"
-                                    ? "Skill Chat"
-                                    : "AI Frame"}
+                                  Feedback{" "}
+                                  <ExternalLink className="h-4 w-4 ml-1" />
                                 </Button>
                               </Link>
-                            </div>
+                            </>
                           )}
                       </div>
                     </div>
+                    <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
+                      {coach.description}
+                    </p>
+                    <div className="mt-4 flex flex-row flex-wrap gap-2">
+                      {coach.profile_type !== "skill_bot" && (
+                        <Badge
+                          variant={"secondary"}
+                          className=" my-1 text-sm text-gray-600"
+                        >
+                          {coach.experience}
+                        </Badge>
+                      )}
+                      {coach.expertise && (
+                        <Badge
+                          variant={"secondary"}
+                          className="my-1 text-sm text-gray-600"
+                        >
+                          {coach.expertise}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
+                      {coach.status === "accepted" && (
+                        <Button
+                          disabled
+                          variant={"outline"}
+                          className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                        >
+                          Connected
+                        </Button>
+                      )}
+                      {(coach.profile_type === "coach" ||
+                        coach.profile_type === "mentor" ||
+                        coach.profile_type === "coach-mentor") && (
+                        <>
+                          {coach.status === "pending" && (
+                            <Button
+                              disabled
+                              variant={"outline"}
+                              className=" max-sm:text-sm max-sm:w-full border border-gray-300"
+                            >
+                              Requested
+                            </Button>
+                          )}
+                          {coach.status === "" && (
+                            <RequestionConnection coachId={coach.profile_id} />
+                          )}
+                          {coach.status === "available" && (
+                            <RequestionConnection coachId={coach.profile_id} />
+                          )}
+                        </>
+                      )}
+                      {coach.avatar_bot_url !== null &&
+                        coach.avatar_bot_url !== "" && (
+                          <div className="max-sm:w-full">
+                            <Link
+                              href={handleLinks(coach.avatar_bot_url)}
+                              target="_blank"
+                            >
+                              <Button
+                                variant={"secondary"}
+                                className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
+                              >
+                                {coach.profile_type === "skill_bot" ||
+                                coach.profile_type === "coachbots"
+                                  ? "Skill Chat"
+                                  : "AI Frame"}
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                    </div>
                   </div>
                 </div>
-              ))}
-            {coachesData.length > 10 && (
-              <Pagination className="my-10 max-sm:text-xs">
-                <PaginationContent>
-                  <PaginationItem>
-                    <Button
-                      variant={"link"}
-                      disabled={currentPage === 1}
-                      onClick={() => paginate(currentPage - 1)}
-                      className="max-sm:text-xs"
-                    >
-                      {" "}
-                      <ChevronLeft className="mr-2 h-4 w-4" /> Previous{" "}
-                    </Button>
-                  </PaginationItem>
-                  {Array.from({ length: totalPages }).map((_, index) => {
-                    if (
-                      (index < maxPaginationLinks &&
-                        currentPage <= maxPaginationLinks - 3) ||
-                      (index >= currentPage - 2 && index <= currentPage + 2) ||
-                      (index > totalPages - maxPaginationLinks &&
-                        currentPage >= totalPages - maxPaginationLinks + 2)
-                    ) {
-                      return (
-                        <PaginationItem
-                          className="w-fit px-0 hover:cursor-pointer max-sm:text-xs"
-                          key={index}
+              </div>
+            ))}
+          {coachesData.length > 10 && (
+            <Pagination className="my-10 max-sm:text-xs">
+              <PaginationContent>
+                <PaginationItem>
+                  <Button
+                    variant={"link"}
+                    disabled={currentPage === 1}
+                    onClick={() => paginate(currentPage - 1)}
+                    className="max-sm:text-xs"
+                  >
+                    {" "}
+                    <ChevronLeft className="mr-2 h-4 w-4" /> Previous{" "}
+                  </Button>
+                </PaginationItem>
+                {Array.from({ length: totalPages }).map((_, index) => {
+                  if (
+                    (index < maxPaginationLinks &&
+                      currentPage <= maxPaginationLinks - 3) ||
+                    (index >= currentPage - 2 && index <= currentPage + 2) ||
+                    (index > totalPages - maxPaginationLinks &&
+                      currentPage >= totalPages - maxPaginationLinks + 2)
+                  ) {
+                    return (
+                      <PaginationItem
+                        className="w-fit px-0 hover:cursor-pointer max-sm:text-xs"
+                        key={index}
+                      >
+                        <PaginationLink
+                          // href="#"
+                          isActive={currentPage === index + 1}
+                          onClick={() => paginate(index + 1)}
+                          className="max-sm:w-fit max-sm:px-2 max-sm:text-xs"
                         >
-                          <PaginationLink
-                            // href="#"
-                            isActive={currentPage === index + 1}
-                            onClick={() => paginate(index + 1)}
-                            className="max-sm:w-fit max-sm:px-2 max-sm:text-xs"
-                          >
-                            {index + 1}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    } else if (
-                      // (index === maxPaginationLinks - 3 &&
-                      //   currentPage > maxPaginationLinks - 3) ||
-                      (index === 1 && currentPage > 4 && totalPages > 5) ||
-                      (index === totalPages - 2 &&
-                        currentPage < totalPages - 3 &&
-                        totalPages > 5)
-                    ) {
-                      return <PaginationEllipsis key={index} />;
-                    }
-                    return null;
-                  })}
-                  <PaginationItem>
-                    <Button
-                      variant={"link"}
-                      disabled={currentPage === totalPages}
-                      onClick={() => paginate(currentPage + 1)}
-                      className="max-sm:text-xs"
-                    >
-                      {" "}
-                      Next <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
-            {!loading && coachesData.length === 0 && (
-              <div className="flex w-full flex-row items-center justify-center">
-                <div className="mt-12 flex items-center">
-                  {parentCheckedValues.includes("External") ||
-                  parentCheckedValues.includes("accepted") ? (
-                    <div className="flex flex-col gap-2">
-                      {/* {parentCheckedValues.includes("External") && (
+                          {index + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  } else if (
+                    // (index === maxPaginationLinks - 3 &&
+                    //   currentPage > maxPaginationLinks - 3) ||
+                    (index === 1 && currentPage > 4 && totalPages > 5) ||
+                    (index === totalPages - 2 &&
+                      currentPage < totalPages - 3 &&
+                      totalPages > 5)
+                  ) {
+                    return <PaginationEllipsis key={index} />;
+                  }
+                  return null;
+                })}
+                <PaginationItem>
+                  <Button
+                    variant={"link"}
+                    disabled={currentPage === totalPages}
+                    onClick={() => paginate(currentPage + 1)}
+                    className="max-sm:text-xs"
+                  >
+                    {" "}
+                    Next <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+          {!loading && coachesData.length === 0 && (
+            <div className="flex w-full flex-row items-center justify-center">
+              <div className="mt-12 flex items-center">
+                {parentCheckedValues.includes("External") ||
+                parentCheckedValues.includes("accepted") ? (
+                  <div className="flex flex-col gap-2">
+                    {/* {parentCheckedValues.includes("External") && (
                         <span>
                           You do not have access to external coaches and mentors
                           at this time. Please connect with your administrator.
                         </span>
                       )} */}
-                      {parentCheckedValues.includes("accepted") &&
-                        connectedCoaches.length === 0 && (
-                          <span>
-                            You do not have any connections yet. Keep exploring.
-                          </span>
-                        )}
-                    </div>
-                  ) : (
-                    <>
-                      <span>No Data</span>
-                    </>
-                  )}
-                </div>
+                    {parentCheckedValues.includes("accepted") &&
+                      connectedCoaches.length === 0 && (
+                        <span>
+                          You do not have any connections yet. Keep exploring.
+                        </span>
+                      )}
+                  </div>
+                ) : (
+                  <>
+                    <span>No Data</span>
+                  </>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      </MaxWidthWrapper>
-    </div>
+      </div>
+    </MaxWidthWrapper>
+    // </div>
   );
 };
 

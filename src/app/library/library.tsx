@@ -442,15 +442,15 @@ const MyLibrary = ({ user }: any) => {
 
   return (
     <div>
-      <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
+      {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
         <NetworkNav user={user} />
-      </div>
+      </div> */}
       <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
             <div
               id="category-navbar"
-              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0 bg-white z-[799]  w-full"
+              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0 bg-white z-[10]  w-full"
             >
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
                 <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
@@ -603,7 +603,7 @@ const MyLibrary = ({ user }: any) => {
                                     >
                                       <Badge
                                         variant={"default"}
-                                        className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                        className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                       >
                                         <>✨ {domains.domain}</>
                                       </Badge>
@@ -732,7 +732,7 @@ const MyLibrary = ({ user }: any) => {
                                 <div className={`w-full flex justify-center`}>
                                   <Badge
                                     variant={"default"}
-                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                   >
                                     <>✨ {skills.domain}</>
                                   </Badge>
@@ -884,7 +884,7 @@ const MyLibrary = ({ user }: any) => {
                                 <div className={`w-full flex justify-center`}>
                                   <Badge
                                     variant={"default"}
-                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3  z-50 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                    className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                   >
                                     <>✨ {domains.domain}</>
                                   </Badge>
@@ -1095,9 +1095,9 @@ const MyLibrary = ({ user }: any) => {
                                     ))}
                                   </Accordion>
                                 ) : (
-                                  <p className="text-sm max-sm:text-xs text-gray-600">
-                                    You don't have any requested scnarios, Start
-                                    by Creating.
+                                  <p className="text-sm max-sm:text-xs text-gray-600 py-4">
+                                    You don't have any requested scenarios,
+                                    Start by Creating.
                                   </p>
                                 )}
                               </div>

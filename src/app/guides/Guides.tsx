@@ -121,15 +121,15 @@ const Guides = ({ user }: any) => {
   }, []);
   return (
     <div>
-      <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
+      {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
         <NetworkNav user={user} />
-      </div>
+      </div> */}
       <main className="bg-white  h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
             <div
               id="category-navbar"
-              className="flex flex-col gap-2 mb-4 bg-red justify-center items-center  sticky top-0 bg-white  z-[799] w-full"
+              className="flex flex-col gap-2 mb-4 bg-red justify-center items-center  sticky top-0 bg-white z-[10] w-full"
             >
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[90px] ">
                 <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
@@ -307,7 +307,10 @@ const Guides = ({ user }: any) => {
                                           className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                         >
                                           {knowledgeBot.length === 0 ? (
-                                            <p>There are no community created guides yet!</p>
+                                            <p>
+                                              There are no community created
+                                              guides yet!
+                                            </p>
                                           ) : (
                                             knowledgeBot.map((bot, i) => (
                                               <AccordionItem
@@ -340,7 +343,6 @@ const Guides = ({ user }: any) => {
                                               </AccordionItem>
                                             ))
                                           )}
-
                                         </Accordion>
                                       </div>
                                     </div>
