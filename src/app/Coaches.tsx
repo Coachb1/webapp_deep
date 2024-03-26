@@ -150,10 +150,21 @@ const Coaches = ({ user }: any) => {
 
   const indexOfLastCoach = currentPage * itemsPerPage;
   const indexOfFirstCoach = indexOfLastCoach - itemsPerPage;
-  const currentCoachesData = coachesData.slice(
-    indexOfFirstCoach,
-    indexOfLastCoach
-  );
+  // const currentCoachesData = coachesData.slice(
+  //   indexOfFirstCoach,
+  //   indexOfLastCoach
+  // );
+  const [currentCoachesData, setCurrentCoachesData] = useState<
+    CoachesDataType[]
+  >([]);
+  useEffect(() => {
+    const currentCoachesData = coachesData.slice(
+      indexOfFirstCoach,
+      indexOfLastCoach
+    );
+
+    setCurrentCoachesData(currentCoachesData);
+  }, [coachesData]);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -579,34 +590,31 @@ const Coaches = ({ user }: any) => {
       );
       console.log(filteredData);
       setCoachesData(filteredData);
+    } else if (newValues.includes("coach")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter(
+              (coachData) =>
+                coachData.profile_type === "coach" ||
+                coachData.profile_type.includes("coach-")
+            )
+          : savedCoachesData.filter(
+              (coachData) =>
+                coachData.profile_type === "coach" ||
+                coachData.profile_type.includes("coach-")
+            ),
+        newValues
+      );
+      console.log(filteredData);
+      setCoachesData(filteredData);
     } else {
-      if (newValues.includes("coach")) {
-        const filteredData = filterData(
-          newValues.includes("Connected")
-            ? coachesData.filter(
-                (coachData) =>
-                  coachData.profile_type === "coach" ||
-                  coachData.profile_type.includes("coach-")
-              )
-            : savedCoachesData.filter(
-                (coachData) =>
-                  coachData.profile_type === "coach" ||
-                  coachData.profile_type.includes("coach-")
-              ),
-          newValues
-        );
-        console.log(filteredData);
-        setCoachesData(filteredData);
-      } else {
-        const filteredData = filterData(
-          newValues.includes("Connected") ? coachesData : savedCoachesData,
-          newValues
-        );
-        console.log(filteredData);
-        setCoachesData(filteredData);
-      }
+      const filteredData = filterData(
+        newValues.includes("Connected") ? coachesData : savedCoachesData,
+        newValues
+      );
+      console.log(filteredData);
+      setCoachesData(filteredData);
     }
-    // }
   };
 
   function isConnected(coachStatus: string): boolean {
@@ -1310,15 +1318,15 @@ const Coaches = ({ user }: any) => {
                           <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
                             {coach.total_without_question_count} Engagements
                           </p>
-                          <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                            ●
-                          </span>
                         </div>
                       )}
                       <div>
                         {coach.feedback_wall !== null &&
                           coach.feedback_wall !== "" && (
                             <>
+                              <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                                ●
+                              </span>
                               <Link
                                 target="_blank"
                                 href={handleLinks(coach.feedback_wall)}
@@ -1477,27 +1485,22 @@ const Coaches = ({ user }: any) => {
           {!loading && coachesData.length === 0 && (
             <div className="flex w-full flex-row items-center justify-center">
               <div className="mt-12 flex items-center">
-                {parentCheckedValues.includes("External") ||
-                parentCheckedValues.includes("accepted") ? (
-                  <div className="flex flex-col gap-2">
-                    {/* {parentCheckedValues.includes("External") && (
-                        <span>
-                          You do not have access to external coaches and mentors
-                          at this time. Please connect with your administrator.
-                        </span>
-                      )} */}
-                    {parentCheckedValues.includes("accepted") &&
-                      connectedCoaches.length === 0 && (
-                        <span>
-                          You do not have any connections yet. Keep exploring.
-                        </span>
-                      )}
-                  </div>
-                ) : (
+                {coachesData.length === 0 && (
                   <>
                     <span>No Data</span>
                   </>
                 )}
+                {parentCheckedValues.includes("External") ||
+                  (parentCheckedValues.includes("accepted") && (
+                    <div className="flex flex-col gap-2">
+                      {parentCheckedValues.includes("accepted") &&
+                        connectedCoaches.length === 0 && (
+                          <span>
+                            You do not have any connections yet. Keep exploring.
+                          </span>
+                        )}
+                    </div>
+                  ))}
               </div>
             </div>
           )}

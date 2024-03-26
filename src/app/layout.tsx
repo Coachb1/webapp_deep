@@ -111,38 +111,12 @@ export default function RootLayout({
       console.error(error);
       setLoading(false);
     }
-
-    // console.log(isAuthenticated);
-    // if (!isAuthenticated) {
-    //   if (!refreshedOnce && pathname === "/") {
-    //     document.cookie.split(";").forEach(function (c) {
-    //       document.cookie = c
-    //         .replace(/^ +/, "")
-    //         .replace(
-    //           /=.*/,
-    //           "=;expires=" + new Date().toUTCString() + ";path=/"
-    //         );
-    //     });
-
-    //     localStorage.setItem("refreshed-once", "true");
-    //     window.location.reload();
-    //   }
-    // }
-    // if (user) {
-    //   localStorage.removeItem("refreshed-once");
-    // }
   }, [isLoading]);
 
-  // useEffect(() => {
-  //   console.log(isAuthenticated);
-  // }, [isAuthenticated]);
-
   useEffect(() => {
-    //hide bots from intake
     if (pathname.includes("intake")) {
       hideBots();
     }
-    //ADD LOCALSTORAGE ITEM after user
     if (pathname === "/coach" || pathname.includes("/coach/")) {
       setShowCoachBot(true);
 
@@ -226,6 +200,13 @@ export default function RootLayout({
         coachtalk.removeAttribute("style");
       }
     } else if (pathname === "/profile") {
+      if (coachScribe) {
+        coachScribe.setAttribute("style", "display: none;");
+      }
+      if (coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
+      }
+    } else if (pathname === "/guides") {
       if (coachScribe) {
         coachScribe.setAttribute("style", "display: none;");
       }
