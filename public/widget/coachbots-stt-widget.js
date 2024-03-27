@@ -4175,8 +4175,8 @@ loadExternalModule().then(() => {
       ">
     </div>
     <p id="bot-footer" style="font-size: ${
-      window.innerWidth < 768 ? "8px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px"></p>
+      window.innerWidth < 768 ? "10px" : "12px"
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px"> Maximum acceptable response length is the 300 words. </p>
   </div>
   `;
 
@@ -4213,7 +4213,7 @@ loadExternalModule().then(() => {
     chatIconContainer2.style.width = "3rem";
     chatIconContainer2.style.height = "3rem";
     chatContainer2.style.position = "fixed";
-    chatbotHeading2.style.fontSize = "12px";
+    // chatbotHeading2.style.fontSize = "12px";
     closeFromTopp2.style.width = "30px";
     closeFromTopp2.style.left = "0.3rem";
     closeFromTopp2.style.top = "0.2rem";
@@ -4836,7 +4836,7 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           //
-
+          console.log(chatElementRef2.shadowRoot.getElementById("text-input"))
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
@@ -7008,6 +7008,13 @@ const openChatContainer2 = () => {
     chatIcon2.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
   }
+
+  var chatElementRef2 = document.getElementById("chat-element2");
+  var shadowRoot = chatElementRef2.shadowRoot;
+
+  // Get the input-container element within the shadow DOM
+  const textInputElement = shadowRoot.getElementById("text-input")
+  textInputElement.setAttribute("onpaste", "alert('Pasting is not allowed in this field.'); return false;")
 };
 
 const closeFromTop2 = () => {
