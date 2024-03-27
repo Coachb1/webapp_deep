@@ -157,12 +157,20 @@ export interface SkillnRoleBotsType {
 
 export interface knowledgeBotJson {
   signature_bot: {
-      bot_id: string;
-      faqs: string;
-      bot_type: string;
-      scenario_case: string;
+    bot_id: string;
+    faqs: string;
+    bot_type: string;
+    bot_scenario_case: string;
   };
   bot_attributes: {
-      bot_name: string;
+    bot_name: string;
   };
+}
+
+export interface knowledgeBotType {
+  bot_id: string;
+  bot_name: string;
+  description: string;
+  bot_type: string;
+  scenario_case: string;
 }
