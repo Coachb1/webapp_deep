@@ -12,7 +12,14 @@ import {
   subdomain,
   getBotById,
 } from "@/lib/utils";
-import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
+import {
+  Info,
+  Loader,
+  PenLine,
+  SendHorizonal,
+  Trash,
+  Trash2,
+} from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -41,9 +48,9 @@ const CoachIntake = ({ user }: any) => {
 
   const router = useRouter();
 
-  if (checkIfEdit) {
-    const [editLoading, setEditLoading] = useState(true);
-  }
+  // if (checkIfEdit) {
+  //   const [editLoading, setEditLoading] = useState(true);
+  // }
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
@@ -134,6 +141,8 @@ const CoachIntake = ({ user }: any) => {
     useState("");
 
   const [discussInCARformat, setDiscussInCARformat] = useState("");
+
+  const [deleteExistingFiles, setDeleteExistingFiles] = useState(false);
 
   //for coaches
   const [foundationalValues, setFoundationalValues] = useState("");
@@ -251,12 +260,23 @@ const CoachIntake = ({ user }: any) => {
         console.log(data);
         setClientinfoData(data.data);
 
-        if (data.data.user_info[0].departments !== null) {
-          setDepartments(data.data.user_info[0].departments);
+        if (
+          data.data.user_info[0].departments !== null &&
+          data.data.user_info[0].departments !== ""
+        ) {
+          console.log(data.data.user_info[0].departments, "Departments");
+          setDepartments(data.data.user_info[0].departments.split(","));
         }
 
-        if (data.data.user_info[0].coach_expertise !== null) {
-          setAreaDomains(data.data.user_info[0].coach_expertise);
+        if (
+          data.data.user_info[0].coach_expertise !== null &&
+          data.data.user_info[0].coach_expertise !== ""
+        ) {
+          console.log(
+            data.data.user_info[0].coach_expertise,
+            "coach_expertise"
+          );
+          setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
         }
       })
       .catch((err) => console.error(err));
@@ -752,6 +772,9 @@ const CoachIntake = ({ user }: any) => {
                     provide_answers_using_emojis: `${
                       provideAnswersUsingEmojis === "yes" ? true : false
                     }`,
+                    allow_coachee_to_create_session: `${
+                      allowSessionNotes === "yes" ? true : false
+                    }`,
                     fitment_answers: {
                       coachmentSelect,
                       participantLevel,
@@ -1012,6 +1035,9 @@ const CoachIntake = ({ user }: any) => {
                 provide_answers_using_emojis: `${
                   provideAnswersUsingEmojis === "yes" ? true : false
                 }`,
+                allow_coachee_to_create_session: `${
+                  allowSessionNotes === "yes" ? true : false
+                }`,
                 fitment_answers: {
                   coachmentSelect,
                   participantLevel,
@@ -1032,6 +1058,7 @@ const CoachIntake = ({ user }: any) => {
                 ? JSON.stringify({
                     bot_id: botIUidFromParams,
                     updated_data: avatarBotCreationFormData,
+                    is_overwrite: deleteExistingFiles,
                   })
                 : JSON.stringify(avatarBotCreationFormData),
             })
@@ -1328,8 +1355,11 @@ const CoachIntake = ({ user }: any) => {
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
+
+    console.log("hello 1");
     if (checkIfEdit === "true") {
-      if (botIdFromParams?.includes("feedback")) {
+      console.log("hello 2");
+      if (formType === "feedback") {
         setIsFeedbackNeeded(true);
         setTimeout(() => {
           console.log(document.getElementById("feedback"));
@@ -1368,19 +1398,22 @@ const CoachIntake = ({ user }: any) => {
               });
           });
       } else if (formType === "coach") {
+        console.log("hello 3");
+        console.log(formType);
         getUserAccount(user)
           .then((res) => res.json())
           .then((data) => {
+            console.log(data);
             fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
               headers: {
                 Authorization: basicAuth,
               },
             })
               .then((res) => res.json())
-              .then((data) => {
-                console.log("Bot details for edit - Coach", data);
-
-                const resultingBot = getBotById(botIdFromParams!, data.data);
+              .then((dataa) => {
+                console.log(dataa);
+                console.log("Bot details for edit - Coach", dataa);
+                const resultingBot = getBotById(botIdFromParams!, dataa.data);
 
                 console.log(resultingBot);
                 setName(resultingBot.bot_attributes.coach_name);
@@ -1415,6 +1448,9 @@ const CoachIntake = ({ user }: any) => {
                 setProblemSolvingApproach(
                   resultingBot.signature_bot.data.additional_data.problem_solving_approach?.trim()
                 );
+                setDiscussInCARformat(
+                  resultingBot.signature_bot.data.discuss_how_you_helped_others_in_coachMentoring?.trim()
+                );
                 // setLinksReflectingWVpersonal(
                 //   resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
                 // );
@@ -1428,8 +1464,18 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.voice_sample
                 );
 
-                //add sessionnotes Autofill
-
+                setProvideAnswersUsingEmojis(
+                  resultingBot.signature_bot.data.additional_data
+                    .provide_answers_using_emojis === "true"
+                    ? "Yes"
+                    : "No"
+                );
+                setAllowSessionNotes(
+                  resultingBot.signature_bot.data.additional_data
+                    .allow_coachee_to_create_session === "true"
+                    ? "Yes"
+                    : "No"
+                );
                 setCoachMentSelect(
                   resultingBot.signature_bot.data.additional_data
                     .fitment_answers?.coachmentSelect
@@ -2030,6 +2076,7 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
+                  <hr />
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please enter 1-2 YouTube links that reflect your worldview
@@ -2090,6 +2137,23 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
+                  <div className="flex items-start space-x-2 my-1.5  w-full border border-red-300 bg-red-100 p-2 rounded-md">
+                    {checkIfEdit && (
+                      <>
+                        <Checkbox
+                          checked={deleteExistingFiles}
+                          onCheckedChange={(checked) => {
+                            console.log(checked);
+                            setDeleteExistingFiles(Boolean(checked));
+                          }}
+                        />
+                        <label className="text-xs text-gray-700">
+                          Delete existing files?
+                        </label>
+                      </>
+                    )}
+                  </div>
+                  <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Do you want to provide a voice sample, if you want an
@@ -2967,7 +3031,7 @@ const CoachIntake = ({ user }: any) => {
                       }}
                       value={department}
                     >
-                      {departments.map((val: string, i: number) => (
+                      {departments.map((val, i) => (
                         <div key={i} className="flex items-center space-x-2 ">
                           <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
                           <label
