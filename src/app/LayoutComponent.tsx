@@ -36,17 +36,10 @@ const LayoutComponent = ({
   isRestricted: boolean;
 }) => {
   const pathname = usePathname();
-  //   const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
 
-  const refreshedOnce =
-    typeof window !== "undefined"
-      ? window.localStorage.getItem(`refreshed-once`)
-      : null;
-
-  //Unauth check
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -181,6 +174,13 @@ const LayoutComponent = ({
       }
       if (coachtalk) {
         coachtalk.removeAttribute("style");
+      }
+    } else if (pathname === "/guides") {
+      if (coachScribe) {
+        coachScribe.setAttribute("style", "display: none;");
+      }
+      if (coachtalk) {
+        coachtalk.setAttribute("style", "display: none;");
       }
     } else if (pathname === "/") {
       if (coachScribe && coachtalk) {
