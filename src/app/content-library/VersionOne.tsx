@@ -14,7 +14,6 @@ import {
   Sales,
   serviceslashConsulting,
   frontLineStaff,
-  immersive,
   presentation,
   caseStudy,
   DiversityPlus,
@@ -26,38 +25,12 @@ import {
   englishSupport,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount, scrollToView } from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
+import { useState } from "react";
+import { scrollToView } from "@/lib/utils";
 
 const VersionOne = ({ user }: any) => {
-  const [groupList, setGroupList] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/accounts/get-client-information/?for=user_info&user_id=${data.uid}`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("USER INFO FOR AUTH ACESS", data);
-            });
-        });
-    }
-  }, []);
-
   let shouldRenderDiv;
   if (user) {
     const userEmail = user?.email;

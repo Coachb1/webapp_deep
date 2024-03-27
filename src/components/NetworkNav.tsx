@@ -137,11 +137,14 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            onClick={() => {
-              router.push("/create-scenario");
-            }}
+            // onClick={() => {
+            //   router.push("/create-scenario");
+            // }}
+            asChild
           >
+            <Link href={"/create-scenario"}>
             Quick Learn
+            </Link>
           </Button>
         )}
       </div>
