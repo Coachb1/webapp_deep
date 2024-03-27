@@ -1058,7 +1058,7 @@ const CoachIntake = ({ user }: any) => {
                 ? JSON.stringify({
                     bot_id: botIUidFromParams,
                     updated_data: avatarBotCreationFormData,
-                    is_overwrite: deleteExistingFiles,
+                    is_overwrite: deleteExistingFiles? 'true' : 'false',
                   })
                 : JSON.stringify(avatarBotCreationFormData),
             })
@@ -1068,7 +1068,7 @@ const CoachIntake = ({ user }: any) => {
                 // setCreateLoading(false);
                 if (!data.error && !data.detail) {
                   console.log(referenceDocs.length, "length");
-                  if (referenceDocs.length > 0) {
+                  if (referenceDocs.length > 0 || linksReflectingWVpersonal !== "" || linksReflectyouWished !== "") {
                     const filesPatchFormData = new FormData();
                     if (referenceDocs.length > 0) {
                       referenceDocs.forEach(({ file, text }) => {
@@ -1112,6 +1112,10 @@ const CoachIntake = ({ user }: any) => {
                     filesPatchFormData.append(
                       "media_data",
                       JSON.stringify(media_data)
+                    );
+                    filesPatchFormData.append(
+                      "is_overwrite",
+                      deleteExistingFiles? 'true' : 'false',
                     );
 
                     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
