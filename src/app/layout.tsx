@@ -42,28 +42,6 @@ const getClientUserInfo = async (userEmail: string | null | undefined) => {
       isRestricted: true,
     };
   }
-  // .then((res) => res.json())
-  // .then((data) => {
-  //   // console.log("GET USER INFO - Client : ", data);
-  //   // console.log(
-  //   //   data.data.user_info[0].is_demo_user,
-  //   //   data.data.user_info[0].is_restricted
-  //   // );
-  //   // setIsDemoUser(data.data.user_info[0].is_demo_user);
-  //   // setIsRestricted(data.data.user_info[0].is_restricted);
-
-  //   return {
-  // isDemoUser: data.data.user_info[0].is_demo_user,
-  // isRestricted: data.data.user_info[0].is_restricted,
-  //   };
-  // })
-  // .catch((err) => {
-  //   console.log(err);
-  //   return {
-  //     isDemoUser: false,
-  //     isRestricted: false,
-  //   };
-  // });
 };
 
 export default async function RootLayout({
