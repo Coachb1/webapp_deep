@@ -103,7 +103,6 @@ export const UnAuth = ({ user }: any) => {
 export const LoginWall = () => {
   const pathname = usePathname();
   const [botId, setBotId] = useState("");
-  const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
   useEffect(() => {
     console.log(pathname);
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];

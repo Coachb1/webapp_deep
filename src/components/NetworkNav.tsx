@@ -15,6 +15,17 @@ import { TooltipWrapper } from "./TooltipWrapper";
 import { useEffect, useState } from "react";
 import { getClientUserInfo } from "@/lib/utils";
 
+interface CustomWindow extends Window {
+  user?: any;
+  locallStorage?: Storage;
+  locationn?: Location;
+  userIdFromWebApp?: any;
+  addEventListener: Window["addEventListener"];
+}
+
+const windowDec: CustomWindow =
+  typeof window !== "undefined" ? window : ({} as CustomWindow);
+
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -45,7 +56,9 @@ const NetworkNav = ({ user }: any) => {
     setScrolled(scrolledUp);
   }
 
-  window.addEventListener("scroll", handleScroll);
+  if (typeof window !== "undefined") {
+    windowDec.addEventListener("scroll", handleScroll);
+  }
 
   return (
     <div

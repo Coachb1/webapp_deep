@@ -13,112 +13,32 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SkillnRoleBotsType, knowledgeBotJson } from "@/lib/types";
 import { baseURL, basicAuth, hideBots } from "@/lib/utils";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { ExternalLinkIcon, History, Info, Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const Guides = ({ user }: any) => {
-  const [roleBots, setRoleBots] = useState<SkillnRoleBotsType[]>([]);
-  const [skillBots, setSkillBots] = useState<SkillnRoleBotsType[]>([]);
-  const [knowledgeBot, setknowledgebot] = useState<SkillnRoleBotsType[]>([]);
-  const [loading, setLoading] = useState(true);
-
+const Guides = ({
+  user,
+  roleBots,
+  skillBots,
+  knowledgeBots,
+}: {
+  user: KindeUser;
+  roleBots: SkillnRoleBotsType[];
+  skillBots: SkillnRoleBotsType[];
+  knowledgeBots: {
+    bot_id: string;
+    bot_name: string;
+    description: string;
+    bot_type: string;
+    scenario_case: string;
+  }[];
+}) => {
   const [selectedTab, setSelectedTab] = useState("guide-by-role");
   const router = useRouter();
 
-  useEffect(() => {
-    hideBots();
-    fetch(`${baseURL}/accounts/get-skill-and-role-bots/`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("data", data);
-
-        const filteredRoleBots = data.filter(
-          (bot: SkillnRoleBotsType) => bot.scenario_case === "role_bot"
-        );
-        setRoleBots(filteredRoleBots);
-
-        const filteredSkillBots = data.filter(
-          (bot: SkillnRoleBotsType) => bot.scenario_case === "skill_guide"
-        );
-        setSkillBots(filteredSkillBots);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-    fetch(
-      `${baseURL}/accounts/get-client-information/?for=user_info&email=${user.email}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((resp) => resp.json())
-      .then((client_info) => {
-        console.log("client", client_info);
-        let client_name;
-        try {
-          client_name = client_info.data.user_info[0].client_name;
-        } catch {
-          client_name = "Not Found";
-        }
-
-        fetch(
-          `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${client_name}`,
-          {
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((resp) => resp.json())
-          .then((result) => {
-            console.log("knowledge-bot", result);
-            let knowledgeBots: {
-              bot_id: string;
-              bot_name: string;
-              description: string;
-              bot_type: string;
-              scenario_case: string;
-            }[] = [];
-            result.data.forEach((item: knowledgeBotJson) => {
-              const botJson = item.signature_bot;
-              const description = JSON.parse(botJson.faqs)[
-                "What is the primary purpose of the bot?"
-              ];
-              knowledgeBots.push({
-                bot_id: botJson.bot_id,
-                bot_name: item.bot_attributes.bot_name,
-                bot_type: botJson.bot_type,
-                description: description,
-                scenario_case: botJson.scenario_case,
-              });
-            });
-            console.log(knowledgeBot);
-
-            setknowledgebot(knowledgeBots);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.error(err);
-            setLoading(false);
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
   return (
     <div>
       {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
@@ -194,69 +114,56 @@ const Guides = ({ user }: any) => {
             </div>
             {selectedTab === "guide-by-role" && (
               <div className="w-full">
-                {loading && (
-                  <div>
-                    <div className="bg-white my-16 max-sm:h-full pb-16 flex justify-center items-center">
-                      <p className="p-2 text-sm max-sm:text-xs">
-                        {" "}
-                        <Loader className="animate-spin inline h-4 w-4 mr-2" />
-                        Loading...
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {!loading && (
-                  <div className="max-sm:pb-10 ">
-                    <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                      <div
-                        id="skill-bots"
-                        className="flex flex-col max-sm:flex-col w-full mx-auto"
-                      >
-                        <div className="w-full flex flex-col items-center justify-center">
-                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                            <div>
-                              <div className="w-full">
-                                <div className="relative isolate mx-auto">
-                                  <div>
-                                    <div className="mx-auto w-full max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                        <Accordion
-                                          type="single"
-                                          collapsible
-                                          className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                        >
-                                          {roleBots.map((bot, i) => (
-                                            <AccordionItem
-                                              key={i}
-                                              value={`${i}-rolebot`}
-                                              className={`px-4`}
-                                            >
-                                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                                <div>{bot.bot_name}</div>
-                                              </AccordionTrigger>
-                                              <AccordionContent className="max-sm:text-xs">
-                                                <p className="text-left">
-                                                  {bot.description}
-                                                </p>
-                                                <div className="flex justify-end mt-2">
-                                                  <Link
-                                                    target="_blank"
-                                                    href={`/knowledge-bot/${bot.bot_id}`}
+                <div className="max-sm:pb-10 ">
+                  <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
+                    <div
+                      id="skill-bots"
+                      className="flex flex-col max-sm:flex-col w-full mx-auto"
+                    >
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                          <div>
+                            <div className="w-full">
+                              <div className="relative isolate mx-auto">
+                                <div>
+                                  <div className="mx-auto w-full max-sm:w-[100%] z-50">
+                                    <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                      <Accordion
+                                        type="single"
+                                        collapsible
+                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                      >
+                                        {roleBots.map((bot, i) => (
+                                          <AccordionItem
+                                            key={i}
+                                            value={`${i}-rolebot`}
+                                            className={`px-4`}
+                                          >
+                                            <AccordionTrigger className="text-left max-sm:text-xs">
+                                              <div>{bot.bot_name}</div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="max-sm:text-xs">
+                                              <p className="text-left">
+                                                {bot.description}
+                                              </p>
+                                              <div className="flex justify-end mt-2">
+                                                <Link
+                                                  target="_blank"
+                                                  href={`/knowledge-bot/${bot.bot_id}`}
+                                                >
+                                                  <Button
+                                                    variant={"secondary"}
+                                                    className="p-2 h-8 border border-gray-200"
                                                   >
-                                                    <Button
-                                                      variant={"secondary"}
-                                                      className="p-2 h-8 border border-gray-200"
-                                                    >
-                                                      Visit bot{" "}
-                                                      <ExternalLinkIcon className="h-4 w-4 ml-2" />
-                                                    </Button>
-                                                  </Link>
-                                                </div>
-                                              </AccordionContent>
-                                            </AccordionItem>
-                                          ))}
-                                        </Accordion>
-                                      </div>
+                                                    Visit bot{" "}
+                                                    <ExternalLinkIcon className="h-4 w-4 ml-2" />
+                                                  </Button>
+                                                </Link>
+                                              </div>
+                                            </AccordionContent>
+                                          </AccordionItem>
+                                        ))}
+                                      </Accordion>
                                     </div>
                                   </div>
                                 </div>
@@ -265,9 +172,9 @@ const Guides = ({ user }: any) => {
                           </div>
                         </div>
                       </div>
-                    </MaxWidthWrapper>
-                  </div>
-                )}
+                    </div>
+                  </MaxWidthWrapper>
+                </div>
                 <div className="w-full mt-12">
                   <p className="text-center font-bold text-gray-500">
                     More Role guides coming soon...
@@ -278,126 +185,32 @@ const Guides = ({ user }: any) => {
 
             {selectedTab === "user-created-guides" && (
               <div className="w-full">
-                {loading && (
-                  <div>
-                    <div className="bg-white my-16 max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
-                      <p className="p-2 text-sm max-sm:text-xs">
-                        {" "}
-                        <Loader className="animate-spin inline h-4 w-4 mr-2" />
-                        Loading...
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {!loading && (
-                  <div className="max-sm:pb-10">
-                    <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                      <div className="flex flex-col max-sm:flex-col w-full mx-auto">
-                        <div className="w-full flex flex-col items-center justify-center">
-                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                            <>
-                              <div className="w-full">
-                                <div className="relative isolate mx-auto">
-                                  <div>
-                                    <div className="mx-auto w-full max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                        <Accordion
-                                          type="single"
-                                          collapsible
-                                          className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                        >
-                                          {knowledgeBot.length === 0 ? (
-                                            <p>
-                                              There are no community created
-                                              guides yet!
-                                            </p>
-                                          ) : (
-                                            knowledgeBot.map((bot, i) => (
-                                              <AccordionItem
-                                                key={i}
-                                                value={`${i}-knowledge-bot`}
-                                                className={`px-4`}
-                                              >
-                                                <AccordionTrigger className="text-left max-sm:text-xs">
-                                                  <div>{bot.bot_name}</div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="max-sm:text-xs">
-                                                  <p className="text-left">
-                                                    {bot.description}
-                                                  </p>
-                                                  <div className="flex justify-end mt-2">
-                                                    <Link
-                                                      target="_blank"
-                                                      href={`/knowledge-bot/${bot.bot_id}`}
-                                                    >
-                                                      <Button
-                                                        variant={"secondary"}
-                                                        className="p-2 h-8 border border-gray-200"
-                                                      >
-                                                        Visit bot{" "}
-                                                        <ExternalLinkIcon className="h-4 w-4 ml-2" />
-                                                      </Button>
-                                                    </Link>
-                                                  </div>
-                                                </AccordionContent>
-                                              </AccordionItem>
-                                            ))
-                                          )}
-                                        </Accordion>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </>
-                          </div>
-                        </div>
-                      </div>
-                    </MaxWidthWrapper>
-                  </div>
-                )}
-                {/* <div className="w-full mt-12">
-                  <p className="text-center font-bold text-gray-500">
-                    More user created guides coming soon...
-                  </p>
-                </div> */}
-              </div>
-            )}
-
-            {selectedTab === "guide-by-skill" && (
-              <div className="w-full">
-                {loading && (
-                  <div>
-                    <div className="bg-white my-16 max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
-                      <p className="p-2 text-sm max-sm:text-xs">
-                        {" "}
-                        <Loader className="animate-spin inline h-4 w-4 mr-2" />
-                        Loading...
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {!loading && (
-                  <div className="max-sm:pb-10">
-                    <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                      <div className="flex flex-col max-sm:flex-col w-full mx-auto">
-                        <div className="w-full flex flex-col items-center justify-center">
-                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                            <>
-                              <div className="w-full">
-                                <div className="relative isolate mx-auto">
-                                  <div>
-                                    <div className="mx-auto w-full max-sm:w-[100%] z-50">
-                                      <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                        <Accordion
-                                          type="single"
-                                          collapsible
-                                          className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                        >
-                                          {skillBots.map((bot, i) => (
+                <div className="max-sm:pb-10">
+                  <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
+                    <div className="flex flex-col max-sm:flex-col w-full mx-auto">
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                          <>
+                            <div className="w-full">
+                              <div className="relative isolate mx-auto">
+                                <div>
+                                  <div className="mx-auto w-full max-sm:w-[100%] z-50">
+                                    <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                      <Accordion
+                                        type="single"
+                                        collapsible
+                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                      >
+                                        {knowledgeBots.length === 0 ? (
+                                          <p className="my-4 text-sm ">
+                                            There are no community created
+                                            guides yet!
+                                          </p>
+                                        ) : (
+                                          knowledgeBots.map((bot, i) => (
                                             <AccordionItem
                                               key={i}
-                                              value={`${i}-rolebot`}
+                                              value={`${i}-knowledge-bot`}
                                               className={`px-4`}
                                             >
                                               <AccordionTrigger className="text-left max-sm:text-xs">
@@ -423,20 +236,88 @@ const Guides = ({ user }: any) => {
                                                 </div>
                                               </AccordionContent>
                                             </AccordionItem>
-                                          ))}
-                                        </Accordion>
-                                      </div>
+                                          ))
+                                        )}
+                                      </Accordion>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </>
-                          </div>
+                            </div>
+                          </>
                         </div>
                       </div>
-                    </MaxWidthWrapper>
-                  </div>
-                )}
+                    </div>
+                  </MaxWidthWrapper>
+                </div>
+                {/* <div className="w-full mt-12">
+                  <p className="text-center font-bold text-gray-500">
+                    More user created guides coming soon...
+                  </p>
+                </div> */}
+              </div>
+            )}
+
+            {selectedTab === "guide-by-skill" && (
+              <div className="w-full">
+                <div className="max-sm:pb-10">
+                  <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
+                    <div className="flex flex-col max-sm:flex-col w-full mx-auto">
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                          <>
+                            <div className="w-full">
+                              <div className="relative isolate mx-auto">
+                                <div>
+                                  <div className="mx-auto w-full max-sm:w-[100%] z-50">
+                                    <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                      <Accordion
+                                        type="single"
+                                        collapsible
+                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                      >
+                                        {skillBots.map((bot, i) => (
+                                          <AccordionItem
+                                            key={i}
+                                            value={`${i}-rolebot`}
+                                            className={`px-4`}
+                                          >
+                                            <AccordionTrigger className="text-left max-sm:text-xs">
+                                              <div>{bot.bot_name}</div>
+                                            </AccordionTrigger>
+                                            <AccordionContent className="max-sm:text-xs">
+                                              <p className="text-left">
+                                                {bot.description}
+                                              </p>
+                                              <div className="flex justify-end mt-2">
+                                                <Link
+                                                  target="_blank"
+                                                  href={`/knowledge-bot/${bot.bot_id}`}
+                                                >
+                                                  <Button
+                                                    variant={"secondary"}
+                                                    className="p-2 h-8 border border-gray-200"
+                                                  >
+                                                    Visit bot{" "}
+                                                    <ExternalLinkIcon className="h-4 w-4 ml-2" />
+                                                  </Button>
+                                                </Link>
+                                              </div>
+                                            </AccordionContent>
+                                          </AccordionItem>
+                                        ))}
+                                      </Accordion>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        </div>
+                      </div>
+                    </div>
+                  </MaxWidthWrapper>
+                </div>
                 <div className="w-full mt-12">
                   <p className="text-center font-bold text-gray-500">
                     More Skill guides coming soon...
