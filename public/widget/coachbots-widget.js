@@ -2244,7 +2244,7 @@ loadExternalModule().then(() => {
   //   };
 
   // to check word limit
-  function isValidMessage(text) {
+  function isValidMessage(text, limit=15,is_greater=false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -2253,10 +2253,19 @@ loadExternalModule().then(() => {
     ) {
       return true;
     }
-    if (words.length < 15) {
-      return false;
-    } else {
-      return true;
+    if(is_greater){
+      if (words.length > limit) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    else{
+      if (words.length < limit) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 
@@ -3409,7 +3418,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }

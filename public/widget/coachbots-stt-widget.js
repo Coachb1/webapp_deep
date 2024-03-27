@@ -973,9 +973,9 @@ const getBotDetails2 = async (botId) => {
       botType === "coachbots"
     ) {
       botFooterElement.innerHTML =
-        "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 10 words or more in response.</p>";
+        "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 15 words or more in response.</p>";
     } else if (botType === "avatar_bot") {
-      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 10 words or more in response.</p>`;
+      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 15 words or more in response.</p>`;
     } else if (botType === "feedback_bot") {
       botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
     } else if (botType === "user_bot") {
@@ -1758,7 +1758,8 @@ async function handleFaqButtonClick(question) {
           appendMessage2(
             addStickerToMessage(
               "Begin Session",
-              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`
+              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
+              '#22c55e'
             )
           );
         }
@@ -3688,7 +3689,9 @@ async function submitEmailAndName2() {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
       sendEmail2(sessionId2, globalReportUrl2);
-      increaseActionPointStt(userId2, "interaction_attempted");
+      if ( questionData2.results[0].page_name !== 'explore'){
+        increaseActionPointStt(userId2, "interaction_attempted");
+      }
       // append custom message to chat
       const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
@@ -4389,7 +4392,7 @@ loadExternalModule().then(() => {
   };
 
   // to check word limit
-  function isValidMessageStt(text, limit = 15) {
+  function isValidMessageStt(text, limit = 15, is_greater = false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -4398,10 +4401,18 @@ loadExternalModule().then(() => {
     ) {
       return true;
     }
-    if (words.length < limit) {
-      return false;
+    if(is_greater){
+      if (words.length > limit) {
+        return false;
+      } else {
+        return true;
+      }
     } else {
-      return true;
+      if (words.length < limit) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 
@@ -4897,9 +4908,15 @@ loadExternalModule().then(() => {
             return;
           }
           if (botType === "feedback_bot" && isFeedbackConvInProcess) {
-            if (!isValidMessageStt(latestMessage, 11)) {
+            if (!isValidMessageStt(latestMessage)) {
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
+              });
+              return;
+            }
+            if (!isValidMessageStt(latestMessage, 300,true)) {
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too large. Please respond within 300 words maximum</b></p>`,
               });
               return;
             }
@@ -5005,9 +5022,9 @@ loadExternalModule().then(() => {
             }
             if (recommendationClicked == true) {
               // show warning if user message is less than 5 words
-              if (latestMessage.split(" ").length < 5) {
+              if (isValidMessageStt(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'>Please provide atleast more than 5 words.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'>Please provide atleast more than 15 words.</p>",
                 });
                 return;
               }
@@ -5104,6 +5121,20 @@ loadExternalModule().then(() => {
               });
               return;
             }
+
+            // here checking word limits for signature bot responses
+            if (!isValidMessageStt(latestMessage)) {
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
+              });
+              return;
+            }
+            if (!isValidMessageStt(latestMessage, 300,true)) {
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too large. Please respond within 300 words maximum</b></p>`,
+              });
+              return;
+            }
             if (isAskingInitialQuestions == true) {
               // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
               // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
@@ -5118,9 +5149,9 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
-                if(!isValidMessageStt(latestMessage,11) && !options.includes(latestMessage)){
+                if(!isValidMessageStt(latestMessage) && !options.includes(latestMessage)){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                   });
                   return;
                 }
@@ -5134,9 +5165,9 @@ loadExternalModule().then(() => {
                   button.disabled = true;
                 });
               } else {
-                if(!isValidMessageStt(latestMessage,11)){
+                if(!isValidMessageStt(latestMessage)){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 10 words.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                   });
                   return;
                 }
@@ -5535,7 +5566,7 @@ loadExternalModule().then(() => {
             if (isAttemptingRecommendation == true && isProceedStt == "true") {
               if (isValidMessageStt(latestMessage) == false) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }
@@ -5587,7 +5618,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 10 words */
               if (!isValidMessageStt(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response is too short it must be minimum of 15 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }

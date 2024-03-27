@@ -88,7 +88,7 @@ const Page = async () => {
     (bot) => bot.scenario_case === "role_bot"
   );
   const skillBots: SkillnRoleBotsType[] = getGuidesListResponse.filter(
-    (bot) => bot.scenario_case === "skill_bot"
+    (bot) => bot.scenario_case === "skill_guide"
   );
 
   const knowledgeBots = await getknowledgeBotss(user?.email!);
