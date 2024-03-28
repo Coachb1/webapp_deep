@@ -77,11 +77,12 @@ const NetworkNav = ({ user }: any) => {
             className={` h-8 max-sm:text-sm ${
               pathname === "/" ? "border border-gray-500 shadow-md" : ""
             } `}
-            onClick={() => {
-              router.push("/");
-            }}
+            // onClick={() => {
+            //   router.push("/");
+            // }}
+            asChild
           >
-            Network Directory
+            <Link href={"/"}>Network Directory</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Explore") && (
@@ -92,11 +93,12 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            onClick={() => {
-              router.push("/content-library");
-            }}
+            // onClick={() => {
+            //   router.push("/content-library");
+            // }}
+            asChild
           >
-            Explore
+            <Link href={"/content-library"}>Explore</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Simulation") && (
@@ -107,11 +109,12 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            onClick={() => {
-              router.push("/library");
-            }}
+            // onClick={() => {
+            //   router.push("/library");
+            // }}
+            asChild
           >
-            Simulation
+            <Link href={"/library"}>Simulation</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Guides") && (
@@ -122,11 +125,12 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            onClick={() => {
-              router.push("/guides");
-            }}
+            // onClick={() => {
+            //   router.push("/guides");
+            // }}
+            asChild
           >
-            Guides
+            <Link href={"/guides"}>Guides</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Quick Learn") && (
@@ -142,9 +146,7 @@ const NetworkNav = ({ user }: any) => {
             // }}
             asChild
           >
-            <Link href={"/create-scenario"}>
-            Quick Learn
-            </Link>
+            <Link href={"/create-scenario"}>Quick Learn</Link>
           </Button>
         )}
       </div>
@@ -161,14 +163,15 @@ const NetworkNav = ({ user }: any) => {
                 className={`${pathname === "/" ? "bg-gray-200" : null}`}
                 asChild
               >
-                <div
-                  onClick={() => {
-                    router.push("/");
-                  }}
+                <Link
+                  href={"/"}
+                  // onClick={() => {
+                  //   router.push("/");
+                  // }}
                 >
                   {" "}
                   Network directory
-                </div>
+                </Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Explore") && (
@@ -178,13 +181,14 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <div
-                  onClick={() => {
-                    router.push("/content-library");
-                  }}
+                <Link
+                  href={"/content-library"}
+                  // onClick={() => {
+                  //   router.push("/content-library");
+                  // }}
                 >
                   Explore
-                </div>
+                </Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Simulation") && (
@@ -194,14 +198,15 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <div
-                  onClick={() => {
-                    router.push("/library");
-                  }}
+                <Link
+                  href={"/library"}
+                  // onClick={() => {
+                  //   router.push("/library");
+                  // }}
                 >
                   {" "}
                   Simulation
-                </div>
+                </Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Guides") && (
@@ -211,14 +216,15 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <div
-                  onClick={() => {
-                    router.push("/guides");
-                  }}
+                <Link
+                  href={"/guides"}
+                  // onClick={() => {
+                  //   router.push("/guides");
+                  // }}
                 >
                   {" "}
                   Guides
-                </div>
+                </Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Quick Learn") && (
@@ -228,14 +234,15 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <div
-                  onClick={() => {
-                    router.push("/create-scenario");
-                  }}
+                <Link
+                  href={"/create-scenario"}
+                  // onClick={() => {
+                  //   router.push("/create-scenario");
+                  // }}
                 >
                   {" "}
                   Quick Learn
-                </div>
+                </Link>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

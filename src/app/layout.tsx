@@ -7,6 +7,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import LayoutComponent from "./LayoutComponent";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth } from "@/lib/utils";
+import Providers from "./ProgressBarProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,12 +67,14 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <AntdRegistry>
-                <LayoutComponent
-                  user={user}
-                  children={children}
-                  isDemoUser={isDemoUser}
-                  isRestricted={isRestricted}
-                />
+                <Providers>
+                  <LayoutComponent
+                    user={user}
+                    children={children}
+                    isDemoUser={isDemoUser}
+                    isRestricted={isRestricted}
+                  />
+                </Providers>
               </AntdRegistry>
             </ThemeProvider>
           </>

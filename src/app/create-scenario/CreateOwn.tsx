@@ -311,7 +311,7 @@ const CreateOwn = ({ user }: any) => {
           {generationError && (
             <p className="text-red-400 my-8 text-sm max-sm:text-xs w-full text-center">
               Encountered an error while Generating your scenarios. It will be
-              saved in "My Library (Requested Scenario Tab)"
+              saved in "Simulation (Requested Scenario Tab)"
             </p>
           )}
           {!generationError &&
@@ -484,7 +484,7 @@ const CreateOwn = ({ user }: any) => {
           {generationError && (
             <p className="text-red-400 my-8 text-sm max-sm:text-xs w-full text-center">
               Encountered an error while Generating your scenarios. It will be
-              saved in "My Library (Requested Scenario Tab)"
+              saved in "Simuation (Requested Scenario Tab)"
             </p>
           )}
         </div>
