@@ -298,22 +298,25 @@ const MyComnnections = ({ user }: any) => {
                         </div>
                         <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
                         <Button
-                          onClick={() => {
-                            router.push(
-                              `/?coachee_id=${connection.coachee_id}`
-                            );
-                          }}
+                          // onClick={() => {
+                          //   router.push(
+                          //     `/?coachee_id=${connection.coachee_id}`
+                          //   );
+                          // }}
+                          asChild
                           variant={"outline"}
                           className="h-6 text-xs w-fit bg-gray-50 border-gray-300 "
                         >
-                          <span className="max-sm:hidden">Visit Profile</span>{" "}
-                          <TooltipWrapper
-                            className="hidden max-sm:block text-xs"
-                            tooltipName="Visit Profile"
-                            body={
-                              <LucideExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
-                            }
-                          />
+                          <Link href={`/?coachee_id=${connection.coachee_id}`}>
+                            <span className="max-sm:hidden">Visit Profile</span>{" "}
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Visit Profile"
+                              body={
+                                <LucideExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Link>
                         </Button>
                       </div>
                     ))}

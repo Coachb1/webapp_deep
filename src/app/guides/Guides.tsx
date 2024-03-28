@@ -69,15 +69,20 @@ const Guides = ({
                 </span>
               </div>
 
-              <Button variant={"outline"} className="h-fit p-1 px-2 w-fit">
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=knowledge-bot");
-                  }}
+              <Button
+                asChild
+                variant={"outline"}
+                className="h-fit p-1 px-2 w-fit"
+              >
+                <Link
+                  // onClick={() => {
+                  //   router.push("/intake/?type=knowledge-bot");
+                  // }}
+                  href={"/intake/?type=knowledge-bot"}
                   className="flex flex-row items-center justify-center"
                 >
                   Create your guide
-                </span>
+                </Link>
               </Button>
               <hr className=" bg-gray-500 w-full" />
               <div className="flex justify-center items-center w-full flex-col gap-2 max-sm:gap-1">

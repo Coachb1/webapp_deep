@@ -51,14 +51,14 @@ const NavProfile = ({ user }: any) => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onClick={() => {
-                router.push("/profile");
-              }}
+              // onClick={() => {
+              //   router.push("/profile");
+              // }}
               asChild
             >
-              <div className="w-full">
+              <Link href={"/profile"} className="w-full">
                 <User className="h-4 w-4 mr-2" /> Your profile
-              </div>
+              </Link>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />

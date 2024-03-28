@@ -213,7 +213,7 @@ const Coaches = ({ user }: any) => {
         const iconsByAiProfiles = data.filter(
           (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
         );
-        console.log(iconsByAiProfiles, "iconsByAiProfiles");
+        // console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
         const allOtherProfiles = data.filter(
           (profile: CoachesDataType) =>
@@ -221,7 +221,7 @@ const Coaches = ({ user }: any) => {
             profile.profile_type !== "icons_by_ai"
         );
 
-        console.log(allOtherProfiles, "allOtherProfiles");
+        // console.log(allOtherProfiles, "allOtherProfiles");
 
         setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
         setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
@@ -241,10 +241,6 @@ const Coaches = ({ user }: any) => {
               )
               .map((profile: CoachesDataType) => profile.skills)
           )
-        );
-
-        console.log(
-          skillsOptions.filter((skill) => skill !== null && skill !== undefined)
         );
 
         const totalExpertise =
@@ -434,7 +430,9 @@ const Coaches = ({ user }: any) => {
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
               );
+
               console.log(findCoachUID(isApprovedData));
+
               if (findCoacheeUID(isApprovedData)) {
                 getConnectionsForCoachee(findCoacheeUID(isApprovedData));
               } else if (findCoachUID(isApprovedData)) {
@@ -460,7 +458,7 @@ const Coaches = ({ user }: any) => {
           })
             .then((res) => res.json())
             .then((data) => {
-              console.log("Bot details for edit", data);
+              console.log(`/get-bots/?user_id=${data.uid}`, data);
 
               const FeedbackBot = data.data.filter(
                 (data: any) => data.signature_bot.bot_type === "feedback_bot"
@@ -483,7 +481,6 @@ const Coaches = ({ user }: any) => {
     inputArray: CoachesDataType[],
     filterArray: string[]
   ): CoachesDataType[] {
-    console.log("INPUT ARRAY ", inputArray);
     if (filterArray.length === 0) {
       return inputArray;
     }
@@ -654,7 +651,6 @@ const Coaches = ({ user }: any) => {
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     } else if (coachId.length > 0) {
-      console.log(savedCoachesData, connections);
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
           const connection = connections.find(
@@ -666,8 +662,6 @@ const Coaches = ({ user }: any) => {
           };
         }
       );
-
-      console.log("Coaches with status : ", coachesWithStatus);
 
       const connectedCoaches = coachesWithStatus.filter(
         (coach) => coach.status === "accepted"
@@ -696,7 +690,6 @@ const Coaches = ({ user }: any) => {
           ),
       ["icons_by_ai"]
     );
-    console.log(filteredData, "coach-only");
     setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
@@ -1036,11 +1029,11 @@ const Coaches = ({ user }: any) => {
                 }
                 asChild
               >
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=coach");
-                  }}
-                  // href={"/intake/?type=coach"}
+                <Link
+                  href={"/intake/?type=coach"}
+                  // onClick={() => {
+                  //   router.push("/intake/?type=coach");
+                  // }}
                   className="flex flex-row items-center justify-center"
                 >
                   Join as Coach or Mentor{" "}
@@ -1083,7 +1076,7 @@ const Coaches = ({ user }: any) => {
                       Not Allowed
                     </Badge>
                   ) : null}
-                </span>
+                </Link>
               </DropdownMenuItem>
               {/* )} */}
               {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
@@ -1095,10 +1088,11 @@ const Coaches = ({ user }: any) => {
                 }
                 asChild
               >
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=coachee");
-                  }}
+                <Link
+                  href={"/intake/?type=coachee"}
+                  // onClick={() => {
+                  //   router.push("/intake/?type=coachee");
+                  // }}
                   className="flex flex-row items-center justify-center"
                 >
                   Join as Coachee or Mentee
@@ -1142,14 +1136,15 @@ const Coaches = ({ user }: any) => {
                       Not Allowed
                     </Badge>
                   ) : null}
-                </span>
+                </Link>
               </DropdownMenuItem>
               {/* )} */}
               <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
-                <span
-                  onClick={() => {
-                    router.push("/intake/?type=feedback");
-                  }}
+                <Link
+                  href={"/intake/?type=feedback"}
+                  // onClick={() => {
+                  //   router.push("/intake/?type=feedback");
+                  // }}
                   className="flex flex-row items-center justify-center"
                 >
                   Join Feedback Network
@@ -1162,7 +1157,7 @@ const Coaches = ({ user }: any) => {
                       )}
                     </>
                   )}
-                </span>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
