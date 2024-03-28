@@ -81,7 +81,7 @@ const Guides = ({
                   href={"/intake/?type=knowledge-bot"}
                   className="flex flex-row items-center justify-center"
                 >
-                  Create your guide
+                  Create your Guide
                 </Link>
               </Button>
               <hr className=" bg-gray-500 w-full" />
@@ -110,7 +110,7 @@ const Guides = ({
                       className="max-sm:text-xs max-sm:py-1 max-sm:my-0.5"
                       value="user-created-guides"
                     >
-                      User created guides
+                      User-created Guides
                     </TabsTrigger>
                   </TabsList>
                   <hr className=" bg-gray-500 w-full" />
