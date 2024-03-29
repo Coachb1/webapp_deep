@@ -150,21 +150,21 @@ const Coaches = ({ user }: any) => {
 
   const indexOfLastCoach = currentPage * itemsPerPage;
   const indexOfFirstCoach = indexOfLastCoach - itemsPerPage;
-  // const currentCoachesData = coachesData.slice(
-  //   indexOfFirstCoach,
-  //   indexOfLastCoach
-  // );
-  const [currentCoachesData, setCurrentCoachesData] = useState<
-    CoachesDataType[]
-  >([]);
-  useEffect(() => {
-    const currentCoachesData = coachesData.slice(
-      indexOfFirstCoach,
-      indexOfLastCoach
-    );
+  const currentCoachesData = coachesData.slice(
+    indexOfFirstCoach,
+    indexOfLastCoach
+  );
+  // const [currentCoachesData, setCurrentCoachesData] = useState<
+  //   CoachesDataType[]
+  // >([]);
+  // useEffect(() => {
+  //   const currentCoachesData = coachesData.slice(
+  //     indexOfFirstCoach,
+  //     indexOfLastCoach
+  //   );
 
-    setCurrentCoachesData(currentCoachesData);
-  }, [coachesData]);
+  //   setCurrentCoachesData(currentCoachesData);
+  // }, [coachesData]);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -311,11 +311,6 @@ const Coaches = ({ user }: any) => {
                   ],
           },
         ]);
-        if (coacheeIdFromParams) {
-          document.getElementById(coacheeIdFromParams)?.scrollIntoView({
-            behavior: "smooth",
-          });
-        }
       })
       .catch((error) => console.log("error", error));
   };
@@ -677,20 +672,25 @@ const Coaches = ({ user }: any) => {
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
+    if (coacheeIdFromParams) {
+      document.getElementById(coacheeIdFromParams)?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
 
-    //default filter for - icons by ai
-    handleUpdateCheckedValues(["icons_by_ai"]);
-    const filteredData = filterData(
-      ["icons_by_ai"].includes("Connected")
-        ? coachesData.filter(
-            (coachData) => coachData.profile_type === "icons_by_ai"
-          )
-        : savedCoachesData.filter(
-            (coachData) => coachData.profile_type === "icons_by_ai"
-          ),
-      ["icons_by_ai"]
-    );
-    setCoachesData(filteredData);
+    // //default filter for - icons by ai
+    // handleUpdateCheckedValues(["icons_by_ai"]);
+    // const filteredData = filterData(
+    //   ["icons_by_ai"].includes("Connected")
+    //     ? coachesData.filter(
+    //         (coachData) => coachData.profile_type === "icons_by_ai"
+    //       )
+    //     : savedCoachesData.filter(
+    //         (coachData) => coachData.profile_type === "icons_by_ai"
+    //       ),
+    //   ["icons_by_ai"]
+    // );
+    // setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
   const handleLinks = (link: string) => {
