@@ -74,7 +74,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
         })
         .catch((err) => {
           console.error(err);
-          toast.error(
+         toast.error(
             `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
           );
         });
