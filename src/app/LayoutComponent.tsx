@@ -106,7 +106,7 @@ const LayoutComponent = ({
       setShowCoachBot(true);
 
       if (pathname === "/knowledge-bot") {
-        setBotId("knowledge-a8d26-crossfit-elevation-support");
+        setBotId("knowledge-c89fd-flyover-project-tracker");
       } else {
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);

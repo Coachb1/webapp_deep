@@ -2763,6 +2763,10 @@ const handleProceedClickStt = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
 
+    //disable Copy Paste
+    const textInputElement = gshadowRoot.getElementById("text-input")
+    textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
+
     if (
       questionMediaLinkStt &&
       testType2 != "mcq" &&
@@ -3125,6 +3129,10 @@ const handleProceedClickStt = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
     appendMessage2("<b>Your session is terminated. You can restart again!</b>");
+
+    //enable Copy Paste
+    const textInputElement = gshadowRoot.getElementById("text-input")
+    textInputElement.removeAttribute("onpaste")
   }
 };
 
@@ -4847,7 +4855,6 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           //
-          console.log(chatElementRef2.shadowRoot.getElementById("text-input"))
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
@@ -5529,6 +5536,13 @@ loadExternalModule().then(() => {
               signals.onResponse({
                 html: "<b>Your session is terminated. You can restart again!</b>",
               });
+
+                 //Enable Copy Paste
+                 var chatElementRef2 = document.getElementById("chat-element2");
+                 var shadowRoot = chatElementRef2.shadowRoot;
+             
+                 const textInputElement = shadowRoot.getElementById("text-input")
+                 textInputElement.removeAttribute("onpaste")
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -6859,6 +6873,14 @@ loadExternalModule().then(() => {
                       html: "<b>Please enter another access code to start a new interaction.</b>",
                     });
                     submitEmailAndName2();
+
+
+                    //Enable Copy Paste
+                    var chatElementRef2 = document.getElementById("chat-element2");
+                    var shadowRoot = chatElementRef2.shadowRoot;
+                
+                    const textInputElement = shadowRoot.getElementById("text-input")
+                    textInputElement.removeAttribute("onpaste")
                     return;
                   }
                 }
@@ -7039,13 +7061,6 @@ const openChatContainer2 = () => {
     chatIcon2.src =
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
   }
-
-  var chatElementRef2 = document.getElementById("chat-element2");
-  var shadowRoot = chatElementRef2.shadowRoot;
-
-  // Get the input-container element within the shadow DOM
-  const textInputElement = shadowRoot.getElementById("text-input")
-  textInputElement.setAttribute("onpaste", "alert('Pasting is not allowed in this field.'); return false;")
 };
 
 const closeFromTop2 = () => {

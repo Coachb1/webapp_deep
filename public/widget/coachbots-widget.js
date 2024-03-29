@@ -905,6 +905,12 @@ async function setMcqVariables() {
           //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
           //   appendMessage(message);
 
+            //Enable Copy Paste
+            var chatElementRef2 = document.getElementById("chat-element");
+            const shadowRoot = chatElementRef2.shadowRoot;
+        
+            const textInputElement = shadowRoot.getElementById("text-input")
+            textInputElement.removeAttribute("onpaste")
           //* send message to start new session
 
           appendMessage(
@@ -1412,6 +1418,14 @@ const handleEndCoachingClick = async (randomId) => {
     submitEmailAndName();
     // sendEmail();
     // resetAllVariables();
+
+      //Enable Copy Paste
+      var chatElementRef2 = document.getElementById("chat-element");
+      const shadowRoot = chatElementRef2.shadowRoot;
+  
+      const textInputElement = shadowRoot.getElementById("text-input")
+      textInputElement.removeAttribute("onpaste")
+                  
     appendMessage(
       "<b>Please enter another access code to start a new interaction.</b>"
     );
@@ -1433,6 +1447,10 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait.."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
+
+    //disable Copy Paste
+    const textInputElement = gshadowRoot.getElementById("text-input")
+    textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
 
     if (questionMediaLink && testType != "mcq" && testType != "dynamic_mcq") {
       console.log(questionMediaLink);
@@ -1778,6 +1796,10 @@ const handleProceedClick = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
     appendMessage("<b>Your session is terminated. You can restart again!</b>");
+
+     //enable Copy Paste
+     const textInputElement = gshadowRoot.getElementById("text-input")
+     textInputElement.removeAttribute("onpaste")
   }
 };
 //* Function to handle button click for no-code flow : start
@@ -2785,6 +2807,12 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
             });
+            //Enable Copy Paste
+            // var chatElementRef2 = document.getElementById("chat-element");
+            // var shadowRoot = chatElementRef2.shadowRoot;
+        
+            const textInputElement = shadowRoot.getElementById("text-input")
+            textInputElement.removeAttribute("onpaste")
             return;
           }
 
@@ -3217,6 +3245,15 @@ loadExternalModule().then(() => {
                         html: "<b>Please enter another access code to start a new interaction.</b>",
                       });
                       submitEmailAndName();
+
+
+
+                    //Enable Copy Paste
+                    var chatElementRef2 = document.getElementById("chat-element");
+                    const shadowRoot = chatElementRef2.shadowRoot;
+                
+                    const textInputElement = shadowRoot.getElementById("text-input")
+                    textInputElement.removeAttribute("onpaste")
                       return;
                     }
                   });
@@ -3362,6 +3399,13 @@ loadExternalModule().then(() => {
               signals.onResponse({
                 html: "<b>Your session is terminated. You can restart again!</b>",
               });
+
+              //Enable Copy Paste
+              var chatElementRef2 = document.getElementById("chat-element");
+              var shadowRoot = chatElementRef2.shadowRoot;
+          
+              const textInputElement = shadowRoot.getElementById("text-input")
+              textInputElement.removeAttribute("onpaste")
             });
             // setTimeout(() => {
             //   window.location.reload();
@@ -3412,6 +3456,13 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Your Session is expired. Please restart again.</b></p>",
                 });
+
+                //Enable Copy Paste
+                // var chatElementRef2 = document.getElementById("chat-element2");
+                // var shadowRoot = chatElementRef2.shadowRoot;
+            
+                const textInputElement = shadowRoot.getElementById("text-input")
+                textInputElement.removeAttribute("onpaste")
                 return;
               }
 
@@ -4690,6 +4741,13 @@ loadExternalModule().then(() => {
                       html: "<b>Please enter another access code to start a new interaction.</b>",
                     });
                     submitEmailAndName();
+
+                    //Enable Copy Paste
+                    var chatElementRef2 = document.getElementById("chat-element");
+                    const shadowRoot = chatElementRef2.shadowRoot;
+                
+                    const textInputElement = shadowRoot.getElementById("text-input")
+                    textInputElement.removeAttribute("onpaste")
                     return;
                   }
 
