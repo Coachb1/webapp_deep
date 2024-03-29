@@ -75,7 +75,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Error generating your scenario");
+          toast.error("Your request is under processing and will be available under the 'User-created scenarios' tab. You will be notified via a email.");
         });
     }
   };
