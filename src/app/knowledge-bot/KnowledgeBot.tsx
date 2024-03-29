@@ -86,7 +86,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
           ? pathname.split("/")[2]
-          : "knowledge-a8d26-crossfit-elevation-support"
+          : "knowledge-c89fd-flyover-project-tracker"
       }`,
       {
         method: "GET",
