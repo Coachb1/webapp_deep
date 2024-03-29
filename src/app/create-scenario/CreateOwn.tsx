@@ -369,42 +369,68 @@ const CreateOwn = ({ user }: any) => {
     const [generationError, setGenerationError] = useState(false);
     const generatedSenarioHandlerGoogle = () => {
       setGenerateLoading(true);
-      const url: any = new URL(
-        `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
-      );
-      const params = new URLSearchParams();
-      params.set("mode", "A");
-      params.set(
-        "information",
-        JSON.stringify({
-          data: {
-            information: decsription !== undefined ? decsription : title,
-          },
-          title: title,
-        })
-      );
-      params.set("url", "");
-      params.set("access_token", basicAuth);
-      params.set("creator_user_id", userId);
-      url.search = params;
+      // const url: any = new URL(
+      //   `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+      // );
+      // const params = new URLSearchParams();
+      // params.set("mode", "A");
+      // params.set(
+      //   "information",
+      //   JSON.stringify({
+      //     data: {
+      //       information: decsription !== undefined ? decsription : title,
+      //     },
+      //     title: title,
+      //   })
+      // );
+      // params.set("url", "");
+      // params.set("access_token", basicAuth);
+      // params.set("creator_user_id", userId);
+      // url.search = params;
 
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
+      // fetch(url, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: basicAuth,
+      //     "Content-Type": "application/json",
+      //   },
+      // })
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     console.log("Result DATA", data);
+      //     setGeneratedData(data);
+      //     setGenerateLoading(false);
+
+      //     if (data[0].message || data[1].message) {
+      //       setGenerationError(true);
+      //       toast.error("Error generating your scenario");
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //     setGenerationError(true);
+      //     toast.error("Error generating your scenario");
+      //     setGenerateLoading(false);
+      //   });
+      //GENERATE SIMULATION BASED ON SUMMARY
+      fetch(
+        `${baseURL}/tests/create-test-from-links/?url=${link}&creator_user_id=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
         .then((data) => {
-          console.log("Result DATA", data);
+          console.log("Result DATA:", data);
           setGeneratedData(data);
           setGenerateLoading(false);
-
           if (data[0].message || data[1].message) {
             setGenerationError(true);
-            toast.error("Error generating your scenario");
           }
+          setGenerateLoading(false);
         })
         .catch((err) => {
           console.error(err);

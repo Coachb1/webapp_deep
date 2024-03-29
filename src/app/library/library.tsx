@@ -1127,7 +1127,7 @@ const MyLibrary = ({ user }: any) => {
             </div>
           </div>
         </div>
-        <PageFooter />
+        {/* <PageFooter /> */}
       </main>
     </div>
   );
