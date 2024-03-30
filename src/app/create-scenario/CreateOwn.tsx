@@ -14,7 +14,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const CreateOwn = ({ user }: any) => {
-  const [searchMode, setSearchMode] = useState("google");
+  const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
   const [userId, setUserId] = useState("");
 
@@ -133,6 +133,7 @@ const CreateOwn = ({ user }: any) => {
         .catch((err) => {
           console.error(err);
           setGenerationError(true);
+          setGenerateLoading(false);
           toast.error("Error generating your scenario");
         });
       // });
@@ -250,7 +251,7 @@ const CreateOwn = ({ user }: any) => {
                 </Button>
                 <div className="flex flex-row items-center justify-center max-sm:flex-col  gap-2">
                   <Button
-                    disabled={!generatedSummary}
+                    disabled={!generatedSummary || generatedLoading}
                     variant="secondary"
                     className={`h-8 border   border-gray-200 max-sm:w-full ${
                       generatedSummary.length > 0
@@ -258,7 +259,6 @@ const CreateOwn = ({ user }: any) => {
                         : ""
                     }`}
                     onClick={() => {
-                      console.log("hello");
                       generatedSenarioHandlerYoutube();
                       // toast.info(
                       //   "The simulation generation may take upto 2 mins. This will also be available in the 'Requested Scenarios' section in the library.",
@@ -653,14 +653,14 @@ const CreateOwn = ({ user }: any) => {
                     setMessageShown(false);
                   }}
                 >
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-200 rounded-sm">
-                    <TabsTrigger
+                  <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
+                    {/* <TabsTrigger
                       disabled={glGenerateLoading}
                       className="text-xs p-1 m-1"
                       value="google"
                     >
                       HBR
-                    </TabsTrigger>
+                    </TabsTrigger> */}
                     <TabsTrigger
                       disabled={glGenerateLoading}
                       className="text-xs p-1 m-1"
