@@ -2765,7 +2765,7 @@ const handleProceedClickStt = async (choice) => {
 
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
-    textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
+    // textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
 
     if (
       questionMediaLinkStt &&
