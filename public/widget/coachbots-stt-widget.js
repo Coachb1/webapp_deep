@@ -4745,6 +4745,125 @@ loadExternalModule().then(() => {
     });
   };
 
+  const GeminiAiResponse = (
+    userInputMessage,
+    signals,
+    conversationId,
+    latestMessage
+  ) => {
+    const messageNode = document.createElement("div");
+    messageNode.classList.add("inner-message-container");
+
+    const messageBubble = document.createElement("div");
+    messageBubble.classList.add("message-bubble", "ai-message-text");
+    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.marginTop = "4px";
+    messageBubble.style.borderRadius = "4px";
+    messageBubble.style.padding = "4";
+    messageBubble.style.backgroundColor = "#f3f4f6";
+    messageBubble.style.color = "#374151";
+
+    const messageText = document.createElement("p");
+
+    messageBubble.appendChild(messageText);
+    messageNode.appendChild(messageBubble);
+
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    gShadowRoot2.getElementById("messages").appendChild(messageNode);
+    gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const allMessages = shadowRoot.getElementById("messages").childNodes;
+    
+    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?key=AIzaSyBfhB_y-hjwnqpVfVuC8ctvKy4gyiTesKo", {
+      method: "POST",
+      body: JSON.stringify({
+        "contents": [{
+          "parts":[{
+            "text": userInputMessage}]}]}),
+    }).then(async (response) => {
+
+      const reader = response.body.getReader();
+      const textDecoder = new TextDecoder("utf-8");
+
+      signals.onResponse({
+        html: "...",
+      });
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          allMessages.forEach((indvMessage) => {
+            console.log(indvMessage.innerText);
+
+            if (
+              indvMessage.innerText === "." ||
+              indvMessage.innerText === "..."
+            ) {
+              indvMessage.remove();
+            }
+          });
+
+          // add user question and bot answer to the session
+          sessionQnAdata.push({
+            user: latestMessage,
+            coach: messageText.innerText,
+          });
+          console.log("sessionQnAdata :", sessionQnAdata, 'conversationId :', conversationId);
+
+          fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ai_response: messageText.innerText,
+              conversation_id: conversationId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.error(err);
+              fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(
+                    key2,
+                    secret2
+                  )}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ai_response: messageText.innerText,
+                  conversation_id: conversationId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                });
+            });
+
+          return;
+        }
+        const decodedText = textDecoder.decode(value);
+        console.log('##############################################value', decodedText)
+        try{
+        const finelText = JSON.parse(decodedText.slice(1))['candidates'][0]['content']['parts'][0]['text'];
+        messageText.innerText += finelText;
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
+        }catch(error){
+          console.log(error)
+        }
+
+      }
+    });
+  };
+
   const OpenAiResponse = (
     userInputMessage,
     signals,
@@ -5386,7 +5505,7 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
               //streaming responses
-              anthropicAiResponse(
+              GeminiAiResponse(
                 responseData.coach_message_metadata.prompt,
                 signals,
                 conversation_id2,
