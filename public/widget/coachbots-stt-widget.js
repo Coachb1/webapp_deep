@@ -1047,7 +1047,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(intakeButton);
     }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case)) {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1102,7 +1102,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
-      endSessionButton.innerText = "End Session & Summarize";
+      endSessionButton.innerText = "End and Email Summary";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
     }

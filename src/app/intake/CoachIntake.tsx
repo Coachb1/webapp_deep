@@ -1057,6 +1057,7 @@ const CoachIntake = ({ user }: any) => {
               body: checkIfEdit
                 ? JSON.stringify({
                     bot_id: botIUidFromParams,
+                    profile_id: userProfileId,
                     updated_data: avatarBotCreationFormData,
                     is_overwrite: deleteExistingFiles? 'true' : 'false',
                   })
@@ -1116,6 +1117,10 @@ const CoachIntake = ({ user }: any) => {
                     filesPatchFormData.append(
                       "is_overwrite",
                       deleteExistingFiles? 'true' : 'false',
+                    );
+                    filesPatchFormData.append(
+                      "profile_id",
+                      `${userProfileId}`,
                     );
 
                     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
