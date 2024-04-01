@@ -1378,6 +1378,135 @@ async function SendingFirstInitialQue() {
     appendMessage2(radio_cont);
   }
 }
+
+async function handleprecheck(choice){
+  if (choice === "Yes") {
+    if (intakeButton) {
+      // enabling Intake button
+      intakeButton.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f87171'"
+      );
+      intakeButton.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = '#dc2626'"
+      );
+      intakeButton.style.backgroundColor = "#dc2626";
+      intakeButton.style.color = "white";
+      intakeButton.disabled = false;
+    }
+
+    disableOrEnableButtons("precheck-proceed-options");
+    // const conversationProceedOptions = shadowRoot2.getElementById(
+    //   "conversation-proceed-options"
+    // );
+    // const conversationProceedOptionsParent =
+    //   conversationProceedOptions.parentElement.parentElement.parentElement;
+    // conversationProceedOptionsParent.remove();
+    appendMessage2(
+      addStickerToMessage(
+        "System",
+        `You must complete the ${intakebuttonText} before beginning the session`,
+        '#22c55e'
+      )
+    );
+    return;
+  }
+
+  if (choice === "No") {
+    conversation_id2 = previousBotConversationId.split(":")[0];
+    sessionId2 = previousBotConversationId.split(":")[1];
+    coachMessage = previousBotConversationId.split(":")[2];
+    isBotInitialized = true;
+    isSessionActiveStt = true;
+
+    disableOrEnableButtons("precheck-proceed-options");
+
+    // const precheckProceed = shadowRoot2.getElementById(
+    //   "precheck-proceed-options"
+    // );
+    // const precheckProceedOptionsParent =
+    //   precheckProceed.parentElement.parentElement.parentElement;
+    // precheckProceedOptionsParent.remove();
+  }
+
+  botInitialQuestionsIndex = 1;
+  // optedBeginSession = true;
+  if (botType === "avatar_bot") {
+    await getFitmentScore(userId2);
+    console.log(isBeginSessionProceed);
+
+    if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && globalBotDetails.data.scenario_case != 'icons_by_ai' && !['coach', 'mentor'].includes(UserProfileInfo.profile_type)) {
+      appendMessage2(
+        addStickerToMessage(
+          "Note",
+          "Your quick match score is low or not calculated. Please proceed with caution",
+          "#22c55e"
+        )
+      );
+    }
+
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today? ",
+        "#22c55e"
+      )
+    );
+  }
+  console.log(botType);
+  if (choice === "No") {
+    // disableOrEnableButtons("conversation-proceed");
+    // newConversationButton.setAttribute("disabled", "true")
+    // newConversationButton.setAttribute("onmouseover", "this.style.cursor = 'not-allowed'");
+    appendMessage2(
+      `<b>Please scroll above to view the conversation and proceed accordingly.</b>`
+    );
+  }
+  console.log(botType);
+  if (botType === "subject_matter_bot") {
+    appendMessage2(
+      `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+    );
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? ",
+        "#22c55e"
+      )
+    );
+
+    return;
+  }
+
+  if (botType === "helper_bot" || botType === "coachbots") {
+    appendMessage2(
+      `Welcome! How can I help today? I am an expert on ${globalBotDetails.data.bot_details.subject} and I can only have a conversation in this domain. There will be errors in my conversation if you ask me unrelated questions or give very short responses.`
+    );
+    appendMessage2(
+      addStickerToMessage(
+        "Welcome",
+        "Very good day! Looks like you are all set to start your session.Let me know what would you like to discuss today? ",
+        "#22c55e"
+      )
+    );
+  }
+
+  // isAskingInitialQuestions = true;
+
+  // const question = botInitialQuestions[botInitialQuestionsIndex];
+  // if (typeof question === "string") {
+  //   appendMessage2(botInitialQuestions[botInitialQuestionsIndex]);
+  // } else {
+  //   const radio_cont = handleRadioTypeInitialQuestion(
+  //     question["options"],
+  //     question["question"]
+  //   );
+  //   appendMessage2(radio_cont);
+  // }
+  console.log("Na-2:", optedBeginSession);
+
+}
 async function handlePreviousConversation(choice) {
   let coachMessage = "";
   if (choice === "previous") {
@@ -1839,10 +1968,10 @@ async function handleFaqButtonClick(question) {
       ) {
         console.log(previousBotConversationId, "in");
 
-        const div = `<div id="conversation-proceed" >
-        <b>Do you want to continue previous conversation or start new conversation?</b> <br>
-            <button id='previous-conversation'  onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('previous')">Previous</button>
-            <button id='new-conversation' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handlePreviousConversation('new')">New</button>
+        const div = `<div id="precheck-proceed-options" >
+        <b>Do you want to do a new pre-check again or continue?</b> <br>
+            <button id='new-precheck'  onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('Yes')">Yes</button>
+            <button id='previous-precheck' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('No')">No</button>
 
         </div>`;
 
@@ -5251,19 +5380,7 @@ loadExternalModule().then(() => {
               return;
             }
 
-            // here checking word limits for signature bot responses
-            if (!isValidMessageStt(latestMessage)) {
-              signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
-              });
-              return;
-            }
-            if (!isValidMessageStt(latestMessage, 300,true)) {
-              signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too large. Please respond within 300 words maximum</b></p>`,
-              });
-              return;
-            }
+            
             if (isAskingInitialQuestions == true) {
               // botInitialQuestionsQnA[botInitialQuestions[botInitialQuestionsIndex]] = latestMessage
               // const tempQna = `Question: ${botInitialQuestions[botInitialQuestionsIndex]}  Answer: ${latestMessage}`
@@ -5278,6 +5395,8 @@ loadExternalModule().then(() => {
                   });
                   return;
                 }
+                console.log('options',!options.includes(latestMessage,options))
+
                 if(!isValidMessageStt(latestMessage) && !options.includes(latestMessage)){
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
@@ -5398,6 +5517,19 @@ loadExternalModule().then(() => {
                 }
                 return;
               }
+            }
+            // here checking word limits for signature bot responses
+            if (!isValidMessageStt(latestMessage)) {
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
+              });
+              return;
+            }
+            if (!isValidMessageStt(latestMessage, 300,true)) {
+              signals.onResponse({
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too large. Please respond within 300 words maximum</b></p>`,
+              });
+              return;
             }
             if (isSessionActiveStt == false && isBotInitialized == false) {
               console.log("intakeUid", IntakeUid);
