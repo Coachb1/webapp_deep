@@ -4187,7 +4187,7 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px"> Maximum acceptable response length is the 300 words. </p>
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px"> Responses work best within 15-300 words. Extremely fast or copy-pasted responses can cause errors. </p>
   </div>
   `;
 
