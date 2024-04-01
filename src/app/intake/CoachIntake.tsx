@@ -1059,7 +1059,7 @@ const CoachIntake = ({ user }: any) => {
                     bot_id: botIUidFromParams,
                     profile_id: userProfileId,
                     updated_data: avatarBotCreationFormData,
-                    is_overwrite: deleteExistingFiles? 'true' : 'false',
+                    is_overwrite: deleteExistingFiles ? "true" : "false",
                   })
                 : JSON.stringify(avatarBotCreationFormData),
             })
@@ -1069,7 +1069,11 @@ const CoachIntake = ({ user }: any) => {
                 // setCreateLoading(false);
                 if (!data.error && !data.detail) {
                   console.log(referenceDocs.length, "length");
-                  if (referenceDocs.length > 0 || linksReflectingWVpersonal !== "" || linksReflectyouWished !== "") {
+                  if (
+                    referenceDocs.length > 0 ||
+                    linksReflectingWVpersonal !== "" ||
+                    linksReflectyouWished !== ""
+                  ) {
                     const filesPatchFormData = new FormData();
                     if (referenceDocs.length > 0) {
                       referenceDocs.forEach(({ file, text }) => {
@@ -1116,7 +1120,7 @@ const CoachIntake = ({ user }: any) => {
                     );
                     filesPatchFormData.append(
                       "is_overwrite",
-                      deleteExistingFiles? 'true' : 'false',
+                      deleteExistingFiles ? "true" : "false"
                     );
                     filesPatchFormData.append(
                       "profile_id",
@@ -2851,6 +2855,15 @@ const CoachIntake = ({ user }: any) => {
                       </Button>
                     )}
                   </div>
+                  {checkIfEdit && (
+                    <div className="flex flex-row mt-2">
+                      <Info className="h-4 w-4 mr-1 inline text-red-400" />
+                      <p className=" w-fit text-xs font-semibold text-red-400">
+                        Upon Save, the bot will be temporarily not available
+                        unless approved.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>
@@ -3169,7 +3182,7 @@ const CoachIntake = ({ user }: any) => {
                       organization the individuals are affiliated with.
                     </label>
                   </div>
-                  <div>
+                  <div className="flex flec-col">
                     {checkIfEdit ? (
                       <Button disabled={feedbackCreateLoading} className="h-8">
                         {" "}
@@ -3203,6 +3216,15 @@ const CoachIntake = ({ user }: any) => {
                       </Button>
                     )}
                   </div>
+                  {checkIfEdit && (
+                    <div className="flex flex-row mt-2">
+                      <Info className="h-4 w-4 mr-1 inline text-red-400" />
+                      <p className=" w-fit text-xs font-semibold text-red-400">
+                        Upon Save, the bot will be temporarily not available
+                        unless approved.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>
@@ -3358,6 +3380,15 @@ const CoachIntake = ({ user }: any) => {
                     </Button>
                   )}
                 </div>
+                {checkIfEdit && (
+                  <div className="flex flex-row mt-2">
+                    <Info className="h-4 w-4 mr-1 inline text-red-400" />
+                    <p className=" w-fit text-xs font-semibold text-red-400">
+                      Upon Save, the bot will be temporarily not available
+                      unless approved.
+                    </p>
+                  </div>
+                )}
               </form>
             </div>
           </div>

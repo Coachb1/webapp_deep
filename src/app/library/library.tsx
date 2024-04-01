@@ -516,7 +516,7 @@ const MyLibrary = ({ user }: any) => {
                   ))}
                 </div>
                 <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
-                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
                   <Button
                     onClick={() => {
                       document
@@ -537,7 +537,7 @@ const MyLibrary = ({ user }: any) => {
                     }}
                     className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                   >
-                    Create New Simulation
+                    Create New Simulation (Experimental)
                   </Button>
                 </div>
               </div>
@@ -1113,9 +1113,15 @@ const MyLibrary = ({ user }: any) => {
                   className="pt-[40vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
                 ></div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
-                    Create new Scenario
-                  </h1>
+                  <Badge
+                    variant={"secondary"}
+                    className="bg-cyan-400 text-xs hover:bg-cyan-400 text-white -ml-[8rem] -mb-[14px] z-[2]"
+                  >
+                    Experimental
+                  </Badge>
+                  <div className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                    <h1>Create new Scenario </h1>
+                  </div>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
                     <CreateYourOwn
                       user={user}

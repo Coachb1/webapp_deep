@@ -4907,14 +4907,12 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     
-    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?key=AIzaSyBfhB_y-hjwnqpVfVuC8ctvKy4gyiTesKo", {
+    fetch("/api/gemini", {
       method: "POST",
-      body: JSON.stringify({
-        "contents": [{
-          "parts":[{
-            "text": userInputMessage}]}]}),
+      body:  JSON.stringify({
+        prompt: userInputMessage,
+      }),
     }).then(async (response) => {
-
       const reader = response.body.getReader();
       const textDecoder = new TextDecoder("utf-8");
 
@@ -4983,15 +4981,9 @@ loadExternalModule().then(() => {
           return;
         }
         const decodedText = textDecoder.decode(value);
-        console.log('##############################################value', decodedText)
-        try{
-        const finelText = JSON.parse(decodedText.slice(1))['candidates'][0]['content']['parts'][0]['text'];
-        messageText.innerText += finelText;
-        shadowRoot.getElementById("messages").scrollBy(0, 500);
-        }catch(error){
-          console.log(error)
-        }
 
+        messageText.innerText += decodedText.replace(/\*/g, '');
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     });
   };
