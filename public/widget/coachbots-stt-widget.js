@@ -1047,7 +1047,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(intakeButton);
     }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case)) {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1102,7 +1102,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
-      endSessionButton.innerText = "End Session & Summarize";
+      endSessionButton.innerText = "End and Email Summary";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
     }
@@ -3697,7 +3697,11 @@ async function submitEmailAndName2() {
       credsUpdated2 = data.status;
       console.log("name email updated, sending email");
       sendEmail2(sessionId2, globalReportUrl2);
-      if ( questionData2.results[0].page_name !== 'explore'){
+      const page_name = questionData2.results[0].page_name
+      const test_code = testCode2 
+      resetAllVariablesStt();
+
+      if ( page_name!== 'explore'){
         increaseActionPointStt(userId2, "interaction_attempted");
       }
       // append custom message to chat
@@ -3714,12 +3718,11 @@ async function submitEmailAndName2() {
       //     html: "<b>Please enter another access code to start a new interaction.</b>",
       //   });
       // }
-      const recommDiv = findRelatedItemsStt(recommendationsDataStt, testCode2);
+      const recommDiv = findRelatedItemsStt(recommendationsDataStt, test_code);
       if (recommDiv) {
         appendMessage2(recommDiv);
       }
 
-      resetAllVariablesStt();
     })
     .catch((err) => {
       console.log(err);
