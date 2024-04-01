@@ -248,7 +248,7 @@ const NetworkNav = ({ user }: any) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {!restrictedPages?.includes("Quick Learn") && (
+      {!restrictedPages?.includes("Profile") && (
         <div className="ml-4">
           <NavProfile user={user} />
         </div>

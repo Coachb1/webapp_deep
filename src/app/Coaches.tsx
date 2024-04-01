@@ -1393,20 +1393,22 @@ const Coaches = ({ user }: any) => {
                       {coach.avatar_bot_url !== null &&
                         coach.avatar_bot_url !== "" && (
                           <div className="max-sm:w-full">
-                            <Link
-                              href={handleLinks(coach.avatar_bot_url)}
-                              target="_blank"
+                            <Button
+                              variant={"secondary"}
+                              className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
+                              disabled={coacheeId.length === 0}
+                              asChild={coacheeId.length !== 0}
                             >
-                              <Button
-                                variant={"secondary"}
-                                className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
+                              <Link
+                                href={handleLinks(coach.avatar_bot_url)}
+                                target="_blank"
                               >
                                 {coach.profile_type === "skill_bot" ||
                                 coach.profile_type === "coachbots"
                                   ? "Skill Chat"
                                   : "AI Frame"}
-                              </Button>
-                            </Link>
+                              </Link>
+                            </Button>
                           </div>
                         )}
                     </div>
