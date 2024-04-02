@@ -1219,8 +1219,8 @@ const Coaches = ({ user }: any) => {
                     </span>
                   )}
                   {coach.timer_enabled && (
-                    <span className="z-[1] mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                      {coach.time_value_in_days} Days remaining
+                    <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                      {coach.time_value_in_days}
                     </span>
                   )}
                 </div>
