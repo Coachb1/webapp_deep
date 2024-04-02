@@ -20,9 +20,14 @@ import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
-    heading: "Fitment Analysis",
+    heading: "Quick Match",
     description:
-      "Discover the perfect match! Our fitment analysis assesses compatibility between you and your coach/mentor, ensuring a harmonious coaching relationship.",
+      "Get matched to your ideal coach or mentor depending upon predefined high level criterion.",
+  },
+  {
+    heading: "Pre-Check",
+    description:
+      "Begin your conversation in structured format with context or current issues on the table.",
   },
   {
     heading: "Sessions Orientation",
@@ -30,9 +35,9 @@ const howItWorks = [
       "Prepare for your session! Access valuable information about your coach/mentor before your session, clearly showing their expertise and style.",
   },
   {
-    heading: "Check-in Conversation",
+    heading: "Session Notes",
     description:
-      "Stay connected between sessions! Engage in interim conversations, gaining insights and guidance whenever you need it.",
+      "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
   },
   {
     heading: "Recommendations",
@@ -203,7 +208,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 <div className="max-sm:text-xs mt-4 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
                   <p className="w-full text-center p-2  max-sm:text-xs">
                     {" "}
-                    <b> Purpose : </b> To answer any project related questions and give project related updates
+                    <b> Purpose : </b> To answer any project related questions
+                    and give project related updates
                   </p>
                 </div>
               )}
@@ -237,7 +243,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
-                  How Avatar works
+                  How Bot works
                 </Button>
               </Link>
 
@@ -282,7 +288,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
                 >
-                  How Avatar works
+                  How Bot works
                 </Badge>
               </div>
               <div className="w-full">
