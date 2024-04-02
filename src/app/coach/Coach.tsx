@@ -23,9 +23,14 @@ import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
-    heading: "Fitment Analysis",
+    heading: "Quick Match",
     description:
-      "Discover the perfect match! Our fitment analysis assesses compatibility between you and your coach/mentor, ensuring a harmonious coaching relationship.",
+      "Get matched to your ideal coach or mentor depending upon predefined high level criterion.",
+  },
+  {
+    heading: "Pre-Check",
+    description:
+      "Begin your conversation in structured format with context or current issues on the table.",
   },
   {
     heading: "Sessions Orientation",
@@ -33,9 +38,9 @@ const howItWorks = [
       "Prepare for your session! Access valuable information about your coach/mentor before your session, clearly showing their expertise and style.",
   },
   {
-    heading: "Check-in Conversation",
+    heading: "Session Notes",
     description:
-      "Stay connected between sessions! Engage in interim conversations, gaining insights and guidance whenever you need it.",
+      "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
   },
   {
     heading: "Recommendations",
@@ -256,9 +261,7 @@ const Coach = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${convertTextToCorrectFormat(
-                      coachName
-                    )} 🚀`
+                  ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
                   : "Welcome to the Aarav Sharma !🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
