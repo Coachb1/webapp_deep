@@ -4906,23 +4906,49 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+    function ensureProperEnding(str ) {
+      // console.log(str)
+      if (str.startsWith("[") && !str.endsWith("]")) {
+        console.log("met condition 1")
+        return str.replace("[", "");
+      } else if (str.startsWith(",") && !str.startsWith("[") && !str.endsWith("]")){
+        console.log("met condition 2")
+        return str.replace(",", "");
+      } else if(str.endsWith("]")){
+        console.log("met condition 3")
+        return str.replace(/^\s*,/, '').replace(/\]\s*$/, '');
+      } else {
+        console.log("met condition DE")
+        return str;
+      }
+    }
     
-    fetch("/api/gemini", {
+    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?key=AIzaSyBfhB_y-hjwnqpVfVuC8ctvKy4gyiTesKo", {
       method: "POST",
-      body:  JSON.stringify({
-        prompt: userInputMessage,
+      body: JSON.stringify({
+        "contents": [{
+          "parts":[{
+            "text": userInputMessage
+          }]
+        }]
       }),
     }).then(async (response) => {
       const reader = response.body.getReader();
-      const textDecoder = new TextDecoder("utf-8");
+      const decoder = new TextDecoder("utf-8");
+      let partialData = ""
+      let existingTexts = [];
 
       signals.onResponse({
         html: "...",
       });
 
       while (true) {
-        const { done, value } = await reader.read();
+        const { done, value } = await reader?.read();
         if (done) {
+          console.log("Stream complete");
+          finished = true;
+          
           allMessages.forEach((indvMessage) => {
             console.log(indvMessage.innerText);
 
@@ -4977,14 +5003,24 @@ loadExternalModule().then(() => {
                   console.log(data);
                 });
             });
-
-          return;
+          shadowRoot.getElementById("messages").scrollBy(0, 500);
+          return Promise.resolve();
         }
-        const decodedText = textDecoder.decode(value);
 
-        messageText.innerText += decodedText.replace(/\*/g, '');
-        shadowRoot.getElementById("messages").scrollBy(0, 500);
-      }
+        const decodedText = decoder.decode(value, { stream: true });
+
+        if(decodedText.length > 0 && decodedText !== "]"){
+          // console.log(ensureProperEnding(decodedText))
+          const data = JSON.parse(ensureProperEnding(decodedText));
+          console.log(data.candidates[0].content.parts[0].text)
+          messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
+
+          shadowRoot.getElementById("messages").scrollBy(0, 500);
+        }
+      };
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
   };
 
