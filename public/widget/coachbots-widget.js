@@ -3278,7 +3278,16 @@ loadExternalModule().then(() => {
           // TEXT RESPONSES
 
           // get latest message
-          const latestMessage = body.messages[body.messages.length - 1].text;
+          // const latestMessage = body.messages[body.messages.length - 1].text;
+
+          let latestMessage = body.messages[body.messages.length - 1].text;
+          //slicing 400 words from user responses > 400 words
+          if(latestMessage.split(" ").length >= 400){
+            latestMessage = latestMessage.split(" ").slice(0, 400).join(" ")
+
+            console.log("SLICED \n", latestMessage)
+          } 
+
           if (isEmailForm) {
             await proceedFormFlow(latestMessage);
             if (formFields.length > 0) {
@@ -3331,7 +3340,7 @@ loadExternalModule().then(() => {
             resetAllVariables();
           }
 
-          const userAcessAvailability = body.messages[0].text;
+          const userAcessAvailability = latestMessage// body.messages[0].text;
           if (userAcessAvailability === "Yes" && !isSessionActive) {
             signals.onResponse({
               html: "<b>Please enter the access code to get started.</b>",
@@ -3507,7 +3516,7 @@ loadExternalModule().then(() => {
           ];
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
             if (optedNo === false) {
-              testCode = body.messages[0].text;
+              testCode = latestMessage // body.messages[0].text;
               appendMessage("Please wait while we are processing ...");
             } else {
               appendMessage("Please wait while we are processing ...");
@@ -3521,7 +3530,7 @@ loadExternalModule().then(() => {
           }
 
           if (questionIndex > 0 && !responsesDone) {
-            userResponse = body.messages[0].text;
+            userResponse = latestMessage// body.messages[0].text;
           }
 
           if (
