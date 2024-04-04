@@ -1926,6 +1926,16 @@ async function handleFaqButtonClick(question) {
         const respJson = await resp.json();
         console.log(" response_initial_qna : ", respJson);
         intakeSummery = respJson.intake_summary;
+
+        // if intake is done in current session then add it to sessionqnadata
+        if ( isIntakeCompleted && intakeSummery){
+          // add to start of sessionqnadata
+          sessionQnAdata.unshift({
+            user: "pre-check",
+            coach: intakeSummery,
+          });
+        }
+
         IntakeUid = respJson.intake_id;
         if (!intakeSummery) {
           // const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
@@ -5519,7 +5529,7 @@ loadExternalModule().then(() => {
                   )
                     .then((response) => response.json())
                     .then((data) => {
-                      console.log(" response : ", data);
+                      console.log("Precheck Submission response : ", data);
                     });
                   //********** submit intake to backend: end */
                   signals.onResponse({
