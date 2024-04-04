@@ -970,20 +970,20 @@ const getBotDetails2 = async (botId) => {
 
     //footer of the bots according to bot type
     const botFooterElement = document.getElementById("bot-footer");
-    if (
-      botType === "subject_matter_bot" ||
-      botType === "helper_bot" ||
-      botType === "coachbots"
-    ) {
-      botFooterElement.innerHTML =
-        "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 15 words or more in response.</p>";
-    } else if (botType === "avatar_bot") {
-      botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 15 words or more in response.</p>`;
-    } else if (botType === "feedback_bot") {
-      botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
-    } else if (botType === "user_bot") {
-      botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`;
-    }
+    // if (
+    //   botType === "subject_matter_bot" ||
+    //   botType === "helper_bot" ||
+    //   botType === "coachbots"
+    // ) {
+    //   botFooterElement.innerHTML =
+    //     "<p>The Expert bots work curated framework and knowledge. Unrelated questions may case errors. For optimum results use 15 words or more in response.</p>";
+    // } else if (botType === "avatar_bot") {
+    //   botFooterElement.innerHTML = `<p>AI Frame works based on the coach-provided background. For optimum results use 15 words or more in response.</p>`;
+    // } else if (botType === "feedback_bot") {
+    //   botFooterElement.innerHTML = `<p>Please note that the "SUBMIT" button at the end of the feedback button must be clicked in order to record the feedback. Only postive feedback is displayed in the wall. The negative feedback is privately delivered by the system.</p>`;
+    // } else if (botType === "user_bot") {
+    //   botFooterElement.innerHTML = `<p>User created bot based on enterprise & personal knowledge.</p>`;
+    // }
 
     let buttons = "";
     let buttonsWrapper = document.createElement("div");
@@ -4342,9 +4342,45 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px"> Responses work best within 15-300 words. Extremely fast or copy-pasted responses can cause errors. </p>
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> Usage direction for Coachbots. Follow the instructions for optimum performance. 
+      <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
+          Read here
+        </button>
+      </span> 
+      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+        <div style="font-size: 12px;">
+          <ul>
+            <li>1 . For Coaches/mentors in the Directory, Click on "End Session" to keep a record of sessions. Your coach/mentor is informed and a transcript is shared after the same. For Icons by AI, it will just keep the record of the conversation. </li>
+            <li>2 .  For any type of avatar or simulation bots, Unrelated questions, answers, or comments and very fast responses may cause system errors. The usage is meant to mimic how it works in the real world.  </li>
+            <li>3 . Keep responses within 10 to 400 words for optimum results. You can either type or speak out your responses. If it's a simulation/roleplay, the "Coach Talk", NLP will also provide you speech analysis in reports.</li>
+            <li>4 . Guide bots are based on specific framework-based responses while user-generated bots are representations of the user's knowledge base on any topic. </li>
+            <li>5 . Simulations and roleplays are meant to practice how real-life scenarios play out. You can check the Explore page to review the scenarios covered. Both CoachTalk and Coachscribe can be used to handle them.</li>
+            <li>6 . In rare cases, there may be delays in responses and reports because of system availability issues.</li>
+          </ul>
+        </div>
+        <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </span>
+      </div> 
+    </p> 
   </div>
   `;
+
+  const readMoreButton = document.getElementById('read-more-button')
+  const instructionsPane = document.getElementById('instructions-pane')
+  const closeInstructionsPane = document.getElementById('close-intructions-pane')
+
+  readMoreButton.addEventListener("click", () => {
+    instructionsPane.style.display = "flex"
+  })
+
+  closeInstructionsPane.addEventListener("click", () => {
+    instructionsPane.style.display = "none"
+  })
 
   const chatContainer2 = document.getElementById("chat-container2");
   const chatElementRef2 = document.getElementById("chat-element2");
