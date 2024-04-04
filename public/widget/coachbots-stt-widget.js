@@ -96,6 +96,7 @@ let uniqueSesssionContainerId;
 let FeedbackUserEmail;
 let botId;
 let botType;
+let botScenarioCase;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 let fitmentAnalysisOptions;
@@ -827,15 +828,15 @@ async function populateBotConversation(participant_id) {
 
       if (participant_message_text && participant_message_text !== "") {
         if (participant_message_text && participant_message_text !== "") {
-          appendMessageForUser2(participant_message_text);
+          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
         }
       } else if (participant_message_text && participant_message_text !== "") {
         if (participant_message_text && participant_message_text !== "") {
-          appendMessageForUser2(participant_message_text);
+          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
         }
       } else if (participant_message_text && participant_message_text !== "") {
         // If there's no coach message, only append participant message
-        appendMessageForUser2(participant_message_text);
+        appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
       }
       if (coach_message_text && coach_message_text !== "") {
         appendMessage2(coach_message_text);
@@ -949,6 +950,8 @@ const getBotDetails2 = async (botId) => {
     console.log("FAQS => ", botDetails.data.faqs);
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
+    botScenarioCase = botDetails.data.scenario_case;
+    
 
     if (botType === "user_bot") {
       botWelcomeMessage = "Welcome to my custom bot.";
@@ -1102,7 +1105,11 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
-      endSessionButton.innerText = "End and Email Summary";
+      if(botScenarioCase === "icons_by_ai"){
+        endSessionButton.innerText = "End session";
+      } else {
+        endSessionButton.innerText = "End and Email Summary";
+      }
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
     }
@@ -2230,9 +2237,13 @@ function sendBotTranscript2() {
   return;
 }
 
-function handleEndConversation() {
+function handleEndConversation(isInActive) {
   console.log("end conversation clicked");
-  appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
+  if(isInActive === true){
+    appendMessage2("<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>");
+  } else {
+    appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
+  }
 
   const begginSessionButton = document.getElementById("begin-session-button");
   begginSessionButton.disabled = false;
@@ -2345,7 +2356,9 @@ function handleEndConversation() {
     formFieldsstt = ["email"];
     appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
   } else {
-    sendBotTranscript2();
+    if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
+      sendBotTranscript2();
+    }
   }
 }
 
@@ -5648,6 +5661,12 @@ loadExternalModule().then(() => {
               }
             }
             if (isBotInitialized == true) {
+              //append addnl statement if user-message has <= 10 words
+              if(latestMessage.split(" ").length <= 10){
+                latestMessage += " I am not sure if you are getting my point, let me know and I can explain further."
+              } 
+
+              console.log("LATEST MESSAGE ===> ", latestMessage)
               const response = await fetch(
                 `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
                 {
@@ -7251,6 +7270,13 @@ const openChatContainer2 = () => {
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
 
+  //end session due to inactivity :- row 708
+  // setTimeout(() => {
+  //   if(isBotInitialized === true){
+  //     handleEndConversation(true)
+  //     isBotInitialized = false
+  //   }
+  // }, 900000);
   user2 = window.user;
   console.log(user2);
 
@@ -7361,6 +7387,14 @@ const closeFromTop2 = () => {
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
+  
+  //end session due to inactivity :- row 708
+  // setTimeout(() => {
+  //   if(isBotInitialized === true){
+  //     handleEndConversation(true)
+  //     isBotInitialized = false
+  //   }
+  // }, 900000);
 
   if (
     chatIcon2.src ===
