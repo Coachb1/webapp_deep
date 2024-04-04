@@ -28,10 +28,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  List,
   Loader,
   Search,
   Star,
   ThumbsUp,
+  UserCogIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -49,6 +51,7 @@ import { UserClientInfoDataType, connectionType } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { profile } from "console";
 import Coach from "./coach/Coach";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 interface CoachesDataType {
   id: number;
@@ -103,7 +106,15 @@ function findConnectionStatus(
   return "";
 }
 
-const Coaches = ({ user }: any) => {
+const Coaches = ({
+  user,
+  coachesDataa,
+  UserJoiningPreviledges,
+}: {
+  user: KindeUser | null;
+  coachesDataa: CoachesDataType[];
+  UserJoiningPreviledges: any;
+}) => {
   const router = useRouter();
   const params = useSearchParams();
   const coacheeIdFromParams = params.get("coachee_id");
@@ -122,6 +133,11 @@ const Coaches = ({ user }: any) => {
 
   const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [loadingStates, setLoadingStates] = useState({
+    icon: <UserCogIcon className="h-4 w-4 mr-2" />,
+    text: "Refreshing Profile Avatars",
+  });
 
   const [coacheeId, setCoacheeId] = useState("");
   const [coachId, setCoachId] = useState("");
@@ -196,123 +212,127 @@ const Coaches = ({ user }: any) => {
   };
 
   const getCoachesData = async () => {
+    setLoadingStates({
+      icon: <List className="h-4 w-4 mr-2" />,
+      text: "Loading Profile summaries",
+    });
     //GET COACHES
-    await fetch(
-      `${baseURL}/accounts/get-directory-informations/?email=${user.email}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+    // await fetch(
+    //   `${baseURL}/accounts/get-directory-informations/?email=${user?.email!}`,
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       Authorization: basicAuth,
+    //     },
+    //   }
+    // )
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    const data = coachesDataa;
+    console.log(data);
 
-        const iconsByAiProfiles = data.filter(
-          (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
-        );
-        // console.log(iconsByAiProfiles, "iconsByAiProfiles");
+    const iconsByAiProfiles = data.filter(
+      (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
+    );
+    // console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
-        const allOtherProfiles = data.filter(
-          (profile: CoachesDataType) =>
-            profile.bot_type !== "coachbots" &&
-            profile.profile_type !== "icons_by_ai"
-        );
+    const allOtherProfiles = data.filter(
+      (profile: CoachesDataType) =>
+        profile.bot_type !== "coachbots" &&
+        profile.profile_type !== "icons_by_ai"
+    );
 
-        // console.log(allOtherProfiles, "allOtherProfiles");
+    // console.log(allOtherProfiles, "allOtherProfiles");
 
-        setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
-        setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
+    setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
+    setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
 
-        setLoading(false);
+    setLoading(false);
 
-        const profileTypeOptions: string[] = Array.from(
-          new Set(data.map((profile: CoachesDataType) => profile.profile_type))
-        );
+    const profileTypeOptions: string[] = Array.from(
+      new Set(data.map((profile: CoachesDataType) => profile.profile_type))
+    );
 
-        const skillsOptions: string[] = Array.from(
-          new Set(
-            data
-              .filter(
-                (profile: CoachesDataType) =>
-                  profile.profile_type !== "skill_bot"
-              )
-              .map((profile: CoachesDataType) => profile.skills)
+    const skillsOptions: string[] = Array.from(
+      new Set(
+        data
+          .filter(
+            (profile: CoachesDataType) => profile.profile_type !== "skill_bot"
           )
-        );
+          .map((profile: CoachesDataType) => profile.skills)
+      )
+    );
 
-        const totalExpertise =
+    const totalExpertise =
+      clientExpertise !== null
+        ? clientExpertise
+        : [
+            "Career Management",
+            "Work Life Banlance",
+            "Project Management",
+            "Lateral Transfers",
+          ];
+
+    setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
+
+    setFilterCategories([
+      {
+        filterName: "Profile Type",
+        filterOptions: [
+          "coach",
+          "mentor",
+          "coachee",
+          "mentee",
+          "icons_by_ai",
+          "accepted",
+          "feedback_bot",
+        ],
+      },
+      {
+        filterName: "Experience",
+        filterOptions: [
+          "0 - 5 years",
+          "5 - 10 years",
+          "10 - 15 years",
+          "15 - 20 years",
+          "20+ years",
+        ],
+      },
+      {
+        filterName: "Department",
+        filterOptions:
+          clientDepartments !== null
+            ? clientDepartments
+            : [
+                "Sales & Marketing",
+                "Production",
+                "Design",
+                "Engineering",
+                "HR & Training",
+                "External",
+              ],
+      },
+      // {
+      //   filterName: "Coach Skills",
+      //   filterOptions: skillsOptions.filter(
+      //     (skill) => skill !== null && skill !== undefined
+      //   ),
+      // },
+      {
+        filterName: "Expertise",
+        filterOptions:
           clientExpertise !== null
             ? clientExpertise
             : [
                 "Career Management",
-                "Work Life Banlance",
+                "Work Life Balance",
                 "Project Management",
                 "Lateral Transfers",
-              ];
-
-        setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
-
-        setFilterCategories([
-          {
-            filterName: "Profile Type",
-            filterOptions: [
-              "coach",
-              "mentor",
-              "coachee",
-              "mentee",
-              "icons_by_ai",
-              "accepted",
-              "feedback_bot",
-            ],
-          },
-          {
-            filterName: "Experience",
-            filterOptions: [
-              "0 - 5 years",
-              "5 - 10 years",
-              "10 - 15 years",
-              "15 - 20 years",
-              "20+ years",
-            ],
-          },
-          {
-            filterName: "Department",
-            filterOptions:
-              clientDepartments !== null
-                ? clientDepartments
-                : [
-                    "Sales & Marketing",
-                    "Production",
-                    "Design",
-                    "Engineering",
-                    "HR & Training",
-                    "External",
-                  ],
-          },
-          // {
-          //   filterName: "Coach Skills",
-          //   filterOptions: skillsOptions.filter(
-          //     (skill) => skill !== null && skill !== undefined
-          //   ),
-          // },
-          {
-            filterName: "Expertise",
-            filterOptions:
-              clientExpertise !== null
-                ? clientExpertise
-                : [
-                    "Career Management",
-                    "Work Life Balance",
-                    "Project Management",
-                    "Lateral Transfers",
-                  ],
-          },
-        ]);
-      })
-      .catch((error) => console.log("error", error));
+              ],
+      },
+    ]);
+    // })
+    // .catch((error) => console.log("error", error));
   };
 
   const getFormattedCoachName = (name: string) => {
@@ -365,40 +385,36 @@ const Coaches = ({ user }: any) => {
   const [userBotData, setUserBotData] = useState<any>();
 
   async function getCanJoinAs(email: string) {
-    try {
-      fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          if (data.error) {
-            setCanJoinAs("");
-          } else {
-            setCanJoinAs(data.can_join_as);
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-
-      // const respJson = await resp.json();
-      // console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
-      // setCanJoinAs(respJson.can_join_as);
-    } catch {
-      // console.log("CANNOT JOIN ANYTHING")
-      // setCanJoinAs("coachee");
+    // try {
+    //   fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`, {
+    //     method: "GET",
+    //     headers: {
+    //       Authorization: basicAuth,
+    //     },
+    //   })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    const data = UserJoiningPreviledges;
+    console.log(data);
+    if (data.error) {
+      setCanJoinAs("");
+    } else {
+      setCanJoinAs(data.can_join_as);
     }
+    // })
+    // .catch((err) => {
+    //   console.error(err);
+    // });
+
+    // const respJson = await resp.json();
+    // console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
+    // setCanJoinAs(respJson.can_join_as);
   }
 
   useEffect(() => {
     hideBots();
-
     if (user) {
-      getClientInfoForUser(user.email);
+      getClientInfoForUser(user?.email!);
       // getAllConnections();
       getCoachesData();
       getUserAccount(user)
@@ -406,7 +422,7 @@ const Coaches = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
-          getCanJoinAs(user.email);
+          getCanJoinAs(user?.email!);
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -1192,18 +1208,35 @@ const Coaches = ({ user }: any) => {
               checkedValues={parentCheckedValues}
               onUpdateCheckedValues={handleUpdateCheckedValues}
             />
-            <p className="text-left text-sm max-sm:text-xs text-gray-600 mt-2">
+            <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
               Each menu is single-select only.
             </p>
           </div>
         </div>
-        <hr className="mt-2" />
+        <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />
+        <Badge
+          variant={"secondary"}
+          className="rounded-sm text-left text-xs max-sm:text-xs font-normal"
+        >
+          Profiles with displayed Coach/Mentor emails are AI emails, with
+          responses generated per the AI pipeline. Average response time is 24
+          hours. The real user email is also kept in CC, they may choose to
+          respond or not.
+        </Badge>
         <div className="mt-2 ">
           {loading && (
             <div className="flex w-full flex-row items-center justify-center">
               <div className="mt-12 flex items-center">
-                <Loader className="mr-2 inline h-4 w-4 animate-spin" />{" "}
-                <span>loading...</span>
+                {loadingStates.icon}
+                <span>{loadingStates.text} </span>
+                <span className="ml-2">
+                  {" "}
+                  <div className="flex justify-center items-baseline space-x-2">
+                    <div className="h-1 w-1 bg-gray-500 rounded-full animate-bounce animation-delay-75"></div>
+                    <div className="h-1 w-1 bg-gray-500 rounded-full animate-bounce animation-delay-150"></div>
+                    <div className="h-1 w-1 bg-gray-500 rounded-full animate-bounce animation-delay-225"></div>
+                  </div>
+                </span>
               </div>
             </div>
           )}
@@ -1213,11 +1246,15 @@ const Coaches = ({ user }: any) => {
             currentCoachesData.map((coach, i) => (
               <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
                 <div className="relative top-[26px]  flex w-full flex-row justify-between">
-                  {coach.profile_type !== "icons_by_ai" && (
-                    <span className="z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                      User Created
-                    </span>
-                  )}
+                  <span
+                    className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs ${
+                      coach.profile_type !== "icons_by_ai"
+                        ? "visible"
+                        : "invisible"
+                    }`}
+                  >
+                    User Created
+                  </span>
                   {coach.timer_enabled && (
                     <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
                       {coach.time_value_in_days}
@@ -1290,7 +1327,9 @@ const Coaches = ({ user }: any) => {
                             "bg-green-500 hover:bg-green-400"
                           }`}
                         >
-                          {convertTextToCorrectFormat(coach.profile_type)}
+                          {coach.profile_type === "icons_by_ai"
+                            ? "Icons by AI"
+                            : convertTextToCorrectFormat(coach.profile_type)}
                         </Badge>
                       )}
                     </div>
@@ -1396,7 +1435,10 @@ const Coaches = ({ user }: any) => {
                             <Button
                               variant={"secondary"}
                               className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                              disabled={coacheeId.length === 0}
+                              disabled={
+                                coach.profile_type !== "icons_by_ai" &&
+                                coacheeId.length === 0
+                              }
                               asChild={coacheeId.length !== 0}
                             >
                               <Link
