@@ -542,11 +542,12 @@ const MyLibrary = ({ user }: any) => {
                 </div>
               </div>
 
-              <hr className=" bg-gray-500 w-full" />
+              <hr className=" h-[3px] bg-gray-400 w-full" />
+              <div className="bg-white h-[10px] w-full" />
             </div>
             <div
               id="eq-tests"
-              className="pt-[40vh] mt-[-38vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
@@ -678,7 +679,7 @@ const MyLibrary = ({ user }: any) => {
                 </div>
                 <div
                   id="competency-tests"
-                  className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh] w-full flex flex-col items-center justify-center"
+                  className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh] w-full flex flex-col items-center justify-center"
                 >
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
@@ -841,7 +842,7 @@ const MyLibrary = ({ user }: any) => {
                     >
                       <div
                         id={category.category_name}
-                        className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
+                        className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
                       >
                         {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                       </div>
@@ -1009,7 +1010,7 @@ const MyLibrary = ({ user }: any) => {
                 {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 <div
                   id="requested-tests"
-                  className="pt-[40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
+                  className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
                 >
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
@@ -1110,7 +1111,7 @@ const MyLibrary = ({ user }: any) => {
                 </div>
                 <div
                   id="create-new"
-                  className="pt-[40vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-30vh]  w-full flex flex-col items-center justify-center"
+                  className="pt-[44vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-34vh]  w-full flex flex-col items-center justify-center"
                 ></div>
                 <div className="w-full flex flex-col items-center justify-center">
                   <Badge
