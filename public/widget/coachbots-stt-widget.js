@@ -2052,7 +2052,10 @@ async function handleFaqButtonClick(question) {
         // <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`;
         // appendMessage2(begginSessionMessage);
 
-        appendMessage2(addStickerToMessage('Begin Session',`Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?`,'#22c55e'))
+        appendMessage2(addStickerToMessage('Begin Session',`
+        <p>
+        Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
+        <p>`,'#22c55e'))
 
         isIntakeSummaryDisplayed = true;
         // return;
@@ -2062,50 +2065,63 @@ async function handleFaqButtonClick(question) {
       await getUserBotConversation(userId2);
       console.log(previousBotConversationId, "out");
 
+      // if (
+      //   previousBotConversationId != "" &&
+      //   botType === "avatar_bot"
+      // ) {
+      //   console.log(previousBotConversationId, "in");
+
+      //   const div = `<div id="precheck-proceed-options" >
+      //   <b>Do you want to do a new pre-check again or continue?</b> <br>
+      //       <button id='new-precheck'  onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('Yes')">Yes</button>
+      //       <button id='previous-precheck' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('No')">No</button>
+
+      //   </div>`;
+
+      //   if (botType === "avatar_bot") {
+      //     appendMessage2(div);
+      //   }
+      //   return;
+      // } else if (
+      //   previousBotConversationId != "" &&
+      //   ["subject_matter_bot", "helper_bot", "coachbots"].includes(botType)
+      // ) {
+      //   // in helperbot and suject matter bot we are not creating another session
+      //   conversation_id2 = previousBotConversationId.split(":")[0];
+      //   sessionId2 = previousBotConversationId.split(":")[1];
+      //   coachMessage = previousBotConversationId.split(":")[2];
+      //   isBotInitialized = true;
+      //   isSessionActiveStt = true;
+      // }
+
       if (
-        previousBotConversationId != "" &&
-        botType === "avatar_bot"
-      ) {
-        console.log(previousBotConversationId, "in");
-
-        const div = `<div id="precheck-proceed-options" >
-        <b>Do you want to do a new pre-check again or continue?</b> <br>
-            <button id='new-precheck'  onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('Yes')">Yes</button>
-            <button id='previous-precheck' onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleprecheck('No')">No</button>
-
-        </div>`;
-
-        if (botType === "avatar_bot") {
-          appendMessage2(div);
+          previousBotConversationId != "" &&
+          botType !== 'avatar_bot'
+          ) {
+          conversation_id2 = previousBotConversationId.split(":")[0];
+          sessionId2 = previousBotConversationId.split(":")[1];
+          coachMessage = previousBotConversationId.split(":")[2];
+          isBotInitialized = true;
+          isSessionActiveStt = true;
         }
-        return;
-      } else if (
-        previousBotConversationId != "" &&
-        ["subject_matter_bot", "helper_bot", "coachbots"].includes(botType)
-      ) {
-        // in helperbot and suject matter bot we are not creating another session
-        conversation_id2 = previousBotConversationId.split(":")[0];
-        sessionId2 = previousBotConversationId.split(":")[1];
-        coachMessage = previousBotConversationId.split(":")[2];
-        isBotInitialized = true;
-        isSessionActiveStt = true;
-      }
 
       botInitialQuestionsIndex = 1;
-      if (botType === "avatar_bot") {
-        await getFitmentScore(userId2);
-        console.log(isBeginSessionProceed);
 
-        if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && globalBotDetails.data.scenario_case != 'icons_by_ai' && !['coach', 'mentor'].includes(UserProfileInfo.profile_type)) {
-          appendMessage2(
-            addStickerToMessage(
-              "Note",
-              "Your quick match score is low or not calculated. Please proceed with caution",
-              '#22c55e'
-            )
-          );
-        }
-      }
+      // removing from avatar bot
+      // if (botType === "avatar_bot") {
+      //   await getFitmentScore(userId2);
+      //   console.log(isBeginSessionProceed);
+
+      //   if (!isBeginSessionProceed && isFitmentAllowed && isStrictFitment && globalBotDetails.data.scenario_case != 'icons_by_ai' && !['coach', 'mentor'].includes(UserProfileInfo.profile_type)) {
+      //     appendMessage2(
+      //       addStickerToMessage(
+      //         "Note",
+      //         "Your quick match score is low or not calculated. Please proceed with caution",
+      //         '#22c55e'
+      //       )
+      //     );
+      //   }
+      // }
       console.log(botType);
       console.log(document.getElementById("bot-footer"));
       if (botType === "subject_matter_bot") {
