@@ -1971,7 +1971,7 @@ async function handleFaqButtonClick(question) {
 
         appendMessage2(addStickerToMessage('Begin Session',`
         <p>
-        Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
+        Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
         <p>`,'#22c55e'))
 
         isIntakeSummaryDisplayed = true;
