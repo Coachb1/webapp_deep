@@ -1095,6 +1095,8 @@ const getBotDetails2 = async (botId) => {
       begginSessionButton.innerText = "Begin session";
       buttonsWrapper.appendChild(begginSessionButton);
     }
+
+    
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
     if (botType === "avatar_bot") {
@@ -1114,6 +1116,68 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(endSessionButton);
     }
     console.log("buttons : ", buttons);
+
+
+    if (botType !== "user_bot") {
+       //canned button one
+      const cannedButtonOne = document.createElement("button");
+      cannedButtonOne.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+      );
+
+      cannedButtonOne.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+      );
+      cannedButtonOne.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = 'white'"
+      );
+      
+      cannedButtonOne.addEventListener(
+        "click",
+        () => {
+          sendMessage("Not exactly, I mean something else..")
+        }
+      );
+
+      cannedButtonOne.setAttribute("id", `canned-btn-1`);
+      cannedButtonOne.innerText = "Not exactly, I mean something else..";
+      buttonsWrapper.appendChild(cannedButtonOne);
+
+      //canned button two
+
+      const cannedButtonTwo = document.createElement("button");
+      cannedButtonTwo.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+      );
+
+      cannedButtonTwo.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb', this.style.cursor = 'not-allowed' "
+      );
+      cannedButtonTwo.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = 'white'"
+      );
+
+      cannedButtonTwo.addEventListener(
+        "click",
+        () => {
+          sendMessage("Yes you got it right, I agree..")
+        }
+      );
+
+      cannedButtonTwo.setAttribute(
+        "disabled",
+        true
+      )
+      cannedButtonTwo.setAttribute("id", `canned-btn-2`);
+      cannedButtonTwo.innerText = "Yes you got it right, I agree..";
+      buttonsWrapper.appendChild(cannedButtonTwo);
+    }
 
     faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
@@ -1853,6 +1917,22 @@ async function handleFaqButtonClick(question) {
       );
       begginSessionButton.disabled = true;
       begginSessionButton.style.cursor = "not-allowed";
+
+      const cannedMessageOne = document.getElementById("canned-btn-1")
+      cannedMessageOne.disabled = false
+      // cannedMessageOne.style.cursor = "pointer"
+      cannedMessageOne.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
+      );
+
+      const cannedMessageTwo = document.getElementById("canned-btn-2")
+      cannedMessageTwo.disabled = false
+      // cannedMessageTwo.style.cursor = "pointer"
+      cannedMessageTwo.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
+      );
       // ****** Check connection logic : start
 
       // const connectionresp = await fetch(
@@ -2258,6 +2338,22 @@ function handleEndConversation(isInActive) {
   const begginSessionButton = document.getElementById("begin-session-button");
   begginSessionButton.disabled = false;
   begginSessionButton.style.cursor = "pointer";
+
+  const cannedMessageOne = document.getElementById("canned-btn-1")
+  cannedMessageOne.disabled = true
+      // cannedMessageOne.style.cursor = "pointer"
+      cannedMessageOne.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+      );
+
+      const cannedMessageTwo = document.getElementById("canned-btn-2")
+      cannedMessageTwo.disabled = false
+      // cannedMessageTwo.style.cursor = "pointer"
+      cannedMessageTwo.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+      );
 
   isSessionActiveStt = false;
   optedBeginSession = false;
@@ -7317,12 +7413,13 @@ const openChatContainer2 = () => {
   document.body.style.overflowY = "hidden";
 
   //end session due to inactivity :- row 708
-  // setTimeout(() => {
-  //   if(isBotInitialized === true){
-  //     handleEndConversation(true)
-  //     isBotInitialized = false
-  //   }
-  // }, 900000);
+  setTimeout(() => {
+    if(isBotInitialized === true){
+      handleEndConversation(true)
+      isBotInitialized = false
+    }
+  }, 1800000);
+
   user2 = window.user;
   console.log(user2);
 
