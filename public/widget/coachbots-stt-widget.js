@@ -1902,6 +1902,9 @@ async function handleFaqButtonClick(question) {
   } else {
     // something_else => begin_session
     if (question == "something_else") {
+      // clear the sessionqnadata
+      sessionQnAdata = [];
+
       // appendMessage2('Please ask your question in chat box')
       console.log('scenario case',globalBotDetails.data.scenario_case)
       if (optedBeginSession) {
@@ -2011,7 +2014,7 @@ async function handleFaqButtonClick(question) {
         if ( isIntakeCompleted && intakeSummery){
           // add to start of sessionqnadata
           sessionQnAdata.unshift({
-            user: "pre-check",
+            user: "last pre-check",
             coach: intakeSummery,
           });
         }
