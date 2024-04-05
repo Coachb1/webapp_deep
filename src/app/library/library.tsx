@@ -529,7 +529,7 @@ const MyLibrary = ({ user }: any) => {
                   >
                     Requested Scenarios <History className="h-4 w-4 ml-2" />
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => {
                       document.getElementById("create-new")?.scrollIntoView({
                         behavior: "smooth",
@@ -538,7 +538,7 @@ const MyLibrary = ({ user }: any) => {
                     className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                   >
                     Create New Simulation (Experimental)
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
 
@@ -1109,7 +1109,7 @@ const MyLibrary = ({ user }: any) => {
                     </div>
                   )}
                 </div>
-                <div
+                {/* <div
                   id="create-new"
                   className="pt-[44vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-34vh]  w-full flex flex-col items-center justify-center"
                 ></div>
@@ -1129,7 +1129,7 @@ const MyLibrary = ({ user }: any) => {
                       generatedHandler={CreateYourOwnGeneratedHandler}
                     />
                   </div>
-                </div>
+                </div> */}
               </MaxWidthWrapper>
             </div>
           </div>

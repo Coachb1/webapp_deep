@@ -1,9 +1,11 @@
 "use client";
 
 import CopyToClipboard from "@/components/CopyToClipboard";
+import CreateYourOwn from "@/components/CreateYourOwn";
 import NetworkNav from "@/components/NetworkNav";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Widgets from "@/components/Widgets";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
@@ -249,7 +251,7 @@ const CreateOwn = ({ user }: any) => {
                     <>Generate Summary</>
                   )}
                 </Button>
-                <div className="flex flex-row items-center justify-center max-sm:flex-col  gap-2">
+                {/* <div className="flex flex-row items-center justify-center max-sm:flex-col  gap-2">
                   <Button
                     disabled={!generatedSummary || generatedLoading}
                     variant="secondary"
@@ -276,13 +278,13 @@ const CreateOwn = ({ user }: any) => {
                       <>Generate Simulation</>
                     )}
                   </Button>
-                </div>
+                </div> */}
               </div>
-              {!generatedSummary && (
+              {/* {!generatedSummary && (
                 <p className="text-xs self-end max-sm:self-center w-fit mt-0">
                   Simulations can be generated after you generate the summary!
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -345,6 +347,10 @@ const CreateOwn = ({ user }: any) => {
                     )}
                   </Button>
                 )} */}
+                  <CopyToClipboard
+                    textToCopy={generatedSummary}
+                    copyType="Summary"
+                  />
                 </div>
               </div>
             )}
@@ -637,13 +643,20 @@ const CreateOwn = ({ user }: any) => {
             <h1 className="text-2xl font-semibold text-gray-600">
               Summary and Simulation
             </h1>
+
+            <div className="w-full flex flex-col items-center justify-center my-10">
+              <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                <CreateYourOwn user={user} />
+              </div>
+            </div>
+            <div className="h-[2px] bg-gray-400 w-full my-20" />
             <form
               onSubmit={(e: FormEvent<HTMLFormElement>) => {
                 searchContextHandler(e);
               }}
               className="flex flex-col justify-center items-center mt-3"
             >
-              <div className="w-[80%]  max-sm:w-fit mb-1 text-xs">
+              <div className="w-[80%]  max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
                 <Tabs
                   className="w-fit self-start"
                   value={searchMode}
@@ -666,7 +679,7 @@ const CreateOwn = ({ user }: any) => {
                       className="text-xs p-1 m-1"
                       value="youtube"
                     >
-                      TED | TEDx
+                      TEsD | TEDx
                     </TabsTrigger>
                     <TabsTrigger
                       disabled={glGenerateLoading}

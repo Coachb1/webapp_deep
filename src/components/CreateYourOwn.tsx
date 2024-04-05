@@ -32,6 +32,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   }, []);
   const userContextRef = useRef<any>();
   const handleGenerateSenario = () => {
+    setGeneratedTestData([]);
     setUserEnteredContext(userContextRef.current.value);
     if (wordCount < 20 || wordCount > 500) {
       console.log("to small");
@@ -55,6 +56,21 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       params.set("creator_user_id", userId);
       url.search = params;
 
+      let awaitedData: NodeJS.Timeout;
+      setTimeout(() => {
+        console.log(generatedTestData.length);
+        awaitedData = setTimeout(() => {
+          console.log(generatedTestData.length);
+          if (generatedTestData.length === 0) {
+            setGenerationError(true);
+            toast.error(
+              "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
+            );
+            setIsloading(false);
+          }
+        }, 180000);
+      }, 200);
+
       fetch(url, {
         method: "POST",
         headers: {
@@ -65,16 +81,18 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Dynamically created Test result", data);
-          generatedHandler();
           setGeneratedTestData(data);
           setIsloading(false);
           if (!data[0].title) {
             setGenerationError(true);
+          } else {
+            clearTimeout(awaitedData);
           }
         })
         .catch((err) => {
           console.error(err);
-         toast.error(
+          setIsloading(false);
+          toast.error(
             `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
           );
         });
@@ -111,7 +129,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                 }
               }}
               placeholder="Create a situation where the user needs to...... to accomplish...."
-              rows={5}
+              rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
             <div className="flex flex-row justify-between w-full">
@@ -128,6 +146,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             </div>
             <div className="flex items-center gap-2">
               <Button
+                disabled={isLoading}
                 onClick={handleGenerateSenario}
                 className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
               >
@@ -154,32 +173,35 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
           </div>
 
           <div className="flex flex-row gap-2 max-sm:flex-col">
-            {generatedTestData.map((test, i) => (
-              <>
-                <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                  <div>
-                    <b className="my-1 text-gray-400">
-                      {i === 0 ? "Simulation" : "Role play"}
-                    </b>
-                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
-                    <p className="text-[12px] mb-2">{test?.description}</p>
+            {!generationError &&
+              generatedTestData.map((test, i) => (
+                <>
+                  <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <b className="my-1 text-gray-400">
+                        {i === 0 ? "Simulation" : "Role play"}
+                      </b>
+                      <p className="text-sm mt-3 font-semibold">
+                        {test?.title}
+                      </p>
+                      <p className="text-[12px] mb-2">{test?.description}</p>
+                    </div>
+                    <div className="flex justify-end mt-2">
+                      <CopyToClipboard
+                        textToCopy={test?.test_code!}
+                        copyType="code"
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-end mt-2">
-                    <CopyToClipboard
-                      textToCopy={test?.test_code!}
-                      copyType="code"
-                    />
-                  </div>
-                </div>
-              </>
-            ))}
+                </>
+              ))}
           </div>
           {generationError && !isLoading && (
             <>
               <hr className="my-2" />
-              <p className="text-sm text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
+              <p className="text-sm my-6 text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
                 Encountered and error while Generating your scenarios. It will
-                be saved in "My Library (Requested Scenario Tab)"
+                be saved in "Simulation (Requested Scenario Tab)"
               </p>
             </>
           )}

@@ -14,6 +14,7 @@ import { Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
 import { useEffect, useState } from "react";
 import { getClientUserInfo } from "@/lib/utils";
+import { Badge } from "./ui/badge";
 
 interface CustomWindow extends Window {
   user?: any;
@@ -146,7 +147,17 @@ const NetworkNav = ({ user }: any) => {
             // }}
             asChild
           >
-            <Link href={"/create-scenario"}>Quick Learn</Link>
+            <Link href={"/create-scenario"}>
+              Simulation creator{" "}
+              <span>
+                <Badge
+                  variant={"default"}
+                  className="bg-cyan-400 w-fit text-xs ml-2  hover:bg-cyan-400 text-white "
+                >
+                  Experimental
+                </Badge>
+              </span>
+            </Link>
           </Button>
         )}
       </div>
@@ -241,7 +252,15 @@ const NetworkNav = ({ user }: any) => {
                   // }}
                 >
                   {" "}
-                  Quick Learn
+                  Simulation creator{" "}
+                  <span>
+                    <Badge
+                      variant={"default"}
+                      className="bg-cyan-400 w-fit text-[10px] p-[2px] ml-1  hover:bg-cyan-400 text-white "
+                    >
+                      Experimental
+                    </Badge>
+                  </span>
                 </Link>
               </DropdownMenuItem>
             )}
