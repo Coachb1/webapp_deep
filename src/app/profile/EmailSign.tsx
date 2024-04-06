@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { BotDetailsType } from "@/lib/types";
 import {
   baseURL,
   basicAuth,
@@ -22,10 +23,13 @@ const EmailSign = ({ user }: any) => {
 
   const [coachId, setCoachId] = useState("");
   const [coacheeId, setCoacheeId] = useState("");
-  const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
+  const [feedbackBots, setFeedbackBots] = useState<BotDetailsType[]>([]);
+  const [avatarBots, setAvatarBots] = useState<BotDetailsType[]>([]);
 
   const [avatarBotId, setAvatarBotId] = useState("");
   const [feedbackBotId, setFeedbackBotId] = useState("");
+
+  const [slId, setSlId] = useState<number | undefined>();
 
   useEffect(() => {
     if (user) {
@@ -96,37 +100,42 @@ const EmailSign = ({ user }: any) => {
                   setFeedbackBotId(feedbackBot);
                 }
 
-                if (findCoacheeUID(isApprovedData)) {
-                  fetch(
-                    `${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`,
-                    {
-                      headers: {
-                        Authorization: basicAuth,
-                      },
-                    }
-                  )
-                    .then((res) => res.json())
-                    .then((data) => {
-                      console.log("Bot details for edit", data);
-                      const FeedbackBot = data.data.filter(
-                        (data: any) =>
-                          data.signature_bot.bot_type === "feedback_bot"
-                      );
-                      console.log(FeedbackBot, "FeedbackBot");
-                      setFeedbackBots(FeedbackBot);
-                      setTimeout(() => {
-                        setLoading(false);
-                      }, 1000);
-                    })
-                    .catch((err) => {
-                      console.error(err);
+                fetch(`${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`, {
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log("Bot details", data);
+                    const coachAvatarBot = data.data.filter(
+                      (data: any) =>
+                        data.signature_bot.bot_type === "avatar_bot"
+                    );
+                    setAvatarBots(coachAvatarBot);
+
+                    // if (findCoacheeUID(isApprovedData)) {
+                    const FeedbackBot = data.data.filter(
+                      (data: any) =>
+                        data.signature_bot.bot_type === "feedback_bot"
+                    );
+
+                    console.log(FeedbackBot, "FeedbackBot");
+                    setFeedbackBots(FeedbackBot);
+                    // }
+                    setTimeout(() => {
                       setLoading(false);
-                    });
-                } else {
-                  setTimeout(() => {
+                    }, 1000);
+                  })
+                  .catch((err) => {
+                    console.error(err);
                     setLoading(false);
-                  }, 1000);
-                }
+                  });
+                // } else {
+                //   setTimeout(() => {
+                //     setLoading(false);
+                //   }, 1000);
+                // }
               } else {
                 setTimeout(() => {
                   setLoading(false);
@@ -217,9 +226,15 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${userEmail}`}
+                                href={`mailto:${
+                                  userName.replace(/\s/g, "").toLowerCase() +
+                                  feedbackBots[0]?.signature_bot.id +
+                                  "@gmail.com"
+                                }`}
                               >
-                                {userEmail}
+                                {userName.replace(/\s/g, "").toLowerCase() +
+                                  feedbackBots[0]?.signature_bot.id +
+                                  "@gmail.com"}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -259,9 +274,15 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${userEmail}`}
+                                href={`mailto:${
+                                  userName.replace(/\s/g, "").toLowerCase() +
+                                  avatarBots[0]?.signature_bot.id +
+                                  "@gmail.com"
+                                }`}
                               >
-                                {userEmail}
+                                {userName.replace(/\s/g, "").toLowerCase() +
+                                  avatarBots[0]?.signature_bot.id +
+                                  "@gmail.com"}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -301,9 +322,15 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${userEmail}`}
+                                href={`mailto:${
+                                  userName.replace(/\s/g, "").toLowerCase() +
+                                  avatarBots[0]?.signature_bot.id +
+                                  "@gmail.com"
+                                }`}
                               >
-                                {userEmail}
+                                {userName.replace(/\s/g, "").toLowerCase() +
+                                  avatarBots[0]?.signature_bot.id +
+                                  "@gmail.com"}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -344,7 +371,7 @@ const EmailSign = ({ user }: any) => {
                     {coacheeId.length === 0 && (
                       <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
                         <div>
-                          Your custom email signature is currently not active. A
+                          Your custom email signature is currently not active.
                         </div>{" "}
                       </div>
                     )}
@@ -374,9 +401,17 @@ const EmailSign = ({ user }: any) => {
                                       color: "#2563eb",
                                       textDecoration: "underline",
                                     }}
-                                    href={`mailto:${userEmail}`}
+                                    href={`mailto:${
+                                      userName
+                                        .replace(/\s/g, "")
+                                        .toLowerCase() +
+                                      feedbackBots[0]?.signature_bot.id +
+                                      "@gmail.com"
+                                    }`}
                                   >
-                                    {userEmail}
+                                    {userName.replace(/\s/g, "").toLowerCase() +
+                                      feedbackBots[0]?.signature_bot.id +
+                                      "@gmail.com"}
                                   </a>{" "}
                                 </div>
                                 <div>Phone: {"<<+91-Add your own>>"} </div>
