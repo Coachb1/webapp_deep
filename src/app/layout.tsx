@@ -20,23 +20,30 @@ interface CustomWindow extends Window {
 }
 
 const getClientUserInfo = async (userEmail: string | null | undefined) => {
-  const response = await fetch(
-    `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
+  if (userEmail !== null && userEmail !== undefined) {
+    const response = await fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        isDemoUser: data.data.user_info[0].is_demo_user,
+        isRestricted: data.data.user_info[0].is_restricted,
+      };
+    } else {
+      return {
+        isDemoUser: false,
+        isRestricted: true,
+      };
     }
-  );
-
-  const data = await response.json();
-
-  if (response.ok) {
-    return {
-      isDemoUser: data.data.user_info[0].is_demo_user,
-      isRestricted: data.data.user_info[0].is_restricted,
-    };
   } else {
     return {
       isDemoUser: false,
