@@ -784,15 +784,15 @@ async function populateBotConversation(participant_id) {
   console.log("PRevious conversations", botConv);
   if (botConv.length > 0) {
     // disabling intakebutton
-    if (botType === "avatar_bot") {
-      if (intakeButton) {
-        intakeButton.disabled = true;
-        intakeButton.style.backgroundColor = "#d3d3d3";
-        intakeButton.style.color = "#a0a0a0";
-        intakeButton.removeAttribute("onmouseover");
-        intakeButton.removeAttribute("onmouseleave");
-      }
-    }
+    // if (botType === "avatar_bot") {
+    //   if (intakeButton) {
+    //     intakeButton.disabled = true;
+    //     intakeButton.style.backgroundColor = "#d3d3d3";
+    //     intakeButton.style.color = "#a0a0a0";
+    //     intakeButton.removeAttribute("onmouseover");
+    //     intakeButton.removeAttribute("onmouseleave");
+    //   }
+    // }
 
     console.log("populating conversation");
     let botConversations;
@@ -2195,7 +2195,7 @@ async function handleFaqButtonClick(question) {
       saveBotEngagement(botId, userId2, "num_of_clicked_button");
 
       botInitialQuestionsIndex = 1;
-      optedBeginSession = true;
+      // optedBeginSession = true;
       const divCont = `<div id="initial_question_proceed" >
       <b>Thank you for considering a virtual session. Please answer the following questions that appear for ${intakebuttonText}. Click "OK" to start</b>
         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="SendingFirstInitialQue()">OK</button>
@@ -5716,14 +5716,14 @@ loadExternalModule().then(() => {
                     
                   }
 
-                  // ***** enabling intake button
-                  if (intakeButton && botType === "avatar_bot") {
-                    intakeButton.disabled = true;
-                    intakeButton.style.backgroundColor = "#d3d3d3";
-                    intakeButton.style.color = "#a0a0a0";
-                    intakeButton.removeAttribute("onmouseover");
-                    intakeButton.removeAttribute("onmouseleave");
-                  }
+                  // ***** disabling intake button
+                  // if (intakeButton && botType === "avatar_bot") {
+                  //   intakeButton.disabled = true;
+                  //   intakeButton.style.backgroundColor = "#d3d3d3";
+                  //   intakeButton.style.color = "#a0a0a0";
+                  //   intakeButton.removeAttribute("onmouseover");
+                  //   intakeButton.removeAttribute("onmouseleave");
+                  // }
                   isIntakeSummaryDisplayed = false
                   return;
                 }
@@ -5875,12 +5875,29 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
               //streaming responses
-              GeminiAiResponse(
-                responseData.coach_message_metadata.prompt,
-                signals,
-                conversation_id2,
-                latestMessage
-              );
+              if (botId === 'avatar_bot-d84e4-lyfe-gemini'){
+                GeminiAiResponse(
+                  responseData.coach_message_metadata.prompt,
+                  signals,
+                  conversation_id2,
+                  latestMessage
+                );
+              } else if (botId === 'avatar_bot-c6bc8-lyfe-haiku'){
+                anthropicAiResponse(
+                  responseData.coach_message_metadata.prompt,
+                  signals,
+                  conversation_id2,
+                  latestMessage
+                );
+              } else {
+                GeminiAiResponse(
+                  responseData.coach_message_metadata.prompt,
+                  signals,
+                  conversation_id2,
+                  latestMessage
+                );
+              }
+
               // conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];
               if (coachResponse.split(":").length > 1) {
