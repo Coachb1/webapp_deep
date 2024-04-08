@@ -2729,6 +2729,22 @@ function createMessageNode2(message) {
 
   return messageNode;
 }
+
+function LoadingMessageWithText(message){
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+   //loading message 
+   const loadingElement = shadowRoot.querySelector(".loading-message-text")
+   loadingElement.style.display = "flex"
+   loadingElement.style.flexDirection = "row"
+   loadingElement.style.alignItems = "center"
+   const messageElement = document.createElement("span")
+   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</span>`
+   messageElement.setAttribute("id", "loading-message")
+   
+   loadingElement.style.width = "fit-content"
+   loadingElement.appendChild(messageElement)
+}
+
 function generateRandomAlphanumeric(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -5652,6 +5668,7 @@ loadExternalModule().then(() => {
                   "all botInitialQuestions submitted : ",
                   botInitialQuestionsQnA
                 );
+                LoadingMessageWithText("Initializing session...")
                 if (isIntakeInProgress) {
                   isIntakeCompleted = true;
                   isIntakeInProgress = false;
@@ -6144,9 +6161,11 @@ loadExternalModule().then(() => {
           if (questionIndex2 === 0 && userAcessAvailability2.length !== 0) {
             if (optedNo2 === false) {
               testCode2 =  latestMessage // body.messages[0].text;
-              appendMessage2("Please wait while we are processing ...");
+              LoadingMessageWithText("Please wait while we are processing ...")
+              // appendMessage2("Please wait while we are processing ...");
             } else {
-              appendMessage2("Please wait while we are processing ...");
+              LoadingMessageWithText("Please wait while we are processing ...")
+              // appendMessage2("Please wait while we are processing ...");
               // //wait while test code is being processed
               // while (!codeAvailabilityUserChoice2) {
               //   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -7036,6 +7055,9 @@ loadExternalModule().then(() => {
                 ) {
                   const shadowRoot =
                     document.getElementById("chat-element2").shadowRoot;
+                    
+                  LoadingMessageWithText("Crunching report data")
+
                   const messageNode = document.createElement("div");
                   messageNode.classList.add("inner-message-container");
                   const messageBubble = document.createElement("div");
