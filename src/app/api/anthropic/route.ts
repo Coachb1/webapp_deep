@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const response = await anthropic.messages.create({
     max_tokens: 1000,
     messages: [{ role: "user", content: userInput }],
-    model: "claude-2.1",
+    model: "claude-3-haiku-20240307",
     stream: true,
   });
 
