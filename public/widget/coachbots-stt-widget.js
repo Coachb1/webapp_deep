@@ -825,7 +825,10 @@ async function populateBotConversation(participant_id) {
     results.forEach((element) => {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
-
+      
+      if (coach_message_text && coach_message_text !== "") {
+        appendMessage2(coach_message_text);
+      }
       if (participant_message_text && participant_message_text !== "") {
         if (participant_message_text && participant_message_text !== "") {
           appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
@@ -838,9 +841,7 @@ async function populateBotConversation(participant_id) {
         // If there's no coach message, only append participant message
         appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
       }
-      if (coach_message_text && coach_message_text !== "") {
-        appendMessage2(coach_message_text);
-      }
+     
       // if (coach_message_text && coach_message_text !== "") {
       //   appendMessage2(coach_message_text);
 
@@ -1138,12 +1139,12 @@ const getBotDetails2 = async (botId) => {
       cannedButtonOne.addEventListener(
         "click",
         () => {
-          sendMessage("Not exactly, I mean something else..")
+          sendMessage("Not exactly...")
         }
       );
 
       cannedButtonOne.setAttribute("id", `canned-btn-1`);
-      cannedButtonOne.innerText = "Not exactly, I mean something else..";
+      cannedButtonOne.innerText = "Not exactly...";
       buttonsWrapper.appendChild(cannedButtonOne);
 
       //canned button two
@@ -1166,7 +1167,7 @@ const getBotDetails2 = async (botId) => {
       cannedButtonTwo.addEventListener(
         "click",
         () => {
-          sendMessage("Yes you got it right, I agree..")
+          sendMessage("Yes I agree...")
         }
       );
 
@@ -1175,7 +1176,7 @@ const getBotDetails2 = async (botId) => {
         true
       )
       cannedButtonTwo.setAttribute("id", `canned-btn-2`);
-      cannedButtonTwo.innerText = "Yes you got it right, I agree..";
+      cannedButtonTwo.innerText = "Yes I agree..";
       buttonsWrapper.appendChild(cannedButtonTwo);
     }
 
@@ -5114,7 +5115,7 @@ loadExternalModule().then(() => {
       }
     }
     
-    fetch("https://for-gem.vercel.app/api/gemini-stream", {
+    fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
           prompt: userInputMessage
@@ -5194,6 +5195,7 @@ loadExternalModule().then(() => {
         }
 
         const decodedText = decoder.decode(value);
+        console.log(decodedText)
         messageText.innerHTML += decodedText.replace(/\*/g, '')
         shadowRoot.getElementById("messages").scrollBy(0, 500);
 
