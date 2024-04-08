@@ -5074,6 +5074,8 @@ loadExternalModule().then(() => {
     conversationId,
     latestMessage
   ) => {
+    userInputMessage = userInputMessage  + `\n input: ${latestMessage}\n output: `
+    console.log('prompt',userInputMessage)
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
