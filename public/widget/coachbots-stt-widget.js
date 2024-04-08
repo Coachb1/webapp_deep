@@ -5114,7 +5114,7 @@ loadExternalModule().then(() => {
       }
     }
     
-    fetch("/api/gemini-stream", {
+    fetch("https://for-gem.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
           prompt: userInputMessage
