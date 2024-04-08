@@ -5876,14 +5876,14 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
               //streaming responses
-              if (botId === 'avatar_bot-d84e4-lyfe-gemini'){
+              if (['avatar_bot-d84e4-lyfe-gemini', 'knowledge-ae898-marketerbot'].includes(botId)){
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
                   conversation_id2,
                   latestMessage
                 );
-              } else if (botId === 'avatar_bot-c6bc8-lyfe-haiku'){
+              } else if (['avatar_bot-c6bc8-lyfe-haiku','knowledge-ae898-marketerbot-haiku'].includes(botId)){
 
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
