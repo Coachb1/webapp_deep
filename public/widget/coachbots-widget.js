@@ -387,6 +387,23 @@ function appendMessage(message) {
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
 }
 
+//* loading element with message 
+function LoadingMessageWithText2(message, shadowRoot){
+  console.log(shadowRoot)
+   //loading message 
+   const loadingElement = shadowRoot.querySelector(".loading-message-text")
+   console.log(loadingElement)
+   loadingElement.style.display = "flex"
+   loadingElement.style.flexDirection = "row"
+   loadingElement.style.alignItems = "center"
+   const messageElement = document.createElement("span")
+   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; ; min-width: 4rem; margin-left: 2rem;">${message}</span>`
+   messageElement.setAttribute("id", "loading-message")
+   
+   loadingElement.style.width = "fit-content"
+   loadingElement.appendChild(messageElement)
+}
+
 //************** session management :start */
 
 function getOrSetSessionData(name, email) {
@@ -3556,11 +3573,14 @@ loadExternalModule().then(() => {
             "QBEWUOM",
           ];
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
+            const shadowRoot = document.getElementById("chat-element").shadowRoot;
             if (optedNo === false) {
               testCode = latestMessage // body.messages[0].text;
-              appendMessage("Please wait while we are processing ...");
+              LoadingMessageWithText2("Please wait while we are processing ...", shadowRoot)
+              // appendMessage("Please wait while we are processing ...");
             } else {
-              appendMessage("Please wait while we are processing ...");
+              LoadingMessageWithText2("Please wait while we are processing ...", shadowRoot)
+              // appendMessage("Please wait while we are processing ...");
               // //wait while test code is being processed
               // while (!codeAvailabilityUserChoice) {
               //   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -4445,7 +4465,10 @@ loadExternalModule().then(() => {
                   userResponse.length > 0
                 ) {
                   const shadowRoot =
-                    document.getElementById("chat-element").shadowRoot;
+                     document.getElementById("chat-element").shadowRoot;
+
+                  LoadingMessageWithText2("Crunching report data", shadowRoot)
+
                   const messageNode = document.createElement("div");
                   messageNode.classList.add("inner-message-container");
                   const messageBubble = document.createElement("div");
