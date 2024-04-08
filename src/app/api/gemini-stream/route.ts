@@ -28,7 +28,7 @@ function addHelpers(response: any): any {
 /**
  * Returns text of first candidate.
  */
-export function getText(response: any): string {
+function getText(response: any): string {
   if (response.candidates?.[0].content?.parts?.[0]?.text) {
     return response.candidates[0].content.parts
       .map(({ text  } : {text : any}) => text)
@@ -46,7 +46,7 @@ export function getText(response: any): string {
  *
  * @param response - Response from a fetch call
  */
-export function processStream(response: Response) {
+function processStream(response: Response) {
   const inputStream = response.body!.pipeThrough(
     new TextDecoderStream("utf8", { fatal: true })
   );
@@ -63,7 +63,7 @@ export function processStream(response: Response) {
  * chunks, returning a new stream that provides a single complete
  * GenerateContentResponse in each iteration.
  */
-export function getResponseStream<T>(
+function getResponseStream<T>(
   inputStream: ReadableStream<string>
 ): ReadableStream<T> {
   const reader = inputStream.getReader();
@@ -110,7 +110,7 @@ export function getResponseStream<T>(
  * Aggregates an array of `GenerateContentResponse`s into a single
  * GenerateContentResponse.
  */
-export function aggregateResponses(responses: any[]): any {
+function aggregateResponses(responses: any[]): any {
   const lastResponse = responses[responses.length - 1];
   const aggregatedResponse: any = {
     promptFeedback: lastResponse?.promptFeedback,
