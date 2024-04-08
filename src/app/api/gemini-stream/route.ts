@@ -6,7 +6,7 @@ const responseLineRE = /^data\: (.*)(?:\n\n|\r\r|\r\n\r\n)/;
  * Adds convenience helper methods to a response object, including stream
  * chunks (as long as each chunk is a complete GenerateContentResponse JSON).
  */
-export function addHelpers(response: any): any {
+function addHelpers(response: any): any {
   response.text = () => {
     if (response.candidates && response.candidates.length > 0) {
       if (response.candidates.length > 1) {
