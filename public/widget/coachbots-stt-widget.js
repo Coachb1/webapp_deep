@@ -5114,14 +5114,10 @@ loadExternalModule().then(() => {
       }
     }
     
-    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?key=AIzaSyBfhB_y-hjwnqpVfVuC8ctvKy4gyiTesKo", {
+    fetch("/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
-        "contents": [{
-          "parts":[{
-            "text": userInputMessage
-          }]
-        }]
+          prompt: userInputMessage
       }),
     }).then(async (response) => {
       const reader = response.body.getReader();
@@ -5197,16 +5193,18 @@ loadExternalModule().then(() => {
           return Promise.resolve();
         }
 
-        const decodedText = decoder.decode(value, { stream: true });
+        const decodedText = decoder.decode(value);
+        messageText.innerHTML += decodedText.replace(/\*/g, '')
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
 
-        if(decodedText.length > 0 && decodedText !== "]"){
-          // console.log(ensureProperEnding(decodedText))
-          const data = JSON.parse(ensureProperEnding(decodedText));
-          console.log(data.candidates[0].content.parts[0].text)
-          messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
+        // if(decodedText.length > 0 && decodedText !== "]"){
+        //   // console.log(ensureProperEnding(decodedText))
+        //   const data = JSON.parse(ensureProperEnding(decodedText));
+        //   console.log(data.candidates[0].content.parts[0].text)
+        //   messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
 
-          shadowRoot.getElementById("messages").scrollBy(0, 500);
-        }
+        //   shadowRoot.getElementById("messages").scrollBy(0, 500);
+        // }
       };
     })
     .catch((error) => {
