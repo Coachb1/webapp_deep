@@ -4963,6 +4963,7 @@ loadExternalModule().then(() => {
     conversationId,
     latestMessage
   ) => {
+    console.log('anthropic', userInputMessage)
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -5883,6 +5884,7 @@ loadExternalModule().then(() => {
                   latestMessage
                 );
               } else if (botId === 'avatar_bot-c6bc8-lyfe-haiku'){
+
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
