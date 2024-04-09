@@ -742,8 +742,7 @@ const getUserBotConversation = async (participant_id) => {
     const botConv = await response.json();
     console.log(
       "PRevious conversations",
-      botConv,
-      botConv[0]["results"].length
+      botConv
     );
     let botConversations;
     if (botConv.length > 0) {
