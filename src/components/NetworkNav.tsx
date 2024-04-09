@@ -68,6 +68,7 @@ const NetworkNav = ({ user }: any) => {
         pathname !== "/library" &&
         pathname !== "/skill-bots" &&
         pathname !== "/guides" &&
+        pathname !== "/create-scenario" &&
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
@@ -102,7 +103,7 @@ const NetworkNav = ({ user }: any) => {
             <Link href={"/content-library"}>Explore</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Simulation") && (
+        {!restrictedPages?.includes("Library") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -115,10 +116,10 @@ const NetworkNav = ({ user }: any) => {
             // }}
             asChild
           >
-            <Link href={"/library"}>Simulation</Link>
+            <Link href={"/library"}>Library</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Guides") && (
+        {/* {!restrictedPages?.includes("Guides") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -133,8 +134,8 @@ const NetworkNav = ({ user }: any) => {
           >
             <Link href={"/guides"}>Guides</Link>
           </Button>
-        )}
-        {!restrictedPages?.includes("Quick Learn") && (
+        )} */}
+        {!restrictedPages?.includes("Creator Studio") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -148,15 +149,15 @@ const NetworkNav = ({ user }: any) => {
             asChild
           >
             <Link href={"/create-scenario"}>
-              Simulation creator{" "}
-              <span>
+              Creator Studio{" "}
+              {/* <span>
                 <Badge
                   variant={"default"}
                   className="bg-cyan-400 w-fit text-xs ml-2  hover:bg-cyan-400 text-white "
                 >
                   Experimental
                 </Badge>
-              </span>
+              </span> */}
             </Link>
           </Button>
         )}
@@ -202,7 +203,7 @@ const NetworkNav = ({ user }: any) => {
                 </Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Simulation") && (
+            {!restrictedPages?.includes("Library") && (
               <DropdownMenuItem
                 className={`${
                   pathname.includes("/library") ? "bg-gray-200" : null
@@ -216,11 +217,11 @@ const NetworkNav = ({ user }: any) => {
                   // }}
                 >
                   {" "}
-                  Simulation
+                  Library
                 </Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Guides") && (
+            {/* {!restrictedPages?.includes("Guides") && (
               <DropdownMenuItem
                 className={`${
                   pathname.includes("/guides") ? "bg-gray-200" : null
@@ -237,8 +238,8 @@ const NetworkNav = ({ user }: any) => {
                   Guides
                 </Link>
               </DropdownMenuItem>
-            )}
-            {!restrictedPages?.includes("Quick Learn") && (
+            )} */}
+            {!restrictedPages?.includes("Creator Studio") && (
               <DropdownMenuItem
                 className={`${
                   pathname.includes("/create-scenario") ? "bg-gray-200" : null
@@ -252,15 +253,15 @@ const NetworkNav = ({ user }: any) => {
                   // }}
                 >
                   {" "}
-                  Simulation creator{" "}
-                  <span>
+                  Creator Studio{" "}
+                  {/* <span>
                     <Badge
                       variant={"default"}
                       className="bg-cyan-400 w-fit text-[10px] p-[2px] ml-1  hover:bg-cyan-400 text-white "
                     >
                       Experimental
                     </Badge>
-                  </span>
+                  </span> */}
                 </Link>
               </DropdownMenuItem>
             )}

@@ -2,6 +2,7 @@
 
 import CopyToClipboard from "@/components/CopyToClipboard";
 import CreateYourOwn from "@/components/CreateYourOwn";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import NetworkNav from "@/components/NetworkNav";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Widgets from "@/components/Widgets";
@@ -9,13 +10,31 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { TabsList } from "@radix-ui/react-tabs";
-import { Info, Link2, Loader, Search } from "lucide-react";
+import { ExternalLinkIcon, Info, Link2, Loader, Search } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
-const CreateOwn = ({ user }: any) => {
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+const CreateOwn = ({
+  user,
+  knowledgeBots,
+}: {
+  user: KindeUser | null;
+  knowledgeBots: {
+    bot_id: string;
+    bot_name: string;
+    description: string;
+    bot_type: string;
+    scenario_case: string;
+  }[];
+}) => {
   const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
   const [userId, setUserId] = useState("");
@@ -626,215 +645,318 @@ const CreateOwn = ({ user }: any) => {
   };
 
   return (
-    <>
-      <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen pb-16">
-        {/* <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-          <NetworkNav user={user} />
-        </div> */}
-        <div className="flex pt-16 flex-col items-center justify-center text-center px-24 max-md:px-10 max-lg:px-10 max-sm:px-8">
-          <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-            <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-              COACH
-            </span>
-            BOTS
-          </h1>
-
-          <div className="w-full">
-            <h1 className="text-2xl font-semibold text-gray-600">
-              Summary and Simulation
-            </h1>
-
-            <div className="w-full flex flex-col items-center justify-center my-10">
-              <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
-                <CreateYourOwn user={user} />
-              </div>
-            </div>
-            <div className="h-[2px] bg-gray-400 w-full my-20" />
-            <form
-              onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                searchContextHandler(e);
-              }}
-              className="flex flex-col justify-center items-center mt-3"
+    <div>
+      <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
+        <div>
+          <div>
+            <div
+              id="category-navbar"
+              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0 bg-white z-[10]  w-full"
             >
-              <div className="w-[80%]  max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
-                <Tabs
-                  className="w-fit self-start"
-                  value={searchMode}
-                  onValueChange={(val) => {
-                    setSearchMode(val);
-                    setContextPrompt("Please enter the context and search!");
-                    setMessageShown(false);
-                  }}
-                >
-                  <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
-                    {/* <TabsTrigger
-                      disabled={glGenerateLoading}
-                      className="text-xs p-1 m-1"
-                      value="google"
-                    >
-                      HBR
-                    </TabsTrigger> */}
-                    <TabsTrigger
-                      disabled={glGenerateLoading}
-                      className="text-xs p-1 m-1"
-                      value="youtube"
-                    >
-                      TEsD | TEDx
-                    </TabsTrigger>
-                    <TabsTrigger
-                      disabled={glGenerateLoading}
-                      className="text-xs p-1 m-1"
-                      value="curated-learning"
-                    >
-                      Open Learning
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+              <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
+                <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
+                  {" "}
+                  <span>Creator Studio</span>
+                </p>
               </div>
-              <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-sm:w-full mt-1">
-                <input
-                  placeholder="Please enter the context to create the scenario"
-                  className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1 "
-                  type="text"
-                  ref={inputRef}
-                  value={searchInputText}
-                  onChange={(e) => {
-                    setSearchInputText(inputRef.current?.value);
-                  }}
-                />
-                <Button
-                  type="submit"
-                  disabled={searchInputText?.length === 0 || createLoading}
-                  className="h-8"
-                >
-                  {createLoading ? (
-                    <>
-                      {" "}
-                      <span className="font-semibold max-sm:hidden">
-                        Searching
-                      </span>
-                      <Loader
-                        className="h-3 w-3 ml-1.5 max-sm:ml-0 inline animate-spin"
-                        strokeWidth={4}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-semibold max-sm:hidden">
-                        Search
-                      </span>
-                      <Search
-                        className="h-3 w-3 ml-1.5 max-sm:ml-0 inline"
-                        strokeWidth={4}
-                      />
-                    </>
-                  )}
-                </Button>
+              {/* <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
+                <span>
+                  {" "}
+                  Simulations and roleplays replicate real-world situations and
+                  interactions, evaluating our aptitude for success in the
+                  workplace. By mimicking scenarios we may encounter, they
+                  assess our interpersonal skills and provide detailed feedback
+                  on our performance and potential areas for improvement.
+                </span>
+              </div> */}
+              <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
+                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                  <Button
+                    asChild
+                    variant={"outline"}
+                    className="h-fit p-1 px-2 w-fit"
+                  >
+                    <Link
+                      // onClick={() => {
+                      //   router.push("/intake/?type=knowledge-bot");
+                      // }}
+                      href={"/intake/?type=knowledge-bot"}
+                      className="flex flex-row items-center justify-center"
+                    >
+                      Create your Guide
+                    </Link>
+                  </Button>
+                </div>
+                <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
+                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                  <Button
+                    onClick={() => {
+                      document
+                        .getElementById("learning-ideas")
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                    }}
+                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                  >
+                    Learning Ideas
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      document
+                        .getElementById("simulation-creator")
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                    }}
+                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                  >
+                    Simulation Creator
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      document
+                        .getElementById("knowledge-bots")
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                        });
+                    }}
+                    className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                  >
+                    Knowledge Bots
+                  </Button>
+                </div>
               </div>
-            </form>
-          </div>
 
-          <div className="w-[80%] max-sm:w-full flex flex-col gap-2 mt-4">
-            {searchMode === "google" && (
-              <>
-                {googleSearchResults.length > 0 ? (
+              <hr className=" h-[3px] bg-gray-400 w-full" />
+              {/* <div className="bg-white h-[10px] w-full" /> */}
+            </div>
+            <div
+              id="learning-ideas"
+              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+            ></div>
+            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+              <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                <div
+                  id="learning-ideas"
+                  className="flex flex-col max-sm:flex-col w-full mx-auto "
+                >
                   <>
-                    {googleSearchResults.map((result) => (
-                      <GoogleResultComponent
-                        link={result.link}
-                        title={result.title}
-                        decsription={result.decsription}
-                      />
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                      <p>{contextPrompt}</p>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-            {searchMode === "youtube" && (
-              <>
-                {createLoading ? (
-                  <>
-                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                      <div className="flex justify-center items-center">
-                        {" "}
-                        <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
-                        <p>loading</p>
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                        Learning Ideas
+                      </h1>
+                      <div className="w-full">
+                        <form
+                          onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                            searchContextHandler(e);
+                          }}
+                          className="flex flex-col justify-center items-center mt-3"
+                        >
+                          <div className="w-[80%]  max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
+                            <Tabs
+                              className="w-fit self-start"
+                              value={searchMode}
+                              onValueChange={(val) => {
+                                setSearchMode(val);
+                                setContextPrompt(
+                                  "Please enter the context and search!"
+                                );
+                                setMessageShown(false);
+                              }}
+                            >
+                              <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
+                                <TabsTrigger
+                                  disabled={glGenerateLoading}
+                                  className="text-xs p-1 m-1"
+                                  value="google"
+                                >
+                                  HBR
+                                </TabsTrigger>
+                                <TabsTrigger
+                                  disabled={glGenerateLoading}
+                                  className="text-xs p-1 m-1"
+                                  value="youtube"
+                                >
+                                  TED | TEDx
+                                </TabsTrigger>
+                              </TabsList>
+                            </Tabs>
+                          </div>
+                          <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-sm:w-full mt-1">
+                            <input
+                              placeholder="Please enter the context to create the scenario"
+                              className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1 "
+                              type="text"
+                              ref={inputRef}
+                              value={searchInputText}
+                              onChange={(e) => {
+                                setSearchInputText(inputRef.current?.value);
+                              }}
+                            />
+                            <Button
+                              type="submit"
+                              disabled={
+                                searchInputText?.length === 0 || createLoading
+                              }
+                              className="h-8"
+                            >
+                              {createLoading ? (
+                                <>
+                                  {" "}
+                                  <span className="font-semibold max-sm:hidden">
+                                    Searching
+                                  </span>
+                                  <Loader
+                                    className="h-3 w-3 ml-1.5 max-sm:ml-0 inline animate-spin"
+                                    strokeWidth={4}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <span className="font-semibold max-sm:hidden">
+                                    Search
+                                  </span>
+                                  <Search
+                                    className="h-3 w-3 ml-1.5 max-sm:ml-0 inline"
+                                    strokeWidth={4}
+                                  />
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </form>
                       </div>
                     </div>
                   </>
-                ) : (
-                  <>
-                    {youtubeSearchResults.length > 0 ? (
-                      <>
-                        {youtubeSearchResults.map((result, i) => (
-                          <YoutubeResultComponent
-                            key={i}
-                            video_link={result.video_link}
-                            video_id={result.video_id}
-                            video_title={result.video_title}
-                            video_description={result.video_description}
-                          />
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                          <p>{contextPrompt}</p>
-                        </div>{" "}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-            {searchMode === "curated-learning" && (
-              <>
-                {createLoading ? (
-                  <>
-                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                      <div className="flex justify-center items-center">
-                        {" "}
-                        <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
-                        <p>loading</p>
+                </div>
+              </MaxWidthWrapper>
+            </div>
+            <div
+              id="simulation-creator"
+              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+            ></div>
+            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+              <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                <div
+                  id="simulation-creator"
+                  className="flex flex-col max-sm:flex-col w-full mx-auto "
+                >
+                  <div>
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                        Simulation creator
+                      </h1>
+                      <div className="w-full">
+                        <div className="w-full flex flex-col items-center justify-center mb-10">
+                          <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                            <CreateYourOwn user={user} />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    {curatedLearningSearchResults.length > 0 ? (
-                      <>
-                        {curatedLearningSearchResults.map((result, i) => (
-                          <YoutubeResultComponent
-                            key={i}
-                            video_link={result.video_link}
-                            video_id={result.video_id}
-                            video_title={result.video_title}
-                            video_description={result.video_description}
-                          />
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                          <p>{contextPrompt}</p>
-                        </div>{" "}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
+                  </div>
+                </div>
+              </MaxWidthWrapper>
+            </div>
+            <div
+              id="knowledge-bots"
+              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+            ></div>
+            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+              <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                <div
+                  id="knowledge-bots"
+                  className="flex flex-col max-sm:flex-col w-full mx-auto "
+                >
+                  <div>
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                        Knowledge Bots
+                      </h1>
+                      <div className="w-full">
+                        <div className="max-sm:pb-10">
+                          <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
+                            <div className="flex flex-col max-sm:flex-col w-full mx-auto">
+                              <div className="w-full flex flex-col items-center justify-center">
+                                <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                                  <>
+                                    <div className="w-full">
+                                      <div className="relative isolate mx-auto">
+                                        <div>
+                                          <div className="mx-auto w-full max-sm:w-[100%] z-50">
+                                            <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                              <Accordion
+                                                type="single"
+                                                collapsible
+                                                className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                              >
+                                                {knowledgeBots.length === 0 ? (
+                                                  <p className="my-4 text-sm ">
+                                                    There are no community
+                                                    created guides yet!
+                                                  </p>
+                                                ) : (
+                                                  knowledgeBots.map(
+                                                    (bot, i) => (
+                                                      <AccordionItem
+                                                        key={i}
+                                                        value={`${i}-knowledge-bot`}
+                                                        className={`px-4`}
+                                                      >
+                                                        <AccordionTrigger className="text-left max-sm:text-xs">
+                                                          <div>
+                                                            {bot.bot_name}
+                                                          </div>
+                                                        </AccordionTrigger>
+                                                        <AccordionContent className="max-sm:text-xs">
+                                                          <p className="text-left">
+                                                            {bot.description}
+                                                          </p>
+                                                          <div className="flex justify-end mt-2">
+                                                            <Link
+                                                              target="_blank"
+                                                              href={`/knowledge-bot/${bot.bot_id}`}
+                                                            >
+                                                              <Button
+                                                                variant={
+                                                                  "secondary"
+                                                                }
+                                                                className="p-2 h-8 border border-gray-200"
+                                                              >
+                                                                Visit bot{" "}
+                                                                <ExternalLinkIcon className="h-4 w-4 ml-2" />
+                                                              </Button>
+                                                            </Link>
+                                                          </div>
+                                                        </AccordionContent>
+                                                      </AccordionItem>
+                                                    )
+                                                  )
+                                                )}
+                                              </Accordion>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                </div>
+                              </div>
+                            </div>
+                          </MaxWidthWrapper>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </MaxWidthWrapper>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
       <Widgets />
-    </>
+    </div>
   );
 };
 
