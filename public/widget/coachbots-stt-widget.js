@@ -831,15 +831,15 @@ async function populateBotConversation(participant_id) {
       }
       if (participant_message_text && participant_message_text !== "") {
         if (participant_message_text && participant_message_text !== "") {
-          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
+          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", "").replace(" Always respond in less than 50 tokens. Note: Never mention token count.", ""));
         }
       } else if (participant_message_text && participant_message_text !== "") {
         if (participant_message_text && participant_message_text !== "") {
-          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
+          appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", "").replace(" Always respond in less than 50 tokens. Note: Never mention token count.", ""));
         }
       } else if (participant_message_text && participant_message_text !== "") {
         // If there's no coach message, only append participant message
-        appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", ""));
+        appendMessageForUser2(participant_message_text.replace(" I am not sure if you are getting my point, let me know and I can explain further.", "").replace(" Always respond in less than 50 tokens. Note: Never mention token count.", ""));
       }
      
       // if (coach_message_text && coach_message_text !== "") {
@@ -5851,9 +5851,11 @@ loadExternalModule().then(() => {
             }
             if (isBotInitialized == true) {
               //append addnl statement if user-message has <= 10 words
-              if(latestMessage.split(" ").length <= 10){
-                latestMessage += " I am not sure if you are getting my point, let me know and I can explain further."
-              } 
+              if(botType === "user_bot"){
+                if(latestMessage.split(" ").length <= 10){
+                  latestMessage += " Always respond in less than 50 tokens. Note: Never mention token count."
+                } 
+              }
 
               console.log("LATEST MESSAGE ===> ", latestMessage)
               const response = await fetch(
@@ -7484,12 +7486,14 @@ const openChatContainer2 = () => {
   document.body.style.overflowY = "hidden";
 
   //end session due to inactivity :- row 708
-  setTimeout(() => {
-    if(isBotInitialized === true){
-      handleEndConversation(true)
-      isBotInitialized = false
-    }
-  }, 1800000);
+  if(botType !== "user_bot"){
+    setTimeout(() => {
+      if(isBotInitialized === true){
+        handleEndConversation(true)
+        isBotInitialized = false
+      }
+    }, 1800000);
+  }
 
   user2 = window.user;
   console.log(user2);
