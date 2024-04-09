@@ -5891,7 +5891,7 @@ loadExternalModule().then(() => {
                   conversation_id2,
                   latestMessage
                 );
-              } else if (['avatar_bot-c6bc8-lyfe-haiku','knowledge-ae898-marketerbot-haiku'].includes(botId)){
+              } else if (['avatar_bot-c6bc8-lyfe-haiku','knowledge-ae898-marketerbot-haiku'].includes(botId) || botType === 'user_bot'){
                 console.log('anthropic#####################')
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
