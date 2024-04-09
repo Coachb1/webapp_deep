@@ -2355,9 +2355,15 @@ function handleEndConversation(isInActive) {
     appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
   }
 
+  isSessionActiveStt = false;
+  isBotInitialized = false;
+  optedBeginSession = false;
+
   const begginSessionButton = document.getElementById("begin-session-button");
+  if (begginSessionButton){
   begginSessionButton.disabled = false;
   begginSessionButton.style.cursor = "pointer";
+  }
 
   const cannedMessageOne = document.getElementById("canned-btn-1")
   cannedMessageOne.disabled = true
@@ -2375,8 +2381,7 @@ function handleEndConversation(isInActive) {
         "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
       );
 
-  isSessionActiveStt = false;
-  optedBeginSession = false;
+
 
   if (endSessionButton && !endSessionButton.disabled) {
     endSessionButton.removeAttribute("onmouseover");
@@ -2482,9 +2487,9 @@ function handleEndConversation(isInActive) {
     formFieldsstt = ["email"];
     appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
   } else {
-    if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
+    // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
       sendBotTranscript2();
-    }
+    // }
   }
 }
 
@@ -5877,6 +5882,7 @@ loadExternalModule().then(() => {
               conversation_id2 = responseData["uid"];
               //streaming responses
               if (['avatar_bot-d84e4-lyfe-gemini', 'knowledge-ae898-marketerbot'].includes(botId)){
+                console.log('gemini#####################')
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
@@ -5884,7 +5890,7 @@ loadExternalModule().then(() => {
                   latestMessage
                 );
               } else if (['avatar_bot-c6bc8-lyfe-haiku','knowledge-ae898-marketerbot-haiku'].includes(botId)){
-
+                console.log('anthropic#####################')
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
