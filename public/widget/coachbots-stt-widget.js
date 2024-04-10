@@ -5167,6 +5167,17 @@ loadExternalModule().then(() => {
             }
           });
 
+          messageText.innerText += '  ';
+
+          console.log("Message Text",messageText)
+
+          // messageText.innerHTML length is 0 or empty string replace with fallback string
+          //log conditions
+          console.log("condition ====> ", messageText.innerText.length === 0 , messageText.innerText === "" , messageText.innerText.replace(/\s/g, "").length === 0)
+          if(messageText.innerText.length === 0 | messageText.innerText === "" | messageText.innerText.replace(/\s/g, "").length === 0){
+            messageText.innerHTML = "..... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+          }
+
           // add user question and bot answer to the session
           sessionQnAdata.push({
             user: latestMessage,
@@ -5217,6 +5228,8 @@ loadExternalModule().then(() => {
         const decodedText = decoder.decode(value);
         console.log(decodedText)
         messageText.innerHTML += decodedText.replace(/\*/g, '')
+        // innerHtml length
+        console.log("innerHtml length : ", messageText.innerText.length);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
 
         // if(decodedText.length > 0 && decodedText !== "]"){
