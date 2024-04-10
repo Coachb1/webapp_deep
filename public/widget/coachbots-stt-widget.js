@@ -5167,6 +5167,7 @@ loadExternalModule().then(() => {
             }
           });
 
+          // just for testing. remove it after testing
           messageText.innerText += '  ';
 
           console.log("Message Text",messageText)
