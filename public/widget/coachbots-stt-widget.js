@@ -821,11 +821,11 @@ async function populateBotConversation(participant_id) {
     }
 
     const results = botConversations["results"];
-    results.forEach((element) => {
+    results.forEach((element,index) => {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
       
-      if (coach_message_text && coach_message_text !== "") {
+      if (coach_message_text && coach_message_text !== "" && index !== 0) {
         appendMessage2(coach_message_text);
       }
       if (participant_message_text && participant_message_text !== "") {
@@ -1023,32 +1023,32 @@ const getBotDetails2 = async (botId) => {
 
     // faqButtonsGenerator("recommendations", "Recommendations");
 
-    if (
-      botType === "avatar_bot" ||
-      botType === "helper_bot" ||
-      botType === "coachbots"
-    ) {
-      if(['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) ){
-        intakebuttonText = 'Orientation'
-      }
-      // faqButtonsGenerator("intake", "Intake");
-      intakeButton = document.createElement("button");
-      intakeButton.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #dc2626; color : white;`
-      );
-      intakeButton.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f87171'"
-      );
-      intakeButton.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = '#dc2626'"
-      );
-      intakeButton.setAttribute("onclick", `handleFaqButtonClick('intake')`);
-      intakeButton.innerText = intakebuttonText;
-      buttonsWrapper.appendChild(intakeButton);
-    }
+    // if (
+    //   botType === "avatar_bot" ||
+    //   botType === "helper_bot" ||
+    //   botType === "coachbots"
+    // ) {
+    //   if(['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) ){
+    //     intakebuttonText = 'Orientation'
+    //   }
+    //   // faqButtonsGenerator("intake", "Intake");
+    //   intakeButton = document.createElement("button");
+    //   intakeButton.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #dc2626; color : white;`
+    //   );
+    //   intakeButton.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f87171'"
+    //   );
+    //   intakeButton.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = '#dc2626'"
+    //   );
+    //   intakeButton.setAttribute("onclick", `handleFaqButtonClick('intake')`);
+    //   intakeButton.innerText = intakebuttonText;
+    //   buttonsWrapper.appendChild(intakeButton);
+    // }
 
     if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
       // faqButtonsGenerator("fitness_analysis", "Quick Match");
@@ -1986,64 +1986,63 @@ async function handleFaqButtonClick(question) {
 
       // *** checking profile_type logic ends here==================================================
 
-      let intakeSummery;
-      if (["avatar_bot", "helper_bot", "coachbots"].includes(botType)) {
-        console.log("===> yes fetching intake summary");
-        const queryparam = new URLSearchParams({
-          method: "get",
-          bot_id: botId,
-          is_positive: "False",
-          qna_type: "initial_qna",
-          user_id: userId2,
-        });
-        const resp = await fetch(
-          `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const respJson = await resp.json();
-        console.log(" response_initial_qna : ", respJson);
-        intakeSummery = respJson.intake_summary;
+      // let intakeSummery;
+      // if (["avatar_bot", "helper_bot", "coachbots"].includes(botType)) {
+      //   console.log("===> yes fetching intake summary");
+      //   const queryparam = new URLSearchParams({
+      //     method: "get",
+      //     bot_id: botId,
+      //     is_positive: "False",
+      //     qna_type: "initial_qna",
+      //     user_id: userId2,
+      //   });
+      //   const resp = await fetch(
+      //     `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+      //     {
+      //       method: "GET",
+      //       headers: {
+      //         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //     }
+      //   );
+      //   const respJson = await resp.json();
+      //   console.log(" response_initial_qna : ", respJson);
+      //   intakeSummery = respJson.intake_summary;
 
-        // if intake is done in current session then add it to sessionqnadata
-        if ( isIntakeCompleted && intakeSummery){
-          // add to start of sessionqnadata
-          sessionQnAdata.unshift({
-            user: "last pre-check",
-            coach: intakeSummery,
-          });
-        }
+      //   // if intake is done in current session then add it to sessionqnadata
+      //   if ( isIntakeCompleted && intakeSummery){
+      //     // add to start of sessionqnadata
+      //     sessionQnAdata.unshift({
+      //       user: "last pre-check",
+      //       coach: intakeSummery,
+      //     });
+      //   }
 
-        IntakeUid = respJson.intake_id;
-        if (!intakeSummery) {
-          // const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
-          // <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
-          // <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
-          // appendMessage2(begginSessionMessage);
-          appendMessage2(addStickerToMessage("Begin Session",`You can only begin session after ${intakebuttonText} is complete`,'#22c55e'));
-          optedBeginSession = false;
-          if (botType != 'avatar_bot'){
-            const begginSessionButton = document.getElementById("begin-session-button");
-            begginSessionButton.disabled = false;
-            begginSessionButton.style.cursor = "pointer";
-          }
-          return;
-        }
-      }
+      //   IntakeUid = respJson.intake_id;
+      //   if (!intakeSummery) {
+      //     // const begginSessionMessage = `<div style="display: flex; flex-direction: column; margin: 0; padding: 0;">
+      //     // <div style="font-size : 12px; font-weight: bold; background-color : #22c55e;color: white; padding: 4px; border-radius:4px; width: fit-content;">Begin Session</div>
+      //     // <div style="margin-top : 8px; padding-top: 0px;">You can only begin session after intake is complete</div>`;
+      //     // appendMessage2(begginSessionMessage);
+      //     appendMessage2(addStickerToMessage("Begin Session",`You can only begin session after ${intakebuttonText} is complete`,'#22c55e'));
+      //     optedBeginSession = false;
+      //     if (botType != 'avatar_bot'){
+      //       const begginSessionButton = document.getElementById("begin-session-button");
+      //       begginSessionButton.disabled = false;
+      //       begginSessionButton.style.cursor = "pointer";
+      //     }
+      //     return;
+      //   }
+      // }
 
-      console.log(
-        "===> isIntakeSummaryDisplayed",
-        isIntakeSummaryDisplayed,
-        botType,
-        botType === "avatar_bot"
-      );
+      // console.log(
+      //   "===> isIntakeSummaryDisplayed",
+      //   isIntakeSummaryDisplayed,
+      //   botType,
+      //   botType === "avatar_bot"
+      // );
       if (
-        isIntakeSummaryDisplayed == false &&
         ["avatar_bot", "helper_bot", "coachbots"].includes(botType) &&
         !['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)
       ) {
@@ -2052,12 +2051,19 @@ async function handleFaqButtonClick(question) {
         // <div style="margin-top : 8px; padding-top: 0px;">Welcome to your session. Here is my understanding of the situation: \n ${intakeSummery} \n Let me know if I missed anything?</div>`;
         // appendMessage2(begginSessionMessage);
 
-        appendMessage2(addStickerToMessage('Begin Session',`
-        <p>
-        Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
-        <p>`,'#22c55e'))
+        // appendMessage2(addStickerToMessage('Begin Session',`
+        // <p>
+        // Welcome to your session. Here is my understanding of the situation: <br> ${intakeSummery} ,<br> Let me know if I missed anything? <br><br> <b>Please update your ${intakebuttonText} questions if you believe this is not the right session context.</b>
+        // <p>`,'#22c55e'))
+        appendMessage2(
+          addStickerToMessage(
+            'Begin Session',
+            `Hey welcome to the session. I know its a same old boring message you see every time but I if you engage meaningfully - we can deep dive on any issue together. Please let me know in details what you want to accoplish with the session and what are your goals?`,
+            '#22c55e'
+          )
+        )
 
-        isIntakeSummaryDisplayed = true;
+        // isIntakeSummaryDisplayed = true;
         // return;
       }
 
@@ -2094,6 +2100,11 @@ async function handleFaqButtonClick(question) {
       //   isSessionActiveStt = true;
       // }
 
+      console.log('checking before creating session:',
+      isBotInitialized,
+      isSessionActiveStt,
+      botType
+      )
       if (
           previousBotConversationId != "" &&
           botType !== 'avatar_bot'
@@ -5788,7 +5799,6 @@ loadExternalModule().then(() => {
                       test_id: botId,
                       is_signature_bot: true,
                       is_idp_discussion_opted: isIDPDiscussionOpted,
-                      intake_id: IntakeUid,
                     }),
                   }
                 );
