@@ -1051,7 +1051,7 @@ const getBotDetails2 = async (botId) => {
     // }
 
     if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
-      // faqButtonsGenerator("fitness_analysis", "Quick Match");
+      // faqButtonsGenerator("fitness_analysis", "Match Score");
       const button = document.createElement("button");
       button.setAttribute(
         "style",
@@ -1069,7 +1069,7 @@ const getBotDetails2 = async (botId) => {
         "onclick",
         `handleFaqButtonClick('fitness_analysis')`
       );
-      button.innerText = "Quick Match";
+      button.innerText = "Match Score";
       buttonsWrapper.appendChild(button);
     }
 
@@ -1511,7 +1511,7 @@ async function handleprecheck(choice){
       appendMessage2(
         addStickerToMessage(
           "Note",
-          "Your quick match score is low or not calculated. Please proceed with caution",
+          "Your Match Score is low or not calculated. Please proceed with caution",
           "#22c55e"
         )
       );
@@ -1665,7 +1665,7 @@ async function handlePreviousConversation(choice) {
       appendMessage2(
         addStickerToMessage(
           "Note",
-          "Your quick match score is low or not calculated. Please proceed with caution",
+          "Your Match Score is low or not calculated. Please proceed with caution",
           "#22c55e"
         )
       );
@@ -1744,11 +1744,13 @@ async function handleFaqButtonClick(question) {
       "profile_type",
       globalBotDetails.data.profile_details.profile_type
     );
-    if (globalBotDetails.data.profile_details.profile_type === "icons_by_ai") {
+
+    
+    if (['icons_by_ai','coach','mentor'].includes(globalBotDetails.data.profile_details.profile_type)) {
       appendMessage2(
         addStickerToMessage(
-          "Quick Match",
-          "These profiles are not enabled for any offline interaction and matching.",
+          "Match Score",
+          "In certain cases, the 'Match Scores' caluclation may fail. For Icons by AI / external coaches and mentors no Match Scores available. For internal coaches and mentors, we can calculate it based on the options selected. Scores are not generated/valid, in case you are interacting with the Coachbot as a coach/mentor.",
           "#fb923c"
         )
       );
@@ -1757,7 +1759,7 @@ async function handleFaqButtonClick(question) {
     fitmentAnalysisInProgress = true;
     appendMessage2(
       `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
-        "Quick Match",
+        "Match Score",
         "Please Wait...",
         "#fb923c"
       )}</div>`
@@ -1798,7 +1800,7 @@ async function handleFaqButtonClick(question) {
       // appendMessage2()
       gShadowRoot2.getElementById(
         `fitment-container-${fitmentContainerId}`
-      ).innerHTML = addStickerToMessage("Quick Match", que_msg,"#fb923c");
+      ).innerHTML = addStickerToMessage("Match Score", que_msg,"#fb923c");
       fitmentAnalysisInProgress = false;
       return;
     }
@@ -1855,7 +1857,7 @@ async function handleFaqButtonClick(question) {
 
     msg = `
     <div style="display: flex; flex-direction: column;">
-      <div style="font-size : 12px; font-weight: bold; background-color : #fb923c;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+      <div style="font-size : 12px; font-weight: bold; background-color : #fb923c;color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Match Score"}</div>
       <div id="fitment-container-${fitmentContainerId}" style="margin-top : 8px; padding-top: 0px;">${formRadios}</div>
     </div>
   `;
@@ -1894,7 +1896,7 @@ async function handleFaqButtonClick(question) {
 
               appendMessage2(`
                 <div style="display: flex; flex-direction: column;">
-                  <div style="font-size : 12px; font-weight: bold; background-color : #f97316; color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Quick Match"}</div>
+                  <div style="font-size : 12px; font-weight: bold; background-color : #f97316; color: white; padding: 4px; border-radius:4px; width: fit-content;">${"Match Score"}</div>
                   <div style="margin-top : 8px; padding-top: 0px;">${formRadio}</div>
                 </div>
               `) */
@@ -1969,19 +1971,17 @@ async function handleFaqButtonClick(question) {
 
       // *** checking profile type: ==============================================================
 
-      await getUserProfile(userId2);
+      // await getUserProfile(userId2);
 
-      if (UserProfileInfo) {
-        console.log("======profileType: ", UserProfileInfo.profile_type);
-        if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
-          appendMessage2(
-            addStickerToMessage(
-              "Begin Session",
-              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
-              '#22c55e'
-            )
-          );
-        }
+      console.log("======profileType: ", globalBotDetails.data.profile_details.profile_type);
+      if (["coach", "mentor"].includes(globalBotDetails.data.profile_details.profile_type)) {
+        appendMessage2(
+          addStickerToMessage(
+            "Begin Session",
+            `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
+            '#22c55e'
+          )
+        );
       }
 
       // *** checking profile_type logic ends here==================================================
@@ -2127,7 +2127,7 @@ async function handleFaqButtonClick(question) {
       //     appendMessage2(
       //       addStickerToMessage(
       //         "Note",
-      //         "Your quick match score is low or not calculated. Please proceed with caution",
+      //         "Your Match Score is low or not calculated. Please proceed with caution",
       //         '#22c55e'
       //       )
       //     );
