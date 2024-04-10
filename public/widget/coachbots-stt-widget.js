@@ -1745,8 +1745,9 @@ async function handleFaqButtonClick(question) {
       globalBotDetails.data.profile_details.profile_type
     );
 
-    
-    if (['icons_by_ai','coach','mentor'].includes(globalBotDetails.data.profile_details.profile_type)) {
+    await getUserProfile(userId2);
+
+    if (['icons_by_ai'].includes(globalBotDetails.data.profile_details.profile_type) || ["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
       appendMessage2(
         addStickerToMessage(
           "Match Score",
@@ -1971,17 +1972,18 @@ async function handleFaqButtonClick(question) {
 
       // *** checking profile type: ==============================================================
 
-      // await getUserProfile(userId2);
-
-      console.log("======profileType: ", globalBotDetails.data.profile_details.profile_type);
-      if (["coach", "mentor"].includes(globalBotDetails.data.profile_details.profile_type)) {
-        appendMessage2(
-          addStickerToMessage(
-            "Begin Session",
-            `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
-            '#22c55e'
-          )
-        );
+      await getUserProfile(userId2);
+      if (UserProfileInfo) {
+        console.log("======profileType: ", UserProfileInfo.profile_type);
+        if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
+          appendMessage2(
+            addStickerToMessage(
+              "Begin Session",
+              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
+              '#22c55e'
+            )
+          );
+        }
       }
 
       // *** checking profile_type logic ends here==================================================
