@@ -41,7 +41,6 @@ const getknowledgeBotss = async (userEmail: string) => {
     }[] = [];
     getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
       const botJson = item.signature_bot;
-      console.log(botJson);
       const description = JSON.parse(botJson.faqs)[
         "What is the primary purpose of the bot?"
       ];

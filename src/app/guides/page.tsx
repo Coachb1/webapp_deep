@@ -92,7 +92,7 @@ const Page = async () => {
   );
 
   const knowledgeBots = await getknowledgeBotss(user?.email!);
-  console.log(knowledgeBots);
+  // console.log(knowledgeBots);
 
   return (
     <div>
