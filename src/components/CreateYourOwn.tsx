@@ -63,7 +63,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       setTimeout(() => {
         retryTimeout =  setTimeout(() => {
           setLoadingText("Retrying again due to server overload.")
-        }, 3000)
+        }, 60000)
       }, 200)
 
 
@@ -78,7 +78,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             );
             setIsloading(false);
           // }
-        }, 20000);
+        }, 180000);
       }, 200);
 
       fetch(url, {
