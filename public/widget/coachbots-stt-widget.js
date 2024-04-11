@@ -5897,15 +5897,7 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
               //streaming responses
-              if (['avatar_bot-d84e4-lyfe-gemini', 'knowledge-ae898-marketerbot'].includes(botId)){
-                console.log('gemini#####################')
-                GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage
-                );
-              } else if (['avatar_bot-c6bc8-lyfe-haiku','knowledge-ae898-marketerbot-haiku'].includes(botId) || botType === 'user_bot'){
+              if (botType === 'user_bot'){
                 console.log('anthropic#####################')
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
