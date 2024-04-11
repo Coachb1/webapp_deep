@@ -7,33 +7,37 @@ export const metadata = constructMetadata({
 });
 
 const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
-  const response = await fetch(
-    `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    }
-  );
+  if (userEmail) {
+    const response = await fetch(
+      `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
 
-  return response.json();
+    return response.json();
+  }
 };
 
 const getUserJoiningPreviledges = async (
   userEmail: string | null | undefined
 ) => {
-  const response = await fetch(
-    `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    }
-  );
+  if (userEmail) {
+    const response = await fetch(
+      `${baseURL}/accounts/user-can-join-as/?email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
 
-  return response.json();
+    return response.json();
+  }
 };
 
 const Page = async () => {
