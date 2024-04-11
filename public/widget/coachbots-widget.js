@@ -2072,6 +2072,8 @@ loadExternalModule().then(() => {
             <li>5 . Simulations and roleplays are meant to practice how real-life scenarios play out. You can check the Explore page to review the scenarios covered. Both CoachTalk and Coachscribe can be used to handle them.</li>
             <li>6 . In rare cases, there may be delays in responses and reports because of system availability issues.</li>
             <li>7 . For AI frames/avatars, the model is a point of view of the coach on a particular topic, for best results stick to the area highlighted in the coach/mentor's page.</li>
+            <li>8 . Cochbot sessions should be assumed to have no prior memory, always restate your context for the current session.</li>
+            <li>9 . For user-created knowledge bots, always ask the questions related to skill area defined, for best results.</li>
           </ul>
         </div>
         <span id="close-intructions-pane2" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -4949,8 +4951,6 @@ const openChatContainer = () => {
         const fileUrl = window.URL.createObjectURL(audioFile);
         audioFileSrc = fileUrl;
         // audioFileSrcMap[`${questionIndex}`] = fileUrl;
-        isRecordingGlobal = false;
-        console.log("glrecor", isRecordingGlobal);
       };
 
       mediaRecorder.start();
@@ -4974,6 +4974,8 @@ const openChatContainer = () => {
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
         isRecording = false;
+        isRecordingGlobal = false;
+        console.log("glrecor", isRecordingGlobal);
       }
     });
   }

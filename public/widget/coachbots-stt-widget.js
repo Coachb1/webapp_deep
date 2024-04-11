@@ -2752,6 +2752,8 @@ function LoadingMessageWithText(message){
   const shadowRoot = document.getElementById("chat-element2").shadowRoot;
    //loading message 
    const loadingElement = shadowRoot.querySelector(".loading-message-text")
+  //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
+  //  dotsFlashingElement.style.color = "#1f2937"
    loadingElement.style.display = "flex"
    loadingElement.style.flexDirection = "row"
    loadingElement.style.alignItems = "center"
@@ -4508,6 +4510,8 @@ loadExternalModule().then(() => {
             <li>5 . Simulations and roleplays are meant to practice how real-life scenarios play out. You can check the Explore page to review the scenarios covered. Both CoachTalk and Coachscribe can be used to handle them.</li>
             <li>6 . In rare cases, there may be delays in responses and reports because of system availability issues.</li>
             <li>7 . For AI frames/avatars, the model is a point of view of the coach on a particular topic, for best results stick to the area highlighted in the coach/mentor's page.</li>
+            <li>8 . Cochbot sessions should be assumed to have no prior memory, always restate your context for the current session.</li>
+            <li>9 . For user-created knowledge bots, always ask the questions related to skill area defined, for best results.</li>
           </ul>
         </div>
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -5148,24 +5152,27 @@ loadExternalModule().then(() => {
       let partialData = ""
       let existingTexts = [];
 
-      signals.onResponse({
-        html: "...",
-      });
-
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
-          console.log("Stream complete");
-          finished = true;
+            allMessages.forEach((indvMessage) => {
+              if (
+                indvMessage.innerText === "." ||
+                indvMessage.innerText === "..." || indvMessage.innerText === " "
+              ) {
+                indvMessage.remove();
+              }
+            });
+
           
-          allMessages.forEach((indvMessage) => {
-            if (
-              indvMessage.innerText === "." ||
-              indvMessage.innerText === "..."
-            ) {
-              indvMessage.remove();
-            }
-          });
+          if(messageText.innerText === ""){
+            messageText.innerText += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+          } else if(!messageText.innerText.endsWith("!") && !messageText.innerText.endsWith(".") && !messageText.innerText.endsWith("?")){
+            messageText.innerText += " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+          }
+          console.log("Stream complete");
+          console.log("STREAMED MESSAGE -> ", messageText.innerText)
+          finished = true;
 
           // add user question and bot answer to the session
           sessionQnAdata.push({
@@ -5216,7 +5223,10 @@ loadExternalModule().then(() => {
 
         const decodedText = decoder.decode(value);
         console.log(decodedText)
-        messageText.innerHTML += decodedText.replace(/\*/g, '')
+        messageText.innerHTML += decodedText
+        signals.onResponse({
+          html: ".",
+        });
         shadowRoot.getElementById("messages").scrollBy(0, 500);
 
         // if(decodedText.length > 0 && decodedText !== "]"){
@@ -5931,13 +5941,16 @@ loadExternalModule().then(() => {
                   .join(":")
                   .trim();
               }
-              if (isBotAudioResponse) {
-                const audioDiv = await TTSContainerSTT(coachResponse);
-                signals.onResponse({ html: audioDiv });
-              } else {
-                signals.onResponse({
-                  html: coachResponse,
-                });
+              if(!isBotInitialized){
+                if (isBotAudioResponse) {
+                  const audioDiv = await TTSContainerSTT(coachResponse);
+                  signals.onResponse({ html: audioDiv });
+                } else {
+                  console.log("from here?")
+                  signals.onResponse({
+                    html: coachResponse,
+                  });
+                }
               }
               setTimeout(() => {
                 if (botType === "avatar_bot") {
