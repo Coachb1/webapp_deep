@@ -224,6 +224,8 @@ let recommendationsDataStt = [
   ], // batch seven
 ];
 
+const emojis = ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','☺️','😚','😙','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐️','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','😮‍','💨','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','😶‍','🌫️','🥴','😵‍','💫','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬']
+
 // sample TEst codes
 const sampleTestCodesStt = {
   QEEG5VY: "AWS Cloud Training",
@@ -5165,10 +5167,17 @@ loadExternalModule().then(() => {
             });
 
           
-          if(messageText.innerText === ""){
-            messageText.innerText += "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
-          } else if(!messageText.innerText.endsWith("!") && !messageText.innerText.endsWith(".") && !messageText.innerText.endsWith("?")){
-            messageText.innerText += " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
+          if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+          } else if (
+            !messageText.innerText.endsWith("!") &&
+            !messageText.innerText.endsWith(".") &&
+            !messageText.innerText.endsWith("?") &&
+            !emojis.some((emoji) => messageText.innerText(emoji))
+          ) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
           }
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText)
