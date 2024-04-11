@@ -361,14 +361,16 @@ const Coach = ({ user, renderType }: any) => {
                 </Button>
               </Link>
 
-              <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Feedback center
-                </Button>
-              </Link>
+              {/* {feedbackBotId && (
+                <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    Feedback center
+                  </Button>
+                </Link>
+              )} */}
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}

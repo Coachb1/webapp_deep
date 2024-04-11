@@ -520,6 +520,7 @@ const Coaches = ({
     []
   );
   const handleUpdateCheckedValues = (newValues: string[]) => {
+    setCurrentPage(1)
     setParentCheckedValues(newValues);
     console.log(newValues);
     if (newValues.length > 0 && newValues[0].length === 0) {
@@ -1428,12 +1429,22 @@ const Coaches = ({
                               Requested
                             </Button>
                           )}
-                          {coach.status === "" && (
-                            <RequestionConnection coachId={coach.profile_id} />
-                          )}
-                          {coach.status === "available" && (
-                            <RequestionConnection coachId={coach.profile_id} />
-                          )}
+                          <>
+                            {coacheeId.length > 0 && (
+                              <>
+                                {coach.status === "" && (
+                                  <RequestionConnection
+                                    coachId={coach.profile_id}
+                                  />
+                                )}
+                                {coach.status === "available" && (
+                                  <RequestionConnection
+                                    coachId={coach.profile_id}
+                                  />
+                                )}
+                              </>
+                            )}
+                          </>
                         </>
                       )}
                       {coach.avatar_bot_url !== null &&

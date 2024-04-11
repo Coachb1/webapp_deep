@@ -766,19 +766,26 @@ const CreateOwn = ({
                               }}
                             >
                               <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
-                                <TabsTrigger
+                                {/* <TabsTrigger
                                   disabled={glGenerateLoading}
                                   className="text-xs p-1 m-1"
                                   value="google"
                                 >
                                   HBR
-                                </TabsTrigger>
+                                </TabsTrigger> */}
                                 <TabsTrigger
                                   disabled={glGenerateLoading}
                                   className="text-xs p-1 m-1"
                                   value="youtube"
                                 >
                                   TED | TEDx
+                                </TabsTrigger>
+                                <TabsTrigger
+                                  disabled={glGenerateLoading}
+                                  className="text-xs p-1 m-1"
+                                  value="curated-learning"
+                                >
+                                  Open Learning
                                 </TabsTrigger>
                               </TabsList>
                             </Tabs>
@@ -826,6 +833,109 @@ const CreateOwn = ({
                             </Button>
                           </div>
                         </form>
+                      </div>
+                      <div className="w-[80%] max-sm:w-full flex flex-col gap-2 mt-4">
+                        {/* {searchMode === "google" && (
+                          <>
+                            {googleSearchResults.length > 0 ? (
+                              <>
+                                {googleSearchResults.map((result) => (
+                                  <GoogleResultComponent
+                                    link={result.link}
+                                    title={result.title}
+                                    decsription={result.decsription}
+                                  />
+                                ))}
+                              </>
+                            ) : (
+                              <>
+                                <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                  <p>{contextPrompt}</p>
+                                </div>
+                              </>
+                            )}
+                          </>
+                        )} */}
+                        {searchMode === "youtube" && (
+                          <>
+                            {createLoading ? (
+                              <>
+                                <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                  <div className="flex justify-center items-center">
+                                    {" "}
+                                    <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
+                                    <p>loading</p>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                {youtubeSearchResults.length > 0 ? (
+                                  <>
+                                    {youtubeSearchResults.map((result, i) => (
+                                      <YoutubeResultComponent
+                                        key={i}
+                                        video_link={result.video_link}
+                                        video_id={result.video_id}
+                                        video_title={result.video_title}
+                                        video_description={
+                                          result.video_description
+                                        }
+                                      />
+                                    ))}
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                      <p>{contextPrompt}</p>
+                                    </div>{" "}
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </>
+                        )}
+                        {searchMode === "curated-learning" && (
+                          <>
+                            {createLoading ? (
+                              <>
+                                <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                  <div className="flex justify-center items-center">
+                                    {" "}
+                                    <Loader className="h-3 w-3 animate-spin mr-2" />{" "}
+                                    <p>loading</p>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                {curatedLearningSearchResults.length > 0 ? (
+                                  <>
+                                    {curatedLearningSearchResults.map(
+                                      (result, i) => (
+                                        <YoutubeResultComponent
+                                          key={i}
+                                          video_link={result.video_link}
+                                          video_id={result.video_id}
+                                          video_title={result.video_title}
+                                          video_description={
+                                            result.video_description
+                                          }
+                                        />
+                                      )
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                      <p>{contextPrompt}</p>
+                                    </div>{" "}
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                   </>

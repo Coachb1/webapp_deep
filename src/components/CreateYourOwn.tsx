@@ -21,6 +21,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [inputError, setInputError] = useState(false);
   const [userId, setUserId] = useState("");
   const [wordCount, setWordCount] = useState(0);
+  const [loadingText, setLoadingText] = useState("Creating simulation.")
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -57,17 +58,26 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       url.search = params;
 
       let awaitedData: NodeJS.Timeout;
+      let retryTimeout : NodeJS.Timeout;
+
+      setTimeout(() => {
+        retryTimeout =  setTimeout(() => {
+          setLoadingText("Retrying again due to server overload.")
+        }, 60000)
+      }, 200)
+
+
       setTimeout(() => {
         console.log(generatedTestData.length);
         awaitedData = setTimeout(() => {
           console.log(generatedTestData.length);
-          if (generatedTestData.length === 0) {
+          // if (generatedTestData.length === 0) {
             setGenerationError(true);
             toast.error(
               "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
             );
             setIsloading(false);
-          }
+          // }
         }, 180000);
       }, 200);
 
@@ -83,15 +93,20 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
           console.log("Dynamically created Test result", data);
           setGeneratedTestData(data);
           setIsloading(false);
-          if (!data[0].title) {
-            setGenerationError(true);
-          } else {
-            clearTimeout(awaitedData);
-          }
+          setLoadingText("Creating simulation.")
+          console.log(data.length)
+          // if (data.length === 0) {
+          //   setGenerationError(true);
+          // }
+          clearTimeout(awaitedData);
+          clearTimeout(retryTimeout)
         })
         .catch((err) => {
+          clearTimeout(awaitedData);
+          clearTimeout(retryTimeout)
           console.error(err);
           setIsloading(false);
+          setLoadingText("Creating simulation.")
           toast.error(
             `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
           );
@@ -109,7 +124,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
 
   return (
     <div className="w-full">
-      <div className="w-full max-sm:w-[100%] z-50 mt-8 text-left">
+      <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
@@ -166,7 +181,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
               )}
               {isLoading && (
                 <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
-                  Please wait, we are generating your senario.
+                  {loadingText}
                 </span>
               )}
             </div>
