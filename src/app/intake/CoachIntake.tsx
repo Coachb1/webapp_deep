@@ -119,8 +119,6 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  useEffect(() => console.log(mentoringPreferencess), [mentoringPreferencess]);
-
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
     boolean | string
   >();
@@ -1122,10 +1120,7 @@ const CoachIntake = ({ user }: any) => {
                       "is_overwrite",
                       deleteExistingFiles ? "true" : "false"
                     );
-                    filesPatchFormData.append(
-                      "profile_id",
-                      `${userProfileId}`,
-                    );
+                    filesPatchFormData.append("profile_id", `${userProfileId}`);
 
                     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                       method: "PATCH",
@@ -1362,7 +1357,6 @@ const CoachIntake = ({ user }: any) => {
   };
 
   //handling edit
-
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
     const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];

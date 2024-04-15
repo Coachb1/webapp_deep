@@ -231,9 +231,7 @@ const SessionNotes = ({ user }: any) => {
             setSubmitLoading(false);
             return;
           }
-          toast.success(
-            "Your comment has been successfully sent to your mentee."
-          );
+          toast.success("Your comment has been successfully sent.");
           setSubmitLoading(false);
           getCommentsGiven(userId);
           setCreateCommentInit(false);
@@ -868,7 +866,7 @@ const SessionNotes = ({ user }: any) => {
                         Recommended Simulation access codes (comma separated){" "}
                       </p>{" "}
                       <Link
-                        href={"/library?scrollView=create-new"}
+                        href={"/create-scenario?scrollView=simulation-creator"}
                         target="_blank"
                         className="bg-blue-200 h-fit text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-md "
                       >

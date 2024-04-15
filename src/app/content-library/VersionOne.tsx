@@ -464,7 +464,7 @@ const VersionOne = ({ user }: any) => {
         </div>
       </div>
 
-      <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
+      {/* <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
       <div className="h-[10vh] max-sm:h-[8vh] text-sm text-gray-700 mx-16 mb-0 max-sm:mx-8 ">
         <div className="flex flex-col items-center justify-between text-center">
           <div>
@@ -496,7 +496,7 @@ const VersionOne = ({ user }: any) => {
         <div className="text-center mt-2 max-sm:text-xs">
           <p>&copy; 2023 Coachbots™. All Rights Reserved.</p>
         </div>
-      </div>
+      </div> */}
       {/* <Widgets /> */}
     </>
   );

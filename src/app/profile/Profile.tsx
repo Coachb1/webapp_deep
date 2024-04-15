@@ -53,9 +53,7 @@ const Profile = ({ user }: any) => {
         .then((data) => {
           setUserRole(data.role);
         });
-    }
 
-    if (user) {
       getClientUserInfo(user.email)
         .then((res) => res.json())
         .then((data) => {

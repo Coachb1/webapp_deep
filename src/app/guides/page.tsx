@@ -25,54 +25,58 @@ const getAllBots = async () => {
 };
 
 const getknowledgeBotss = async (userEmail: string) => {
-  const response = await fetch(
-    `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    }
-  );
-
-  const responseData = await response.json();
-  const clientName = responseData.data.user_info[0].client_name;
-
-  if (clientName) {
-    const getBotsDataResponse = await fetch(
-      `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${clientName}`,
+  if (userEmail) {
+    const response = await fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
       {
+        method: "GET",
         headers: {
           Authorization: basicAuth,
         },
       }
     );
 
-    const getBotsDataResponseData = await getBotsDataResponse.json();
+    const responseData = await response.json();
+    const clientName = responseData.data.user_info[0].client_name;
 
-    let knowledgeBotss: {
-      bot_id: string;
-      bot_name: string;
-      description: string;
-      bot_type: string;
-      scenario_case: string;
-    }[] = [];
-    getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
-      const botJson = item.signature_bot;
-      console.log(botJson);
-      const description = JSON.parse(botJson.faqs)[
-        "What is the primary purpose of the bot?"
-      ];
-      knowledgeBotss.push({
-        bot_id: botJson.bot_id,
-        bot_name: item.bot_attributes.bot_name,
-        bot_type: botJson.bot_type,
-        description: description,
-        scenario_case: botJson.bot_scenario_case,
+    if (clientName) {
+      const getBotsDataResponse = await fetch(
+        `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${clientName}`,
+        {
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      const getBotsDataResponseData = await getBotsDataResponse.json();
+
+      let knowledgeBotss: {
+        bot_id: string;
+        bot_name: string;
+        description: string;
+        bot_type: string;
+        scenario_case: string;
+      }[] = [];
+      getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
+        const botJson = item.signature_bot;
+        console.log(botJson);
+        const description = JSON.parse(botJson.faqs)[
+          "What is the primary purpose of the bot?"
+        ];
+        knowledgeBotss.push({
+          bot_id: botJson.bot_id,
+          bot_name: item.bot_attributes.bot_name,
+          bot_type: botJson.bot_type,
+          description: description,
+          scenario_case: botJson.bot_scenario_case,
+        });
       });
-    });
 
-    return knowledgeBotss;
+      return knowledgeBotss;
+    } else {
+      return [];
+    }
   } else {
     return [];
   }
