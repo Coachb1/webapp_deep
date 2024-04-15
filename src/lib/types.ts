@@ -161,6 +161,7 @@ export interface knowledgeBotJson {
     faqs: string;
     bot_type: string;
     bot_scenario_case: string;
+    creator_name: string;
   };
   bot_attributes: {
     bot_name: string;

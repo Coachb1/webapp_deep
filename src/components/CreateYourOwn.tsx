@@ -21,7 +21,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [inputError, setInputError] = useState(false);
   const [userId, setUserId] = useState("");
   const [wordCount, setWordCount] = useState(0);
-  const [loadingText, setLoadingText] = useState("Creating simulation.")
+  const [loadingText, setLoadingText] = useState("Creating simulation.");
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -58,25 +58,24 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       url.search = params;
 
       let awaitedData: NodeJS.Timeout;
-      let retryTimeout : NodeJS.Timeout;
+      let retryTimeout: NodeJS.Timeout;
 
       setTimeout(() => {
-        retryTimeout =  setTimeout(() => {
-          setLoadingText("Retrying again due to server overload.")
-        }, 60000)
-      }, 200)
-
+        retryTimeout = setTimeout(() => {
+          setLoadingText("Retrying again due to server overload.");
+        }, 60000);
+      }, 200);
 
       setTimeout(() => {
         console.log(generatedTestData.length);
         awaitedData = setTimeout(() => {
           console.log(generatedTestData.length);
           // if (generatedTestData.length === 0) {
-            setGenerationError(true);
-            toast.error(
-              "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
-            );
-            setIsloading(false);
+          setGenerationError(true);
+          toast.error(
+            "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
+          );
+          setIsloading(false);
           // }
         }, 180000);
       }, 200);
@@ -93,20 +92,24 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
           console.log("Dynamically created Test result", data);
           setGeneratedTestData(data);
           setIsloading(false);
-          setLoadingText("Creating simulation.")
-          console.log(data.length)
+          setLoadingText("Creating simulation.");
+          console.log(data.length);
+          if (data[0].message) {
+            toast.error("Error generating the scenarios.");
+            setGenerationError(true);
+          }
           // if (data.length === 0) {
           //   setGenerationError(true);
           // }
           clearTimeout(awaitedData);
-          clearTimeout(retryTimeout)
+          clearTimeout(retryTimeout);
         })
         .catch((err) => {
           clearTimeout(awaitedData);
-          clearTimeout(retryTimeout)
+          clearTimeout(retryTimeout);
           console.error(err);
           setIsloading(false);
-          setLoadingText("Creating simulation.")
+          setLoadingText("Creating simulation.");
           toast.error(
             `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
           );
@@ -215,8 +218,8 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             <>
               <hr className="my-2" />
               <p className="text-sm my-6 text-center max-sm:text-[11px] ml-2 max-sm:ml-[1px] text-red-500 max-sm:leading-[12px]">
-                Encountered and error while Generating your scenarios. It will
-                be saved in "Simulation (Requested Scenario Tab)"
+                Encountered an error while Generating your scenarios. It will be
+                saved in "Simulation (Requested Scenario Tab)"
               </p>
             </>
           )}
