@@ -3,10 +3,7 @@
 import CopyToClipboard from "@/components/CopyToClipboard";
 import CreateYourOwn from "@/components/CreateYourOwn";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import NetworkNav from "@/components/NetworkNav";
-import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Widgets from "@/components/Widgets";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
@@ -41,6 +38,7 @@ const CreateOwn = ({
     description: string;
     bot_type: string;
     scenario_case: string;
+    creator_name: string;
   }[];
 }) => {
   const params = useSearchParams();
@@ -1017,7 +1015,7 @@ const CreateOwn = ({
                                               <Accordion
                                                 type="single"
                                                 collapsible
-                                                className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                                className="w-full  text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                               >
                                                 {knowledgeBots.length === 0 ? (
                                                   <p className="my-4 text-sm ">
@@ -1030,15 +1028,30 @@ const CreateOwn = ({
                                                       <AccordionItem
                                                         key={i}
                                                         value={`${i}-knowledge-bot`}
-                                                        className={`px-4`}
+                                                        className={`px-4 ${
+                                                          knowledgeBots.length -
+                                                            1 ==
+                                                            i && "border-b-0"
+                                                        }`}
                                                       >
                                                         <AccordionTrigger className="text-left max-sm:text-xs">
-                                                          <div>
-                                                            {bot.bot_name}
+                                                          <div className="flex flex-col items-start">
+                                                            <span>
+                                                              {bot.bot_name}
+                                                            </span>
+                                                            <span className="text-xs font-semibold my-1">
+                                                              Created by{" "}
+                                                              <span className="font-extrabold">
+                                                                {
+                                                                  bot.creator_name
+                                                                }
+                                                              </span>
+                                                            </span>
                                                           </div>
                                                         </AccordionTrigger>
                                                         <AccordionContent className="max-sm:text-xs">
                                                           <p className="text-left">
+                                                            {/* <b>Purpose :</b>{" "} */}
                                                             {bot.description}
                                                           </p>
                                                           <div className="flex justify-end mt-2">

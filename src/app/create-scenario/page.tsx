@@ -41,7 +41,9 @@ const getknowledgeBotss = async (userEmail: string) => {
         description: string;
         bot_type: string;
         scenario_case: string;
+        creator_name: string;
       }[] = [];
+
       getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
         const botJson = item.signature_bot;
         const description = JSON.parse(botJson.faqs)[
@@ -53,6 +55,7 @@ const getknowledgeBotss = async (userEmail: string) => {
           bot_type: botJson.bot_type,
           description: description,
           scenario_case: botJson.bot_scenario_case,
+          creator_name: botJson.creator_name,
         });
       });
 
