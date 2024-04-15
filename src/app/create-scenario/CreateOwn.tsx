@@ -12,7 +12,13 @@ import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { TabsList } from "@radix-ui/react-tabs";
-import { ExternalLinkIcon, Info, Link2, Loader, Search } from "lucide-react";
+import {
+  BadgePlus,
+  ExternalLinkIcon,
+  Link2,
+  Loader,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -22,6 +28,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useSearchParams } from "next/navigation";
+
 const CreateOwn = ({
   user,
   knowledgeBots,
@@ -35,9 +43,21 @@ const CreateOwn = ({
     scenario_case: string;
   }[];
 }) => {
+  const params = useSearchParams();
+  const scrollViewFromParams = params.get("scrollView");
   const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
   const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    if (scrollViewFromParams) {
+      console.log(scrollViewFromParams);
+      console.log(document.getElementById(scrollViewFromParams));
+      document.getElementById(scrollViewFromParams)?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   const [contextPrompt, setContextPrompt] = useState(
     "Please enter the context and search!"
@@ -670,25 +690,7 @@ const CreateOwn = ({
                 </span>
               </div> */}
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
-                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
-                  <Button
-                    asChild
-                    variant={"outline"}
-                    className="h-fit p-1 px-2 w-fit"
-                  >
-                    <Link
-                      // onClick={() => {
-                      //   router.push("/intake/?type=knowledge-bot");
-                      // }}
-                      href={"/intake/?type=knowledge-bot"}
-                      className="flex flex-row items-center justify-center"
-                    >
-                      Create your Guide
-                    </Link>
-                  </Button>
-                </div>
-                <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
-                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4">
                   <Button
                     onClick={() => {
                       document
@@ -944,7 +946,7 @@ const CreateOwn = ({
             </div>
             <div
               id="simulation-creator"
-              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+              className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -971,7 +973,7 @@ const CreateOwn = ({
             </div>
             <div
               id="knowledge-bots"
-              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+              className="pt-[27vh] mt-[-25vh]   max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -981,10 +983,26 @@ const CreateOwn = ({
                 >
                   <div>
                     <div className="w-full flex flex-col items-center justify-center">
-                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                      <h1 className="text-xl mt-2 mb-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         Knowledge Bots
                       </h1>
-                      <div className="w-full">
+                      <Button
+                        asChild
+                        variant={"link"}
+                        className="h-fit p-1 px-2 w-fit"
+                      >
+                        <Link
+                          href={"/intake/?type=knowledge-bot"}
+                          className="flex flex-row items-center justify-center"
+                        >
+                          <span>
+                            {" "}
+                            <BadgePlus className="mr-2 h-4 w-4" />{" "}
+                          </span>{" "}
+                          Create your knowledge bot
+                        </Link>
+                      </Button>
+                      <div className="w-full mt-3">
                         <div className="max-sm:pb-10">
                           <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                             <div className="flex flex-col max-sm:flex-col w-full mx-auto">

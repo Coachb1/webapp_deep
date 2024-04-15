@@ -151,9 +151,6 @@ const EmailSign = ({ user }: any) => {
         });
     }
   }, []);
-  useEffect(() => {
-    console.log(totalActionPoints);
-  }, [totalActionPoints]);
 
   const CopySignComponent = ({ id }: { id: string }) => {
     const [copied, setCopied] = useState(false);

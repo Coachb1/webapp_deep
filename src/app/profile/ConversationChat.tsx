@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "../../components/ui/badge";
 
 const ConversationChat = ({
   conversation,

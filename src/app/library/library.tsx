@@ -99,9 +99,6 @@ const convertToJsonArray = (input: Category): StateType[] => {
 };
 
 const MyLibrary = ({ user }: any) => {
-  const params = useSearchParams();
-  const scrollViewFromParams = params.get("scrollView");
-
   const [tests, setTests] = useState<StateType[]>([]);
   const [filteredTests, setFilteredTests] = useState<StateType[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -300,13 +297,6 @@ const MyLibrary = ({ user }: any) => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      if (scrollViewFromParams) {
-        document.getElementById(scrollViewFromParams)?.scrollIntoView({
-          behavior: "smooth",
-        });
-      }
-    }, 3000);
     if (user) {
       getTestsByCompetencies();
       getRequestedTests();

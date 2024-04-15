@@ -170,17 +170,6 @@ const Coaches = ({
     indexOfFirstCoach,
     indexOfLastCoach
   );
-  // const [currentCoachesData, setCurrentCoachesData] = useState<
-  //   CoachesDataType[]
-  // >([]);
-  // useEffect(() => {
-  //   const currentCoachesData = coachesData.slice(
-  //     indexOfFirstCoach,
-  //     indexOfLastCoach
-  //   );
-
-  //   setCurrentCoachesData(currentCoachesData);
-  // }, [coachesData]);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -189,26 +178,28 @@ const Coaches = ({
   const maxPaginationLinks = 5;
 
   const getClientInfoForUser = (userEmail: string) => {
-    fetch(
-      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setUserClientInfoData(data.data);
-        console.log(data, "client user info");
-        setClientDepartments(data.data.user_info[0].departments);
-        setClientExpertise(data.data.user_info[0].coach_expertise);
+    if (userEmail) {
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setUserClientInfoData(data.data);
+          console.log(data, "client user info");
+          setClientDepartments(data.data.user_info[0].departments);
+          setClientExpertise(data.data.user_info[0].coach_expertise);
 
-        setRestrictedPages(data.data.user_info[0].restricted_pages);
-        setRestrictedFeatures(data.data.user_info[0].restricted_features);
-      })
-      .catch((err) => console.error(err));
+          setRestrictedPages(data.data.user_info[0].restricted_pages);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
+        })
+        .catch((err) => console.error(err));
+    }
   };
 
   const getCoachesData = async () => {
@@ -340,60 +331,53 @@ const Coaches = ({
   };
 
   const getConnectionsForCoachee = (coacheeId: string) => {
-    fetch(
-      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setConnections(data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (coacheeId) {
+      fetch(
+        `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setConnections(data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const getConnectionsForCoach = (coachId: string) => {
-    fetch(
-      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setConnections(data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (coachId) {
+      fetch(
+        `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setConnections(data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
-  const [userBotData, setUserBotData] = useState<any>();
-
   async function getCanJoinAs(email: string) {
-    // try {
-    //   fetch(`${baseURL}/accounts/user-can-join-as/?email=${email}`, {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: basicAuth,
-    //     },
-    //   })
-    //     .then((res) => res.json())
-    //     .then((data) => {
     const data = UserJoiningPreviledges;
     console.log(data);
     if (data.error) {
@@ -401,21 +385,12 @@ const Coaches = ({
     } else {
       setCanJoinAs(data.can_join_as);
     }
-    // })
-    // .catch((err) => {
-    //   console.error(err);
-    // });
-
-    // const respJson = await resp.json();
-    // console.log(`canJoinAs: ${respJson} ${respJson.can_join_as}`);
-    // setCanJoinAs(respJson.can_join_as);
   }
 
   useEffect(() => {
     hideBots();
     if (user) {
       getClientInfoForUser(user?.email!);
-      // getAllConnections();
       getCoachesData();
       getUserAccount(user)
         .then((res) => res.json())
@@ -520,7 +495,7 @@ const Coaches = ({
     []
   );
   const handleUpdateCheckedValues = (newValues: string[]) => {
-    setCurrentPage(1)
+    setCurrentPage(1);
     setParentCheckedValues(newValues);
     console.log(newValues);
     if (newValues.length > 0 && newValues[0].length === 0) {

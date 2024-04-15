@@ -5,12 +5,11 @@ import { Button } from "../../components/ui/button";
 import Link from "next/link";
 import { Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   PartifipantsforLeaderBoardTypes,
   baseURL,
   basicAuth,
-  capitalizeText,
   convertTextToCorrectFormat,
   getUserAccount,
 } from "@/lib/utils";
@@ -60,13 +59,12 @@ const UserProfile = ({ user }: any) => {
       .then((dataa) => {
         console.log(dataa);
 
-        
         if (profileType === "coach" || profileType === "mentor") {
-          dataa = dataa.coach_mentor
+          dataa = dataa.coach_mentor;
         } else if (profileType === "coachee" || profileType === "mentee") {
-          dataa = dataa.coachee_mentee
-        } else{
-          dataa = dataa.full_data
+          dataa = dataa.coachee_mentee;
+        } else {
+          dataa = dataa.full_data;
         }
 
         const userDetails = dataa.map(
@@ -139,7 +137,7 @@ const UserProfile = ({ user }: any) => {
         getUserAccount(user)
           .then((response) => response.json())
           .then(async (data) => {
-            console.log('user_profile', data)
+            console.log("user_profile", data);
             const userId = data.uid;
             setUserRole(data.role);
             await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
@@ -178,7 +176,7 @@ const UserProfile = ({ user }: any) => {
               .catch((error) => {
                 console.error("Error getting report", error);
               });
-            getLeaderboardPosition(data.uid,data.profile_type);
+            getLeaderboardPosition(data.uid, data.profile_type);
             getKudosCounts(data.uid);
           });
       }
@@ -189,7 +187,12 @@ const UserProfile = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md w-full">
-      <div className="pl-4 max-sm:pl-2 pt-2">Account Information</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 flex flex-row items-center ">
+        <p>Account Information </p>
+        {/* <span className="">
+          <Badge className="ml-4">{convertTextToCorrectFormat(userRole)}</Badge>
+        </span> */}
+      </div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
           <div className="flex flex-row items-center">
@@ -204,12 +207,6 @@ const UserProfile = ({ user }: any) => {
               {user.email}
             </p>
           </div>
-          {/* <div className="flex flex-row items-center mt-4">
-            <p className="text-sm ">User role </p>
-            <Badge className="ml-4">
-              {convertTextToCorrectFormat(userRole)}
-            </Badge>
-          </div> */}
         </div>
         <div className="my-4 flex flex-row items-center">
           <p className="text-sm">Session Reports</p>
