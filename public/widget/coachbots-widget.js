@@ -2823,6 +2823,7 @@ loadExternalModule().then(() => {
     handler: async (body, signals) => {
       try {
         if (body instanceof FormData) {
+          isRecordingGlobal = false
           //AUDIO RESPONSES
 
           if (isEmailForm) {
