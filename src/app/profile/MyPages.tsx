@@ -141,13 +141,18 @@ const MyPages = ({ user }: any) => {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
       }
     } else if (profile_type === "coachee" || profile_type === "mentee") {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
-      } else {
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
+      }
+      else {
         return `/intake/?type=${
           botType === "feedback_bot" ? "feedback" : "coachee"
         }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;

@@ -145,12 +145,13 @@ const Coach = ({ user, renderType }: any) => {
             },
             body: JSON.stringify({
               user_context: {
-                name: user.given_name,
+                name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
                 role: "member",
                 user_attributes: {
                   tag: "deepchat_profile",
                   attributes: {
                     username: "web_user",
+                    name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
                     email: user.email,
                   },
                 },

@@ -507,6 +507,8 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("about", about);
         formdata.append("experience", experience);
 
+        let CoachMentorQnA = {coach_qna: {}, mentor_qna: {}}
+
         if (!checkIfEdit) {
           //@ts-ignore
           formdata.append("profile_image", profileImage, "coachprofile.jpg");
@@ -569,77 +571,91 @@ const CoachIntake = ({ user }: any) => {
           );
 
           if (profileType === "coach") {
+            const coachQna = {
+              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                foundationalValues,
+              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                developmentFramewrok,
+              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                coachingProcessOverview,
+              "How do you handle situations where I feel stuck or unsure about my next steps?":
+                handlingSituations,
+              "How can I integrate the lessons from these sessions into my daily life?":
+                integratingLessons,
+              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                guidanceOnCoachingProcess,
+            }
+
+            CoachMentorQnA.coach_qna = coachQna;
+
             formdata.append(
               "qna_for_coach_mentor",
               JSON.stringify({
-                coach: {
-                  "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                    foundationalValues,
-                  "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                    developmentFramewrok,
-                  "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                    coachingProcessOverview,
-                  "How do you handle situations where I feel stuck or unsure about my next steps?":
-                    handlingSituations,
-                  "How can I integrate the lessons from these sessions into my daily life?":
-                    integratingLessons,
-                  "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                    guidanceOnCoachingProcess,
-                },
+                coach: coachQna,
               })
             );
           } else if (profileType === "mentor") {
+            const QnaMentor = {
+              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                differentCareerPath,
+              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                problemSolvingApproachInDomain,
+              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                overviewofMentoring,
+              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                opportunitiesOfGrowth,
+              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                commonChallengesOrObstacles,
+              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                opinionsAboutKeyQualities,
+            }
+
+            CoachMentorQnA.mentor_qna = QnaMentor;
+
             formdata.append(
               "qna_for_coach_mentor",
               JSON.stringify({
-                mentor: {
-                  "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                    differentCareerPath,
-                  "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                    problemSolvingApproachInDomain,
-                  "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                    overviewofMentoring,
-                  "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                    opportunitiesOfGrowth,
-                  "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                    commonChallengesOrObstacles,
-                  "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                    opinionsAboutKeyQualities,
-                },
+                mentor: QnaMentor,
               })
             );
           } else if (profileType === "coach-mentor") {
+            const qnaCoach = {
+              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                foundationalValues,
+              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                developmentFramewrok,
+              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                coachingProcessOverview,
+              "How do you handle situations where I feel stuck or unsure about my next steps?":
+                handlingSituations,
+              "How can I integrate the lessons from these sessions into my daily life?":
+                integratingLessons,
+              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                guidanceOnCoachingProcess,
+            }
+            CoachMentorQnA.coach_qna = qnaCoach;
+
+            const qnaMentor = {
+              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                differentCareerPath,
+              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                problemSolvingApproachInDomain,
+              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                overviewofMentoring,
+              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                opportunitiesOfGrowth,
+              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                commonChallengesOrObstacles,
+              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                opinionsAboutKeyQualities,
+            }
+            CoachMentorQnA.mentor_qna = qnaMentor;
+
             formdata.append(
               "qna_for_coach_mentor",
               JSON.stringify({
-                coach: {
-                  "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                    foundationalValues,
-                  "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                    developmentFramewrok,
-                  "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                    coachingProcessOverview,
-                  "How do you handle situations where I feel stuck or unsure about my next steps?":
-                    handlingSituations,
-                  "How can I integrate the lessons from these sessions into my daily life?":
-                    integratingLessons,
-                  "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                    guidanceOnCoachingProcess,
-                },
-                mentor: {
-                  "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                    differentCareerPath,
-                  "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                    problemSolvingApproachInDomain,
-                  "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                    overviewofMentoring,
-                  "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                    opportunitiesOfGrowth,
-                  "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                    commonChallengesOrObstacles,
-                  "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                    opinionsAboutKeyQualities,
-                },
+                coach: qnaCoach,
+                mentor: qnaMentor,
               })
             );
           }
@@ -782,6 +798,8 @@ const CoachIntake = ({ user }: any) => {
                       coachMentInSameDep,
                       outcomeSupported,
                     },
+                    coach_qna: CoachMentorQnA.coach_qna,
+                    mentor_qna: CoachMentorQnA.mentor_qna
                   },
                   media_data: {
                     youtube_links: linksReflectingWVpersonal,
@@ -1045,6 +1063,8 @@ const CoachIntake = ({ user }: any) => {
                   coachMentInSameDep,
                   outcomeSupported,
                 },
+                coach_qna: CoachMentorQnA.coach_qna,
+                mentor_qna: CoachMentorQnA.mentor_qna
               },
               media_data: {
                 youtube_links: linksReflectingWVpersonal,
@@ -1222,7 +1242,24 @@ const CoachIntake = ({ user }: any) => {
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
+      console.log('user feedback',user)
       setFeedbackCreateLoading(true);
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+
+      var requestOptions = {
+        method: "GET",
+        headers: myHeaders
+      };
+      fetch(
+        `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('feedback bot profile data',result);
+          userProfileId = result.data.length > 0 ? result.data[0].uid : null;
+      console.log(userProfileId)
       var feedbackFormdata = {
         bot_type: "feedback_bot",
         bot_name: name,
@@ -1313,6 +1350,9 @@ const CoachIntake = ({ user }: any) => {
             });
           }
         });
+
+      });
+
     }
   };
 
