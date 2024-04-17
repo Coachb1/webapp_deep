@@ -71,7 +71,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [areaDomains, setAreaDomains] = useState<string[]>([
     "Career Management",
-    "Work Life Banlance",
+    "Work Life Balance",
     "Project Management",
     "Lateral Transfers",
   ]);
@@ -163,7 +163,8 @@ const CoachIntake = ({ user }: any) => {
   const [opportunitiesOfGrowth, setOpportunitiesOfGrowth] = useState("");
   const [commonChallengesOrObstacles, setCommenChallengesOrObstacles] =
     useState("");
-  const [opinionsAboutKeyQualities, setpinionsAboutKeyQualities] = useState("");
+  const [opinionsAboutKeyQualities, setOpinionsAboutKeyQualities] =
+    useState("");
 
   interface FileData {
     file: File;
@@ -240,7 +241,7 @@ const CoachIntake = ({ user }: any) => {
     setOverviewOfMentoring("");
     setOpportunitiesOfGrowth("");
     setCommenChallengesOrObstacles("");
-    setpinionsAboutKeyQualities("");
+    setOpinionsAboutKeyQualities("");
   };
 
   const getClientInfoForUser = (userEmail: string) => {
@@ -770,6 +771,8 @@ const CoachIntake = ({ user }: any) => {
                     provide_answers_using_emojis: `${
                       provideAnswersUsingEmojis === "yes" ? true : false
                     }`,
+                    common_phrases_and_expressions: phrasesNExpressions,
+                    significant_challenges_and_solutions: significantChallenges,
                     allow_coachee_to_create_session: `${
                       allowSessionNotes === "yes" ? true : false
                     }`,
@@ -1385,12 +1388,14 @@ const CoachIntake = ({ user }: any) => {
             })
               .then((res) => res.json())
               .then((data) => {
-                console.log("Bot details for edit", data);
                 let resultingBot = getBotById(botIdFromParams!, data.data);
 
-                console.log(resultingBot);
-                setName(resultingBot.bot_attributes.bot_name);
-                console.log(resultingBot.bot_attributes.bot_name);
+                console.log("Bot details for edit - Feedback", data);
+                setName(
+                  `${user.given_name} ${
+                    user.family_name ? user.family_name : ""
+                  }`
+                );
                 if (botIdFromParams?.includes("feedback")) {
                   setProfileBio(
                     resultingBot.signature_bot.data.additional_data.short_profile_bio?.trim()
@@ -1418,12 +1423,14 @@ const CoachIntake = ({ user }: any) => {
             })
               .then((res) => res.json())
               .then((dataa) => {
-                console.log(dataa);
-                console.log("Bot details for edit - Coach", dataa);
                 const resultingBot = getBotById(botIdFromParams!, dataa.data);
 
-                console.log(resultingBot);
-                setName(resultingBot.bot_attributes.coach_name);
+                console.log("Bot details for edit - Coach", resultingBot);
+                setName(
+                  `${user.given_name} ${
+                    user.family_name ? user.family_name : ""
+                  }`
+                );
                 setProfileType(profileTypeFromParams!);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
@@ -1435,19 +1442,27 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.department
                 );
                 setAreaDomain(
-                  resultingBot.signature_bot.data.additional_data.area_domain
+                  resultingBot.signature_bot.data.additional_data.area_domain.trim()
                 );
-                setMentoringPreferences(
-                  resultingBot.signature_bot.data.additional_data
-                    .mentoring_preferences
-                );
-                // setCoachMentFrameworks(
-                //   resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.trim()
+                // setAreaDomain(
+                //   resultingBot.signature_bot.data.additional_data.area_domain
+                //     ?.split(",")
+                //     .map((item: string) => item.trim())
+                //     .filter((item: string) => item.length > 0)
                 // );
+                setSignificantChallenges(
+                  resultingBot.signature_bot.data.additional_data
+                    .significant_challenges_and_solutions
+                );
+
+                setMentoringPreferences(
+                  resultingBot.signature_bot.data.additional_data.mentoring_preferences.trim()
+                );
                 setMentoringPreferencess(
-                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks?.split(
-                    ", "
-                  )
+                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks
+                    ?.split(",")
+                    .map((item: string) => item.trim())
+                    .filter((item: string) => item.length > 0)
                 );
                 setPovProgramParticipants(
                   resultingBot.signature_bot.data.additional_data.dominant_point_of_view?.trim()
@@ -1456,7 +1471,10 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.problem_solving_approach?.trim()
                 );
                 setDiscussInCARformat(
-                  resultingBot.signature_bot.data.discuss_how_you_helped_others_in_coachMentoring?.trim()
+                  resultingBot.signature_bot.data.additional_data.discuss_how_you_helped_others_in_coachMentoring?.trim()
+                );
+                setJourneyAndBackground(
+                  resultingBot.signature_bot.data.additional_data.journey_and_background?.trim()
                 );
                 // setLinksReflectingWVpersonal(
                 //   resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
@@ -1469,6 +1487,8 @@ const CoachIntake = ({ user }: any) => {
                 );
                 setVoiceSample(
                   resultingBot.signature_bot.data.additional_data.voice_sample
+                    ? "Yes"
+                    : "No"
                 );
 
                 setProvideAnswersUsingEmojis(
@@ -1487,18 +1507,87 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data
                     .fitment_answers?.coachmentSelect
                 );
-                setCochMentInSameDep(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.coachMentInSameDep
-                );
+
                 setParticipantLevel(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.participantLevel
+                  resultingBot.bot_attributes.fitment_answers.mentor_answer[0]
                 );
+                setCochMentInSameDep(
+                  resultingBot.bot_attributes.fitment_answers.mentor_answer[1]
+                );
+
                 setOutcomeSupported(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.outcomeSupported
+                  resultingBot.bot_attributes.fitment_answers.mentor_answer[2]
                 );
+
+                setPhrasesNExpressions(
+                  resultingBot.signature_bot.data.additional_data
+                    ?.common_phrases_and_expressions
+                );
+
+                const coach_qna =
+                  resultingBot.signature_bot.data.additional_data?.coach_qna;
+
+                //coaching and mentoring QnA's
+                if (coach_qna) {
+                  setFoundationalValues(
+                    coach_qna[
+                      "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?"
+                    ]
+                  );
+                  setDevelopmentFrameworks(
+                    coach_qna[
+                      "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?"
+                    ]
+                  );
+                  setCoachingProcessOverview(
+                    coach_qna[
+                      "Can you provide an overview of your coaching process and what I can expect from our sessions?"
+                    ]
+                  );
+                  setHandlingSituations(
+                    coach_qna[
+                      "How do you handle situations where I feel stuck or unsure about my next steps?"
+                    ]
+                  );
+                  setIntegratongLessons(
+                    coach_qna[
+                      "How can I integrate the lessons from these sessions into my daily life?"
+                    ]
+                  );
+                  setGuidanceOnCoachingProcess(
+                    coach_qna[
+                      "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?"
+                    ]
+                  );
+                }
+
+                const mentor_qna =
+                  resultingBot.signature_bot.data.additional_data?.mentor_qna;
+
+                if (mentor_qna) {
+                  setDifferentCareerPath(
+                    mentor_qna[
+                      "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?"
+                    ]
+                  );
+                  setProblemSolvingApproachInDomain(
+                    mentor_qna[
+                      "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?"
+                    ]
+                  );
+                  setOverviewOfMentoring(
+                    "Can you provide an overview of your mentoring approach and what I can expect from our sessions?"
+                  );
+                  setOpportunitiesOfGrowth(
+                    "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?"
+                  );
+                  setCommenChallengesOrObstacles(
+                    "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?"
+                  );
+                  setOpinionsAboutKeyQualities(
+                    "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?"
+                  );
+                }
               });
           });
       } else if (formType === "coachee") {
@@ -1515,12 +1604,14 @@ const CoachIntake = ({ user }: any) => {
             )
               .then((res) => res.json())
               .then((data) => {
-                console.log("Bot details for edit - coachee", data);
-
+                console.log(data);
                 const resultingBot = data.data;
-
-                console.log(resultingBot);
-                setName(resultingBot.name);
+                console.log("Bot details for edit - coachee", resultingBot);
+                setName(
+                  `${user.given_name} ${
+                    user.family_name ? user.family_name : ""
+                  }`
+                );
                 setAbout(resultingBot.about?.trim());
                 setExperience(resultingBot.experience);
                 setProfileType(resultingBot.profile_type);
@@ -1830,7 +1921,7 @@ const CoachIntake = ({ user }: any) => {
                               htmlFor={`r${i}+1 ${val}`}
                               className="text-xs text-gray-700"
                             >
-                              {capitalizeText(val)}
+                              {val}
                             </label>
                           </div>
                         ))}
@@ -2651,7 +2742,7 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
-                              setpinionsAboutKeyQualities(e.target.value);
+                              setOpinionsAboutKeyQualities(e.target.value);
 
                               handleWordLimitMin(
                                 e.target.value,

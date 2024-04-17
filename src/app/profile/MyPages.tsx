@@ -136,7 +136,7 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    if (profile_type === "coach" || profile_type === "mentor") {
+    if (profile_type === "coach" || profile_type === "mentor" || profile_type === "coach-mentor" ) {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
@@ -306,7 +306,7 @@ const MyPages = ({ user }: any) => {
                           botType.bot_type,
                           bot.bot_id,
                           userProfile?.uid,
-                          userProfile?.profile_type
+                          userProfile?.profile_type === "coach" && userProfile?.is_mentor === true ? "coach-mentor" : userProfile?.profile_type
                         )! + `&uid=${bot.uid}`
                       }
                     >
