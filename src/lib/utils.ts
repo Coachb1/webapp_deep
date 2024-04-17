@@ -144,12 +144,13 @@ export const getUserAccount = (user: any) => {
     },
     body: JSON.stringify({
       user_context: {
-        name: user.given_name,
+        name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
         role: "member",
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
-            username: user.given_name,
+            name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
+            username: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
             email: user.email,
           },
         },

@@ -7537,7 +7537,7 @@ const openChatContainer2 = () => {
   let user_email2;
 
   if (window.user) {
-    user_name2 = window.user.given_name;
+    user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""}`;
     user_email2 = window.user.email;
   } else {
     user_name2 = "coachbots_anonyoususer";
@@ -7565,6 +7565,7 @@ const openChatContainer2 = () => {
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
+            name: user_name2,
             username: user_name2,
             email: user_email2,
           },

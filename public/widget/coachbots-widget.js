@@ -5004,7 +5004,7 @@ const openChatContainer = () => {
   let user_email;
 
   if (user) {
-    user_name = user.given_name;
+    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
     user_email = user.email;
   } else {
     user_name = "coachbots_anonyoususer";
@@ -5030,6 +5030,7 @@ const openChatContainer = () => {
         user_attributes: {
           tag: "deepchat_profile",
           attributes: {
+            name: user_name,
             username: user_name,
             email: user_email,
           },
