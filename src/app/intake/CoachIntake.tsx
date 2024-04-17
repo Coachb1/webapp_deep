@@ -1858,7 +1858,7 @@ const CoachIntake = ({ user }: any) => {
 
                         handleWordLimitMin(
                           e.target.value,
-                          50,
+                          20,
                           "journeyAndBackground"
                         );
                       }}
@@ -2111,7 +2111,7 @@ const CoachIntake = ({ user }: any) => {
 
                           handleWordLimitMin(
                             e.target.value,
-                            50,
+                            20,
                             "significantChallenges"
                           );
                         }}
@@ -2323,7 +2323,7 @@ const CoachIntake = ({ user }: any) => {
 
                           handleWordLimitMin(
                             e.target.value,
-                            100,
+                            20,
                             "discussInCARformat"
                           );
                         }}
@@ -2387,7 +2387,7 @@ const CoachIntake = ({ user }: any) => {
                               setFoundationalValues(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "foundationalValues"
                               );
                             }}
@@ -2419,7 +2419,7 @@ const CoachIntake = ({ user }: any) => {
                               setDevelopmentFrameworks(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "developmentFramewrok"
                               );
                             }}
@@ -2459,7 +2459,7 @@ const CoachIntake = ({ user }: any) => {
                               setCoachingProcessOverview(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "coachingProcessOverview"
                               );
                             }}
@@ -2490,7 +2490,7 @@ const CoachIntake = ({ user }: any) => {
 
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "handlingSituations"
                               );
                             }}
@@ -2520,7 +2520,7 @@ const CoachIntake = ({ user }: any) => {
                               setIntegratongLessons(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "integratingLessons"
                               );
                             }}
@@ -2551,7 +2551,7 @@ const CoachIntake = ({ user }: any) => {
                               setGuidanceOnCoachingProcess(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "guidanceOnCoachingProcess"
                               );
                             }}
@@ -2589,7 +2589,7 @@ const CoachIntake = ({ user }: any) => {
                               setDifferentCareerPath(e.target.value);
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "differentCareerPath"
                               );
                             }}
@@ -2621,7 +2621,7 @@ const CoachIntake = ({ user }: any) => {
 
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "problemSolvingApproachInDomain"
                               );
                             }}
@@ -2662,7 +2662,7 @@ const CoachIntake = ({ user }: any) => {
 
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "overviewofMentoring"
                               );
                             }}
@@ -2694,7 +2694,7 @@ const CoachIntake = ({ user }: any) => {
 
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "opportunitiesOfGrowth"
                               );
                             }}
@@ -2746,7 +2746,7 @@ const CoachIntake = ({ user }: any) => {
 
                               handleWordLimitMin(
                                 e.target.value,
-                                100,
+                                20,
                                 "opinionsAboutKeyQualities"
                               );
                             }}
