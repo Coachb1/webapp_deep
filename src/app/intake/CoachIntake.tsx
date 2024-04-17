@@ -653,6 +653,7 @@ const CoachIntake = ({ user }: any) => {
             "high_rating_characteristics",
             characteristicsRateHigh
           );
+          formdata.append("coaching_level", participantLevel);
         }
 
         if (!checkIfEdit) {
@@ -1626,6 +1627,13 @@ const CoachIntake = ({ user }: any) => {
                 setCharacteristicsRateHigh(
                   resultingBot.high_rating_characteristics
                 );
+
+                setParticipantLevel(resultingBot.coaching_level);
+                setCochMentInSameDep(
+                  resultingBot.coach_same_department ? "Yes" : "No"
+                );
+
+                setOutcomeSupported(resultingBot.supported_outcome);
 
                 setDepartment(resultingBot.department);
               });
