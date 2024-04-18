@@ -1641,6 +1641,12 @@ const CoachIntake = ({ user }: any) => {
                 const mentor_qna =
                   resultingBot.signature_bot.data.additional_data?.mentor_qna;
 
+                console.log(
+                  mentor_qna[
+                    "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?"
+                  ]
+                );
+
                 if (mentor_qna) {
                   setDifferentCareerPath(
                     mentor_qna[
@@ -1653,16 +1659,24 @@ const CoachIntake = ({ user }: any) => {
                     ]
                   );
                   setOverviewOfMentoring(
-                    "Can you provide an overview of your mentoring approach and what I can expect from our sessions?"
+                    mentor_qna[
+                      "Can you provide an overview of your mentoring approach and what I can expect from our sessions?"
+                    ]
                   );
                   setOpportunitiesOfGrowth(
-                    "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?"
+                    mentor_qna[
+                      "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?"
+                    ]
                   );
                   setCommenChallengesOrObstacles(
-                    "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?"
+                    mentor_qna[
+                      "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?"
+                    ]
                   );
                   setOpinionsAboutKeyQualities(
-                    "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?"
+                    mentor_qna[
+                      "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?"
+                    ]
                   );
                 }
               });
@@ -2282,7 +2296,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please enter 1-2 YouTube links that reflect your worldview
-                      on personal & professional development.
+                      on personal & professional development. (Separate multiple
+                      links by comma)
                     </p>
                     <div>
                       <textarea
@@ -2303,6 +2318,7 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please enter 1-2 article links that reflect what you
                       wished everyone would follow in their growth journey.
+                      (Separate multiple links by comma)
                     </p>
                     <div>
                       <textarea
