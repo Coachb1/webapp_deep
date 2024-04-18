@@ -1546,12 +1546,14 @@ const CoachIntake = ({ user }: any) => {
                 setJourneyAndBackground(
                   resultingBot.signature_bot.data.additional_data.journey_and_background?.trim()
                 );
-                // setLinksReflectingWVpersonal(
-                //   resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
-                // );
-                // setLinksReflectyouWished(
-                //   resultingBot.signature_bot.data.additional_data.article_links?.trim()
-                // );
+                if (checkIfView) {
+                  setLinksReflectingWVpersonal(
+                    resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
+                  );
+                  setLinksReflectyouWished(
+                    resultingBot.signature_bot.data.additional_data.article_links?.trim()
+                  );
+                }
                 setLeaderNames(
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
