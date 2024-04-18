@@ -375,7 +375,7 @@ export const getClientUserInfo = (userEmail: string) => {
 };
 
 export function replaceSpecialCharacters(inputString: string) {
-  const specialCharsRegex = /[^a-zA-Z0-9\s]/g;
+  const specialCharsRegex = /[^a-zA-Z0-9\s-]/g;
   const cleanedString = inputString.replace(specialCharsRegex, "");
   console.log(cleanedString);
   return cleanedString;
