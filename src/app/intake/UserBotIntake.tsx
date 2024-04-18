@@ -23,6 +23,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
+  const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
 
@@ -283,9 +284,12 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                     router.push("/profile");
                   }, 4000);
                 } else {
-                  toast.success("Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.", {
-                    duration: 6000,
-                  });
+                  toast.success(
+                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                    {
+                      duration: 6000,
+                    }
+                  );
                   setTimeout(() => {
                     router.push("/");
                   }, 4000);
@@ -311,7 +315,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
   //handling edit
   useEffect(() => {
-    if (checkIfEdit === "true") {
+    if (checkIfEdit === "true" || checkIfView === "true") {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
@@ -374,20 +378,33 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           }}
         >
           <div className="flex flex-col gap-2">
-            <Badge
-              variant={"secondary"}
-              className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
-            >
-              <Info className="h-4 w-4 mr-1" /> All fields are required.
-            </Badge>
-            {checkIfEdit && (
+            {checkIfView && (
               <Badge
                 className="bg-blue-200 w-fit text-blue-800"
                 variant={"outline"}
               >
-                You are editing your bot. All the earlier inputs will be
-                replaced by current inputs.
+                You are viewing your knowledge bot Intake.
               </Badge>
+            )}
+            {!checkIfView && (
+              <>
+                {" "}
+                <Badge
+                  variant={"secondary"}
+                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
+                >
+                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                </Badge>
+                {checkIfEdit && (
+                  <Badge
+                    className="bg-blue-200 w-fit text-blue-800"
+                    variant={"outline"}
+                  >
+                    You are editing your bot. All the earlier inputs will be
+                    replaced by current inputs.
+                  </Badge>
+                )}
+              </>
             )}
           </div>
           <div>
@@ -415,6 +432,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               </p>
               <input
                 required
+                disabled={checkIfView === null ? false : true}
                 onChange={(e) => {
                   setPrimaryPurpose(e.target.value);
                 }}
@@ -429,6 +447,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 What tasks or functions should the bot perform?
               </p>
               <textarea
+                disabled={checkIfView === null ? false : true}
                 required
                 onChange={(e) => {
                   setFunctionsNTasksOfBot(e.target.value);
@@ -445,6 +464,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 responses?
               </p>
               <textarea
+                disabled={checkIfView === null ? false : true}
                 value={infoAccessToBot}
                 required
                 onChange={(e) => {
@@ -461,6 +481,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 questions?
               </p>
               <textarea
+                disabled={checkIfView === null ? false : true}
                 value={commanFaqs}
                 required
                 onChange={(e) => {
@@ -477,6 +498,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               </p>
               <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                 <input
+                  disabled={checkIfView === null ? false : true}
                   type="file"
                   className="w-full text-xs my-2"
                   multiple
@@ -498,6 +520,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 accessible
               </p>
               <textarea
+                disabled={checkIfView === null ? false : true}
                 value={releventLinks}
                 required
                 onChange={(e) => {
@@ -508,56 +531,61 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
               />
             </div>
-            <hr className="mb-2" />
-            <div className="flex items-start space-x-2 my-1.5 ">
-              <Checkbox
-                checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
-                onCheckedChange={(checked) => {
-                  setPrivaciInfoChecked(checked);
-                }}
-              />
-              <label className="text-xs text-gray-700">
-                We respect your data and privacy. Any data is handled per the
-                data security and privacy policy of the organization holding the
-                platform license. Please contact your program administrator for
-                removal requests. Any AI assets created by the users are
-                considered the property of the organization the individuals are
-                affiliated with.
-              </label>
-            </div>
-            <div>
-              {checkIfEdit ? (
-                <Button disabled={submitLoading} className="h-8">
-                  {" "}
-                  {submitLoading ? (
-                    <>
-                      <Loader className="h-5 w-5 animate-spin mr-2" /> Saving
-                    </>
+            {!checkIfView && (
+              <>
+                <hr className="mb-2" />
+                <div className="flex items-start space-x-2 my-1.5 ">
+                  <Checkbox
+                    checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
+                    onCheckedChange={(checked) => {
+                      setPrivaciInfoChecked(checked);
+                    }}
+                  />
+                  <label className="text-xs text-gray-700">
+                    We respect your data and privacy. Any data is handled per
+                    the data security and privacy policy of the organization
+                    holding the platform license. Please contact your program
+                    administrator for removal requests. Any AI assets created by
+                    the users are considered the property of the organization
+                    the individuals are affiliated with.
+                  </label>
+                </div>
+                <div>
+                  {checkIfEdit ? (
+                    <Button disabled={submitLoading} className="h-8">
+                      {" "}
+                      {submitLoading ? (
+                        <>
+                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                          Saving
+                        </>
+                      ) : (
+                        <>
+                          Save Changes <PenLine className="ml-2 h-5 w-5" />
+                        </>
+                      )}
+                    </Button>
                   ) : (
-                    <>
-                      Save Changes <PenLine className="ml-2 h-5 w-5" />
-                    </>
+                    <Button
+                      disabled={submitLoading || !privacyInfoChecked}
+                      className="h-8"
+                    >
+                      {" "}
+                      {submitLoading ? (
+                        <>
+                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                          Submitting
+                        </>
+                      ) : (
+                        <>
+                          Submit <SendHorizonal className="ml-2 h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
-              ) : (
-                <Button
-                  disabled={submitLoading || !privacyInfoChecked}
-                  className="h-8"
-                >
-                  {" "}
-                  {submitLoading ? (
-                    <>
-                      <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                      Submitting
-                    </>
-                  ) : (
-                    <>
-                      Submit <SendHorizonal className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </form>
       </div>

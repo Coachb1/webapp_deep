@@ -2,7 +2,7 @@
 
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Copy, Edit, LinkIcon, Loader } from "lucide-react";
+import { Code, Copy, Edit, LinkIcon, Loader, View } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
@@ -130,13 +130,56 @@ const MyPages = ({ user }: any) => {
     }
   };
 
+  const intakeBotTypeLinksForView = (
+    botType: string,
+    bot_id: string,
+    profile_id: string,
+    profile_type: string
+  ) => {
+    if (
+      profile_type === "coach" ||
+      profile_type === "mentor" ||
+      profile_type === "coach-mentor"
+    ) {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      }
+    } else if (profile_type === "coachee" || profile_type === "mentee") {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      } else {
+        return `/intake/?type=${
+          botType === "feedback_bot" ? "feedback" : "coachee"
+        }&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      }
+    } else if (profile_type === "mentee") {
+      return `/intake/?type=coachee&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    } else {
+      if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      }
+    }
+  };
+
   const intakeBotTypeLinks = (
     botType: string,
     bot_id: string,
     profile_id: string,
     profile_type: string
   ) => {
-    if (profile_type === "coach" || profile_type === "mentor" || profile_type === "coach-mentor" ) {
+    if (
+      profile_type === "coach" ||
+      profile_type === "mentor" ||
+      profile_type === "coach-mentor"
+    ) {
       if (botType === "avatar_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
@@ -151,8 +194,7 @@ const MyPages = ({ user }: any) => {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "user_bot") {
         return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
-      }
-      else {
+      } else {
         return `/intake/?type=${
           botType === "feedback_bot" ? "feedback" : "coachee"
         }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
@@ -305,13 +347,17 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    <Link
+                    {/* FOR EDIT MODE */}
+                    {/* <Link
                       href={
                         intakeBotTypeLinks(
                           botType.bot_type,
                           bot.bot_id,
                           userProfile?.uid,
-                          userProfile?.profile_type === "coach" && userProfile?.is_mentor === true ? "coach-mentor" : userProfile?.profile_type
+                          userProfile?.profile_type === "coach" &&
+                            userProfile?.is_mentor === true
+                            ? "coach-mentor"
+                            : userProfile?.profile_type
                         )! + `&uid=${bot.uid}`
                       }
                     >
@@ -324,6 +370,33 @@ const MyPages = ({ user }: any) => {
                           className="hidden max-sm:block text-xs"
                           tooltipName="Edit"
                           body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        />
+                      </Button>
+                    </Link> */}
+
+                    {/* FOR VIEW MODE */}
+                    <Link
+                      href={
+                        intakeBotTypeLinksForView(
+                          botType.bot_type,
+                          bot.bot_id,
+                          userProfile?.uid,
+                          userProfile?.profile_type === "coach" &&
+                            userProfile?.is_mentor === true
+                            ? "coach-mentor"
+                            : userProfile?.profile_type
+                        )! + `&uid=${bot.uid}`
+                      }
+                    >
+                      <Button
+                        variant={"secondary"}
+                        className="h-6 text-xs w-fit bg-blue-200 "
+                      >
+                        <span className="max-sm:hidden">View</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="View"
+                          body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
                     </Link>
@@ -351,7 +424,8 @@ const MyPages = ({ user }: any) => {
                     {/* - {userProfile.name} */}
                   </p>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                  <Link
+                  {/* FOR EDIT MODE */}
+                  {/* <Link
                     href={
                       intakeBotTypeLinks(
                         "coachee",
@@ -370,6 +444,30 @@ const MyPages = ({ user }: any) => {
                         className="hidden max-sm:block text-xs"
                         tooltipName="Edit"
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
+                  </Link> */}
+
+                  {/* FOR VIEW MODE */}
+                  <Link
+                    href={
+                      intakeBotTypeLinksForView(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                    >
+                      <span className="max-sm:hidden">View</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="View"
+                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
                   </Link>

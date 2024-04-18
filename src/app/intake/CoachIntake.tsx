@@ -41,6 +41,7 @@ const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
   const checkIfEdit = params.get("edit");
+  const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
@@ -441,6 +442,7 @@ const CoachIntake = ({ user }: any) => {
               if (
                 data.data.length > 0 &&
                 !checkIfEdit &&
+                !checkIfView &&
                 formType !== "knowledge-bot" &&
                 formType !== "feedback"
               ) {
@@ -1418,7 +1420,7 @@ const CoachIntake = ({ user }: any) => {
     coachScribe.setAttribute("style", "display: none;");
 
     console.log("hello 1");
-    if (checkIfEdit === "true") {
+    if (checkIfEdit === "true" || checkIfView === "true") {
       console.log("hello 2");
       if (formType === "feedback") {
         setIsFeedbackNeeded(true);
@@ -1796,7 +1798,10 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
-                      disabled={checkIfEdit === null ? false : true}
+                      disabled={
+                        (checkIfEdit === null ? false : true) ||
+                        (checkIfView === null ? false : true)
+                      }
                       value={profileType}
                       options={[
                         {
@@ -1850,6 +1855,7 @@ const CoachIntake = ({ user }: any) => {
                       minLength={200}
                       maxLength={1500}
                       required
+                      disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         setAbout(e.target.value);
                         handleWordLimit(
@@ -1880,6 +1886,7 @@ const CoachIntake = ({ user }: any) => {
                         onValueChange={(value) => {
                           setExperience(value);
                         }}
+                        disabled={checkIfView === null ? false : true}
                       >
                         {[
                           "0 - 5 years",
@@ -1915,6 +1922,7 @@ const CoachIntake = ({ user }: any) => {
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
                         }}
+                        disabled={checkIfView === null ? false : true}
                         className="w-fit"
                       />{" "}
                       <p className="m-1 mt-2 ml-0 text-gray-500">
@@ -1931,6 +1939,7 @@ const CoachIntake = ({ user }: any) => {
 
                     <textarea
                       rows={4}
+                      disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         setJourneyAndBackground(e.target.value);
 
@@ -1957,6 +1966,7 @@ const CoachIntake = ({ user }: any) => {
                     <RadioGroup
                       value={department}
                       required
+                      disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
                         setDepartment(value);
                       }}
@@ -1983,6 +1993,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={areaDomain}
                         onValueChange={(value) => {
                           setAreaDomain(value);
@@ -2015,6 +2026,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={mentoringPreferences}
                         onValueChange={(value) => {
                           setMentoringPreferences(value);
@@ -2088,8 +2100,11 @@ const CoachIntake = ({ user }: any) => {
                               <div className="flex items-center space-x-2 my-1.5 ">
                                 <Checkbox
                                   disabled={
-                                    !mentoringPreferencess.includes(model) &&
-                                    mentoringPreferencess.length >= 3
+                                    (!mentoringPreferencess.includes(model) &&
+                                      mentoringPreferencess.length >= 3) ||
+                                    checkIfView === null
+                                      ? false
+                                      : true
                                   }
                                   id={model}
                                   onCheckedChange={(checked) => {
@@ -2123,6 +2138,7 @@ const CoachIntake = ({ user }: any) => {
                       <input
                         required
                         value={povProgramParticipants}
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setPovProgramParticipants(e.target.value);
 
@@ -2152,6 +2168,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <input
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={problemSolvingApproach}
                         onChange={(e) => {
                           setProblemSolvingApproach(e.target.value);
@@ -2184,6 +2201,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setSignificantChallenges(e.target.value);
 
@@ -2214,6 +2232,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         onChange={(e) => {
                           setPhrasesNExpressions(e.target.value);
@@ -2242,6 +2261,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <input
                         required
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setLeaderNames(e.target.value);
                         }}
@@ -2261,6 +2281,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
@@ -2281,6 +2302,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         required={!checkIfEdit}
+                        disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
                           setLinksReflectyouWished(e.target.value);
@@ -2301,6 +2323,7 @@ const CoachIntake = ({ user }: any) => {
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         type="file"
                         className="w-full text-xs my-2"
@@ -2339,6 +2362,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={voiceSample}
                         onValueChange={(value) => {
                           setVoiceSample(value);
@@ -2365,6 +2389,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={allowSessionNotes}
                         onValueChange={(value) => {
@@ -2394,6 +2419,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         value={discussInCARformat}
                         onChange={(e) => {
@@ -2422,6 +2448,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={provideAnswersUsingEmojis}
                         onValueChange={(value) => {
@@ -2458,6 +2485,7 @@ const CoachIntake = ({ user }: any) => {
                         </p>
                         <div>
                           <textarea
+                            disabled={checkIfView === null ? false : true}
                             rows={4}
                             required={!checkIfEdit}
                             value={foundationalValues}
@@ -2491,6 +2519,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={developmentFramewrok}
                             onChange={(e) => {
@@ -2531,6 +2560,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={coachingProcessOverview}
                             onChange={(e) => {
@@ -2561,6 +2591,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={handlingSituations}
                             onChange={(e) => {
@@ -2592,6 +2623,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={integratingLessons}
                             onChange={(e) => {
@@ -2623,6 +2655,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
@@ -2661,6 +2694,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={differentCareerPath}
                             onChange={(e) => {
@@ -2692,6 +2726,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
@@ -2733,6 +2768,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={overviewofMentoring}
                             onChange={(e) => {
@@ -2765,6 +2801,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
@@ -2798,6 +2835,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
@@ -2817,6 +2855,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
@@ -2886,6 +2925,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
                           setParticipantLevel(value);
@@ -2911,6 +2951,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
@@ -2938,6 +2979,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
@@ -2967,57 +3009,66 @@ const CoachIntake = ({ user }: any) => {
                       </RadioGroup>
                     </div>
                   </div>
-                  <hr className="my-2" />
-                  <div className="flex items-start space-x-2 my-1.5 ">
-                    <Checkbox
-                      checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
-                      onCheckedChange={(checked) => {
-                        setPrivaciInfoChecked(checked);
-                      }}
-                    />
-                    <label className="text-xs text-gray-700">
-                      We respect your data and privacy. Any data is handled per
-                      the data security and privacy policy of the organization
-                      holding the platform license. Please contact your program
-                      administrator for removal requests. Any AI assets created
-                      by the users are considered the property of the
-                      organization the individuals are affiliated with.
-                    </label>
-                  </div>
-                  <div>
-                    {checkIfEdit ? (
-                      <Button disabled={createLoading} className="h-8">
-                        {" "}
-                        {createLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
+                  {!checkIfView && (
+                    <>
+                      <hr className="my-2" />
+                      <div className="flex items-start space-x-2 my-1.5 ">
+                        <Checkbox
+                          checked={
+                            checkIfEdit ? true : Boolean(privacyInfoChecked)
+                          }
+                          onCheckedChange={(checked) => {
+                            setPrivaciInfoChecked(checked);
+                          }}
+                        />
+                        <label className="text-xs text-gray-700">
+                          We respect your data and privacy. Any data is handled
+                          per the data security and privacy policy of the
+                          organization holding the platform license. Please
+                          contact your program administrator for removal
+                          requests. Any AI assets created by the users are
+                          considered the property of the organization the
+                          individuals are affiliated with.
+                        </label>
+                      </div>
+                      <div>
+                        {checkIfEdit ? (
+                          <Button disabled={createLoading} className="h-8">
+                            {" "}
+                            {createLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Saving
+                              </>
+                            ) : (
+                              <>
+                                Save Changes{" "}
+                                <PenLine className="ml-2 h-5 w-5" />
+                              </>
+                            )}
+                          </Button>
                         ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
+                          <Button
+                            disabled={createLoading || !privacyInfoChecked}
+                            className="h-8"
+                          >
+                            {" "}
+                            {createLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Submitting
+                              </>
+                            ) : (
+                              <>
+                                Submit{" "}
+                                <SendHorizonal className="ml-2 h-4 w-4" />
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </Button>
-                    ) : (
-                      <Button
-                        disabled={createLoading || !privacyInfoChecked}
-                        className="h-8"
-                      >
-                        {" "}
-                        {createLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          <>
-                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                   {checkIfEdit && (
                     <div className="flex flex-row mt-2">
                       <Info className="h-4 w-4 mr-1 inline text-red-400" />
@@ -3048,18 +3099,31 @@ const CoachIntake = ({ user }: any) => {
                   createSubmitHandler(e);
                 }}
               >
-                <Badge
-                  variant={"secondary"}
-                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
-                >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
-                </Badge>
+                {checkIfView && (
+                  <Badge
+                    className="bg-blue-200 w-fit text-blue-800"
+                    variant={"outline"}
+                  >
+                    You are viewing your profile.
+                  </Badge>
+                )}
+                {!checkIfView && (
+                  <Badge
+                    variant={"secondary"}
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                  >
+                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  </Badge>
+                )}
                 <div>
                   <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
                       defaultValue={"coachee"}
-                      disabled={checkIfEdit === null ? false : true}
+                      disabled={
+                        (checkIfEdit === null ? false : true) ||
+                        (checkIfView === null ? false : true)
+                      }
                       value={profileType}
                       options={[
                         {
@@ -3108,6 +3172,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <textarea
                       value={about}
+                      disabled={checkIfView === null ? false : true}
                       required
                       minLength={200}
                       maxLength={1500}
@@ -3136,6 +3201,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div>
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         value={experience}
                         required
                         onValueChange={(value) => {
@@ -3168,6 +3234,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         type="file"
                         name="myImage"
@@ -3189,6 +3256,7 @@ const CoachIntake = ({ user }: any) => {
                       rate yourself near the lows.
                     </p>
                     <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
                       value={characteristicsRateLows}
                       onCharacteristicsSelect={onCharacteristicsSelectLow}
                       options={characteristicsList}
@@ -3200,6 +3268,7 @@ const CoachIntake = ({ user }: any) => {
                       rate yourself highly.
                     </p>
                     <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
                       value={characteristicsRateHigh}
                       onCharacteristicsSelect={onCharacteristicsSelectHigh}
                       options={characteristicsList}
@@ -3211,6 +3280,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <RadioGroup
                       required
+                      disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
                         setDepartment(value);
                       }}
@@ -3246,6 +3316,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
                           setParticipantLevel(value);
@@ -3271,6 +3342,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
@@ -3298,6 +3370,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
@@ -3328,57 +3401,69 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
 
-                  <hr className="my-2" />
-                  <div className="flex items-start space-x-2 my-1.5 ">
-                    <Checkbox
-                      checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
-                      onCheckedChange={(checked) => {
-                        setPrivaciInfoChecked(checked);
-                      }}
-                    />
-                    <label className="text-xs text-gray-700">
-                      We respect your data and privacy. Any data is handled per
-                      the data security and privacy policy of the organization
-                      holding the platform license. Please contact your program
-                      administrator for removal requests. Any AI assets created
-                      by the users are considered the property of the
-                      organization the individuals are affiliated with.
-                    </label>
-                  </div>
-                  <div className="flex flec-col">
-                    {checkIfEdit ? (
-                      <Button disabled={feedbackCreateLoading} className="h-8">
-                        {" "}
-                        {feedbackCreateLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
+                  {!checkIfView && (
+                    <>
+                      <hr className="my-2" />
+                      <div className="flex items-start space-x-2 my-1.5 ">
+                        <Checkbox
+                          checked={
+                            checkIfEdit ? true : Boolean(privacyInfoChecked)
+                          }
+                          onCheckedChange={(checked) => {
+                            setPrivaciInfoChecked(checked);
+                          }}
+                        />
+                        <label className="text-xs text-gray-700">
+                          We respect your data and privacy. Any data is handled
+                          per the data security and privacy policy of the
+                          organization holding the platform license. Please
+                          contact your program administrator for removal
+                          requests. Any AI assets created by the users are
+                          considered the property of the organization the
+                          individuals are affiliated with.
+                        </label>
+                      </div>
+                      <div className="flex flec-col">
+                        {checkIfEdit ? (
+                          <Button
+                            disabled={feedbackCreateLoading}
+                            className="h-8"
+                          >
+                            {" "}
+                            {feedbackCreateLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Saving
+                              </>
+                            ) : (
+                              <>
+                                Save Changes{" "}
+                                <PenLine className="ml-2 h-5 w-5" />
+                              </>
+                            )}
+                          </Button>
                         ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
+                          <Button
+                            disabled={createLoading || !privacyInfoChecked}
+                            className="h-8"
+                          >
+                            {" "}
+                            {createLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Submitting
+                              </>
+                            ) : (
+                              <>
+                                Submit{" "}
+                                <SendHorizonal className="ml-2 h-4 w-4" />
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </Button>
-                    ) : (
-                      <Button
-                        disabled={createLoading || !privacyInfoChecked}
-                        className="h-8"
-                      >
-                        {" "}
-                        {createLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          <>
-                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                   {checkIfEdit && (
                     <div className="flex flex-row mt-2">
                       <Info className="h-4 w-4 mr-1 inline text-red-400" />
@@ -3410,12 +3495,22 @@ const CoachIntake = ({ user }: any) => {
                 }}
               >
                 <div className="flex flex-col gap-2">
-                  <Badge
-                    variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
-                  >
-                    <Info className="h-4 w-4 mr-1" /> All fields are required.
-                  </Badge>
+                  {!checkIfView && (
+                    <Badge
+                      variant={"secondary"}
+                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
+                    >
+                      <Info className="h-4 w-4 mr-1" /> All fields are required.
+                    </Badge>
+                  )}
+                  {checkIfView && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800"
+                      variant={"outline"}
+                    >
+                      You are viewing your bot.
+                    </Badge>
+                  )}
                   {checkIfEdit && (
                     <Badge
                       className="bg-blue-200 w-fit text-blue-800"
@@ -3455,6 +3550,7 @@ const CoachIntake = ({ user }: any) => {
                   <textarea
                     value={profileBio}
                     required
+                    disabled={checkIfView === null ? false : true}
                     minLength={200}
                     maxLength={1500}
                     onChange={(e) => {
@@ -3477,6 +3573,7 @@ const CoachIntake = ({ user }: any) => {
                   </p>
                   <textarea
                     value={currentProjects}
+                    disabled={checkIfView === null ? false : true}
                     required
                     onChange={(e) => {
                       setCurrentProjects(e.target.value);
@@ -3492,57 +3589,71 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                   )}
                 </div>
-                <hr className="my-2" />
-                <div className="flex items-start space-x-2 my-1.5 ">
-                  <Checkbox
-                    checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
-                    onCheckedChange={(checked) => {
-                      setPrivaciInfoChecked(checked);
-                    }}
-                  />
-                  <label className="text-xs text-gray-700">
-                    We respect your data and privacy. Any data is handled per
-                    the data security and privacy policy of the organization
-                    holding the platform license. Please contact your program
-                    administrator for removal requests. Any AI assets created by
-                    the users are considered the property of the organization
-                    the individuals are affiliated with.
-                  </label>
-                </div>
-                <div>
-                  {checkIfEdit ? (
-                    <Button disabled={feedbackCreateLoading} className="h-8">
-                      {" "}
-                      {feedbackCreateLoading ? (
-                        <>
-                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                          Saving
-                        </>
+                {!checkIfView && (
+                  <>
+                    <hr className="my-2" />
+                    <div className="flex items-start space-x-2 my-1.5 ">
+                      <Checkbox
+                        disabled={checkIfView === null ? false : true}
+                        checked={
+                          checkIfEdit ? true : Boolean(privacyInfoChecked)
+                        }
+                        onCheckedChange={(checked) => {
+                          setPrivaciInfoChecked(checked);
+                        }}
+                      />
+                      <label className="text-xs text-gray-700">
+                        We respect your data and privacy. Any data is handled
+                        per the data security and privacy policy of the
+                        organization holding the platform license. Please
+                        contact your program administrator for removal requests.
+                        Any AI assets created by the users are considered the
+                        property of the organization the individuals are
+                        affiliated with.
+                      </label>
+                    </div>
+
+                    <div>
+                      {checkIfEdit ? (
+                        <Button
+                          disabled={feedbackCreateLoading}
+                          className="h-8"
+                        >
+                          {" "}
+                          {feedbackCreateLoading ? (
+                            <>
+                              <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                              Saving
+                            </>
+                          ) : (
+                            <>
+                              Save Changes <PenLine className="ml-2 h-5 w-5" />
+                            </>
+                          )}
+                        </Button>
                       ) : (
-                        <>
-                          Save Changes <PenLine className="ml-2 h-5 w-5" />
-                        </>
+                        <Button
+                          disabled={
+                            feedbackCreateLoading || !privacyInfoChecked
+                          }
+                          className="h-8"
+                        >
+                          {" "}
+                          {feedbackCreateLoading ? (
+                            <>
+                              <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                              Submitting
+                            </>
+                          ) : (
+                            <>
+                              Submit <SendHorizonal className="ml-2 h-5 w-5" />
+                            </>
+                          )}
+                        </Button>
                       )}
-                    </Button>
-                  ) : (
-                    <Button
-                      disabled={feedbackCreateLoading || !privacyInfoChecked}
-                      className="h-8"
-                    >
-                      {" "}
-                      {feedbackCreateLoading ? (
-                        <>
-                          <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                          Submitting
-                        </>
-                      ) : (
-                        <>
-                          Submit <SendHorizonal className="ml-2 h-5 w-5" />
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div>
+                    </div>
+                  </>
+                )}
                 {checkIfEdit && (
                   <div className="flex flex-row mt-2">
                     <Info className="h-4 w-4 mr-1 inline text-red-400" />
