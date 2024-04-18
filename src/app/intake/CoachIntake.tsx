@@ -3076,23 +3076,30 @@ const CoachIntake = ({ user }: any) => {
                   createSubmitHandler(e);
                 }}
               >
-                <Badge
-                  variant={"secondary"}
-                  className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
-                >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
-                </Badge>
+                {checkIfView && (
+                  <Badge
+                    className="bg-blue-200 w-fit text-blue-800"
+                    variant={"outline"}
+                  >
+                    You are viewing your profile.
+                  </Badge>
+                )}
+                {!checkIfView && (
+                  <Badge
+                    variant={"secondary"}
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                  >
+                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  </Badge>
+                )}
                 <div>
                   <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
                       defaultValue={"coachee"}
                       disabled={
-                        checkIfEdit === null
-                          ? false
-                          : true || checkIfView === null
-                          ? false
-                          : true
+                        (checkIfEdit === null ? false : true) ||
+                        (checkIfView === null ? false : true)
                       }
                       value={profileType}
                       options={[

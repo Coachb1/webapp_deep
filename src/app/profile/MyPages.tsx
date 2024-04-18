@@ -158,7 +158,7 @@ const MyPages = ({ user }: any) => {
       } else {
         return `/intake/?type=${
           botType === "feedback_bot" ? "feedback" : "coachee"
-        }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+        }&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       }
     } else if (profile_type === "mentee") {
       return `/intake/?type=coachee&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
@@ -347,19 +347,7 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    {/* <TooltipWrapper
-                      className="text-xs"
-                      tooltipName="View your Network Profile"
-                      body={
-                        <Button
-                          variant={"secondary"}
-                          className="h-6 text-xs w-fit bg-blue-200 "
-                        >
-                          <span className="max-sm:hidden">View</span>{" "}
-                          <View className="h-3 w-3 ml-2 max-sm:ml-0" />
-                        </Button>
-                      }
-                    /> */}
+                    {/* FOR EDIT MODE */}
                     {/* <Link
                       href={
                         intakeBotTypeLinks(
@@ -385,6 +373,8 @@ const MyPages = ({ user }: any) => {
                         />
                       </Button>
                     </Link> */}
+
+                    {/* FOR VIEW MODE */}
                     <Link
                       href={
                         intakeBotTypeLinksForView(
@@ -434,7 +424,8 @@ const MyPages = ({ user }: any) => {
                     {/* - {userProfile.name} */}
                   </p>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                  <Link
+                  {/* FOR EDIT MODE */}
+                  {/* <Link
                     href={
                       intakeBotTypeLinks(
                         "coachee",
@@ -453,6 +444,30 @@ const MyPages = ({ user }: any) => {
                         className="hidden max-sm:block text-xs"
                         tooltipName="Edit"
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
+                  </Link> */}
+
+                  {/* FOR VIEW MODE */}
+                  <Link
+                    href={
+                      intakeBotTypeLinksForView(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                    >
+                      <span className="max-sm:hidden">View</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="View"
+                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
                   </Link>
