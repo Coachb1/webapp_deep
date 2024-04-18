@@ -11,6 +11,7 @@ import {
   hideBots,
   subdomain,
   getBotById,
+  replaceSpecialCharacters,
 } from "@/lib/utils";
 import {
   Info,
@@ -507,7 +508,7 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("about", about);
         formdata.append("experience", experience);
 
-        let CoachMentorQnA = {coach_qna: {}, mentor_qna: {}}
+        let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
 
         if (!checkIfEdit) {
           //@ts-ignore
@@ -569,6 +570,8 @@ const CoachIntake = ({ user }: any) => {
             "common_phrases_and_expressions",
             phrasesNExpressions
           );
+          formdata.append("mentorship_contribution", discussInCARformat);
+          formdata.append("journey_and_background", journeyAndBackground);
 
           if (profileType === "coach") {
             const coachQna = {
@@ -584,7 +587,7 @@ const CoachIntake = ({ user }: any) => {
                 integratingLessons,
               "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
                 guidanceOnCoachingProcess,
-            }
+            };
 
             CoachMentorQnA.coach_qna = coachQna;
 
@@ -608,7 +611,7 @@ const CoachIntake = ({ user }: any) => {
                 commonChallengesOrObstacles,
               "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
                 opinionsAboutKeyQualities,
-            }
+            };
 
             CoachMentorQnA.mentor_qna = QnaMentor;
 
@@ -632,7 +635,7 @@ const CoachIntake = ({ user }: any) => {
                 integratingLessons,
               "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
                 guidanceOnCoachingProcess,
-            }
+            };
             CoachMentorQnA.coach_qna = qnaCoach;
 
             const qnaMentor = {
@@ -648,7 +651,7 @@ const CoachIntake = ({ user }: any) => {
                 commonChallengesOrObstacles,
               "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
                 opinionsAboutKeyQualities,
-            }
+            };
             CoachMentorQnA.mentor_qna = qnaMentor;
 
             formdata.append(
@@ -800,7 +803,7 @@ const CoachIntake = ({ user }: any) => {
                       outcomeSupported,
                     },
                     coach_qna: CoachMentorQnA.coach_qna,
-                    mentor_qna: CoachMentorQnA.mentor_qna
+                    mentor_qna: CoachMentorQnA.mentor_qna,
                   },
                   media_data: {
                     youtube_links: linksReflectingWVpersonal,
@@ -1065,7 +1068,7 @@ const CoachIntake = ({ user }: any) => {
                   outcomeSupported,
                 },
                 coach_qna: CoachMentorQnA.coach_qna,
-                mentor_qna: CoachMentorQnA.mentor_qna
+                mentor_qna: CoachMentorQnA.mentor_qna,
               },
               media_data: {
                 youtube_links: linksReflectingWVpersonal,
@@ -1243,14 +1246,14 @@ const CoachIntake = ({ user }: any) => {
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
-      console.log('user feedback',user)
+      console.log("user feedback", user);
       setFeedbackCreateLoading(true);
       var myHeaders = new Headers();
       myHeaders.append("Authorization", basicAuth);
 
       var requestOptions = {
         method: "GET",
-        headers: myHeaders
+        headers: myHeaders,
       };
       fetch(
         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
@@ -1258,102 +1261,109 @@ const CoachIntake = ({ user }: any) => {
       )
         .then((response) => response.json())
         .then((result) => {
-          console.log('feedback bot profile data',result);
+          console.log("feedback bot profile data", result);
           userProfileId = result.data.length > 0 ? result.data[0].uid : null;
-      console.log(userProfileId)
-      var feedbackFormdata = {
-        bot_type: "feedback_bot",
-        bot_name: name,
-        profile_id: userProfileId,
-        email: user.email,
-        attributes: {
-          heading: "welcome to feedback bot",
-          feedback_questions: {
-            "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-            "2": "Regarding workplace team management skills, how would you rate my skills?",
-            "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-            "4": "How would like to see me implement the feedback you have provided so far?",
-          },
-        },
-        feedback_questions: {
-          "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-          "2": "Regarding workplace team management skills, how would you rate my skills?",
-          "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-          "4": "How would like to see me implement the feedback you have provided so far?",
-        },
-        participant_id: userId,
-        additional_data: {
-          short_profile_bio: profileBio,
-          current_projects: currentProjects,
-          suggested_projects: suggestedProjects,
-        },
-        bot_base_url: `${
-          subdomain === "playground"
-            ? "https://playground.coachbots.com"
-            : "https://platform.coachbots.com"
-        }`,
-      };
+          console.log(userProfileId);
+          var feedbackFormdata = {
+            bot_type: "feedback_bot",
+            bot_name: name,
+            profile_id: userProfileId,
+            email: user.email,
+            attributes: {
+              heading: "welcome to feedback bot",
+              feedback_questions: {
+                "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+                "2": "Regarding workplace team management skills, how would you rate my skills?",
+                "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+                "4": "How would like to see me implement the feedback you have provided so far?",
+              },
+            },
+            feedback_questions: {
+              "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+              "2": "Regarding workplace team management skills, how would you rate my skills?",
+              "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+              "4": "How would like to see me implement the feedback you have provided so far?",
+            },
+            participant_id: userId,
+            additional_data: {
+              short_profile_bio: profileBio,
+              current_projects: currentProjects,
+              suggested_projects: suggestedProjects,
+            },
+            bot_base_url: `${
+              subdomain === "playground"
+                ? "https://playground.coachbots.com"
+                : "https://platform.coachbots.com"
+            }`,
+          };
 
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", basicAuth);
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          myHeaders.append("Authorization", basicAuth);
 
-      fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-        method: checkIfEdit ? "PATCH" : "POST",
-        headers: myHeaders,
-        body: checkIfEdit
-          ? JSON.stringify({
-              bot_id: botIUidFromParams,
-              updated_data: feedbackFormdata,
-            })
-          : JSON.stringify(feedbackFormdata),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setFeedbackCreateLoading(false);
+          fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+            method: checkIfEdit ? "PATCH" : "POST",
+            headers: myHeaders,
+            body: checkIfEdit
+              ? JSON.stringify({
+                  bot_id: botIUidFromParams,
+                  updated_data: feedbackFormdata,
+                })
+              : JSON.stringify(feedbackFormdata),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setFeedbackCreateLoading(false);
 
-          if (!data.error && !data.detail) {
-            if (checkIfEdit) {
-              toast.success("Successfully Updated your feedback bot.", {
-                duration: 6000,
-              });
-              setTimeout(() => {
-                router.push("/profile");
-              }, 4000);
-            } else {
-              toast.success(
-                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                {
-                  duration: 6000,
+              if (!data.error && !data.detail) {
+                if (checkIfEdit) {
+                  toast.success("Successfully Updated your feedback bot.", {
+                    duration: 6000,
+                  });
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 4000);
+                } else {
+                  toast.success(
+                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
                 }
-              );
-              setTimeout(() => {
-                router.push("/");
-              }, 4000);
-            }
-            resetAllStates();
-          } else {
-            toast.error("Error creating your feedback bot. Please try again.", {
-              duration: 6000,
+                resetAllStates();
+              } else {
+                toast.error(
+                  "Error creating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              if (checkIfEdit) {
+                toast.error(
+                  "Error Updating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              } else {
+                toast.error(
+                  "Error creating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              }
             });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          if (checkIfEdit) {
-            toast.error("Error Updating your feedback bot. Please try again.", {
-              duration: 6000,
-            });
-          } else {
-            toast.error("Error creating your feedback bot. Please try again.", {
-              duration: 6000,
-            });
-          }
         });
-
-      });
-
     }
   };
 
@@ -1499,10 +1509,27 @@ const CoachIntake = ({ user }: any) => {
                 setMentoringPreferences(
                   resultingBot.signature_bot.data.additional_data.mentoring_preferences.trim()
                 );
+
                 setMentoringPreferencess(
                   resultingBot.signature_bot.data.additional_data.mentoring_frameworks
-                    ?.split(",")
-                    .map((item: string) => item.trim())
+                    ?.replace(`"`, "")
+                    .split(",")
+                    .map((item: string) =>
+                      replaceSpecialCharacters(item.trim())
+                    )
+                    .filter((item: string) => item.length > 0)
+                );
+                console.log(
+                  resultingBot.signature_bot.data.additional_data
+                    .mentoring_frameworks
+                );
+                console.log(
+                  resultingBot.signature_bot.data.additional_data.mentoring_frameworks
+                    ?.replace(`"`, "")
+                    .split(",")
+                    .map((item: string) =>
+                      replaceSpecialCharacters(item.trim())
+                    )
                     .filter((item: string) => item.length > 0)
                 );
                 setPovProgramParticipants(
@@ -1553,7 +1580,10 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.bot_attributes.fitment_answers.mentor_answer[0]
                 );
                 setCochMentInSameDep(
-                  resultingBot.bot_attributes.fitment_answers.mentor_answer[1]
+                  resultingBot.bot_attributes.fitment_answers
+                    .mentor_answer[1] === "true"
+                    ? "Yes"
+                    : "No"
                 );
 
                 setOutcomeSupported(
@@ -2915,7 +2945,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {[
-                          "Careeer advancement",
+                          "Career advancement",
                           "Skill development",
                           "Introspection & reflectiom",
                           "Networking & leadership",
@@ -3275,7 +3305,7 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {[
-                          "Careeer advancement",
+                          "Career advancement",
                           "Skill development",
                           "Introspection & reflectiom",
                           "Networking & leadership",
