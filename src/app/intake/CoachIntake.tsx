@@ -465,7 +465,7 @@ const CoachIntake = ({ user }: any) => {
               console.error(err);
             });
 
-          if (formType === "feedback" && !checkIfEdit) {
+          if (formType === "feedback" && !checkIfEdit && !checkIfView) {
             fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
               headers: {
                 Authorization: basicAuth,
@@ -2313,8 +2313,8 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                  <div className="flex items-start space-x-2 my-1.5  w-full border border-red-300 bg-red-100 p-2 rounded-md">
-                    {checkIfEdit && (
+                  {checkIfEdit && (
+                    <div className="flex items-start space-x-2 my-1.5  w-full border border-red-300 bg-red-100 p-2 rounded-md">
                       <>
                         <Checkbox
                           checked={deleteExistingFiles}
@@ -2327,8 +2327,8 @@ const CoachIntake = ({ user }: any) => {
                           Delete existing files?
                         </label>
                       </>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
