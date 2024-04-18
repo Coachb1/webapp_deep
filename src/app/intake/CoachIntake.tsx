@@ -1780,12 +1780,14 @@ const CoachIntake = ({ user }: any) => {
                 }}
               >
                 <div className="flex flex-col gap-2">
-                  <Badge
-                    variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
-                  >
-                    <Info className="h-4 w-4 mr-1" /> All fields are required.
-                  </Badge>
+                  {!checkIfView && (
+                    <Badge
+                      variant={"secondary"}
+                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
+                    >
+                      <Info className="h-4 w-4 mr-1" /> All fields are required.
+                    </Badge>
+                  )}
                   {checkIfEdit && (
                     <Badge
                       className="bg-blue-200 w-fit text-blue-800"
