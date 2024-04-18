@@ -206,7 +206,7 @@ const Feedback = ({ user, renderType }: any) => {
             coachScribe.setAttribute("style", "display: none;");
             setInValidCoach(true);
           }
-          setCoachName(data.data.bot_details.coach_name);
+          setCoachName(data.data.bot_name);
 
           if (data.data.bot_details.info) {
             setCoachDescription(data.data.bot_details.info);
