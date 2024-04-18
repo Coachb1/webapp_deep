@@ -40,6 +40,7 @@ const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
   const formType = params.get("type");
   const checkIfEdit = params.get("edit");
+  const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
   const editBotType = params.get("bot_type");
@@ -440,6 +441,7 @@ const CoachIntake = ({ user }: any) => {
               if (
                 data.data.length > 0 &&
                 !checkIfEdit &&
+                !checkIfView &&
                 formType !== "knowledge-bot" &&
                 formType !== "feedback"
               ) {
@@ -507,7 +509,7 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("about", about);
         formdata.append("experience", experience);
 
-        let CoachMentorQnA = {coach_qna: {}, mentor_qna: {}}
+        let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
 
         if (!checkIfEdit) {
           //@ts-ignore
@@ -584,7 +586,7 @@ const CoachIntake = ({ user }: any) => {
                 integratingLessons,
               "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
                 guidanceOnCoachingProcess,
-            }
+            };
 
             CoachMentorQnA.coach_qna = coachQna;
 
@@ -608,7 +610,7 @@ const CoachIntake = ({ user }: any) => {
                 commonChallengesOrObstacles,
               "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
                 opinionsAboutKeyQualities,
-            }
+            };
 
             CoachMentorQnA.mentor_qna = QnaMentor;
 
@@ -632,7 +634,7 @@ const CoachIntake = ({ user }: any) => {
                 integratingLessons,
               "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
                 guidanceOnCoachingProcess,
-            }
+            };
             CoachMentorQnA.coach_qna = qnaCoach;
 
             const qnaMentor = {
@@ -648,7 +650,7 @@ const CoachIntake = ({ user }: any) => {
                 commonChallengesOrObstacles,
               "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
                 opinionsAboutKeyQualities,
-            }
+            };
             CoachMentorQnA.mentor_qna = qnaMentor;
 
             formdata.append(
@@ -800,7 +802,7 @@ const CoachIntake = ({ user }: any) => {
                       outcomeSupported,
                     },
                     coach_qna: CoachMentorQnA.coach_qna,
-                    mentor_qna: CoachMentorQnA.mentor_qna
+                    mentor_qna: CoachMentorQnA.mentor_qna,
                   },
                   media_data: {
                     youtube_links: linksReflectingWVpersonal,
@@ -1065,7 +1067,7 @@ const CoachIntake = ({ user }: any) => {
                   outcomeSupported,
                 },
                 coach_qna: CoachMentorQnA.coach_qna,
-                mentor_qna: CoachMentorQnA.mentor_qna
+                mentor_qna: CoachMentorQnA.mentor_qna,
               },
               media_data: {
                 youtube_links: linksReflectingWVpersonal,
@@ -1243,14 +1245,14 @@ const CoachIntake = ({ user }: any) => {
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (user) {
-      console.log('user feedback',user)
+      console.log("user feedback", user);
       setFeedbackCreateLoading(true);
       var myHeaders = new Headers();
       myHeaders.append("Authorization", basicAuth);
 
       var requestOptions = {
         method: "GET",
-        headers: myHeaders
+        headers: myHeaders,
       };
       fetch(
         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
@@ -1258,102 +1260,109 @@ const CoachIntake = ({ user }: any) => {
       )
         .then((response) => response.json())
         .then((result) => {
-          console.log('feedback bot profile data',result);
+          console.log("feedback bot profile data", result);
           userProfileId = result.data.length > 0 ? result.data[0].uid : null;
-      console.log(userProfileId)
-      var feedbackFormdata = {
-        bot_type: "feedback_bot",
-        bot_name: name,
-        profile_id: userProfileId,
-        email: user.email,
-        attributes: {
-          heading: "welcome to feedback bot",
-          feedback_questions: {
-            "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-            "2": "Regarding workplace team management skills, how would you rate my skills?",
-            "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-            "4": "How would like to see me implement the feedback you have provided so far?",
-          },
-        },
-        feedback_questions: {
-          "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-          "2": "Regarding workplace team management skills, how would you rate my skills?",
-          "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-          "4": "How would like to see me implement the feedback you have provided so far?",
-        },
-        participant_id: userId,
-        additional_data: {
-          short_profile_bio: profileBio,
-          current_projects: currentProjects,
-          suggested_projects: suggestedProjects,
-        },
-        bot_base_url: `${
-          subdomain === "playground"
-            ? "https://playground.coachbots.com"
-            : "https://platform.coachbots.com"
-        }`,
-      };
+          console.log(userProfileId);
+          var feedbackFormdata = {
+            bot_type: "feedback_bot",
+            bot_name: name,
+            profile_id: userProfileId,
+            email: user.email,
+            attributes: {
+              heading: "welcome to feedback bot",
+              feedback_questions: {
+                "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+                "2": "Regarding workplace team management skills, how would you rate my skills?",
+                "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+                "4": "How would like to see me implement the feedback you have provided so far?",
+              },
+            },
+            feedback_questions: {
+              "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+              "2": "Regarding workplace team management skills, how would you rate my skills?",
+              "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+              "4": "How would like to see me implement the feedback you have provided so far?",
+            },
+            participant_id: userId,
+            additional_data: {
+              short_profile_bio: profileBio,
+              current_projects: currentProjects,
+              suggested_projects: suggestedProjects,
+            },
+            bot_base_url: `${
+              subdomain === "playground"
+                ? "https://playground.coachbots.com"
+                : "https://platform.coachbots.com"
+            }`,
+          };
 
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", basicAuth);
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          myHeaders.append("Authorization", basicAuth);
 
-      fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-        method: checkIfEdit ? "PATCH" : "POST",
-        headers: myHeaders,
-        body: checkIfEdit
-          ? JSON.stringify({
-              bot_id: botIUidFromParams,
-              updated_data: feedbackFormdata,
-            })
-          : JSON.stringify(feedbackFormdata),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setFeedbackCreateLoading(false);
+          fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+            method: checkIfEdit ? "PATCH" : "POST",
+            headers: myHeaders,
+            body: checkIfEdit
+              ? JSON.stringify({
+                  bot_id: botIUidFromParams,
+                  updated_data: feedbackFormdata,
+                })
+              : JSON.stringify(feedbackFormdata),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setFeedbackCreateLoading(false);
 
-          if (!data.error && !data.detail) {
-            if (checkIfEdit) {
-              toast.success("Successfully Updated your feedback bot.", {
-                duration: 6000,
-              });
-              setTimeout(() => {
-                router.push("/profile");
-              }, 4000);
-            } else {
-              toast.success(
-                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                {
-                  duration: 6000,
+              if (!data.error && !data.detail) {
+                if (checkIfEdit) {
+                  toast.success("Successfully Updated your feedback bot.", {
+                    duration: 6000,
+                  });
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 4000);
+                } else {
+                  toast.success(
+                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
                 }
-              );
-              setTimeout(() => {
-                router.push("/");
-              }, 4000);
-            }
-            resetAllStates();
-          } else {
-            toast.error("Error creating your feedback bot. Please try again.", {
-              duration: 6000,
+                resetAllStates();
+              } else {
+                toast.error(
+                  "Error creating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              if (checkIfEdit) {
+                toast.error(
+                  "Error Updating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              } else {
+                toast.error(
+                  "Error creating your feedback bot. Please try again.",
+                  {
+                    duration: 6000,
+                  }
+                );
+              }
             });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          if (checkIfEdit) {
-            toast.error("Error Updating your feedback bot. Please try again.", {
-              duration: 6000,
-            });
-          } else {
-            toast.error("Error creating your feedback bot. Please try again.", {
-              duration: 6000,
-            });
-          }
         });
-
-      });
-
     }
   };
 
@@ -1408,7 +1417,7 @@ const CoachIntake = ({ user }: any) => {
     coachScribe.setAttribute("style", "display: none;");
 
     console.log("hello 1");
-    if (checkIfEdit === "true") {
+    if (checkIfEdit === "true" || checkIfView === "view") {
       console.log("hello 2");
       if (formType === "feedback") {
         setIsFeedbackNeeded(true);
@@ -1766,7 +1775,10 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
-                      disabled={checkIfEdit === null ? false : true}
+                      disabled={
+                        (checkIfEdit === null ? false : true) ||
+                        (checkIfView === null ? false : true)
+                      }
                       value={profileType}
                       options={[
                         {
@@ -1820,6 +1832,7 @@ const CoachIntake = ({ user }: any) => {
                       minLength={200}
                       maxLength={1500}
                       required
+                      disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         setAbout(e.target.value);
                         handleWordLimit(
@@ -1850,6 +1863,7 @@ const CoachIntake = ({ user }: any) => {
                         onValueChange={(value) => {
                           setExperience(value);
                         }}
+                        disabled={checkIfView === null ? false : true}
                       >
                         {[
                           "0 - 5 years",
@@ -1885,6 +1899,7 @@ const CoachIntake = ({ user }: any) => {
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
                         }}
+                        disabled={checkIfView === null ? false : true}
                         className="w-fit"
                       />{" "}
                       <p className="m-1 mt-2 ml-0 text-gray-500">
@@ -1901,6 +1916,7 @@ const CoachIntake = ({ user }: any) => {
 
                     <textarea
                       rows={4}
+                      disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         setJourneyAndBackground(e.target.value);
 
@@ -1927,6 +1943,7 @@ const CoachIntake = ({ user }: any) => {
                     <RadioGroup
                       value={department}
                       required
+                      disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
                         setDepartment(value);
                       }}
@@ -1953,6 +1970,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={areaDomain}
                         onValueChange={(value) => {
                           setAreaDomain(value);
@@ -1985,6 +2003,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={mentoringPreferences}
                         onValueChange={(value) => {
                           setMentoringPreferences(value);
@@ -2058,8 +2077,11 @@ const CoachIntake = ({ user }: any) => {
                               <div className="flex items-center space-x-2 my-1.5 ">
                                 <Checkbox
                                   disabled={
-                                    !mentoringPreferencess.includes(model) &&
-                                    mentoringPreferencess.length >= 3
+                                    (!mentoringPreferencess.includes(model) &&
+                                      mentoringPreferencess.length >= 3) ||
+                                    checkIfView === null
+                                      ? false
+                                      : true
                                   }
                                   id={model}
                                   onCheckedChange={(checked) => {
@@ -2093,6 +2115,7 @@ const CoachIntake = ({ user }: any) => {
                       <input
                         required
                         value={povProgramParticipants}
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setPovProgramParticipants(e.target.value);
 
@@ -2122,6 +2145,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <input
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={problemSolvingApproach}
                         onChange={(e) => {
                           setProblemSolvingApproach(e.target.value);
@@ -2154,6 +2178,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setSignificantChallenges(e.target.value);
 
@@ -2184,6 +2209,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         onChange={(e) => {
                           setPhrasesNExpressions(e.target.value);
@@ -2212,6 +2238,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <input
                         required
+                        disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           setLeaderNames(e.target.value);
                         }}
@@ -2231,6 +2258,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
@@ -2251,6 +2279,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         required={!checkIfEdit}
+                        disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
                           setLinksReflectyouWished(e.target.value);
@@ -2271,6 +2300,7 @@ const CoachIntake = ({ user }: any) => {
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         type="file"
                         className="w-full text-xs my-2"
@@ -2309,6 +2339,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={voiceSample}
                         onValueChange={(value) => {
                           setVoiceSample(value);
@@ -2335,6 +2366,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={allowSessionNotes}
                         onValueChange={(value) => {
@@ -2364,6 +2396,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         value={discussInCARformat}
                         onChange={(e) => {
@@ -2392,6 +2425,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={provideAnswersUsingEmojis}
                         onValueChange={(value) => {
@@ -2428,6 +2462,7 @@ const CoachIntake = ({ user }: any) => {
                         </p>
                         <div>
                           <textarea
+                            disabled={checkIfView === null ? false : true}
                             rows={4}
                             required={!checkIfEdit}
                             value={foundationalValues}
@@ -2461,6 +2496,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={developmentFramewrok}
                             onChange={(e) => {
@@ -2501,6 +2537,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={coachingProcessOverview}
                             onChange={(e) => {
@@ -2531,6 +2568,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={handlingSituations}
                             onChange={(e) => {
@@ -2562,6 +2600,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={integratingLessons}
                             onChange={(e) => {
@@ -2593,6 +2632,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
@@ -2631,6 +2671,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={differentCareerPath}
                             onChange={(e) => {
@@ -2662,6 +2703,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
@@ -2703,6 +2745,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={overviewofMentoring}
                             onChange={(e) => {
@@ -2735,6 +2778,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
@@ -2768,6 +2812,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
@@ -2787,6 +2832,7 @@ const CoachIntake = ({ user }: any) => {
                         <div>
                           <textarea
                             rows={4}
+                            disabled={checkIfView === null ? false : true}
                             required={!checkIfEdit}
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
@@ -2856,6 +2902,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="my-2 mb-3">
                       <RadioGroup
                         required
+                        disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
                           setParticipantLevel(value);
@@ -2881,6 +2928,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
@@ -2908,6 +2956,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
+                        disabled={checkIfView === null ? false : true}
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
@@ -2937,57 +2986,66 @@ const CoachIntake = ({ user }: any) => {
                       </RadioGroup>
                     </div>
                   </div>
-                  <hr className="my-2" />
-                  <div className="flex items-start space-x-2 my-1.5 ">
-                    <Checkbox
-                      checked={checkIfEdit ? true : Boolean(privacyInfoChecked)}
-                      onCheckedChange={(checked) => {
-                        setPrivaciInfoChecked(checked);
-                      }}
-                    />
-                    <label className="text-xs text-gray-700">
-                      We respect your data and privacy. Any data is handled per
-                      the data security and privacy policy of the organization
-                      holding the platform license. Please contact your program
-                      administrator for removal requests. Any AI assets created
-                      by the users are considered the property of the
-                      organization the individuals are affiliated with.
-                    </label>
-                  </div>
-                  <div>
-                    {checkIfEdit ? (
-                      <Button disabled={createLoading} className="h-8">
-                        {" "}
-                        {createLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Saving
-                          </>
+                  {!checkIfView && (
+                    <>
+                      <hr className="my-2" />
+                      <div className="flex items-start space-x-2 my-1.5 ">
+                        <Checkbox
+                          checked={
+                            checkIfEdit ? true : Boolean(privacyInfoChecked)
+                          }
+                          onCheckedChange={(checked) => {
+                            setPrivaciInfoChecked(checked);
+                          }}
+                        />
+                        <label className="text-xs text-gray-700">
+                          We respect your data and privacy. Any data is handled
+                          per the data security and privacy policy of the
+                          organization holding the platform license. Please
+                          contact your program administrator for removal
+                          requests. Any AI assets created by the users are
+                          considered the property of the organization the
+                          individuals are affiliated with.
+                        </label>
+                      </div>
+                      <div>
+                        {checkIfEdit ? (
+                          <Button disabled={createLoading} className="h-8">
+                            {" "}
+                            {createLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Saving
+                              </>
+                            ) : (
+                              <>
+                                Save Changes{" "}
+                                <PenLine className="ml-2 h-5 w-5" />
+                              </>
+                            )}
+                          </Button>
                         ) : (
-                          <>
-                            Save Changes <PenLine className="ml-2 h-5 w-5" />
-                          </>
+                          <Button
+                            disabled={createLoading || !privacyInfoChecked}
+                            className="h-8"
+                          >
+                            {" "}
+                            {createLoading ? (
+                              <>
+                                <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
+                                Submitting
+                              </>
+                            ) : (
+                              <>
+                                Submit{" "}
+                                <SendHorizonal className="ml-2 h-4 w-4" />
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </Button>
-                    ) : (
-                      <Button
-                        disabled={createLoading || !privacyInfoChecked}
-                        className="h-8"
-                      >
-                        {" "}
-                        {createLoading ? (
-                          <>
-                            <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
-                            Submitting
-                          </>
-                        ) : (
-                          <>
-                            Submit <SendHorizonal className="ml-2 h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                   {checkIfEdit && (
                     <div className="flex flex-row mt-2">
                       <Info className="h-4 w-4 mr-1 inline text-red-400" />
