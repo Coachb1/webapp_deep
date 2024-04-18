@@ -1548,10 +1548,12 @@ const CoachIntake = ({ user }: any) => {
                 );
                 if (checkIfView) {
                   setLinksReflectingWVpersonal(
-                    resultingBot.signature_bot.data.additional_data.youtube_links?.trim()
+                    resultingBot.signature_bot.data.additional_data
+                      .youtube_links
                   );
                   setLinksReflectyouWished(
-                    resultingBot.signature_bot.data.additional_data.article_links?.trim()
+                    resultingBot.signature_bot.data.additional_data
+                      .article_links
                   );
                 }
                 setLeaderNames(
