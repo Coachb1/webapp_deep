@@ -5176,7 +5176,7 @@ loadExternalModule().then(() => {
             !messageText.innerText.endsWith("!") &&
             !messageText.innerText.endsWith(".") &&
             !messageText.innerText.endsWith("?") &&
-            !emojis.some((emoji) => messageText.innerText(emoji))
+            !emojis.some((emoji) => messageText.innerText.endsWith(emoji))
           ) {
             messageText.innerText +=
               " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
