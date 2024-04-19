@@ -1577,23 +1577,26 @@ const CoachIntake = ({ user }: any) => {
                     ? "Yes"
                     : "No"
                 );
-                setCoachMentSelect(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.coachmentSelect
-                );
+                // setCoachMentSelect(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.coachmentSelect
+                // );
 
                 setParticipantLevel(
-                  resultingBot.bot_attributes.fitment_answers.mentor_answer[0]
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[0]
                 );
+
                 setCochMentInSameDep(
-                  resultingBot.bot_attributes.fitment_answers
-                    .mentor_answer[1] === "true"
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[1]
                     ? "Yes"
                     : "No"
                 );
 
                 setOutcomeSupported(
-                  resultingBot.bot_attributes.fitment_answers.mentor_answer[2]
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[2]
                 );
 
                 setPhrasesNExpressions(
