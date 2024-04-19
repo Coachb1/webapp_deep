@@ -1577,23 +1577,26 @@ const CoachIntake = ({ user }: any) => {
                     ? "Yes"
                     : "No"
                 );
-                setCoachMentSelect(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.coachmentSelect
-                );
+                // setCoachMentSelect(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.coachmentSelect
+                // );
 
                 setParticipantLevel(
-                  resultingBot.bot_attributes.fitment_answers.mentor_answer[0]
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[0]
                 );
+
                 setCochMentInSameDep(
-                  resultingBot.bot_attributes.fitment_answers
-                    .mentor_answer[1] === "true"
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[1]
                     ? "Yes"
                     : "No"
                 );
 
                 setOutcomeSupported(
-                  resultingBot.bot_attributes.fitment_answers.mentor_answer[2]
+                  resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[2]
                 );
 
                 setPhrasesNExpressions(
@@ -1640,12 +1643,6 @@ const CoachIntake = ({ user }: any) => {
 
                 const mentor_qna =
                   resultingBot.signature_bot.data.additional_data?.mentor_qna;
-
-                console.log(
-                  mentor_qna[
-                    "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?"
-                  ]
-                );
 
                 if (mentor_qna) {
                   setDifferentCareerPath(
@@ -3011,7 +3008,7 @@ const CoachIntake = ({ user }: any) => {
                         {[
                           "Career advancement",
                           "Skill development",
-                          "Introspection & reflectiom",
+                          "Introspection & reflection",
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
@@ -3402,7 +3399,7 @@ const CoachIntake = ({ user }: any) => {
                         {[
                           "Career advancement",
                           "Skill development",
-                          "Introspection & reflectiom",
+                          "Introspection & reflection",
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
