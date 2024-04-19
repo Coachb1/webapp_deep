@@ -105,6 +105,7 @@ const Coach = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("BOT DETAILS : ", data);
+        console.log();
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
         console.log(
@@ -136,7 +137,11 @@ const Coach = ({ user, renderType }: any) => {
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setIsLoading(false);
-        if (!data.data.is_sample_bot && !data.data.is_system_bot) {
+        if (
+          !data.data.is_sample_bot &&
+          !data.data.is_system_bot &&
+          data.data.scenario_case !== "icons_by_ai"
+        ) {
           fetch(`${baseURL}/accounts/`, {
             method: "POST",
             headers: {
@@ -145,13 +150,17 @@ const Coach = ({ user, renderType }: any) => {
             },
             body: JSON.stringify({
               user_context: {
-                name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
+                name: `${user.given_name} ${
+                  user.family_name ? user.family_name : ""
+                }`,
                 role: "member",
                 user_attributes: {
                   tag: "deepchat_profile",
                   attributes: {
                     username: "web_user",
-                    name: `${user.given_name} ${user.family_name ? user.family_name : ""}`,
+                    name: `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`,
                     email: user.email,
                   },
                 },
