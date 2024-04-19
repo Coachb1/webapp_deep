@@ -430,7 +430,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <p className="text-sm max-sm:text-xs my-1">
                 What is the primary purpose of the bot?
               </p>
-              <input
+              <textarea
+                rows={4}
                 required
                 disabled={checkIfView === null ? false : true}
                 onChange={(e) => {
@@ -438,7 +439,6 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 }}
                 value={primaryPurpose}
                 placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
-                type="text"
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
             </div>
@@ -454,8 +454,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 }}
                 value={functionsNTasksOfBot}
                 placeholder="List tasks or functions, e.g., `Answer FAQs, process orders, provide account information.`"
-                rows={3}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                rows={4}
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
               />
             </div>
             <div className="my-3">
@@ -471,8 +471,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   setInfoAccessToBots(e.target.value);
                 }}
                 placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
-                rows={3}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                rows={4}
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
             </div>
             <div className="my-3">
@@ -488,7 +488,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   setCommanFaqs(e.target.value);
                 }}
                 placeholder="list example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
-                rows={3}
+                rows={4}
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
             </div>
@@ -527,8 +527,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   setReleventLinks(e.target.value);
                 }}
                 placeholder="youtube links) - Provide accessible links, e.g. '[YouTube link].'"
-                rows={3}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                rows={4}
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
               />
             </div>
             {!checkIfView && (

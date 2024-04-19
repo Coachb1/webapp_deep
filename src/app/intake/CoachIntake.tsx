@@ -2152,7 +2152,8 @@ const CoachIntake = ({ user }: any) => {
                       starting point.
                     </p>
                     <div>
-                      <input
+                      <textarea
+                        rows={4}
                         required
                         value={povProgramParticipants}
                         disabled={checkIfView === null ? false : true}
@@ -2166,7 +2167,6 @@ const CoachIntake = ({ user }: any) => {
                           );
                         }}
                         placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
-                        type="text"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes(
@@ -2183,7 +2183,8 @@ const CoachIntake = ({ user }: any) => {
                       What is your general approach towards problem solving?
                     </p>
                     <div>
-                      <input
+                      <textarea
+                        rows={4}
                         required
                         disabled={checkIfView === null ? false : true}
                         value={problemSolvingApproach}
@@ -2197,7 +2198,6 @@ const CoachIntake = ({ user }: any) => {
                           );
                         }}
                         placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
-                        type="text"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes(
