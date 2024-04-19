@@ -1641,12 +1641,6 @@ const CoachIntake = ({ user }: any) => {
                 const mentor_qna =
                   resultingBot.signature_bot.data.additional_data?.mentor_qna;
 
-                console.log(
-                  mentor_qna[
-                    "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?"
-                  ]
-                );
-
                 if (mentor_qna) {
                   setDifferentCareerPath(
                     mentor_qna[
@@ -3011,7 +3005,7 @@ const CoachIntake = ({ user }: any) => {
                         {[
                           "Career advancement",
                           "Skill development",
-                          "Introspection & reflectiom",
+                          "Introspection & reflection",
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
@@ -3402,7 +3396,7 @@ const CoachIntake = ({ user }: any) => {
                         {[
                           "Career advancement",
                           "Skill development",
-                          "Introspection & reflectiom",
+                          "Introspection & reflection",
                           "Networking & leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
