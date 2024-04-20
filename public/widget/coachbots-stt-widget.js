@@ -5251,7 +5251,7 @@ loadExternalModule().then(() => {
       
         const decodedText = decoder.decode(value);
         console.log(decodedText)
-        messageText.innerHTML +=  processString(decodedText)
+        messageText.innerHTML +=  decodedText
         signals.onResponse({
           html: ".",
         });
