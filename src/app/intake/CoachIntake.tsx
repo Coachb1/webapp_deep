@@ -247,40 +247,42 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const getClientInfoForUser = (userEmail: string) => {
-    fetch(
-      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setClientinfoData(data.data);
-
-        if (
-          data.data.user_info[0].departments !== null &&
-          data.data.user_info[0].departments !== ""
-        ) {
-          console.log(data.data.user_info[0].departments, "Departments");
-          setDepartments(data.data.user_info[0].departments.split(","));
+    if (userEmail) {
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
         }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setClientinfoData(data.data);
 
-        if (
-          data.data.user_info[0].coach_expertise !== null &&
-          data.data.user_info[0].coach_expertise !== ""
-        ) {
-          console.log(
-            data.data.user_info[0].coach_expertise,
-            "coach_expertise"
-          );
-          setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
-        }
-      })
-      .catch((err) => console.error(err));
+          if (
+            data.data.user_info[0].departments !== null &&
+            data.data.user_info[0].departments !== ""
+          ) {
+            console.log(data.data.user_info[0].departments, "Departments");
+            setDepartments(data.data.user_info[0].departments.split(","));
+          }
+
+          if (
+            data.data.user_info[0].coach_expertise !== null &&
+            data.data.user_info[0].coach_expertise !== ""
+          ) {
+            console.log(
+              data.data.user_info[0].coach_expertise,
+              "coach_expertise"
+            );
+            setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
+          }
+        })
+        .catch((err) => console.error(err));
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
