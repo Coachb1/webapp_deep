@@ -29,6 +29,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { scrollToView } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const VersionOne = ({ user }: any) => {
   let shouldRenderDiv;
@@ -92,7 +93,10 @@ const VersionOne = ({ user }: any) => {
           Toolkits and conversational coaching-learning for any scenario.
         </p>
 
-        <div className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2">
+        <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
+          Demo
+        </Badge>
+        <div className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 border-2 border-indigo-400 p-3 rounded-md">
           <Link href="/coach" target="_blank">
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
