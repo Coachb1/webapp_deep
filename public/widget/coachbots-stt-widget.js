@@ -5096,6 +5096,22 @@ loadExternalModule().then(() => {
     });
   };
 
+  function processString(inputString) {
+    // Define regular expressions for patterns to remove
+    const pattern1 = /0:"\s*/g;  // Matches "0:" with optional whitespace
+    const pattern2 = /"\s*/g;    // Matches " with optional whitespace
+    const pattern3 = /\n\n/g;    // Matches two consecutive newline characters
+  
+    // Remove patterns from the input string
+    const processedString = inputString
+      .replace(pattern1, '')    // Remove pattern1
+      .replace(pattern2, '')    // Remove pattern2
+      .replace(pattern3, '');   // Remove pattern3
+  
+    return processedString;
+  }
+  
+
   const GeminiAiResponse = (
     userInputMessage,
     signals,
@@ -5232,9 +5248,10 @@ loadExternalModule().then(() => {
           return Promise.resolve();
         }
 
+      
         const decodedText = decoder.decode(value);
         console.log(decodedText)
-        messageText.innerHTML += decodedText
+        messageText.innerHTML +=  processString(decodedText)
         signals.onResponse({
           html: ".",
         });
