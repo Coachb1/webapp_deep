@@ -588,12 +588,12 @@ const Coaches = ({
           ? coachesData.filter(
               (coachData) =>
                 coachData.profile_type === "coach" ||
-                coachData.profile_type.includes("coach-")
+                coachData.profile_type === "coach-mentor"
             )
           : savedCoachesData.filter(
               (coachData) =>
                 coachData.profile_type === "coach" ||
-                coachData.profile_type.includes("coach-")
+                coachData.profile_type === "coach-mentor"
             ),
         newValues
       );
@@ -1201,7 +1201,8 @@ const Coaches = ({
               onUpdateCheckedValues={handleUpdateCheckedValues}
             />
             <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
-              Each menu is single-select only.
+              This is a combination filter. It works when the the result
+              satisfies each selection criterion.
             </p>
           </div>
         </div>
@@ -1535,7 +1536,10 @@ const Coaches = ({
               <div className="mt-12 flex items-center">
                 {coachesData.length === 0 && (
                   <>
-                    <span>No Data</span>
+                    <span>
+                      The existing choices are too narrow. Please use lesser
+                      search parameters.
+                    </span>
                   </>
                 )}
                 {parentCheckedValues.includes("External") ||

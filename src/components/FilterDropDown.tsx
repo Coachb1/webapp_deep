@@ -36,7 +36,6 @@ const FilterDropDown = ({
     if (checked) {
       onUpdateCheckedValues([...checkedValues, value]);
 
-      console.log([...checkedValues, value]);
       if (
         [...checkedValues, value].includes("coachee") ||
         [...checkedValues, value].includes("mentee")
@@ -45,7 +44,6 @@ const FilterDropDown = ({
           .filter((val) => val.filterName === "Expertise")
           .flatMap((filter) => filter.filterName);
 
-        console.log(disabledFilters);
         setDisabledFilters(disabledFilters);
       }
     } else {
