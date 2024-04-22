@@ -362,7 +362,7 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
   return outputData;
 }
 
-export const getClientUserInfo = (userEmail: string) => {
+export const getClientUserInfo = (userEmail: string | undefined) => {
   if (userEmail) {
     return fetch(
       `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,

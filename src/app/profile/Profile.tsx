@@ -54,8 +54,8 @@ const Profile = ({ user }: any) => {
           setUserRole(data.role);
         });
 
-      getClientUserInfo(user.email)
-        .then((res) => res.json())
+      getClientUserInfo(user?.email)
+        ?.then((res) => res.json())
         .then((data) => {
           console.log(data, "getClientUserInfo - userProfile");
 
