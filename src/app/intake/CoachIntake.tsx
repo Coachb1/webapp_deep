@@ -1759,7 +1759,7 @@ const CoachIntake = ({ user }: any) => {
   ) => {
     const inputValue = input_value;
 
-    if (inputValue.split(" ").length >= minLimit) {
+    if (inputValue.trim().split(" ").length >= minLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
     } else {
       setError((prevErrors) => ({
@@ -2862,10 +2862,23 @@ const CoachIntake = ({ user }: any) => {
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
                               setCommenChallengesOrObstacles(e.target.value);
+
+                              handleWordLimitMin(
+                                e.target.value,
+                                20,
+                                "commenChallengesOrObstacles"
+                              );
                             }}
                             placeholder=""
                             className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
                           />
+                          {Object.keys(error).includes(
+                            "commenChallengesOrObstacles"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["commenChallengesOrObstacles"]}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="my-3">
