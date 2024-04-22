@@ -923,6 +923,7 @@ const CoachIntake = ({ user }: any) => {
                       if (data.error === "Bot already exists") {
                         toast.error("Bot already exists");
                       } else {
+                        setCreateLoading(false);
                         toast.error(
                           "Error creating your coach profile. Please try again.",
                           {
@@ -958,6 +959,7 @@ const CoachIntake = ({ user }: any) => {
             })
             .catch((error) => {
               console.log("error", error);
+              setCreateLoading(false);
               toast.error(
                 "Error creating your coach profile. Please try again."
               );
@@ -1177,6 +1179,7 @@ const CoachIntake = ({ user }: any) => {
                             router.push("/profile");
                           }, 4000);
                         } else {
+                          setCreateLoading(false);
                           toast.error(
                             "Error creating your coach profile. Please try again.",
                             {
@@ -1213,6 +1216,7 @@ const CoachIntake = ({ user }: any) => {
                   if (data.error === "Bot already exists") {
                     toast.error("Bot already exists");
                   } else {
+                    setCreateLoading(false);
                     toast.error(
                       "Error creating your coach profile. Please try again.",
                       {
