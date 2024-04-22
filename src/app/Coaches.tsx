@@ -417,8 +417,6 @@ const Coaches = ({
                 (coachData: any) => coachData.is_approved === true
               );
 
-              console.log(findCoachUID(isApprovedData));
-
               if (findCoacheeUID(isApprovedData)) {
                 getConnectionsForCoachee(findCoacheeUID(isApprovedData));
               } else if (findCoachUID(isApprovedData)) {
@@ -450,11 +448,6 @@ const Coaches = ({
                 (data: any) => data.signature_bot.bot_type === "feedback_bot"
               );
               setFeedbackBots(FeedbackBot);
-
-              // const UserBot = data.data.filter(
-              //   (data: any) => data.signature_bot.bot_type === "user_bot"
-              // );
-              // setUserBotData(UserBot);
             })
             .catch((err) => {
               console.error(err);
@@ -1046,7 +1039,9 @@ const Coaches = ({
                         </>
                       ) : (
                         <>
-                          {allCoaches[0]?.profile_type === "coach" ? (
+                          {allCoaches[0]?.profile_type === "coach" ||
+                          allCoaches[0]?.profile_type === "mentor" ||
+                          allCoaches[0]?.profile_type === "coach-mentor" ? (
                             <Badge className="ml-2">Requested</Badge>
                           ) : (
                             <Badge

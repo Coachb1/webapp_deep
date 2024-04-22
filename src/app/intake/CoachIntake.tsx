@@ -899,6 +899,7 @@ const CoachIntake = ({ user }: any) => {
                               router.push("/");
                             }, 4000);
                           } else {
+                            setCreateLoading(false);
                             toast.error(
                               "Error creating your coach profile. Please try again.",
                               {
