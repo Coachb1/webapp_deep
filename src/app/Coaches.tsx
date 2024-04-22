@@ -676,11 +676,13 @@ const Coaches = ({
       setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
-    if (coacheeIdFromParams) {
-      document.getElementById(coacheeIdFromParams)?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
+    setTimeout(() => {
+      if (coacheeIdFromParams) {
+        document.getElementById(coacheeIdFromParams)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    }, 200);
 
     // //default filter for - icons by ai
     // handleUpdateCheckedValues(["icons_by_ai"]);
