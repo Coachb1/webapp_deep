@@ -2,7 +2,7 @@
 
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Copy, Edit, LinkIcon, Loader, View } from "lucide-react";
+import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
@@ -212,6 +212,20 @@ const MyPages = ({ user }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
+      <div className="pl-4 max-sm:pl-2 ">
+        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
+          {" "}
+          <Info className="h-3 w-3 mr-2 inline" />
+          For editing profiles please email us at{" "}
+          <a
+            className="font-bold text-blue-400"
+            href="mailto: info@coachbots.com"
+          >
+            {" "}
+            info@coachbots.com
+          </a>
+        </p>
+      </div>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
