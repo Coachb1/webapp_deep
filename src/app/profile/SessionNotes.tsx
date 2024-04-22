@@ -242,6 +242,7 @@ const SessionNotes = ({ user }: any) => {
           console.error(err);
         });
     } else {
+      setSubmitLoading(false);
       setContextLengthError(true);
     }
   };
@@ -927,7 +928,7 @@ const SessionNotes = ({ user }: any) => {
                     <Button
                       onClick={createCommentHandler}
                       className="max-sm:p-2 h-6 mt-2 hover:brightness-105"
-                      disabled={emailError}
+                      disabled={emailError || submitLoading}
                     >
                       {submitLoading ? (
                         <>

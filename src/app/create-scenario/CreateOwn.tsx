@@ -48,13 +48,15 @@ const CreateOwn = ({
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    if (scrollViewFromParams) {
-      console.log(scrollViewFromParams);
-      console.log(document.getElementById(scrollViewFromParams));
-      document.getElementById(scrollViewFromParams)?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
+    setTimeout(() => {
+      if (scrollViewFromParams) {
+        console.log(scrollViewFromParams);
+        console.log(document.getElementById(scrollViewFromParams));
+        document.getElementById(scrollViewFromParams)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    }, 200);
   }, []);
 
   const [contextPrompt, setContextPrompt] = useState(

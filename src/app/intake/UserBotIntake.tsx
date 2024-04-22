@@ -7,6 +7,8 @@ import {
   convertTextToCorrectFormat,
   getBotById,
   getUserAccount,
+  isValidLinks,
+  isValidYoutubeLinks,
   subdomain,
 } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
@@ -362,6 +364,21 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     }
   }, []);
 
+  const [error, setError] = useState({});
+
+  const handleInputLinks = (input_value: string, fieldName: string) => {
+    const inputValue = input_value;
+
+    if (isValidLinks(inputValue)) {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    } else {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Please enter the valid link(s).`,
+      }));
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center w-full">
       <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
@@ -525,11 +542,17 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 required
                 onChange={(e) => {
                   setReleventLinks(e.target.value);
+                  handleInputLinks(e.target.value, "releventLinks");
                 }}
                 placeholder="youtube links) - Provide accessible links, e.g. '[YouTube link].'"
                 rows={4}
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
               />
+              {Object.keys(error).includes("releventLinks") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["releventLinks"]}
+                </p>
+              )}
             </div>
             {!checkIfView && (
               <>

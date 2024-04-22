@@ -12,6 +12,8 @@ import {
   subdomain,
   getBotById,
   replaceSpecialCharacters,
+  isValidLinks,
+  isValidYoutubeLinks,
 } from "@/lib/utils";
 import {
   Info,
@@ -1773,6 +1775,30 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
+  const handleInputLinks = (input_value: string, fieldName: string) => {
+    const inputValue = input_value;
+
+    if (fieldName === "linksReflectingWVpersonal") {
+      if (isValidYoutubeLinks(inputValue)) {
+        setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+      } else {
+        setError((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: `Please enter the valid youtube link(s).`,
+        }));
+      }
+    } else if (fieldName === "linksReflectyouWished") {
+      if (isValidLinks(inputValue)) {
+        setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+      } else {
+        setError((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: `Please enter the valid article link(s).`,
+        }));
+      }
+    }
+  };
+
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -2311,10 +2337,21 @@ const CoachIntake = ({ user }: any) => {
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
                           setLinksReflectingWVpersonal(e.target.value);
+                          handleInputLinks(
+                            e.target.value,
+                            "linksReflectingWVpersonal"
+                          );
                         }}
                         placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
                       />
+                      {Object.keys(error).includes(
+                        "linksReflectingWVpersonal"
+                      ) && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["linksReflectingWVpersonal"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -2332,10 +2369,19 @@ const CoachIntake = ({ user }: any) => {
                         value={linksReflectyouWished}
                         onChange={(e) => {
                           setLinksReflectyouWished(e.target.value);
+                          handleInputLinks(
+                            e.target.value,
+                            "linksReflectyouWished"
+                          );
                         }}
                         placeholder="(Let's say you came across an article that you liked a lot and you think it will help the program participants to grow, you can add that link. E.g you want to generally talk about empathy, you can add this article: https://www.mindtools.com/agz0gft/empathy-at-work)"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                       />
+                      {Object.keys(error).includes("linksReflectyouWished") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["linksReflectyouWished"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3 ">

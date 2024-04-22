@@ -382,3 +382,31 @@ export function replaceSpecialCharacters(inputString: string) {
   console.log(cleanedString);
   return cleanedString;
 }
+
+export function isValidLinks(linksString: string): boolean {
+  const links = linksString.split(",");
+  const urlRegex = /^(http|https):\/\/[^ "]+\.[a-zA-Z]{2,}(\/[^ "]+)*$/;
+
+  for (const link of links) {
+    const trimmedLink = link.trim();
+    if (!urlRegex.test(trimmedLink)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function isValidYoutubeLinks(linksString: string): boolean {
+  const links = linksString.split(",");
+  const urlRegex = /^https?:\/\/(?:www\.)?youtube\.com\/.+/;
+
+  for (const link of links) {
+    const trimmedLink = link.trim();
+    if (!urlRegex.test(trimmedLink)) {
+      return false;
+    }
+  }
+
+  return true;
+}
