@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  GlobeIcon,
   List,
   Loader,
   Search,
@@ -203,10 +204,10 @@ const Coaches = ({
   };
 
   const getCoachesData = async () => {
-    setLoadingStates({
-      icon: <List className="h-4 w-4 mr-2" />,
-      text: "Loading Profile summaries",
-    });
+    // setLoadingStates({
+    //   icon: <List className="h-4 w-4 mr-2" />,
+    //   text: "Loading Profile summaries",
+    // });
     //GET COACHES
     // await fetch(
     //   `${baseURL}/accounts/get-directory-informations/?email=${user?.email!}`,
@@ -238,7 +239,7 @@ const Coaches = ({
     setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
     setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
 
-    setLoading(false);
+    // setLoading(false);
 
     const profileTypeOptions: string[] = Array.from(
       new Set(data.map((profile: CoachesDataType) => profile.profile_type))
@@ -345,10 +346,14 @@ const Coaches = ({
         .then((data) => {
           console.log(data);
           setConnections(data.data);
+          setLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          setLoading(false);
         });
+    } else {
+      setLoading(false);
     }
   };
 
@@ -367,10 +372,14 @@ const Coaches = ({
         .then((data) => {
           console.log(data);
           setConnections(data.data);
+          setLoading(false);
         })
         .catch((err) => {
+          setLoading(false);
           console.log(err);
         });
+    } else {
+      setLoading(false);
     }
   };
 
@@ -421,6 +430,8 @@ const Coaches = ({
                 getConnectionsForCoachee(findCoacheeUID(isApprovedData));
               } else if (findCoachUID(isApprovedData)) {
                 getConnectionsForCoach(findCoachUID(isApprovedData));
+              } else {
+                setLoading(false);
               }
 
               if (isApprovedData.length > 0) {
@@ -545,10 +556,14 @@ const Coaches = ({
       const filteredData = filterData(
         newValues.includes("Connected")
           ? coachesData.filter(
-              (coachData) => coachData.profile_type === "mentor"
+              (coachData) =>
+                coachData.profile_type === "mentor" ||
+                coachData.profile_type === "coach-mentor"
             )
           : savedCoachesData.filter(
-              (coachData) => coachData.profile_type === "mentor"
+              (coachData) =>
+                coachData.profile_type === "mentor" ||
+                coachData.profile_type === "coach-mentor"
             ),
         newValues
       );
@@ -600,6 +615,10 @@ const Coaches = ({
 
   useEffect(() => {
     console.log("ALL CONNECTIONS : ", connections);
+    // setLoadingStates({
+    //   icon: <GlobeIcon className="h-4 w-4 mr-2" />,
+    //   text: "Getting your connections",
+    // });
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
@@ -1196,7 +1215,7 @@ const Coaches = ({
         </Badge>
         <div className="mt-2 ">
           {loading && (
-            <div className="flex w-full flex-row items-center justify-center">
+            <div className="flex w-full flex-row items-center justify-center pb-12">
               <div className="mt-12 flex items-center">
                 {loadingStates.icon}
                 <span>{loadingStates.text} </span>

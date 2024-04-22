@@ -6,6 +6,41 @@ export const metadata = constructMetadata({
   title: "Network - Coachbots",
 });
 
+const getClientUserInfo = async (userEmail: string | null | undefined) => {
+  if (userEmail !== null && userEmail !== undefined) {
+    const response = await fetch(
+      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    const data = await response.json();
+    console.log(data.data.user_info[0].is_demo_user);
+    console.log(data.data.user_info[0].is_restricted);
+
+    if (response.ok) {
+      return {
+        isDemoUser: data.data.user_info[0].is_demo_user,
+        isRestricted: data.data.user_info[0].is_restricted,
+      };
+    } else {
+      return {
+        isDemoUser: false,
+        isRestricted: true,
+      };
+    }
+  } else {
+    return {
+      isDemoUser: false,
+      isRestricted: true,
+    };
+  }
+};
+
 const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
   if (userEmail) {
     const response = await fetch(
@@ -44,7 +79,13 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const directoryProfilesData = await getDirectoryProfiles(user?.email);
+  const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
+
+  let directoryProfilesData;
+
+  if (!isRestricted || isDemoUser) {
+    directoryProfilesData = await getDirectoryProfiles(user?.email);
+  }
 
   const UserJoiningPreviledges = await getUserJoiningPreviledges(user?.email);
 
