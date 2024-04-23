@@ -26,8 +26,6 @@ import {
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
 import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
@@ -61,30 +59,7 @@ const VersionOne = ({ user }: any) => {
 
   return (
     <>
-      {/* <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16"> <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-        {!user && (
-          <Badge
-            variant={"secondary"}
-            className="bg-[#2DC092] absolute right-20 h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16"
-          >
-            ✨ Sign up to get the EQ Acess{" "}
-            <br className="hidden max-sm:inline" /> (Workplace emails only)
-            <ArrowUp className="ml-2 w-4 h-4" />
-          </Badge>
-        )}
-        <>
-          <NetworkNav user={user} />
-        </>
-      </div> */}
-
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        {/* <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-          <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-            COACH
-          </span>
-          BOTS
-        </h1> */}
-
         <h1 className="text-5xl mt-12 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
@@ -104,7 +79,7 @@ const VersionOne = ({ user }: any) => {
               AI-Frame
             </Button>
           </Link>
-          <Link
+          {/* <Link
             href="/coach/coach-d54cd-aravsharma?is_audio=true"
             target="_blank"
           >
@@ -113,7 +88,7 @@ const VersionOne = ({ user }: any) => {
             >
               AI-Frame (Audio enabled)
             </Button>
-          </Link>
+          </Link> */}
           <Link href="/feedback" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
@@ -128,13 +103,13 @@ const VersionOne = ({ user }: any) => {
               Knowledge bot (User generated)
             </Button>
           </Link>
-          <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
+          {/* <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               New Manager (Role bot)
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2]">
