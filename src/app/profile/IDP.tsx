@@ -40,9 +40,9 @@ const IDP = ({ user }: any) => {
   const [loading, setLoading] = useState(false);
   const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
 
-  useEffect(() => {
-    setLoading(true);
+  const getIDPs = () => {
     if (user) {
+      setLoading(true);
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
@@ -67,6 +67,10 @@ const IDP = ({ user }: any) => {
           console.error(err);
         });
     }
+  };
+
+  useEffect(() => {
+    getIDPs();
   }, []);
 
   return (
@@ -75,11 +79,13 @@ const IDP = ({ user }: any) => {
       <div className="mx-4 mt-2 text-sm max-sm:mx-2 ">
         <Tabs defaultValue="view-idps" className="w-full">
           <TabsList className="border border-gray-200 ">
-            <TabsTrigger value="view-idps">Your IDPs</TabsTrigger>
+            <TabsTrigger onClick={() => getIDPs()} value="view-idps">
+              Your IDPs
+            </TabsTrigger>
             <TabsTrigger value="create-new-idp">Create new IDP</TabsTrigger>
           </TabsList>
           <TabsContent value="view-idps">
-            {userIDPs.length > 0 && (
+            {!loading && userIDPs.length > 0 && (
               <div className="">
                 <div className="bg-gray-200 px-4 text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <div className="mx-4 flex flex-row mt-4  max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">

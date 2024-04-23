@@ -106,7 +106,6 @@ const IDPIntake = ({ user }: any) => {
       toast.success(
         "Thank you. Your development plan and recommendations will be emailed to you soon. It will be also available in the profile section for you to review.",
         {
-          position: "bottom-right",
           duration: 10000,
         }
       );
