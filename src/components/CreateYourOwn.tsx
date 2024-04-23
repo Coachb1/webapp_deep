@@ -22,6 +22,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [userId, setUserId] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [loadingText, setLoadingText] = useState("Creating simulation.");
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -31,9 +32,13 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
         });
     }
   }, []);
+
   const userContextRef = useRef<any>();
+
   const handleGenerateSenario = () => {
     setGeneratedTestData([]);
+    setGenerationError(false);
+    setInputError(false);
     setUserEnteredContext(userContextRef.current.value);
     if (wordCount < 20 || wordCount > 500) {
       console.log("to small");
@@ -76,44 +81,53 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
           );
           setIsloading(false);
+          setLoadingText("Retrying again due to server overload.");
           // }
         }, 180000);
       }, 200);
 
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Dynamically created Test result", data);
-          setGeneratedTestData(data);
-          setIsloading(false);
-          setLoadingText("Creating simulation.");
-          console.log(data.length);
-          if (data[0].message) {
-            toast.error("Error generating the scenarios.");
-            setGenerationError(true);
-          }
-          // if (data.length === 0) {
-          //   setGenerationError(true);
-          // }
-          clearTimeout(awaitedData);
-          clearTimeout(retryTimeout);
+      try {
+        fetch(url, {
+          method: "POST",
+          headers: {
+            Authorization: basicAuth,
+            "Content-Type": "application/json",
+          },
         })
-        .catch((err) => {
-          clearTimeout(awaitedData);
-          clearTimeout(retryTimeout);
-          console.error(err);
-          setIsloading(false);
-          setLoadingText("Creating simulation.");
-          toast.error(
-            `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
-          );
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Dynamically created Test result", data);
+            setGeneratedTestData(data);
+            setIsloading(false);
+            setLoadingText("Creating simulation.");
+            console.log(data.length);
+            if (data[0].message) {
+              toast.error("Error generating the scenarios.");
+              setGenerationError(true);
+            }
+            // if (data.length === 0) {
+            //   setGenerationError(true);
+            // }
+            clearTimeout(awaitedData);
+            clearTimeout(retryTimeout);
+          })
+          .catch((err) => {
+            clearTimeout(awaitedData);
+            clearTimeout(retryTimeout);
+            console.error(err);
+            setIsloading(false);
+            setLoadingText("Creating simulation.");
+            toast.error(
+              `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
+            );
+          });
+      } catch (error) {
+        //@ts-ignore
+        clearTimeout(awaitedData);
+        //@ts-ignore
+        clearTimeout(retryTimeout);
+        console.error(error);
+      }
     }
   };
 
@@ -139,7 +153,6 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                 setInputError(false);
               }}
               onChange={(e) => {
-                console.log(e.target.value.trim().split(" ").length);
                 if (e.target.value.trim() === "") {
                   setWordCount(0);
                 } else {
