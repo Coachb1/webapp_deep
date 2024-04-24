@@ -1201,8 +1201,8 @@ const Coaches = ({
               onUpdateCheckedValues={handleUpdateCheckedValues}
             />
             <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
-              This is a combination filter. It works when the the result
-              satisfies each selection criterion.
+              This is a combination filter. It works when the result satisfies
+              each selection criterion.
             </p>
           </div>
         </div>
@@ -1248,14 +1248,18 @@ const Coaches = ({
                   >
                     User Created
                   </span>
-                  {coach.profile_type !== "icons_by_ai" && (
+                  {(coach.profile_type === "coach" ||
+                    coach.profile_type === "mentor" ||
+                    coach.profile_type === "coach-mentor") && (
                     <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
                       {coach.name.replace(/\s/g, "").toLowerCase() +
                         coach.id +
                         "@coachbots.com"}
                     </span>
                   )}
-                  {coach.profile_type === "icons_by_ai" && (
+                  {(coach.profile_type === "icons_by_ai" ||
+                    coach.profile_type === "coachee" ||
+                    coach.profile_type === "mentee") && (
                     <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
                       Not Applicable
                     </span>
