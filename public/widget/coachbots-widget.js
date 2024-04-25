@@ -31,6 +31,7 @@ let display_name;
 let content_type;
 let audioFile;
 let audioFileSrc = "";
+let mediaRecorder;
 
 let inputName = "";
 let inputEmail = "";
@@ -2824,6 +2825,8 @@ loadExternalModule().then(() => {
       try {
         if (body instanceof FormData) {
           isRecordingGlobal = false
+          mediaRecorder.stop();
+          console.log(mediaRecorder)
           //AUDIO RESPONSES
 
           if (isEmailForm) {
@@ -4908,7 +4911,6 @@ const openChatContainer = () => {
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   const sendBtn = chatE.shadowRoot.querySelector(".input-button");
-  let mediaRecorder;
   let isRecording = false;
   let audioChunks = [];
   let stream;
