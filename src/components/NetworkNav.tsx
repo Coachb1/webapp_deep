@@ -79,15 +79,12 @@ const NetworkNav = ({ user }: any) => {
             className={` h-8 max-sm:text-sm ${
               pathname === "/" ? "border border-gray-500 shadow-md" : ""
             } `}
-            // onClick={() => {
-            //   router.push("/");
-            // }}
             asChild
           >
             <Link href={"/"}>Network Directory</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Explore") && (
+        {!restrictedPages?.includes("Demo") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -95,12 +92,9 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            // onClick={() => {
-            //   router.push("/content-library");
-            // }}
             asChild
           >
-            <Link href={"/content-library"}>Explore</Link>
+            <Link href={"/content-library"}>Demo</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Library") && (
@@ -111,30 +105,11 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            // onClick={() => {
-            //   router.push("/library");
-            // }}
             asChild
           >
             <Link href={"/library"}>Library</Link>
           </Button>
         )}
-        {/* {!restrictedPages?.includes("Guides") && (
-          <Button
-            variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
-              pathname.includes("/guides")
-                ? "border border-gray-500 shadow-md"
-                : ""
-            } `}
-            // onClick={() => {
-            //   router.push("/guides");
-            // }}
-            asChild
-          >
-            <Link href={"/guides"}>Guides</Link>
-          </Button>
-        )} */}
         {!restrictedPages?.includes("Creator Studio") && (
           <Button
             variant={"outline"}
@@ -143,22 +118,9 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
-            // onClick={() => {
-            //   router.push("/create-scenario");
-            // }}
             asChild
           >
-            <Link href={"/create-scenario"}>
-              Creator Studio{" "}
-              {/* <span>
-                <Badge
-                  variant={"default"}
-                  className="bg-cyan-400 w-fit text-xs ml-2  hover:bg-cyan-400 text-white "
-                >
-                  Experimental
-                </Badge>
-              </span> */}
-            </Link>
+            <Link href={"/create-scenario"}>Creator Studio </Link>
           </Button>
         )}
       </div>
@@ -175,32 +137,17 @@ const NetworkNav = ({ user }: any) => {
                 className={`${pathname === "/" ? "bg-gray-200" : null}`}
                 asChild
               >
-                <Link
-                  href={"/"}
-                  // onClick={() => {
-                  //   router.push("/");
-                  // }}
-                >
-                  {" "}
-                  Network directory
-                </Link>
+                <Link href={"/"}> Network directory</Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Explore") && (
+            {!restrictedPages?.includes("Demo") && (
               <DropdownMenuItem
                 className={`${
                   pathname === "/content-library" ? "bg-gray-200" : null
                 }`}
                 asChild
               >
-                <Link
-                  href={"/content-library"}
-                  // onClick={() => {
-                  //   router.push("/content-library");
-                  // }}
-                >
-                  Explore
-                </Link>
+                <Link href={"/content-library"}>Demo</Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Library") && (

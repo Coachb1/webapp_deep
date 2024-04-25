@@ -33,7 +33,6 @@ const getknowledgeBotss = async (userEmail: string) => {
       );
 
       const getBotsDataResponseData = await getBotsDataResponse.json();
-      console.log(getBotsDataResponseData.data);
 
       let knowledgeBotss: {
         bot_id: string;
@@ -59,7 +58,6 @@ const getknowledgeBotss = async (userEmail: string) => {
         });
       });
 
-      console.log(knowledgeBotss);
       return knowledgeBotss;
     } else {
       return [];

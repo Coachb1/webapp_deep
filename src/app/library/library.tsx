@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, History, Info, Loader } from "lucide-react";
+import { ChevronLeft, History, Info, Loader, Workflow } from "lucide-react";
 import Link from "next/link";
 import {
   JSXElementConstructor,
@@ -473,7 +473,7 @@ const MyLibrary = ({ user }: any) => {
                       });
                     }}
                   >
-                    EQ Areas
+                    Emotional Quotient Areas
                   </Button>
 
                   <Button
@@ -535,6 +535,36 @@ const MyLibrary = ({ user }: any) => {
               <hr className=" h-[3px] bg-gray-400 w-full" />
               <div className="bg-white h-[10px] w-full" />
             </div>
+
+            <div className="mb-8">
+              <div
+                id="how-it-works"
+                className="flex flex-col max-sm:flex-col w-full mx-auto"
+              >
+                <div className="w-full flex flex-col items-center justify-center">
+                  <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                    How it works <Workflow className="ml-2 w-6 h-6 inline" />
+                  </h1>
+                  <div className="w-[80%] max-sm:w-[90%]">
+                    <div className="flex flex-col max-sm:text-xs max-sm:flex-col w-[64%] max-sm:w-[100%] mx-auto  mt-4 rounded-lg border p-4 max-sm:p-2">
+                      {[
+                        "Select the category of simulations",
+                        "Scroll to the simulation and copy the access code",
+                        "Enter the access code on the Coachscribe or CoachTalk to attempt.",
+                      ].map((step, i) => (
+                        <div key={i} className="flex flex-row">
+                          {" "}
+                          <span className="font-semibold mr-2 min-w-fit">
+                            Step {i + 1} :
+                          </span>{" "}
+                          <p>{step}</p>{" "}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div
               id="eq-tests"
               className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
@@ -553,9 +583,9 @@ const MyLibrary = ({ user }: any) => {
                           id={category.category_name}
                           className="w-full flex flex-col items-center justify-center"
                         >
-                          <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                          <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                             {/* {convertTextToCorrectFormat(category.category_name)} */}
-                            EQ Areas
+                            Emotional Quotient Areas
                           </h1>
                           <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
                             <Info
@@ -674,7 +704,7 @@ const MyLibrary = ({ user }: any) => {
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                  <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     Competency Based Power Skills{" "}
                   </h1>
                   <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
@@ -837,7 +867,7 @@ const MyLibrary = ({ user }: any) => {
                         {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                       </div>
                       {/* Category Name */}
-                      <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                      <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         {convertTextToCorrectFormat(category.category_name)}
                       </h1>
                       <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
@@ -1005,7 +1035,7 @@ const MyLibrary = ({ user }: any) => {
                   {/* <Separator className="w-[80%] bg-gray-200 " /> */}
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                  <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     Requested Scenarios
                   </h1>
                   <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
@@ -1110,7 +1140,7 @@ const MyLibrary = ({ user }: any) => {
                   >
                     Experimental
                   </Badge>
-                  <div className="text-xl mt-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                  <div className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     <h1>Create new Scenario </h1>
                   </div>
                   <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">

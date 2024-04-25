@@ -63,13 +63,16 @@ const VersionOne = ({ user }: any) => {
         <h1 className="text-5xl mt-12 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
+        <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
           {" "}
-          Toolkits and conversational coaching-learning for any scenario.
+          Toolkits and conversational coaching-learning for any scenario. The{" "}
+          <b>User demos</b> are the user-created avatars and bots. While the{" "}
+          <b>System demos</b> are the role plays and simulations supported by
+          platform algorithm.
         </p>
 
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
-          Demo
+          User Demo
         </Badge>
         <div className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 border-2 border-indigo-400 p-3 rounded-md">
           <Link href="/coach" target="_blank">
@@ -112,7 +115,10 @@ const VersionOne = ({ user }: any) => {
           </Link> */}
         </div>
 
-        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2]">
+        <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
+          System Demo
+        </Badge>
+        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md">
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Button
               variant={"secondary"}
