@@ -737,7 +737,7 @@ const CreateOwn = ({
               id="learning-ideas"
               className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
             ></div>
-            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+            <div className="max-sm:pb-10 min-h-[20vh] ">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
                 <div
                   id="learning-ideas"
@@ -929,7 +929,7 @@ const CreateOwn = ({
                                   </>
                                 ) : (
                                   <>
-                                    <div className="h-full w-full text-sm max-sm:text-xs mt-12">
+                                    <div className="h-full w-full text-sm max-sm:text-xs my-6">
                                       <p>{contextPrompt}</p>
                                     </div>{" "}
                                   </>
@@ -944,11 +944,12 @@ const CreateOwn = ({
                 </div>
               </MaxWidthWrapper>
             </div>
+            <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
             <div
               id="simulation-creator"
               className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
             ></div>
-            <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
+            <div className="h-fit ">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
                 <div
                   id="simulation-creator"
@@ -971,6 +972,7 @@ const CreateOwn = ({
                 </div>
               </MaxWidthWrapper>
             </div>
+            <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
             <div
               id="knowledge-bots"
               className="pt-[27vh] mt-[-25vh]   max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
