@@ -10,11 +10,13 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
-import { Info, Menu } from "lucide-react";
+import { HelpCircle, Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
 import { useEffect, useState } from "react";
 import { getClientUserInfo } from "@/lib/utils";
 import { Badge } from "./ui/badge";
+import { UseHelpMode } from "@/lib/helpmodeContext";
+import { Switch } from "./ui/switch";
 
 interface CustomWindow extends Window {
   user?: any;
@@ -31,6 +33,8 @@ const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+
+  const { updateHelpModeState, helpModeState } = UseHelpMode();
 
   //client based restrictions
   const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
@@ -216,7 +220,17 @@ const NetworkNav = ({ user }: any) => {
         </DropdownMenu>
       </div>
       {!restrictedPages?.includes("Profile") && (
-        <div className="ml-4">
+        <div className="ml-4 h-full flex flex-row items-center gap-2">
+          {/* <div className="flex flex-row gap-2 items-center">
+            <Switch
+              onCheckedChange={(checked) => {
+                updateHelpModeState(checked);
+              }}
+              id="help-mode"
+            />
+            <p className="text-sm max-sm:text-xs">Help mode</p>
+          </div>
+          <div className="h-[20px] w-[2px] bg-gray-500"></div> */}
           <NavProfile user={user} />
         </div>
       )}

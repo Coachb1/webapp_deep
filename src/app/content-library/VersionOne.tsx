@@ -2,7 +2,6 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
-
 import {
   Managerial,
   oneTwoOne,
@@ -28,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { UseHelpMode } from "@/lib/helpmodeContext";
 
 const VersionOne = ({ user }: any) => {
   let shouldRenderDiv;
@@ -56,6 +56,7 @@ const VersionOne = ({ user }: any) => {
       shouldRenderDiv = true;
     }
   }
+  const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
     <>

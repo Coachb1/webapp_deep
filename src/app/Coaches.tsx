@@ -5,6 +5,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+
 import {
   baseURL,
   basicAuth,
@@ -53,6 +54,7 @@ import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { profile } from "console";
 import Coach from "./coach/Coach";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { UseHelpMode } from "@/lib/helpmodeContext";
 
 interface CoachesDataType {
   id: number;
@@ -996,12 +998,11 @@ const Coaches = ({
   };
 
   return (
-    // <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
-    //   <div className="z-[999]">
-    //     <NetworkNav user={user} />
-    //   </div>
     <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
-      <h1 className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]">
+      <h1
+        id="heading"
+        className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]"
+      >
         <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
           COACH
         </span>
@@ -1563,7 +1564,6 @@ const Coaches = ({
         </div>
       </div>
     </MaxWidthWrapper>
-    // </div>
   );
 };
 
