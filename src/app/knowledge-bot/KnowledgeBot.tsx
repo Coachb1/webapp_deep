@@ -22,17 +22,7 @@ const howItWorks = [
   {
     heading: "Quick Match",
     description:
-      "Get matched to your ideal coach or mentor depending upon predefined high level criterion.",
-  },
-  {
-    heading: "Pre-Check",
-    description:
-      "Begin your conversation in structured format with context or current issues on the table.",
-  },
-  {
-    heading: "Sessions Orientation",
-    description:
-      "Prepare for your session! Access valuable information about your coach/mentor before your session, clearly showing their expertise and style.",
+      "The quick match demonstrates fitment between participants based on pre-decided criteria. These can be set up during the user onboarding.",
   },
   {
     heading: "Session Notes",

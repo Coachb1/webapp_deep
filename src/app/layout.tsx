@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { UserContextProvider } from "@/lib/UserContext";
+import { HelpModeProvider } from "@/lib/helpmodeContext";
 import { Toaster } from "@/components/ui/sonner";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import LayoutComponent from "./LayoutComponent";
@@ -64,30 +64,32 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="bg-white">
-      <UserContextProvider>
-        <body className={inter.className} suppressHydrationWarning={true}>
-          <>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <AntdRegistry>
-                <Providers>
-                  <LayoutComponent
-                    user={user}
-                    children={children}
-                    isDemoUser={isDemoUser}
-                    isRestricted={isRestricted}
-                  />
-                </Providers>
-              </AntdRegistry>
-            </ThemeProvider>
-          </>
-          <Toaster theme="light" richColors position="top-right" />
-        </body>
-      </UserContextProvider>
+      <HelpModeProvider>
+        <>
+          <body className={inter.className} suppressHydrationWarning={true}>
+            <>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <AntdRegistry>
+                  <Providers>
+                    <LayoutComponent
+                      user={user}
+                      children={children}
+                      isDemoUser={isDemoUser}
+                      isRestricted={isRestricted}
+                    />
+                  </Providers>
+                </AntdRegistry>
+              </ThemeProvider>
+            </>
+            <Toaster theme="light" richColors position="top-right" />
+          </body>
+        </>
+      </HelpModeProvider>
     </html>
   );
 }
