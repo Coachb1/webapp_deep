@@ -3865,7 +3865,7 @@ async function setMcqVariablesStt() {
       resetAllVariablesStt();
 
       appendMessage2(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
       );
 
       return;
@@ -7351,7 +7351,7 @@ loadExternalModule().then(() => {
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                     });
                     return;
                   }
@@ -7429,7 +7429,7 @@ loadExternalModule().then(() => {
                   // console.log(resp)
                   // if (!resp.ok){
                   //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
                   //   })
                   // }
                   if (window.user) {
@@ -7480,7 +7480,7 @@ loadExternalModule().then(() => {
               resetAllVariablesStt();
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                 });
               }
             }
@@ -7515,7 +7515,7 @@ loadExternalModule().then(() => {
 
         resetAllVariablesStt();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
         });
       }
     },

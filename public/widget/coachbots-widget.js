@@ -873,7 +873,7 @@ async function setMcqVariables() {
       resetAllVariables(); //reseting variables
 
       appendMessage(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
       );
       return;
     }
@@ -2636,7 +2636,7 @@ loadExternalModule().then(() => {
 
           if (questionIndex <= questionLength) {
             appendMessage(
-              "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+              "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
             );
           }
           maxUploadFailed = true;
@@ -2810,7 +2810,7 @@ loadExternalModule().then(() => {
       if (questionIndex <= questionLength && testType != "coaching") {
         setTimeout(() => {
           appendMessage(
-            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>"
+            "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
           );
         }, 200);
       }
@@ -3120,7 +3120,7 @@ loadExternalModule().then(() => {
                 testResponseHandlerFailed = false;
                 resetAllVariables();
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                 });
                 return;
               }
@@ -3199,7 +3199,7 @@ loadExternalModule().then(() => {
                   resetAllVariables(); //reseting variables
 
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                   });
                   return;
                 }
@@ -4699,7 +4699,7 @@ loadExternalModule().then(() => {
                     resetAllVariables(); //reseting variables
 
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                     });
                     return;
                   }
@@ -4859,7 +4859,7 @@ loadExternalModule().then(() => {
 
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
                 });
               }
             }
@@ -4890,7 +4890,7 @@ loadExternalModule().then(() => {
         resetAllVariables(); //reseting variables
 
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
         });
       }
     },
@@ -4947,6 +4947,8 @@ const openChatContainer = () => {
           type: audioBlob.type,
         });
         audioChunks.length = 0;
+
+        console.log(audioFile,'audioFile')
 
         // audioFileMap[`${questionIndex}`] = audioFile
         const fileUrl = window.URL.createObjectURL(audioFile);
