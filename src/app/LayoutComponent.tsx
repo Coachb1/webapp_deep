@@ -50,20 +50,20 @@ const LayoutComponent = ({
           window.userIdFromWebApp = data.uid;
         });
     }
-    if (!logSessionStarted) {
-      LogRocket.init("irkulq/coachbots");
-      if (user) {
-        LogRocket.identify(user?.id, {
-          name: user?.given_name!,
-          email: user?.email!,
-        });
-        console.log("USER SET");
-        window.user = user;
-      }
-      setupLogRocketReact(LogRocket);
-      setLogSessionStarted(true);
-      console.log("LOG SESSION STARTED");
-    }
+    // if (!logSessionStarted) {
+    //   LogRocket.init("irkulq/coachbots");
+    //   if (user) {
+    //     LogRocket.identify(user?.id, {
+    //       name: user?.given_name!,
+    //       email: user?.email!,
+    //     });
+    //     console.log("USER SET");
+    //     window.user = user;
+    //   }
+    //   setupLogRocketReact(LogRocket);
+    //   setLogSessionStarted(true);
+    //   console.log("LOG SESSION STARTED");
+    // }
   }, []);
 
   useEffect(() => {
