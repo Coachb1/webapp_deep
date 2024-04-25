@@ -1,5 +1,6 @@
 "use client";
 
+import HelpMode from "@/components/HelpMode";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -232,10 +233,20 @@ const MyComnnections = ({ user }: any) => {
     );
   };
 
+  // const HelpModeSteps: {
+  //   target: string;
+  //   content: any;
+  // }[] = [
+  //   {
+  //     target: "#my-connections",
+  //     content:
+  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+  //   },
+  // ];
   return (
-    <div className="bg-accent p-2 mt-2 mb-8 rounded-md">
+    <div id="my-connections" className="bg-accent p-2 mt-2 mb-8 rounded-md">
+      {/* <HelpMode steps={HelpModeSteps} /> */}
       <div className="pl-4 max-sm:pl-2 pt-2">My Connections</div>
-
       {!loading && (
         <>
           {connectionsForCoach.length === 0 &&

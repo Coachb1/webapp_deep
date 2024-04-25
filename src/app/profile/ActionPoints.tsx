@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
+import HelpMode from "@/components/HelpMode";
 
 const ActionPoints = ({ user }: any) => {
   const [totalActionPoints, setTotalActionPoints] = useState(0);
@@ -84,9 +85,25 @@ const ActionPoints = ({ user }: any) => {
       </div>
     );
   };
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#session-reports",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#personal-leaderboard",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
+      <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2">My rewards</div>
       {loading && (
         <>

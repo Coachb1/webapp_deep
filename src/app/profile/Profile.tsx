@@ -35,6 +35,7 @@ import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
 import MyComnnections from "./MyConnections";
 import AdminReports from "./AdminReports";
+import HelpMode from "@/components/HelpMode";
 
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
@@ -65,12 +66,13 @@ const Profile = ({ user }: any) => {
     }
   }, []);
 
-  const NavItem = ({ itemName, icon }: any) => {
+  const NavItem = ({ itemName, icon, id }: any) => {
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <div
+              id={id}
               className={`p-2 rounded-md text-sm flex flex-row gap-2 items-center max-sm:justify-center  hover:cursor-pointer ${
                 selectedItem === itemName && "bg-gray-200"
               } ${selectedItem !== itemName && "hover:bg-gray-50"}`}
@@ -90,9 +92,65 @@ const Profile = ({ user }: any) => {
     );
   };
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#ainfo",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#mcon",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#apsn",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#bcon",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#mrew",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#comp",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#idp",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#esign",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#admin",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#arep",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
+
   return (
     <>
-      {" "}
+      <HelpMode steps={HelpModeSteps} />
       {/* <NetworkNav user={user} /> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
@@ -116,46 +174,54 @@ const Profile = ({ user }: any) => {
           <div className="h-fit flex flex-col justify-start gap-3 mb-8 overflow-scroll no-scrollbar">
             <NavItem
               itemName={"Account Information"}
+              id="ainfo"
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
             />
             {!restrictedFeatures?.includes("My Connections") && (
               <NavItem
+                id="mcon"
                 itemName={"My Connections"}
                 icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("Action Plan & session notes") && (
               <NavItem
+                id="apsn"
                 itemName={"Action Plan & session notes"}
                 icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("Bot Conversations") && (
               <NavItem
+                id="bcon"
                 itemName={"Bot Conversations"}
                 icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("My Rewards") && (
               <NavItem
+                id="mrew"
                 itemName={"My Rewards"}
                 icon={<PocketIcon className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("Competencies") && (
               <NavItem
+                id="comp"
                 itemName={"Competencies"}
                 icon={<BrainCircuit className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("IDP") && (
               <NavItem
+                id="idp"
                 itemName={"IDP"}
                 icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
               />
             )}
             {!restrictedFeatures?.includes("Email Signature") && (
               <NavItem
+                id="esign"
                 itemName={"Email Signature"}
                 icon={<MailCheck className="text-gray-500 h-5 w-5" />}
               />
@@ -164,6 +230,7 @@ const Profile = ({ user }: any) => {
               <>
                 {userRole === "super_admin" ? (
                   <NavItem
+                    id="admin"
                     itemName={"Admin"}
                     icon={<ShieldCheck className="text-blue-500 h-5 w-5" />}
                   />
@@ -174,6 +241,7 @@ const Profile = ({ user }: any) => {
               <>
                 {userRole === "super_admin" || userRole === "client_admin" ? (
                   <NavItem
+                    id="arep"
                     itemName={"Admin Reports"}
                     icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
                   />

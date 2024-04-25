@@ -29,6 +29,9 @@ import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 
+import React from "react";
+import HelpMode from "@/components/HelpMode";
+
 const VersionOne = ({ user }: any) => {
   let shouldRenderDiv;
   if (user) {
@@ -56,10 +59,35 @@ const VersionOne = ({ user }: any) => {
       shouldRenderDiv = true;
     }
   }
-  const { helpModeState, updateHelpModeState } = UseHelpMode();
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#user-demos",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#system-demos",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: ".chat-icon",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: ".chat-icon2",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
   return (
     <>
+      <HelpMode steps={HelpModeSteps} />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-5xl mt-12 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
@@ -75,7 +103,10 @@ const VersionOne = ({ user }: any) => {
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
           User Demo
         </Badge>
-        <div className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 border-2 border-indigo-400 p-3 rounded-md">
+        <div
+          id="user-demos"
+          className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 border-2 border-indigo-400 p-3 rounded-md"
+        >
           <Link href="/coach" target="_blank">
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
@@ -119,7 +150,10 @@ const VersionOne = ({ user }: any) => {
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
           System Demo
         </Badge>
-        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md">
+        <div
+          id="system-demos"
+          className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+        >
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Button
               variant={"secondary"}

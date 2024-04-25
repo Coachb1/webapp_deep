@@ -210,7 +210,7 @@ const MyPages = ({ user }: any) => {
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
+    <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
       <div className="pl-4 max-sm:pl-2 ">
         <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">

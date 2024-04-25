@@ -26,6 +26,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
+import HelpMode from "@/components/HelpMode";
 
 const CreateOwn = ({
   user,
@@ -664,8 +665,30 @@ const CreateOwn = ({
     }
   };
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#li-id",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#sc-id",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#kb-id",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
+
   return (
     <div>
+      <HelpMode steps={HelpModeSteps} />
       <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
@@ -692,6 +715,7 @@ const CreateOwn = ({
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4">
                   <Button
+                    id="li-id"
                     onClick={() => {
                       document
                         .getElementById("learning-ideas")
@@ -704,6 +728,7 @@ const CreateOwn = ({
                     Learning Ideas
                   </Button>
                   <Button
+                    id="sc-id"
                     onClick={() => {
                       document
                         .getElementById("simulation-creator")
@@ -716,6 +741,7 @@ const CreateOwn = ({
                     Simulation Creator
                   </Button>
                   <Button
+                    id="kb-id"
                     onClick={() => {
                       document
                         .getElementById("knowledge-bots")
