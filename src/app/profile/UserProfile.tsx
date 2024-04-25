@@ -13,6 +13,7 @@ import {
   convertTextToCorrectFormat,
   getUserAccount,
 } from "@/lib/utils";
+import HelpMode from "@/components/HelpMode";
 
 interface PositionedUserTypes {
   name: string;
@@ -185,8 +186,35 @@ const UserProfile = ({ user }: any) => {
     }
   }, []);
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#session-reports",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#personal-leaderboard",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#kudos-board",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#directory-profile",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
+
   return (
     <div className="bg-accent p-2 mt-2 rounded-md w-full">
+      <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2 flex flex-row items-center ">
         <p>Account Information </p>
         {/* <span className="">
@@ -208,12 +236,15 @@ const UserProfile = ({ user }: any) => {
             </p>
           </div>
         </div>
-        <div className="my-4 flex flex-row items-center">
+        <div
+          id="session-reports"
+          className="my-4 w-fit flex flex-row items-center"
+        >
           <p className="text-sm">Session Reports</p>
           <>
             <Button
               disabled={testAttempedCount === 0}
-              className="ml-8 max-sm:ml-1 w-fit max-sm:text-xs"
+              className="ml-8  max-sm:ml-1 w-fit max-sm:p-1 max-sm:text-xs"
             >
               {candidateReportUrl && candidateReportUrl.length !== 0 ? (
                 <>
@@ -234,8 +265,13 @@ const UserProfile = ({ user }: any) => {
         </div>
         <hr />
         <div className="mt-4 mb-4">
-          <div className="flex flex-row items-center mt-4">
-            <p className="text-sm ">Personal Leaderboard : </p>
+          <div
+            id="personal-leaderboard"
+            className="flex flex-row items-center  mt-4 w-fit"
+          >
+            <p className="text-sm max-sm:text-xs min-w-fit">
+              Personal Leaderboard :{" "}
+            </p>
             <Badge variant={"outline"} className="ml-4 p-2">
               {" "}
               {plLoading ? (
@@ -260,7 +296,7 @@ const UserProfile = ({ user }: any) => {
           </div>
         </div>
         {userKudosData[0] && (
-          <div className="mt-4 mb-4">
+          <div id="kudos-board" className="mt-4 mb-4">
             <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
               <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
               {kudosLoading ? (

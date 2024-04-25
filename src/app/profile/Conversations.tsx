@@ -228,7 +228,10 @@ const Conversations = ({ user }: any) => {
   }, []);
   return (
     <>
-      <div className="bg-accent p-2 mt-2 mb-6 rounded-md">
+      <div
+        id="bot-conversations"
+        className="bg-accent p-2 mt-2 mb-6 rounded-md"
+      >
         <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
         <div className="">
           {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (

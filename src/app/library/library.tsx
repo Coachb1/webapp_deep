@@ -46,6 +46,8 @@ import {
   DomainData,
 } from "@/lib/types";
 import { useSearchParams } from "next/navigation";
+import HelpMode from "@/components/HelpMode";
+import { UseHelpMode } from "@/lib/helpmodeContext";
 
 interface Test {
   title: string;
@@ -430,11 +432,28 @@ const MyLibrary = ({ user }: any) => {
     // SetFilteredNewManagerTests(filtered);
   };
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#nav1",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#nav2",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
   return (
     <div>
       {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
         <NetworkNav user={user} />
       </div> */}
+
+      <HelpMode steps={HelpModeSteps} />
       <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
@@ -463,7 +482,10 @@ const MyLibrary = ({ user }: any) => {
                 </span>
               </div>
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
-                <div className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                <div
+                  id="nav1"
+                  className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
+                >
                   <Button
                     variant={"outline"}
                     className={`h-8 max-sm:text-sm`}
@@ -506,7 +528,10 @@ const MyLibrary = ({ user }: any) => {
                   ))}
                 </div>
                 <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
-                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap">
+                <div
+                  id="nav2"
+                  className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
+                >
                   <Button
                     onClick={() => {
                       document

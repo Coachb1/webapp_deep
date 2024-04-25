@@ -24,6 +24,7 @@ import Link from "next/link";
 import { convertDate } from "@/lib/utils";
 import { connectionType } from "@/lib/types";
 import { Select, Space } from "antd";
+import HelpMode from "@/components/HelpMode";
 
 // Pagination related variables
 
@@ -409,9 +410,41 @@ const SessionNotes = ({ user }: any) => {
     }
   };
 
+  // const HelpModeSteps: {
+  //   target: string;
+  //   content: any;
+  // }[] = [
+  //   {
+  //     target: "#session-notes",
+  //     content:
+  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+  //   },
+  //   {
+  //     target: "#c-given",
+  //     content:
+  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+  //   },
+  //   {
+  //     target: "#c-recieved",
+  //     content:
+  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+  //   },
+  //   {
+  //     target: "#new-comment",
+  //     content:
+  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+  //   },
+  // ];
+
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll">
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & session notes</div>{" "}
+    <div
+      id="session-notes"
+      className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll"
+    >
+      {/* <HelpMode steps={HelpModeSteps} /> */}
+      <div className="pl-4 max-sm:pl-2 pt-2">
+        Action Plan & session notes
+      </div>{" "}
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
@@ -429,12 +462,17 @@ const SessionNotes = ({ user }: any) => {
           <div className="flex flex-row  items-center gap-2 justify-between max-sm:flex-col max-sm:justify-start max-sm:items-start">
             <TabsList className="border-2 bg-gray-300">
               {/* {connectionsOptions.length > 0 && ( */}
-              <TabsTrigger className="text-sm max-sm:text-xs" value="c-given">
+              <TabsTrigger
+                id="c-given"
+                className="text-sm max-sm:text-xs"
+                value="c-given"
+              >
                 Comments Given
               </TabsTrigger>
               {/* )} */}
               <div>
                 <TabsTrigger
+                  id="c-recieved"
                   className="text-sm max-sm:text-xs hover:cursor-pointer"
                   value="c-recieved"
                 >
@@ -823,6 +861,7 @@ const SessionNotes = ({ user }: any) => {
                 {!createCommentInit && (
                   <div className="ml-2 w-full flex flex-col items-center justify-center">
                     <Button
+                      id="new-comment"
                       className="max-sm:p-2 w-fit h-8 mt-2 hover:brightness-105 text-sm bg-green-800"
                       onClick={() => {
                         setCreateCommentInit(true);

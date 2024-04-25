@@ -55,6 +55,7 @@ import { profile } from "console";
 import Coach from "./coach/Coach";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
+import HelpMode from "@/components/HelpMode";
 
 interface CoachesDataType {
   id: number;
@@ -997,8 +998,25 @@ const Coaches = ({
     );
   };
 
+  const HelpModeSteps: {
+    target: string;
+    content: any;
+  }[] = [
+    {
+      target: "#join-the-network",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+    {
+      target: "#search-filter",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    },
+  ];
+
   return (
     <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
+      <HelpMode steps={HelpModeSteps} />
       <h1
         id="heading"
         className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]"
@@ -1016,7 +1034,10 @@ const Coaches = ({
         Peer to Peer network of leaders for growth.
       </p>
       {!restrictedFeatures?.includes("Join the network") && (
-        <div className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs">
+        <div
+          id="join-the-network"
+          className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs"
+        >
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="border-none outline-none">
               <div>
@@ -1179,32 +1200,34 @@ const Coaches = ({
             assistance even when life gets busy!
           </p>
         </div>
-        <div className="my-4">
-          <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
-            <Search className="mr-1 inline h-4 w-4" />
-            <input
-              placeholder="What are you looking for?"
-              className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
-              type="text"
-              onChange={(e) => {
-                console.log(e.target.value);
-                handleUpdateCheckedValues([e.target.value]);
-              }}
-            />
+        <div id="search-filter">
+          <div className="my-4">
+            <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
+              <Search className="mr-1 inline h-4 w-4" />
+              <input
+                placeholder="What are you looking for?"
+                className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+                type="text"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  handleUpdateCheckedValues([e.target.value]);
+                }}
+              />
+            </div>
           </div>
-        </div>
-        <div className="mt-4">
-          <div>
-            <FilterDropDown
-              filtersCategory={filterCategroies}
-              setParentCheckedValues={setParentCheckedValues}
-              checkedValues={parentCheckedValues}
-              onUpdateCheckedValues={handleUpdateCheckedValues}
-            />
-            <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
-              This is a combination filter. It works when the result satisfies
-              each selection criterion.
-            </p>
+          <div className="mt-4">
+            <div>
+              <FilterDropDown
+                filtersCategory={filterCategroies}
+                setParentCheckedValues={setParentCheckedValues}
+                checkedValues={parentCheckedValues}
+                onUpdateCheckedValues={handleUpdateCheckedValues}
+              />
+              <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
+                This is a combination filter. It works when the result satisfies
+                each selection criterion.
+              </p>
+            </div>
           </div>
         </div>
         <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />

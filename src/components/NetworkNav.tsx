@@ -221,8 +221,9 @@ const NetworkNav = ({ user }: any) => {
       </div>
       {!restrictedPages?.includes("Profile") && (
         <div className="ml-4 h-full flex flex-row items-center gap-2">
-          {/* <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-2 items-center">
             <Switch
+              checked={helpModeState}
               onCheckedChange={(checked) => {
                 updateHelpModeState(checked);
               }}
@@ -230,7 +231,7 @@ const NetworkNav = ({ user }: any) => {
             />
             <p className="text-sm max-sm:text-xs">Help mode</p>
           </div>
-          <div className="h-[20px] w-[2px] bg-gray-500"></div> */}
+          <div className="h-[20px] w-[2px] bg-gray-500"></div>
           <NavProfile user={user} />
         </div>
       )}
