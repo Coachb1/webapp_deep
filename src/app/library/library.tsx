@@ -575,7 +575,7 @@ const MyLibrary = ({ user }: any) => {
                       {[
                         "Select the category of simulations",
                         "Scroll to the simulation and copy the access code",
-                        "Enter the access code on the Coachscribe or CoachTalk to attempt.",
+                        "Enter the access code on the CoachScribe or CoachTalk to attempt.",
                       ].map((step, i) => (
                         <div key={i} className="flex flex-row">
                           {" "}
