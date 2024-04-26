@@ -813,7 +813,7 @@ async function setMcqVariables() {
     console.log("user logged in, so sending email");
     gShadowRoot.getElementById(
       `mcq-option-${mcqFormId}`
-    ).innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>`;
+    ).innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>`;
     // // submitting response
     const testResponse = await fetch(`${baseURL}/test-responses/`, {
       method: "POST",
@@ -3088,7 +3088,7 @@ loadExternalModule().then(() => {
             messageBubble.style.backgroundColor = "#f3f4f6";
             messageBubble.style.color = "#374151";
             const messageText = document.createElement("p");
-            messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b>${
+            messageText.innerHTML = `That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
               user ? "" : "<b> Hang tight for next steps </b>"
             }`;
             messageBubble.appendChild(messageText);
@@ -4487,7 +4487,7 @@ loadExternalModule().then(() => {
                   messageBubble.style.backgroundColor = "#f3f4f6";
                   messageBubble.style.color = "#374151";
                   const messageText = document.createElement("p");
-                  messageText.innerHTML = `<b>That's it! Thank you for participating in the  interaction.</b> ${
+                  messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
                     user ? "" : "<b> Hang tight for next steps </b>"
                   }`;
                   messageBubble.appendChild(messageText);
