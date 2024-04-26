@@ -445,6 +445,7 @@ const handleFeedbackSubmit = async () => {
     bot_id: botId,
     type_of_email: "feedback_conv",
     user_email: FeedbackUserEmail,
+    is_positive: IsPositiveFeedback ? "True" : "False",
   });
 
   console.log('user_email',FeedbackUserEmail)
@@ -622,28 +623,28 @@ const feedbackBotQnAFlow = (flow) => {
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
 
     IsPositiveFeedback = true;
-    // const queryparams = new URLSearchParams({
-    //   conversation: "",
-    //   bot_id: botId,
-    //   type_of_email: "like",
-    //   user_email: FeedbackUserEmail,
-    // });
-    // const response = fetch(
-    //   `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // )
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log("Dynamic mcq response : ", data);
-    //   });
+    const queryparams = new URLSearchParams({
+      conversation: "",
+      bot_id: botId,
+      type_of_email: "like",
+      user_email: FeedbackUserEmail,
+    });
+    const response = fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dynamic mcq response : ", data);
+      });
 
-    // console.log("sent email");
+    console.log("sent email");
     feedbackBotIndex += 1;
     isFeedbackConvInProcess = true;
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
@@ -659,28 +660,28 @@ const feedbackBotQnAFlow = (flow) => {
     feedbackBotIndex += 1;
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
 
-    // const queryparams = new URLSearchParams({
-    //   conversation: "",
-    //   bot_id: botId,
-    //   type_of_email: "dislike",
-    //   user_email: FeedbackUserEmail,
-    // });
-    // const response = fetch(
-    //   `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // )
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log("Dynamic mcq response : ", data);
-    //   });
+    const queryparams = new URLSearchParams({
+      conversation: "",
+      bot_id: botId,
+      type_of_email: "dislike",
+      user_email: FeedbackUserEmail,
+    });
+    const response = fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dynamic mcq response : ", data);
+      });
 
-    // console.log("sent email");
+    console.log("sent email");
     // setTimeout(() => {
     //   appendMessage2(
     //     `<button style="margin-top:5px; width:100%; padding:6px 4px; border-radius: 8px; " onclick="handleEndFeedback()">End</button>`
