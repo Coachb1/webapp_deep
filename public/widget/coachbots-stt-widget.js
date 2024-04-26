@@ -5160,6 +5160,11 @@ loadExternalModule().then(() => {
         return str;
       }
     }
+
+    function endsWithLowerCaseLetter(str) {
+      const pattern = /[a-z]$/;
+      return pattern.test(str);
+  }
     
     fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
       method: "POST",
@@ -5189,10 +5194,7 @@ loadExternalModule().then(() => {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
           } else if (
-            !messageText.innerText.endsWith("!") &&
-            !messageText.innerText.endsWith(".") &&
-            !messageText.innerText.endsWith("?") &&
-            !emojis.some((emoji) => messageText.innerText.endsWith(emoji))
+            endsWithLowerCaseLetter(messageText.innerText)
           ) {
             messageText.innerText +=
               " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
