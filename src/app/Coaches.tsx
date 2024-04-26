@@ -56,6 +56,7 @@ import Coach from "./coach/Coach";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import HelpMode from "@/components/HelpMode";
+import Joyride from "react-joyride";
 
 interface CoachesDataType {
   id: number;
@@ -86,11 +87,41 @@ interface CoachesDataType {
   total_engagement_with_question_count: number | null;
   total_without_question_count: number | null;
   visual_tag: string;
+  id_for_target_selection?: string;
 }
 
 interface FilterCategoriesType {
   filterName: string;
   filterOptions: string[];
+}
+
+function addIdForTargetSelection(profiles: CoachesDataType[]) {
+  // Initialize flags to track the first occurrence of each profile type
+  let firstIconsByAiFound = false;
+  let firstCoacheeFound = false;
+  let firstCoachFound = false;
+
+  // Iterate through the profiles array
+  profiles.forEach((profile) => {
+    // Check the profile_type and update the id_for_target_selection field accordingly
+    if (profile.profile_type === "icons_by_ai" && !firstIconsByAiFound) {
+      profile.id_for_target_selection = "first_icons_by_ai";
+      firstIconsByAiFound = true; // Update flag to indicate the first icons_by_ai profile has been processed
+    } else if (profile.profile_type === "coachee" && !firstCoacheeFound) {
+      profile.id_for_target_selection = "first_coachee_profile";
+      firstCoacheeFound = true; // Update flag to indicate the first coachee profile has been processed
+    } else if (
+      (profile.profile_type === "coach" ||
+        profile.profile_type === "mentor" ||
+        profile.profile_type === "coach-mentor") &&
+      !firstCoachFound
+    ) {
+      profile.id_for_target_selection = "first_coach_profile";
+      firstCoachFound = true; // Update flag to indicate the first coach profile has been processed
+    }
+  });
+
+  return profiles; // Return the updated profiles array
 }
 
 function findConnectionStatus(
@@ -676,10 +707,15 @@ const Coaches = ({
       console.log("Connected Coaches", connectedCoaches);
 
       setConnectedCoaches(connectedCoaches);
-      setCoachesData([...connectedCoaches, ...unconnectedCoaches]);
+      setCoachesData(
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+      );
       setSavedCoachesData([...connectedCoaches, ...unconnectedCoaches]);
     }
+    console.log(addIdForTargetSelection(coachesData));
+
     setTimeout(() => {
+      // setCoachesData(addIdForTargetSelection(coachesData));
       if (coacheeIdFromParams) {
         document.getElementById(coacheeIdFromParams)?.scrollIntoView({
           behavior: "smooth",
@@ -998,10 +1034,7 @@ const Coaches = ({
     );
   };
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
+  const HelpModeSteps = [
     {
       target: "#join-the-network",
       content:
@@ -1012,11 +1045,48 @@ const Coaches = ({
       content:
         " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
     },
+    {
+      target: "#first_icons_by_ai",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+      placement: "auto",
+    },
+    {
+      target: "#first_coachee_profile",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+      placement: "auto",
+    },
+    {
+      target: "#first_coach_profile",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+      placement: "auto",
+    },
   ];
+  const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
     <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
-      <HelpMode steps={HelpModeSteps} />
+      {helpModeState && (
+        <Joyride
+          spotlightClicks
+          continuous
+          scrollOffset={100}
+          disableScrollParentFix
+          callback={(callbackData) => {
+            console.log(callbackData);
+            if (
+              callbackData.action === "close" ||
+              callbackData.action === "reset"
+            ) {
+              updateHelpModeState(false);
+            }
+          }}
+          //@ts-ignore
+          steps={HelpModeSteps}
+        />
+      )}
       <h1
         id="heading"
         className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]"
@@ -1290,6 +1360,7 @@ const Coaches = ({
                   )}
                 </div>
                 <div
+                  id={coach.id_for_target_selection}
                   className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
                     coach.profile_type === "icons_by_ai" &&
                     "border-gray-800 shadow-lg"
@@ -1497,7 +1568,7 @@ const Coaches = ({
               </div>
             ))}
           {coachesData.length > 10 && (
-            <Pagination className="my-10 max-sm:text-xs">
+            <Pagination id="page" className="my-10 max-sm:text-xs">
               <PaginationContent>
                 <PaginationItem>
                   <Button
