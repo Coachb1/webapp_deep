@@ -1,12 +1,42 @@
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
 import { Link2 } from "lucide-react";
+import HelpMode from "@/components/HelpMode";
 
 const AdminReports = ({ user }: any) => {
+  const HelpModeSteps = [
+    {
+      target: "#kudosreport",
+      content:
+        "Report based on peer feedback network - positive and negative feedback report received. ",
+    },
+    {
+      target: "#pt-usage",
+      content:
+        "Blended report that shows partipant usage plus score achievement in a leaderboard format.",
+    },
+    {
+      target: "#pt-mapping",
+      content:
+        "As members of the network establish the connections they are reflected in this report. These are the relationships between coach(mentor) and coachee(mentee).",
+    },
+    {
+      target: "#attr",
+      content:
+        "Prediction of potential employee churn probability based on user behavior analysis when available. ",
+    },
+    {
+      target: "#suc-red",
+      content:
+        "Prediction of potential employee sucession and promotion readiness based on user behavior analysis when available. ",
+    },
+  ];
+
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
+      <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Client Admin</div>
-      <div className="m-4 flex flex-row items-center">
+      <div id="kudosreport" className="m-4 flex flex-row items-center w-fit">
         <p className="text-sm">Kudos board</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
@@ -21,7 +51,7 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div className="m-4 flex flex-row items-center">
+      <div id="pt-usage" className="m-4 flex flex-row items-center  w-fit">
         <p className="text-sm"> Participant Usage Leaderboard</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
@@ -36,7 +66,7 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div className="m-4 flex flex-row items-center">
+      <div id="pt-mapping" className="m-4 flex flex-row items-center  w-fit">
         <p className="text-sm">Participant mapping report</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
@@ -51,8 +81,8 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div className="m-4 flex flex-row items-center">
-        <p className="text-sm">Attrition report</p>
+      <div id="attr" className="m-4 flex flex-row items-center  w-fit">
+        <p className="text-sm">Attrition report (Sample)</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
@@ -66,8 +96,10 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div className="m-4 flex flex-row items-center">
-        <p className="text-sm">Succession & Promotion Readiness report</p>
+      <div id="suc-red" className="m-4 flex flex-row items-center  w-fit">
+        <p className="text-sm">
+          Succession & Promotion Readiness report (Sample)
+        </p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>

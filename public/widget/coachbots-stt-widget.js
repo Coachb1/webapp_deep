@@ -2065,7 +2065,7 @@ async function handleFaqButtonClick(question) {
         appendMessage2(
           addStickerToMessage(
             'Begin Session',
-            `Hey welcome to the session. I know its a same old boring message you see every time but I if you engage meaningfully - we can deep dive on any issue together. Please let me know in details what you want to accoplish with the session and what are your goals?`,
+            `Hello, welcome to the session! I know it's the same old boring message you see every time, but if you engage meaningfully, we can deep dive into any issue together. Please let me know in detail what you want to accomplish with this session and what your goals are.`,
             '#22c55e'
           )
         )

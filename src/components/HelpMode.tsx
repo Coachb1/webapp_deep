@@ -15,6 +15,7 @@ const HelpMode = ({
       {helpModeState && (
         <Joyride
           continuous
+          scrollOffset={100}
           disableScrolling={true}
           callback={(callbackData) => {
             console.log(callbackData);
