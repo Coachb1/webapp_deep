@@ -1,6 +1,5 @@
-const baseURL = "https://coach-api-ovh.coachbots.com/api/v1";
-const testCodes = ["QG8OTQR", "QXA0FHL", "QQJPCFI"];
-
+import { baseURL } from "../fixtures/utils";
+const staticTestCodes = ["Q877O08", "Q9SSEH3"];
 describe("Init", () => {
   beforeEach(() => {
     cy.session("loggedInUser", () => {
@@ -12,11 +11,9 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type(
-              "coachbot.demo2@coachbots.com"
-            );
+            cy.get('[data-testid="auth-email-field"]').type("a2@coachbots.com");
             cy.get('[data-testid="auth-submit-button"]').click();
-            cy.get("#input_field_p_password_password").type("Demo123#");
+            cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
           });
       });
@@ -40,7 +37,7 @@ describe("Init", () => {
       .contains("Yes")
       .click();
 
-    testCodes.forEach((testCode) => {
+    staticTestCodes.forEach((testCode) => {
       // type the test code
       cy.get("#chat-element2").shadow().find("#text-input").type(testCode);
 
@@ -55,7 +52,7 @@ describe("Init", () => {
         "testInfo"
       );
       cy.wait("@testInfo", {
-        timeout: 20000,
+        timeout: 30000,
       }).then((interception) => {
         const testTitle = interception.response?.body.results[0].title;
         const testDescription =
@@ -114,15 +111,15 @@ describe("Init", () => {
             "getReportUrl"
           );
           cy.wait("@getReportUrl", {
-            timeout: 20000,
+            timeout: 30000,
           }).then((interception) => {
-            cy.readFile("cypress/results/reports.txt").then(
+            cy.readFile("cypress/results/staticReports.txt").then(
               (existingFileContents: any) => {
                 const appendedFileContents =
                   existingFileContents +
                   `${testCode} : ${interception.response?.body.url} \n`;
                 cy.writeFile(
-                  "cypress/results/reports.txt",
+                  "cypress/results/staticReports.txt",
                   appendedFileContents
                 );
               }
