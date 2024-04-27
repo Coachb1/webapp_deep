@@ -589,8 +589,8 @@ const MyLibrary = ({ user }: any) => {
                   <div className="w-[80%] max-sm:w-[90%]">
                     <div className="flex flex-col max-sm:text-xs max-sm:flex-col w-[64%] max-sm:w-[100%] mx-auto  mt-4 rounded-lg border p-4 max-sm:p-2">
                       {[
-                        "Select the category of simulations",
-                        "Scroll to the simulation and copy the access code",
+                        "Select the category of simulations.",
+                        "Scroll to the simulation and copy the access code.",
                         "Enter the access code on the CoachScribe or CoachTalk to attempt.",
                       ].map((step, i) => (
                         <div key={i} className="flex flex-row">

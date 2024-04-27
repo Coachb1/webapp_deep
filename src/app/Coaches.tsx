@@ -1339,10 +1339,9 @@ const Coaches = ({
           variant={"secondary"}
           className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
         >
-          Profiles with displayed Coach/Mentor emails are AI emails, with
-          responses generated per the AI pipeline. Average response time is 24
-          hours. The real user email is also kept in CC, they may choose to
-          respond or not.
+          Profiles with displayed coach/mentor emails use AI-generated
+          responses, with an average response time of 24 hours. The real user's
+          email is also kept in CC; they may choose to respond or not.
         </Badge>
         <div className="mt-2 ">
           {loading && (

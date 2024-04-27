@@ -37,7 +37,7 @@ const AdminReports = ({ user }: any) => {
       <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Client Admin</div>
       <div id="kudosreport" className="m-4 flex flex-row items-center w-fit">
-        <p className="text-sm">Kudos board</p>
+        <p className="text-sm">Kudos Board</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
@@ -67,7 +67,7 @@ const AdminReports = ({ user }: any) => {
         </>
       </div>
       <div id="pt-mapping" className="m-4 flex flex-row items-center  w-fit">
-        <p className="text-sm">Participant mapping report</p>
+        <p className="text-sm">Participant Mapping report</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
