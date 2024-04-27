@@ -2824,9 +2824,6 @@ loadExternalModule().then(() => {
     handler: async (body, signals) => {
       try {
         if (body instanceof FormData) {
-          isRecordingGlobal = false
-          mediaRecorder.stop();
-          console.log(mediaRecorder)
           //AUDIO RESPONSES
 
           if (isEmailForm) {
@@ -4944,6 +4941,8 @@ const openChatContainer = () => {
         );
         audioDuration = audioBuffer.duration;
         console.log("at INIT - Audio duration:", audioDuration);
+        isRecording = false;
+        isRecordingGlobal = false;
 
         audioFile = new File([audioBlob], "user-audio", {
           type: audioBlob.type,
@@ -4978,8 +4977,6 @@ const openChatContainer = () => {
       stream.getTracks().forEach((track) => track.stop());
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
         mediaRecorder.stop();
-        isRecording = false;
-        isRecordingGlobal = false;
         console.log("glrecor", isRecordingGlobal);
       }
     });
