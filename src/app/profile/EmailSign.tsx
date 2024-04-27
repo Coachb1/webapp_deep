@@ -223,15 +223,9 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${
-                                  userName.replace(/\s/g, "").toLowerCase() +
-                                  feedbackBots[0]?.signature_bot.id +
-                                  "@gmail.com"
-                                }`}
+                                href={`mailto:${userEmail}`}
                               >
-                                {userName.replace(/\s/g, "").toLowerCase() +
-                                  feedbackBots[0]?.signature_bot.id +
-                                  "@gmail.com"}
+                                {userEmail}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -271,15 +265,9 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${
-                                  userName.replace(/\s/g, "").toLowerCase() +
-                                  avatarBots[0]?.signature_bot.id +
-                                  "@gmail.com"
-                                }`}
+                                href={`mailto:${userEmail}`}
                               >
-                                {userName.replace(/\s/g, "").toLowerCase() +
-                                  avatarBots[0]?.signature_bot.id +
-                                  "@gmail.com"}
+                                {userEmail}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -319,15 +307,9 @@ const EmailSign = ({ user }: any) => {
                                   color: "#2563eb",
                                   textDecoration: "underline",
                                 }}
-                                href={`mailto:${
-                                  userName.replace(/\s/g, "").toLowerCase() +
-                                  avatarBots[0]?.signature_bot.id +
-                                  "@gmail.com"
-                                }`}
+                                href={`mailto:${userEmail}`}
                               >
-                                {userName.replace(/\s/g, "").toLowerCase() +
-                                  avatarBots[0]?.signature_bot.id +
-                                  "@gmail.com"}
+                                {userEmail}
                               </a>{" "}
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
@@ -398,17 +380,9 @@ const EmailSign = ({ user }: any) => {
                                       color: "#2563eb",
                                       textDecoration: "underline",
                                     }}
-                                    href={`mailto:${
-                                      userName
-                                        .replace(/\s/g, "")
-                                        .toLowerCase() +
-                                      feedbackBots[0]?.signature_bot.id +
-                                      "@gmail.com"
-                                    }`}
+                                    href={`mailto:${userEmail}`}
                                   >
-                                    {userName.replace(/\s/g, "").toLowerCase() +
-                                      feedbackBots[0]?.signature_bot.id +
-                                      "@gmail.com"}
+                                    {userEmail}
                                   </a>{" "}
                                 </div>
                                 <div>Phone: {"<<+91-Add your own>>"} </div>

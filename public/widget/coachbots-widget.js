@@ -1015,19 +1015,19 @@ async function submitEmailAndName() {
       name: window.user.given_name,
     });
   }
-  await fetch(
-    `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("name email updated, sending email");
+  // await fetch(
+  //   `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
+  //   {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   }
+  // )
+  //   .then((response) => response.json())
+  //   .then((data) => {
+      // console.log("name email updated, sending email");
       sendEmail(sessionId, globalReportUrl);
       increaseActionPoint(userId, "interaction_attempted");
 
@@ -1045,10 +1045,10 @@ async function submitEmailAndName() {
         appendMessage(recommDiv);
       }
       resetAllVariables();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
 
   // await sendEmail();
 
@@ -3075,8 +3075,12 @@ loadExternalModule().then(() => {
           }
 
           if (questionIndex === questionLength) {
+            
             const shadowRoot =
-              document.getElementById("chat-element").shadowRoot;
+            document.getElementById("chat-element").shadowRoot;
+            
+            LoadingMessageWithText2("Crunching report data", shadowRoot)
+
             const messageNode = document.createElement("div");
             messageNode.classList.add("inner-message-container");
             const messageBubble = document.createElement("div");
