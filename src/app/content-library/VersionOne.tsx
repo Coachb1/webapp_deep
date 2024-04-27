@@ -98,8 +98,8 @@ const VersionOne = ({ user }: any) => {
         <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
           {" "}
           Toolkits and conversational coaching-learning for any scenario. The{" "}
-          <b>User demos</b> are the user-created avatars and bots. While the{" "}
-          <b>System demos</b> are the role plays and simulations supported by
+          <b>User Demo</b> are the user-created avatars and bots, while the{" "}
+          <b>System Demo</b> are the role plays and simulations supported by the
           platform algorithm.
         </p>
 
@@ -138,7 +138,7 @@ const VersionOne = ({ user }: any) => {
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Knowledge bot
+              Knowledge Bot
             </Button>
           </Link>
           {/* <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
@@ -203,7 +203,7 @@ const VersionOne = ({ user }: any) => {
               className="border border-gray-200 h-8 hover:cursor-pointer"
               onClick={() => scrollToView("pms")}
             >
-              PMS enabled
+              PMS Enabled
             </Button>
 
             <Button

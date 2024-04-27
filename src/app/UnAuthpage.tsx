@@ -149,7 +149,7 @@ export const LoginWall = () => {
                   <ClipboardListIcon className="text-white text-3xl mb-4" />
                   <h3 className="text-xl font-bold text-white">02</h3>
                   <h3 className="text-lg font-semibold mb-2">
-                    Exchange notes & exercises.
+                    Exchange notes & exercises
                   </h3>
                   <p className="text-sm">
                     Exchange notes based on your live sessions or just
