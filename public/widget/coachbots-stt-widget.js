@@ -2312,20 +2312,20 @@ function sendBotTranscript2() {
     email: userEmail,
   });
 
-  fetch(
-    `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      credsUpdated2 = data.status;
-      console.log("name email updated, sending email");
+  // fetch(
+  //   `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
+  //   {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   }
+  // )
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     credsUpdated2 = data.status;
+  //     console.log("name email updated, sending email");
 
       const queryParamsEmail2 = new URLSearchParams({
         submitted_email: userEmail,
@@ -2358,7 +2358,7 @@ function sendBotTranscript2() {
           // // qUid = data.options_data.next_situation;
           // qUid = globalQuestionDataStt.results[0].questions[mcqQustionIndexStt].uid;
         });
-    });
+    // });
 
   return;
 }
