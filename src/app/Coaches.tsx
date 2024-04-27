@@ -114,6 +114,7 @@ function addIdForTargetSelection(profiles: CoachesDataType[]) {
       (profile.profile_type === "coach" ||
         profile.profile_type === "mentor" ||
         profile.profile_type === "coach-mentor") &&
+      profile.feedback_wall !== null &&
       !firstCoachFound
     ) {
       profile.id_for_target_selection = "first_coach_profile";
@@ -828,12 +829,14 @@ const Coaches = ({
     stars: number;
     totalRatings: number;
     coachId: string;
+    id?: string;
   }
 
   const ReviewComponent: React.FC<ReviewComponentProps> = ({
     stars,
     totalRatings,
     coachId,
+    id,
   }) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [starCount, setStarCount] = useState<number>(stars);
@@ -914,6 +917,7 @@ const Coaches = ({
 
     return (
       <div
+        id={id}
         className={`flex flex-row items-center ${
           coacheeId.length === 0 && "hover:cursor-not-allowed"
         }`}
@@ -1036,32 +1040,59 @@ const Coaches = ({
 
   const HelpModeSteps = [
     {
+      target: "#header-text",
+      content:
+        "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
+    },
+    {
       target: "#join-the-network",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
     },
     {
       target: "#search-filter",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up.  ",
     },
-    {
-      target: "#first_icons_by_ai",
-      content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-      placement: "auto",
-    },
-    {
-      target: "#first_coachee_profile",
-      content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-      placement: "auto",
-    },
+    // {
+    //   target: "#first_icons_by_ai",
+    //   content:
+    //     "",
+    //   placement: "auto",
+    // },
+    // {
+    //   target: "#first_coachee_profile",
+    //   content:
+    //     "",
+    //   placement: "auto",
+    // },
     {
       target: "#first_coach_profile",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
       placement: "auto",
+    },
+    {
+      target: "#email",
+      content:
+        "The avatar of the email via which the conversation can happen without leaving the inbox! ( The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+    },
+    {
+      target: "#reviews",
+      disableScrolling: true,
+      content:
+        "Coaches and Mentors can get review ratings from anyone in the network. ",
+    },
+    {
+      target: "#feedback",
+      disableScrolling: true,
+      content:
+        "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
+    },
+    {
+      target: "#participant-listing",
+      disableScrolling: true,
+      content: `All participants are listed. Coach, coaches, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
     },
   ];
   const { helpModeState, updateHelpModeState } = UseHelpMode();
@@ -1096,7 +1127,10 @@ const Coaches = ({
         </span>
         BOTS
       </h1>
-      <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
+      <h1
+        id="header-text"
+        className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl "
+      >
         Coaching & Performance Workbench
       </h1>
       <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
@@ -1327,246 +1361,271 @@ const Coaches = ({
               </div>
             </div>
           )}
-
-          {!loading &&
-            coachesData.length > 0 &&
-            currentCoachesData.map((coach, i) => (
-              <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
-                <div className="relative top-[26px]  flex w-full flex-row justify-between">
-                  <span
-                    className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs ${
-                      coach.profile_type !== "icons_by_ai"
-                        ? "visible"
-                        : "invisible"
+          <div id="participant-listing">
+            {!loading &&
+              coachesData.length > 0 &&
+              currentCoachesData.map((coach, i) => (
+                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
+                  <div className="relative top-[26px]  flex w-full flex-row justify-between">
+                    <span
+                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs ${
+                        coach.profile_type !== "icons_by_ai"
+                          ? "visible"
+                          : "invisible"
+                      }`}
+                    >
+                      User Created
+                    </span>
+                    {(coach.profile_type === "coach" ||
+                      coach.profile_type === "mentor" ||
+                      coach.profile_type === "coach-mentor") && (
+                      <span
+                        id={
+                          coach.id_for_target_selection ===
+                            "first_coach_profile" &&
+                          coach.feedback_wall !== null
+                            ? "email"
+                            : undefined
+                        }
+                        className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs"
+                      >
+                        {coach.name.replace(/\s/g, "").toLowerCase() +
+                          coach.id +
+                          "@coachbots.com"}
+                      </span>
+                    )}
+                    {(coach.profile_type === "icons_by_ai" ||
+                      coach.profile_type === "coachee" ||
+                      coach.profile_type === "mentee") && (
+                      <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                        Not Applicable
+                      </span>
+                    )}
+                  </div>
+                  <div
+                    id={coach.id_for_target_selection}
+                    className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
+                      coach.profile_type === "icons_by_ai" &&
+                      "border-gray-800 shadow-lg"
                     }`}
                   >
-                    User Created
-                  </span>
-                  {(coach.profile_type === "coach" ||
-                    coach.profile_type === "mentor" ||
-                    coach.profile_type === "coach-mentor") && (
-                    <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                      {coach.name.replace(/\s/g, "").toLowerCase() +
-                        coach.id +
-                        "@coachbots.com"}
-                    </span>
-                  )}
-                  {(coach.profile_type === "icons_by_ai" ||
-                    coach.profile_type === "coachee" ||
-                    coach.profile_type === "mentee") && (
-                    <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
-                      Not Applicable
-                    </span>
-                  )}
-                </div>
-                <div
-                  id={coach.id_for_target_selection}
-                  className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
-                    coach.profile_type === "icons_by_ai" &&
-                    "border-gray-800 shadow-lg"
-                  }`}
-                >
-                  <div className="">
-                    <img
-                      className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
-                      src={coach.profile_pic_url}
-                    />
-                    <div className="mt-4">
-                      <LikeComponent
-                        profile_id={coach.profile_id}
-                        likesInfo={coach.admirer_ids}
+                    <div className="">
+                      <img
+                        className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
+                        src={coach.profile_pic_url}
                       />
+                      <div className="mt-4">
+                        <LikeComponent
+                          profile_id={coach.profile_id}
+                          likesInfo={coach.admirer_ids}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className=" flex flex-col items-start justify-start w-full">
-                    <div className="mb-2 flex flex-row items-center gap-1">
-                      {" "}
-                      {hasPassed5Days(coach.created) ? null : (
-                        <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                          <Star color="#047857" className="mr-1 h-4 w-4 " /> New
-                        </Badge>
-                      )}
-                      {coach.visual_tag !== null &&
-                        coach.visual_tag
-                          .split(", ")
-                          .map((tag) => (
-                            <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                              {convertTextToCorrectFormat(tag)}
-                            </Badge>
-                          ))}
-                    </div>
-                    <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                      {getFormattedCoachName(coach.name)}{" "}
-                    </p>{" "}
-                    <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
-                      {coach.department}
-                    </p>
-                    <div className="flex flex-row items-center justify-start gap-2">
-                      {coach.profile_type === "coach-mentor" ? (
-                        <>
-                          <Badge
-                            variant={"secondary"}
-                            className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                          >
-                            {convertTextToCorrectFormat("coach")}
+                    <div className=" flex flex-col items-start justify-start w-full">
+                      <div className="mb-2 flex flex-row items-center gap-1">
+                        {" "}
+                        {hasPassed5Days(coach.created) ? null : (
+                          <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
+                            <Star color="#047857" className="mr-1 h-4 w-4 " />{" "}
+                            New
                           </Badge>
-                          <Badge
-                            variant={"secondary"}
-                            className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                          >
-                            {convertTextToCorrectFormat("mentor")}
-                          </Badge>
-                        </>
-                      ) : (
-                        <Badge
-                          variant={"secondary"}
-                          className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
-                            (coach.profile_type === "skill_bot" ||
-                              coach.profile_type === "coachbots") &&
-                            "bg-green-500 hover:bg-green-400"
-                          }`}
-                        >
-                          {coach.profile_type === "icons_by_ai"
-                            ? "Icons by AI"
-                            : convertTextToCorrectFormat(coach.profile_type)}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
-                      <div className="flex flex-row items-center"></div>
-                      {coach.profile_type !== "coachee" &&
-                        coach.profile_type !== "mentee" && (
-                          <ReviewComponent
-                            stars={coach.rating}
-                            totalRatings={coach.total_rating}
-                            coachId={coach.profile_id}
-                          />
                         )}
-                      {(coach.profile_type === "coach" ||
-                        coach.profile_type === "mentor") && (
-                        <div className="max-sm:mt-2 flex flex-row items-center">
-                          <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                            ●
-                          </span>
-                          <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
-                            {coach.total_without_question_count} Engagements
-                          </p>
-                        </div>
-                      )}
-                      <div>
-                        {coach.feedback_wall !== null &&
-                          coach.feedback_wall !== "" && (
-                            <>
-                              <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
-                                ●
-                              </span>
-                              <Link
-                                target="_blank"
-                                href={handleLinks(coach.feedback_wall)}
-                              >
-                                <Button
-                                  variant={"link"}
-                                  className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
+                        {coach.visual_tag !== null &&
+                          coach.visual_tag
+                            .split(", ")
+                            .map((tag) => (
+                              <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
+                                {convertTextToCorrectFormat(tag)}
+                              </Badge>
+                            ))}
+                      </div>
+                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
+                        {getFormattedCoachName(coach.name)}{" "}
+                      </p>{" "}
+                      <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
+                        {coach.department}
+                      </p>
+                      <div className="flex flex-row items-center justify-start gap-2">
+                        {coach.profile_type === "coach-mentor" ? (
+                          <>
+                            <Badge
+                              variant={"secondary"}
+                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
+                            >
+                              {convertTextToCorrectFormat("coach")}
+                            </Badge>
+                            <Badge
+                              variant={"secondary"}
+                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
+                            >
+                              {convertTextToCorrectFormat("mentor")}
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge
+                            variant={"secondary"}
+                            className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
+                              (coach.profile_type === "skill_bot" ||
+                                coach.profile_type === "coachbots") &&
+                              "bg-green-500 hover:bg-green-400"
+                            }`}
+                          >
+                            {coach.profile_type === "icons_by_ai"
+                              ? "Icons by AI"
+                              : convertTextToCorrectFormat(coach.profile_type)}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
+                        <div className="flex flex-row items-center"></div>
+                        {coach.profile_type !== "coachee" &&
+                          coach.profile_type !== "mentee" && (
+                            <ReviewComponent
+                              id={
+                                coach.id_for_target_selection ===
+                                  "first_coach_profile" &&
+                                coach.feedback_wall !== null
+                                  ? "reviews"
+                                  : undefined
+                              }
+                              stars={coach.rating}
+                              totalRatings={coach.total_rating}
+                              coachId={coach.profile_id}
+                            />
+                          )}
+                        {(coach.profile_type === "coach" ||
+                          coach.profile_type === "mentor") && (
+                          <div className="max-sm:mt-2 flex flex-row items-center">
+                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                              ●
+                            </span>
+                            <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
+                              {coach.total_without_question_count} Engagements
+                            </p>
+                          </div>
+                        )}
+                        <div>
+                          {coach.feedback_wall !== null &&
+                            coach.feedback_wall !== "" && (
+                              <>
+                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                                  ●
+                                </span>
+                                <Link
+                                  id={
+                                    coach.id_for_target_selection ===
+                                      "first_coach_profile" &&
+                                    coach.feedback_wall !== null
+                                      ? "feedback"
+                                      : undefined
+                                  }
+                                  target="_blank"
+                                  href={handleLinks(coach.feedback_wall)}
                                 >
-                                  Feedback{" "}
-                                  <ExternalLink className="h-4 w-4 ml-1" />
-                                </Button>
-                              </Link>
+                                  <Button
+                                    variant={"link"}
+                                    className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
+                                  >
+                                    Feedback{" "}
+                                    <ExternalLink className="h-4 w-4 ml-1" />
+                                  </Button>
+                                </Link>
+                              </>
+                            )}
+                        </div>
+                      </div>
+                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
+                        {coach.description}
+                      </p>
+                      <div className="mt-4 flex flex-row flex-wrap gap-2">
+                        {coach.profile_type !== "skill_bot" && (
+                          <Badge
+                            variant={"secondary"}
+                            className=" my-1 text-sm text-gray-600"
+                          >
+                            {coach.experience}
+                          </Badge>
+                        )}
+                        {coach.expertise && (
+                          <Badge
+                            variant={"secondary"}
+                            className="my-1 text-sm text-gray-600"
+                          >
+                            {coach.expertise}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
+                        {coach.status === "accepted" && (
+                          <Button
+                            disabled
+                            variant={"outline"}
+                            className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                          >
+                            Connected
+                          </Button>
+                        )}
+                        {(coach.profile_type === "coach" ||
+                          coach.profile_type === "mentor" ||
+                          coach.profile_type === "coach-mentor") && (
+                          <>
+                            {coach.status === "pending" && (
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className=" max-sm:text-sm max-sm:w-full border border-gray-300"
+                              >
+                                Requested
+                              </Button>
+                            )}
+                            <>
+                              {coacheeId.length > 0 && (
+                                <>
+                                  {coach.status === "" && (
+                                    <RequestionConnection
+                                      coachId={coach.profile_id}
+                                    />
+                                  )}
+                                  {coach.status === "available" && (
+                                    <RequestionConnection
+                                      coachId={coach.profile_id}
+                                    />
+                                  )}
+                                </>
+                              )}
                             </>
+                          </>
+                        )}
+                        {coach.avatar_bot_url !== null &&
+                          coach.avatar_bot_url !== "" && (
+                            <div className="max-sm:w-full">
+                              <Button
+                                variant={"secondary"}
+                                className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
+                                disabled={
+                                  coach.profile_type !== "icons_by_ai" &&
+                                  coacheeId.length === 0
+                                }
+                                asChild={coacheeId.length !== 0}
+                              >
+                                <Link
+                                  href={handleLinks(coach.avatar_bot_url)}
+                                  target="_blank"
+                                >
+                                  {coach.profile_type === "skill_bot" ||
+                                  coach.profile_type === "coachbots"
+                                    ? "Skill Chat"
+                                    : "AI Frame"}
+                                </Link>
+                              </Button>
+                            </div>
                           )}
                       </div>
                     </div>
-                    <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
-                      {coach.description}
-                    </p>
-                    <div className="mt-4 flex flex-row flex-wrap gap-2">
-                      {coach.profile_type !== "skill_bot" && (
-                        <Badge
-                          variant={"secondary"}
-                          className=" my-1 text-sm text-gray-600"
-                        >
-                          {coach.experience}
-                        </Badge>
-                      )}
-                      {coach.expertise && (
-                        <Badge
-                          variant={"secondary"}
-                          className="my-1 text-sm text-gray-600"
-                        >
-                          {coach.expertise}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
-                      {coach.status === "accepted" && (
-                        <Button
-                          disabled
-                          variant={"outline"}
-                          className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                        >
-                          Connected
-                        </Button>
-                      )}
-                      {(coach.profile_type === "coach" ||
-                        coach.profile_type === "mentor" ||
-                        coach.profile_type === "coach-mentor") && (
-                        <>
-                          {coach.status === "pending" && (
-                            <Button
-                              disabled
-                              variant={"outline"}
-                              className=" max-sm:text-sm max-sm:w-full border border-gray-300"
-                            >
-                              Requested
-                            </Button>
-                          )}
-                          <>
-                            {coacheeId.length > 0 && (
-                              <>
-                                {coach.status === "" && (
-                                  <RequestionConnection
-                                    coachId={coach.profile_id}
-                                  />
-                                )}
-                                {coach.status === "available" && (
-                                  <RequestionConnection
-                                    coachId={coach.profile_id}
-                                  />
-                                )}
-                              </>
-                            )}
-                          </>
-                        </>
-                      )}
-                      {coach.avatar_bot_url !== null &&
-                        coach.avatar_bot_url !== "" && (
-                          <div className="max-sm:w-full">
-                            <Button
-                              variant={"secondary"}
-                              className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                              disabled={
-                                coach.profile_type !== "icons_by_ai" &&
-                                coacheeId.length === 0
-                              }
-                              asChild={coacheeId.length !== 0}
-                            >
-                              <Link
-                                href={handleLinks(coach.avatar_bot_url)}
-                                target="_blank"
-                              >
-                                {coach.profile_type === "skill_bot" ||
-                                coach.profile_type === "coachbots"
-                                  ? "Skill Chat"
-                                  : "AI Frame"}
-                              </Link>
-                            </Button>
-                          </div>
-                        )}
-                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
           {coachesData.length > 10 && (
             <Pagination id="page" className="my-10 max-sm:text-xs">
               <PaginationContent>

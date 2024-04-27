@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
 import HelpMode from "@/components/HelpMode";
+import Joyride from "react-joyride";
+import { UseHelpMode } from "@/lib/helpmodeContext";
 
 const CreateOwn = ({
   user,
@@ -665,30 +667,50 @@ const CreateOwn = ({
     }
   };
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
+  const HelpModeSteps = [
+    {
+      target: "#ac-items",
+      content:
+        "Action items for this page. You can get learning ideas specific to your context and create your own learning.",
+    },
     {
       target: "#li-id",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Generate summary learning from various learning videos like TedTalks and Youtube videos. These can then be used for simulation creation as needed. ",
     },
     {
       target: "#sc-id",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "From a given user context, create any simulation or roleplay. These can be specific to your organizational use cases . For ideas on what could be created you can refer to the demo page. ",
     },
     {
       target: "#kb-id",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "For enterprise knowledge management, users can take any documents in the repository (or create one) and create a bot based on that knowledge content. It can also be internal department or project-specific bots.",
     },
   ];
-
+  const { helpModeState, updateHelpModeState } = UseHelpMode();
   return (
     <div>
-      <HelpMode steps={HelpModeSteps} />
+      {helpModeState && (
+        <Joyride
+          spotlightClicks
+          continuous
+          scrollOffset={200}
+          disableScrollParentFix
+          callback={(callbackData) => {
+            console.log(callbackData);
+            if (
+              callbackData.action === "close" ||
+              callbackData.action === "reset"
+            ) {
+              updateHelpModeState(false);
+            }
+          }}
+          //@ts-ignore
+          steps={HelpModeSteps}
+        />
+      )}
       <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
         <div>
           <div>
@@ -713,9 +735,11 @@ const CreateOwn = ({
                 </span>
               </div> */}
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
-                <div className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4">
+                <div
+                  id="ac-items"
+                  className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4"
+                >
                   <Button
-                    id="li-id"
                     onClick={() => {
                       document
                         .getElementById("learning-ideas")
@@ -728,7 +752,6 @@ const CreateOwn = ({
                     Learning Ideas
                   </Button>
                   <Button
-                    id="sc-id"
                     onClick={() => {
                       document
                         .getElementById("simulation-creator")
@@ -741,7 +764,6 @@ const CreateOwn = ({
                     Simulation Creator
                   </Button>
                   <Button
-                    id="kb-id"
                     onClick={() => {
                       document
                         .getElementById("knowledge-bots")
@@ -771,7 +793,10 @@ const CreateOwn = ({
                 >
                   <>
                     <div className="w-full flex flex-col items-center justify-center">
-                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                      <h1
+                        id="li-id"
+                        className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                      >
                         Learning Ideas
                       </h1>
                       <div className="w-full">
@@ -983,7 +1008,10 @@ const CreateOwn = ({
                 >
                   <div>
                     <div className="w-full flex flex-col items-center justify-center">
-                      <h1 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                      <h1
+                        id="sc-id"
+                        className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                      >
                         Simulation creator
                       </h1>
                       <div className="w-full">
@@ -1011,7 +1039,10 @@ const CreateOwn = ({
                 >
                   <div>
                     <div className="w-full flex flex-col items-center justify-center">
-                      <h1 className="text-xl mt-2 mb-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                      <h1
+                        id="kb-id"
+                        className="text-xl mt-2 mb-2 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                      >
                         Knowledge Bots
                       </h1>
                       <Button

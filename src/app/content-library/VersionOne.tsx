@@ -60,29 +60,32 @@ const VersionOne = ({ user }: any) => {
     }
   }
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
+  const HelpModeSteps = [
     {
       target: "#user-demos",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
     },
     {
       target: "#system-demos",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Use or clinet-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
     },
     {
       target: ".chat-icon",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Users who want to get feedback about their speech parameters like confidence etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
     },
     {
       target: ".chat-icon2",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is convrted into text. The processing speed is fast & efficient. ",
+    },
+    {
+      target: "#manager-plus",
+      disableScrolling: false,
+      content:
+        "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
     },
   ];
   return (
@@ -329,8 +332,9 @@ const VersionOne = ({ user }: any) => {
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
-          <div id="managerplus">
+          <div>
             <HeroAccordion
+              id="manager-plus"
               badgeText="Manager+"
               user={user ? true : false}
               tests={Managerial}

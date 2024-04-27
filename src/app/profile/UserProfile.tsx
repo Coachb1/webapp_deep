@@ -186,29 +186,27 @@ const UserProfile = ({ user }: any) => {
     }
   }, []);
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
+  const HelpModeSteps = [
     {
       target: "#session-reports",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "While the user interacts with the bots for simulations and roleplays - a detailed feedback report is generated. All the feedback reports for the particular user can be viewed in a consolidated manner here.",
     },
     {
       target: "#personal-leaderboard",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Leaderboard position for the particular user depending upon the score achievement and usage.",
     },
     {
       target: "#kudos-board",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Peer feedback network stats based on feedback received from peer group.",
     },
     {
       target: "#directory-profile",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Ability to view and update directory profile, AI frames and feedback network profiles. ",
+      
     },
   ];
 

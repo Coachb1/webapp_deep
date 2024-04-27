@@ -432,19 +432,35 @@ const MyLibrary = ({ user }: any) => {
     // SetFilteredNewManagerTests(filtered);
   };
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
+  const HelpModeSteps = [
     {
       target: "#nav1",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Subject matter Categories of simulations and roleplay available are listed here. Popular categories are manager development, Emotional Quotient areas and client specific competency skill specific areas.",
     },
     {
       target: "#nav2",
       content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+        "Users are able to create their own scenarios (via the Creator studio)",
+    },
+    {
+      target: "#eq-cat",
+      content: "A specific subject matter category for listing simulations. ",
+    },
+    {
+      target: "#sl-aw",
+      content:
+        "These sections are where the simulations actual simulations and roleplays are curated. The title categorization is for easy access. In this case, the simulations are meant to check for self-awareness. ",
+    },
+    {
+      target: ".chat-icon",
+      content:
+        "Users who want to get feedback about their speech parameters like confidence etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower.",
+    },
+    {
+      target: ".chat-icon2",
+      content:
+        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is convrted into text. The processing speed is fast & efficient.",
     },
   ];
   return (
@@ -608,7 +624,10 @@ const MyLibrary = ({ user }: any) => {
                           id={category.category_name}
                           className="w-full flex flex-col items-center justify-center"
                         >
-                          <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                          <h1
+                            id="eq-cat"
+                            className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                          >
                             {/* {convertTextToCorrectFormat(category.category_name)} */}
                             Emotional Quotient Areas
                           </h1>
@@ -648,6 +667,11 @@ const MyLibrary = ({ user }: any) => {
                                       className={`w-full flex justify-center`}
                                     >
                                       <Badge
+                                        id={
+                                          domainIndex === 0
+                                            ? "sl-aw"
+                                            : undefined
+                                        }
                                         variant={"default"}
                                         className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                       >
