@@ -1576,13 +1576,13 @@ const CoachIntake = ({ user }: any) => {
 
                 setProvideAnswersUsingEmojis(
                   resultingBot.signature_bot.data.additional_data
-                    .provide_answers_using_emojis === "true"
+                    .provide_answers_using_emojis === true
                     ? "Yes"
                     : "No"
                 );
                 setAllowSessionNotes(
                   resultingBot.signature_bot.data.additional_data
-                    .allow_coachee_to_create_session === "true"
+                    .allow_coachee_to_create_session === true
                     ? "Yes"
                     : "No"
                 );

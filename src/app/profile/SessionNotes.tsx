@@ -534,7 +534,8 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <p className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {comment.simulation_codes !== null ? (
+                              {comment.simulation_codes !== null ||
+                              comment.simulation_codes !== "" ? (
                                 <>
                                   {comment.simulation_codes
                                     .split(",")
@@ -696,7 +697,8 @@ const SessionNotes = ({ user }: any) => {
                             <div className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
                               <>
-                                {comment.simulation_codes !== null ? (
+                                {comment.simulation_codes !== null ||
+                                comment.simulation_codes !== "" ? (
                                   <>
                                     {comment.simulation_codes
                                       .split(",")
@@ -926,11 +928,11 @@ const SessionNotes = ({ user }: any) => {
                       ref={accessCodeRef}
                       className={`w-full p-2 bg-white rounded-md outline-none border focus-visible:border-gray-400`}
                     />
-                    {accessCodeLengthError && (
+                    {/* {accessCodeLengthError && (
                       <p className="text-red-500 text-xs m-2">
                         Atleast include one test code
                       </p>
-                    )}
+                    )} */}
                   </div>
                   <div className="flex flex-col">
                     <p className="mr-2 my-1 mt-2">Comment</p>
@@ -1103,7 +1105,8 @@ const SessionNotes = ({ user }: any) => {
                                   In process, please check again in a while.{" "}
                                 </span>
                               )} */}
-                              {comment.simulation_codes !== null ? (
+                              {comment.simulation_codes !== null ||
+                              comment.simulation_codes !== "" ? (
                                 <>
                                   {comment.simulation_codes
                                     .split(",")
@@ -1183,7 +1186,8 @@ const SessionNotes = ({ user }: any) => {
                             <div>
                               <p className="mr-2 my-1 mt-2">
                                 <b> Recommended practice access codes </b> :{" "}
-                                {comment.simulation_codes !== null ? (
+                                {comment.simulation_codes !== null ||
+                                comment.simulation_codes !== "" ? (
                                   <>
                                     {comment.simulation_codes
                                       .split(",")

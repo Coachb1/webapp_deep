@@ -237,17 +237,17 @@ const Profile = ({ user }: any) => {
                 ) : null}
               </>
             )}
-            {!restrictedFeatures?.includes("Client - Admin Reports") && (
+            {/* {!restrictedFeatures?.includes("Client - Admin Reports") && (
               <>
-                {userRole === "super_admin" || userRole === "client_admin" ? (
-                  <NavItem
-                    id="arep"
-                    itemName={"Admin Reports"}
-                    icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
-                  />
-                ) : null}
+                {userRole === "super_admin" || userRole === "client_admin" ? ( */}
+            <NavItem
+              id="arep"
+              itemName={"Admin Reports"}
+              icon={<ClipboardList className="text-blue-500 h-5 w-5" />}
+            />
+            {/* ) : null}
               </>
-            )}
+            )} */}
           </div>
         </div>
         <div className=" w-[80%] max-sm:w-[90%]">
