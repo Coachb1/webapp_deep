@@ -92,62 +92,8 @@ const Profile = ({ user }: any) => {
     );
   };
 
-  const HelpModeSteps: {
-    target: string;
-    content: any;
-  }[] = [
-    // {
-    //   target: "#ainfo",
-    //   content:
-    //     "The network participants can add session notes and action plans for each other.",
-    // },
-    {
-      target: "#mcon",
-      content: "Connections betweeen Coach/Mentor and Coachee/Mentee",
-    },
-    {
-      target: "#apsn",
-      content:
-        "The network participants can add session notes and action plans for each other. ",
-    },
-    {
-      target: "#bcon",
-      content:
-        "Conversations with the user's AI avatar (AI-frame) or user's interaction with other bots. The feedback page bot interactions are also requested here.",
-    },
-    {
-      target: "#mrew",
-      content: "Customized reward point system customized to each client.",
-    },
-    {
-      target: "#comp",
-      content:
-        "Pre-defined competencies and skills can be set from this section. This can be customized for each client. This will help customize the user's library based on these skills.",
-    },
-    {
-      target: "#idp",
-      content:
-        "Users can generate individual development plans and simulations they should practice depending on this specific practice.",
-    },
-    {
-      target: "#esign",
-      content: "Email signatures for use by the coach or mentor.",
-    },
-    {
-      target: "#admin",
-      content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-    },
-    {
-      target: "#arep",
-      content:
-        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-    },
-  ];
-
   return (
     <>
-      <HelpMode steps={HelpModeSteps} />
       {/* <NetworkNav user={user} /> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
