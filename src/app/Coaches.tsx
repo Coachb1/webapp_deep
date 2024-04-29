@@ -210,6 +210,7 @@ const Coaches = ({
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
   const totalPages = Math.ceil(coachesData.length / itemsPerPage);
   const maxPaginationLinks = 5;
 
@@ -716,11 +717,22 @@ const Coaches = ({
     console.log(addIdForTargetSelection(coachesData));
 
     setTimeout(() => {
-      // setCoachesData(addIdForTargetSelection(coachesData));
       if (coacheeIdFromParams) {
-        document.getElementById(coacheeIdFromParams)?.scrollIntoView({
-          behavior: "smooth",
-        });
+        const indexOfCoacheeForScroll = coachesDataa.findIndex(
+          (coach) => coach.profile_id === coacheeIdFromParams
+        );
+
+        if (indexOfCoacheeForScroll >= 0) {
+          const pageNumber =
+            Math.floor(indexOfCoacheeForScroll / itemsPerPage) + 1;
+
+          paginate(pageNumber);
+          console.log(indexOfCoacheeForScroll, "indexOfCoacheeForScroll");
+
+          document.getElementById(coacheeIdFromParams)?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
       }
     }, 200);
 
