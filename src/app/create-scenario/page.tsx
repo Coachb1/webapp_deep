@@ -4,7 +4,7 @@ import CreateOwn from "./CreateOwn";
 import { knowledgeBotJson } from "@/lib/types";
 
 export const metadata = constructMetadata({
-  title: "Creator Studio",
+  title: "Creator Studio - Coachbots",
 });
 
 const getknowledgeBotss = async (userEmail: string) => {
@@ -57,7 +57,7 @@ const getknowledgeBotss = async (userEmail: string) => {
           creator_name: botJson.creator_name,
         });
       });
-
+      console.log(knowledgeBotss);
       return knowledgeBotss;
     } else {
       return [];

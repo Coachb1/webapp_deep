@@ -3,7 +3,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import VersionOne from "./VersionOne";
 import Widgets from "@/components/Widgets";
 
-export const metadata = constructMetadata();
+export const metadata = constructMetadata({
+  title: "Demo - Coachbots",
+});
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();

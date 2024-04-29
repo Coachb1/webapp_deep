@@ -4,7 +4,7 @@ import MyLibrary from "./library";
 import Widgets from "@/components/Widgets";
 
 export const metadata = constructMetadata({
-  title: "My Library",
+  title: "Library - Coachbots",
 });
 
 const Page = async () => {

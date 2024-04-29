@@ -145,7 +145,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
-              Please enter the situation that you want to practice.
+              Please enter the situation that you want to practice
             </p>
             <textarea
               ref={userContextRef}
@@ -159,7 +159,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                   setWordCount(e.target.value.trim().split(" ").length);
                 }
               }}
-              placeholder="Create a situation where the user needs to...... to accomplish...."
+              placeholder="Create a situation where the user needs to... to accomplish..."
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />

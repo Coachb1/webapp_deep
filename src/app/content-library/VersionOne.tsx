@@ -74,7 +74,7 @@ const VersionOne = ({ user }: any) => {
     {
       target: ".chat-icon",
       content:
-        "Users who want to get feedback about their speech parameters like confidence etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
+        "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
     },
     {
       target: ".chat-icon2",
@@ -332,7 +332,7 @@ const VersionOne = ({ user }: any) => {
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
         <div className="w-full">
-          <div>
+          <div id="managerplus">
             <HeroAccordion
               id="manager-plus"
               badgeText="Manager+"
