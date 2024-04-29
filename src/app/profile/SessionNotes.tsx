@@ -410,41 +410,12 @@ const SessionNotes = ({ user }: any) => {
     }
   };
 
-  // const HelpModeSteps: {
-  //   target: string;
-  //   content: any;
-  // }[] = [
-  //   {
-  //     target: "#session-notes",
-  //     content:
-  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-  //   },
-  //   {
-  //     target: "#c-given",
-  //     content:
-  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-  //   },
-  //   {
-  //     target: "#c-recieved",
-  //     content:
-  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-  //   },
-  //   {
-  //     target: "#new-comment",
-  //     content:
-  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-  //   },
-  // ];
-
   return (
     <div
       id="session-notes"
       className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll"
     >
-      {/* <HelpMode steps={HelpModeSteps} /> */}
-      <div className="pl-4 max-sm:pl-2 pt-2">
-        Action Plan & session notes
-      </div>{" "}
+      <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & Session notes</div>{" "}
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
@@ -476,7 +447,7 @@ const SessionNotes = ({ user }: any) => {
                   className="text-sm max-sm:text-xs hover:cursor-pointer"
                   value="c-recieved"
                 >
-                  Comments Recieved
+                  Comments Received
                 </TabsTrigger>
               </div>
             </TabsList>
@@ -576,88 +547,6 @@ const SessionNotes = ({ user }: any) => {
                                   </>
                                 </>
                               )}
-                              {/* {comment.recommendations !== null ? (
-                                <>
-                                  {hasPassed48Hours(comment.date) ? (
-                                    <>
-                                      {comment.recommendations
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : comment.updated !== null ? (
-                                    <>
-                                      {comment.recommendations
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span>
-                                        In process, please check again in a
-                                        while.{" "}
-                                      </span>
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <span>
-                                  In process, please check again in a while.{" "}
-                                </span>
-                              )} */}
                             </p>
                           </div>
                           <p className="mt-2">
@@ -741,88 +630,6 @@ const SessionNotes = ({ user }: any) => {
                                   </>
                                 )}
                               </>
-                              {/* {comment.recommendation !== null ? ( // earlier : recommendation
-                                <>
-                                  {hasPassed48Hours(comment.date) ? (
-                                    <>
-                                      {comment.simulation_codes
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : comment.updated !== null ? (
-                                    <>
-                                      {comment.simulation_codes
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span>
-                                        In process, please check again in a
-                                        while.{" "}
-                                      </span>
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <span>
-                                  In process, please check again in a while.{" "}
-                                </span>
-                              )} */}
                             </div>
                           </div>
                           <p className="mt-2">
@@ -1023,88 +830,6 @@ const SessionNotes = ({ user }: any) => {
                           <div>
                             <div className="mr-2 my-1 mt-2">
                               <b> Recommended practice access codes </b> :{" "}
-                              {/* {comment.recommendations !== null ? (
-                                <>
-                                  {hasPassed48Hours(comment.date) ? (
-                                    <>
-                                      {comment.recommendations
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : comment.updated !== null ? (
-                                    <>
-                                      {comment.recommendations
-                                        .split(",")
-                                        .map((recommendation, i) => (
-                                          <span
-                                            className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                            // href={"/content-library"}
-                                            onClick={() => {
-                                              navigator.clipboard
-                                                .writeText(recommendation)
-                                                .then(() => {
-                                                  toast.success(
-                                                    "Test code copied to clipboard",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                })
-                                                .catch((err) => {
-                                                  toast.error(
-                                                    "Error copying test code",
-                                                    {
-                                                      duration: 4000,
-                                                    }
-                                                  );
-                                                });
-                                            }}
-                                          >
-                                            {recommendation}
-                                          </span>
-                                        ))}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span>
-                                        In process, please check again in a
-                                        while.{" "}
-                                      </span>
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <span>
-                                  In process, please check again in a while.{" "}
-                                </span>
-                              )} */}
                               {comment.simulation_codes !== null ||
                               comment.simulation_codes !== "" ? (
                                 <>
@@ -1229,88 +954,6 @@ const SessionNotes = ({ user }: any) => {
                                     </>
                                   </>
                                 )}
-                                {/* {comment.recommendations !== null ? (
-                                  <>
-                                    {hasPassed48Hours(comment.date) ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : comment.updated !== null ? (
-                                      <>
-                                        {comment.recommendations
-                                          .split(",")
-                                          .map((recommendation, i) => (
-                                            <span
-                                              className="text-semibold text-blue-500 mx-1 font-bold hover:cursor-copy"
-                                              // href={"/content-library"}
-                                              onClick={() => {
-                                                navigator.clipboard
-                                                  .writeText(recommendation)
-                                                  .then(() => {
-                                                    toast.success(
-                                                      "Test code copied to clipboard",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  })
-                                                  .catch((err) => {
-                                                    toast.error(
-                                                      "Error copying test code",
-                                                      {
-                                                        duration: 4000,
-                                                      }
-                                                    );
-                                                  });
-                                              }}
-                                            >
-                                              {recommendation}
-                                            </span>
-                                          ))}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <span>
-                                          In process, please check again in a
-                                          while.{" "}
-                                        </span>
-                                      </>
-                                    )}
-                                  </>
-                                ) : (
-                                  <span>
-                                    In process, please check again in a while.{" "}
-                                  </span>
-                                )} */}
                               </p>
                             </div>
                           </div>
@@ -1342,7 +985,7 @@ const SessionNotes = ({ user }: any) => {
                     <>
                       {filteredRecivedItems.length === 0 && (
                         <div className="text-center mt-4 font-bold ">
-                          You have not recieved any comments yet
+                          You have not received any comments yet
                         </div>
                       )}
                     </>

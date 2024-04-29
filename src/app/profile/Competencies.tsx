@@ -214,7 +214,7 @@ const Competencies = ({ user }: any) => {
                 }}
                 variant={"link"}
               >
-                Customise Your existing skills ?
+                Customise your existing skills ?
               </Button>
             </div>
           </div>
