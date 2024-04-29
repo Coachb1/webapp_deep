@@ -4978,10 +4978,12 @@ const openChatContainer = () => {
 
   if (sendBtn) {
     sendBtn.addEventListener("click", () => {
-      stream.getTracks().forEach((track) => track.stop());
-      if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
-        console.log("glrecor", isRecordingGlobal);
+      if(isRecording){
+        stream.getTracks().forEach((track) => track.stop());
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+          console.log("glrecor", isRecordingGlobal);
+        }
       }
     });
   }

@@ -222,7 +222,7 @@ const Coach = ({ user, renderType }: any) => {
 
   const CoachBotBody = () => {
     return (
-      <>
+      <div suppressHydrationWarning={true}>
         {/* {enrolled ? (
           <> */}
         {renderType === "static" && (
@@ -265,7 +265,7 @@ const Coach = ({ user, renderType }: any) => {
                   : "Welcome to the Aarav Sharma !🚀"}
               </h1>
               <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+                <span className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -275,7 +275,7 @@ const Coach = ({ user, renderType }: any) => {
                   bot is trained on the coach/ mentor’s style, ideologies, and
                   coaching/mentoring style, ensuring a tailored and effective
                   coaching experience.{" "}
-                </div>
+                </span>
               </p>
               {/* {renderType !== "dynamic" && (
                     <p className="my-4 max-sm:text-xs text-[#2f2323]">
@@ -508,7 +508,7 @@ const Coach = ({ user, renderType }: any) => {
             </div>
           </div>
         </div>
-      </>
+      </div>
       // ) : (
       //   <>
       //     <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
