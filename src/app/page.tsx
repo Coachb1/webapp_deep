@@ -88,7 +88,7 @@ const Page = async () => {
   const UserJoiningPreviledges = await getUserJoiningPreviledges(user?.email);
 
   return (
-    <div>
+    <div suppressHydrationWarning>
       <Coaches
         user={user}
         coachesDataa={directoryProfilesData}
