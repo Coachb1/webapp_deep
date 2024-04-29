@@ -3092,7 +3092,7 @@ loadExternalModule().then(() => {
             messageBubble.style.backgroundColor = "#f3f4f6";
             messageBubble.style.color = "#374151";
             const messageText = document.createElement("p");
-            messageText.innerHTML = `That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
+            messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
               user ? "" : "<b> Hang tight for next steps </b>"
             }`;
             messageBubble.appendChild(messageText);
