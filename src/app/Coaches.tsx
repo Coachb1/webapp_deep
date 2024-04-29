@@ -686,7 +686,9 @@ const Coaches = ({
       setCoachesData(
         addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
       );
-      setSavedCoachesData(addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches]));
+      setSavedCoachesData(
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+      );
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
@@ -714,7 +716,9 @@ const Coaches = ({
       setCoachesData(
         addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
       );
-      setSavedCoachesData(addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches]));
+      setSavedCoachesData(
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+      );
     }
 
     setTimeout(() => {
@@ -1067,25 +1071,13 @@ const Coaches = ({
       content:
         "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up.  ",
     },
-    // {
-    //   target: "#first_icons_by_ai",
-    //   content:
-    //     "",
-    //   placement: "auto",
-    // },
-    // {
-    //   target: "#first_coachee_profile",
-    //   content:
-    //     "",
-    //   placement: "auto",
-    // },
     {
       target: "#participant-listing",
       disableScrolling: true,
       content: `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
     },
     {
-      target: ".first_coach_profile",
+      target: "#first_coach_profile",
       content:
         "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
       placement: "auto",
@@ -1107,8 +1099,8 @@ const Coaches = ({
       content:
         "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
     },
-    
   ];
+
   const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
@@ -1420,7 +1412,7 @@ const Coaches = ({
                     className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
                       coach.profile_type === "icons_by_ai" &&
                       "border-gray-800 shadow-lg"
-                    }` }
+                    }`}
                   >
                     <div className="">
                       <img

@@ -57,7 +57,7 @@ const NavProfile = ({ user }: any) => {
               asChild
             >
               <Link href={"/profile"} className="w-full">
-                <User className="h-4 w-4 mr-2" /> Your profile
+                <User className="h-4 w-4 mr-2" /> My Account
               </Link>
             </DropdownMenuItem>
 

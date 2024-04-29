@@ -263,7 +263,7 @@ const Conversations = ({ user }: any) => {
                   )}
                 {conversationData.length > 0 && (
                   <>
-                    <Badge>My interactions</Badge>
+                    <Badge>My Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationData.map((conversation) => (
                         <ConversationChat
@@ -287,7 +287,7 @@ const Conversations = ({ user }: any) => {
                   )}
                 {feedbackConversations.length > 0 && (
                   <>
-                    <Badge>Feedback interactions</Badge>
+                    <Badge>Feedback Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {feedbackConversations.map((conversation) => (
                         <FeedbackConversationChat

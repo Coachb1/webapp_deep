@@ -107,7 +107,7 @@ const Profile = ({ user }: any) => {
             <ChevronLeft className="h-6 w-6 mr-2 max-sm:h-4 max-sm:w-4" />
           </div>
           <h3 className="text-2xl font-mono font-semibold max-sm:text-lg">
-            Your profile
+            My Account
           </h3>
         </div>
         <hr />
@@ -130,7 +130,7 @@ const Profile = ({ user }: any) => {
             {!restrictedFeatures?.includes("Action Plan & session notes") && (
               <NavItem
                 id="apsn"
-                itemName={"Action Plan & session notes"}
+                itemName={"Action Plan & Session notes"}
                 icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
             )}
@@ -200,7 +200,7 @@ const Profile = ({ user }: any) => {
               <MyPages user={user} />
             </div>
           )}
-          {selectedItem === "Action Plan & session notes" && (
+          {selectedItem === "Action Plan & Session notes" && (
             <SessionNotes user={user} />
           )}
           {selectedItem === "Bot Conversations" && (

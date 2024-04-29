@@ -79,7 +79,7 @@ const ActionPoints = ({ user }: any) => {
           </p> */}
           <Milestone className="h-8 mt-3 w-8 text-gray-500 max-sm:h-5 max-sm:w-5" />
           {actionPoint === 50 && (
-            <p className="text-xs text-center">Invite Previleges</p>
+            <p className="text-xs text-center">Invite Privileges</p>
           )}
         </div>
       </div>
@@ -104,7 +104,7 @@ const ActionPoints = ({ user }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <HelpMode steps={HelpModeSteps} />
-      <div className="pl-4 max-sm:pl-2 pt-2">My rewards</div>
+      <div className="pl-4 max-sm:pl-2 pt-2">My Rewards</div>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
