@@ -436,7 +436,7 @@ const MyLibrary = ({ user }: any) => {
     {
       target: "#nav1",
       content:
-        "Subject matter Categories of simulations and roleplay available are listed here. Popular categories are manager development, Emotional Quotient areas and client specific competency skill specific areas.",
+        "Subject matter categories of simulations and roleplay available are listed here. Popular categories are manager development, Emotional Quotient areas and client specific competency skill specific areas.",
     },
     {
       target: "#nav2",
@@ -539,7 +539,7 @@ const MyLibrary = ({ user }: any) => {
                       variant={"outline"}
                       className={`h-8 max-sm:text-sm`}
                     >
-                      {category.category_name}
+                      {convertTextToCorrectFormat(category.category_name)}
                     </Button>
                   ))}
                 </div>
@@ -956,7 +956,12 @@ const MyLibrary = ({ user }: any) => {
                                     variant={"default"}
                                     className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                   >
-                                    <>✨ {domains.domain}</>
+                                    <>
+                                      ✨{" "}
+                                      {convertTextToCorrectFormat(
+                                        domains.domain
+                                      )}
+                                    </>
                                   </Badge>
                                 </div>
 

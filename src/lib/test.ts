@@ -273,7 +273,7 @@ export const EQTestsCategorised: CategoryData[] = [
         ],
       },
       {
-        domain: "Anallytical Mindset",
+        domain: "Analytical Mindset",
         tests: [
           {
             test_code: "Q8DFIM4",
@@ -342,8 +342,8 @@ export const EQTestsCategorised: CategoryData[] = [
         label: "Influence",
       },
       {
-        value: "Anallytical Mindset",
-        label: "Anallytical Mindset",
+        value: "Analytical Mindset",
+        label: "Analytical Mindset",
       },
       {
         value: "Needs and Wants",
@@ -415,7 +415,7 @@ export const EQTests: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Anallytical Mindset",
+    domain: "Analytical Mindset",
     test_code: "Q8DFIM4",
     title: "Double-Booking Crisis Management",
     description:

@@ -3988,23 +3988,23 @@ async function submitEmailAndName2() {
     queryParams2 = new URLSearchParams({
       participant_id: participantId2,
       email: window.user.email,
-      name: window.user.given_name,
+      name: window.user.given_name ,
     });
   }
-  await fetch(
-    `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      credsUpdated2 = data.status;
-      console.log("name email updated, sending email");
+  // await fetch(
+  //   `${baseURL2}/test-attempt-sessions/set-name-and-email/?${queryParams2}`,
+  //   {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   }
+  // )
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     credsUpdated2 = data.status;
+  //     console.log("name email updated, sending email");
       sendEmail2(sessionId2, globalReportUrl2);
       const page_name = questionData2.results[0].page_name
       const test_code = testCode2 
@@ -4032,10 +4032,10 @@ async function submitEmailAndName2() {
         appendMessage2(recommDiv);
       }
 
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
   //   const queryParams22 = new URLSearchParams({
   //     test_attempt_session_id: sessionId2,
   //     report_url: globalReportUrl2,

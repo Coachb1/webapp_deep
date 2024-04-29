@@ -137,7 +137,7 @@ export const LoginWall = () => {
                   <UserIcon className="text-white text-3xl mb-4" />
                   <h3 className="text-xl font-bold text-white">01</h3>
                   <h3 className="text-lg font-semibold mb-2">
-                    Join the Network
+                    Join The Network
                   </h3>
                   <p className="text-sm">
                     Join the network as a coach or coachee. The coaches create
@@ -149,7 +149,7 @@ export const LoginWall = () => {
                   <ClipboardListIcon className="text-white text-3xl mb-4" />
                   <h3 className="text-xl font-bold text-white">02</h3>
                   <h3 className="text-lg font-semibold mb-2">
-                    Exchange notes & exercises
+                    Exchange Notes & Exercises
                   </h3>
                   <p className="text-sm">
                     Exchange notes based on your live sessions or just
@@ -186,7 +186,7 @@ export const LoginWall = () => {
                   <BarChartIcon className="text-white text-3xl mb-4" />
                   <h3 className="text-xl font-bold text-white">05</h3>
                   <h3 className="text-lg font-semibold mb-2">
-                    Track your progress
+                    Track Your Progress
                   </h3>
                   <p className="text-sm">
                     Track your skill scores based on simulations or interactions

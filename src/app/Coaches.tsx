@@ -1085,7 +1085,7 @@ const Coaches = ({
     {
       target: "#email",
       content:
-        "The avatar of the email via which the conversation can happen without leaving the inbox! ( The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+        "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
     },
     {
       target: "#reviews",
