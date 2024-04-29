@@ -181,6 +181,8 @@ const Coaches = ({
   const [connections, setConnections] = useState<connectionType[]>([]);
   // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const [buttonLoading, setButtonLoading] = useState(true);
+
   //client based restrictions
   const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
   const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
@@ -457,6 +459,7 @@ const Coaches = ({
               console.log(data);
 
               setAllCoaches(data.data);
+              setButtonLoading(false);
 
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
@@ -479,6 +482,7 @@ const Coaches = ({
               }
             })
             .then((err) => {
+              setButtonLoading(false);
               console.error(err);
             });
 
@@ -1145,169 +1149,172 @@ const Coaches = ({
       </p>
       {!restrictedFeatures?.includes("Join the network") && (
         <>
-          {allCoaches.length > 0 && (
-            <div
-              id="join-the-network"
-              className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs"
-            >
-              <DropdownMenu>
-                <DropdownMenuTrigger
+          <div
+            id="join-the-network"
+            className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs"
+          >
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                disabled={buttonLoading}
+                asChild
+                className="border-none outline-none"
+              >
+                <div>
+                  {" "}
+                  <Button
+                    disabled={buttonLoading}
+                    variant={"outline"}
+                    className="h-fit w-fit"
+                  >
+                    Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
+                <DropdownMenuItem
+                  disabled={
+                    allCoaches.length > 0 ||
+                    (canJoinAs?.length !== 0 &&
+                      !["coach", "mentor"].includes(canJoinAs))
+                  }
                   asChild
-                  className="border-none outline-none"
                 >
-                  <div>
-                    {" "}
-                    <Button variant={"outline"} className="h-fit w-fit">
-                      Join the network <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
-                  <DropdownMenuItem
-                    disabled={
-                      allCoaches.length > 0 ||
-                      (canJoinAs?.length !== 0 &&
-                        !["coach", "mentor"].includes(canJoinAs))
-                    }
-                    asChild
+                  <Link
+                    href={"/intake/?type=coach"}
+                    // onClick={() => {
+                    //   router.push("/intake/?type=coach");
+                    // }}
+                    className="flex flex-row items-center justify-center"
                   >
-                    <Link
-                      href={"/intake/?type=coach"}
-                      // onClick={() => {
-                      //   router.push("/intake/?type=coach");
-                      // }}
-                      className="flex flex-row items-center justify-center"
-                    >
-                      Join as Coach or Mentor{" "}
-                      {allCoaches.length > 0 ? (
-                        <>
-                          {allCoaches[0]?.is_approved ? (
-                            <>
-                              {coachId ? (
-                                <Badge className="ml-2">Already Joined</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {allCoaches[0]?.profile_type === "coach" ||
-                              allCoaches[0]?.profile_type === "mentor" ||
-                              allCoaches[0]?.profile_type === "coach-mentor" ? (
-                                <Badge className="ml-2">Requested</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </>
-                      ) : canJoinAs?.length !== 0 &&
-                        !["coach", "mentor"].includes(canJoinAs) ? (
-                        <Badge
-                          variant={"secondary"}
-                          className="ml-2 border border-gray-400"
-                        >
-                          Not Allowed
-                        </Badge>
-                      ) : null}
-                    </Link>
-                  </DropdownMenuItem>
-                  {/* )} */}
-                  {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
-                  <DropdownMenuItem
-                    disabled={
-                      allCoaches.length > 0 ||
-                      (canJoinAs?.length !== 0 &&
-                        !["coachee", "mentee"].includes(canJoinAs))
-                    }
-                    asChild
+                    Join as Coach or Mentor{" "}
+                    {allCoaches.length > 0 ? (
+                      <>
+                        {allCoaches[0]?.is_approved ? (
+                          <>
+                            {coachId ? (
+                              <Badge className="ml-2">Already Joined</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {allCoaches[0]?.profile_type === "coach" ||
+                            allCoaches[0]?.profile_type === "mentor" ||
+                            allCoaches[0]?.profile_type === "coach-mentor" ? (
+                              <Badge className="ml-2">Requested</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </>
+                    ) : canJoinAs?.length !== 0 &&
+                      !["coach", "mentor"].includes(canJoinAs) ? (
+                      <Badge
+                        variant={"secondary"}
+                        className="ml-2 border border-gray-400"
+                      >
+                        Not Allowed
+                      </Badge>
+                    ) : null}
+                  </Link>
+                </DropdownMenuItem>
+                {/* )} */}
+                {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
+                <DropdownMenuItem
+                  disabled={
+                    allCoaches.length > 0 ||
+                    (canJoinAs?.length !== 0 &&
+                      !["coachee", "mentee"].includes(canJoinAs))
+                  }
+                  asChild
+                >
+                  <Link
+                    href={"/intake/?type=coachee"}
+                    // onClick={() => {
+                    //   router.push("/intake/?type=coachee");
+                    // }}
+                    className="flex flex-row items-center justify-center"
                   >
-                    <Link
-                      href={"/intake/?type=coachee"}
-                      // onClick={() => {
-                      //   router.push("/intake/?type=coachee");
-                      // }}
-                      className="flex flex-row items-center justify-center"
-                    >
-                      Join as Coachee or Mentee
-                      {allCoaches.length > 0 ? (
-                        <>
-                          {allCoaches[0]?.is_approved ? (
-                            <>
-                              {coacheeId ? (
-                                <Badge className="ml-2">Already Joined</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {allCoaches[0]?.profile_type === "coachee" ||
-                              allCoaches[0]?.profile_type === "mentee" ? (
-                                <Badge className="ml-2">Requested</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </>
-                      ) : canJoinAs?.length !== 0 &&
-                        !["coachee", "mentee"].includes(canJoinAs) ? (
-                        <Badge
-                          variant={"secondary"}
-                          className="ml-2 border border-gray-400"
-                        >
-                          Not Allowed
-                        </Badge>
-                      ) : null}
-                    </Link>
-                  </DropdownMenuItem>
-                  {/* )} */}
-                  <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
-                    <Link
-                      href={"/intake/?type=feedback"}
-                      // onClick={() => {
-                      //   router.push("/intake/?type=feedback");
-                      // }}
-                      className="flex flex-row items-center justify-center"
-                    >
-                      Join Feedback Network
-                      {feedbackBots.length > 0 && (
-                        <>
-                          {feedbackBots[0]?.signature_bot.is_approved ? (
-                            <Badge className="ml-2">Already Joined</Badge>
-                          ) : (
-                            <Badge className="ml-2">Requested</Badge>
-                          )}
-                        </>
-                      )}
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                    Join as Coachee or Mentee
+                    {allCoaches.length > 0 ? (
+                      <>
+                        {allCoaches[0]?.is_approved ? (
+                          <>
+                            {coacheeId ? (
+                              <Badge className="ml-2">Already Joined</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {allCoaches[0]?.profile_type === "coachee" ||
+                            allCoaches[0]?.profile_type === "mentee" ? (
+                              <Badge className="ml-2">Requested</Badge>
+                            ) : (
+                              <Badge
+                                variant={"secondary"}
+                                className="ml-2 border border-gray-400"
+                              >
+                                Not Allowed
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </>
+                    ) : canJoinAs?.length !== 0 &&
+                      !["coachee", "mentee"].includes(canJoinAs) ? (
+                      <Badge
+                        variant={"secondary"}
+                        className="ml-2 border border-gray-400"
+                      >
+                        Not Allowed
+                      </Badge>
+                    ) : null}
+                  </Link>
+                </DropdownMenuItem>
+                {/* )} */}
+                <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
+                  <Link
+                    href={"/intake/?type=feedback"}
+                    // onClick={() => {
+                    //   router.push("/intake/?type=feedback");
+                    // }}
+                    className="flex flex-row items-center justify-center"
+                  >
+                    Join Feedback Network
+                    {feedbackBots.length > 0 && (
+                      <>
+                        {feedbackBots[0]?.signature_bot.is_approved ? (
+                          <Badge className="ml-2">Already Joined</Badge>
+                        ) : (
+                          <Badge className="ml-2">Requested</Badge>
+                        )}
+                      </>
+                    )}
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </>
       )}
       <div id="list" className="min-h-screen w-full max-sm:px-2">
