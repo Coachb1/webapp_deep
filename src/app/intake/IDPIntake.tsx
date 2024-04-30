@@ -12,7 +12,13 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { baseURL, basicAuth, getUserAccount, hideBots } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  convertTextToCorrectFormat,
+  getUserAccount,
+  hideBots,
+} from "@/lib/utils";
 import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -62,6 +68,9 @@ const IDPIntake = ({ user }: any) => {
         .then((data) => {
           console.log("USER Data from IDP intake", data);
           setUserId(data.uid);
+          setName(
+            `${user.given_name} ${user.family_name ? user.family_name : ""}`
+          );
         });
     } else {
       router.push("/");
@@ -97,7 +106,6 @@ const IDPIntake = ({ user }: any) => {
       toast.success(
         "Thank you. Your development plan and recommendations will be emailed to you soon. It will be also available in the profile section for you to review.",
         {
-          position: "bottom-right",
           duration: 10000,
         }
       );
@@ -113,16 +121,16 @@ const IDPIntake = ({ user }: any) => {
       .then((data) => {
         console.log(data);
         if (data.msg.includes("error")) {
-          toast.error("Error while generating your IDP, Please try again!");
-          setOpenDialog(false);
+          // toast.error("Error while generating your IDP, Please try again!");
+          // setOpenDialog(false);
         } else {
           resetAllStates();
           setReportUrl(data.report);
         }
       })
       .catch((err) => {
-        toast.error("Error while generating your IDP, Please try again!");
-        setSubmitLoading(false);
+        // toast.error("Error while generating your IDP, Please try again!");
+        // setSubmitLoading(false);
         console.error(err);
       });
   };
@@ -198,12 +206,12 @@ const IDPIntake = ({ user }: any) => {
           )}
         </DialogContent>
       </Dialog> */}
-      <div className="flex flex-col justify-center items-center w-full">
-        <div className="bg-white w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
-          <h1 className="text-xl text-left text-gray-600 font-bold">
+      <div className="flex flex-col text-sm max-sm:text-xs justify-center items-center w-full">
+        <div className="bg-white w-full h-fit p-4  rounded-md mb-4">
+          <h1 className="text-xl max-sm:text-sm text-left text-gray-600 font-bold">
             Individual Development Plan Intake
           </h1>
-          <p className="mb-3 text-left text-sm text-gray-600">
+          <p className="mb-3 text-left text-sm max-sm:text-xs text-gray-600">
             Use this to get your Individual Development Plan report.
           </p>
           <form
@@ -220,20 +228,18 @@ const IDPIntake = ({ user }: any) => {
             </Badge>
             <div>
               <div className="my-3">
-                <p className="text-sm my-1">Enter your name</p>
+                <p className="text-sm max-sm:text-xs my-1">Enter your name</p>
                 <input
-                  value={name}
+                  value={convertTextToCorrectFormat(name)}
+                  disabled
                   required
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }}
                   placeholder="Aarav Sharma"
                   type="text"
-                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                  className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   Few professional accomplishments you are proud of?
                 </p>
                 <textarea
@@ -248,7 +254,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What areas of work do you often get critical feedback or you
                   believe is your drawback?
                 </p>
@@ -264,7 +270,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What are some areas you want to improve?
                 </p>
                 <textarea
@@ -279,7 +285,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What would you believe may derail your plan?
                 </p>
                 <textarea
@@ -294,7 +300,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What is the immediate 90 day focus?
                 </p>
                 <textarea
@@ -309,7 +315,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What are your long term (12-24 months) goals?
                 </p>
                 <textarea
@@ -324,7 +330,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What do you believe should be your priorities?
                 </p>
                 <textarea
@@ -339,7 +345,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What learning and certifications do you already have?
                 </p>
                 <textarea
@@ -354,7 +360,7 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                <p className="text-sm my-1">
+                <p className="text-sm max-sm:text-xs my-1">
                   What domain and subject areas do you specialize in?
                 </p>
                 <textarea

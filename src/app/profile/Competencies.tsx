@@ -11,7 +11,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 
 const Competencies = ({ user }: any) => {
@@ -56,30 +56,7 @@ const Competencies = ({ user }: any) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const getCompetency = () => {
     setFetchLoading(true);
-    fetch(`${baseURL}/accounts/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_context: {
-          name: user.given_name,
-          role: "member",
-          user_attributes: {
-            tag: "deepchat_profile",
-            attributes: {
-              username: "web_user",
-              email: user.email,
-            },
-          },
-        },
-        identity_context: {
-          identity_type: "deepchat_unique_id",
-          value: user.email,
-        },
-      }),
-    })
+    getUserAccount(user)
       .then((response) => response.json())
       .then((data) => {
         setUserId(data.uid);
@@ -120,7 +97,9 @@ const Competencies = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getCompetency();
+    if (user) {
+      getCompetency();
+    }
   }, []);
 
   const submitCompetenciesHandler = () => {
@@ -235,7 +214,7 @@ const Competencies = ({ user }: any) => {
                 }}
                 variant={"link"}
               >
-                Customise Your existing skills ?
+                Customise your existing skills ?
               </Button>
             </div>
           </div>

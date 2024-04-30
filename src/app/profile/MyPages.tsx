@@ -1,8 +1,13 @@
 "use client";
 
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import {
+  applicationUrl,
+  baseURL,
+  basicAuth,
+  getUserAccount,
+} from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Copy, Edit, LinkIcon, Loader } from "lucide-react";
+import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
@@ -32,83 +37,200 @@ const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
+  const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUserAccount(user)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("bot data : ", data);
-            data.data.forEach((entry: any) => {
-              const botType = entry.signature_bot.bot_type;
+    if (user) {
+      getUserAccount(user)
+        .then((response) => response.json())
+        .then(async (data) => {
+          console.log(data);
+          const profile = await fetch(
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          );
 
-              if (!botTypeMap[botType]) {
-                botTypeMap[botType] = [];
-              }
-              const existingEntry = botTypeMap[botType].find(
-                (bot) => bot.bot_id === entry.signature_bot.bot_id
-              );
-              if (!existingEntry) {
-                botTypeMap[botType].push({
-                  bot_id: entry.signature_bot.bot_id,
-                  uid: entry.signature_bot.uid,
-                  bot_name: entry.bot_attributes.coach_name,
-                });
-              }
-            });
-            const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
-              (botType) => ({
-                bot_type: botType,
-                bots: botTypeMap[botType],
-              })
-            );
-            setBotTypes(result);
-            setLoading(false);
+          const profileJson = await profile.json();
+          // const userProfile = profileJson.data[0]
+          console.log("profile", profileJson.data);
+
+          // const profileType = userProfile.profile_type;
+          setUserProfile(
+            profileJson.data.filter(
+              (profile: any) => profile.is_approved === true
+            )[0]
+          );
+          console.log(profileJson.data[0]);
+
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            headers: {
+              Authorization: basicAuth,
+            },
           })
-          .catch((error) => {
-            console.error(error);
-            setLoading(false);
-          });
-      });
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("bot data : ", data);
+              data.data.forEach((entry: any) => {
+                const botType = entry.signature_bot.bot_type;
+
+                if (!botTypeMap[botType]) {
+                  botTypeMap[botType] = [];
+                }
+                const existingEntry = botTypeMap[botType].find(
+                  (bot) => bot.bot_id === entry.signature_bot.bot_id
+                );
+                if (!existingEntry) {
+                  botTypeMap[botType].push({
+                    bot_id: entry.signature_bot.bot_id,
+                    uid: entry.signature_bot.uid,
+                    bot_name:
+                      entry.signature_bot.bot_id.includes("feedback") ||
+                      entry.signature_bot.bot_id.includes("knowledge")
+                        ? entry.bot_attributes.bot_name
+                        : entry.bot_attributes.coach_name,
+                  });
+                }
+              });
+              const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
+                (botType) => ({
+                  bot_type: botType,
+                  bots: botTypeMap[botType],
+                })
+              );
+              setBotTypes(result);
+              setLoading(false);
+            })
+            .catch((error) => {
+              console.error(error);
+              setLoading(false);
+            });
+        });
+    }
   }, []);
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "Avatar Pages";
+      return "AI Frame";
     } else if (botType === "feedback_bot") {
-      return "Feedback Pages";
+      return "Feedback Page";
+    } else if (botType === "user_bot") {
+      return "Knowledge Bot";
     }
   };
 
   const BotTypeLinks = (botType: string, bot_id: string) => {
     if (botType === "avatar_bot") {
-      return `https://playground.coachbots.com/coach/${bot_id}`;
+      return `${applicationUrl()}/coach/${bot_id}`;
     } else if (botType === "feedback_bot") {
-      return `https://playground.coachbots.com/feedback/${bot_id}`;
+      return `${applicationUrl()}/feedback/${bot_id}`;
     } else if (botType === "subject_matter_bot") {
-      return `https://playground.coachbots.com/subject-expert/${bot_id}`;
+      return `${applicationUrl()}/subject-expert/${bot_id}`;
+    } else if (botType === "user_bot") {
+      return `${applicationUrl()}/custom-bot/${bot_id}`;
     }
   };
 
-  const intakeBotTypeLinks = (botType: string, bot_id: string) => {
-    if (botType === "avatar_bot") {
-      return `/intake/?type=coach&edit=true&bot_id=${bot_id}`;
-    } else if (botType === "feedback_bot") {
-      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}`;
+  const intakeBotTypeLinksForView = (
+    botType: string,
+    bot_id: string,
+    profile_id: string,
+    profile_type: string
+  ) => {
+    console.log(botType, bot_id, profile_id, profile_type);
+    if (
+      profile_type === "coach" ||
+      profile_type === "mentor" ||
+      profile_type === "coach-mentor"
+    ) {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      }
+    } else if (profile_type === "coachee" || profile_type === "mentee") {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      } else {
+        return `/intake/?type=${
+          botType === "feedback_bot" ? "feedback" : "coachee"
+        }&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      }
+    } else if (profile_type === "mentee") {
+      return `/intake/?type=coachee&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    } else {
+      if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      }
+    }
+  };
+
+  const intakeBotTypeLinks = (
+    botType: string,
+    bot_id: string,
+    profile_id: string,
+    profile_type: string
+  ) => {
+    if (
+      profile_type === "coach" ||
+      profile_type === "mentor" ||
+      profile_type === "coach-mentor"
+    ) {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
+      }
+    } else if (profile_type === "coachee" || profile_type === "mentee") {
+      if (botType === "avatar_bot") {
+        return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "feedback_bot") {
+        return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      } else if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
+      } else {
+        return `/intake/?type=${
+          botType === "feedback_bot" ? "feedback" : "coachee"
+        }&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+      }
+    } else if (profile_type === "mentee") {
+      return `/intake/?type=coachee&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
+    } else {
+      if (botType === "user_bot") {
+        return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
+      }
     }
   };
 
   return (
-    <div className="bg-accent p-2 mt-2 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2">My Pages</div>
+    <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
+      <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
+      <div className="pl-4 max-sm:pl-2 ">
+        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
+          {" "}
+          <Info className="h-3 w-3 mr-2 inline" />
+          For editing profiles please email us at{" "}
+          <a
+            className="font-bold text-blue-400"
+            href="mailto: info@coachbots.com"
+          >
+            {" "}
+            info@coachbots.com
+          </a>
+        </p>
+      </div>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -118,123 +240,224 @@ const MyPages = ({ user }: any) => {
           </div>
         </>
       )}
-      {!loading && botTypes.length === 0 && (
-        <>
-          <div className="text-xs w-full h-20 flex items-center justify-center">
-            <div>You don't have any active bots yet!</div>{" "}
-            <Button className="pl-1" variant={"link"}>
-              Create one?
-            </Button>
-          </div>
-        </>
-      )}
-      <div className="m-4 text-sm max-sm:m-2">
+      {!loading &&
+        botTypes.length === 0 &&
+        userProfile?.profile_type !== "coachee" && (
+          <>
+            <div className="text-xs w-full h-20 flex items-center justify-center">
+              <div>You don't have any active Pages yet!</div>{" "}
+              {/* <Button className="pl-1" variant={"link"}>
+                Create one?
+              </Button> */}
+            </div>
+          </>
+        )}
+      <div className="my-4 text-sm">
         {botTypes.map((botType) => (
-          <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
-            <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p>
+          <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
+            {/* <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p> */}
             {botType.bots.map((bot, i) => (
-              <div>
-                <div className="border border-x-gray-200 flex flex-row gap-3 my-2 items-center">
-                  <p>{i + 1}</p>{" "}
-                  <p className="max-sm:text-xs">{bot.bot_name}</p>{" "}
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant={"secondary"}
-                        className="h-6 text-xs w-fit"
-                      >
-                        <span className="max-sm:hidden"> Code snippet</span>{" "}
-                        <TooltipWrapper
-                          className="hidden max-sm:block text-xs"
-                          tooltipName="Code snippet"
-                          body={<Code className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                        />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
-                      <DialogHeader>
-                        <DialogTitle>Code snippet for your bot</DialogTitle>
-                        <DialogDescription>
-                          <div className="bg-gray-100 rounded-sm my-2 p-2 text-xs overflow-scroll  no-scrollbar">
-                            <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
-                              {`
+              <div className="m-4 my-1 text-sm max-sm:m-2">
+                <div className="flex items-center">
+                  {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
+                  <p
+                    className={`text-sm inline ${
+                      botType.bot_type === "user_bot"
+                        ? "w-[45%] max-sm:w-[70%]"
+                        : "w-[45%] max-sm:w-[70%]"
+                    } `}
+                  >
+                    <>
+                      {" "}
+                      {BotTypesHeading(botType.bot_type)}{" "}
+                      {botType.bot_type === "user_bot" && (
+                        <b className="text-gray-600"> - {bot.bot_name}</b>
+                      )}{" "}
+                    </>
+                  </p>{" "}
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
+                  <div className="flex flex-row gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant={"secondary"}
+                          className="h-6 text-xs w-fit"
+                        >
+                          <span className="max-sm:hidden"> Code snippet</span>{" "}
+                          <TooltipWrapper
+                            className="hidden max-sm:block text-xs"
+                            tooltipName="Code snippet"
+                            body={<Code className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                        <DialogHeader>
+                          <DialogTitle>Code snippet for your bot</DialogTitle>
+                          <DialogDescription>
+                            <div className="bg-gray-100 rounded-sm my-2 p-2 text-xs overflow-scroll  no-scrollbar">
+                              <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
+                                {`
 <div
     class="deep-chat-poc2"
     data-bot-id="${bot.bot_id}"
 ></div>
 <script
-    src="https://playground.coachbots.com/widget/coachbots-stt-widget.js"
+    src="${applicationUrl()}/widget/coachbots-stt-widget.js"
     defer
 ></script>
                             `}
-                            </p>
-                          </div>
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter className="-mt-4">
-                        <CopyToClipboard
-                          copyType="code"
-                          textToCopy={`<div
+                              </p>
+                            </div>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="-mt-4">
+                          <CopyToClipboard
+                            copyType="code"
+                            textToCopy={`<div
                                 class="deep-chat-poc2"
                                 data-bot-id="${bot.bot_id}"
                             ></div>
                             <script
-                                src="https://playground.coachbots.com/widget/coachbots-stt-widget.js"
+                                src=${applicationUrl()}/widget/coachbots-stt-widget.js"
                                 defer
                             ></script>`}
-                        />
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <Dialog>
-                    <DialogTrigger asChild>
+                          />
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Dialog>
+                      {botType.bot_type !== "user_bot" && (
+                        <DialogTrigger asChild>
+                          <Button
+                            variant={"secondary"}
+                            className="h-6 text-xs w-fit"
+                          >
+                            <span className="max-sm:hidden">Link </span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Link"
+                              body={
+                                <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </DialogTrigger>
+                      )}
+                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                        <DialogHeader>
+                          <DialogTitle>Page link</DialogTitle>
+                          <DialogDescription>
+                            <Link
+                              target="_blank"
+                              href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
+                              className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
+                            >
+                              {BotTypeLinks(botType.bot_type, bot.bot_id)}
+                            </Link>
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="-mt-4">
+                          <CopyToClipboard
+                            copyType="link"
+                            textToCopy={
+                              BotTypeLinks(botType.bot_type, bot.bot_id)!
+                            }
+                          />
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    {/* FOR EDIT MODE */}
+                    {/* <Link
+                      href={
+                        intakeBotTypeLinks(
+                          botType.bot_type,
+                          bot.bot_id,
+                          userProfile?.uid,
+                          userProfile?.profile_type === "coach" &&
+                            userProfile?.is_mentor === true
+                            ? "coach-mentor"
+                            : userProfile?.profile_type
+                        )! + `&uid=${bot.uid}`
+                      }
+                    >
                       <Button
                         variant={"secondary"}
-                        className="h-6 text-xs w-fit"
+                        className="h-6 text-xs w-fit bg-blue-200 "
                       >
-                        <span className="max-sm:hidden">Link </span>
+                        <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
-                          tooltipName="Link"
-                          body={
-                            <LinkIcon className="h-3 w-3 ml-2 max-sm:ml-0" />
-                          }
+                          tooltipName="Edit"
+                          body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
-                      <DialogHeader>
-                        <DialogTitle>Page link</DialogTitle>
-                        <DialogDescription>
-                          <Link
-                            target="_blank"
-                            href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
-                            className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
-                          >
-                            {BotTypeLinks(botType.bot_type, bot.bot_id)}
-                          </Link>
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter className="-mt-4">
-                        <CopyToClipboard
-                          copyType="link"
-                          textToCopy={
-                            BotTypeLinks(botType.bot_type, bot.bot_id)!
-                          }
+                    </Link> */}
+
+                    {/* FOR VIEW MODE */}
+                    <Link
+                      href={
+                        intakeBotTypeLinksForView(
+                          botType.bot_type,
+                          bot.bot_id,
+                          userProfile?.uid,
+                          userProfile?.profile_type === "coach" &&
+                            userProfile?.is_mentor === true
+                            ? "coach-mentor"
+                            : userProfile?.profile_type
+                        )! + `&uid=${bot.uid}`
+                      }
+                    >
+                      <Button
+                        variant={"secondary"}
+                        className="h-6 text-xs w-fit bg-blue-200 "
+                      >
+                        <span className="max-sm:hidden">View</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="View"
+                          body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
-                  <Link
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {!loading &&
+        userProfile &&
+        (userProfile.profile_type === "coachee" ||
+          userProfile.profile_type === "mentee") && (
+          <>
+            <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
+              {/* <p className="text-sm ">Coachee</p> */}
+              <div className="m-4 my-1 text-sm max-sm:m-2">
+                <div className="flex items-center">
+                  {/* <p className="text-sm inline w-[10%]">1</p> */}
+                  <p className="text-sm inline w-[45%] max-sm:w-[50%]">
+                    {userProfile.profile_type === "coachee" && <>Coachee</>}
+                    {userProfile.profile_type === "mentee" && <>Mentee</>}
+
+                    {/* - {userProfile.name} */}
+                  </p>
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
+                  {/* FOR EDIT MODE */}
+                  {/* <Link
                     href={
-                      intakeBotTypeLinks(botType.bot_type, bot.bot_id)! +
-                      `&uid=${bot.uid}`
+                      intakeBotTypeLinks(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
                     }
                   >
                     <Button
                       variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 "
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
                     >
                       <span className="max-sm:hidden">Edit</span>{" "}
                       <TooltipWrapper
@@ -243,13 +466,36 @@ const MyPages = ({ user }: any) => {
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
+                  </Link> */}
+
+                  {/* FOR VIEW MODE */}
+                  <Link
+                    href={
+                      intakeBotTypeLinksForView(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                    >
+                      <span className="max-sm:hidden">View</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="View"
+                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
                   </Link>
                 </div>
               </div>
-            ))}
-          </div>
-        ))}
-      </div>
+            </div>
+          </>
+        )}
     </div>
   );
 };

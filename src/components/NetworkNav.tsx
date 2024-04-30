@@ -10,27 +10,85 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
-import { Info, Menu } from "lucide-react";
+import { HelpCircle, Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
+import { useEffect, useState } from "react";
+import { getClientUserInfo } from "@/lib/utils";
+import { Badge } from "./ui/badge";
+import { UseHelpMode } from "@/lib/helpmodeContext";
+import { Switch } from "./ui/switch";
+
+interface CustomWindow extends Window {
+  user?: any;
+  locallStorage?: Storage;
+  locationn?: Location;
+  userIdFromWebApp?: any;
+  addEventListener: Window["addEventListener"];
+}
+
+const windowDec: CustomWindow =
+  typeof window !== "undefined" ? window : ({} as CustomWindow);
 
 const NetworkNav = ({ user }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+
+  const { updateHelpModeState, helpModeState } = UseHelpMode();
+
+  //client based restrictions
+  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+    null
+  );
+
+  const [scrolled, setScrolled] = useState<number>(0);
+  useEffect(() => {
+    if (user) {
+      getClientUserInfo(user.email)
+        ?.then((res) => res.json())
+        .then((data) => {
+          console.log(data, "getClientUserInfo - NetworkNav");
+
+          setRestrictedPages(data.data.user_info[0].restricted_pages);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
+        });
+    }
+  }, []);
+
+  function handleScroll() {
+    var scrolledUp = window.scrollY || window.pageYOffset;
+    setScrolled(scrolledUp);
+  }
+
+  if (typeof window !== "undefined") {
+    windowDec.addEventListener("scroll", handleScroll);
+  }
+
   return (
-    <div className="flex flex-row gap-2">
-      <div className="flex flex-row gap-2 max-sm:hidden">
-        <Link href="/">
+    <div
+      className={`fixed right-0 top-0 z-40 flex h-6 w-full items-center justify-end p-4 py-8   ${
+        scrolled > 0 &&
+        pathname !== "/library" &&
+        pathname !== "/skill-bots" &&
+        pathname !== "/guides" &&
+        pathname !== "/create-scenario" &&
+        "border-b border-gray-400 backdrop-blur-lg"
+      } `}
+    >
+      <div className="flex flex-row gap-2 max-sm:hidden ">
+        {!restrictedPages?.includes("Network Directory") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
               pathname === "/" ? "border border-gray-500 shadow-md" : ""
             } `}
+            asChild
           >
-            Network Directory
+            <Link href={"/"}>Network Directory</Link>
           </Button>
-        </Link>{" "}
-        <Link href="/content-library">
+        )}
+        {!restrictedPages?.includes("Demo") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -38,11 +96,12 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
+            asChild
           >
-            Explore
+            <Link href={"/content-library"}>Demo</Link>
           </Button>
-        </Link>{" "}
-        <Link href="/library">
+        )}
+        {!restrictedPages?.includes("Library") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -50,11 +109,12 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
+            asChild
           >
-            My Library
+            <Link href={"/library"}>Library</Link>
           </Button>
-        </Link>{" "}
-        <Link href="/create-scenario">
+        )}
+        {!restrictedPages?.includes("Creator Studio") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -62,100 +122,119 @@ const NetworkNav = ({ user }: any) => {
                 ? "border border-gray-500 shadow-md"
                 : ""
             } `}
+            asChild
           >
-            Open Simulations
+            <Link href={"/create-scenario"}>Creator Studio </Link>
           </Button>
-        </Link>{" "}
-        <TooltipWrapper
-          className="w-60 text-xs"
-          tooltipName="Individual development Plan Intake (Login required)"
-          body={
-            <div>
-              <Button
-                onClick={() => {
-                  router.push("/intake/?type=IDP");
-                  console.log(pathname, params.toString());
-                }}
-                disabled={!user}
-                variant={"outline"}
-                className={` h-8 max-sm:text-sm ${
-                  params.toString().includes("IDP")
-                    ? "border border-gray-500 shadow-md"
-                    : ""
-                } `}
-              >
-                IDP <Info className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          }
-        />{" "}
+        )}
       </div>
       <div className="hidden max-sm:block">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
-            <div className="w-fit h-fit p-[4px] bg-gray-200 rounded-md">
+          <DropdownMenuTrigger asChild className="!z-[999] overflow-visible">
+            <div className="h-fit w-fit rounded-md bg-gray-200 p-[4px]">
               <Menu className="h-6 w-6" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="z-[999] w-fit">
-            <DropdownMenuItem
-              className={`${pathname === "/" ? "bg-gray-200" : null}`}
-              asChild
-            >
-              <Link href={"/"}> Network directory</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`${
-                pathname === "/content-library" ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <Link href={"/content-library"}>Explore</Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/library") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <Link href={"/library"}> Library</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className={`${
-                pathname.includes("/create-scenario") ? "bg-gray-200" : null
-              }`}
-              asChild
-            >
-              <Link href={"/create-scenario"}> Open Simulations</Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <TooltipWrapper
-                className="w-60 text-xs"
-                tooltipName="Individual development Plan Intake (Login required)"
-                body={
-                  <div>
-                    <Button
-                      onClick={() => {
-                        router.push("/intake/?type=IDP");
-                      }}
-                      disabled={!user}
-                      variant={"outline"}
-                      className={`h-8 w-full text-start flex flex-row justify-start p-0 pl-2 max-sm:text-sm border-none  ${
-                        params.toString().includes("IDP") ? "bg-gray-200" : ""
-                      }`}
+            {!restrictedPages?.includes("Network Directory") && (
+              <DropdownMenuItem
+                className={`${pathname === "/" ? "bg-gray-200" : null}`}
+                asChild
+              >
+                <Link href={"/"}> Network directory</Link>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Demo") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname === "/content-library" ? "bg-gray-200" : null
+                }`}
+                asChild
+              >
+                <Link href={"/content-library"}>Demo</Link>
+              </DropdownMenuItem>
+            )}
+            {!restrictedPages?.includes("Library") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/library") ? "bg-gray-200" : null
+                }`}
+                asChild
+              >
+                <Link
+                  href={"/library"}
+                  // onClick={() => {
+                  //   router.push("/library");
+                  // }}
+                >
+                  {" "}
+                  Library
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {/* {!restrictedPages?.includes("Guides") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/guides") ? "bg-gray-200" : null
+                }`}
+                asChild
+              >
+                <Link
+                  href={"/guides"}
+                  // onClick={() => {
+                  //   router.push("/guides");
+                  // }}
+                >
+                  {" "}
+                  Guides
+                </Link>
+              </DropdownMenuItem>
+            )} */}
+            {!restrictedPages?.includes("Creator Studio") && (
+              <DropdownMenuItem
+                className={`${
+                  pathname.includes("/create-scenario") ? "bg-gray-200" : null
+                }`}
+                asChild
+              >
+                <Link
+                  href={"/create-scenario"}
+                  // onClick={() => {
+                  //   router.push("/create-scenario");
+                  // }}
+                >
+                  {" "}
+                  Creator Studio{" "}
+                  {/* <span>
+                    <Badge
+                      variant={"default"}
+                      className="bg-cyan-400 w-fit text-[10px] p-[2px] ml-1  hover:bg-cyan-400 text-white "
                     >
-                      IDP <Info className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                }
-              />
-            </DropdownMenuItem>
+                      Experimental
+                    </Badge>
+                  </span> */}
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <NavProfile user={user} />
+      {!restrictedPages?.includes("Profile") && (
+        <div className="ml-4 h-full flex flex-row items-center gap-2">
+          <div className="flex flex-row gap-2 items-center">
+            <Switch
+              checked={helpModeState}
+              onCheckedChange={(checked) => {
+                updateHelpModeState(checked);
+              }}
+              id="help-mode"
+            />
+            <p className="text-sm max-sm:text-xs">Help mode</p>
+          </div>
+          <div className="h-[20px] w-[2px] bg-gray-500"></div>
+          <NavProfile user={user} />
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,6 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import HeroAccordion from "@/components/HeroAccordion";
-
 import {
   Managerial,
   oneTwoOne,
@@ -14,7 +13,6 @@ import {
   Sales,
   serviceslashConsulting,
   frontLineStaff,
-  immersive,
   presentation,
   caseStudy,
   DiversityPlus,
@@ -23,40 +21,18 @@ import {
   questionPro,
   pms,
   pitch,
+  englishSupport,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowUp } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
+import { scrollToView } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { UseHelpMode } from "@/lib/helpmodeContext";
+
+import React from "react";
+import HelpMode from "@/components/HelpMode";
 
 const VersionOne = ({ user }: any) => {
-  const [groupList, setGroupList] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/accounts/get-client-information/?for=user_info&user_id=${data.uid}`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("USER INFO FOR AUTH ACESS", data);
-            });
-        });
-    }
-  }, []);
-
   let shouldRenderDiv;
   if (user) {
     const userEmail = user?.email;
@@ -84,220 +60,255 @@ const VersionOne = ({ user }: any) => {
     }
   }
 
+  const HelpModeSteps = [
+    {
+      target: "#user-demos",
+      content:
+        "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
+    },
+    {
+      target: "#system-demos",
+      content:
+        "Use or clinet-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+    },
+    {
+      target: ".chat-icon",
+      content:
+        "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
+    },
+    {
+      target: ".chat-icon2",
+      content:
+        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is convrted into text. The processing speed is fast & efficient. ",
+    },
+    {
+      target: "#manager-plus",
+      disableScrolling: false,
+      content:
+        "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
+    },
+  ];
   return (
-    <div className="bg-gray-100 min-h-[120vh] h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
-      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-        {!user && (
-          <Badge
-            variant={"secondary"}
-            className="bg-[#2DC092] absolute right-20 h-6 text-white  hover:bg-[#2DC092] z-50 max-sm:text-[10px] max-sm:h-10 truncate mt-[5.5rem] -mr-16"
-          >
-            ✨ Sign up to get the EQ Acess{" "}
-            <br className="hidden max-sm:inline" /> (Workplace emails only)
-            <ArrowUp className="ml-2 w-4 h-4" />
-          </Badge>
-        )}
-        <>
-          <NetworkNav user={user} />
-        </>
-      </div>
-
+    <>
+      <HelpMode steps={HelpModeSteps} />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
-          <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-            COACH
-          </span>
-          BOTS
-        </h1>
-        <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+        <h1 className="text-5xl mt-12 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg max-sm:px-8">
+        <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
           {" "}
-          Toolkits and conversational coaching-learning for any scenario.
+          Toolkits and conversational coaching-learning for any scenario. The{" "}
+          <b>User Demo</b> are the user-created avatars and bots, while the{" "}
+          <b>System Demo</b> are the role plays and simulations supported by the
+          platform algorithm.
         </p>
 
-        <div className="flex flex-row mt-4 z-50 gap-2">
-          <Link href="/coach">
+        <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-indigo-500 hover:bg-indigo-500 ">
+          User Demo
+        </Badge>
+        <div
+          id="user-demos"
+          className="flex flex-row flex-wrap justify-center mt-4 z-[2] gap-2 border-2 border-indigo-400 p-3 rounded-md"
+        >
+          <Link href="/coach" target="_blank">
             <Button
-              variant={"outline"}
-              className={`h-8 text-sm max-sm:text-xs`}
+              className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Avatar Page (Sample)
+              AI-Frame
             </Button>
           </Link>
-          <Link href="/feedback">
+          {/* <Link
+            href="/coach/coach-d54cd-aravsharma?is_audio=true"
+            target="_blank"
+          >
             <Button
-              variant={"outline"}
-              className={` h-8 text-sm max-sm:text-xs`}
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Feedback Page (Sample)
+              AI-Frame (Audio enabled)
+            </Button>
+          </Link> */}
+          <Link href="/feedback" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              Feedback Page
             </Button>
           </Link>
+          <Link href="/knowledge-bot" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              Knowledge Bot
+            </Button>
+          </Link>
+          {/* <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              New Manager (Role bot)
+            </Button>
+          </Link> */}
         </div>
 
-        <div className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0">
+        <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
+          System Demo
+        </Badge>
+        <div
+          id="system-demos"
+          className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+        >
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
-            <Link href={"#managerplus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Manager+
-              </Button>
-            </Link>
-            <Link href={"#ijp"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                IJP/Succession
-              </Button>
-            </Link>
-            <Link href={"#reflection"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Reflection
-              </Button>
-            </Link>
-            <Link href={"#diversityPlus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Diversity+
-              </Button>
-            </Link>
-            <Link href={"#qp"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Questions Pro
-              </Button>
-            </Link>
-            <Link href={"#pms"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                PMS enabled
-              </Button>
-            </Link>
-            {/* <Link href={"#coachingplus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Coaching+
-              </Button>
-            </Link> */}
-            <Link href={"#pitch"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Pitch+
-              </Button>
-            </Link>
-            <Link href={"#discoveryPlus"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Discovery+
-              </Button>
-            </Link>
-            <Link href={"#one-to-one"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                1:1 Check-ins | AI Curated
-              </Button>
-            </Link>
-            <Link href={"#tech"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Technology
-              </Button>
-            </Link>
-            <Link href={"#sales"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Sales
-              </Button>
-            </Link>
-            <Link href={"#frontline-staff"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Frontline Staff &#40;Hindi&#41;
-              </Button>
-            </Link>
-            <Link href={"#service-c"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Service/Consulting
-              </Button>
-            </Link>
-            <Link href={"#360-feedback"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                360 Feedback
-              </Button>
-            </Link>
-            <Link href={"#case-study"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Case study | AI Curated
-              </Button>
-            </Link>
-            <Link href={"#presentation"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Presentation
-              </Button>
-            </Link>
-            <Link href={"#immersive"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Immersive | AI Curated
-              </Button>
-            </Link>
-            <Link href={"#onboarding"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Onboarding
-              </Button>
-            </Link>
-            <Link href={"#meetings"}>
-              <Button
-                variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
-              >
-                Meetings
-              </Button>
-            </Link>
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("managerplus")}
+            >
+              Manager+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("ijp")}
+            >
+              IJP/Succession
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("reflection")}
+            >
+              Reflection
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("diversityPlus")}
+            >
+              Diversity+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("qp")}
+            >
+              Questions Pro
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("pms")}
+            >
+              PMS Enabled
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("pitch")}
+            >
+              Pitch+
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("discoveryPlus")}
+            >
+              Discovery+ | MCQ
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("one-to-one")}
+            >
+              1:1 Check-ins | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("tech")}
+            >
+              Technology
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("sales")}
+            >
+              Sales
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("frontline-staff")}
+            >
+              Frontline Staff (Hindi)
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("service-c")}
+            >
+              Service/Consulting
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("360-feedback")}
+            >
+              360 Feedback
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("case-study")}
+            >
+              Case study | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("presentation")}
+            >
+              Presentation
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("onboarding")}
+            >
+              Onboarding
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("meetings")}
+            >
+              Meetings | Dynamic
+            </Button>
+
+            <Button
+              variant={"secondary"}
+              className="border border-gray-200 h-8 hover:cursor-pointer"
+              onClick={() => scrollToView("english-support")}
+            >
+              English Support
+            </Button>
 
             {/* {shouldRenderDiv && (
               <Link href={"/create-scenario"}>
@@ -323,6 +334,7 @@ const VersionOne = ({ user }: any) => {
         <div className="w-full">
           <div id="managerplus">
             <HeroAccordion
+              id="manager-plus"
               badgeText="Manager+"
               user={user ? true : false}
               tests={Managerial}
@@ -379,14 +391,14 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="discoveryPlus">
             <HeroAccordion
-              badgeText="Discovery+"
+              badgeText="Discovery+ | MCQ"
               user={user ? true : false}
               tests={DescoveryPlus}
             />
           </div>
           <div id="one-to-one">
             <HeroAccordion
-              badgeText="1:1 Check-ins | AI Curated"
+              badgeText="1:1 Check-ins | Dynamic"
               user={user ? true : false}
               tests={oneTwoOne}
             />
@@ -428,7 +440,7 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="case-study">
             <HeroAccordion
-              badgeText="Case study | AI Curated"
+              badgeText="Case study | Dynamic"
               user={user ? true : false}
               tests={caseStudy}
             />
@@ -440,13 +452,13 @@ const VersionOne = ({ user }: any) => {
               tests={presentation}
             />
           </div>
-          <div id="immersive">
+          {/* <div id="immersive">
             <HeroAccordion
-              badgeText="Immersive | AI Curated"
+              badgeText="Immersive "
               user={user ? true : false}
               tests={immersive}
             />
-          </div>
+          </div> */}
           <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
@@ -456,9 +468,16 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="meetings">
             <HeroAccordion
-              badgeText="Meetings"
+              badgeText="Meetings | Dynamic"
               user={user ? true : false}
               tests={meetings}
+            />
+          </div>
+          <div id="english-support">
+            <HeroAccordion
+              badgeText="English Support"
+              user={user ? true : false}
+              tests={englishSupport}
             />
           </div>
           {/* {shouldRenderDiv && (
@@ -469,7 +488,7 @@ const VersionOne = ({ user }: any) => {
         </div>
       </div>
 
-      <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
+      {/* <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
       <div className="h-[10vh] max-sm:h-[8vh] text-sm text-gray-700 mx-16 mb-0 max-sm:mx-8 ">
         <div className="flex flex-col items-center justify-between text-center">
           <div>
@@ -501,9 +520,9 @@ const VersionOne = ({ user }: any) => {
         <div className="text-center mt-2 max-sm:text-xs">
           <p>&copy; 2023 Coachbots™. All Rights Reserved.</p>
         </div>
-      </div>
+      </div> */}
       {/* <Widgets /> */}
-    </div>
+    </>
   );
 };
 

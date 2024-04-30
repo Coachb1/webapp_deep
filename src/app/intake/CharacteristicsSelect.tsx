@@ -13,13 +13,19 @@ const filterOption = (
 const CharactericticsSelect = ({
   onCharacteristicsSelect,
   options,
+  value,
+  disabled,
 }: {
   onCharacteristicsSelect: (val: string) => void;
   options: { label: string; value: string; disabled?: boolean }[];
+  value: string;
+  disabled?: boolean;
 }) => {
   return (
     <>
       <Select
+        disabled={disabled}
+        value={value}
         className="w-full"
         showSearch
         virtual={false}

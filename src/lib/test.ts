@@ -6,6 +6,8 @@ export interface Test {
   interaction_mode: string;
 }
 
+import { CategoryData } from "./types";
+
 export const Audiotests: Test[] = [
   {
     domain: "Marketing",
@@ -175,6 +177,186 @@ export const Samples: Test[] = [
   },
 ];
 
+export const EQTestsCategorised: CategoryData[] = [
+  {
+    category_name: "EQ mini course",
+    tests_data: [
+      {
+        domain: "Self-Awareness",
+        tests: [
+          {
+            test_code: "QB6FX7C",
+            title: "Navigating uncertainty in a new role",
+            description:
+              "A recent joinee in tech industry, was excited to start his new role. However, within days of joining, a corporate restructuring led to changes in his responsibilities and team composition. This unexpected turn of events introduced complexity and apprehension. The following questions by the manager, Ajay aim to gauge the team member's ability to handle uncertainty and adapt to change. Respond as a team member to this situation.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Self-Regulation",
+        tests: [
+          {
+            test_code: "QKJF0XW",
+            title: "Prioritizing Tasks in Time-Critical Situations",
+            description:
+              "The time crunch situation with competing priorities is quite common in a workplace. As an entry-level team member, one has to make a judgment call to determine which task deserves immediate attention. The questions below aim to assess the thought process behind the decision making in such a scenario.  Respond to this situation as the team member.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Motivation",
+        tests: [
+          {
+            test_code: "QO4RRDL",
+            title: "Driving Team Engagement for an Initiative",
+            description:
+              "Nisha trying to involve her disinterested team in a process improvement initiative. The team is reluctant to adopt a new project management methodology due to their familiarity with the existing process and concerns about potential disruptions. The new initiative aims to streamline project workflows and improve efficiency. Respond to this situation as the team member, Nisha.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Empathy",
+        tests: [
+          {
+            test_code: "QJETQM4",
+            title: "Supporting a Struggling Colleague",
+            description:
+              "Harsha and Franklin, postgraduates from the same B-School, share a close friendship at Hy-tech technology solutions. Harsha, a team member counselor, enjoys recognition due to daily interactions, while Franklin, a finance executive, feels unrecognized. His resignation prompts Mr. Mehta to address the situation. Mr. Mehta highlights Franklin's expertise through emails, cross-departmental projects, and discussions. Team-building activities and an inclusive environment are promoted. Harsha supports Franklin by involving him, sharing skills, and maintaining their friendship. These efforts ensure Franklin's value and strengthen their workplace dynamics. The questions evaluate the team member's learning from this case lesson. Respond to this context appropriately.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Social Awareness ",
+        tests: [
+          {
+            test_code: "Q8A5C4I",
+            title: "Supplier Selection Dilemma",
+            description:
+              "The team member has to make a tricky choice between two suppliers for procurement of office equipment. One offers cheaper pricing but the other provides eco-friendly options at a higher cost. He has to evaluate various factors like cost-effectiveness, environmental sustainability, product quality, and service. This decision requires careful consideration of the pros and cons of both options and how they align with the company's priorities. Respond to this situation as the team member.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Cooperation",
+        tests: [
+          {
+            test_code: "Q2GE3U9",
+            title: "Managing Disagreements in cross-functional team dynamics",
+            description:
+              "Team dynamics can be challenging to navigate, especially when opinions differ. This scenario explores how to handle disagreements and advocate for one's ideas without damaging team cohesion. A team member of a cross-functional team is very innovative, but his ideas often clash with those of his team members. He faces the decision of adapting his approach to fit in or advocating for his ideas while maintaining a collaborative atmosphere.  Respond to this situation as the team member.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Influence",
+        tests: [
+          {
+            test_code: "Q03F4LB",
+            title: "Feedback for Coworker Who Interrupts Frequently",
+            description:
+              "Distractions and interruptions are an unavoidable part of any workplace. However, interrupting coworkers during discussions can damage teamwork and effectiveness. Here is a context to help evaluate and provide feedback to a team member who frequently interrupts coworkers. Respond to this situation as the team member.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Analytical Mindset",
+        tests: [
+          {
+            test_code: "Q8DFIM4",
+            title: "Double-Booking Crisis Management",
+            description:
+              "Unforeseen challenges frequently require creative problem-solving. When a junior project coordinator double-books an important meeting room, quick thinking and collaboration are critical to resolve the issue.  A junior project coordinator accidentally double-books a meeting room for two important client presentations at the same time.  Respond to this situation as the junior project coordinator.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Needs and Wants",
+        tests: [
+          {
+            test_code: "QND4PNE",
+            title: "Discussing Career Growth Aspirations with Manager",
+            description:
+              "A team member wishes to have an open and understanding conversation with his manager regarding his aspirations for career growth but fears coming across as dissatisfied in his current role. He schedules a meeting with his manager. The objective of the meeting is to discuss his long-term career goals, skill development, professional support, current role satisfaction, and suggestions for enhancing career growth opportunities and transparency within the team. Respond to the questions asked by the manager as a team member.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+      {
+        domain: "Curiosity",
+        tests: [
+          {
+            test_code: "QK3FJSW",
+            title: "Mentorship for Enhancing Cross-functional Harmony",
+            description:
+              "Vishal, a new product manager, is seeking a mentor to help improve collaboration with his engineering team. The conversation aims to assess Vishal's approach to learning, communication, and relationship building. By reflecting on these areas, Vishal can gain insights into strengthening cross-functional partnerships. Respond to this situation as the product manager, Vishal.",
+            test_type: "Audio",
+            is_recommended: false,
+          },
+        ],
+      },
+    ],
+    domainOptionsForFilter: [
+      {
+        value: "Self-Awareness",
+        label: "Self-Awareness",
+      },
+      {
+        value: "Self-Regulation",
+        label: "Self-Regulation",
+      },
+      {
+        value: "Motivation",
+        label: "Motivation",
+      },
+      {
+        value: "Empathy",
+        label: "Empathy",
+      },
+      {
+        value: "Social Awareness ",
+        label: "Social Awareness ",
+      },
+      {
+        value: "Cooperation",
+        label: "Cooperation",
+      },
+      {
+        value: "Influence",
+        label: "Influence",
+      },
+      {
+        value: "Analytical Mindset",
+        label: "Analytical Mindset",
+      },
+      {
+        value: "Needs and Wants",
+        label: "Needs and Wants",
+      },
+      {
+        value: "Curiosity",
+        label: "Curiosity",
+      },
+    ],
+  },
+];
+
 export const EQTests: Test[] = [
   {
     domain: "Self-Awareness",
@@ -233,7 +415,7 @@ export const EQTests: Test[] = [
     interaction_mode: "Audio",
   },
   {
-    domain: "Anallytical Mindset",
+    domain: "Analytical Mindset",
     test_code: "Q8DFIM4",
     title: "Double-Booking Crisis Management",
     description:
@@ -714,6 +896,32 @@ export const onBoarding: Test[] = [
     title: "Punctuality challenges due to weather issue",
     description:
       "Raj, a manager in a Mumbai-based company, noticed that a new joiner, consistently arrived on time during his first month. However, as the monsoon season hit, his commute time significantly increased due to waterlogged roads and public transport disruptions. This led to a gradual decline in his punctuality, with the employee frequently arriving late to the office. Raj, concerned about the impact on project timelines, decided to address this issue with him. Respond to this situation as the employee.",
+    interaction_mode: "Audio",
+  },
+];
+export const englishSupport: Test[] = [
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q38R7BR",
+    title: "Addressing Guest Complaint Regarding Room Cleanliness",
+    description:
+      "Ramesh, a recent guest at a hotel in Mumbai, approaches the receptionist to express dissatisfaction with the cleanliness of his room during his stay. Upon inspection, he discovered dust accumulation in corners, uncleaned bathroom fixtures, and stained linens. He had booked a deluxe room for a four-day stay, expecting high standards of cleanliness. However, the lapse in housekeeping standards left him disappointed and frustrated. Communicate with the guest and assure him that necessary actions will be taken. Respond to this situation as the receptionist. Demonstrate suitable English communication skills as you respond to this business context.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q52S75K",
+    title: "Handling Customer Inquiry Regarding Account Discrepancy",
+    description:
+      "Sarah, a customer at the bank, approaches the customer service representative to inquire about a discrepancy in her account balance. She noticed unauthorized transactions and discrepancies in her recent statements. Sarah expresses concern about the security of her account and seeks clarification on the irregularities. As the customer service representative, you must address her concerns promptly and reassure her that the bank will investigate the matter thoroughly to resolve the issue and ensure the security of her account. Respond to this situation as the customer service representative. Demonstrate suitable English communication skills as you respond to this business context.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "English speaking proficiency",
+    test_code: "Q8C4WBS",
+    title: "Resolving Customer Concern Over Damaged Merchandise	",
+    description:
+      "Meena, a customer at a clothing store in Bangalore, approaches the cashier with a pair of jeans she wishes to purchase. However, upon reaching the counter, she notices a small tear in the fabric. She expresses her concern to the cashier, explaining that she had selected the jeans for a special occasion. The cashier listens attentively, assuring Meena that they will promptly exchange the damaged item for a new one. The cashier apologizes for the inconvenience and ensures Meena that her satisfaction is a top priority for the store. Respond to this situation as the cashier. Demonstrate suitable English communication skills as you respond to this business context.",
     interaction_mode: "Audio",
   },
 ];

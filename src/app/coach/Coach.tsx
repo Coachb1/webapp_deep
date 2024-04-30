@@ -15,26 +15,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, convertTextToCorrectFormat } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
+import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
-    heading: "Fitment Analysis",
+    heading: "Quick Match",
     description:
-      "Discover the perfect match! Our fitment analysis assesses compatibility between you and your coach/mentor, ensuring a harmonious coaching relationship.",
+      "The quick match demonstrates fitment between participants based on pre-decided criteria. These can be set up during the user onboarding.",
   },
   {
-    heading: "Sessions Orientation",
+    heading: "Session Notes",
     description:
-      "Prepare for your session! Access valuable information about your coach/mentor before your session, clearly showing their expertise and style.",
-  },
-  {
-    heading: "Check-in Conversation",
-    description:
-      "Stay connected between sessions! Engage in interim conversations, gaining insights and guidance whenever you need it.",
+      "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
   },
   {
     heading: "Recommendations",
@@ -69,7 +65,7 @@ const Coach = ({ user, renderType }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
   const [enrolled, SetEnrolled] = useState(true);
-
+  const [feedbackBotId, setFeedbackBotId] = useState("");
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
@@ -99,6 +95,7 @@ const Coach = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("BOT DETAILS : ", data);
+        console.log();
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
         console.log(
@@ -106,6 +103,7 @@ const Coach = ({ user, renderType }: any) => {
           data.data.bot_details.is_login_required,
           data.data.bot_details.is_strict_login_required
         );
+        setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
 
@@ -116,7 +114,7 @@ const Coach = ({ user, renderType }: any) => {
           }
           setCoachName(data.data.bot_details.coach_name);
           setCoachDescription(data.data.bot_details.info);
-          setProfileImage(data.owner_profile_image);
+          setProfileImage(data.data.owner_profile_image);
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
@@ -129,7 +127,11 @@ const Coach = ({ user, renderType }: any) => {
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setIsLoading(false);
-        if (!data.data.is_sample_bot && !data.data.is_system_bot) {
+        if (
+          !data.data.is_sample_bot &&
+          !data.data.is_system_bot &&
+          data.data.scenario_case !== "icons_by_ai"
+        ) {
           fetch(`${baseURL}/accounts/`, {
             method: "POST",
             headers: {
@@ -138,12 +140,17 @@ const Coach = ({ user, renderType }: any) => {
             },
             body: JSON.stringify({
               user_context: {
-                name: user.given_name,
+                name: `${user.given_name} ${
+                  user.family_name ? user.family_name : ""
+                }`,
                 role: "member",
                 user_attributes: {
                   tag: "deepchat_profile",
                   attributes: {
                     username: "web_user",
+                    name: `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`,
                     email: user.email,
                   },
                 },
@@ -169,7 +176,11 @@ const Coach = ({ user, renderType }: any) => {
                 .then((res) => res.json())
                 .then((data) => {
                   console.log("xyz-data", data);
-                  if (data.data.length === 0) {
+                  if (
+                    data.data.length === 0 &&
+                    renderType === "dynamic" &&
+                    pathname !== "/coach/coach-d54cd-aravsharma"
+                  ) {
                     const coachScribe =
                       document.getElementsByClassName("deep-chat-poc2")[0];
 
@@ -211,7 +222,7 @@ const Coach = ({ user, renderType }: any) => {
 
   const CoachBotBody = () => {
     return (
-      <>
+      <div suppressHydrationWarning={true}>
         {/* {enrolled ? (
           <> */}
         {renderType === "static" && (
@@ -233,9 +244,12 @@ const Coach = ({ user, renderType }: any) => {
             </div>
           </div>
         )}
-        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+        <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-            <NetworkNav user={user} />
+            {/* <NetworkNav user={user} /> */}
+            <div className="ml-4">
+              <NavProfileWoProfile user={user} />
+            </div>
           </div>
           <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
             <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
@@ -247,11 +261,11 @@ const Coach = ({ user, renderType }: any) => {
             <div>
               <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
-                  ? `Welcome to ${coachName}'s Avatar🚀`
-                  : "Welcome to the Aarav Sharma’s Avatar!🚀"}
+                  ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
+                  : "Welcome to the Aarav Sharma !🚀"}
               </h1>
-              <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                <div className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+              <div className="my-4 max-sm:text-xs text-[#2f2323]">
+                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -261,8 +275,8 @@ const Coach = ({ user, renderType }: any) => {
                   bot is trained on the coach/ mentor’s style, ideologies, and
                   coaching/mentoring style, ensuring a tailored and effective
                   coaching experience.{" "}
-                </div>
-              </p>
+                </p>
+              </div>
               {/* {renderType !== "dynamic" && (
                     <p className="my-4 max-sm:text-xs text-[#2f2323]">
                       This is where you will see the summary information of the
@@ -274,13 +288,13 @@ const Coach = ({ user, renderType }: any) => {
                 // coachDescription
                 <>
                   <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <div className="w-[20%] max-sm:w-fit">
+                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                         src={profileImage}
                       />
                     </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left">
+                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
                       {" "}
                       {coachDescription}
                     </p>
@@ -288,15 +302,15 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               ) : (
                 <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                  <div className="w-[20%] max-sm:w-fit">
+                  <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                       src={
-                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1706180818/nvvgijnibqkznjh3d1pi.jpg"
+                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                       }
                     />
                   </div>{" "}
-                  <p className="w-[80%] max-sm:w-full text-left">
+                  <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
                     {" "}
                     I'm Aarav Sharma, a seasoned corporate coach with 15+ years'
                     experience in leadership development. Holding a master's in
@@ -343,9 +357,20 @@ const Coach = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
-                  How Avatar works
+                  How AI Frame works
                 </Button>
               </Link>
+
+              {/* {feedbackBotId && (
+                <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    Feedback center
+                  </Button>
+                </Link>
+              )} */}
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
@@ -379,7 +404,7 @@ const Coach = ({ user, renderType }: any) => {
                   variant={"secondary"}
                   className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
                 >
-                  How Avatar works
+                  How AI Frame works
                 </Badge>
               </div>
               <div className="w-full">
@@ -483,7 +508,7 @@ const Coach = ({ user, renderType }: any) => {
             </div>
           </div>
         </div>
-      </>
+      </div>
       // ) : (
       //   <>
       //     <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">

@@ -1,7 +1,7 @@
 "use client";
 
 import BotsNavigation from "@/components/BotsNavigation";
-import NavProfile from "@/components/NavProfile";
+import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 import NoLoginFlag from "@/components/NoLoginFlag";
 import WhereToUse from "@/components/WhereToUse";
 import {
@@ -17,7 +17,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 
@@ -72,30 +72,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
   useEffect(() => {
     setIsLoading(true);
     if (user) {
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: user.given_name,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: "web_user",
-                email: user.email,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: user.email,
-          },
-        }),
-      })
+      getUserAccount(user)
         .then((response) => response.json())
         .then((data) => {
           fetch(
@@ -208,11 +185,14 @@ const SubjectExpert = ({ user, renderType }: any) => {
             </div>
           </div>
         )}
-        <div className="bg-gray-100 min-h-screen h-full grainy max-sm:h-full max-sm:min-h-screen pb-16">
+        <div className="bg-white min-h-screen h-full  max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
             {/* <NavProfile user={user} />
                 <BotsNavigation user={user} /> */}
-            <NetworkNav user={user} />
+            {/* <NetworkNav user={user} /> */}
+            <div className="ml-4">
+              <NavProfileWoProfile user={user} />
+            </div>
           </div>
           <div className="flex pt-20 flex-col items-center justify-center text-center px-24 max-sm:px-8">
             <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">

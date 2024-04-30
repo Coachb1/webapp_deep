@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ConversationChat from "./ConversationChat";
+import ConversationChat, { FeedbackConversationChat } from "./ConversationChat";
 import { Loader } from "lucide-react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { FeedbackConversationType } from "@/lib/types";
 
 interface Result {
   uid: string;
@@ -95,35 +96,16 @@ const Conversations = ({ user }: any) => {
     ConvertedConversation[]
   >([]);
 
+  const [feedbackConversations, setFeedbackConversations] = useState<
+    FeedbackConversationType[]
+  >([]);
+
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   useEffect(() => {
     if (user) {
       setLoading(true);
-      fetch(`${baseURL}/accounts/`, {
-        method: "POST",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_context: {
-            name: user.given_name,
-            role: "member",
-            user_attributes: {
-              tag: "deepchat_profile",
-              attributes: {
-                username: "web_user",
-                email: user.email,
-              },
-            },
-          },
-          identity_context: {
-            identity_type: "deepchat_unique_id",
-            value: user.email,
-          },
-        }),
-      })
+      getUserAccount(user)
         .then((response) => response.json())
         .then(async (data) => {
           await fetch(
@@ -141,8 +123,14 @@ const Conversations = ({ user }: any) => {
               if (data[0] != "Bot not Found") {
                 const convertedData: ConvertedConversation[] =
                   convertJsonToExpectedFormat(data);
-                setConvertsationDataAdmin(convertedData);
+                setConvertsationDataAdmin(
+                  convertedData.sort(
+                    (a, b) =>
+                      new Date(b.date).getTime() - new Date(a.date).getTime()
+                  )
+                );
               }
+              // setLoading(false);
             })
             .catch((err) => {
               console.error(err);
@@ -164,20 +152,86 @@ const Conversations = ({ user }: any) => {
               console.log("FOR USER : ", data);
               const convertedData: ConvertedConversation[] =
                 convertJsonToExpectedFormat(data);
-              setConvertsationData(convertedData);
-              setLoading(false);
+              setConvertsationData(
+                convertedData.sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime()
+                )
+              );
+              // setLoading(false);
             })
             .catch((err) => {
               console.error(err);
               setLoading(false);
               setFetchError(true);
             });
+
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            headers: {
+              Authorization: basicAuth,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Bot details for feedback check", data);
+
+              const FeedbackBot = data.data.filter(
+                (data: any) => data.signature_bot.bot_type === "feedback_bot"
+              );
+
+              if (FeedbackBot.length > 0) {
+                fetch(
+                  `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${FeedbackBot[0].signature_bot.bot_id}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                    },
+                  }
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log("FOR Feedback bot data : ", data);
+
+                    const FeedbackConvo: FeedbackConversationType[] =
+                      data.message.map((entry: any) => ({
+                        participant_name: entry.is_anonymous
+                          ? "Anonymous User"
+                          : entry.participant_name,
+                        date: entry.date,
+                        msg: {
+                          question: Object.keys(entry.msg)[0],
+                          answer: Object.values(entry.msg)[0],
+                        },
+                      }));
+                    console.log(FeedbackConvo, "FeedbackConvo");
+                    setFeedbackConversations(
+                      FeedbackConvo.sort(
+                        (a, b) =>
+                          new Date(b.date).getTime() -
+                          new Date(a.date).getTime()
+                      )
+                    );
+                    setLoading(false);
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    setLoading(false);
+                    setFetchError(true);
+                  });
+              } else {
+                setLoading(false);
+              }
+            });
         });
     }
   }, []);
   return (
     <>
-      <div className="bg-accent p-2 mt-2 rounded-md">
+      <div
+        id="bot-conversations"
+        className="bg-accent p-2 mt-2 mb-6 rounded-md"
+      >
         <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
         <div className="">
           {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
@@ -185,10 +239,11 @@ const Conversations = ({ user }: any) => {
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
-                    <Badge>Others Interaction</Badge>
+                    <Badge>Coachee & Mentee Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationDataAdmin.map((conversation) => (
                         <ConversationChat
+                          type="coachee-interactions"
                           participant={conversation.participant_name}
                           conversation={conversation.conversation}
                           botName={conversation.bot_name}
@@ -200,15 +255,19 @@ const Conversations = ({ user }: any) => {
                         />
                       ))}
                     </div>
-                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
                   </>
                 )}
+                {conversationDataAdmin.length > 0 &&
+                  conversationData.length > 0 && (
+                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
+                  )}
                 {conversationData.length > 0 && (
                   <>
-                    <Badge>My interactions</Badge>
+                    <Badge>My Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {conversationData.map((conversation) => (
                         <ConversationChat
+                          type="coach-interactions"
                           participant={conversation.participant_name}
                           conversation={conversation.conversation}
                           date={
@@ -217,6 +276,24 @@ const Conversations = ({ user }: any) => {
                           }
                           role={conversation.role}
                           botName={conversation.bot_name}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {conversationData.length > 0 &&
+                  feedbackConversations.length > 0 && (
+                    <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
+                  )}
+                {feedbackConversations.length > 0 && (
+                  <>
+                    <Badge>Feedback Interactions</Badge>
+                    <div className="flex flex-col w-full">
+                      {feedbackConversations.map((conversation) => (
+                        <FeedbackConversationChat
+                          conversation={conversation.msg}
+                          date={formatDate(conversation.date)}
+                          participant={conversation.participant_name}
                         />
                       ))}
                     </div>
