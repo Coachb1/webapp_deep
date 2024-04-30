@@ -91,18 +91,22 @@ describe("Init", () => {
               "GET",
               `${baseURL}/test-responses/get-text-to-speech/?text=${response?.body["response_text"]}`
             ).then((response) => {
-              // const audioBlob = new Blob([response.body], {
-              //   type: "audio/mpeg",
-              // });
-              // const audioFile = new File([audioBlob], "temp_audio.mp3", {
-              //   type: "audio/mpeg",
-              // });
+              const audioBlob = new Blob([response.body], {
+                type: "audio/mpeg",
+              });
+              const audioFile = new File([audioBlob], "temp_audio.mp3", {
+                type: "audio/mpeg",
+              });
+              // cy.log(`${audioFile.arrayBuffer(())}`);
               // cy.writeFile("cypress/temp/temp_audio.mp3", audioFile);
               // cy.readFile("cypress/temp/temp_audio.mp3", "base64").then(
               //   (base64Audio) => {
-              //     cy.get("#chat-element")
-              //       .shadow()
-              //       .find("#text-input")
+              // cy.get("#chat-element")
+              //   .shadow()
+              //   .find("#text-input")
+              //   .then((input) => {
+
+              //   });
               //       .type(`data:audio/mpeg;base64,${base64Audio}`);
               //     cy.get("#chat-element")
               //       .shadow()
