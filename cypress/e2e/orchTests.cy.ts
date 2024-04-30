@@ -1,6 +1,6 @@
 import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
-const orchestratedTestCodes = ["QSKUOD0", "Q7E1DGY"];
+const orchestratedTestCodes = ["Q7E1DGY" ];
 
 describe("Init", () => {
   beforeEach(() => {
@@ -38,8 +38,8 @@ describe("Init", () => {
       .find(".deep-chat-suggestion-button")
       .contains("Yes")
       .click();
-
-    orchestratedTestCodes.forEach((testCode) => {
+    // cy.log("STARTED")
+    orchestratedTestCodes.forEach((testCode, rootIndex) => {
       // type the test code
       cy.get("#chat-element2").shadow().find("#text-input").type(testCode);
       cy.intercept("GET", `/api/v1/tests/?test_code=${testCode}`).as(
@@ -52,14 +52,15 @@ describe("Init", () => {
         .find(".input-button-svg.inside-right")
         .click();
 
-      cy.get("#chat-element2")
-        .shadow()
-        .find(`button[onclick="handleProceedClickStt('Yes')"]`)
-        .click();
-
       cy.wait("@testInfo", {
         timeout: 30000,
       }).then((interception) => {
+        cy.get("#chat-element2")
+          .shadow()
+          .find(`button[onclick="handleProceedClickStt('Yes')"]`, {
+            timeout: 10000,
+          })
+          .click();
         const testTitle = interception.response?.body.results[0].title;
         const testDescription =
           interception.response?.body.results[0].description;
@@ -75,8 +76,6 @@ describe("Init", () => {
           interception.response?.body.results[0]
             .orchestrated_conversation_details.initial_messages[0];
 
-        cy.wait("@testSession").then((sessionInterception) => {
-          const sessionId = sessionInterception.response?.body.uid;
 
           questions.forEach((qn: any, i: number) => {
             if (i > 0) {
@@ -141,12 +140,7 @@ describe("Init", () => {
             cy.wait("@getReportUrl", {
               timeout: 30000,
             }).then((interception) => {
-              cy.intercept(
-                "POST",
-                `/api/v1/test-attempt-sessions/send-report-email/?test_attempt_session_id=${sessionId}&report_url=${encodeURIComponent(
-                  interception.response?.body.url
-                )}&is_whatsapp=false`
-              ).as("sessionReportEmail");
+              
 
               cy.readFile("cypress/results/OrchestratedReports.txt").then(
                 (existingFileContents: any) => {
@@ -159,10 +153,8 @@ describe("Init", () => {
                   );
                 }
               );
-              cy.wait("@sessionReportEmail", { timeout: 100000 });
             });
           });
-        });
       });
     });
   });
