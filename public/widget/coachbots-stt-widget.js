@@ -994,7 +994,7 @@ const getBotDetails2 = async (botId) => {
     let buttonsWrapper = document.createElement("div");
     buttonsWrapper.setAttribute(
       "style",
-      "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px; scrollbar-width : none;"
+      "display: flex; flex-direction: row; gap : 4px; width: fit-content; overflow: scroll; padding-bottom: 2px; scrollbar-width : none; scrollbar-width: none; "
     );
 
     const faqButtonsGenerator = (actionName, buttonText) => {

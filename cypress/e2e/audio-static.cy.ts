@@ -24,14 +24,14 @@ describe("Init", () => {
     });
   });
 
-  it("static tests", () => {
+  it("static tests - Coachscribe", () => {
     cy.visit("http://localhost:3000/content-library");
 
     //open the bot
-    cy.get(".chat-icon2").click();
+    cy.get(".chat-icon").click();
 
     //yes / no
-    cy.get("#chat-element2")
+    cy.get("#chat-element")
       .shadow()
       .find(".deep-chat-suggestion-button")
       .contains("Yes")
@@ -39,12 +39,13 @@ describe("Init", () => {
 
     staticTestCodes.forEach((testCode) => {
       // type the test code
-      cy.get("#chat-element2").shadow().find("#text-input").type(testCode);
       cy.intercept("GET", `/api/v1/tests/?test_code=${testCode}`).as(
         "testInfo"
       );
+      cy.get("#chat-element").shadow().find("#text-input").type(testCode);
+
       //click send
-      cy.get("#chat-element2")
+      cy.get("#chat-element")
         .shadow()
         .find(".input-button-svg.inside-right")
         .click();
@@ -65,9 +66,11 @@ describe("Init", () => {
             console.log(item.question);
           }
         );
-        cy.get("#chat-element2")
+        cy.get("#chat-element")
           .shadow()
-          .find(`button[onclick="handleProceedClickStt('Yes')"]`, {timeout : 10000})
+          .find(`button[onclick="handleProceedClick('Yes')"]`, {
+            timeout: 10000,
+          })
           .click();
 
         cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
@@ -84,14 +87,39 @@ describe("Init", () => {
               formattedQuestion
             )}`
           ).then((response) => {
-            cy.get("#chat-element2")
-              .shadow()
-              .find("#text-input")
-              .type(response?.body["response_text"]);
-            cy.get("#chat-element2")
-              .shadow()
-              .find(".input-button-svg.inside-right")
-              .click();
+            cy.request(
+              "GET",
+              `${baseURL}/test-responses/get-text-to-speech/?text=${response?.body["response_text"]}`
+            ).then((response) => {
+              // const audioBlob = new Blob([response.body], {
+              //   type: "audio/mpeg",
+              // });
+              // const audioFile = new File([audioBlob], "temp_audio.mp3", {
+              //   type: "audio/mpeg",
+              // });
+              // cy.writeFile("cypress/temp/temp_audio.mp3", audioFile);
+              // cy.readFile("cypress/temp/temp_audio.mp3", "base64").then(
+              //   (base64Audio) => {
+              //     cy.get("#chat-element")
+              //       .shadow()
+              //       .find("#text-input")
+              //       .type(`data:audio/mpeg;base64,${base64Audio}`);
+              //     cy.get("#chat-element")
+              //       .shadow()
+              //       .find(".input-button-svg.inside-right")
+              //       .click();
+              //   }
+              // );
+            });
+
+            // cy.get("#chat-element")
+            //   .shadow()
+            //   .find("#text-input")
+            //   .type();
+            // cy.get("#chat-element")
+            //   .shadow()
+            //   .find(".input-button-svg.inside-right")
+            //   .click();
           });
         });
 
