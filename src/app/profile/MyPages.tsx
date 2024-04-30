@@ -1,6 +1,11 @@
 "use client";
 
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import {
+  applicationUrl,
+  baseURL,
+  basicAuth,
+  getUserAccount,
+} from "@/lib/utils";
 import { Button } from "../../components/ui/button";
 import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
 import { Separator } from "@radix-ui/react-dropdown-menu";
@@ -120,13 +125,13 @@ const MyPages = ({ user }: any) => {
 
   const BotTypeLinks = (botType: string, bot_id: string) => {
     if (botType === "avatar_bot") {
-      return `https://playground.coachbots.com/coach/${bot_id}`;
+      return `${applicationUrl()}/coach/${bot_id}`;
     } else if (botType === "feedback_bot") {
-      return `https://playground.coachbots.com/feedback/${bot_id}`;
+      return `${applicationUrl()}/feedback/${bot_id}`;
     } else if (botType === "subject_matter_bot") {
-      return `https://playground.coachbots.com/subject-expert/${bot_id}`;
+      return `${applicationUrl()}/subject-expert/${bot_id}`;
     } else if (botType === "user_bot") {
-      return `https://playground.coachbots.com/custom-bot/${bot_id}`;
+      return `${applicationUrl()}/custom-bot/${bot_id}`;
     }
   };
 
@@ -298,7 +303,7 @@ const MyPages = ({ user }: any) => {
     data-bot-id="${bot.bot_id}"
 ></div>
 <script
-    src="https://playground.coachbots.com/widget/coachbots-stt-widget.js"
+    src="${applicationUrl()}/widget/coachbots-stt-widget.js"
     defer
 ></script>
                             `}
@@ -314,7 +319,7 @@ const MyPages = ({ user }: any) => {
                                 data-bot-id="${bot.bot_id}"
                             ></div>
                             <script
-                                src="https://playground.coachbots.com/widget/coachbots-stt-widget.js"
+                                src=${applicationUrl()}/widget/coachbots-stt-widget.js"
                                 defer
                             ></script>`}
                           />

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { BotDetailsType } from "@/lib/types";
 import {
+  applicationUrl,
   baseURL,
   basicAuth,
   calculateTotalActionPoints,
@@ -97,7 +98,9 @@ const EmailSign = ({ user }: any) => {
                     .split(", ")
                     .filter((id: string) => id.includes("feedback"))
                     .join("");
+
                   setFeedbackBotId(feedbackBot);
+                  console.log(feedbackBot);
                 }
 
                 fetch(`${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`, {
@@ -230,7 +233,7 @@ const EmailSign = ({ user }: any) => {
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
                             <a
-                              href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
+                              href={`${applicationUrl()}/feedback/${feedbackBotId}`}
                               style={{
                                 fontWeight: 600,
                                 fontSize: "12px",
@@ -272,7 +275,7 @@ const EmailSign = ({ user }: any) => {
                             </div>
                             <div>Phone: {"<<+91-Add your own>>"} </div>
                             <a
-                              href={`https://playground.coachbots.com/coach/${avatarBotId}`}
+                              href={`${applicationUrl()}/coach/${avatarBotId}`}
                               style={{
                                 fontWeight: 600,
                                 fontSize: "12px",
@@ -315,7 +318,7 @@ const EmailSign = ({ user }: any) => {
                             <div>Phone: {"<<+91-Add your own>>"} </div>
 
                             <a
-                              href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
+                              href={`${applicationUrl()}/feedback/${feedbackBotId}`}
                               style={{
                                 fontWeight: 600,
                                 fontSize: "12px",
@@ -327,7 +330,7 @@ const EmailSign = ({ user }: any) => {
                             </a>
                             <br />
                             <a
-                              href={`https://playground.coachbots.com/coach/${avatarBotId}`}
+                              href={`${applicationUrl()}/coach/${avatarBotId}`}
                               style={{
                                 fontWeight: 600,
                                 fontSize: "12px",
@@ -387,7 +390,7 @@ const EmailSign = ({ user }: any) => {
                                 </div>
                                 <div>Phone: {"<<+91-Add your own>>"} </div>
                                 <a
-                                  href={`https://playground.coachbots.com/feedback/${feedbackBotId}`}
+                                  href={`${applicationUrl()}/feedback/${feedbackBotId}`}
                                   style={{
                                     fontWeight: 600,
                                     fontSize: "12px",
