@@ -213,9 +213,9 @@ export function getBotById(botId: string, jsonData: any) {
 }
 export function reportsLinksSelector() {
   if (subdomain === "platform") {
-    return "https://myreportdev.coachbots.com/";
+    return "https://myreport.coachbots.com";
   } else {
-    return "https://myreportdev.coachbots.com/";
+    return "https://myreportdev.coachbots.com";
   }
 }
 
@@ -410,3 +410,11 @@ export function isValidYoutubeLinks(linksString: string): boolean {
 
   return true;
 }
+
+export const applicationUrl = () => {
+  if (subdomain === "platform") {
+    return "https://platform.coachbots.com";
+  } else {
+    return "https://playground.coachbots.com";
+  }
+};

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "../../components/ui/button";
 import { Link2 } from "lucide-react";
 import HelpMode from "@/components/HelpMode";
+import { reportsLinksSelector } from "@/lib/utils";
 
 const AdminReports = ({ user }: any) => {
   const HelpModeSteps = [
@@ -42,7 +43,9 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/kudosBoard/?email=${user.email}`}
+                href={`${reportsLinksSelector()}/kudosBoard/?email=${
+                  user.email
+                }`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -57,7 +60,9 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/participantLeaderboardReport/?email=${user.email}`}
+                href={`${reportsLinksSelector()}/participantLeaderboardReport/?email=${
+                  user.email
+                }`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -72,7 +77,9 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/participantMappingReport/?email=${user.email}`}
+                href={`${reportsLinksSelector()}/participantMappingReport/?email=${
+                  user.email
+                }`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -87,7 +94,7 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/attritionReport/`}
+                href={`${reportsLinksSelector()}/attritionReport/`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
@@ -104,7 +111,7 @@ const AdminReports = ({ user }: any) => {
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
-                href={`https://myreportdev.coachbots.com/successionReport/`}
+                href={`${reportsLinksSelector()}/successionReport/`}
                 target="_blank"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
