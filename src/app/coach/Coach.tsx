@@ -264,8 +264,8 @@ const Coach = ({ user, renderType }: any) => {
                   ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
                   : "Welcome to the Aarav Sharma !🚀"}
               </h1>
-              <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                <span className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+              <div className="my-4 max-sm:text-xs text-[#2f2323]">
+                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -275,8 +275,8 @@ const Coach = ({ user, renderType }: any) => {
                   bot is trained on the coach/ mentor’s style, ideologies, and
                   coaching/mentoring style, ensuring a tailored and effective
                   coaching experience.{" "}
-                </span>
-              </p>
+                </p>
+              </div>
               {/* {renderType !== "dynamic" && (
                     <p className="my-4 max-sm:text-xs text-[#2f2323]">
                       This is where you will see the summary information of the

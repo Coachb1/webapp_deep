@@ -1459,7 +1459,7 @@ const Coaches = ({
                             ))}
                       </div>
                       <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
-                        {getFormattedCoachName(coach.name)}{" "}
+                        {convertTextToCorrectFormat(coach.name)}{" "}
                       </p>{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
