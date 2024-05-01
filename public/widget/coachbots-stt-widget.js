@@ -1074,6 +1074,7 @@ const getBotDetails2 = async (botId) => {
         "onclick",
         `handleFaqButtonClick('fitness_analysis')`
       );
+      button.setAttribute("id", `quick-match-button`);
       button.innerText = "Match Score";
       buttonsWrapper.appendChild(button);
     }
@@ -1929,6 +1930,14 @@ async function handleFaqButtonClick(question) {
       begginSessionButton.disabled = true;
       begginSessionButton.style.cursor = "not-allowed";
 
+      const quickmatch = document.getElementById(
+        "quick-match-button"
+      );
+      if (quickmatch && botType == 'avatar_bot'){
+        quickmatch.disabled = true;
+        quickmatch.style.cursor = "not-allowed";
+      }
+
       const cannedMessageOne = document.getElementById("canned-btn-1")
       cannedMessageOne.disabled = false
       // cannedMessageOne.style.cursor = "pointer"
@@ -2380,6 +2389,15 @@ function handleEndConversation(isInActive) {
   if (begginSessionButton){
   begginSessionButton.disabled = false;
   begginSessionButton.style.cursor = "pointer";
+  }
+
+  
+  const quickmatch = document.getElementById(
+        "quick-match-button"
+      );
+  if (quickmatch){
+  quickmatch.disabled = false;
+  quickmatch.style.cursor = "pointer";
   }
 
   const cannedMessageOne = document.getElementById("canned-btn-1")
