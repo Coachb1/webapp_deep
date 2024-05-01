@@ -1074,6 +1074,7 @@ const getBotDetails2 = async (botId) => {
         "onclick",
         `handleFaqButtonClick('fitness_analysis')`
       );
+      button.setAttribute("id", `quick-match-button`);
       button.innerText = "Match Score";
       buttonsWrapper.appendChild(button);
     }
@@ -1929,6 +1930,14 @@ async function handleFaqButtonClick(question) {
       begginSessionButton.disabled = true;
       begginSessionButton.style.cursor = "not-allowed";
 
+      const quickmatch = document.getElementById(
+        "quick-match-button"
+      );
+      if (quickmatch && botType == 'avatar_bot'){
+        quickmatch.disabled = true;
+        quickmatch.style.cursor = "not-allowed";
+      }
+
       const cannedMessageOne = document.getElementById("canned-btn-1")
       cannedMessageOne.disabled = false
       // cannedMessageOne.style.cursor = "pointer"
@@ -2380,6 +2389,15 @@ function handleEndConversation(isInActive) {
   if (begginSessionButton){
   begginSessionButton.disabled = false;
   begginSessionButton.style.cursor = "pointer";
+  }
+
+  
+  const quickmatch = document.getElementById(
+        "quick-match-button"
+      );
+  if (quickmatch){
+  quickmatch.disabled = false;
+  quickmatch.style.cursor = "pointer";
   }
 
   const cannedMessageOne = document.getElementById("canned-btn-1")
@@ -6844,7 +6862,7 @@ loadExternalModule().then(() => {
                               appendMessage2(
                                 `▪ Title : ${senarioTitle2} <br><br>
                                     ▪ Description : ${senarioDescription2} <br><br>
-                                    ▪ Instructions : Audio/Video Messages should be atleast 15 secs long. <br><br>
+                                    ▪ Instructions : Response should be at least 15 words. <br><br>
                                     ▪ Media : <a href="${senarioMediaDescription2}" target="_blank">Click here to read the article.</a>
                                     `
                               );
@@ -7533,13 +7551,13 @@ const openChatContainer2 = () => {
   document.body.style.overflowY = "hidden";
 
   //end session due to inactivity :- row 708
-  if(botType !== "user_bot"){
-    setTimeout(() => {
-      if(isBotInitialized === true){
-        handleEndConversation(true)
-        isBotInitialized = false
-      }
-    }, 1800000);
+  if (botId && botType !== "user_bot") {
+    if (isBotInitialized === true) {
+      setTimeout(() => {
+        handleEndConversation(true);
+        isBotInitialized = false;
+      }, 1800000);
+    }
   }
 
   user2 = window.user;
@@ -7548,12 +7566,12 @@ const openChatContainer2 = () => {
   const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
 
   // Using the ipinfo.io API
-  fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-    .then((response) => response.json())
-    .then((data) => {
-      ipAddress2 = data.ip;
-    })
-    .catch((error) => console.error("Error fetching IP address:", error));
+  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     ipAddress2 = data.ip;
+  //   })
+  //   .catch((error) => console.error("Error fetching IP address:", error));
 
   let user_name2;
   let user_email2;

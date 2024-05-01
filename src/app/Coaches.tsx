@@ -298,7 +298,7 @@ const Coaches = ({
         ? clientExpertise
         : [
             "Career Management",
-            "Work Life Banlance",
+            "Work Life Balance",
             "Project Management",
             "Lateral Transfers",
           ];
