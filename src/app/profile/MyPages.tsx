@@ -242,24 +242,19 @@ const MyPages = ({ user }: any) => {
       )}
       {!loading &&
         botTypes.length === 0 &&
-        userProfile?.profile_type !== "coachee" && (
+        (userProfile?.profile_type !== "coachee" && userProfile?.profile_type !== "mentee") && (
           <>
             <div className="text-xs w-full h-20 flex items-center justify-center">
               <div>You don't have any active Pages yet!</div>{" "}
-              {/* <Button className="pl-1" variant={"link"}>
-                Create one?
-              </Button> */}
             </div>
           </>
         )}
       <div className="my-4 text-sm">
         {botTypes.map((botType) => (
           <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
-            {/* <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p> */}
             {botType.bots.map((bot, i) => (
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
-                  {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
                   <p
                     className={`text-sm inline ${
                       botType.bot_type === "user_bot"

@@ -413,7 +413,7 @@ const SessionNotes = ({ user }: any) => {
   return (
     <div
       id="session-notes"
-      className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll"
+      className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll no-scrollbar"
     >
       <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & Session notes</div>{" "}
       <div className="m-4 max-sm:m-2">
