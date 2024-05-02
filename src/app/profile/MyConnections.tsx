@@ -31,7 +31,7 @@ const MyComnnections = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
 
   const getConnectionsForCoach = (coachId: string) => {
-    setLoading(true);
+    // setLoading(true);
     fetch(
       `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
       {
@@ -112,7 +112,7 @@ const MyComnnections = ({ user }: any) => {
                 setLoading(false);
               }, 1000);
             })
-            .then((err) => {
+            .catch((err) => {
               console.error(err);
               setTimeout(() => {
                 setLoading(false);
