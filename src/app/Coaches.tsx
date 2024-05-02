@@ -725,6 +725,8 @@ const Coaches = ({
       );
     }
 
+    let ScrollTimeMs = connections.length > 0 ? 500 : 200
+
     setTimeout(() => {
       if (coacheeIdFromParams) {
         const indexOfCoacheeForScroll = coachesDataa.findIndex(
@@ -743,7 +745,7 @@ const Coaches = ({
           });
         }
       }
-    }, 200);
+    }, ScrollTimeMs);
 
     // //default filter for - icons by ai
     // handleUpdateCheckedValues(["icons_by_ai"]);
