@@ -744,8 +744,10 @@ const SessionNotes = ({ user }: any) => {
                   <div className="flex flex-col">
                     <p className="mr-2 my-1 mt-2">Comment</p>
                     <textarea
-                      onChange={() => {
-                        setContextLengthError(false);
+                      onChange={(event) => {
+                        if(event.target.value.split(" ").length >= 40){
+                          setContextLengthError(false);
+                        }
                       }}
                       onBlur={(e) => {
                         if (e.target.value.split(" ").length < 40) {
