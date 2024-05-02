@@ -45,7 +45,6 @@ const MyPages = ({ user }: any) => {
       getUserAccount(user)
         .then((response) => response.json())
         .then(async (data) => {
-          console.log(data);
           const profile = await fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -56,16 +55,13 @@ const MyPages = ({ user }: any) => {
           );
 
           const profileJson = await profile.json();
-          // const userProfile = profileJson.data[0]
-          console.log("profile", profileJson.data);
+          console.log("profile", profileJson.data[0]);
 
-          // const profileType = userProfile.profile_type;
           setUserProfile(
             profileJson.data.filter(
               (profile: any) => profile.is_approved === true
             )[0]
           );
-          console.log(profileJson.data[0]);
 
           fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
             headers: {
