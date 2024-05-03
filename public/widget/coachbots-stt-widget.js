@@ -1059,7 +1059,7 @@ const getBotDetails2 = async (botId) => {
     //   buttonsWrapper.appendChild(intakeButton);
     // }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
       // faqButtonsGenerator("fitness_analysis", "Match Score");
       const button = document.createElement("button");
       button.setAttribute(
