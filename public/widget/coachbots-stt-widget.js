@@ -88,6 +88,7 @@ let fitmentAnalysisIndex = 1;
 let fitmentAnalysisQuestions;
 let fitmentAnalysisQnA = {};
 let feedbackBotIndex = 1;
+let initialfeedbackBotQuestions;
 let feedbackBotQuestions;
 let feedbackBotQnA = {};
 let isFeedbackConvEnd = false;
@@ -617,9 +618,9 @@ function renameKey(obj) {
 
 const feedbackBotQnAFlow = (flow) => {
   disableOrEnableButtons(`thumbsup-down-${uniqueSesssionContainerId}`);
-  console.log("isAnonymous", isAnonymous);
+  console.log("isAnonymous =>", isAnonymous, "flow => ",flow);
   if (flow === "up") {
-    feedbackBotQuestions = renameKey(feedbackBotQuestions);
+    feedbackBotQuestions = renameKey(initialfeedbackBotQuestions);
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs up today?";
 
     IsPositiveFeedback = true;
@@ -654,8 +655,11 @@ const feedbackBotQnAFlow = (flow) => {
     //   );
     // }, 200);
   } else if (flow === "down") {
-    feedbackBotQuestions = renameKey(feedbackBotQuestions);
+    console.log("### FeedbackbotQuestions before rename => ", feedbackBotQuestions)
+    feedbackBotQuestions = renameKey(initialfeedbackBotQuestions);
+    console.log("### FeedbackbotQuestions  after rename => ", feedbackBotQuestions)
     feedbackBotQuestions["1"] = "Why are you giving me a thumbs down today?";
+    console.log("### FeedbackbotQuestions after indexing => ", feedbackBotQuestions)
     isFeedbackConvInProcess = true;
     feedbackBotIndex += 1;
     appendMessage2(feedbackBotQuestions[feedbackBotIndex]);
@@ -1207,6 +1211,7 @@ const getBotDetails2 = async (botId) => {
     } else {
       feedbackBotInitialFlow("initial");
       feedbackBotQuestions = botDetails.data.feedback_qna;
+      initialfeedbackBotQuestions = botDetails.data.feedback_qna;
     }
 
     //   appendMessage2('jiks')
