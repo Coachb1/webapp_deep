@@ -725,7 +725,7 @@ const Coaches = ({
       );
     }
 
-    let ScrollTimeMs = connections.length > 0 ? 500 : 200
+    let ScrollTimeMs = connections.length > 0 ? 500 : 200;
 
     setTimeout(() => {
       if (coacheeIdFromParams) {
@@ -1115,6 +1115,7 @@ const Coaches = ({
         <Joyride
           spotlightClicks
           continuous
+          locale={{ last: "End" }}
           scrollOffset={100}
           disableScrollParentFix
           callback={(callbackData) => {

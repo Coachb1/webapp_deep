@@ -695,6 +695,7 @@ const CreateOwn = ({
       {helpModeState && (
         <Joyride
           spotlightClicks
+          locale={{ last: "End" }}
           continuous
           scrollOffset={200}
           disableScrollParentFix
