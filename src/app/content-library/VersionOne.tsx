@@ -79,7 +79,7 @@ const VersionOne = ({ user }: any) => {
     {
       target: ".chat-icon2",
       content:
-        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is convrted into text. The processing speed is fast & efficient. ",
+        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
     },
     {
       target: "#manager-plus",
