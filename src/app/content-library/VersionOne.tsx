@@ -69,7 +69,7 @@ const VersionOne = ({ user }: any) => {
     {
       target: "#system-demos",
       content:
-        "Use or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+        "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
     },
     {
       target: ".chat-icon",
