@@ -758,7 +758,7 @@ const Coaches = ({
           });
         }
       }
-    }, 350);
+    }, 400);
   }, [coachesData]);
 
   const handleLinks = (link: string) => {
