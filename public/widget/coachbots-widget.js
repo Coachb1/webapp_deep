@@ -4901,6 +4901,7 @@ loadExternalModule().then(() => {
   };
 });
 
+let sendBtn;
 const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
@@ -4911,7 +4912,7 @@ const openChatContainer = () => {
 
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
-  const sendBtn = chatE.shadowRoot.querySelector(".input-button");
+  sendBtn = chatE.shadowRoot.querySelector(".input-button");
   let isRecording = false;
   let audioChunks = [];
   let stream;
@@ -5110,3 +5111,12 @@ const closeFromTop = () => {
       "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
   }
 };
+
+//handling for enter key send while recording
+document.addEventListener("keydown", (event) => {
+  if (event.keyCode === 13 || event.which === 13) {
+    if(isRecordingGlobal) {
+      sendBtn.click()
+    }
+  }
+});

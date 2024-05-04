@@ -15,6 +15,7 @@ const HelpMode = ({
       {helpModeState && (
         <Joyride
           continuous
+          locale={{ last: "End" }}
           scrollOffset={100}
           disableScrolling={true}
           callback={(callbackData) => {

@@ -2,7 +2,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Feedback from "./Feedback";
 import { constructMetadata } from "@/lib/utils";
 export const metadata = constructMetadata({
-  title: "Feedback",
+  title: "Feedback - Coachbots",
 });
 const Page = async () => {
   const { getUser } = getKindeServerSession();

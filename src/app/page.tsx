@@ -1,6 +1,15 @@
-import { baseURL, basicAuth, constructMetadata } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  constructMetadata,
+  findCoachUID,
+  findCoacheeUID,
+  getUserAccount,
+} from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Coaches from "./Coaches";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { connectionType } from "@/lib/types";
 
 export const metadata = constructMetadata({
   title: "Network - Coachbots",
@@ -73,6 +82,59 @@ const getUserJoiningPreviledges = async (
   }
 };
 
+const getUserConnections = async (user: KindeUser | null) => {
+  const accountResponse = await getUserAccount(user);
+  const userAccount = await accountResponse.json();
+
+  const profileResponse = await fetch(
+    `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userAccount.uid}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  const userProfiles = await profileResponse.json();
+  const isApprovedData = userProfiles.data.filter(
+    (coachData: any) => coachData.is_approved === true
+  );
+  let connections = [];
+
+  if (findCoacheeUID(isApprovedData).length > 0) {
+    const connectionResponse = await fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${findCoacheeUID(
+        isApprovedData
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    connections = await connectionResponse.json();
+  } else if (findCoachUID(isApprovedData).length > 0) {
+    const connectionResponse = await fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${findCoachUID(
+        isApprovedData
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    connections = await connectionResponse.json();
+  }
+
+  return connections;
+};
+
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -80,9 +142,13 @@ const Page = async () => {
   const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
 
   let directoryProfilesData;
-
   if (!isRestricted || isDemoUser) {
     directoryProfilesData = await getDirectoryProfiles(user?.email);
+  }
+
+  let userConnections: connectionType[] = [];
+  if (user) {
+    userConnections = await getUserConnections(user);
   }
 
   const UserJoiningPreviledges = await getUserJoiningPreviledges(user?.email);
@@ -93,6 +159,7 @@ const Page = async () => {
         user={user}
         coachesDataa={directoryProfilesData}
         UserJoiningPreviledges={UserJoiningPreviledges}
+        userConnections={userConnections}
       />
     </div>
   );

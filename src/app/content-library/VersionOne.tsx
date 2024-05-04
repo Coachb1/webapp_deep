@@ -69,7 +69,7 @@ const VersionOne = ({ user }: any) => {
     {
       target: "#system-demos",
       content:
-        "Use or clinet-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+        "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
     },
     {
       target: ".chat-icon",
@@ -79,7 +79,7 @@ const VersionOne = ({ user }: any) => {
     {
       target: ".chat-icon2",
       content:
-        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is convrted into text. The processing speed is fast & efficient. ",
+        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
     },
     {
       target: "#manager-plus",
@@ -117,16 +117,6 @@ const VersionOne = ({ user }: any) => {
               AI-Frame
             </Button>
           </Link>
-          {/* <Link
-            href="/coach/coach-d54cd-aravsharma?is_audio=true"
-            target="_blank"
-          >
-            <Button
-              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
-            >
-              AI-Frame (Audio enabled)
-            </Button>
-          </Link> */}
           <Link href="/feedback" target="_blank">
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
@@ -141,13 +131,6 @@ const VersionOne = ({ user }: any) => {
               Knowledge Bot
             </Button>
           </Link>
-          {/* <Link href="/knowledge-bot/new-manager-eb1a3" target="_blank">
-            <Button
-              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
-            >
-              New Manager (Role bot)
-            </Button>
-          </Link> */}
         </div>
 
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">

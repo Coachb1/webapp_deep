@@ -45,7 +45,6 @@ const MyPages = ({ user }: any) => {
       getUserAccount(user)
         .then((response) => response.json())
         .then(async (data) => {
-          console.log(data);
           const profile = await fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
             {
@@ -56,16 +55,13 @@ const MyPages = ({ user }: any) => {
           );
 
           const profileJson = await profile.json();
-          // const userProfile = profileJson.data[0]
-          console.log("profile", profileJson.data);
+          console.log("profile", profileJson.data[0]);
 
-          // const profileType = userProfile.profile_type;
           setUserProfile(
             profileJson.data.filter(
               (profile: any) => profile.is_approved === true
             )[0]
           );
-          console.log(profileJson.data[0]);
 
           fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
             headers: {
@@ -242,24 +238,19 @@ const MyPages = ({ user }: any) => {
       )}
       {!loading &&
         botTypes.length === 0 &&
-        userProfile?.profile_type !== "coachee" && (
+        (userProfile?.profile_type !== "coachee" && userProfile?.profile_type !== "mentee") && (
           <>
             <div className="text-xs w-full h-20 flex items-center justify-center">
               <div>You don't have any active Pages yet!</div>{" "}
-              {/* <Button className="pl-1" variant={"link"}>
-                Create one?
-              </Button> */}
             </div>
           </>
         )}
       <div className="my-4 text-sm">
         {botTypes.map((botType) => (
           <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
-            {/* <p className="text-sm ">{BotTypesHeading(botType.bot_type)}</p> */}
             {botType.bots.map((bot, i) => (
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
-                  {/* <p className="text-sm inline w-[10%]">{i + 1}</p>{" "} */}
                   <p
                     className={`text-sm inline ${
                       botType.bot_type === "user_bot"

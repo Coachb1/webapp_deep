@@ -1,6 +1,5 @@
 "use client";
 
-import HelpMode from "@/components/HelpMode";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -101,22 +100,65 @@ const MyComnnections = ({ user }: any) => {
               console.log(isApprovedData);
               if (findCoacheeUID(isApprovedData).length > 0) {
                 console.log("for coachees");
-                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+                fetch(
+                  `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${findCoacheeUID(
+                    isApprovedData
+                  )}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                    },
+                  }
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log(data);
+                    setConnectionsForCoachee(data.data);
+                    setLoading(false);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setLoading(false);
+                  });
+
+                // getConnectionsForCoachee(findCoacheeUID(isApprovedData));
               }
 
               if (findCoachUID(isApprovedData).length > 0) {
                 console.log("for coaches");
-                getConnectionsForCoach(findCoachUID(isApprovedData));
+                fetch(
+                  `${baseURL}/accounts/coach-coachee-connections/?coach_id=${findCoachUID(
+                    isApprovedData
+                  )}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                    },
+                  }
+                )
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log(data);
+
+                    setConnectionsForCoach(data.data);
+                    setLoading(false);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setLoading(false);
+                  });
               }
-              setTimeout(() => {
-                setLoading(false);
-              }, 1000);
+              // setTimeout(() => {
+              //   setLoading(false);
+              // }, 1000);
             })
-            .then((err) => {
+            .catch((err) => {
               console.error(err);
-              setTimeout(() => {
-                setLoading(false);
-              }, 1000);
+              // setTimeout(() => {
+              //   setLoading(false);
+              // }, 1000);
             });
         });
     }

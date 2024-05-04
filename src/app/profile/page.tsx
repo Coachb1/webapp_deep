@@ -3,7 +3,7 @@ import { constructMetadata } from "@/lib/utils";
 import Profile from "./Profile";
 
 export const metadata = constructMetadata({
-  title: "My Account",
+  title: "My Account - Coachbots",
 });
 
 const Page = async () => {
