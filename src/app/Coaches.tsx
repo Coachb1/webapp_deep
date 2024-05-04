@@ -663,6 +663,8 @@ const Coaches = ({
     //   icon: <GlobeIcon className="h-4 w-4 mr-2" />,
     //   text: "Getting your connections",
     // });
+    let connectedCoaches: CoachesDataType[] = [];
+    let unconnectedCoaches: CoachesDataType[] = [];
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
@@ -680,11 +682,11 @@ const Coaches = ({
 
       console.log("Coaches with status : ", coachesWithStatus);
 
-      const connectedCoaches = coachesWithStatus.filter(
+      connectedCoaches = coachesWithStatus.filter(
         (coach) => coach.status === "accepted"
       );
 
-      const unconnectedCoaches = coachesWithStatus.filter(
+      unconnectedCoaches = coachesWithStatus.filter(
         (coach) => !isConnected(coach.status)
       );
 
@@ -710,11 +712,11 @@ const Coaches = ({
         }
       );
 
-      const connectedCoaches = coachesWithStatus.filter(
+      connectedCoaches = coachesWithStatus.filter(
         (coach) => coach.status === "accepted"
       );
 
-      const unconnectedCoaches = coachesWithStatus.filter(
+      unconnectedCoaches = coachesWithStatus.filter(
         (coach) => !isConnected(coach.status)
       );
 
@@ -729,11 +731,12 @@ const Coaches = ({
       );
     }
 
-    const scrollTimer = setTimeout(() => {
+    setTimeout(() => {
       if (coacheeIdFromParams) {
-        const indexOfCoacheeForScroll = coachesData.findIndex(
-          (coach) => coach.profile_id === coacheeIdFromParams
-        );
+        const indexOfCoacheeForScroll = [
+          ...connectedCoaches,
+          ...unconnectedCoaches,
+        ].findIndex((coach) => coach.profile_id === coacheeIdFromParams);
 
         if (indexOfCoacheeForScroll >= 0) {
           const pageNumber =
@@ -746,9 +749,7 @@ const Coaches = ({
           });
         }
       }
-    }, 200);
-
-    return () => clearTimeout(scrollTimer);
+    }, 300);
 
     //default filter for - icons by ai
     //   handleUpdateCheckedValues(["icons_by_ai"]);
