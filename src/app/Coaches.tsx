@@ -725,11 +725,25 @@ const Coaches = ({
       );
     }
 
-    let ScrollTimeMs = connections.length > 0 ? 500 : 200;
+    // //default filter for - icons by ai
+    // handleUpdateCheckedValues(["icons_by_ai"]);
+    // const filteredData = filterData(
+    //   ["icons_by_ai"].includes("Connected")
+    //     ? coachesData.filter(
+    //         (coachData) => coachData.profile_type === "icons_by_ai"
+    //       )
+    //     : savedCoachesData.filter(
+    //         (coachData) => coachData.profile_type === "icons_by_ai"
+    //       ),
+    //   ["icons_by_ai"]
+    // );
+    // setCoachesData(filteredData);
+  }, [connections, coacheeId, coachId]);
 
+  useEffect(() => {
     setTimeout(() => {
       if (coacheeIdFromParams) {
-        const indexOfCoacheeForScroll = coachesDataa.findIndex(
+        const indexOfCoacheeForScroll = coachesData.findIndex(
           (coach) => coach.profile_id === coacheeIdFromParams
         );
 
@@ -745,22 +759,8 @@ const Coaches = ({
           });
         }
       }
-    }, ScrollTimeMs);
-
-    // //default filter for - icons by ai
-    // handleUpdateCheckedValues(["icons_by_ai"]);
-    // const filteredData = filterData(
-    //   ["icons_by_ai"].includes("Connected")
-    //     ? coachesData.filter(
-    //         (coachData) => coachData.profile_type === "icons_by_ai"
-    //       )
-    //     : savedCoachesData.filter(
-    //         (coachData) => coachData.profile_type === "icons_by_ai"
-    //       ),
-    //   ["icons_by_ai"]
-    // );
-    // setCoachesData(filteredData);
-  }, [connections, coacheeId, coachId]);
+    }, 200);
+  }, [coachesData]);
 
   const handleLinks = (link: string) => {
     if (link.includes("playground")) {
