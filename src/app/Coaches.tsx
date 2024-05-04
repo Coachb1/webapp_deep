@@ -741,7 +741,8 @@ const Coaches = ({
   }, [connections, coacheeId, coachId]);
 
   useEffect(() => {
-    setTimeout(() => {
+    const scrollTimer = setTimeout(() => {
+      console.log("NOWWWW")
       if (coacheeIdFromParams) {
         const indexOfCoacheeForScroll = coachesData.findIndex(
           (coach) => coach.profile_id === coacheeIdFromParams
@@ -758,7 +759,9 @@ const Coaches = ({
           });
         }
       }
-    }, 500);
+    }, 1000);
+
+    return () => clearTimeout(scrollTimer);
   }, [coachesData]);
 
   const handleLinks = (link: string) => {
