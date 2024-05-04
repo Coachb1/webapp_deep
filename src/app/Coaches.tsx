@@ -146,10 +146,12 @@ const Coaches = ({
   user,
   coachesDataa,
   UserJoiningPreviledges,
+  userConnections,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
   UserJoiningPreviledges: any;
+  userConnections: any;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -465,13 +467,13 @@ const Coaches = ({
                 (coachData: any) => coachData.is_approved === true
               );
 
-              if (findCoacheeUID(isApprovedData)) {
-                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              } else if (findCoachUID(isApprovedData)) {
-                getConnectionsForCoach(findCoachUID(isApprovedData));
-              } else {
-                setLoading(false);
-              }
+              // if (findCoacheeUID(isApprovedData)) {
+              //   getConnectionsForCoachee(findCoacheeUID(isApprovedData));
+              // } else if (findCoachUID(isApprovedData)) {
+              //   getConnectionsForCoach(findCoachUID(isApprovedData));
+              // } else {
+              //   setLoading(false);
+              // }
 
               if (isApprovedData.length > 0) {
                 setCoacheeId(findCoacheeUID(isApprovedData));
@@ -480,10 +482,12 @@ const Coaches = ({
                 setCoacheeId("");
                 setCoachId("");
               }
+              setLoading(false);
             })
             .then((err) => {
               setButtonLoading(false);
               console.error(err);
+              setLoading(false);
             });
 
           fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
@@ -662,8 +666,8 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = connections.find(
-            (connection) =>
+          const connection = userConnections.data.find(
+            (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
           );
@@ -696,8 +700,8 @@ const Coaches = ({
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = connections.find(
-            (connection) => connection.coachee_id === coach.profile_id
+          const connection = userConnections.data.find(
+            (connection: any) => connection.coachee_id === coach.profile_id
           );
           return {
             ...coach,
@@ -725,24 +729,45 @@ const Coaches = ({
       );
     }
 
-    // //default filter for - icons by ai
-    // handleUpdateCheckedValues(["icons_by_ai"]);
-    // const filteredData = filterData(
-    //   ["icons_by_ai"].includes("Connected")
-    //     ? coachesData.filter(
-    //         (coachData) => coachData.profile_type === "icons_by_ai"
-    //       )
-    //     : savedCoachesData.filter(
-    //         (coachData) => coachData.profile_type === "icons_by_ai"
-    //       ),
-    //   ["icons_by_ai"]
-    // );
-    // setCoachesData(filteredData);
+    const scrollTimer = setTimeout(() => {
+      if (coacheeIdFromParams) {
+        const indexOfCoacheeForScroll = coachesData.findIndex(
+          (coach) => coach.profile_id === coacheeIdFromParams
+        );
+
+        if (indexOfCoacheeForScroll >= 0) {
+          const pageNumber =
+            Math.floor(indexOfCoacheeForScroll / itemsPerPage) + 1;
+
+          paginate(pageNumber);
+
+          document.getElementById(coacheeIdFromParams)?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      }
+    }, 200);
+
+    return () => clearTimeout(scrollTimer);
+
+    //default filter for - icons by ai
+    //   handleUpdateCheckedValues(["icons_by_ai"]);
+    //   const filteredData = filterData(
+    //     ["icons_by_ai"].includes("Connected")
+    //       ? coachesData.filter(
+    //           (coachData) => coachData.profile_type === "icons_by_ai"
+    //         )
+    //       : savedCoachesData.filter(
+    //           (coachData) => coachData.profile_type === "icons_by_ai"
+    //         ),
+    //     ["icons_by_ai"]
+    //   );
+    //   setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
   useEffect(() => {
     const scrollTimer = setTimeout(() => {
-      console.log("NOWWWW")
+      console.log("NOWWWW");
       if (coacheeIdFromParams) {
         const indexOfCoacheeForScroll = coachesData.findIndex(
           (coach) => coach.profile_id === coacheeIdFromParams
