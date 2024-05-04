@@ -752,14 +752,13 @@ const Coaches = ({
             Math.floor(indexOfCoacheeForScroll / itemsPerPage) + 1;
 
           paginate(pageNumber);
-          console.log(indexOfCoacheeForScroll, "indexOfCoacheeForScroll");
 
           document.getElementById(coacheeIdFromParams)?.scrollIntoView({
             behavior: "smooth",
           });
         }
       }
-    }, 200);
+    }, 350);
   }, [coachesData]);
 
   const handleLinks = (link: string) => {
