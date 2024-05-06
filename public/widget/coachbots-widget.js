@@ -2824,19 +2824,26 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
-        if(clearMultipleBodyData){
-          if(body instanceof FormData){
-            console.log("FROM HERE", body)
-            const userMessageValue = JSON.parse(body.get('message1'))
-            const newObj = {
-              messages : [userMessageValue]
-            }
-            body = newObj
-  
-            console.log(body)
-            const shadowRoot = document.getElementById("chat-element").shadowRoot;
-            const lastAudioMessageBubble = shadowRoot.querySelectorAll('.user-message-text.audio-message');
-            lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove()
+        if (body instanceof FormData) {
+          const bodyLength = [...body.entries()].length;
+          console.log(bodyLength);
+          if (bodyLength > 1) {
+              console.log("FROM HERE", body);
+              const userMessageValue = JSON.parse(body.get("message1"));
+              const newObj = {
+                messages: [userMessageValue],
+              };
+              body = newObj;
+
+              console.log(body);
+              const shadowRoot =
+                document.getElementById("chat-element").shadowRoot;
+              const lastAudioMessageBubble = shadowRoot.querySelectorAll(
+                ".user-message-text.audio-message"
+              );
+              lastAudioMessageBubble[
+                lastAudioMessageBubble.length - 1
+              ].remove();
           }
         }
         if (body instanceof FormData) {
