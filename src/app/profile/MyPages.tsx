@@ -359,7 +359,7 @@ const MyPages = ({ user }: any) => {
                       </DialogContent>
                     </Dialog>
                     {/* FOR EDIT MODE */}
-                    {/* <Link
+                    <Link
                       href={
                         intakeBotTypeLinks(
                           botType.bot_type,
@@ -383,10 +383,10 @@ const MyPages = ({ user }: any) => {
                           body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </Link> */}
+                    </Link>
 
                     {/* FOR VIEW MODE */}
-                    <Link
+                    {/* <Link
                       href={
                         intakeBotTypeLinksForView(
                           botType.bot_type,
@@ -410,7 +410,7 @@ const MyPages = ({ user }: any) => {
                           body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
@@ -436,7 +436,7 @@ const MyPages = ({ user }: any) => {
                   </p>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                   {/* FOR EDIT MODE */}
-                  {/* <Link
+                  <Link
                     href={
                       intakeBotTypeLinks(
                         "coachee",
@@ -457,10 +457,10 @@ const MyPages = ({ user }: any) => {
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
-                  </Link> */}
+                  </Link>
 
                   {/* FOR VIEW MODE */}
-                  <Link
+                  {/* <Link
                     href={
                       intakeBotTypeLinksForView(
                         "coachee",
@@ -481,7 +481,7 @@ const MyPages = ({ user }: any) => {
                         body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
