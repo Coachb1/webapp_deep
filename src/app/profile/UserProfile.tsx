@@ -32,11 +32,10 @@ interface KudosDetailsType {
   total_users: number;
 }
 
-const UserProfile = ({ user }: any) => {
+const UserProfile = ({ user, userRole }: any) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
-  const [userRole, setUserRole] = useState("");
 
   const [userPositionDetails, setUserPositionDetails] = useState<
     PositionedUserTypes[]
@@ -140,7 +139,6 @@ const UserProfile = ({ user }: any) => {
           .then(async (data) => {
             console.log("user_profile", data);
             const userId = data.uid;
-            setUserRole(data.role);
             await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
               method: "POST",
               headers: {
@@ -239,17 +237,26 @@ const UserProfile = ({ user }: any) => {
       target: "#esign",
       content: "Email signatures for use by the coach or mentor.",
     },
-    {
+  ];
+
+  if(userRole === "super_admin"){
+    HelpModeSteps.push({
       target: "#admin",
       content:
         " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-    },
-    {
+    })
+    HelpModeSteps.push( {
       target: "#arep",
       content:
         " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-    },
-  ];
+    })
+  } else if(userRole === "client_admin") {
+    HelpModeSteps.push({
+      target: "#admin",
+      content:
+        " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
+    })
+  }
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md w-full">

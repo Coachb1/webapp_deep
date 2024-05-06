@@ -196,7 +196,7 @@ const Profile = ({ user }: any) => {
         <div className=" w-[80%] max-sm:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
-              <UserProfile user={user} />
+              <UserProfile user={user} userRole={userRole} />
               <MyPages user={user} />
             </div>
           )}
