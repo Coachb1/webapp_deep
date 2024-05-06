@@ -5275,7 +5275,7 @@ loadExternalModule().then(() => {
         }
 
       
-        const decodedText = decoder.decode(value);
+        const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText)
         messageText.innerHTML +=  decodedText
         signals.onResponse({
