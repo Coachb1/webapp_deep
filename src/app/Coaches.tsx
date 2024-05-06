@@ -95,7 +95,7 @@ interface FilterCategoriesType {
   filterOptions: string[];
 }
 
-function addIdForTargetSelection(profiles: CoachesDataType[]) {
+function addIdForTargetSelection(profiles: CoachesDataType[], HelpModeSteps : any[]) {
   // Initialize flags to track the first occurrence of each profile type
   let firstIconsByAiFound = false;
   let firstCoacheeFound = false;
@@ -119,6 +119,30 @@ function addIdForTargetSelection(profiles: CoachesDataType[]) {
     ) {
       profile.id_for_target_selection = "first_coach_profile";
       firstCoachFound = true; // Update flag to indicate the first coach profile has been processed
+
+      HelpModeSteps.push({
+        target: "#first_coach_profile",
+        content:
+          "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
+        placement: "auto",
+      },
+      {
+        target: "#email",
+        content:
+          "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+      },
+      {
+        target: "#reviews",
+        disableScrolling: true,
+        content:
+          "Coaches and Mentors can get review ratings from anyone in the network. ",
+      },
+      {
+        target: "#feedback",
+        disableScrolling: true,
+        content:
+          "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
+      })
     }
   });
 
@@ -694,10 +718,10 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
       );
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
@@ -724,10 +748,10 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches])
+        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
       );
     }
 
@@ -1110,29 +1134,7 @@ const Coaches = ({
       disableScrolling: true,
       content: `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
     },
-    {
-      target: "#first_coach_profile",
-      content:
-        "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
-      placement: "auto",
-    },
-    {
-      target: "#email",
-      content:
-        "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
-    },
-    {
-      target: "#reviews",
-      disableScrolling: true,
-      content:
-        "Coaches and Mentors can get review ratings from anyone in the network. ",
-    },
-    {
-      target: "#feedback",
-      disableScrolling: true,
-      content:
-        "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
-    },
+    
   ];
 
   const { helpModeState, updateHelpModeState } = UseHelpMode();
