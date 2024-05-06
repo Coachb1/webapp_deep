@@ -1282,6 +1282,7 @@ const setHoverPoints = (coords, imageId, imageMapName, tooltipId) => {
   });
 };
 
+let clearMultipleBodyData = false;
 // to reset all variables
 const resetAllVariables = async () => {
   //* reset all variables : start
@@ -2823,6 +2824,21 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
+        if(clearMultipleBodyData){
+          if(body instanceof FormData){
+            console.log("FROM HERE", body)
+            const userMessageValue = JSON.parse(body.get('message1'))
+            const newObj = {
+              messages : [userMessageValue]
+            }
+            body = newObj
+  
+            console.log(body)
+            const shadowRoot = document.getElementById("chat-element").shadowRoot;
+            const lastAudioMessageBubble = shadowRoot.querySelectorAll('.user-message-text.audio-message');
+            lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove()
+          }
+        }
         if (body instanceof FormData) {
           //AUDIO RESPONSES
 
@@ -3300,7 +3316,7 @@ loadExternalModule().then(() => {
                     reportUrl = data.url;
                     globalReportUrl = reportUrl;
                     console.log("Report Url : ", reportUrl, globalReportUrl);
-
+                    clearMultipleBodyData = true
                     //* send report message or form to collect data : start
                     if (window.user) {
                       // sendEmail();
@@ -3342,7 +3358,7 @@ loadExternalModule().then(() => {
           }
         } else {
           // TEXT RESPONSES
-
+          clearMultipleBodyData = false
           // get latest message
           // const latestMessage = body.messages[body.messages.length - 1].text;
 
