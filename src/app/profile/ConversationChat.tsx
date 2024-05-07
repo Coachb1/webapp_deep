@@ -17,7 +17,7 @@ const ConversationChat = ({
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
-            <p className="flex flex-row max-sm:flex-col max-sm:text-left">
+            <p className="flex flex-row max-sm:flex-col max-sm:text-left max-lg:flex-col max-lg:text-left">
               {type !== "coach-interactions" && (
                 <span>
                   {" "}
@@ -91,7 +91,7 @@ export const FeedbackConversationChat = ({
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
-            <p className="flex flex-row max-sm:flex-col max-sm:text-left">
+            <p className="flex flex-row max-sm:flex-col max-sm:text-left max-lg:flex-col max-lg:text-left">
               <span>
                 {" "}
                 <b> Participant</b> : {participant}{" "}

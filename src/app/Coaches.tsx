@@ -1418,9 +1418,9 @@ const Coaches = ({
               coachesData.length > 0 &&
               currentCoachesData.map((coach, i) => (
                 <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
-                  <div className="relative top-[26px]  flex w-full flex-row justify-between">
+                  <div className="relative top-[26px] flex w-full flex-row justify-between">
                     <span
-                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs ${
+                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs ${
                         coach.profile_type !== "icons_by_ai"
                           ? "visible"
                           : "invisible"
@@ -1439,7 +1439,7 @@ const Coaches = ({
                             ? "email"
                             : undefined
                         }
-                        className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs"
+                        className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs"
                       >
                         {coach.name.replace(/\s/g, "").toLowerCase() +
                           coach.id +
@@ -1449,7 +1449,7 @@ const Coaches = ({
                     {(coach.profile_type === "icons_by_ai" ||
                       coach.profile_type === "coachee" ||
                       coach.profile_type === "mentee") && (
-                      <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-sm:text-xs">
+                      <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs">
                         Not Applicable
                       </span>
                     )}
@@ -1491,7 +1491,7 @@ const Coaches = ({
                               </Badge>
                             ))}
                       </div>
-                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-lg">
+                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
                         {convertTextToCorrectFormat(coach.name)}{" "}
                       </p>{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
@@ -1528,8 +1528,7 @@ const Coaches = ({
                           </Badge>
                         )}
                       </div>
-                      <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start justify-start gap-2 max-sm:gap-1">
-                        <div className="flex flex-row items-center"></div>
+                      <div className="flex flex-row max-sm:flex-col max-lg:flex-col items-center max-sm:items-start max-lg:items-start justify-start gap-2 max-sm:gap-1">
                         {coach.profile_type !== "coachee" &&
                           coach.profile_type !== "mentee" && (
                             <ReviewComponent
@@ -1548,7 +1547,7 @@ const Coaches = ({
                         {(coach.profile_type === "coach" ||
                           coach.profile_type === "mentor") && (
                           <div className="max-sm:mt-2 flex flex-row items-center">
-                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden  max-lg:hidden">
                               ●
                             </span>
                             <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
@@ -1560,7 +1559,7 @@ const Coaches = ({
                           {coach.feedback_wall !== null &&
                             coach.feedback_wall !== "" && (
                               <>
-                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden">
+                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden max-lg:hidden">
                                   ●
                                 </span>
                                 <Link
@@ -1593,7 +1592,7 @@ const Coaches = ({
                         {coach.profile_type !== "skill_bot" && (
                           <Badge
                             variant={"secondary"}
-                            className=" my-1 text-sm text-gray-600"
+                            className=" my-1 text-sm max-sm:text-xs text-gray-600"
                           >
                             {coach.experience}
                           </Badge>
@@ -1601,7 +1600,7 @@ const Coaches = ({
                         {coach.expertise && (
                           <Badge
                             variant={"secondary"}
-                            className="my-1 text-sm text-gray-600"
+                            className="my-1 text-sm max-sm:text-xs text-gray-600"
                           >
                             {coach.expertise}
                           </Badge>

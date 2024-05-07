@@ -76,7 +76,7 @@ const NetworkNav = ({ user }: any) => {
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
-      <div className="flex flex-row gap-2 max-sm:hidden ">
+      <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden ">
         {!restrictedPages?.includes("Network Directory") && (
           <Button
             variant={"outline"}
@@ -128,7 +128,7 @@ const NetworkNav = ({ user }: any) => {
           </Button>
         )}
       </div>
-      <div className="hidden max-sm:block">
+      <div className="hidden max-sm:block max-lg:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="!z-[999] overflow-visible">
             <div className="h-fit w-fit rounded-md bg-gray-200 p-[4px]">

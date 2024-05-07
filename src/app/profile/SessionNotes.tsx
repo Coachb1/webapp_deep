@@ -430,7 +430,7 @@ const SessionNotes = ({ user }: any) => {
             }
           }}
         >
-          <div className="flex flex-row  items-center gap-2 justify-between max-sm:flex-col max-sm:justify-start max-sm:items-start">
+          <div className="flex flex-row  items-center gap-2 justify-between max-sm:flex-col max-sm:items-start max-sm:justify-start  max-lg:justify-start">
             <TabsList className="border-2 bg-gray-300">
               {/* {connectionsOptions.length > 0 && ( */}
               <TabsTrigger
@@ -451,7 +451,7 @@ const SessionNotes = ({ user }: any) => {
                 </TabsTrigger>
               </div>
             </TabsList>
-            <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md  ">
+            <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md max-sm:ml-1 ">
               <Search className="h-4 w-4 mr-1 inline" />
               <input
                 placeholder="Search comments"

@@ -81,10 +81,10 @@ const Profile = ({ user }: any) => {
               }}
             >
               {icon}
-              <span className="max-sm:hidden">{itemName}</span>
+              <span className="max-sm:hidden max-lg:hidden">{itemName}</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="hidden max-sm:block" side="right">
+          <TooltipContent className="hidden max-sm:block max-lg:block" side="right">
             <p>{itemName}</p>
           </TooltipContent>
         </Tooltip>
@@ -113,7 +113,7 @@ const Profile = ({ user }: any) => {
         <hr />
       </div>
       <div className="h-full px-10 max-sm:px-5 w-full bg-white min-h-[80vh] flex flex-row justify-between">
-        <div className="w-[18%] max-sm:w-[10%] mt-2 mr-2">
+        <div className="w-[18%] max-sm:w-[10%] max-lg:flex justify-center max-lg:w-[8%] mt-2 mr-2">
           <div className="h-fit flex flex-col justify-start gap-3 mb-8 overflow-scroll no-scrollbar">
             <NavItem
               itemName={"Account Information"}
@@ -193,7 +193,7 @@ const Profile = ({ user }: any) => {
             )}
           </div>
         </div>
-        <div className=" w-[80%] max-sm:w-[90%]">
+        <div className="w-[80%] max-sm:w-[90%] max-lg:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
               <UserProfile user={user} userRole={userRole} />
