@@ -275,19 +275,8 @@ const MyComnnections = ({ user }: any) => {
     );
   };
 
-  // const HelpModeSteps: {
-  //   target: string;
-  //   content: any;
-  // }[] = [
-  //   {
-  //     target: "#my-connections",
-  //     content:
-  //       " Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos quidem dolorum, corrupti sequi quibusdam ipsam itaque labore ad aliquam, tempora dicta? Ut nam quo sit enim minima aut alias itaque aliquid laborum et rerum quia expedita doloremque magni, aliquam tempore ad sint, explicabo temporibus facere sunt. Pariatur animi repellendus officiis.",
-  //   },
-  // ];
   return (
     <div id="my-connections" className="bg-accent p-2 mt-2 mb-8 rounded-md">
-      {/* <HelpMode steps={HelpModeSteps} /> */}
       <div className="pl-4 max-sm:pl-2 pt-2">My Connections</div>
       {!loading && (
         <>
@@ -307,17 +296,17 @@ const MyComnnections = ({ user }: any) => {
           <div className="m-4 text-sm max-sm:m-0">
             {connectionsForCoach.length > 0 && (
               <div className="m-4 text-sm max-sm:m-0 max-sm:my-4">
-                <div className="bg-gray-200 px-4  max-sm:px-1 text-sm w-full m-2 ml-0 p-2 rounded-md">
+                <div className="bg-gray-200 px-4  max-sm:px-1 text-sm w-full m-2 ml-0 p-2 rounded-md max-sm:pl-6">
                   <div className="mx-4 flex flex-row my-3 gap-3 max-sm:gap-2  items-center max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
                     {/* <div className="w-[10%] max-sm:text-xs  text-center">
                       SL no.
                     </div> */}
                     <div className=" w-[20%] text-center ">Name </div>
-                    <div className=" w-[40%]  text-center ">Status </div>
+                    <div className=" w-[40%] max-sm:w-[50%] text-center">Status </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1">
                     {connectionsForCoach.map((connection, i) => (
-                      <div className="flex flex-row gap-3 my-2 items-center max-sm:justify-between">
+                      <div className="flex flex-row gap-3 my-2 items-center">
                         {/* <p className="w-[10%] max-sm:w-[12%] text-center">
                           {i + 1}
                         </p>{" "} */}

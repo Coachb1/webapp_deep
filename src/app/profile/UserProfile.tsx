@@ -290,12 +290,12 @@ const UserProfile = ({ user, userRole }: any) => {
           <>
             <Button
               disabled={testAttempedCount === 0}
-              className="ml-8  max-sm:ml-1 w-fit max-sm:p-1 max-sm:text-xs"
+              className="ml-8 w-fit max-sm:p-1 max-sm:text-xs max-sm:h-8 max-sm:ml-4 max-sm:px-2"
             >
               {candidateReportUrl && candidateReportUrl.length !== 0 ? (
                 <>
                   <Link
-                    className="flex flex-row items-center justify-center ml-2 max-sm:ml-1"
+                    className="flex flex-row items-center justify-center ml-2 max-sm:ml-1 "
                     href={candidateReportUrl}
                     target="_blank"
                   >

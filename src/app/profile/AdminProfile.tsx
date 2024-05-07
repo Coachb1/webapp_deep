@@ -8,13 +8,14 @@ const AdminProfile = ({ user }: any) => {
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Admin's space</div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm">Bulk Upload</p>
+        <p className="text-sm max-sm:text-xs">Bulk Upload</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
                 href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>
@@ -23,13 +24,14 @@ const AdminProfile = ({ user }: any) => {
         </>
       </div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm">Django Dashboard</p>
+        <p className="text-sm max-sm:text-xs">Django Dashboard</p>
         <>
           <Button className="ml-8 h-6 w-fit max-sm:ml-2">
             <>
               <Link
                 href={`https://coach-api-ovh.coachbots.com/custom-admin`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>

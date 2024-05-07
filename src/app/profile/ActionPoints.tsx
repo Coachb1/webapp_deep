@@ -121,11 +121,11 @@ const ActionPoints = ({ user }: any) => {
             <Info className="h-3 w-3 mr-2 inline" />
             Please reach out to your admin for redemption of your award points.
           </p>
-          <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:pr-1 rounded-md">
+          <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:p-1 rounded-md">
             <div className="flex flex-col justify-evenly items-center w-[16%]">
               <p className="max-sm:text-xs ">Points</p>
               <div className=" h-[2px] w-full mb-2"></div>
-              <p className="mt-10 max-sm:mt-2 max-sm:text-xs ">Gifts</p>
+              <p className="mt-8 max-sm:mt-2 max-sm:text-xs ">Gifts</p>
             </div>
             <MileStone
               actionPoint={3}

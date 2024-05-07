@@ -38,15 +38,16 @@ const AdminReports = ({ user }: any) => {
       <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Client Admin</div>
       <div id="kudosreport" className="m-4 flex flex-row items-center w-fit">
-        <p className="text-sm">Kudos Board</p>
+        <p className="text-sm max-sm:text-xs">Kudos Board</p>
         <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Button className="ml-8 h-6 w-fit min-w-fit  max-sm:ml-2">
             <>
               <Link
                 href={`${reportsLinksSelector()}/kudosBoard/?email=${
                   user.email
                 }`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>
@@ -55,15 +56,16 @@ const AdminReports = ({ user }: any) => {
         </>
       </div>
       <div id="pt-usage" className="m-4 flex flex-row items-center  w-fit">
-        <p className="text-sm"> Participant Usage Leaderboard</p>
+        <p className="text-sm max-sm:text-xs"> Participant Usage Leaderboard</p>
         <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Button className="ml-8 h-6 w-fit min-w-fit max-sm:ml-2">
             <>
               <Link
                 href={`${reportsLinksSelector()}/participantLeaderboardReport/?email=${
                   user.email
                 }`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>
@@ -71,16 +73,17 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div id="pt-mapping" className="m-4 flex flex-row items-center  w-fit">
-        <p className="text-sm">Participant Mapping report</p>
+      <div id="pt-mapping" className="m-4 flex flex-row items-center w-fit">
+        <p className="text-sm max-sm:text-xs ">Participant Mapping report</p>
         <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Button className="ml-8 h-6 w-fit min-w-fit max-sm:ml-2">
             <>
               <Link
                 href={`${reportsLinksSelector()}/participantMappingReport/?email=${
                   user.email
                 }`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>
@@ -88,14 +91,15 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div id="attr" className="m-4 flex flex-row items-center  w-fit">
-        <p className="text-sm">Attrition report (Sample)</p>
+      <div id="attr" className="m-4 flex flex-row items-center w-fit">
+        <p className="text-sm max-sm:text-xs">Attrition report (Sample)</p>
         <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Button className="ml-8 h-6 w-fit min-w-fit max-sm:ml-2">
             <>
               <Link
                 href={`${reportsLinksSelector()}/attritionReport/`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
                 Link <Link2 className={`h-4 w-4 ml-2 inline`} />
               </Link>
@@ -103,18 +107,19 @@ const AdminReports = ({ user }: any) => {
           </Button>
         </>
       </div>
-      <div id="suc-red" className="m-4 flex flex-row items-center  w-fit">
-        <p className="text-sm">
+      <div id="suc-red" className="m-4 flex flex-row items-center w-fit">
+        <p className="text-sm max-sm:text-xs">
           Succession & Promotion Readiness report (Sample)
         </p>
         <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Button className="ml-8 h-6 w-fit min-w-fit max-sm:ml-2">
             <>
               <Link
                 href={`${reportsLinksSelector()}/successionReport/`}
                 target="_blank"
+                className="max-sm:text-xs"
               >
-                Link <Link2 className={`h-4 w-4 ml-2 inline`} />
+                Link <Link2 className={`h-4 w-4 ml-2 inline `} />
               </Link>
             </>
           </Button>

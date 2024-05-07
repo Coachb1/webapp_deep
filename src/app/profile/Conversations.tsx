@@ -235,7 +235,7 @@ const Conversations = ({ user }: any) => {
         <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
         <div className="">
           {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
-            <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs min-h-[109px]">
+            <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs max-lg:text-xs max-xl:text-xs min-h-[109px]">
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>

@@ -586,7 +586,7 @@ const MyLibrary = ({ user }: any) => {
                   <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                     How it works <Workflow className="ml-2 w-6 h-6 inline" />
                   </h1>
-                  <div className="w-[80%] max-sm:w-[90%]">
+                  <div className="w-[80%] max-sm:w-[90%] max-lg:w-full">
                     <div className="flex flex-col max-sm:text-xs max-sm:flex-col w-[64%] max-sm:w-[100%] mx-auto  mt-4 rounded-lg border p-4 max-sm:p-2">
                       {[
                         "Select the category of simulations.",
@@ -642,7 +642,7 @@ const MyLibrary = ({ user }: any) => {
                             </span>
                           </div>
 
-                          <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                          <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
                             <SearchNSelect
                               placeholder="Select by Simulation domain"
                               onSearchHandler={(value) =>
@@ -655,7 +655,7 @@ const MyLibrary = ({ user }: any) => {
                             />
                           </div>
 
-                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                          <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                             {(
                               filteredTestsData[category.category_name] ||
                               category.tests_data
@@ -766,7 +766,7 @@ const MyLibrary = ({ user }: any) => {
                       Grayed bars indicate already attempted simulations
                     </span>
                   </div>
-                  <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                  <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
                     {competencyBasedPowerSkillsTests.length > 0 && (
                       <SearchNSelect
                         placeholder="Select by Simulation domain"
@@ -789,7 +789,7 @@ const MyLibrary = ({ user }: any) => {
                       />
                     )}
                   </div>
-                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                     {competencyBasedPowerSkillsTests.length > 0 && (
                       <>
                         {(
@@ -930,7 +930,7 @@ const MyLibrary = ({ user }: any) => {
                         </span>
                       </div>
 
-                      <div className="w-[65%] max-sm:w-[85%] flex justify-center items-center mt-4">
+                      <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
                         <SearchNSelect
                           placeholder="Select by Simulation domain"
                           onSearchHandler={(value) =>
@@ -943,7 +943,7 @@ const MyLibrary = ({ user }: any) => {
                         />
                       </div>
 
-                      <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                      <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                         {(
                           filteredTestsData[category.category_name] ||
                           category.tests_data
@@ -1111,7 +1111,7 @@ const MyLibrary = ({ user }: any) => {
                       </p>
                     </div>
                   ) : (
-                    <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                    <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
                       <div className="w-full">
                         <div className="relative isolate mx-auto">
                           <div>

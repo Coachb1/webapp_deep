@@ -256,7 +256,7 @@ const CreateOwn = ({
             <div>
               <iframe
                 id="player"
-                className="rounded-sm max-sm:w-full"
+                className="rounded-sm max-sm:w-full max-lg:w-[95%]"
                 src={`https://www.youtube.com/embed/${video_id}`}
                 allowFullScreen
                 aria-describedby="video-info"
@@ -807,7 +807,7 @@ const CreateOwn = ({
                           }}
                           className="flex flex-col justify-center items-center mt-3"
                         >
-                          <div className="w-[80%]  max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
+                          <div className="w-[80%] max-lg:w-[80%] max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
                             <Tabs
                               className="w-fit self-start"
                               value={searchMode}
@@ -844,7 +844,7 @@ const CreateOwn = ({
                               </TabsList>
                             </Tabs>
                           </div>
-                          <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-sm:w-full mt-1">
+                          <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-lg:w-[80%] max-sm:w-full mt-1">
                             <input
                               placeholder="Please enter the context to create the scenario"
                               className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1 "
@@ -888,7 +888,7 @@ const CreateOwn = ({
                           </div>
                         </form>
                       </div>
-                      <div className="w-[80%] max-sm:w-full flex flex-col gap-2 mt-4">
+                      <div className="w-[80%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
                         {/* {searchMode === "google" && (
                           <>
                             {googleSearchResults.length > 0 ? (
@@ -1067,7 +1067,7 @@ const CreateOwn = ({
                           <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                             <div className="flex flex-col max-sm:flex-col w-full mx-auto">
                               <div className="w-full flex flex-col items-center justify-center">
-                                <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
+                                <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[100%] mx-auto">
                                   <>
                                     <div className="w-full">
                                       <div className="relative isolate mx-auto">
@@ -1082,7 +1082,7 @@ const CreateOwn = ({
                                                 {knowledgeBots.length === 0 ? (
                                                   <p className="my-4 text-sm ">
                                                     There are no community
-                                                    created guides yet!
+                                                    created guides yet!  
                                                   </p>
                                                 ) : (
                                                   knowledgeBots.map(

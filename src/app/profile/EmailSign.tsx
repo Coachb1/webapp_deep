@@ -206,7 +206,7 @@ const EmailSign = ({ user }: any) => {
               <>
                 {coachId.length > 0 ? (
                   <>
-                    <div className="m-4 flex flex-row gap-2 max-sm:flex-col">
+                    <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
                       <div>
                         <p className="text-sm my-1 text-gray-600 font-semibold">
                           Feedback
