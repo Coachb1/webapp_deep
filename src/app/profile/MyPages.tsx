@@ -213,7 +213,7 @@ const MyPages = ({ user }: any) => {
   return (
     <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
-      <div className="pl-4 max-sm:pl-2 ">
+      {/* <div className="pl-4 max-sm:pl-2 ">
         <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
           {" "}
           <Info className="h-3 w-3 mr-2 inline" />
@@ -226,7 +226,7 @@ const MyPages = ({ user }: any) => {
             info@coachbots.com
           </a>
         </p>
-      </div>
+      </div> */}
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -359,7 +359,7 @@ const MyPages = ({ user }: any) => {
                       </DialogContent>
                     </Dialog>
                     {/* FOR EDIT MODE */}
-                    {/* <Link
+                    <Link
                       href={
                         intakeBotTypeLinks(
                           botType.bot_type,
@@ -383,10 +383,10 @@ const MyPages = ({ user }: any) => {
                           body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </Link> */}
+                    </Link>
 
                     {/* FOR VIEW MODE */}
-                    <Link
+                    {/* <Link
                       href={
                         intakeBotTypeLinksForView(
                           botType.bot_type,
@@ -410,7 +410,7 @@ const MyPages = ({ user }: any) => {
                           body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </div>
@@ -436,7 +436,7 @@ const MyPages = ({ user }: any) => {
                   </p>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
                   {/* FOR EDIT MODE */}
-                  {/* <Link
+                  <Link
                     href={
                       intakeBotTypeLinks(
                         "coachee",
@@ -457,10 +457,10 @@ const MyPages = ({ user }: any) => {
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
-                  </Link> */}
+                  </Link>
 
                   {/* FOR VIEW MODE */}
-                  <Link
+                  {/* <Link
                     href={
                       intakeBotTypeLinksForView(
                         "coachee",
@@ -481,7 +481,7 @@ const MyPages = ({ user }: any) => {
                         body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>

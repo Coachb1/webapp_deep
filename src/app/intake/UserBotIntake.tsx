@@ -214,6 +214,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
     if (checkIfEdit) {
       formdata.append("bot_id", botIUidFromParams!);
+      formdata.append("for_reapproval", "true");
     }
 
     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
