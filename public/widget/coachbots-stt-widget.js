@@ -5134,16 +5134,20 @@ loadExternalModule().then(() => {
   
     return processedString;
   }
-  
 
-  const GeminiAiResponse = (
+  function endsWithLowerCaseLetter(str) {
+    const pattern = /[a-z]$/;
+    return pattern.test(str);
+  }
+
+  const ChatGeminiAiResponse = (
     userInputMessage,
     signals,
     conversationId,
-    latestMessage
+    latestMessage,
+    prompt,
+    previousHistory
   ) => {
-    userInputMessage = userInputMessage  + `\n input: ${latestMessage}\n output: `
-    console.log('prompt',userInputMessage)
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -5168,71 +5172,51 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
-    function ensureProperEnding(str ) {
-      // console.log(str)
-      if (str.startsWith("[") && !str.endsWith("]")) {
-        console.log("met condition 1")
-        return str.replace("[", "");
-      } else if (str.startsWith(",") && !str.startsWith("[") && !str.endsWith("]")){
-        console.log("met condition 2")
-        return str.replace(",", "");
-      } else if(str.endsWith("]")){
-        console.log("met condition 3")
-        return str.replace(/^\s*,/, '').replace(/\]\s*$/, '');
-      } else {
-        console.log("met condition DE")
-        return str;
-      }
-    }
-
-    function endsWithLowerCaseLetter(str) {
-      const pattern = /[a-z]$/;
-      return pattern.test(str);
-  }
-    
-    fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
+    fetch("/api/chat-gemini", {
       method: "POST",
       body: JSON.stringify({
-          prompt: userInputMessage
+        prompt: prompt,
+        response: userInputMessage,
+        previousHistory: JSON.stringify(previousHistory),
       }),
     }).then(async (response) => {
+      console.log(response);
+      //@ts-ignore
       const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let partialData = ""
-      let existingTexts = [];
+      const textDecoder = new TextDecoder("utf-8");
 
       while (true) {
-        const { done, value } = await reader?.read();
-        if (done) {
-            allMessages.forEach((indvMessage) => {
-              if (
-                indvMessage.innerText === "." ||
-                indvMessage.innerText === "..." || indvMessage.innerText === " "
-              ) {
-                indvMessage.remove();
-              }
-            });
+        const { done, value } = await reader.read();
 
+        if (done) {
+          allMessages.forEach((indvMessage) => {
+            if (
+              indvMessage.innerText === "." ||
+              indvMessage.innerText === "..." ||
+              indvMessage.innerText === " "
+            ) {
+              indvMessage.remove();
+            }
+          });
           
           if (messageText.innerText === "") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-          } else if (
-            endsWithLowerCaseLetter(messageText.innerText)
-          ) {
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
             messageText.innerText +=
               " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
           }
-          console.log("Stream complete");
-          console.log("STREAMED MESSAGE -> ", messageText.innerText)
-          finished = true;
-
           // add user question and bot answer to the session
           sessionQnAdata.push({
             user: latestMessage,
             coach: messageText.innerText,
           });
-          console.log("sessionQnAdata :", sessionQnAdata, 'conversationId :', conversationId);
+          console.log(
+            "sessionQnAdata :",
+            sessionQnAdata,
+            "conversationId :",
+            conversationId
+          );
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
@@ -5270,32 +5254,185 @@ loadExternalModule().then(() => {
                   console.log(data);
                 });
             });
+
           shadowRoot.getElementById("messages").scrollBy(0, 500);
-          return Promise.resolve();
+          return;
         }
 
-      
-        const decodedText = decoder.decode(value, { stream: !done });
-        console.log(decodedText)
-        messageText.innerHTML +=  decodedText
+        const decodedText = textDecoder.decode(value, { stream: !done });
+        console.log(decodedText);
+        messageText.innerHTML += decodedText;
         signals.onResponse({
           html: ".",
         });
         shadowRoot.getElementById("messages").scrollBy(0, 500);
-
-        // if(decodedText.length > 0 && decodedText !== "]"){
-        //   // console.log(ensureProperEnding(decodedText))
-        //   const data = JSON.parse(ensureProperEnding(decodedText));
-        //   console.log(data.candidates[0].content.parts[0].text)
-        //   messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
-
-        //   shadowRoot.getElementById("messages").scrollBy(0, 500);
-        // }
-      };
-    })
-    .catch((error) => {
-      console.error("Error:", error);
+      }
     });
+  };  
+
+  const GeminiAiResponse = (
+    userInputMessage,
+    signals,
+    conversationId,
+    latestMessage
+  ) => {
+    userInputMessage =
+      userInputMessage + `\n input: ${latestMessage}\n output: `;
+    console.log("prompt", userInputMessage);
+    const messageNode = document.createElement("div");
+    messageNode.classList.add("inner-message-container");
+
+    const messageBubble = document.createElement("div");
+    messageBubble.classList.add("message-bubble", "ai-message-text");
+    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.marginTop = "4px";
+    messageBubble.style.borderRadius = "4px";
+    messageBubble.style.padding = "4";
+    messageBubble.style.backgroundColor = "#f3f4f6";
+    messageBubble.style.color = "#374151";
+
+    const messageText = document.createElement("p");
+
+    messageBubble.appendChild(messageText);
+    messageNode.appendChild(messageBubble);
+
+    gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    gShadowRoot2.getElementById("messages").appendChild(messageNode);
+    gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+    const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+    function ensureProperEnding(str) {
+      // console.log(str)
+      if (str.startsWith("[") && !str.endsWith("]")) {
+        console.log("met condition 1");
+        return str.replace("[", "");
+      } else if (
+        str.startsWith(",") &&
+        !str.startsWith("[") &&
+        !str.endsWith("]")
+      ) {
+        console.log("met condition 2");
+        return str.replace(",", "");
+      } else if (str.endsWith("]")) {
+        console.log("met condition 3");
+        return str.replace(/^\s*,/, "").replace(/\]\s*$/, "");
+      } else {
+        console.log("met condition DE");
+        return str;
+      }
+    }
+
+    fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt: userInputMessage,
+      }),
+    })
+      .then(async (response) => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let partialData = "";
+        let existingTexts = [];
+
+        while (true) {
+          const { done, value } = await reader?.read();
+          if (done) {
+            allMessages.forEach((indvMessage) => {
+              if (
+                indvMessage.innerText === "." ||
+                indvMessage.innerText === "..." ||
+                indvMessage.innerText === " "
+              ) {
+                indvMessage.remove();
+              }
+            });
+
+            if (messageText.innerText === "") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            }
+            console.log("Stream complete");
+            console.log("STREAMED MESSAGE -> ", messageText.innerText);
+            finished = true;
+
+            // add user question and bot answer to the session
+            sessionQnAdata.push({
+              user: latestMessage,
+              coach: messageText.innerText,
+            });
+            console.log(
+              "sessionQnAdata :",
+              sessionQnAdata,
+              "conversationId :",
+              conversationId
+            );
+
+            fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+              method: "POST",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                ai_response: messageText.innerText,
+                conversation_id: conversationId,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+              })
+              .catch((err) => {
+                console.error(err);
+                fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Basic ${createBasicAuthToken2(
+                      key2,
+                      secret2
+                    )}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    ai_response: messageText.innerText,
+                    conversation_id: conversationId,
+                  }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log(data);
+                  });
+              });
+            shadowRoot.getElementById("messages").scrollBy(0, 500);
+            return Promise.resolve();
+          }
+
+          const decodedText = decoder.decode(value, { stream: !done });
+          console.log(decodedText);
+          messageText.innerHTML += decodedText;
+          signals.onResponse({
+            html: ".",
+          });
+          shadowRoot.getElementById("messages").scrollBy(0, 500);
+
+          // if(decodedText.length > 0 && decodedText !== "]"){
+          //   // console.log(ensureProperEnding(decodedText))
+          //   const data = JSON.parse(ensureProperEnding(decodedText));
+          //   console.log(data.candidates[0].content.parts[0].text)
+          //   messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
+
+          //   shadowRoot.getElementById("messages").scrollBy(0, 500);
+          // }
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   const OpenAiResponse = (
