@@ -981,7 +981,7 @@ const CoachIntake = ({ user }: any) => {
             myHeaders.append("Content-Type", "application/json");
           // }
           fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=true`,
             {
               method: "PATCH",
               headers: myHeaders,
