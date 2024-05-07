@@ -92,7 +92,7 @@ const VersionOne = ({ user }: any) => {
     <>
       <HelpMode steps={HelpModeSteps} />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        <h1 className="text-5xl mt-12 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+        <h1 className="text-5xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
@@ -138,7 +138,7 @@ const VersionOne = ({ user }: any) => {
         </Badge>
         <div
           id="system-demos"
-          className="text-lg w-[80%] max-sm:w-full mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+          className="text-lg w-[80%] max-sm:w-[90%] mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
         >
           <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
             <Button
@@ -313,7 +313,7 @@ const VersionOne = ({ user }: any) => {
           </div>
         </div>
       </MaxWidthWrapper>
-      <div className="flex flex-row max-sm:flex-col w-[80%] max-sm:w-full mx-auto">
+      <div className="flex flex-row max-sm:flex-col w-[80%] max-lg:w-[75%] max-sm:w-full mx-auto">
         <div className="w-full">
           <div id="managerplus">
             <HeroAccordion
