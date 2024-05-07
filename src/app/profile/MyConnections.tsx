@@ -123,9 +123,7 @@ const MyComnnections = ({ user }: any) => {
                   });
 
                 // getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              }
-
-              if (findCoachUID(isApprovedData).length > 0) {
+              } else if (findCoachUID(isApprovedData).length > 0) {
                 console.log("for coaches");
                 fetch(
                   `${baseURL}/accounts/coach-coachee-connections/?coach_id=${findCoachUID(
@@ -149,16 +147,13 @@ const MyComnnections = ({ user }: any) => {
                     console.log(err);
                     setLoading(false);
                   });
+              } else {
+                setLoading(false);
               }
-              // setTimeout(() => {
-              //   setLoading(false);
-              // }, 1000);
             })
             .catch((err) => {
               console.error(err);
-              // setTimeout(() => {
-              //   setLoading(false);
-              // }, 1000);
+              setLoading(false);
             });
         });
     }
@@ -302,7 +297,9 @@ const MyComnnections = ({ user }: any) => {
                       SL no.
                     </div> */}
                     <div className=" w-[20%] text-center ">Name </div>
-                    <div className=" w-[40%] max-sm:w-[50%] text-center">Status </div>
+                    <div className=" w-[40%] max-sm:w-[50%] text-center">
+                      Status{" "}
+                    </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1">
                     {connectionsForCoach.map((connection, i) => (
