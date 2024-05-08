@@ -17,6 +17,7 @@ export const metadata = constructMetadata({
 
 const getClientUserInfo = async (userEmail: string | null | undefined) => {
   if (userEmail !== null && userEmail !== undefined) {
+    await CreateOrAssignClientId(userEmail);
     const response = await fetch(
       `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
       {
@@ -166,7 +167,6 @@ const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  await CreateOrAssignClientId(user?.email);
   const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
 
   let directoryProfilesData;

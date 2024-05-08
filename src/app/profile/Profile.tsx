@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/app/profile/Competencies";
 import MyPages from "@/app/profile/MyPages";
-import { getClientUserInfo, getUserAccount } from "@/lib/utils";
+import { CreateOrAssignClientId, getClientUserInfo, getUserAccount } from "@/lib/utils";
 import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
@@ -55,14 +55,22 @@ const Profile = ({ user }: any) => {
           setUserRole(data.role);
         });
 
-      getClientUserInfo(user?.email)
-        ?.then((res) => res.json())
-        .then((data) => {
-          console.log(data, "getClientUserInfo - userProfile");
+      CreateOrAssignClientId(user?.email)
+      ?.then((resp) => resp.text())
+      .then((result) => {
+          console.log(`Success : data:`, result)
+          getClientUserInfo(user?.email)
+            ?.then((res) => res.json())
+            .then((data) => {
+              console.log(data, "getClientUserInfo - userProfile");
 
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        });
+              setRestrictedPages(data.data.user_info[0].restricted_pages);
+              setRestrictedFeatures(data.data.user_info[0].restricted_features);
+            });
+      })
+      .catch((error) => console.error('Error in create-or-assign-client-id',error));
+  
+      
     }
   }, []);
 

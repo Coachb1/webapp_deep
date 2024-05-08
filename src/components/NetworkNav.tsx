@@ -13,7 +13,7 @@ import NavProfile from "./NavProfile";
 import { HelpCircle, Info, Menu } from "lucide-react";
 import { TooltipWrapper } from "./TooltipWrapper";
 import { useEffect, useState } from "react";
-import { getClientUserInfo } from "@/lib/utils";
+import { CreateOrAssignClientId, getClientUserInfo } from "@/lib/utils";
 import { Badge } from "./ui/badge";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Switch } from "./ui/switch";
@@ -45,14 +45,22 @@ const NetworkNav = ({ user }: any) => {
   const [scrolled, setScrolled] = useState<number>(0);
   useEffect(() => {
     if (user) {
-      getClientUserInfo(user.email)
-        ?.then((res) => res.json())
-        .then((data) => {
-          console.log(data, "getClientUserInfo - NetworkNav");
+      CreateOrAssignClientId(user.email)
+      ?.then((resp) => resp.text())
+      .then((result) => {
+          console.log(`Success : data:`, result)
+          getClientUserInfo(user.email)
+            ?.then((res) => res.json())
+            .then((data) => {
+              console.log(data, "getClientUserInfo - NetworkNav");
 
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        });
+              setRestrictedPages(data.data.user_info[0].restricted_pages);
+              setRestrictedFeatures(data.data.user_info[0].restricted_features);
+            });
+      })
+      .catch((error) => console.error('Error in create-or-assign-client-id',error));
+
+      
     }
   }, []);
 
