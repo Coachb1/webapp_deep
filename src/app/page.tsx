@@ -135,10 +135,38 @@ const getUserConnections = async (user: KindeUser | null) => {
   return connections;
 };
 
+const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
+  if (userEmail !== null && userEmail !== undefined) {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", basicAuth);
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      "email": userEmail,
+    });
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    
+    const response = await fetch(`${baseURL}/accounts/create-or-assign-client-id/`, requestOptions)
+
+    const data = await response.json();
+
+
+    if (response.ok){
+      console.log(`Success : data:`, data)
+    } else {
+      console.error(`Failed to run CreateOrAssignClientId`)
+    }
+  }
+    
+};
+
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-
+  await CreateOrAssignClientId(user?.email);
   const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
 
   let directoryProfilesData;
