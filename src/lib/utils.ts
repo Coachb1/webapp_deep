@@ -362,8 +362,39 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
   return outputData;
 }
 
-export const getClientUserInfo = (userEmail: string | undefined) => {
+const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
+  if (userEmail !== null && userEmail !== undefined) {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", basicAuth);
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      "email": userEmail,
+    });
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    
+    const response = await fetch(`${baseURL}/accounts/create-or-assign-client-id/`, requestOptions)
+
+    const data = await response.json();
+
+
+    if (response.ok){
+      console.log(`Success : data:`, data)
+    } else {
+      console.error(`Failed to run CreateOrAssignClientId`)
+    }
+  }
+    
+};
+
+export const getClientUserInfo = async(userEmail: string | undefined) => {
   if (userEmail) {
+    console.log('C3')
+    await CreateOrAssignClientId(userEmail)
+
     return fetch(
       `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
       {
