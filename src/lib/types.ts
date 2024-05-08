@@ -257,3 +257,15 @@ export interface BotDetailsType {
     ui_information: any; // Update type if it's known
   };
 }
+
+export interface ClientUserType {
+  userEmail: string;
+  userName: string;
+  userId: string;
+}
+
+export interface ClientDataType {
+  clientName: string;
+  clientId: string;
+  Users: ClientUserType[];
+}

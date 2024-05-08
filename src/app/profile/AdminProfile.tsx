@@ -1,9 +1,102 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
-import { Link2 } from "lucide-react";
-import { baseURL } from "@/lib/utils";
+import { Link2, Loader, PenBox, Users2, Wrench, X } from "lucide-react";
+import {
+  baseURL,
+  basicAuth,
+  parseClientData,
+  parseClientUsers,
+} from "@/lib/utils";
+import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { ClientDataType } from "@/lib/types";
+import UsersPopover from "@/components/ui/UsersPopover";
+import { toast } from "sonner";
 
 const AdminProfile = ({ user }: any) => {
+  const [changeClientInit, setChangeClientInit] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [changeLoading, setChangeLoading] = useState(false);
+  const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
+
+  const [selectedUser, setSelectedUser] = useState("");
+  const [oldClientId, setOldClientId] = useState("");
+  const [newClientId, setNewClientId] = useState("");
+
+  const [allUsers, setAllUsers] = useState<
+    {
+      userEmail: string;
+      userClientId: string;
+    }[]
+  >([]);
+
+  const getAllClientsData = () => {
+    setLoading(true);
+    fetch(`${baseURL}/accounts/client_id_user_modification?all_client=true`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientsData(parseClientData(data));
+        setAllUsers(parseClientUsers(data));
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.error(err);
+      });
+  };
+
+  useEffect(() => {
+    getAllClientsData();
+  }, []);
+
+  const changeUsersClientHandler = () => {
+    setChangeLoading(true);
+    fetch(`${baseURL}/accounts/client_id_user_modification/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        new_client_id: newClientId,
+        user_email: selectedUser,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setChangeLoading(false);
+        toast.success("Successfully changed the client.");
+        console.log(data);
+        getAllClientsData();
+        cancelHandler();
+      })
+      .catch((err) => {
+        setChangeLoading(false);
+        toast.success("Error changing the client. Try again.");
+        console.error(err);
+      });
+  };
+
+  const cancelHandler = () => {
+    setChangeClientInit(false);
+    setSelectedUser("");
+    setOldClientId("");
+    setNewClientId("");
+  };
+
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Admin's space</div>
@@ -38,6 +131,192 @@ const AdminProfile = ({ user }: any) => {
             </>
           </Button>
         </>
+      </div>
+      <div className="m-4 h-[2px] bg-gray-400 rounded-xl" />
+      <div className="m-4 flex flex-col items-start">
+        <p className="text-base max-sm:text-sm font-semibold">Clients</p>
+        <div className="mt-3 w-full flex flex-col gap-2">
+          {loading && (
+            <div className="text-xs w-full h-20 flex items-center justify-center">
+              <div>
+                <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
+              </div>
+            </div>
+          )}
+          {!loading &&
+            clientsData.map((client, i) => (
+              <div className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2">
+                <span className=" max-sm:text-xs">{i + 1}</span>
+                <span>-</span>
+                <p className="text-sm font-semibold max-sm:text-xs">
+                  {client.clientName}
+                </p>
+                <UsersPopover
+                  Users={client.Users}
+                  triggerComponent={
+                    <Button
+                      variant={"outline"}
+                      className="h-6 text-xs p-1 px-3 text-gray-500 ml-4"
+                    >
+                      View users <Users2 className="inline h-4 w-4 ml-2" />
+                    </Button>
+                  }
+                />
+              </div>
+            ))}
+        </div>
+      </div>
+      <div className="m-4 mt-6 flex flex-col items-start">
+        <p className="text-base max-sm:text-sm font-semibold ">Actions</p>
+        <div
+          className={`mt-3 w-full p-2 rounded-md ${
+            changeClientInit && "bg-blue-100 border border-blue-300"
+          }`}
+        >
+          <Button
+            onClick={() => {
+              setChangeClientInit(true);
+            }}
+            disabled={clientsData.length === 0}
+            variant={"default"}
+            className=" p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+          >
+            {" "}
+            <Wrench className="inline h-4 w-4 mr-2" /> Change Users Client
+          </Button>
+
+          {changeClientInit && (
+            <div className="flex flex-col gap-4 w-full justify-end">
+              <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Select the user</p>
+                  <Select
+                    onValueChange={(value) => {
+                      setSelectedUser(value);
+
+                      console.log(
+                        allUsers.filter((user) => user.userEmail === value)[0]
+                          .userClientId
+                      );
+                      setOldClientId(
+                        allUsers.filter((user) => user.userEmail === value)[0]
+                          .userClientId
+                      );
+                    }}
+                    defaultValue={allUsers[0].userEmail}
+                    value={selectedUser}
+                  >
+                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
+                      <span className="text-gray-600 text-left">
+                        {selectedUser}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {allUsers.map((user) => (
+                          <SelectItem value={user.userEmail}>
+                            {user.userEmail}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Old client</p>
+                  <Select value={oldClientId} disabled>
+                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
+                      <span className="text-gray-600 text-left">
+                        {oldClientId && (
+                          <>
+                            {
+                              clientsData.filter(
+                                (client) => client.clientId === oldClientId
+                              )[0].clientName
+                            }{" "}
+                            : {oldClientId}
+                          </>
+                        )}
+                      </span>
+                    </SelectTrigger>
+                  </Select>
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Select new client</p>
+                  <Select
+                    onValueChange={(value) => {
+                      // setSkillFour(value);
+                      setNewClientId(value);
+                    }}
+                    value={newClientId}
+                  >
+                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
+                      <span className="text-gray-600 text-left">
+                        {newClientId && (
+                          <>
+                            {
+                              clientsData.filter(
+                                (client) => client.clientId === newClientId
+                              )[0].clientName
+                            }{" "}
+                            : {newClientId}
+                          </>
+                        )}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {clientsData.map((client) => (
+                          <SelectItem
+                            disabled={oldClientId === client.clientId}
+                            value={client.clientId}
+                          >
+                            {client.clientName} : {client.clientId}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="self-end">
+                <div className="self-end">
+                  <Button
+                    variant={"destructive"}
+                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
+                    onClick={() => {
+                      cancelHandler();
+                    }}
+                  >
+                    Cancel <X className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button
+                    disabled={
+                      selectedUser.length === 0 ||
+                      oldClientId.length === 0 ||
+                      newClientId.length === 0
+                    }
+                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
+                    onClick={() => {
+                      changeUsersClientHandler();
+                    }}
+                  >
+                    {changeLoading ? (
+                      <>
+                        Changing{" "}
+                        <Loader className="ml-2 h-4 w-4 animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        Confirm change <PenBox className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
