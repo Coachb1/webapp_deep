@@ -21,6 +21,7 @@ interface CustomWindow extends Window {
 
 const getClientUserInfo = async (userEmail: string | null | undefined) => {
   if (userEmail !== null && userEmail !== undefined) {
+    await CreateOrAssignClientId(userEmail);
     const response = await fetch(
       `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
       {
@@ -88,7 +89,6 @@ export default async function RootLayout({
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  await CreateOrAssignClientId(user?.email);
 
   const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
 
