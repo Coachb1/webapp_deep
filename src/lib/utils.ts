@@ -2,7 +2,13 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Metadata } from "next";
-import { Categories, CategoryData, DomainData, TestData } from "./types";
+import {
+  Categories,
+  CategoryData,
+  ClientDataType,
+  DomainData,
+  TestData,
+} from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -418,3 +424,49 @@ export const applicationUrl = () => {
     return "https://playground.coachbots.com";
   }
 };
+
+export function parseClientData(data: any): ClientDataType[] {
+  const clients: ClientDataType[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+      const clientData = data[clientName][0];
+
+      const client: ClientDataType = {
+        clientName,
+        clientId: clientData.client_id,
+        Users: data[clientName].map((user: any) => ({
+          userEmail: user.user_email,
+          userName: user.name,
+          userId: user.user_id,
+        })),
+      };
+
+      clients.push(client);
+    }
+  }
+
+  return clients;
+}
+
+export function parseClientUsers(data: any) {
+  const clientUsers: {
+    userEmail: string;
+    userClientId: string;
+  }[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+      const clientData = data[clientName][0];
+
+      data[clientName].map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userClientId: clientData.client_id,
+        });
+      });
+    }
+  }
+
+  return clientUsers;
+}
