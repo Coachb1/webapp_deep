@@ -769,14 +769,14 @@ const CreateOwn = ({
                   <Button
                     onClick={() => {
                       document
-                        .getElementById("survey-creator")
+                        .getElementById("deepdive-creator")
                         ?.scrollIntoView({
                           behavior: "smooth",
                         });
                     }}
                     className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                   >
-                    Create your survey
+                    Create your Deep dive
                   </Button>
                   <Button
                     onClick={() => {
@@ -1043,7 +1043,7 @@ const CreateOwn = ({
             </div>
             <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
             <div
-              id="survey-creator"
+              id="deepdive-creator"
               className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
             ></div>
             <div className="h-fit ">
@@ -1058,7 +1058,7 @@ const CreateOwn = ({
                         id="sc-id"
                         className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                       >
-                        Create your survey
+                        Create your Deep dive
                       </h1>
                       <div className="w-full">
                         <div className="w-full flex flex-col items-center justify-center mb-10">
