@@ -17,33 +17,6 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 
-interface Message {
-  question: string;
-  answer: string;
-}
-
-interface feedbackConversationType {
-  participant_name: string;
-  date: string;
-  msg: Message[];
-}
-
-const convertJsonToStateFormat = (jsonData: any) => {
-  return jsonData.map((item: any) => {
-    const { participant_name, date, msg } = item;
-
-    const formattedMsg = Object.entries(msg).map(([question, answer]) => ({
-      question,
-      answer,
-    }));
-
-    return {
-      participant_name,
-      date,
-      msg: formattedMsg,
-    };
-  });
-};
 const howItWorks = [
   {
     heading: "Thumbs Up or Thumbs Down",
@@ -90,12 +63,11 @@ const benefitsData = [
   },
 ];
 
-
-const Survey = ({ user, renderType }: any) => {
+const DeepDive = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
-  const [coachName, setCoachName] = useState<string>("");
-  const [coachDescription, setCoachDescription] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [botObjective, setBotObjective] = useState<string>("");
   const [currentProjects, setCurrentProjects] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -106,8 +78,6 @@ const Survey = ({ user, renderType }: any) => {
   const [userIdFromBotDetails, setUserIdFromBotDetails] = useState<string>("");
   const [profileImage, setProfileImage] = useState("");
   useEffect(() => {
-    setIsLoading(true);
-
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
@@ -123,7 +93,7 @@ const Survey = ({ user, renderType }: any) => {
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
           ? pathname.split("/")[2]
-          : "feedback-d55cd-aravsharma"
+          : "deep_dive-16843-guru-chaitanya"
       }`,
       {
         method: "GET",
@@ -134,31 +104,18 @@ const Survey = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
 
-        if (renderType === "dynamic") {
-          console.log("DYNAMIC FEEDBACK DATA ", data);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
-          setCoachName(data.data.bot_name);
+        if (data.error) {
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
+        setTitle(data.data.deep_dive_data.bot_title);
+        setBotObjective(data.data.deep_dive_data.bot_objective);
 
-          if (data.data.bot_details.info) {
-            setCoachDescription(data.data.bot_details.info);
-          } else if (data.data.additional_data.short_profile_bio) {
-            setCoachDescription(data.data.additional_data.short_profile_bio);
-          }
-        }
-       
-        setProfileImage(data.data.owner_profile_image);
-        setUserIdFromBotDetails(data.data.user_id);
-        if (data.data.additional_data !== null) {
-          setCurrentProjects(data.data.additional_data?.current_projects);
-        }
         setIsLoading(false);
-       
       })
       .catch((err) => {
         setIsLoading(false);
@@ -167,11 +124,9 @@ const Survey = ({ user, renderType }: any) => {
       });
   }, []);
 
-
-  const FeedbackBotBody = () => {
+  const DeepDiveBody = () => {
     return (
       <>
-
         {renderType === "static" && (
           <Script src="../widget/coachbots-stt-widget.js" />
         )}
@@ -186,7 +141,6 @@ const Survey = ({ user, renderType }: any) => {
         )}
         <div className="h-full min-h-screen bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
           <div className="fixed !z-[800] flex h-6 w-full items-center justify-end p-4 py-8">
-
             <div className="ml-4">
               <NavProfileWoProfile user={user} />
             </div>
@@ -199,65 +153,22 @@ const Survey = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl ">
-                Hey this is{" "}
+              <h1 className="mt-0 text-2xl font-bold text-gray-600 max-sm:text-xl  ">
+                {title}
               </h1>
 
               <div className="mt-4">
-                {renderType === "dynamic" ? (
-                  <>
-                    <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-gray-200 bg-amber-50 p-2 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
-                      <div className="flex w-[20%] items-center justify-center max-sm:w-fit">
-                        <img
-                          className="h-[200px] w-[200px] rounded-md object-cover max-sm:h-[130px]"
-                          src={profileImage}
-                        />
-                      </div>{" "}
-                      <p className="w-[80%] text-left max-sm:w-full  max-sm:text-center">
-                        {" "}
-                        {coachDescription}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <p className="w-full text-left  max-sm:text-center">
+                <>
+                  <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-gray-200 bg-amber-50 p-2 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
+                    <p className="w-full text-center max-sm:w-full max-sm:text-center">
                       {" "}
-                     {/* SURVEY DESCRIPTION */}
+                      {botObjective}
                     </p>
                   </div>
-                )}
-              </div>
-              {currentProjects && (
-                <div className="mt-4 rounded-lg border border-gray-200 bg-teal-50 p-2 max-sm:text-xs">
-                  <p className="my-2">
-                    {/* MORE SURVEY INFO */}
-                  </p>
-                </div>
-              )}
-
-              <div className="my-4 text-[#2f2323] max-sm:text-xs">
-                <p className="rounded-lg border border-gray-200 bg-blue-100 p-2">
-                  {" "}
-                  Thank you for taking the time! Your feedback is invaluable to
-                  me. Please take a moment to share your experience by selecting
-                  either a thumbs up or thumbs down. I have a few additional
-                  questions to gather more details about your experience. Please
-                  share your honest answers to the questions. Your input helps
-                  me improve, and I genuinely appreciate your time and insights.
-                </p>
+                </>
               </div>
             </div>
             <div className="mt-8 flex flex-row flex-wrap gap-2 max-sm:items-center max-sm:justify-center z-10">
-              <Link href={"#kudos"}>
-                <Button
-                  variant={"secondary"}
-                  className="h-8 border border-gray-200 hover:cursor-pointer"
-                >
-                  Kudos Wall
-                </Button>
-              </Link>
-
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -266,16 +177,7 @@ const Survey = ({ user, renderType }: any) => {
                   How it works
                 </Button>
               </Link>
-              <Link href="#critical-feedback">
-                {userId === userIdFromBotDetails && (
-                  <Button
-                    variant={"secondary"}
-                    className="h-8 border border-gray-200 hover:cursor-pointer"
-                  >
-                    Critical Feedbacks {renderType !== "dynamic" && "(sample)"}
-                  </Button>
-                )}
-              </Link>
+
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
@@ -284,7 +186,7 @@ const Survey = ({ user, renderType }: any) => {
                   Benefits
                 </Button>
               </Link>
-            </div>            
+            </div>
             <div className="w-full  pt-20 -mt-20 " id="howItWorks">
               <div className={`flex w-full justify-center`}>
                 <Badge
@@ -388,13 +290,13 @@ const Survey = ({ user, renderType }: any) => {
         <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-2xl">
           <div className="rounded-md bg-gray-300 p-2 text-sm">
             <Loader className="mr-2 inline h-4 w-4 animate-spin" />
-            Please wait while we prepare your coach.
+            Please wait while we fetch data.
           </div>
         </div>
       )}
-      {!isLoading && <FeedbackBotBody />}
+      {!isLoading && <DeepDiveBody />}
     </>
   );
 };
 
-export default Survey;
+export default DeepDive;
