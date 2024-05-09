@@ -784,7 +784,7 @@ const CreateOwn = ({
                       }}
                       className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                     >
-                      Create your Deep dive
+                      Create Your Deep Dive
                     </Button>
                   )}
                   <Button
@@ -1069,7 +1069,7 @@ const CreateOwn = ({
                             id="sc-id"
                             className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                           >
-                            Create your Deep dive
+                            Create Your Deep Dive
                           </h1>
                           <div className="w-full">
                             <div className="w-full flex flex-col items-center justify-center mb-10">

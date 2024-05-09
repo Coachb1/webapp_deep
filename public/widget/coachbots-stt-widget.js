@@ -298,7 +298,7 @@ function getOrSetSessionId() {
     generatedSessionId = retrievedSessionId;
   } else {
     console.log("No sessionId found in SessionStorage. So setting it now.");
-    generatedSessionId = generateSessionId();
+    generatedSessionId = "generateSessionId()";
     localStorage.setItem("coachbots-session-id", generatedSessionId);
   }
   return generatedSessionId;
