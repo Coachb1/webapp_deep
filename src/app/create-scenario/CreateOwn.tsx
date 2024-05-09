@@ -6,7 +6,12 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  getClientUserInfo,
+  getUserAccount,
+} from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { TabsList } from "@radix-ui/react-tabs";
 import {
@@ -29,10 +34,13 @@ import { useSearchParams } from "next/navigation";
 import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
 import { UseHelpMode } from "@/lib/helpmodeContext";
+import { Badge } from "@/components/ui/badge";
+import CreateYourDeepDive from "@/components/CreateYourDeepDive";
 
 const CreateOwn = ({
   user,
   knowledgeBots,
+  deepdiveCreationAccess,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -43,6 +51,7 @@ const CreateOwn = ({
     scenario_case: string;
     creator_name: string;
   }[];
+  deepdiveCreationAccess: Boolean;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -764,6 +773,20 @@ const CreateOwn = ({
                   >
                     Simulation Creator
                   </Button>
+                  {deepdiveCreationAccess && (
+                    <Button
+                      onClick={() => {
+                        document
+                          .getElementById("deepdive-creator")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                      }}
+                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                    >
+                      Create your Deep dive
+                    </Button>
+                  )}
                   <Button
                     onClick={() => {
                       document
@@ -1027,6 +1050,41 @@ const CreateOwn = ({
                 </div>
               </MaxWidthWrapper>
             </div>
+            {deepdiveCreationAccess && (
+              <>
+                <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
+                <div
+                  id="deepdive-creator"
+                  className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                ></div>
+                <div className="h-fit ">
+                  <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                    <div
+                      id="simulation-creator"
+                      className="flex flex-col max-sm:flex-col w-full mx-auto "
+                    >
+                      <div>
+                        <div className="w-full flex flex-col items-center justify-center">
+                          <h1
+                            id="sc-id"
+                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                          >
+                            Create your Deep dive
+                          </h1>
+                          <div className="w-full">
+                            <div className="w-full flex flex-col items-center justify-center mb-10">
+                              <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                                <CreateYourDeepDive user={user} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </MaxWidthWrapper>
+                </div>
+              </>
+            )}
             <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
             <div
               id="knowledge-bots"
@@ -1082,7 +1140,7 @@ const CreateOwn = ({
                                                 {knowledgeBots.length === 0 ? (
                                                   <p className="my-4 text-sm ">
                                                     There are no community
-                                                    created guides yet!  
+                                                    created guides yet!
                                                   </p>
                                                 ) : (
                                                   knowledgeBots.map(

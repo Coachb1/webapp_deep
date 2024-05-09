@@ -57,7 +57,6 @@ const getknowledgeBotss = async (userEmail: string) => {
           creator_name: botJson.creator_name,
         });
       });
-      console.log(knowledgeBotss);
       return knowledgeBotss;
     } else {
       return [];
@@ -67,15 +66,48 @@ const getknowledgeBotss = async (userEmail: string) => {
   }
 };
 
+const getDeepDiveCreationAcess = async (
+  userEmail: string | undefined | null
+) => {
+  if (userEmail) {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", basicAuth);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+    };
+
+    const response = await fetch(
+      `${baseURL}/coaching-conversations/get-deep-dive-create-access/?email=${userEmail}`,
+      requestOptions
+    );
+
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData.has_access;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
+
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   const knowledgeBots = await getknowledgeBotss(user?.email!);
+  const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
 
   return (
     <div>
-      <CreateOwn user={user} knowledgeBots={knowledgeBots} />
+      <CreateOwn
+        user={user}
+        knowledgeBots={knowledgeBots}
+        deepdiveCreationAccess={deepdiveCreationAccess}
+      />
     </div>
   );
 };

@@ -113,6 +113,15 @@ const LayoutComponent = ({
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
+    } else if (pathname.includes("/deep-dive")) {
+      setShowCoachBot(true);
+
+      if (pathname === "/deep-dive") {
+        setBotId("deep_dive-16843-guru-chaitanya");
+      } else {
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
+      }
     }
   }, [pathname]);
 
@@ -218,7 +227,8 @@ const LayoutComponent = ({
                     {!pathname.includes("/feedback") &&
                     !pathname.includes("/coach") &&
                     !pathname.includes("/subject-expert") &&
-                    !pathname.includes("/knowledge-bot") ? (
+                    !pathname.includes("/knowledge-bot") &&
+                    !pathname.includes("/deep-dive") ? (
                       <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
                         <div className="z-[999]">
                           <NetworkNav user={user} />
@@ -250,7 +260,8 @@ const LayoutComponent = ({
                 {!pathname.includes("/feedback") &&
                 !pathname.includes("/coach") &&
                 !pathname.includes("/subject-expert") &&
-                !pathname.includes("/knowledge-bot") ? (
+                !pathname.includes("/knowledge-bot") &&
+                !pathname.includes("/deep-dive") ? (
                   <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
                     <div className="z-[999]">
                       <NetworkNav user={user} />

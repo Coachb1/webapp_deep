@@ -171,7 +171,10 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     setSubmitLoading(true);
     // if (!checkIfEdit) {
     var formdata = new FormData();
-    formdata.append("name", user.given_name!);
+    formdata.append(
+      "name",
+      `${user.given_name} ${user.family_name ? user.family_name : ""}`
+    );
     formdata.append("user_id", userId);
     formdata.append("bot_name", botName);
     formdata.append("participant_id", userId);
