@@ -52,7 +52,7 @@ const CreateYourDeepDive = ({ user }: any) => {
   const handleGenerateSurvey = () => {
     setGenerationError(false);
     setInputError(false);
-    if (wordCount < 20 || wordCount > 500) {
+    if (wordCount < 5 || wordCount > 200) {
       console.log("to small");
       setInputError(true);
     } else {
@@ -141,7 +141,7 @@ const CreateYourDeepDive = ({ user }: any) => {
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
-              Please enter your Deep dive objective
+              Please enter your deep dive objective.
             </p>
             <textarea
               ref={userContextRef}
@@ -165,7 +165,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   !inputError && "invisible"
                 }`}
               >
-                Please describe your Deep dive in 20-500 words.
+                Please describe your deep dive in 5-200 words.
               </p>
               <p className="font-bold text-gray-500 text-xs self-end">
                 {wordCount}/500
@@ -206,7 +206,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                     <>
                       <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                         <div>
-                          <b className="my-1 text-gray-400">Deep dive</b>
+                          <b className="my-1 text-gray-400">Deep Dive</b>
                           <p className="text-sm mt-3 font-semibold">
                             {dd.title}
                           </p>
