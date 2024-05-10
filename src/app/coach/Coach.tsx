@@ -66,6 +66,9 @@ const Coach = ({ user, renderType }: any) => {
   const [profileImage, setProfileImage] = useState("");
   const [enrolled, SetEnrolled] = useState(true);
   const [feedbackBotId, setFeedbackBotId] = useState("");
+  const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
+    ""
+  );
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
@@ -103,6 +106,7 @@ const Coach = ({ user, renderType }: any) => {
           data.data.bot_details.is_login_required,
           data.data.bot_details.is_strict_login_required
         );
+        setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
@@ -259,7 +263,7 @@ const Coach = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
+              <h1 className="text-3xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
                 {renderType === "dynamic"
                   ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
                   : "Welcome to the Aarav Sharma !🚀"}
@@ -352,14 +356,16 @@ const Coach = ({ user, renderType }: any) => {
                   Where to use
                 </Button>
               </Link> */}
-              <Link href={"#howItWorks"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  How AI Frame works
-                </Button>
-              </Link>
+              {botScenarioCase !== "icons_by_ai" && (
+                <Link href={"#howItWorks"}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    How AI Frame works
+                  </Button>
+                </Link>
+              )}
 
               {/* {feedbackBotId && (
                 <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
@@ -398,52 +404,54 @@ const Coach = ({ user, renderType }: any) => {
             {/* <div id="wtu">
               <WhereToUse />
             </div> */}
-            <div className="w-full" id="howItWorks">
-              <div className={`w-full flex justify-center`}>
-                <Badge
-                  variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                >
-                  How AI Frame works
-                </Badge>
-              </div>
-              <div className="w-full">
-                <div className="relative isolate mx-auto">
-                  <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
-                        >
-                          {howItWorks.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === howItWorks.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
-                            >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+            {botScenarioCase !== "icons_by_ai" && (
+              <div className="w-full" id="howItWorks">
+                <div className={`w-full flex justify-center`}>
+                  <Badge
+                    variant={"secondary"}
+                    className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  >
+                    How AI Frame works
+                  </Badge>
+                </div>
+                <div className="w-full">
+                  <div className="relative isolate mx-auto">
+                    <div>
+                      <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full text-gray-500 max-sm:p-4 "
+                          >
+                            {howItWorks.map((test, i) => (
+                              <AccordionItem
+                                key={i}
+                                value={`item-${i + 1}`}
+                                className={
+                                  i === howItWorks.length - 1
+                                    ? "border-none"
+                                    : "border-b"
+                                }
+                              >
+                                <AccordionTrigger className="text-left max-sm:text-xs">
+                                  <div>
+                                    <b>{test.heading}</b>
+                                  </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="max-sm:text-xs text-left">
+                                  <p> {test.description}</p>
+                                </AccordionContent>
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
             <div className="w-full" id="benefits">
               <div className={`w-full flex justify-center`}>
                 <Badge

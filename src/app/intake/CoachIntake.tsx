@@ -36,6 +36,7 @@ import { UserClientInfoDataType } from "@/lib/types";
 import { Radio } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -74,10 +75,14 @@ const CoachIntake = ({ user }: any) => {
   ]);
 
   const [areaDomains, setAreaDomains] = useState<string[]>([
-    "Career Management",
-    "Work Life Balance",
-    "Project Management",
-    "Lateral Transfers",
+    "Leadership Development",
+    "Stress Management",
+    "Hiring & Recruitment",
+    "People Management",
+    "Diversity & Inclusion",
+    "Career Navigation",
+    "Culture Alignment",
+    "Workplace Skills",
   ]);
 
   //intake fields state
@@ -280,7 +285,7 @@ const CoachIntake = ({ user }: any) => {
               data.data.user_info[0].coach_expertise,
               "coach_expertise"
             );
-            setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
+            // setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
           }
         })
         .catch((err) => console.error(err));
@@ -443,28 +448,28 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              if (
-                data.data.length > 0 &&
-                !checkIfEdit &&
-                !checkIfView &&
-                formType !== "knowledge-bot" &&
-                formType !== "feedback"
-              ) {
-                if (
-                  (formType === "coach" && profileTypes.includes("coach")) ||
-                  profileTypes.includes("mentor") ||
-                  profileTypes.includes("coachee") ||
-                  profileTypes.includes("mentee")
-                ) {
-                  setCanCreateProfile(false);
-                  toast.loading(
-                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-                  );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
-                }
-              }
+              // if (
+              //   data.data.length > 0 &&
+              //   !checkIfEdit &&
+              //   !checkIfView &&
+              //   formType !== "knowledge-bot" &&
+              //   formType !== "feedback"
+              // ) {
+              //   if (
+              //     (formType === "coach" && profileTypes.includes("coach")) ||
+              //     profileTypes.includes("mentor") ||
+              //     profileTypes.includes("coachee") ||
+              //     profileTypes.includes("mentee")
+              //   ) {
+              //     setCanCreateProfile(false);
+              //     toast.loading(
+              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+              //     );
+              //     setTimeout(() => {
+              //       router.push("/");
+              //     }, 4000);
+              //   }
+              // }
             })
             .catch((err) => {
               console.error(err);
@@ -978,7 +983,7 @@ const CoachIntake = ({ user }: any) => {
           var formDataJSON = JSON.stringify(formDataObject);
           console.log(formDataObject);
           // if (formType === "coachee") {
-            myHeaders.append("Content-Type", "application/json");
+          myHeaders.append("Content-Type", "application/json");
           // }
           fetch(
             `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=true`,
@@ -1004,253 +1009,253 @@ const CoachIntake = ({ user }: any) => {
               //   router.push("/profile");
               // }, 6000);
               // }
-            
-          if (formType === "coach") {
-            // myHeaders.append("Content-Type", "application/json");
-            // const avatarBotCreationFormData = {
-            //   bot_type: "avatar_bot",
-            //   profile_id: userProfileId,
-            //   bot_name: name,
-            //   email: user.email,
-            //   bot_details: { info: about, coach_name: name },
-            //   attributes: {
-            //     heading: `welcome to ${name}'s avatar bot`,
-            //   },
-            //   participant_id: userId,
-            //   bot_base_url: `${
-            //     subdomain === "playground"
-            //       ? "https://playground.coachbots.com"
-            //       : "https://platform.coachbots.com"
-            //   }`,
-            //   fitment_answer: `${participantLevel},${
-            //     coachMentInSameDep === "yes" ? true : false
-            //   },${outcomeSupported}`,
-            //   fitment_data: {
-            //     options: {
-            //       "1": ["Someone Senior", "Any level"],
-            //       "2": ["Yes", "No"],
-            //       "3": [
-            //         "Career advancement",
-            //         "Skill development",
-            //         "Introspection & reflection",
-            //         "Networking & leadership",
-            //       ],
-            //     },
-            //     mentee_que: {
-            //       "1": "What level of coach & mentor do you want?",
-            //       "2": "I want a coach & mentor someone from the same department.",
-            //       "3": "What kind of outcome do you want from these sessions the most?",
-            //     },
-            //     mentor_que: {
-            //       "1": "What level of participant do you want to coach & mentor?",
-            //       "2": "I want to coach & mentor someone in the same department.",
-            //       "3": "What kind of outcome can you support in these sessions the most?",
-            //     },
-            //   },
-            //   additional_data: {
-            //     profile_type: "coach",
-            //     area_domain: areaDomain,
-            //     experience: experience,
-            //     mentoring_preferences: mentoringPreferences,
-            //     mentoring_frameworks: mentoringPreferencess.join(", "),
-            //     dominant_point_of_view: povProgramParticipants,
-            //     problem_solving_approach: problemSolvingApproach,
-            //     admired_leaders: leaderNames,
-            //     profile_description: about,
-            //     department: department,
-            //     youtube_links: linksReflectingWVpersonal,
-            //     article_links: linksReflectyouWished,
-            //     voice_sample: voiceSample,
-            //     discuss_how_you_helped_others_in_coachMentoring:
-            //       discussInCARformat,
-            //     journey_and_background: journeyAndBackground,
-            //     provide_answers_using_emojis: `${
-            //       provideAnswersUsingEmojis === "yes" ? true : false
-            //     }`,
-            //     allow_coachee_to_create_session: `${
-            //       allowSessionNotes === "yes" ? true : false
-            //     }`,
-            //     fitment_answers: {
-            //       coachmentSelect,
-            //       participantLevel,
-            //       coachMentInSameDep,
-            //       outcomeSupported,
-            //     },
-            //     coach_qna: CoachMentorQnA.coach_qna,
-            //     mentor_qna: CoachMentorQnA.mentor_qna,
-            //   },
-            //   media_data: {
-            //     youtube_links: linksReflectingWVpersonal,
-            //     article_links: linksReflectyouWished,
-            //   },
-            // };
 
-            // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-            //   method: checkIfEdit ? "PATCH" : "POST",
-            //   headers: myHeaders,
-            //   body: checkIfEdit
-            //     ? JSON.stringify({
-            //         bot_id: botIUidFromParams,
-            //         profile_id: userProfileId,
-            //         updated_data: avatarBotCreationFormData,
-            //         is_overwrite: deleteExistingFiles ? "true" : "false",
-            //       })
-            //     : JSON.stringify(avatarBotCreationFormData),
-            // })
-            //   .then((res) => res.json())
-            //   .then((data) => {
-            //     console.log(data);
-            //     // setCreateLoading(false);
-            //     if (!data.error && !data.detail) {
-                  console.log(referenceDocs.length, "length");
-                  if (
-                    referenceDocs.length > 0 ||
-                    linksReflectingWVpersonal !== "" ||
-                    linksReflectyouWished !== ""
-                  ) {
-                    const filesPatchFormData = new FormData();
-                    if (referenceDocs.length > 0) {
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              "pdf_data",
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              `doc_data`,
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        }
-                      });
-                    }
+              if (formType === "coach") {
+                // myHeaders.append("Content-Type", "application/json");
+                // const avatarBotCreationFormData = {
+                //   bot_type: "avatar_bot",
+                //   profile_id: userProfileId,
+                //   bot_name: name,
+                //   email: user.email,
+                //   bot_details: { info: about, coach_name: name },
+                //   attributes: {
+                //     heading: `welcome to ${name}'s avatar bot`,
+                //   },
+                //   participant_id: userId,
+                //   bot_base_url: `${
+                //     subdomain === "playground"
+                //       ? "https://playground.coachbots.com"
+                //       : "https://platform.coachbots.com"
+                //   }`,
+                //   fitment_answer: `${participantLevel},${
+                //     coachMentInSameDep === "yes" ? true : false
+                //   },${outcomeSupported}`,
+                //   fitment_data: {
+                //     options: {
+                //       "1": ["Someone Senior", "Any level"],
+                //       "2": ["Yes", "No"],
+                //       "3": [
+                //         "Career advancement",
+                //         "Skill development",
+                //         "Introspection & reflection",
+                //         "Networking & leadership",
+                //       ],
+                //     },
+                //     mentee_que: {
+                //       "1": "What level of coach & mentor do you want?",
+                //       "2": "I want a coach & mentor someone from the same department.",
+                //       "3": "What kind of outcome do you want from these sessions the most?",
+                //     },
+                //     mentor_que: {
+                //       "1": "What level of participant do you want to coach & mentor?",
+                //       "2": "I want to coach & mentor someone in the same department.",
+                //       "3": "What kind of outcome can you support in these sessions the most?",
+                //     },
+                //   },
+                //   additional_data: {
+                //     profile_type: "coach",
+                //     area_domain: areaDomain,
+                //     experience: experience,
+                //     mentoring_preferences: mentoringPreferences,
+                //     mentoring_frameworks: mentoringPreferencess.join(", "),
+                //     dominant_point_of_view: povProgramParticipants,
+                //     problem_solving_approach: problemSolvingApproach,
+                //     admired_leaders: leaderNames,
+                //     profile_description: about,
+                //     department: department,
+                //     youtube_links: linksReflectingWVpersonal,
+                //     article_links: linksReflectyouWished,
+                //     voice_sample: voiceSample,
+                //     discuss_how_you_helped_others_in_coachMentoring:
+                //       discussInCARformat,
+                //     journey_and_background: journeyAndBackground,
+                //     provide_answers_using_emojis: `${
+                //       provideAnswersUsingEmojis === "yes" ? true : false
+                //     }`,
+                //     allow_coachee_to_create_session: `${
+                //       allowSessionNotes === "yes" ? true : false
+                //     }`,
+                //     fitment_answers: {
+                //       coachmentSelect,
+                //       participantLevel,
+                //       coachMentInSameDep,
+                //       outcomeSupported,
+                //     },
+                //     coach_qna: CoachMentorQnA.coach_qna,
+                //     mentor_qna: CoachMentorQnA.mentor_qna,
+                //   },
+                //   media_data: {
+                //     youtube_links: linksReflectingWVpersonal,
+                //     article_links: linksReflectyouWished,
+                //   },
+                // };
 
-                    filesPatchFormData.append("bot_id", botIUidFromParams!);
-                    const media_data = {
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                    };
-                    filesPatchFormData.append(
-                      "media_data",
-                      JSON.stringify(media_data)
-                    );
-                    filesPatchFormData.append(
-                      "is_overwrite",
-                      deleteExistingFiles ? "true" : "false"
-                    );
-                    filesPatchFormData.append("profile_id", `${userProfileId}`);
-
-                    fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                      method: "PATCH",
-                      headers: {
-                        Authorization: basicAuth,
-                      },
-                      body: filesPatchFormData,
-                    })
-                      .then((res) => res.json())
-                      .then((data) => {
-                        console.log(data);
-                        setCreateLoading(false);
-                        if (!data.error && !data.detail) {
-                          toast.success(
-                            "Successfully updated your profile. Redirecting you to your Profile page.",
-                            {
-                              duration: 6000,
-                            }
+                // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                //   method: checkIfEdit ? "PATCH" : "POST",
+                //   headers: myHeaders,
+                //   body: checkIfEdit
+                //     ? JSON.stringify({
+                //         bot_id: botIUidFromParams,
+                //         profile_id: userProfileId,
+                //         updated_data: avatarBotCreationFormData,
+                //         is_overwrite: deleteExistingFiles ? "true" : "false",
+                //       })
+                //     : JSON.stringify(avatarBotCreationFormData),
+                // })
+                //   .then((res) => res.json())
+                //   .then((data) => {
+                //     console.log(data);
+                //     // setCreateLoading(false);
+                //     if (!data.error && !data.detail) {
+                console.log(referenceDocs.length, "length");
+                if (
+                  referenceDocs.length > 0 ||
+                  linksReflectingWVpersonal !== "" ||
+                  linksReflectyouWished !== ""
+                ) {
+                  const filesPatchFormData = new FormData();
+                  if (referenceDocs.length > 0) {
+                    referenceDocs.forEach(({ file, text }) => {
+                      if (file.name.includes(".pdf")) {
+                        if (text) {
+                          filesPatchFormData.append(
+                            "pdf_data",
+                            `file_name:${file.name} text_file:${text}`
                           );
-                          resetAllStates();
-                          setTimeout(() => {
-                            router.push("/profile");
-                          }, 4000);
+                          console.log(text);
                         } else {
-                          setCreateLoading(false);
-                          toast.error(
-                            "Error creating your coach profile. Please try again.",
-                            {
-                              duration: 6000,
-                            }
+                          filesPatchFormData.append(
+                            `attached_pdfs`,
+                            file,
+                            file.name.trim()
                           );
                         }
-                      })
-                      .catch((err) => {
+                      } else if (file.name.includes(".docx")) {
+                        if (text) {
+                          filesPatchFormData.append(
+                            `doc_data`,
+                            `file_name:${file.name} text_file:${text}`
+                          );
+                          console.log(text);
+                        } else {
+                          filesPatchFormData.append(
+                            `attached_docs`,
+                            file,
+                            file.name.trim()
+                          );
+                        }
+                      }
+                    });
+                  }
+
+                  filesPatchFormData.append("bot_id", botIUidFromParams!);
+                  const media_data = {
+                    youtube_links: linksReflectingWVpersonal,
+                    article_links: linksReflectyouWished,
+                  };
+                  filesPatchFormData.append(
+                    "media_data",
+                    JSON.stringify(media_data)
+                  );
+                  filesPatchFormData.append(
+                    "is_overwrite",
+                    deleteExistingFiles ? "true" : "false"
+                  );
+                  filesPatchFormData.append("profile_id", `${userProfileId}`);
+
+                  fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                    method: "PATCH",
+                    headers: {
+                      Authorization: basicAuth,
+                    },
+                    body: filesPatchFormData,
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(data);
+                      setCreateLoading(false);
+                      if (!data.error && !data.detail) {
+                        toast.success(
+                          "Successfully updated your profile. Redirecting you to your Profile page.",
+                          {
+                            duration: 6000,
+                          }
+                        );
+                        resetAllStates();
+                        setTimeout(() => {
+                          router.push("/profile");
+                        }, 4000);
+                      } else {
+                        setCreateLoading(false);
                         toast.error(
                           "Error creating your coach profile. Please try again.",
                           {
                             duration: 6000,
                           }
                         );
-                        console.error(err);
-                        setCreateLoading(false);
-                      });
-                  } else {
-                    setCreateLoading(false);
-                    toast.success(
-                      "Successfully updated your profile. Redirecting you to your Profile page.",
-                      {
-                        duration: 6000,
                       }
-                    );
-                    resetAllStates();
-                    setTimeout(() => {
-                      router.push("/profile");
-                    }, 4000);
+                    })
+                    .catch((err) => {
+                      toast.error(
+                        "Error creating your coach profile. Please try again.",
+                        {
+                          duration: 6000,
+                        }
+                      );
+                      console.error(err);
+                      setCreateLoading(false);
+                    });
+                } else {
+                  setCreateLoading(false);
+                  toast.success(
+                    "Successfully updated your profile. Redirecting you to your Profile page.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  resetAllStates();
+                  setTimeout(() => {
+                    router.push("/profile");
+                  }, 4000);
+                }
+                //   } else {
+                //     setCreateLoading(false);
+                //     if (data.error === "Bot already exists") {
+                //       toast.error("Bot already exists");
+                //     } else {
+                //       setCreateLoading(false);
+                //       toast.error(
+                //         "Error creating your coach profile. Please try again.",
+                //         {
+                //           duration: 6000,
+                //         }
+                //       );
+                //     }
+                //   }
+                // })
+                // .catch((err) => {
+                //   console.error(err);
+                //   setCreateLoading(false);
+                // });
+              } else {
+                resetAllStates();
+                setCreateLoading(false);
+                toast.success(
+                  "Successfully updated your profile. Redirecting you to your Profile page.",
+                  {
+                    duration: 6000,
                   }
-              //   } else {
-              //     setCreateLoading(false);
-              //     if (data.error === "Bot already exists") {
-              //       toast.error("Bot already exists");
-              //     } else {
-              //       setCreateLoading(false);
-              //       toast.error(
-              //         "Error creating your coach profile. Please try again.",
-              //         {
-              //           duration: 6000,
-              //         }
-              //       );
-              //     }
-              //   }
-              // })
-              // .catch((err) => {
-              //   console.error(err);
-              //   setCreateLoading(false);
-              // });
-          } else {
-            resetAllStates();
-            setCreateLoading(false);
-            toast.success(
-              "Successfully updated your profile. Redirecting you to your Profile page.",
-              {
-                duration: 6000,
+                );
+                setTimeout(() => {
+                  router.push("/profile");
+                }, 4000);
               }
-            );
-            setTimeout(() => {
-              router.push("/profile");
-            }, 4000);
-          }
-          })
-          .catch((err) => {
-            console.error(err);
-            toast.error("Error updating your profile. Please try again.");
-            setCreateLoading(false);
-          });
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error("Error updating your profile. Please try again.");
+              setCreateLoading(false);
+            });
         }
       }
     } catch (error) {
@@ -1817,7 +1822,7 @@ const CoachIntake = ({ user }: any) => {
         {formType === "knowledge-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">
-            <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+            <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Coach & Mentor Intake
               </h1>
@@ -2044,7 +2049,16 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Select the area/domain that you are most passionate about
-                      coaching and mentoring.
+                      coaching and mentoring.{" "}
+                      <TooltipWrapper
+                        body={
+                          <span className="p-1 w-fit rounded-full hover:bg-gray-200 hover:cursor-pointer">
+                            <Info className="h-4 w-4 inline" color="#075985" />
+                          </span>
+                        }
+                        tooltipName="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
+                        className="max-sm:w-[40%] max-sm:flex-end w-[80%] max-md:w-[70%] max-lg:w-[80%] bg-blue-100 mx-4"
+                      />
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup

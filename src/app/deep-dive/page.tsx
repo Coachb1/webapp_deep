@@ -2,7 +2,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { constructMetadata } from "@/lib/utils";
 import DeepDive from "./DeepDive";
 export const metadata = constructMetadata({
-  title: "Survey - Coachbots",
+  title: "Deepdive - Coachbots",
 });
 const Page = async () => {
   const { getUser } = getKindeServerSession();
