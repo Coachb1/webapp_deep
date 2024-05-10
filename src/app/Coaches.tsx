@@ -1446,13 +1446,13 @@ const Coaches = ({
                           "@coachbots.com"}
                       </span>
                     )}
-                    {(coach.profile_type === "icons_by_ai" ||
+                    {/* {(coach.profile_type === "icons_by_ai" ||
                       coach.profile_type === "coachee" ||
                       coach.profile_type === "mentee") && (
                       <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs">
                         Not Applicable
                       </span>
-                    )}
+                    )} */}
                   </div>
                   <div
                     id={coach.id_for_target_selection}
