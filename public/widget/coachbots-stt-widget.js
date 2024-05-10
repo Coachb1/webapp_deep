@@ -964,6 +964,8 @@ const getBotDetails2 = async (botId) => {
 
     if (botType === "user_bot") {
       botWelcomeMessage = "Welcome to my custom bot.";
+    } else if (botType === "deep_dive") {
+      botWelcomeMessage = "Welcome to Deep Dive bot";
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
         "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
@@ -1020,7 +1022,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(button);
     };
 
-    if (botDetails.data.faqs && botType !== "user_bot") {
+    if (botDetails.data.faqs && !["user_bot",'deep_dive'].includes(botType)) {
       let faqs = Object.keys(botDetails.data.faqs);
       if (faqs.length > 0) {
         // faqs.forEach((title) => {
@@ -1059,7 +1061,7 @@ const getBotDetails2 = async (botId) => {
     //   buttonsWrapper.appendChild(intakeButton);
     // }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && botType !== "user_bot") {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive'].includes(botType)) {
       // faqButtonsGenerator("fitness_analysis", "Match Score");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1109,7 +1111,7 @@ const getBotDetails2 = async (botId) => {
     
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
-    if (botType === "avatar_bot") {
+    if (["avatar_bot" ,'deep_dive'].includes(botType)) {
       endSessionButton = document.createElement("button");
       endSessionButton.setAttribute(
         "style",
@@ -1128,7 +1130,7 @@ const getBotDetails2 = async (botId) => {
     console.log("buttons : ", buttons);
 
 
-    if (botType !== "user_bot") {
+    if (!["user_bot",'deep_dive'].includes(botType)) {
        //canned button one
       const cannedButtonOne = document.createElement("button");
       cannedButtonOne.setAttribute(
@@ -1218,7 +1220,7 @@ const getBotDetails2 = async (botId) => {
     //   const faqs = botDetails.faq;
     console.log("id", userId2, participantId2);
     console.log("id from web app", window.userIdFromWebApp);
-    if (!isBotConversationPopulated && botType !== "feedback_bot") {
+    if (!isBotConversationPopulated && !["feedback_bot",'deep_dive'].includes(botType)) {
       populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
@@ -1944,20 +1946,22 @@ async function handleFaqButtonClick(question) {
       }
 
       const cannedMessageOne = document.getElementById("canned-btn-1")
-      cannedMessageOne.disabled = false
-      // cannedMessageOne.style.cursor = "pointer"
-      cannedMessageOne.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
-      );
+      if (cannedMessageOne){
+        cannedMessageOne.disabled = false
+        // cannedMessageOne.style.cursor = "pointer"
+        cannedMessageOne.setAttribute(
+          "onmouseover",
+          "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
+        );
 
-      const cannedMessageTwo = document.getElementById("canned-btn-2")
-      cannedMessageTwo.disabled = false
-      // cannedMessageTwo.style.cursor = "pointer"
-      cannedMessageTwo.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
-      );
+        const cannedMessageTwo = document.getElementById("canned-btn-2")
+        cannedMessageTwo.disabled = false
+        // cannedMessageTwo.style.cursor = "pointer"
+        cannedMessageTwo.setAttribute(
+          "onmouseover",
+          "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'pointer'"
+        );
+      }
       // ****** Check connection logic : start
 
       // const connectionresp = await fetch(
@@ -1991,17 +1995,19 @@ async function handleFaqButtonClick(question) {
 
       // *** checking profile type: ==============================================================
 
-      await getUserProfile(userId2);
-      if (UserProfileInfo) {
-        console.log("======profileType: ", UserProfileInfo.profile_type);
-        if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
-          appendMessage2(
-            addStickerToMessage(
-              "Begin Session",
-              `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
-              '#22c55e'
-            )
-          );
+      if (!['deep_dive'].includes(botType)){
+        await getUserProfile(userId2);
+        if (UserProfileInfo) {
+          console.log("======profileType: ", UserProfileInfo.profile_type);
+          if (["coach", "mentor"].includes(UserProfileInfo.profile_type)) {
+            appendMessage2(
+              addStickerToMessage(
+                "Begin Session",
+                `<b><p>Interactions between coaches & mentors are not considered valid and are not optimized. For transparency, the interactions are not blocked.</p></b>`,
+                '#22c55e'
+              )
+            );
+          }
         }
       }
 
@@ -2063,6 +2069,35 @@ async function handleFaqButtonClick(question) {
       //   botType,
       //   botType === "avatar_bot"
       // );
+      if (botType === 'deep_dive'){
+        gShadowRoot2.getElementById("text-input").focus();
+        setTimeout(() => {
+          gShadowRoot2.getElementById("text-input").textContent = "START";
+          gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+          
+          setTimeout(() => {
+
+            var chatElement = document.getElementById("chat-element2");
+          const shdwroot = chatElement.shadowRoot;
+          const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+          console.log('deepdive-msgcont',messageContainers)
+          messageContainers.forEach((container) => {
+            console.log('deepdive-cont',container)
+            const messageText = container.querySelector(".user-message-text p");
+            if (
+              messageText &&
+              messageText.textContent.trim().toLowerCase() === "start"
+            ) {
+              container.remove();
+            }
+          });
+          }, 100);
+        }, 100);
+        console.log(gShadowRoot2.getElementById("text-input"),'text input')
+        
+      }
+
       if (
         ["avatar_bot", "helper_bot", "coachbots"].includes(botType) &&
         !['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)
@@ -2126,9 +2161,11 @@ async function handleFaqButtonClick(question) {
       isSessionActiveStt,
       botType
       )
+
+      // because we are creating session on every in avatar and deepdive
       if (
           previousBotConversationId != "" &&
-          botType !== 'avatar_bot'
+          !['avatar_bot','deep_dive'].includes(botType)  
           ) {
           conversation_id2 = previousBotConversationId.split(":")[0];
           sessionId2 = previousBotConversationId.split(":")[1];
@@ -2406,21 +2443,23 @@ function handleEndConversation(isInActive) {
   }
 
   const cannedMessageOne = document.getElementById("canned-btn-1")
-  cannedMessageOne.disabled = true
-      // cannedMessageOne.style.cursor = "pointer"
-      cannedMessageOne.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
-      );
 
-      const cannedMessageTwo = document.getElementById("canned-btn-2")
-      cannedMessageTwo.disabled = false
-      // cannedMessageTwo.style.cursor = "pointer"
-      cannedMessageTwo.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
-      );
+  if (cannedMessageOne){
+    cannedMessageOne.disabled = true
+        // cannedMessageOne.style.cursor = "pointer"
+        cannedMessageOne.setAttribute(
+          "onmouseover",
+          "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+        );
 
+        const cannedMessageTwo = document.getElementById("canned-btn-2")
+        cannedMessageTwo.disabled = false
+        // cannedMessageTwo.style.cursor = "pointer"
+        cannedMessageTwo.setAttribute(
+          "onmouseover",
+          "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+        );
+    }
 
 
   if (endSessionButton && !endSessionButton.disabled) {
@@ -5144,10 +5183,12 @@ loadExternalModule().then(() => {
     userInputMessage,
     signals,
     conversationId,
-    latestMessage,
-    prompt,
-    previousHistory
+    prompt
   ) => {
+
+    console.log('prompt',prompt)
+    console.log(conversationId, 'con')
+    console.log(userInputMessage,'msg')
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -5171,6 +5212,21 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+    let previousHistory = []
+    if (sessionQnAdata.length > 0){
+      sessionQnAdata.forEach(element => {
+        previousHistory.push(
+          {
+            "user": element.user,
+            "model": element.coach
+          }
+        )
+      });
+      
+    }
+
+    console.log('Previous History: ', previousHistory)
 
     fetch("https://gemini-stream.vercel.app/api/chat-gemini", {
       method: "POST",
@@ -5199,16 +5255,16 @@ loadExternalModule().then(() => {
             }
           });
           
-          if (messageText.innerText === "") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-          }
+          // if (messageText.innerText === "") {
+          //   messageText.innerText +=
+          //     "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+          // } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+          //   messageText.innerText +=
+          //     " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+          // }
           // add user question and bot answer to the session
           sessionQnAdata.push({
-            user: latestMessage,
+            user: userInputMessage,
             coach: messageText.innerText,
           });
           console.log(
@@ -6098,7 +6154,17 @@ loadExternalModule().then(() => {
 
               conversation_id2 = responseData["uid"];
               //streaming responses
-              if (botType === 'user_bot'){
+              if (botType === 'deep_dive'){
+                console.log('chatGemini#####################')
+
+                ChatGeminiAiResponse(
+                  latestMessage,
+                  signals,
+                  conversation_id2,
+                  responseData.coach_message_metadata.prompt
+                )
+
+              } else if (botType === 'user_bot'){
                 console.log('anthropic#####################')
                 anthropicAiResponse(
                   responseData.coach_message_metadata.prompt,
@@ -6136,7 +6202,7 @@ loadExternalModule().then(() => {
                 }
               }
               setTimeout(() => {
-                if (botType === "avatar_bot") {
+                if (["avatar_bot","deep_dive"].includes(botType)) {
                   console.log("endSessionButton:", endSessionButton.disabled);
                   if (endSessionButton && endSessionButton.disabled) {
                     endSessionButton.setAttribute(
