@@ -79,10 +79,10 @@ export const UnAuth = ({ user }: any) => {
         </h1>
         <div className="my-2 max-w-prose">
           {" "}
-          <p className="text-lg font-bold text-gray-600">
+          {/* <p className="text-lg font-bold text-gray-600">
             Not Authorised!
-          </p>{" "}
-          <p>
+          </p>{" "} */}
+          {/* <p>
             Your subscription has expired or you are no longer authorized to
             access the platform. Please contact your administrator or email us
             at{" "}
@@ -94,7 +94,8 @@ export const UnAuth = ({ user }: any) => {
               info@coachbots.com
             </Link>
             , if you believe you have reached this message in error.
-          </p>
+          </p> */}
+          <p>Thank you for your interest in the trial. A team member wll reach out to you for providing a custom onboarding experience.</p>
         </div>
       </MaxWidthWrapper>{" "}
     </div>
