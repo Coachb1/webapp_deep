@@ -5172,7 +5172,7 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
-    fetch("https://gemini-stream.vercel.app/api/chat-gemini", {
+    fetch("https://next-js-gemini-frontend.vercel.app/api/chat-gemini", {
       method: "POST",
       body: JSON.stringify({
         prompt: prompt,
@@ -5324,7 +5324,7 @@ loadExternalModule().then(() => {
       }
     }
 
-    fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
+    fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
