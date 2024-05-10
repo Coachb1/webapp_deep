@@ -207,12 +207,12 @@ const CreateYourDeepDive = ({ user }: any) => {
                       <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                         <div>
                           <b className="my-1 text-gray-400">Deep Dive</b>
-                          <p className="text-sm mt-3 font-semibold">
+                          <p className="text-base mt-3 font-semibold">
                             {dd.title}
                           </p>
-                          <p className="text-[12px] mb-2">{dd.objective}</p>
+                          <p className="text-sm my-2">{dd.objective}</p>
                         </div>
-                        <div className="flex justify-end mt-3 gap-2">
+                        <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
                           <CopyToClipboard
                             textToCopy={dd.link}
                             copyType="Link"
