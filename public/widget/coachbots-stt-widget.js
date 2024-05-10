@@ -5228,7 +5228,7 @@ loadExternalModule().then(() => {
 
     console.log('Previous History: ', previousHistory)
 
-    fetch("https://gemini-stream.vercel.app/api/chat-gemini", {
+    fetch("https://next-js-gemini-frontend.vercel.app/api/chat-gemini", {
       method: "POST",
       body: JSON.stringify({
         prompt: prompt,
@@ -5380,7 +5380,7 @@ loadExternalModule().then(() => {
       }
     }
 
-    fetch("https://gemini-stream.vercel.app/api/gemini-stream", {
+    fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
