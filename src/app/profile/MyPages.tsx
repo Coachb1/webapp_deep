@@ -70,28 +70,37 @@ const MyPages = ({ user }: any) => {
           })
             .then((res) => res.json())
             .then((data) => {
-              console.log("bot data : ", data);
-              data.data.forEach((entry: any) => {
-                const botType = entry.signature_bot.bot_type;
+              console.log(
+                "bot data : ",
+                data.data.filter(
+                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+                )
+              );
+              data.data
+                .filter(
+                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+                )
+                .forEach((entry: any) => {
+                  const botType = entry.signature_bot.bot_type;
 
-                if (!botTypeMap[botType]) {
-                  botTypeMap[botType] = [];
-                }
-                const existingEntry = botTypeMap[botType].find(
-                  (bot) => bot.bot_id === entry.signature_bot.bot_id
-                );
-                if (!existingEntry) {
-                  botTypeMap[botType].push({
-                    bot_id: entry.signature_bot.bot_id,
-                    uid: entry.signature_bot.uid,
-                    bot_name:
-                      entry.signature_bot.bot_id.includes("feedback") ||
-                      entry.signature_bot.bot_id.includes("knowledge")
-                        ? entry.bot_attributes.bot_name
-                        : entry.bot_attributes.coach_name,
-                  });
-                }
-              });
+                  if (!botTypeMap[botType]) {
+                    botTypeMap[botType] = [];
+                  }
+                  const existingEntry = botTypeMap[botType].find(
+                    (bot) => bot.bot_id === entry.signature_bot.bot_id
+                  );
+                  if (!existingEntry) {
+                    botTypeMap[botType].push({
+                      bot_id: entry.signature_bot.bot_id,
+                      uid: entry.signature_bot.uid,
+                      bot_name:
+                        entry.signature_bot.bot_id.includes("feedback") ||
+                        entry.signature_bot.bot_id.includes("knowledge")
+                          ? entry.bot_attributes.bot_name
+                          : entry.bot_attributes.coach_name,
+                    });
+                  }
+                });
               const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
                 (botType) => ({
                   bot_type: botType,
@@ -238,7 +247,8 @@ const MyPages = ({ user }: any) => {
       )}
       {!loading &&
         botTypes.length === 0 &&
-        (userProfile?.profile_type !== "coachee" && userProfile?.profile_type !== "mentee") && (
+        userProfile?.profile_type !== "coachee" &&
+        userProfile?.profile_type !== "mentee" && (
           <>
             <div className="text-xs w-full h-20 flex items-center justify-center">
               <div>You don't have any active Pages yet!</div>{" "}

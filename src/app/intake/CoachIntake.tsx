@@ -285,7 +285,7 @@ const CoachIntake = ({ user }: any) => {
               data.data.user_info[0].coach_expertise,
               "coach_expertise"
             );
-            // setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
+            setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
           }
         })
         .catch((err) => console.error(err));

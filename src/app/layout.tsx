@@ -32,9 +32,10 @@ const getClientUserInfo = async (userEmail: string | null | undefined) => {
       }
     );
 
-    const data = await response.json();
-
     if (response.ok) {
+      const data = await response.json();
+      console.log("isDemo user - Layout: ", data.data.user_info[0].is_demo_user)
+      console.log("isRestricted user - Layout: ", data.data.user_info[0].is_restricted)
       return {
         isDemoUser: data.data.user_info[0].is_demo_user,
         isRestricted: data.data.user_info[0].is_restricted,
