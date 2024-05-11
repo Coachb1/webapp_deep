@@ -26,11 +26,12 @@ const getClientUserInfo = async (userEmail: string | null | undefined) => {
           Authorization: basicAuth,
         },
       }
-    );
-
-    const data = await response.json();
+    );    
 
     if (response.ok) {
+      const data = await response.json();
+      console.log("isDemo user : ", data.data.user_info[0].is_demo_user)
+      console.log("isRestricted user : ", data.data.user_info[0].is_restricted)
       return {
         isDemoUser: data.data.user_info[0].is_demo_user,
         isRestricted: data.data.user_info[0].is_restricted,
@@ -153,7 +154,6 @@ const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
     const response = await fetch(`${baseURL}/accounts/create-or-assign-client-id/`, requestOptions)
 
     const data = await response.json();
-
 
     if (response.ok){
       console.log(`Success : data:`, data)
