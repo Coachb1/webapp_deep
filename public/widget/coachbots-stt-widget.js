@@ -2,8 +2,8 @@ const key2 = "";
 const secret2 = "";
 
 const subdomainStt = window.location.hostname.split(".")[0];
-const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrlStt = "http://127.0.0.1:8001/api/v1"
+// const devUrlStt = "https://coach-api-ovh.coachbots.com/api/v1";
+const devUrlStt = "http://127.0.0.1:8001/api/v1"
 // const devUrlStt = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
@@ -95,6 +95,7 @@ let isFeedbackConvEnd = false;
 let isFeedbackConvInProcess = false;
 let uniqueSesssionContainerId;
 let FeedbackUserEmail;
+let feedbackUserName;
 let botId;
 let botType;
 let botScenarioCase;
@@ -290,6 +291,16 @@ function getAnonymousEmail() {
   return user_email;
 }
 
+function isEmail(emailAdress){
+  let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+if (emailAdress.match(regex)) 
+  return true; 
+
+ else 
+  return false; 
+}
+
 function getOrSetSessionId() {
   let generatedSessionId = "";
   const retrievedSessionId = localStorage.getItem("coachbots-session-id");
@@ -402,10 +413,12 @@ const getUserOrAnonymousDetails = async (choice) => {
       }
       // appendMessage2(emailForm)
       isEmailFormstt = true;
-      formFieldsstt = ["email"];
+      formFieldsstt = ["name","email"];
+      console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     } else {
       FeedbackUserEmail = user.email;
+      console.log("jiks FeedbackUserEmail", FeedbackUserEmail);
       const thumbsupdiv = await feedbackBotInitialFlow("save_email");
       appendMessage2(thumbsupdiv);
     }
@@ -446,6 +459,7 @@ const handleFeedbackSubmit = async () => {
     bot_id: botId,
     type_of_email: "feedback_conv",
     user_email: FeedbackUserEmail,
+    user_name: feedbackUserName,
     is_positive: IsPositiveFeedback ? "True" : "False",
   });
 
@@ -505,6 +519,7 @@ const handleEndFeedback = async () => {
     bot_id: botId,
     type_of_email: "feedback_conv",
     user_email: FeedbackUserEmail,
+    user_name: feedbackUserName,
   });
 
   // sending feedback conversation to bot owner
@@ -629,6 +644,7 @@ const feedbackBotQnAFlow = (flow) => {
       bot_id: botId,
       type_of_email: "like",
       user_email: FeedbackUserEmail,
+      user_name: feedbackUserName,
     });
     const response = fetch(
       `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
@@ -669,6 +685,7 @@ const feedbackBotQnAFlow = (flow) => {
       bot_id: botId,
       type_of_email: "dislike",
       user_email: FeedbackUserEmail,
+      user_name: feedbackUserName,
     });
     const response = fetch(
       `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
@@ -710,7 +727,19 @@ const feedbackBotInitialFlow = async (flow) => {
     if (!window.user && FeedbackUserEmail != "Anonymous User") {
       // const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
       // FeedbackUserEmail = shadowRoot2.getElementById("feedback-email-input2").value;
+      
+      console.log("emailNameformJsonstt", emailNameformJsonstt);
       FeedbackUserEmail = emailNameformJsonstt["email"];
+
+      // if(! isEmail(FeedbackUserEmail)){
+      //   appendMessage2("<p style='font-size: 14px;color: #991b1b;'> please enter a valid email to continue </p>");
+        // feedbackBotInitialFlow("save_email");
+        // return;
+        // signals.onResponse({
+        //   html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+        // });
+        // return;
+      // }
 
       // const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
       // const msg = gshadowRoot.getElementById("feedback-email-form");
@@ -2351,9 +2380,11 @@ function sendBotTranscript2() {
   const shadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
   let userEmail = "";
+  let userName = ""
   if (!window.user) {
     // userEmail = shadowRoot2.getElementById("input-email2").value;
     userEmail = emailNameformJsonstt["email"];
+    userName = emailNameformJsonstt["name"];
   } else {
     userEmail = window.user.email;
   }
@@ -2362,6 +2393,7 @@ function sendBotTranscript2() {
   queryParams2 = new URLSearchParams({
     participant_id: participantId2,
     email: userEmail,
+    name: userName
   });
 
   // fetch(
@@ -2381,6 +2413,7 @@ function sendBotTranscript2() {
 
       const queryParamsEmail2 = new URLSearchParams({
         submitted_email: userEmail,
+        submitted_name: userName,
         test_attempt_session_id: sessionId2,
       });
 
@@ -2563,7 +2596,7 @@ function handleEndConversation(isInActive) {
   if (!window.user) {
     // appendMessage2(emailForm);
     isEmailFormstt = true;
-    formFieldsstt = ["email"];
+    formFieldsstt = ["name", "email"];
     appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
@@ -5652,9 +5685,31 @@ loadExternalModule().then(() => {
             } else {
               isEmailFormstt = false;
               if (botId != undefined && botType !== "feedback_bot") {
+                const userEmail = emailNameformJsonstt["email"];
+                if(! isEmail(userEmail)){
+                  formFieldsstt.push("email")
+                  isEmailFormstt = true;
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'> please enter a valid email </p>",
+                  });
+                  return;
+                }
+
                 sendBotTranscript2();
                 signals.onResponse({ html: faqHtmlData });
               } else if (botId != undefined && botType === "feedback_bot") {
+                console.log("before thumbs up ==>", FeedbackUserEmail,emailNameformJsonstt)
+                FeedbackUserEmail = emailNameformJsonstt["email"];
+                feedbackUserName = emailNameformJsonstt["name"];
+
+                if(! isEmail(FeedbackUserEmail)){
+                  formFieldsstt.push("email")
+                  isEmailFormstt = true;
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'> please enter a valid email </p>",
+                  });
+                  return;
+                }
                 const thumbsupdiv = await feedbackBotInitialFlow("save_email");
                 signals.onResponse({
                   html: thumbsupdiv,
@@ -5711,6 +5766,7 @@ loadExternalModule().then(() => {
             }
             return;
           } else if (botType === "feedback_bot" && !isFeedbackConvInProcess) {
+            console.log("NA-fb")
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
             });
