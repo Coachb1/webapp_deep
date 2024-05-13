@@ -716,6 +716,14 @@ const CreateOwn = ({
             ) {
               updateHelpModeState(false);
             }
+
+            if (
+              callbackData.step.target === ".chat-icon" &&
+              callbackData.status === "running" &&
+              callbackData.action === "prev"
+            ) {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
           }}
           //@ts-ignore
           steps={HelpModeSteps}

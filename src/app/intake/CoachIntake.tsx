@@ -3569,7 +3569,7 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                     </>
                   )}
-                  {checkIfEdit && (
+                  {/* {checkIfEdit && (
                     <div className="flex flex-row mt-2">
                       <Info className="h-4 w-4 mr-1 inline text-red-400" />
                       <p className=" w-fit text-xs font-semibold text-red-400">
@@ -3577,7 +3577,7 @@ const CoachIntake = ({ user }: any) => {
                         unless approved.
                       </p>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </form>
             </div>

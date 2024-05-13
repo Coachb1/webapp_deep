@@ -141,7 +141,7 @@ const CreateYourDeepDive = ({ user }: any) => {
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
-              Please enter your deep dive objective.
+              Please enter your deep dive objective
             </p>
             <textarea
               ref={userContextRef}
@@ -227,7 +227,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                               target="_blank"
                             >
                               <ExternalLink className="mr-2 w-4 h-4" /> Visit
-                              Deep dive.
+                              Deep Dive
                             </Link>
                           </Button>
                         </div>

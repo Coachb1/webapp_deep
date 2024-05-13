@@ -43,21 +43,26 @@ const getknowledgeBotss = async (userEmail: string) => {
         creator_name: string;
       }[] = [];
 
-      getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
-        const botJson = item.signature_bot;
-        const description = JSON.parse(botJson.faqs)[
-          "What is the primary purpose of the bot?"
-        ];
-        knowledgeBotss.push({
-          bot_id: botJson.bot_id,
-          bot_name: item.bot_attributes.bot_name,
-          bot_type: botJson.bot_type,
-          description: description,
-          scenario_case: botJson.bot_scenario_case,
-          creator_name: botJson.creator_name,
+      try {
+        getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
+          const botJson = item.signature_bot;
+          const description = botJson.faqs[
+            // @ts-ignore
+            "What is the primary purpose of the bot?"
+          ];
+          knowledgeBotss.push({
+            bot_id: botJson.bot_id,
+            bot_name: item.bot_attributes.bot_name,
+            bot_type: botJson.bot_type,
+            description: description,
+            scenario_case: botJson.bot_scenario_case,
+            creator_name: botJson.creator_name,
+          });
         });
-      });
-      return knowledgeBotss;
+        return knowledgeBotss;
+      } catch (error) {
+        return [];
+      }
     } else {
       return [];
     }
