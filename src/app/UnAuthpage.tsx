@@ -166,6 +166,7 @@ export const LoginWall = () => {
     if (pathname.includes("/feedback") || pathname.includes("/feedback/")) {
       coachScribe.removeAttribute("style");
       if (pathname === "/feedback") {
+        console.log("DYN")
         setBotId("feedback-d55cd-aravsharma");
       } else {
         const bot_id = pathname.split("/")[2];
@@ -290,7 +291,7 @@ export const LoginWall = () => {
 
       {(pathname.includes("/feedback") || pathname.includes("/feedback/")) && (
         <>
-          <Feedback renderType="static" />
+          <Feedback renderType="dynamic" />
           <Widgets from="feedbackDynamic" />
           <Script src="../widget/coachbots-stt-widget.js" />
           <div data-bot-id={botId} className="deep-chat-poc2"></div>
