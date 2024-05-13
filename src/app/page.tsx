@@ -17,41 +17,73 @@ export const metadata = constructMetadata({
 
 const getClientUserInfo = async (userEmail: string | null | undefined) => {
   if (userEmail !== null && userEmail !== undefined) {
-    await CreateOrAssignClientId(userEmail);
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", basicAuth);
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      email: userEmail,
+    });
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
     const response = await fetch(
-      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );    
+      `${baseURL}/accounts/create-or-assign-client-id/`,
+      requestOptions
+    );
+
+    const data = await response.json();
 
     if (response.ok) {
-      const data = await response.json();
-      console.log("isDemo user : ", data.data.user_info[0].is_demo_user)
-      console.log("isRestricted user : ", data.data.user_info[0].is_restricted)
-      return {
-        isDemoUser: data.data.user_info[0].is_demo_user,
-        isRestricted: data.data.user_info[0].is_restricted,
-        clientExpertise :  data.data.user_info[0].coach_expertise,
-        clientDepartments : data.data.user_info[0].departments
-      };
+      console.log(`Success : data:`, data);
+      const response = await fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("isDemo user : ", data.data.user_info[0].is_demo_user);
+        console.log(
+          "isRestricted user : ",
+          data.data.user_info[0].is_restricted
+        );
+        return {
+          isDemoUser: data.data.user_info[0].is_demo_user,
+          isRestricted: data.data.user_info[0].is_restricted,
+          clientExpertise: data.data.user_info[0].coach_expertise,
+          clientDepartments: data.data.user_info[0].departments,
+        };
+      } else {
+        return {
+          isDemoUser: false,
+          isRestricted: true,
+          clientExpertise: null,
+          clientDepartments: null,
+        };
+      }
     } else {
+      console.error(`Failed to run CreateOrAssignClientId`);
       return {
         isDemoUser: false,
         isRestricted: true,
-        clientExpertise : null,
-        clientDepartments : null
+        clientExpertise: null,
+        clientDepartments: null,
       };
     }
   } else {
     return {
       isDemoUser: false,
       isRestricted: true,
-      clientExpertise : null,
-      clientDepartments : null
+      clientExpertise: null,
+      clientDepartments: null,
     };
   }
 };
@@ -143,37 +175,11 @@ const getUserConnections = async (user: KindeUser | null) => {
   return connections;
 };
 
-const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
-  if (userEmail !== null && userEmail !== undefined) {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", basicAuth);
-    myHeaders.append("Content-Type", "application/json");
-    const raw = JSON.stringify({
-      "email": userEmail,
-    });
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    
-    const response = await fetch(`${baseURL}/accounts/create-or-assign-client-id/`, requestOptions)
-
-    const data = await response.json();
-
-    if (response.ok){
-      console.log(`Success : data:`, data)
-    } else {
-      console.error(`Failed to run CreateOrAssignClientId`)
-    }
-  }
-    
-};
-
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const { isDemoUser, isRestricted , clientDepartments, clientExpertise} = await getClientUserInfo(user?.email);
+  const { isDemoUser, isRestricted, clientDepartments, clientExpertise } =
+    await getClientUserInfo(user?.email);
 
   let directoryProfilesData;
   if (!isRestricted || isDemoUser) {

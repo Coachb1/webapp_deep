@@ -79,10 +79,10 @@ export const UnAuth = ({ user }: any) => {
         </h1>
         <div className="my-2 max-w-prose">
           {" "}
-          {/* <p className="text-lg font-bold text-gray-600">
+          <p className="text-lg font-bold text-gray-600">
             Not Authorised!
-          </p>{" "} */}
-          {/* <p>
+          </p>{" "}
+          <p>
             Your subscription has expired or you are no longer authorized to
             access the platform. Please contact your administrator or email us
             at{" "}
@@ -94,8 +94,63 @@ export const UnAuth = ({ user }: any) => {
               info@coachbots.com
             </Link>
             , if you believe you have reached this message in error.
-          </p> */}
-          <p>Thank you for your interest in the trial. A team member wll reach out to you for providing a custom onboarding experience.</p>
+          </p>
+        </div>
+      </MaxWidthWrapper>{" "}
+    </div>
+  );
+};
+
+export const DemoPage = ({ user }: any) => {
+  return (
+    <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
+      <div className="fixed w-full top-0 flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+        <div className="flex flex-row gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="overflow-visible !z-[999]">
+              <div className=" p-[4px]">
+                <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999]" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <div className="flex items-center justify-center gap-2 p-2">
+                <div className="flex flex-col space-x-0.5 leading-none">
+                  {user.given_name && (
+                    <p className="font-medium text-sm text-black">
+                      {user.given_name}
+                    </p>
+                  )}
+                  {user.email && (
+                    <p className="w-[200px] truncate text-xs text-slate-700">
+                      {user.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <LogoutLink>
+                  {" "}
+                  <LogOut className="h-4 w-4 mr-2" /> Logout
+                </LogoutLink>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+        <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
+          <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+            COACH
+          </span>
+          BOTS
+        </h1>
+        <div className="my-2 max-w-prose">
+          {" "}
+          <p>
+            Thank you for your interest in the trial. A team member wll reach
+            out to you for providing a custom onboarding experience.
+          </p>
         </div>
       </MaxWidthWrapper>{" "}
     </div>
