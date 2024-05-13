@@ -2120,7 +2120,6 @@ loadExternalModule().then(() => {
     chatIcon.style.width = "3rem";
     chatIcon.style.height = "3rem";
     chatIcon.style.position = "fixed";
-    chatbotHeading.style.fontSize = "12px";
     closeFromTopp.style.width = "30px";
     closeFromTopp.style.left = "0.3rem";
     closeFromTopp.style.top = "0.2rem";
@@ -2824,6 +2823,7 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
+        console.log("bodybody", body)
         if (body instanceof FormData) {
           const bodyLength = [...body.entries()].length;
           console.log(bodyLength);
@@ -2928,6 +2928,9 @@ loadExternalModule().then(() => {
             });
             return;
           }
+
+          body = undefined
+          audioFile = undefined
 
           const formdata = new FormData();
           formdata.append("owner_type", "user");
@@ -5135,7 +5138,7 @@ const closeFromTop = () => {
   }
 };
 
-//handling for enter key send while recording
+// handling for enter key send while recording
 document.addEventListener("keydown", (event) => {
   if (event.keyCode === 13 || event.which === 13) {
     if(isRecordingGlobal) {

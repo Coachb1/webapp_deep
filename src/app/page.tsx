@@ -35,17 +35,23 @@ const getClientUserInfo = async (userEmail: string | null | undefined) => {
       return {
         isDemoUser: data.data.user_info[0].is_demo_user,
         isRestricted: data.data.user_info[0].is_restricted,
+        clientExpertise :  data.data.user_info[0].coach_expertise,
+        clientDepartments : data.data.user_info[0].departments
       };
     } else {
       return {
         isDemoUser: false,
         isRestricted: true,
+        clientExpertise : null,
+        clientDepartments : null
       };
     }
   } else {
     return {
       isDemoUser: false,
       isRestricted: true,
+      clientExpertise : null,
+      clientDepartments : null
     };
   }
 };
@@ -167,7 +173,7 @@ const CreateOrAssignClientId = async (userEmail: string | null | undefined) => {
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
+  const { isDemoUser, isRestricted , clientDepartments, clientExpertise} = await getClientUserInfo(user?.email);
 
   let directoryProfilesData;
   if (!isRestricted || isDemoUser) {
@@ -188,6 +194,8 @@ const Page = async () => {
         coachesDataa={directoryProfilesData}
         UserJoiningPreviledges={UserJoiningPreviledges}
         userConnections={userConnections}
+        clientDepartments={clientDepartments}
+        clientExpertise={clientExpertise}
       />
     </div>
   );

@@ -95,7 +95,10 @@ interface FilterCategoriesType {
   filterOptions: string[];
 }
 
-function addIdForTargetSelection(profiles: CoachesDataType[], HelpModeSteps : any[]) {
+function addIdForTargetSelection(
+  profiles: CoachesDataType[],
+  HelpModeSteps: any[]
+) {
   // Initialize flags to track the first occurrence of each profile type
   let firstIconsByAiFound = false;
   let firstCoacheeFound = false;
@@ -120,29 +123,31 @@ function addIdForTargetSelection(profiles: CoachesDataType[], HelpModeSteps : an
       profile.id_for_target_selection = "first_coach_profile";
       firstCoachFound = true; // Update flag to indicate the first coach profile has been processed
 
-      HelpModeSteps.push({
-        target: "#first_coach_profile",
-        content:
-          "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
-        placement: "auto",
-      },
-      {
-        target: "#email",
-        content:
-          "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
-      },
-      {
-        target: "#reviews",
-        disableScrolling: true,
-        content:
-          "Coaches and Mentors can get review ratings from anyone in the network. ",
-      },
-      {
-        target: "#feedback",
-        disableScrolling: true,
-        content:
-          "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
-      })
+      HelpModeSteps.push(
+        {
+          target: "#first_coach_profile",
+          content:
+            "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
+          placement: "auto",
+        },
+        {
+          target: "#email",
+          content:
+            "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+        },
+        {
+          target: "#reviews",
+          disableScrolling: true,
+          content:
+            "Coaches and Mentors can get review ratings from anyone in the network. ",
+        },
+        {
+          target: "#feedback",
+          disableScrolling: true,
+          content:
+            "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
+        }
+      );
     }
   });
 
@@ -171,11 +176,15 @@ const Coaches = ({
   coachesDataa,
   UserJoiningPreviledges,
   userConnections,
+  clientDepartments,
+  clientExpertise
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
   UserJoiningPreviledges: any;
   userConnections: any;
+  clientDepartments : any;
+  clientExpertise : any
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -218,11 +227,11 @@ const Coaches = ({
   const [userClientInfoData, setUserClientInfoData] =
     useState<UserClientInfoDataType>();
 
-  const [clientDepartments, setClientDepartments] = useState<string[] | null>(
-    null
-  );
+  // const [clientDepartments, setClientDepartments] = useState<string[] | null>(
+  //   null
+  // );
 
-  const [clientExpertise, setClientExpertise] = useState<string[] | null>(null);
+  // const [clientExpertise, setClientExpertise] = useState<string[] | null>(null);
 
   //pagination logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -242,6 +251,8 @@ const Coaches = ({
   const totalPages = Math.ceil(coachesData.length / itemsPerPage);
   const maxPaginationLinks = 5;
 
+  // let clientDepartments : string = "";
+  // let clientExpertise :  string = "";
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
       fetch(
@@ -257,8 +268,11 @@ const Coaches = ({
         .then((data) => {
           setUserClientInfoData(data.data);
           console.log(data, "client user info");
-          setClientDepartments(data.data.user_info[0].departments);
-          setClientExpertise(data.data.user_info[0].coach_expertise);
+          // clientDepartments = data.data.user_info[0].departments
+          // clientExpertise = data.data.user_info[0].coach_expertise
+          // setClientDepartments(data.data.user_info[0].departments);
+          // setClientExpertise(data.data.user_info[0].coach_expertise);
+          console.log(data.data.user_info[0].coach_expertise, "data.data.user_info[0].coach_expertise")
 
           setRestrictedPages(data.data.user_info[0].restricted_pages);
           setRestrictedFeatures(data.data.user_info[0].restricted_features);
@@ -319,15 +333,23 @@ const Coaches = ({
       )
     );
 
+    console.log("HELLO DTA : ", clientDepartments, clientExpertise)
+
     const totalExpertise =
-      clientExpertise !== null
-        ? clientExpertise
+      clientExpertise !== null &&  clientExpertise !== ""
+        ? clientExpertise.split(",")
         : [
-            "Career Management",
-            "Work Life Balance",
-            "Project Management",
-            "Lateral Transfers",
+            "Leadership Development",
+            "Stress Management",
+            "Hiring & Recruitment",
+            "People Management",
+            "Diversity & Inclusion",
+            "Career Navigation",
+            "Culture Alignment",
+            "Workplace Skills",
           ];
+
+    console.log(totalExpertise)
 
     setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
 
@@ -357,8 +379,8 @@ const Coaches = ({
       {
         filterName: "Department",
         filterOptions:
-          clientDepartments !== null
-            ? clientDepartments
+          clientDepartments !== null &&  clientDepartments !== "" 
+            ? clientDepartments.split(",")
             : [
                 "Sales & Marketing",
                 "Production",
@@ -377,13 +399,17 @@ const Coaches = ({
       {
         filterName: "Expertise",
         filterOptions:
-          clientExpertise !== null
-            ? clientExpertise
+        clientExpertise !== null &&  clientExpertise !== ""
+            ? clientExpertise.split(",")
             : [
-                "Career Management",
-                "Work Life Balance",
-                "Project Management",
-                "Lateral Transfers",
+                "Leadership Development",
+                "Stress Management",
+                "Hiring & Recruitment",
+                "People Management",
+                "Diversity & Inclusion",
+                "Career Navigation",
+                "Culture Alignment",
+                "Workplace Skills",
               ],
       },
     ]);
@@ -718,10 +744,16 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps
+        )
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps
+        )
       );
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
@@ -748,10 +780,16 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps
+        )
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps
+        )
       );
     }
 
@@ -1134,7 +1172,6 @@ const Coaches = ({
       disableScrolling: true,
       content: `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
     },
-    
   ];
 
   const { helpModeState, updateHelpModeState } = UseHelpMode();
@@ -1149,12 +1186,16 @@ const Coaches = ({
           scrollOffset={100}
           disableScrollParentFix
           callback={(callbackData) => {
-            console.log(callbackData);
+            // console.log(callbackData);
             if (
               callbackData.action === "close" ||
               callbackData.action === "reset"
             ) {
               updateHelpModeState(false);
+            }
+
+            if(callbackData.step.target === "#search-filter" && callbackData.action === "next"){
+              window.scrollTo({top : 0, behavior : "smooth"})
             }
           }}
           //@ts-ignore
@@ -1420,7 +1461,7 @@ const Coaches = ({
                 <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
                   <div className="relative top-[26px] flex w-full flex-row justify-between">
                     <span
-                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs ${
+                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] ${
                         coach.profile_type !== "icons_by_ai"
                           ? "visible"
                           : "invisible"
@@ -1439,7 +1480,7 @@ const Coaches = ({
                             ? "email"
                             : undefined
                         }
-                        className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs"
+                        className="z-[1] ml-4 mr-4  rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] max-sm:mr-2 "
                       >
                         {coach.name.replace(/\s/g, "").toLowerCase() +
                           coach.id +
@@ -1456,7 +1497,7 @@ const Coaches = ({
                   </div>
                   <div
                     id={coach.id_for_target_selection}
-                    className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
+                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 ${
                       coach.profile_type === "icons_by_ai" &&
                       "border-gray-800 shadow-lg"
                     }`}
