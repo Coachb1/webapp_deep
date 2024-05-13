@@ -985,8 +985,14 @@ const CoachIntake = ({ user }: any) => {
           // if (formType === "coachee") {
           myHeaders.append("Content-Type", "application/json");
           // }
+
+          let reapproval = "true";
+          if (formType === "coachee"){
+            reapproval = "false";
+          }
+          console.log(reapproval);
           fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=true`,
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
             {
               method: "PATCH",
               headers: myHeaders,
