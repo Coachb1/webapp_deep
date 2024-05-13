@@ -567,7 +567,7 @@ const CoachIntake = ({ user }: any) => {
           formdata.append("coaching_level", participantLevel);
           formdata.append(
             "coach_same_department",
-            `${coachMentInSameDep === "yes" ? true : false}`
+            `${coachMentInSameDep === "Yes" ? true : false}`
           );
           formdata.append(
             "allow_coachee_to_create_session",

@@ -90,7 +90,7 @@ const VersionOne = ({ user }: any) => {
   ];
   return (
     <>
-      <HelpMode steps={HelpModeSteps} />
+      <HelpMode steps={HelpModeSteps} forPage="demo" />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
         <h1 className="text-5xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
