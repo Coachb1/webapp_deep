@@ -4659,21 +4659,38 @@ loadExternalModule().then(() => {
   //                 </div>`)
 
   //responsive styles for phones
+  // if (window.innerWidth < 600) {
+  //   chatContainer2.style.width = "80vw";
+  //   chatContainer2.style.right = "10vw";
+  //   chatContainer2.style.height = "78vh";
+  //   chatContainer2.style.bottom = "12vh";
+  //   chatElementRef2.style.height = "65vh";
+  //   chatElementRef2.style.width = "80vw";
+  //   chatIconContainer2.style.position = "fixed";
+  //   chatIconContainer2.style.width = "3rem";
+  //   chatIconContainer2.style.height = "3rem";
+  //   chatContainer2.style.position = "fixed";
+  //   closeFromTopp2.style.width = "30px";
+  //   closeFromTopp2.style.left = "0.3rem";
+  //   closeFromTopp2.style.top = "0.2rem";
+  // }
+
   if (window.innerWidth < 600) {
-    chatContainer2.style.width = "80vw";
-    chatContainer2.style.right = "10vw";
-    chatContainer2.style.height = "78vh";
-    chatContainer2.style.bottom = "12vh";
-    chatElementRef2.style.height = "65vh";
-    chatElementRef2.style.width = "80vw";
+    chatContainer2.style.borderRadius = "0"
+    chatContainer2.style.width = "100vw";
+    chatContainer2.style.right = "0";
+    chatContainer2.style.top = "0";
+    chatContainer2.style.height = "100vh";
+    chatContainer2.style.bottom = "0";
+    chatElementRef2.style.height = "85vh";
+    chatElementRef2.style.width = "100vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
     chatIconContainer2.style.height = "3rem";
     chatContainer2.style.position = "fixed";
-    // chatbotHeading2.style.fontSize = "12px";
     closeFromTopp2.style.width = "30px";
     closeFromTopp2.style.left = "0.3rem";
-    closeFromTopp2.style.top = "0.2rem";
+    closeFromTopp2.style.top = "1rem";
   }
 
   let credentialsForm2;

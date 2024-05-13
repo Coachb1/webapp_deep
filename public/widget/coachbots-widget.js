@@ -2109,21 +2109,39 @@ loadExternalModule().then(() => {
   const closeFromTopp = document.getElementById("close-top");
 
   //responsive styles for phones
+  // if (window.innerWidth < 600) {
+  //   chatContainer.style.width = "80vw";
+  //   chatContainer.style.left = "10vw";
+  //   chatContainer.style.height = "70vh";
+  //   chatContainer.style.bottom = "12vh";
+  //   chatElementRef.style.height = "60vh";
+  //   chatElementRef.style.width = "80vw";
+  //   chatContainer.style.position = "fixed";
+  //   chatIcon.style.width = "3rem";
+  //   chatIcon.style.height = "3rem";
+  //   chatIcon.style.position = "fixed";
+  //   closeFromTopp.style.width = "30px";
+  //   closeFromTopp.style.left = "0.3rem";
+  //   closeFromTopp.style.top = "0.2rem";
+  // }
+
   if (window.innerWidth < 600) {
-    chatContainer.style.width = "80vw";
-    chatContainer.style.left = "10vw";
-    chatContainer.style.height = "70vh";
-    chatContainer.style.bottom = "12vh";
-    chatElementRef.style.height = "60vh";
-    chatElementRef.style.width = "80vw";
+    chatContainer.style.borderRadius = "0";
+    chatContainer.style.width = "100vw";
+    chatContainer.style.left = "0";
+    chatContainer.style.height = "100vh";
+    chatContainer.style.bottom = "0";
+    chatElementRef.style.height = "85vh";
+    chatElementRef.style.width = "100vw";
     chatContainer.style.position = "fixed";
     chatIcon.style.width = "3rem";
     chatIcon.style.height = "3rem";
     chatIcon.style.position = "fixed";
     closeFromTopp.style.width = "30px";
-    closeFromTopp.style.left = "0.3rem";
-    closeFromTopp.style.top = "0.2rem";
+    closeFromTopp.style.right = "0.3rem";
+    closeFromTopp.style.top = "1rem";
   }
+
 
   let credentialsForm;
   if (window.innerWidth > 868) {
@@ -4928,9 +4946,16 @@ loadExternalModule().then(() => {
 });
 
 let sendBtn;
+
 const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+
+  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
+  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
+  console.log(coachScribeChatIcon, coachScribeContainer)
+  coachScribeChatIcon.style.display = "none"
+  coachScribeContainer.style.display = "none"
 
   let backdrop2 = document.getElementById("backdrop2")
   backdrop2.style.display = "block"
@@ -5016,12 +5041,12 @@ const openChatContainer = () => {
   }
 
   // Using the ipinfo.io API
-  fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-    .then((response) => response.json())
-    .then((data) => {
-      ipAddress = data.ip;
-    })
-    .catch((error) => console.error("Error fetching IP address:", error));
+  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     ipAddress = data.ip;
+  //   })
+  //   .catch((error) => console.error("Error fetching IP address:", error));
 
   //   const user_data = getUserData();
 
@@ -5125,6 +5150,12 @@ const closeFromTop = () => {
   backdrop2.style.display = "none"
   chatContainer.style.scale = 0;
   chatContainer.style["transform-origin"] = "0% 100%";
+
+  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
+  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
+  console.log(coachScribeChatIcon, coachScribeContainer)
+  coachScribeChatIcon.style.display = "block"
+  coachScribeContainer.style.display = "block"
 
   if (
     chatIcon.src ===
