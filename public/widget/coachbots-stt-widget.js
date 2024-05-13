@@ -315,6 +315,24 @@ function getOrSetSessionId() {
   return generatedSessionId;
 }
 
+
+const getUserOrAnonymousDetailsDeepDive = async (choice) => {
+  console.log(choice);
+  disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
+  if (choice === "No") {
+    if (!window.user) {
+      isAnonymous = false;
+      isEmailFormstt = true;
+      formFieldsstt = ["name","email"];
+      console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    }
+  }
+  else if (choice === "Yes") {
+    appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>")
+  }
+}
+
 const getUserOrAnonymousDetails = async (choice) => {
   console.log(choice);
   disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
@@ -2595,9 +2613,22 @@ function handleEndConversation(isInActive) {
   }
   if (!window.user) {
     // appendMessage2(emailForm);
-    isEmailFormstt = true;
-    formFieldsstt = ["name", "email"];
-    appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    if(botType === "deep_dive"){
+      const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+        <b>Want to continue as Anonymous?</b>
+        </br> <div>
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
+            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
+            </div>
+        </div>`;
+
+      appendMessage2(optionData);
+
+    } else {
+      isEmailFormstt = true;
+      formFieldsstt = ["name", "email"];
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    }
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
       sendBotTranscript2();
@@ -5704,6 +5735,7 @@ loadExternalModule().then(() => {
               if (botId != undefined && botType !== "feedback_bot") {
                 const userEmail = emailNameformJsonstt["email"];
                 if(! isEmail(userEmail)){
+                  console.log("email not valid 1")
                   formFieldsstt.push("email")
                   isEmailFormstt = true;
                   signals.onResponse({
@@ -5726,6 +5758,8 @@ loadExternalModule().then(() => {
                 feedbackUserName = emailNameformJsonstt["name"];
 
                 if(! isEmail(FeedbackUserEmail)){
+                  console.log("email not valid 2")
+
                   formFieldsstt.push("email")
                   isEmailFormstt = true;
                   signals.onResponse({
