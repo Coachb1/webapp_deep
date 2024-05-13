@@ -2452,7 +2452,7 @@ function handleEndConversation(isInActive) {
   console.log("end conversation clicked");
   if(isInActive === true){
     appendMessage2("<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>");
-  } else {
+  } else if (botType != 'deep_dive') {
     appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
   }
 
@@ -5696,7 +5696,13 @@ loadExternalModule().then(() => {
                 }
 
                 sendBotTranscript2();
+                if (botType === 'deep_dive') {
+                  signals.onResponse({
+                    html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
+                  });
+                } else {
                 signals.onResponse({ html: faqHtmlData });
+                }
               } else if (botId != undefined && botType === "feedback_bot") {
                 console.log("before thumbs up ==>", FeedbackUserEmail,emailNameformJsonstt)
                 FeedbackUserEmail = emailNameformJsonstt["email"];
