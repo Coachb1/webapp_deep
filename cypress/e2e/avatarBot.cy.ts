@@ -1,7 +1,6 @@
 import { baseURL } from "../fixtures/utils";
-const staticTestCodes = ["Q877O08", "Q9SSEH3"];
-
-const botId = "avatar_bot-2f3b2-parul-dengre";
+// const staticTestCodes = ["Q877O08", "Q9SSEH3"];
+const botId = "avatar_bot-817f6-vidya--prakash";
 const userId = "10822f2f-2e05-438e-b1b4-0107b95745f2";
 
 describe("Init", () => {
@@ -77,11 +76,12 @@ describe("Init", () => {
                             }
                           );
                         } else {
+                          cy.wait(10000)
                           cy.get("#chat-element2")
                             .shadow()
                             .find("#text-input")
                             .type(response?.body["response_text"]);
-
+                          cy.wait(5000)
                           cy.get("#chat-element2")
                             .shadow()
                             .find(".input-button-svg.inside-right")
