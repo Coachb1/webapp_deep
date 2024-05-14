@@ -4946,7 +4946,7 @@ loadExternalModule().then(() => {
 });
 
 let sendBtn;
-
+let InputField; 
 const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
@@ -4954,8 +4954,11 @@ const openChatContainer = () => {
   const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
   const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
   console.log(coachScribeChatIcon, coachScribeContainer)
-  coachScribeChatIcon.style.display = "none"
-  coachScribeContainer.style.display = "none"
+
+  if(window.innerWidth < 600){
+    coachScribeChatIcon.style.display = "none"
+    coachScribeContainer.style.display = "none"
+  }
 
   let backdrop2 = document.getElementById("backdrop2")
   backdrop2.style.display = "block"
@@ -4964,6 +4967,7 @@ const openChatContainer = () => {
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   sendBtn = chatE.shadowRoot.querySelector(".input-button");
+  InputField = chatE.shadowRoot.getElementById("text-input")
   let isRecording = false;
   let audioChunks = [];
   let stream;
@@ -5154,8 +5158,11 @@ const closeFromTop = () => {
   const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
   const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
   console.log(coachScribeChatIcon, coachScribeContainer)
-  coachScribeChatIcon.style.display = "block"
-  coachScribeContainer.style.display = "block"
+
+  if (window.innerWidth < 600) {
+    coachScribeChatIcon.style.display = "block";
+    coachScribeContainer.style.display = "block";
+  }
 
   if (
     chatIcon.src ===
