@@ -1495,7 +1495,7 @@ const CoachIntake = ({ user }: any) => {
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`, {
               headers: {
                 Authorization: basicAuth,
               },

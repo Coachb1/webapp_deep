@@ -27,18 +27,20 @@ interface Bot {
   bot_id: string;
   bot_name: string;
   uid: string;
+  is_approved: boolean;
 }
 
 interface BotTypeEntry {
   bot_type: string;
   bots: Bot[];
 }
-const botTypeMap: Record<string, Bot[]> = {};
+// const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
 
   useEffect(() => {
     if (user) {
@@ -63,11 +65,14 @@ const MyPages = ({ user }: any) => {
             )[0]
           );
 
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
+          fetch(
+            `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
             .then((res) => res.json())
             .then((data) => {
               console.log(
@@ -93,6 +98,7 @@ const MyPages = ({ user }: any) => {
                     botTypeMap[botType].push({
                       bot_id: entry.signature_bot.bot_id,
                       uid: entry.signature_bot.uid,
+                      is_approved: entry.signature_bot.is_approved,
                       bot_name:
                         entry.signature_bot.bot_id.includes("feedback") ||
                         entry.signature_bot.bot_id.includes("knowledge")
@@ -368,35 +374,8 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    {/* FOR EDIT MODE */}
-                    <Link
-                      href={
-                        intakeBotTypeLinks(
-                          botType.bot_type,
-                          bot.bot_id,
-                          userProfile?.uid,
-                          userProfile?.profile_type === "coach" &&
-                            userProfile?.is_mentor === true
-                            ? "coach-mentor"
-                            : userProfile?.profile_type
-                        )! + `&uid=${bot.uid}`
-                      }
-                    >
-                      <Button
-                        variant={"secondary"}
-                        className="h-6 text-xs w-fit bg-blue-200 "
-                      >
-                        <span className="max-sm:hidden">Edit</span>{" "}
-                        <TooltipWrapper
-                          className="hidden max-sm:block text-xs"
-                          tooltipName="Edit"
-                          body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                        />
-                      </Button>
-                    </Link>
-
                     {/* FOR VIEW MODE */}
-                    {/* <Link
+                    <Link
                       href={
                         intakeBotTypeLinksForView(
                           botType.bot_type,
@@ -420,7 +399,36 @@ const MyPages = ({ user }: any) => {
                           body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                         />
                       </Button>
-                    </Link> */}
+                    </Link>
+                    {/* FOR EDIT MODE */}
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit min-w-fit bg-blue-200 "
+                      disabled={!bot.is_approved}
+                    >
+                      <Link
+                        href={
+                          intakeBotTypeLinks(
+                            botType.bot_type,
+                            bot.bot_id,
+                            userProfile?.uid,
+                            userProfile?.profile_type === "coach" &&
+                              userProfile?.is_mentor === true
+                              ? "coach-mentor"
+                              : userProfile?.profile_type
+                          )! + `&uid=${bot.uid}`
+                        }
+                      >
+                        <span className="max-sm:hidden">Edit</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="Edit"
+                          body={
+                            <Edit className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                          }
+                        />
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </div>
