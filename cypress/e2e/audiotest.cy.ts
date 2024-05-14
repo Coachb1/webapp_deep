@@ -58,7 +58,7 @@ function handleTestCode(testCode: any) {
     .click();
 
   cy.wait("@testInfo", { timeout: 30000 }).then((interception) => {
-    const { title, description, questions } = interception.response.body.results[0];
+    const { title, description, questions } = interception.response?.body.results[0];
     proceedWithTest(title, description, questions);
   });
 }
