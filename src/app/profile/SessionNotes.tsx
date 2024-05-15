@@ -742,28 +742,37 @@ const SessionNotes = ({ user }: any) => {
                     )} */}
                   </div>
                   <div className="flex flex-col">
-                    <p className="mr-2 my-1 mt-2">Comment</p>
-                    <textarea
-                      onChange={(event) => {
-                        if(event.target.value.split(" ").length >= 40){
-                          setContextLengthError(false);
-                        }
-                      }}
-                      onBlur={(e) => {
-                        if (e.target.value.split(" ").length < 40) {
-                          setContextLengthError(true);
-                        }
-                      }}
-                      ref={commentRef}
-                      rows={4}
-                      className="w-full p-2 bg-[#FFFFFF] rounded-md outline-none border focus-visible:border-gray-400"
-                    />
-                    {contextLengthError && (
-                      <p className="text-red-500 text-xs m-2">
-                        Comment should be atleast 40 words!
-                      </p>
-                    )}
-                  </div>
+                  <p className="mr-2 my-1 mt-2">Comment</p>
+                  <textarea
+                    onChange={(event) => {
+                      const inputValue = event.target.value;
+                      const words = inputValue.trim().split(/\s+/);
+                      if (words.length <= 80) {
+                        setContextLengthError(false);
+                        commentRef.current.value = inputValue;
+                      } else {
+                        commentRef.current.value = words.slice(0, 80).join(" ");
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const words = e.target.value.trim().split(/\s+/);
+                      if (words.length < 30 || words.length > 80) {
+                        setContextLengthError(true);
+                      } else {
+                        setContextLengthError(false);
+                      }
+                    }}
+                    ref={commentRef}
+                    rows={4}
+                    className="w-full p-2 bg-[#FFFFFF] rounded-md outline-none border focus-visible:border-gray-400"
+                  />
+                  {contextLengthError && (
+                    <p className="text-red-500 text-xs m-2">
+                      Comment should be between 30 and 80 words!
+                    </p>
+                  )}
+                </div>
+
                   <div className="w-full  flex flex-row justify-end gap-2">
                     <Button
                       variant={"destructive"}

@@ -3,7 +3,7 @@
 import { Eraser, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
-import { Ref, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -41,7 +41,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
     setInputError(false);
     setUserEnteredContext(userContextRef.current.value);
     if (wordCount < 20 || wordCount > 500) {
-      console.log("to small");
+      console.log("too small or too large");
       setInputError(true);
     } else {
       setIsloading(true);
@@ -62,8 +62,8 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       params.set("creator_user_id", userId);
       url.search = params;
 
-      let awaitedData: NodeJS.Timeout;
-      let retryTimeout: NodeJS.Timeout;
+      let awaitedData: NodeJS.Timeout | undefined;
+      let retryTimeout: NodeJS.Timeout | undefined;
 
       setTimeout(() => {
         retryTimeout = setTimeout(() => {
@@ -72,17 +72,13 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       }, 200);
 
       setTimeout(() => {
-        console.log(generatedTestData.length);
         awaitedData = setTimeout(() => {
-          console.log(generatedTestData.length);
-          // if (generatedTestData.length === 0) {
           setGenerationError(true);
           toast.error(
-            "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
+            "Due to server loads, the scenario cannot be generated at this time. Please retry again after some time."
           );
           setIsloading(false);
           setLoadingText("Retrying again due to server overload.");
-          // }
         }, 180000);
       }, 200);
 
@@ -100,32 +96,26 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             setGeneratedTestData(data);
             setIsloading(false);
             setLoadingText("Creating simulation.");
-            console.log(data.length);
             if (data[0].message) {
               toast.error("Error generating the scenarios.");
               setGenerationError(true);
             }
-            // if (data.length === 0) {
-            //   setGenerationError(true);
-            // }
-            clearTimeout(awaitedData);
-            clearTimeout(retryTimeout);
+            if (awaitedData) clearTimeout(awaitedData);
+            if (retryTimeout) clearTimeout(retryTimeout);
           })
           .catch((err) => {
-            clearTimeout(awaitedData);
-            clearTimeout(retryTimeout);
+            if (awaitedData) clearTimeout(awaitedData);
+            if (retryTimeout) clearTimeout(retryTimeout);
             console.error(err);
             setIsloading(false);
             setLoadingText("Creating simulation.");
             toast.error(
-              `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
+              `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via email.`
             );
           });
       } catch (error) {
-        //@ts-ignore
-        clearTimeout(awaitedData);
-        //@ts-ignore
-        clearTimeout(retryTimeout);
+        if (awaitedData) clearTimeout(awaitedData);
+        if (retryTimeout) clearTimeout(retryTimeout);
         console.error(error);
       }
     }
@@ -144,7 +134,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
+            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
               Please enter the situation that you want to practice
             </p>
             <textarea
@@ -153,18 +143,22 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                 setInputError(false);
               }}
               onChange={(e) => {
-                if (e.target.value.trim() === "") {
-                  setWordCount(0);
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                const count = words.length;
+
+                if (count <= 500) {
+                  setWordCount(count);
+                  setInputError(count < 20 || count > 500);
                 } else {
-                  setWordCount(e.target.value.trim().split(" ").length);
+                  setInputError(true);
                 }
               }}
-              placeholder="Create a situation where the user needs to... to accomplish..."
+              placeholder="Create a situation where the user needs to accomplish..."
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
             <div className="flex flex-row justify-between w-full">
-              {/* {inputError && ( */}
               <p
                 className={`text-red-500 text-xs mb-1.5 self-start ${
                   !inputError && "invisible"
@@ -172,7 +166,6 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
               >
                 Please describe your situation in 20-500 words.
               </p>
-              {/* )} */}
               <p className="font-bold text-gray-500 text-xs">{wordCount}/500</p>
             </div>
             <div className="flex items-center gap-2">
@@ -185,7 +178,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                 {isLoading && (
                   <Loader className="h-4 w-4 inline ml-2 animate-spin" />
                 )}
-              </Button>{" "}
+              </Button>
               {!isLoading && (
                 <Button
                   onClick={clearHanlder}
@@ -206,25 +199,24 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
           <div className="flex flex-row gap-2 max-sm:flex-col">
             {!generationError &&
               generatedTestData.map((test, i) => (
-                <>
-                  <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                      <b className="my-1 text-gray-400">
-                        {i === 0 ? "Simulation" : "Role play"}
-                      </b>
-                      <p className="text-sm mt-3 font-semibold">
-                        {test?.title}
-                      </p>
-                      <p className="text-[12px] mb-2">{test?.description}</p>
-                    </div>
-                    <div className="flex justify-end mt-2">
-                      <CopyToClipboard
-                        textToCopy={test?.test_code!}
-                        copyType="code"
-                      />
-                    </div>
+                <div
+                  key={i}
+                  className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
+                >
+                  <div>
+                    <b className="my-1 text-gray-400">
+                      {i === 0 ? "Simulation" : "Role play"}
+                    </b>
+                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
+                    <p className="text-[12px] mb-2">{test?.description}</p>
                   </div>
-                </>
+                  <div className="flex justify-end mt-2">
+                    <CopyToClipboard
+                      textToCopy={test?.test_code!}
+                      copyType="code"
+                    />
+                  </div>
+                </div>
               ))}
           </div>
           {generationError && !isLoading && (

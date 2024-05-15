@@ -1763,17 +1763,29 @@ const CoachIntake = ({ user }: any) => {
     maxLimit: number,
     fieldName: string
   ) => {
-    const inputValue = input_value;
-
-    if (inputValue.length > minLimit && inputValue.length < maxLimit) {
+    const inputValue = input_value.trim();
+    const words = inputValue.split(/\s+/);
+    const wordCount = words.length;
+  
+    console.log(`Input Value: "${inputValue}"`);
+    console.log(`Words: ${JSON.stringify(words)}`);
+    console.log(`Word Count: ${wordCount}`);
+  
+    if (wordCount >= minLimit && wordCount <= maxLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    } else if (wordCount < minLimit) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Minimum ${minLimit} words are required.`,
+      }));
     } else {
       setError((prevErrors) => ({
         ...prevErrors,
-        [fieldName]: `${fieldName} should be between ${minLimit} and ${maxLimit} characters.`,
+        [fieldName]: `Maximum ${maxLimit} words are allowed.`,
       }));
     }
   };
+  
 
   const handleWordLimitMin = (
     input_value: string,
@@ -1914,34 +1926,32 @@ const CoachIntake = ({ user }: any) => {
                     )} */}
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add a profile description.
-                    </p>
-                    <textarea
-                      value={about}
-                      minLength={200}
-                      maxLength={1500}
-                      required
-                      disabled={checkIfView === null ? false : true}
-                      onChange={(e) => {
-                        setAbout(e.target.value);
-                        handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
-                          "Profile Description"
-                        );
-                      }}
-                      placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("Profile Description") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Profile Description"]}
-                      </p>
-                    )}
-                  </div>
+                        <p className="text-sm my-1">
+                          Please add a profile description.
+                        </p>
+                        <textarea
+                          value={about}
+                          required
+                          disabled={checkIfView === null ? false : true}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setAbout(inputValue);
+                            }
+                            handleWordLimit(inputValue, 30, 80, "Profile Description");
+                          }}
+                          placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
+                          rows={3}
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                        />
+                        {Object.keys(error).includes("Profile Description") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["Profile Description"]}
+                          </p>
+                        )}
+                      </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Total number of years of experience.
@@ -1998,34 +2008,33 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
                   <div className="my-4">
-                    <p className="text-sm my-1">
-                      Please share your journey and background story,
-                      highlighting experiences that have shaped your path to
-                      where you are today?
-                    </p>
+                        <p className="text-sm my-1">
+                          Please share your journey and background story,
+                          highlighting experiences that have shaped your path to
+                          where you are today?
+                        </p>
+                        <textarea
+                          rows={4}
+                          disabled={checkIfView === null ? false : true}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setJourneyAndBackground(inputValue);
+                            }
+                            handleWordLimit(inputValue, 50, 80, "journeyAndBackground");
+                          }}
+                          value={journeyAndBackground}
+                          placeholder="Seeking guidance to enhance leadership skills, manage work-life balance, and navigate career transitions as a marketing professional."
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("journeyAndBackground") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["journeyAndBackground"]}
+                          </p>
+                        )}
+                      </div>
 
-                    <textarea
-                      rows={4}
-                      disabled={checkIfView === null ? false : true}
-                      onChange={(e) => {
-                        setJourneyAndBackground(e.target.value);
-
-                        handleWordLimitMin(
-                          e.target.value,
-                          20,
-                          "journeyAndBackground"
-                        );
-                      }}
-                      value={journeyAndBackground}
-                      placeholder="Seeking guidance to enhance leadership skills, manage work-life balance, and navigate career transitions as a marketing professional."
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                    {Object.keys(error).includes("journeyAndBackground") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["journeyAndBackground"]}
-                      </p>
-                    )}
-                  </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Which department/ business unit you belong to?
@@ -2205,130 +2214,127 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please articulate your dominant point of view which you
-                      want to discuss with the program participants as a general
-                      starting point.
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required
-                        value={povProgramParticipants}
-                        disabled={checkIfView === null ? false : true}
-                        onChange={(e) => {
-                          setPovProgramParticipants(e.target.value);
+                      <p className="text-sm my-1">
+                        Please articulate your dominant point of view which you
+                        want to discuss with the program participants as a general
+                        starting point.
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          required
+                          value={povProgramParticipants}
+                          disabled={checkIfView === null ? false : true}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setPovProgramParticipants(inputValue);
+                            }
+                            handleWordLimit(inputValue, 30, 80, "povProgramParticipants");
+                          }}
+                          placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("povProgramParticipants") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["povProgramParticipants"]}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            10,
-                            "povProgramParticipants"
-                          );
-                        }}
-                        placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes(
-                        "povProgramParticipants"
-                      ) && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["povProgramParticipants"]}
-                        </p>
-                      )}
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        What is your general approach towards problem solving?
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          required
+                          disabled={checkIfView === null ? false : true}
+                          value={problemSolvingApproach}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setProblemSolvingApproach(inputValue);
+                            }
+                            handleWordLimit(inputValue, 30, 80, "problemSolvingApproach");
+                          }}
+                          placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("problemSolvingApproach") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["problemSolvingApproach"]}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What is your general approach towards problem solving?
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={problemSolvingApproach}
-                        onChange={(e) => {
-                          setProblemSolvingApproach(e.target.value);
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            10,
-                            "problemSolvingApproach"
-                          );
-                        }}
-                        placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes(
-                        "problemSolvingApproach"
-                      ) && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["problemSolvingApproach"]}
+                    <div className="my-3">
+                        <p className="text-sm my-1">
+                          What were the 3 most significant challenges you
+                          encountered in your journey, and how did you successfully
+                          navigate and overcome them?
                         </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What were the 3 most significant challenges you
-                      encountered in your journey, and how did you successfully
-                      navigate and overcome them?
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        disabled={checkIfView === null ? false : true}
-                        onChange={(e) => {
-                          setSignificantChallenges(e.target.value);
+                        <div>
+                          <textarea
+                            rows={4}
+                            disabled={checkIfView === null ? false : true}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setSignificantChallenges(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "significantChallenges");
+                            }}
+                            value={significantChallenges}
+                            placeholder="Explain your top challenges and how you overcame them. For example - helped new joiners navigate team conflicts by fostering open communication."
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                          />
+                          {Object.keys(error).includes("significantChallenges") && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["significantChallenges"]}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
-                            "significantChallenges"
-                          );
-                        }}
-                        value={significantChallenges}
-                        placeholder="Explain your top challenges and how you overcame them for example - helped new joiners navigate team conflicts by fostering open communication"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes("significantChallenges") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["significantChallenges"]}
+                      <div className="my-3">
+                        <p className="text-sm my-1">
+                          Are there any phrases or expressions you find yourself
+                          using often in conversations? These could be catchphrases,
+                          favorite quotes, or unique sayings that reflect your
+                          personality.
                         </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Are there any phrases or expressions you find yourself
-                      using often in conversations? These could be catchphrases,
-                      favorite quotes, or unique sayings that reflect your
-                      personality.
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
-                        onChange={(e) => {
-                          setPhrasesNExpressions(e.target.value);
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
-                            "phrasesNExpressions"
-                          );
-                        }}
-                        value={phrasesNExpressions}
-                        placeholder="Provide a few of your favorite quotes or catch phrases like 'Progress over perfection."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes("phrasesNExpressions") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["phrasesNExpressions"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                        <div>
+                          <textarea
+                            rows={4}
+                            disabled={checkIfView === null ? false : true}
+                            required={!checkIfEdit}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setPhrasesNExpressions(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "phrasesNExpressions");
+                            }}
+                            value={phrasesNExpressions}
+                            placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                          />
+                          {Object.keys(error).includes("phrasesNExpressions") && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["phrasesNExpressions"]}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
@@ -2521,16 +2527,15 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         value={discussInCARformat}
                         onChange={(e) => {
-                          setDiscussInCARformat(e.target.value);
-
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
-                            "discussInCARformat"
-                          );
+                          const inputValue = e.target.value;
+                          const words = inputValue.trim().split(/\s+/);
+                          if (words.length <= 80) {
+                            setDiscussInCARformat(inputValue);
+                          }
+                          handleWordLimit(inputValue, 50, 80, "discussInCARformat");
                         }}
-                        placeholder="Please mentions these personal transformation stories in CAR format - Context, Action and Result achieved."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                        placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes("discussInCARformat") && (
                         <p className="text-red-500 text-xs mt-1">
@@ -2539,6 +2544,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Would you like your AI Avatar to provide expressive
@@ -2642,18 +2648,15 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                       <hr />
                       <div className="my-2">
-                        <h3 className="font-semibold text-base text-gray-600">
-                          Coaching FAQs
-                        </h3>
+                        <h3 className="font-semibold text-base text-gray-600">Coaching FAQs</h3>
                         <p className="text-sm text-gray-600">
-                          Note: Answer these in first person as if you are
-                          answering directly to your coachee.
+                          Note: Answer these in first person as if you are answering directly to your coachee.
                         </p>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
-                          Can you provide an overview of your coaching process
-                          and what I can expect from our sessions?
+                          Can you provide an overview of your coaching process and what I can expect from our sessions?
                         </p>
                         <div>
                           <textarea
@@ -2662,29 +2665,27 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={coachingProcessOverview}
                             onChange={(e) => {
-                              setCoachingProcessOverview(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "coachingProcessOverview"
-                              );
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setCoachingProcessOverview(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "coachingProcessOverview");
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {Object.keys(error).includes(
-                            "coachingProcessOverview"
-                          ) && (
+                          {Object.keys(error).includes("coachingProcessOverview") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["coachingProcessOverview"]}
                             </p>
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
-                          How do you handle situations where I feel stuck or
-                          unsure about my next steps?
+                          How do you handle situations where I feel stuck or unsure about my next steps?
                         </p>
                         <div>
                           <textarea
@@ -2693,30 +2694,27 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={handlingSituations}
                             onChange={(e) => {
-                              setHandlingSituations(e.target.value);
-
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "handlingSituations"
-                              );
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setHandlingSituations(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "handlingSituations");
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {Object.keys(error).includes(
-                            "handlingSituations"
-                          ) && (
+                          {Object.keys(error).includes("handlingSituations") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["handlingSituations"]}
                             </p>
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
-                          How can I integrate the lessons from these sessions
-                          into my daily life?
+                          How can I integrate the lessons from these sessions into my daily life?
                         </p>
                         <div>
                           <textarea
@@ -2725,30 +2723,27 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={integratingLessons}
                             onChange={(e) => {
-                              setIntegratongLessons(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "integratingLessons"
-                              );
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setIntegratongLessons(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "integratingLessons");
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {Object.keys(error).includes(
-                            "integratingLessons"
-                          ) && (
+                          {Object.keys(error).includes("integratingLessons") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["integratingLessons"]}
                             </p>
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
-                          Can you provide guidance on how to effectively balance
-                          personal and professional goals during our coaching
-                          process?
+                          Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?
                         </p>
                         <div>
                           <textarea
@@ -2757,25 +2752,24 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
-                              setGuidanceOnCoachingProcess(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "guidanceOnCoachingProcess"
-                              );
+                              const inputValue = e.target.value;
+                              const words = inputValue.trim().split(/\s+/);
+                              if (words.length <= 80) {
+                                setGuidanceOnCoachingProcess(inputValue);
+                              }
+                              handleWordLimit(inputValue, 50, 80, "guidanceOnCoachingProcess");
                             }}
                             placeholder=""
                             className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
-                          {Object.keys(error).includes(
-                            "guidanceOnCoachingProcess"
-                          ) && (
+                          {Object.keys(error).includes("guidanceOnCoachingProcess") && (
                             <p className="text-red-500 text-xs mt-1">
                               {(error as any)["guidanceOnCoachingProcess"]}
                             </p>
                           )}
                         </div>
                       </div>
+
                     </>
                   )}
                   {(profileType === "mentor" ||
@@ -2783,213 +2777,187 @@ const CoachIntake = ({ user }: any) => {
                     <>
                       <hr />
                       <div className="my-3">
-                        <p className="text-sm my-1">
-                          As a mentor, what do you think are the different
-                          career paths available in this field? What are the
-                          core skills and understanding required to continuously
-                          grow in this field?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={differentCareerPath}
-                            onChange={(e) => {
-                              setDifferentCareerPath(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "differentCareerPath"
-                              );
-                            }}
-                            placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "differentCareerPath"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["differentCareerPath"]}
+                            <p className="text-sm my-1">
+                              As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?
                             </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What is the problem solving approach in your domain
-                          and why do you think that is the right construct for
-                          growing in this field?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={problemSolvingApproachInDomain}
-                            onChange={(e) => {
-                              setProblemSolvingApproachInDomain(e.target.value);
+                            <div>
+                              <textarea
+                                rows={4}
+                                disabled={checkIfView === null ? false : true}
+                                required={!checkIfEdit}
+                                value={differentCareerPath}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const words = inputValue.trim().split(/\s+/);
+                                  if (words.length <= 80) {
+                                    setDifferentCareerPath(inputValue);
+                                  }
+                                  handleWordLimit(inputValue, 50, 80, "differentCareerPath");
+                                }}
+                                placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
+                                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                              />
+                              {Object.keys(error).includes("differentCareerPath") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["differentCareerPath"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "problemSolvingApproachInDomain"
-                              );
-                            }}
-                            placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "problemSolvingApproachInDomain"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["problemSolvingApproachInDomain"]}
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              What is the problem-solving approach in your domain and why do you think that is the right construct for growing in this field?
                             </p>
-                          )}
-                        </div>
-                      </div>
+                            <div>
+                              <textarea
+                                rows={4}
+                                disabled={checkIfView === null ? false : true}
+                                required={!checkIfEdit}
+                                value={problemSolvingApproachInDomain}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const words = inputValue.trim().split(/\s+/);
+                                  if (words.length <= 80) {
+                                    setProblemSolvingApproachInDomain(inputValue);
+                                  }
+                                  handleWordLimit(inputValue, 50, 80, "problemSolvingApproachInDomain");
+                                }}
+                                placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
+                                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                              />
+                              {Object.keys(error).includes("problemSolvingApproachInDomain") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["problemSolvingApproachInDomain"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
                       <hr />
                       <div className="my-2">
-                        <h3 className="font-semibold text-base text-gray-600">
-                          Mentoring FAQs
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Note: Answer these in first person as if you are
-                          answering directly to your mentee.
-                        </p>
-                      </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          Can you provide an overview of your mentoring approach
-                          and what I can expect from our sessions?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={overviewofMentoring}
-                            onChange={(e) => {
-                              setOverviewOfMentoring(e.target.value);
+                      <h3 className="font-semibold text-base text-gray-600">Mentoring FAQs</h3>
+                      <p className="text-sm text-gray-600">
+                        Note: Answer these in first person as if you are answering directly to your mentee.
+                      </p>
+                    </div>
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "overviewofMentoring"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "overviewofMentoring"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["overviewofMentoring"]}
-                            </p>
-                          )}
-                        </div>
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        Can you provide an overview of your mentoring approach and what I can expect from our sessions?
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          disabled={checkIfView === null ? false : true}
+                          required={!checkIfEdit}
+                          value={overviewofMentoring}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setOverviewOfMentoring(inputValue);
+                            }
+                            handleWordLimit(inputValue, 50, 80, "overviewofMentoring");
+                          }}
+                          placeholder=""
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("overviewofMentoring") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["overviewofMentoring"]}
+                          </p>
+                        )}
                       </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What opportunities for growth or advancement do you
-                          see in this field, and how can I position myself to
-                          capitalize on them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={opportunitiesOfGrowth}
-                            onChange={(e) => {
-                              setOpportunitiesOfGrowth(e.target.value);
+                    </div>
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "opportunitiesOfGrowth"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "opportunitiesOfGrowth"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["opportunitiesOfGrowth"]}
-                            </p>
-                          )}
-                        </div>
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          disabled={checkIfView === null ? false : true}
+                          required={!checkIfEdit}
+                          value={opportunitiesOfGrowth}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setOpportunitiesOfGrowth(inputValue);
+                            }
+                            handleWordLimit(inputValue, 50, 80, "opportunitiesOfGrowth");
+                          }}
+                          placeholder=""
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("opportunitiesOfGrowth") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["opportunitiesOfGrowth"]}
+                          </p>
+                        )}
                       </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What are some common challenges or obstacles that
-                          individuals face when pursuing success in this field,
-                          and what strategies do you suggest for overcoming
-                          them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={commonChallengesOrObstacles}
-                            onChange={(e) => {
-                              setCommenChallengesOrObstacles(e.target.value);
+                    </div>
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "commenChallengesOrObstacles"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "commenChallengesOrObstacles"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["commenChallengesOrObstacles"]}
-                            </p>
-                          )}
-                        </div>
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          disabled={checkIfView === null ? false : true}
+                          required={!checkIfEdit}
+                          value={commonChallengesOrObstacles}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setCommenChallengesOrObstacles(inputValue);
+                            }
+                            handleWordLimit(inputValue, 50, 80, "commenChallengesOrObstacles");
+                          }}
+                          placeholder=""
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("commenChallengesOrObstacles") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["commenChallengesOrObstacles"]}
+                          </p>
+                        )}
                       </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          In your opinion, what are the key qualities or skills
-                          that contribute to success in the field I'm aiming to
-                          excel in, and how can I develop or enhance them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
-                            value={opinionsAboutKeyQualities}
-                            onChange={(e) => {
-                              setOpinionsAboutKeyQualities(e.target.value);
+                    </div>
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "opinionsAboutKeyQualities"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "opinionsAboutKeyQualities"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["opinionsAboutKeyQualities"]}
-                            </p>
-                          )}
-                        </div>
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?
+                      </p>
+                      <div>
+                        <textarea
+                          rows={4}
+                          disabled={checkIfView === null ? false : true}
+                          required={!checkIfEdit}
+                          value={opinionsAboutKeyQualities}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const words = inputValue.trim().split(/\s+/);
+                            if (words.length <= 80) {
+                              setOpinionsAboutKeyQualities(inputValue);
+                            }
+                            handleWordLimit(inputValue, 50, 80, "opinionsAboutKeyQualities");
+                          }}
+                          placeholder=""
+                          className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                        />
+                        {Object.keys(error).includes("opinionsAboutKeyQualities") && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {(error as any)["opinionsAboutKeyQualities"]}
+                          </p>
+                        )}
                       </div>
+                    </div>
+
                     </>
                   )}
                   <hr />
@@ -3285,16 +3253,13 @@ const CoachIntake = ({ user }: any) => {
                       value={about}
                       disabled={checkIfView === null ? false : true}
                       required
-                      minLength={200}
-                      maxLength={1500}
                       onChange={(e) => {
-                        setAbout(e.target.value);
-                        handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
-                          "Profile Description"
-                        );
+                        const inputValue = e.target.value;
+                        const words = inputValue.trim().split(/\s+/);
+                        if (words.length <= 80) {
+                          setAbout(inputValue);
+                        }
+                        handleWordLimit(inputValue, 30, 80, "Profile Description");
                       }}
                       placeholder="Briefly share your background, goals, and what you're seeking in a coaching or mentoring relationship."
                       rows={3}
@@ -3655,51 +3620,60 @@ const CoachIntake = ({ user }: any) => {
                   )} */}
                 </div>
                 <div className="my-3">
-                  <p className="text-sm my-1">
-                    Please add a short profile bio.
-                  </p>
-                  <textarea
-                    value={profileBio}
-                    required
-                    disabled={checkIfView === null ? false : true}
-                    minLength={200}
-                    maxLength={1500}
-                    onChange={(e) => {
-                      setProfileBio(e.target.value);
-                      handleWordLimit(e.target.value, 200, 1500, "Profile Bio");
-                    }}
-                    placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
-                    rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                  />
-                  {Object.keys(error).includes("Profile Bio") && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {(error as any)["Profile Bio"]}
-                    </p>
-                  )}
-                </div>
-                <div className="my-3">
-                  <p className="text-sm my-1">
-                    Please enter your Current Projects
-                  </p>
-                  <textarea
-                    value={currentProjects}
-                    disabled={checkIfView === null ? false : true}
-                    required
-                    onChange={(e) => {
-                      setCurrentProjects(e.target.value);
-                      handleWordLimitMin(e.target.value, 20, "currentProjects");
-                    }}
-                    placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
-                    rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                  />
-                  {Object.keys(error).includes("currentProjects") && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {(error as any)["currentProjects"]}
-                    </p>
-                  )}
-                </div>
+                      <p className="text-sm my-1">
+                        Please add a short profile bio.
+                      </p>
+                      <textarea
+                        value={profileBio}
+                        required
+                        disabled={checkIfView === null ? false : true}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const words = inputValue.trim().split(/\s+/);
+                          if (words.length <= 50) {
+                            setProfileBio(inputValue);
+                          }
+                          handleWordLimit(inputValue, 20, 50, "Profile Bio");
+                        }}
+                        placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
+                        rows={3}
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      />
+                      {Object.keys(error).includes("Profile Bio") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["Profile Bio"]}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="my-3">
+                      <p className="text-sm my-1">
+                        Please enter your Current Projects
+                      </p>
+                      <textarea
+                        value={currentProjects}
+                        disabled={checkIfView === null ? false : true}
+                        required
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const words = inputValue.trim().split(/\s+/);
+                          if (words.length <= 80) {
+                            setCurrentProjects(inputValue);
+                          }
+                          handleWordLimit(inputValue, 50, 80, "currentProjects");
+                        }}
+                        placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
+                        rows={3}
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      />
+                      {Object.keys(error).includes("currentProjects") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["currentProjects"]}
+                        </p>
+                      )}
+                    </div>
+
+
                 {!checkIfView && (
                   <>
                     <hr className="my-2" />
