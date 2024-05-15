@@ -177,14 +177,14 @@ const Coaches = ({
   UserJoiningPreviledges,
   userConnections,
   clientDepartments,
-  clientExpertise
+  clientExpertise,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
   UserJoiningPreviledges: any;
   userConnections: any;
-  clientDepartments : any;
-  clientExpertise : any
+  clientDepartments: any;
+  clientExpertise: any;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -272,7 +272,10 @@ const Coaches = ({
           // clientExpertise = data.data.user_info[0].coach_expertise
           // setClientDepartments(data.data.user_info[0].departments);
           // setClientExpertise(data.data.user_info[0].coach_expertise);
-          console.log(data.data.user_info[0].coach_expertise, "data.data.user_info[0].coach_expertise")
+          console.log(
+            data.data.user_info[0].coach_expertise,
+            "data.data.user_info[0].coach_expertise"
+          );
 
           setRestrictedPages(data.data.user_info[0].restricted_pages);
           setRestrictedFeatures(data.data.user_info[0].restricted_features);
@@ -333,10 +336,10 @@ const Coaches = ({
       )
     );
 
-    console.log("HELLO DTA : ", clientDepartments, clientExpertise)
+    console.log("HELLO DTA : ", clientDepartments, clientExpertise);
 
     const totalExpertise =
-      clientExpertise !== null &&  clientExpertise !== ""
+      clientExpertise !== null && clientExpertise !== ""
         ? clientExpertise.split(",")
         : [
             "Leadership Development",
@@ -349,7 +352,7 @@ const Coaches = ({
             "Workplace Skills",
           ];
 
-    console.log(totalExpertise)
+    console.log(totalExpertise);
 
     setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
 
@@ -379,7 +382,7 @@ const Coaches = ({
       {
         filterName: "Department",
         filterOptions:
-          clientDepartments !== null &&  clientDepartments !== "" 
+          clientDepartments !== null && clientDepartments !== ""
             ? clientDepartments.split(",")
             : [
                 "Sales & Marketing",
@@ -399,7 +402,7 @@ const Coaches = ({
       {
         filterName: "Expertise",
         filterOptions:
-        clientExpertise !== null &&  clientExpertise !== ""
+          clientExpertise !== null && clientExpertise !== ""
             ? clientExpertise.split(",")
             : [
                 "Leadership Development",
@@ -868,6 +871,7 @@ const Coaches = ({
 
     useEffect(() => {
       setStatus(findConnectionStatus(connections, coachId, coacheeId));
+      console.log(findConnectionStatus(connections, coachId, coacheeId));
     }, [connections]);
 
     const requestConnectHandler = () => {
@@ -918,7 +922,7 @@ const Coaches = ({
     return (
       <>
         <Button
-          disabled={requestLoading}
+          disabled={requestLoading || status === "pending"}
           variant={"outline"}
           className="max-sm:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
@@ -931,7 +935,7 @@ const Coaches = ({
               Requesting
             </>
           ) : (
-            "Request connection"
+            <>{status === "pending" ? "Requested" : "Request connection"}</>
           )}
         </Button>
       </>
@@ -1194,8 +1198,11 @@ const Coaches = ({
               updateHelpModeState(false);
             }
 
-            if(callbackData.step.target === "#search-filter" && callbackData.action === "next"){
-              window.scrollTo({top : 0, behavior : "smooth"})
+            if (
+              callbackData.step.target === "#search-filter" &&
+              callbackData.action === "next"
+            ) {
+              window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
           //@ts-ignore
@@ -1458,7 +1465,7 @@ const Coaches = ({
             {!loading &&
               coachesData.length > 0 &&
               currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
+                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20">
                   <div className="relative top-[26px] flex w-full flex-row justify-between">
                     <span
                       className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] ${
@@ -1626,7 +1633,7 @@ const Coaches = ({
                             )}
                         </div>
                       </div>
-                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
+                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
                         {coach.description}
                       </p>
                       <div className="mt-4 flex flex-row flex-wrap gap-2">
