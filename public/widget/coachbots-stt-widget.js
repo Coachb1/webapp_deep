@@ -1976,10 +1976,6 @@ async function handleFaqButtonClick(question) {
         return;
       }
       console.log(window.user,'is_logged_in')
-      console.log(
-        'globalBotDetails.data.bot_expires_at', globalBotDetails.data.bot_expires_at,
-        'access_code', globalBotDetails.data.access_code
-      )
       if (botType === 'deep_dive' && !window.user) {
         const today = new Date();
         const botExpiresAt = new Date(globalBotDetails.data.bot_expires_at);
