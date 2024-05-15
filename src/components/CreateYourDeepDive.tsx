@@ -12,6 +12,7 @@ interface DeepDiveType {
   title: string;
   objective: string;
   link: string;
+  access_code: string;
 }
 
 function getLink() {
@@ -28,8 +29,10 @@ const CreateYourDeepDive = ({ user }: any) => {
   const userContextRef = useRef<any>();
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
+  const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [userId, setUserId] = useState("");
+  const [expiryDate, setExpiryDate] = useState('');
 
   const [isLoading, setIsloading] = useState(false);
   const [loadingText, setLoadingText] = useState("Generating your deep dive.");
@@ -52,9 +55,12 @@ const CreateYourDeepDive = ({ user }: any) => {
   const handleGenerateSurvey = () => {
     setGenerationError(false);
     setInputError(false);
+    setDateError(false);
     if (wordCount < 5 || wordCount > 200) {
       console.log("to small");
       setInputError(true);
+    } else if (expiryDate === undefined || expiryDate === "" || expiryDate === null) {
+      setDateError(true);
     } else {
       setIsloading(true);
       var myHeaders = new Headers();
@@ -76,6 +82,13 @@ const CreateYourDeepDive = ({ user }: any) => {
       formdata.append(
         "profile_image",
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
+      );
+      let date = new Date(expiryDate).toISOString();
+      
+      console.log('expiry date', expiryDate, date)
+      formdata.append(
+        "expiry_date",
+        date
       );
 
       formdata.append(
@@ -108,6 +121,7 @@ const CreateYourDeepDive = ({ user }: any) => {
               objective: data.deep_dive_data.bot_objective,
               title: data.deep_dive_data.bot_title,
               link: `${getLink()}deep-dive/${data.bot_id}`,
+              access_code: data.deep_dive_data.access_code,
             };
 
             setGeneratedDeepdiveData([generatedData]);
@@ -133,6 +147,7 @@ const CreateYourDeepDive = ({ user }: any) => {
     setGenerationError(false);
     setInputError(false);
     setWordCount(0);
+    setExpiryDate("");
   };
 
   return (
@@ -171,6 +186,43 @@ const CreateYourDeepDive = ({ user }: any) => {
                 {wordCount}/500
               </p>
             </div>
+
+            {/* expiry date */}
+
+            <div className="flex flex-row justify-between w-full">
+            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+              Expiry Date
+            </p>
+            <input
+              
+              value={expiryDate}
+              onChange={(e) => {
+                setExpiryDate(e.target.value);}
+              }
+              type="date"
+              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+            />
+            
+            </div>
+            {dateError && (
+              <>
+                <br />
+                <div className="flex flex-row justify-between w-full">
+                  <p
+                    className={`text-red-500 text-xs mb-1.5 self-start ${
+                      !dateError && "invisible"
+                    }`}
+                  >
+                    Please select the date.
+                  </p>
+                </div>
+              </>
+            )}
+            <br />
+
+            {/* expiry date ends */}
+
+
             <div className="flex items-center gap-2">
               <Button
                 disabled={isLoading && generatedDeepdiveData.length > 0}
@@ -213,6 +265,10 @@ const CreateYourDeepDive = ({ user }: any) => {
                           <p className="text-sm my-2">{dd.objective}</p>
                         </div>
                         <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
+                          <CopyToClipboard 
+                          textToCopy={dd.access_code} 
+                          copyType="Access Code" 
+                          />
                           <CopyToClipboard
                             textToCopy={dd.link}
                             copyType="Link"

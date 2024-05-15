@@ -139,6 +139,7 @@ let isAnonymous = false;
 let UserProfileInfo;
 let sessionQnAdata = [];
 let intakebuttonText = 'Pre-Check'
+let askDeepDiveAccessCode = false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -1974,6 +1975,37 @@ async function handleFaqButtonClick(question) {
         console.log("===> yes optedBeginSession");
         return;
       }
+      console.log(window.user,'is_logged_in')
+      console.log(
+        'globalBotDetails.data.bot_expires_at', globalBotDetails.data.bot_expires_at,
+        'access_code', globalBotDetails.data.access_code
+      )
+      if (botType === 'deep_dive' && !window.user) {
+        const today = new Date();
+        const botExpiresAt = new Date(globalBotDetails.data.bot_expires_at);
+        
+        console.log('expires_at: ', today,botExpiresAt)
+        if (botExpiresAt < today) {
+            appendMessage2(
+              addStickerToMessage(
+                "Begin Session",
+                `<b><p>Bot expired...</p></b>`,
+                '#22c55e'
+              )
+            );
+            return
+        }
+        appendMessage2(
+          addStickerToMessage(
+            "Begin Session",
+            `<b><p>Please enter bot access code.</p></b>`,
+            '#22c55e'
+          )
+        );
+
+        askDeepDiveAccessCode = true;
+
+    }
       saveBotEngagement(botId, userId2, "num_of_clicked_button");
 
       optedBeginSession = true;
@@ -2116,7 +2148,7 @@ async function handleFaqButtonClick(question) {
       //   botType,
       //   botType === "avatar_bot"
       // );
-      if (botType === 'deep_dive'){
+      if (botType === 'deep_dive' && window.user){
         gShadowRoot2.getElementById("text-input").focus();
         setTimeout(() => {
           gShadowRoot2.getElementById("text-input").textContent = "START";
@@ -5723,6 +5755,19 @@ loadExternalModule().then(() => {
 
             console.log("SLICED \n", latestMessage)
           } 
+
+          console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
+          if(askDeepDiveAccessCode){
+              console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
+              askDeepDiveAccessCode = false;
+              if(latestMessage !== globalBotDetails.data.access_code){
+                signals.onResponse({
+                  html: "<p style='font-size: 14px;color: #991b1b;'> Please enter a valid access code </p>",
+                });
+                return
+              }
+              latestMessage = "START"
+          }
 
           if (isEmailFormstt) {
             await proceedFormFlowStt(latestMessage);
