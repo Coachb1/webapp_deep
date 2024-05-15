@@ -22,6 +22,36 @@ import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
+const handleWordLimit = (
+  input_value: string,
+  minLimit: number,
+  maxLimit: number,
+  fieldName: string,
+  setError: Function
+) => {
+  const inputValue = input_value.trim();
+  const words = inputValue.split(/\s+/);
+  const wordCount = words.length;
+
+  console.log(`Input Value: "${inputValue}"`);
+  console.log(`Words: ${JSON.stringify(words)}`);
+  console.log(`Word Count: ${wordCount}`);
+
+  if (wordCount >= minLimit && wordCount <= maxLimit) {
+    setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
+  } else if (wordCount < minLimit) {
+    setError((prevErrors: any) => ({
+      ...prevErrors,
+      [fieldName]: `Minimum ${minLimit} words are required.`,
+    }));
+  } else {
+    setError((prevErrors: any) => ({
+      ...prevErrors,
+      [fieldName]: `Maximum ${maxLimit} words are allowed.`,
+    }));
+  }
+};
+
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
@@ -429,90 +459,121 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             )}
           </div>
           <div>
-            <div className="my-3">
-              <p className="text-sm max-sm:text-xs my-1">
-                Enter your bot name.
-              </p>
-              <input
-                required
-                disabled={checkIfEdit ? true : false}
-                onChange={(e) => {
-                  setBotName(e.target.value);
-                }}
-                value={botName}
-                placeholder="Project X bot, POSH bot, Digital literacy bot etc."
-                type="text"
-                className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
-                  checkIfEdit ? "hover:cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
-            <div className="my-3">
-              <p className="text-sm max-sm:text-xs my-1">
-                What is the primary purpose of the bot?
-              </p>
-              <textarea
-                rows={4}
-                required
-                disabled={checkIfView === null ? false : true}
-                onChange={(e) => {
-                  setPrimaryPurpose(e.target.value);
-                }}
-                value={primaryPurpose}
-                placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-              />
-            </div>
-            <div className="my-3">
-              <p className="text-sm max-sm:text-xs my-1">
-                What tasks or functions should the bot perform?
-              </p>
-              <textarea
-                disabled={checkIfView === null ? false : true}
-                required
-                onChange={(e) => {
-                  setFunctionsNTasksOfBot(e.target.value);
-                }}
-                value={functionsNTasksOfBot}
-                placeholder="List tasks or functions, e.g., `Answer FAQs, process orders, provide account information.`"
-                rows={4}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-              />
-            </div>
-            <div className="my-3">
-              <p className="text-sm max-sm:text-xs my-1">
-                Provide the information the bot should have access to generate
-                responses?
-              </p>
-              <textarea
-                disabled={checkIfView === null ? false : true}
-                value={infoAccessToBot}
-                required
-                onChange={(e) => {
-                  setInfoAccessToBots(e.target.value);
-                }}
-                placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
-                rows={4}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-              />
-            </div>
-            <div className="my-3">
-              <p className="text-sm max-sm:text-xs my-1">
-                Provide a few common FAQs the bot should use for commonly asked
-                questions?
-              </p>
-              <textarea
-                disabled={checkIfView === null ? false : true}
-                value={commanFaqs}
-                required
-                onChange={(e) => {
-                  setCommanFaqs(e.target.value);
-                }}
-                placeholder="list example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
-                rows={4}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-              />
-            </div>
+          <div className="my-3">
+  <p className="text-sm max-sm:text-xs my-1">Enter your bot name.</p>
+  <input
+    required
+    disabled={checkIfEdit ? true : false}
+    onChange={(e) => {
+      const inputValue = e.target.value;
+      const words = inputValue.trim().split(/\s+/);
+      if (words.length <= 10) {
+        setBotName(inputValue);
+      }
+      handleWordLimit(inputValue, 3, 10, "botName", setError);
+    }}
+    value={botName}
+    placeholder="Project X bot, POSH bot, Digital literacy bot etc."
+    type="text"
+    className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
+      checkIfEdit ? "hover:cursor-not-allowed" : ""
+    }`}
+  />
+  {Object.keys(error).includes("botName") && (
+    <p className="text-red-500 text-xs mt-1">{(error as any)["botName"]}</p>
+  )}
+</div>
+    <div className="my-3">
+            <p className="text-sm max-sm:text-xs my-1">What is the primary purpose of the bot?</p>
+            <textarea
+              rows={4}
+              required
+              disabled={checkIfView === null ? false : true}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                if (words.length <= 50) {
+                  setPrimaryPurpose(inputValue);
+                }
+                handleWordLimit(inputValue, 10, 50, "primaryPurpose", setError);
+              }}
+              value={primaryPurpose}
+              placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
+              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+            />
+            {Object.keys(error).includes("primaryPurpose") && (
+              <p className="text-red-500 text-xs mt-1">{(error as any)["primaryPurpose"]}</p>
+            )}
+          </div>
+
+          <div className="my-3">
+            <p className="text-sm max-sm:text-xs my-1">What tasks or functions should the bot perform?</p>
+            <textarea
+              rows={4}
+              required
+              disabled={checkIfView === null ? false : true}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                if (words.length <= 75) {
+                  setFunctionsNTasksOfBot(inputValue);
+                }
+                handleWordLimit(inputValue, 15, 75, "functionsNTasksOfBot", setError);
+              }}
+              value={functionsNTasksOfBot}
+              placeholder="List tasks or functions, e.g., 'Answer FAQs, process orders, provide account information.'"
+              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+            />
+            {Object.keys(error).includes("functionsNTasksOfBot") && (
+              <p className="text-red-500 text-xs mt-1">{(error as any)["functionsNTasksOfBot"]}</p>
+            )}
+          </div>
+
+          <div className="my-3">
+            <p className="text-sm max-sm:text-xs my-1">Provide the information the bot should have access to generate responses?</p>
+            <textarea
+              rows={4}
+              required
+              disabled={checkIfView === null ? false : true}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                if (words.length <= 100) {
+                  setInfoAccessToBots(inputValue);
+                }
+                handleWordLimit(inputValue, 20, 100, "infoAccessToBot", setError);
+              }}
+              value={infoAccessToBot}
+              placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
+              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+            />
+            {Object.keys(error).includes("infoAccessToBot") && (
+              <p className="text-red-500 text-xs mt-1">{(error as any)["infoAccessToBot"]}</p>
+            )}
+          </div>
+
+          <div className="my-3">
+            <p className="text-sm max-sm:text-xs my-1">Provide a few common FAQs the bot should use for commonly asked questions?</p>
+            <textarea
+              rows={4}
+              required
+              disabled={checkIfView === null ? false : true}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                if (words.length <= 50) {
+                  setCommanFaqs(inputValue);
+                }
+                handleWordLimit(inputValue, 10, 50, "commanFaqs", setError);
+              }}
+              value={commanFaqs}
+              placeholder="List example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
+              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+            />
+            {Object.keys(error).includes("commanFaqs") && (
+              <p className="text-red-500 text-xs mt-1">{(error as any)["commanFaqs"]}</p>
+            )}
+          </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Upload any relevant document or pdf to add to the bot
