@@ -166,7 +166,7 @@ export const LoginWall = () => {
     if (pathname.includes("/feedback") || pathname.includes("/feedback/")) {
       coachScribe.removeAttribute("style");
       if (pathname === "/feedback") {
-        console.log("DYN")
+        console.log("DYN");
         setBotId("feedback-d55cd-aravsharma");
       } else {
         const bot_id = pathname.split("/")[2];

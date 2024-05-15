@@ -8,7 +8,6 @@ import {
 } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
 import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
-import { Separator } from "@radix-ui/react-dropdown-menu";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -452,33 +451,9 @@ const MyPages = ({ user }: any) => {
 
                     {/* - {userProfile.name} */}
                   </p>
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                  {/* FOR EDIT MODE */}
-                  <Link
-                    href={
-                      intakeBotTypeLinks(
-                        "coachee",
-                        "123",
-                        userProfile.uid,
-                        userProfile.profile_type
-                      )! + `&uid=`
-                    }
-                  >
-                    <Button
-                      variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
-                    >
-                      <span className="max-sm:hidden">Edit</span>{" "}
-                      <TooltipWrapper
-                        className="hidden max-sm:block text-xs"
-                        tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                      />
-                    </Button>
-                  </Link>
-
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 " />
                   {/* FOR VIEW MODE */}
-                  {/* <Link
+                  <Link
                     href={
                       intakeBotTypeLinksForView(
                         "coachee",
@@ -499,7 +474,31 @@ const MyPages = ({ user }: any) => {
                         body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
-                  </Link> */}
+                  </Link>
+
+                  {/* FOR EDIT MODE */}
+                  <Link
+                    href={
+                      intakeBotTypeLinks(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
+                    >
+                      <span className="max-sm:hidden">Edit</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="Edit"
+                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

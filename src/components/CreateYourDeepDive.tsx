@@ -37,9 +37,7 @@ const CreateYourDeepDive = ({ user }: any) => {
   const [isLoading, setIsloading] = useState(false);
   const [loadingText, setLoadingText] = useState("Generating your deep dive.");
 
-  const [generatedDeepdiveData, setGeneratedDeepdiveData] = useState<
-    DeepDiveType[]
-  >([]);
+  const [generatedDeepdiveData, setGeneratedDeepdiveData] = useState<DeepDiveType[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -50,14 +48,14 @@ const CreateYourDeepDive = ({ user }: any) => {
           setUserId(data.uid);
         });
     }
-  }, []);
+  }, [user]);
 
   const handleGenerateSurvey = () => {
     setGenerationError(false);
     setInputError(false);
     setDateError(false);
-    if (wordCount < 5 || wordCount > 200) {
-      console.log("to small");
+    if (wordCount < 5 || wordCount > 500) {
+      console.log("too small or too large");
       setInputError(true);
     } else if (expiryDate === undefined || expiryDate === "" || expiryDate === null) {
       setDateError(true);
@@ -155,7 +153,7 @@ const CreateYourDeepDive = ({ user }: any) => {
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
+            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
               Please enter your deep dive objective
             </p>
             <textarea
@@ -164,13 +162,18 @@ const CreateYourDeepDive = ({ user }: any) => {
                 setInputError(false);
               }}
               onChange={(e) => {
-                if (e.target.value.trim() === "") {
-                  setWordCount(0);
+                const inputValue = e.target.value;
+                const words = inputValue.trim().split(/\s+/);
+                const count = words.length;
+
+                if (count <= 500) {
+                  setWordCount(count);
+                  setInputError(count < 5 || count > 500);
                 } else {
-                  setWordCount(e.target.value.trim().split(" ").length);
+                  setInputError(true);
                 }
               }}
-              placeholder="<placeholder>"
+              placeholder="Create a situation where the user needs to accomplish..."
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
@@ -180,7 +183,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   !inputError && "invisible"
                 }`}
               >
-                Please describe your deep dive in 5-200 words.
+                Please describe your deep dive in 5-500 words.
               </p>
               <p className="font-bold text-gray-500 text-xs self-end">
                 {wordCount}/500
@@ -233,7 +236,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                 {isLoading && (
                   <Loader className="h-4 w-4 inline ml-2 animate-spin" />
                 )}
-              </Button>{" "}
+              </Button>
               {!isLoading && (
                 <Button
                   onClick={clearHanlder}
@@ -252,46 +255,45 @@ const CreateYourDeepDive = ({ user }: any) => {
           </div>
           {generatedDeepdiveData.length > 0 && (
             <>
-              {
-                <div className="flex flex-row gap-2 max-sm:flex-col">
-                  {generatedDeepdiveData.map((dd, i) => (
-                    <>
-                      <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                          <b className="my-1 text-gray-400">Deep Dive</b>
-                          <p className="text-base mt-3 font-semibold">
-                            {dd.title}
-                          </p>
-                          <p className="text-sm my-2">{dd.objective}</p>
-                        </div>
-                        <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
-                          <CopyToClipboard 
+
+              <div className="flex flex-row gap-2 max-sm:flex-col">
+                {generatedDeepdiveData.map((dd, i) => (
+                  <div
+                    key={i}
+                    className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
+                  >
+                    <div>
+                      <b className="my-1 text-gray-400">Deep Dive</b>
+                      <p className="text-base mt-3 font-semibold">
+                        {dd.title}
+                      </p>
+                      <p className="text-sm my-2">{dd.objective}</p>
+                    </div>
+                    <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
+                      <CopyToClipboard 
                           textToCopy={dd.access_code} 
                           copyType="Access Code" 
-                          />
-                          <CopyToClipboard
-                            textToCopy={dd.link}
-                            copyType="Link"
-                          />
-                          <Button
-                            variant={"link"}
-                            className="max-sm:p-2 h-8 hover:brightness-105"
-                            asChild
-                          >
-                            <Link
-                              href={`/${dd.link.replace(getLink(), "")}`}
-                              target="_blank"
-                            >
-                              <ExternalLink className="mr-2 w-4 h-4" /> Visit
-                              Deep Dive
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </>
-                  ))}
-                </div>
-              }
+                      />
+                      <CopyToClipboard
+                        textToCopy={dd.link}
+                        copyType="Link"
+                      />
+                      <Button
+                        variant={"link"}
+                        className="max-sm:p-2 h-8 hover:brightness-105"
+                        asChild
+                      >
+                        <Link
+                          href={`/${dd.link.replace(getLink(), "")}`}
+                          target="_blank"
+                        >
+                          <ExternalLink className="mr-2 w-4 h-4" /> Visit Deep Dive
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </>
           )}
         </div>

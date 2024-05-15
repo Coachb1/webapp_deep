@@ -7,6 +7,8 @@ import {
   CategoryData,
   ClientDataType,
   DomainData,
+  ExtractedData,
+  MediaData,
   TestData,
 } from "./types";
 
@@ -368,28 +370,25 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
   return outputData;
 }
 
-export const CreateOrAssignClientId =  (userEmail: string | null | undefined) => {
+export const CreateOrAssignClientId = (
+  userEmail: string | null | undefined
+) => {
   if (userEmail !== null && userEmail !== undefined) {
-
-    return fetch(`${baseURL}/accounts/create-or-assign-client-id/`, 
-    {
+    return fetch(`${baseURL}/accounts/create-or-assign-client-id/`, {
       method: "POST",
       headers: {
-        "Authorization": basicAuth,
-        "Content-Type": "application/json"
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "email": userEmail
+        email: userEmail,
       }),
-    }
-    );
+    });
   }
 };
 
-
 export const getClientUserInfo = (userEmail: string | undefined) => {
   if (userEmail) {
-
     return fetch(
       `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
       {
@@ -489,4 +488,38 @@ export function parseClientUsers(data: any) {
   }
 
   return clientUsers;
+}
+
+export function transformExtractedData(data: ExtractedData): MediaData {
+  const mediaData: MediaData = {
+    extracted_from_article: [],
+    extracted_from_pdf: [],
+    extracted_from_youtube: [],
+  };
+
+  for (const source in data) {
+    if (data.hasOwnProperty(source)) {
+      const files = data[source];
+      for (const fileName in files) {
+        if (files.hasOwnProperty(fileName)) {
+          const fileContent = files[fileName];
+          const fileObject = {
+            fileName,
+            fileContent,
+            isDeleted: false,
+          };
+          // Push the object into the corresponding array in mediaData
+          if (source === "extracted_from_article") {
+            mediaData.extracted_from_article.push(fileObject);
+          } else if (source === "extracted_from_pdf") {
+            mediaData.extracted_from_pdf.push(fileObject);
+          } else if (source === "extracted_from_youtube") {
+            mediaData.extracted_from_youtube.push(fileObject);
+          }
+        }
+      }
+    }
+  }
+
+  return mediaData;
 }

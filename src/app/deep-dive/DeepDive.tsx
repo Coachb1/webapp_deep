@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
+import { toast } from "sonner";
 
 const howItWorks = [
   {
@@ -115,6 +116,23 @@ const DeepDive = ({ user, renderType }: any) => {
         setTitle(data.data.deep_dive_data.bot_title);
         setBotObjective(data.data.deep_dive_data.bot_objective);
 
+        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+
+        const coachScribeIcon = document.getElementById("chat-icon2");
+        fetch("https://ipinfo.io/json")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data.ip);
+            if (!allowedIPS.split(", ").includes(data.ip)) {
+              coachScribeIcon?.removeAttribute("onclick");
+              coachScribeIcon?.removeEventListener("click", () => {
+                toast.error("You are not allowed to access this bot.");
+              });
+              coachScribeIcon?.addEventListener("click", () => {
+                toast.error("You are not allowed to access this bot.");
+              });
+            }
+          });
         setIsLoading(false);
       })
       .catch((err) => {
