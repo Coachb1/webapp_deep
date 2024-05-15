@@ -128,7 +128,7 @@ const feedbackJsonConversion = (jsonData: any) => {
     })
     .sort(
       (a: any, b: any) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime()
+        new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
 
   return sortedFeedback;
@@ -155,7 +155,7 @@ const Feedback = ({ user, renderType }: any) => {
   }
 
   const [positiveFeedbacks, setPositiveFeedbacks] = useState<feedbackType[]>(
-    []
+    [],
   );
 
   const [feedbackConversations, setFeedbackConversations] = useState<
@@ -193,7 +193,7 @@ const Feedback = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      }
+      },
     )
       .then((res) => res.json())
       .then((data) => {
@@ -214,14 +214,24 @@ const Feedback = ({ user, renderType }: any) => {
             setCoachDescription(data.data.additional_data.short_profile_bio);
           }
         }
-        // if (data.data.bot_details.is_strict_login_required && !user) {
-        //   coachScribe.setAttribute("style", "display: none;");
-        // }
-        // if (data.data.bot_details.is_login_required) {
-        //   if (!user) {
-        //     coachScribe.setAttribute("style", "display: none;");
-        //   }
-        // }
+
+        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+
+        const coachScribeIcon = document.getElementById("chat-icon2");
+        fetch("https://ipinfo.io/json")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data.ip);
+            if (!allowedIPS.split(", ").includes(data.ip)) {
+              coachScribeIcon?.removeAttribute("onclick");
+              coachScribeIcon?.removeEventListener("click", () => {
+                toast.error("You are not allowed to access this bot.");
+              });
+              coachScribeIcon?.addEventListener("click", () => {
+                toast.error("You are not allowed to access this bot.");
+              });
+            }
+          });
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setProfileImage(data.data.owner_profile_image);
@@ -230,77 +240,6 @@ const Feedback = ({ user, renderType }: any) => {
           setCurrentProjects(data.data.additional_data?.current_projects);
         }
         setIsLoading(false);
-        // if (!data.data.is_sample_bot && !data.data.is_system_bot) {
-        //   fetch(`${baseURL}/accounts/`, {
-        //     method: "POST",
-        //     headers: {
-        //       Authorization: basicAuth,
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       user_context: {
-        //         name: user.given_name,
-        //         role: "member",
-        //         user_attributes: {
-        //           tag: "deepchat_profile",
-        //           attributes: {
-        //             username: "web_user",
-        //             email: user.email,
-        //           },
-        //         },
-        //       },
-        //       identity_context: {
-        //         identity_type: "deepchat_unique_id",
-        //         value: user.email,
-        //       },
-        //     }),
-        //   })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //       fetch(
-        //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-        //         {
-        //           method: "GET",
-        //           headers: {
-        //             Authorization: basicAuth,
-        //           },
-        //         }
-        //       )
-        //         .then((res) => res.json())
-        //         .then((data) => {
-        //           console.log("xyz-data", data);
-        //           if (data.data.length === 0) {
-        //             const coachScribe =
-        //               document.getElementsByClassName("deep-chat-poc2")[0];
-
-        //             console.log(coachScribe);
-        //             const botButton = document.getElementsByClassName(
-        //               "chat-icon-container2"
-        //             )[0];
-        //             botButton.removeAttribute("onclick");
-
-        //             const chatIcon =
-        //               document.getElementsByClassName("chat-icon2")[0];
-        //             const showEnrollmentToast = () => {
-        //               chatIcon.addEventListener("click", () => {
-        //                 toast.error(
-        //                   "You have not enrolled as a program participant. Please enroll and try again."
-        //                 );
-        //               });
-        //             };
-        //             if (!chatIcon.getAttribute("onclick")) {
-        //               chatIcon.setAttribute(
-        //                 "onclick",
-        //                 `${showEnrollmentToast()}`
-        //               );
-        //             }
-        //           }
-        //         })
-        //         .catch((err) => {
-        //           console.error(err);
-        //         });
-        //     });
-        // }
         fetch(
           `${baseURL}/accounts/get-user-feedback-data/?method=get&feedback_type=positive&bot_id=${
             renderType === "dynamic"
@@ -312,7 +251,7 @@ const Feedback = ({ user, renderType }: any) => {
             headers: {
               Authorization: basicAuth,
             },
-          }
+          },
         )
           .then((res) => res.json())
           .then((data) => {
@@ -344,7 +283,7 @@ const Feedback = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      }
+      },
     )
       .then((res) => res.json())
       .then((data) => {
@@ -353,12 +292,12 @@ const Feedback = ({ user, renderType }: any) => {
         if (data.critical_msgs.length > 0) {
           console.log(convertJsonToStateFormat(data.critical_msgs));
           const convertedCriticalFeedbacks = convertJsonToStateFormat(
-            data.critical_msgs
+            data.critical_msgs,
           );
           const sortedByLatestDates: feedbackConversationType[] =
             convertedCriticalFeedbacks.sort(
               (a: any, b: any) =>
-                new Date(b.date).getTime() - new Date(a.date).getTime()
+                new Date(b.date).getTime() - new Date(a.date).getTime(),
             );
           console.log(sortedByLatestDates);
           setFeedbackConversations(sortedByLatestDates);
@@ -615,7 +554,7 @@ const Feedback = ({ user, renderType }: any) => {
                                                   <span>
                                                     <b>Feedback Date</b> :{" "}
                                                     {convertDate(
-                                                      feedbacks.date
+                                                      feedbacks.date,
                                                     )}
                                                   </span>
                                                 </p>
@@ -650,14 +589,14 @@ const Feedback = ({ user, renderType }: any) => {
                                                           </div>
                                                         </div>
                                                       </>
-                                                    )
+                                                    ),
                                                   )}
                                                 </div>
                                               </AccordionContent>
                                             </AccordionItem>
                                           </Accordion>
                                         </div>
-                                      )
+                                      ),
                                     )}
                                   </div>
                                 </div>

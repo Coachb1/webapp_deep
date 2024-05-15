@@ -269,3 +269,19 @@ export interface ClientDataType {
   clientId: string;
   Users: ClientUserType[];
 }
+
+export interface ExtractedData {
+  [source: string]: { [fileName: string]: string };
+}
+
+export interface MediaItem {
+  fileName: string;
+  fileContent: string;
+  isDeleted: boolean;
+}
+
+export interface MediaData {
+  extracted_from_article: MediaItem[];
+  extracted_from_pdf: MediaItem[];
+  extracted_from_youtube: MediaItem[];
+}
