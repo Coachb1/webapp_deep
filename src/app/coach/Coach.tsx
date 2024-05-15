@@ -69,6 +69,8 @@ const Coach = ({ user, renderType }: any) => {
   const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
     ""
   );
+  // const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
+
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();

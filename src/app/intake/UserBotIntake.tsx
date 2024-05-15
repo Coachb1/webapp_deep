@@ -10,16 +10,28 @@ import {
   isValidLinks,
   isValidYoutubeLinks,
   subdomain,
+  transformExtractedData,
 } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { Button } from "@/components/ui/button";
-import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
+import {
+  File,
+  Info,
+  Loader,
+  PenLine,
+  SendHorizonal,
+  Trash2,
+  UndoDot,
+} from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MediaData } from "@/lib/types";
+import Link from "next/link";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const handleWordLimit = (
@@ -80,6 +92,9 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   }
   const [releventDocument, setReleventDocuments] = useState<FileData[]>([]);
   const [releventLinks, setReleventLinks] = useState("");
+
+  //mediaData
+  const [mediaData, setMediaData] = useState<MediaData>();
 
   useEffect(() => {
     if (user) {
@@ -289,6 +304,62 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             }
           });
 
+          let deletingDocs: string = "";
+          let deletingPdfs: string = "";
+          if (mediaData?.extracted_from_pdf) {
+            deletingDocs = mediaData?.extracted_from_pdf
+              .map((item) => {
+                if (item.isDeleted && item.fileName.includes(".docx")) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+
+            deletingPdfs = mediaData?.extracted_from_pdf
+              .map((item) => {
+                if (item.isDeleted && item.fileName.includes(".pdf")) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          let deletingArticleLinks: string = "";
+          if (mediaData?.extracted_from_article) {
+            deletingArticleLinks = mediaData?.extracted_from_article
+              .map((item) => {
+                if (item.isDeleted) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          let deletingYoutubeLinks: string = "";
+          if (mediaData?.extracted_from_youtube) {
+            deletingYoutubeLinks = mediaData?.extracted_from_youtube
+              .map((item) => {
+                if (item.isDeleted) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          const deletedData = {
+            pdf_files: deletingPdfs,
+            youtube_links: deletingYoutubeLinks,
+            article_links: deletingArticleLinks,
+            doc_files: deletingDocs,
+          };
+
+          console.log(deletedData);
+          patchFormData.append("deleted_data", JSON.stringify(deletedData));
+
           patchFormData.append(
             "media_data",
             JSON.stringify({
@@ -371,7 +442,17 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               console.log(resultingBot);
 
               setBotName(resultingBot.bot_attributes.bot_name);
-              const parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
+              console.log(
+                transformExtractedData(
+                  resultingBot.signature_bot.data.media_data
+                )
+              );
+              setMediaData(
+                transformExtractedData(
+                  resultingBot.signature_bot.data.media_data
+                )
+              );
+              const parsedFaqJson = resultingBot.signature_bot.faqs;
               setCommanFaqs(
                 parsedFaqJson[
                   "Provide a few common FAQs the bot should use for commonly asked questions?"
@@ -388,11 +469,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               setPrimaryPurpose(
                 parsedFaqJson["What is the primary purpose of the bot?"]
               );
-              setReleventLinks(
-                parsedFaqJson[
-                  "Provide any relevant links and make sure the links are publicly accessible"
-                ]
-              );
+              // setReleventLinks(
+              //   parsedFaqJson[
+              //     "Provide any relevant links and make sure the links are publicly accessible"
+              //   ]
+              // );
             });
         });
     }
@@ -411,6 +492,38 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         [fieldName]: `Please enter the valid link(s).`,
       }));
     }
+  };
+
+  const deleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: true } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
+  };
+
+  const undoDeleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: false } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
   };
 
   return (
@@ -459,121 +572,161 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             )}
           </div>
           <div>
-          <div className="my-3">
-  <p className="text-sm max-sm:text-xs my-1">Enter your bot name.</p>
-  <input
-    required
-    disabled={checkIfEdit ? true : false}
-    onChange={(e) => {
-      const inputValue = e.target.value;
-      const words = inputValue.trim().split(/\s+/);
-      if (words.length <= 10) {
-        setBotName(inputValue);
-      }
-      handleWordLimit(inputValue, 3, 10, "botName", setError);
-    }}
-    value={botName}
-    placeholder="Project X bot, POSH bot, Digital literacy bot etc."
-    type="text"
-    className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
-      checkIfEdit ? "hover:cursor-not-allowed" : ""
-    }`}
-  />
-  {Object.keys(error).includes("botName") && (
-    <p className="text-red-500 text-xs mt-1">{(error as any)["botName"]}</p>
-  )}
-</div>
-    <div className="my-3">
-            <p className="text-sm max-sm:text-xs my-1">What is the primary purpose of the bot?</p>
-            <textarea
-              rows={4}
-              required
-              disabled={checkIfView === null ? false : true}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                if (words.length <= 50) {
-                  setPrimaryPurpose(inputValue);
-                }
-                handleWordLimit(inputValue, 10, 50, "primaryPurpose", setError);
-              }}
-              value={primaryPurpose}
-              placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
-              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-            />
-            {Object.keys(error).includes("primaryPurpose") && (
-              <p className="text-red-500 text-xs mt-1">{(error as any)["primaryPurpose"]}</p>
-            )}
-          </div>
+            <div className="my-3">
+              <p className="text-sm max-sm:text-xs my-1">
+                Enter your bot name.
+              </p>
+              <input
+                required
+                disabled={checkIfEdit ? true : false}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  if (words.length <= 10) {
+                    setBotName(inputValue);
+                  }
+                  handleWordLimit(inputValue, 3, 10, "botName", setError);
+                }}
+                value={botName}
+                placeholder="Project X bot, POSH bot, Digital literacy bot etc."
+                type="text"
+                className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
+                  checkIfEdit ? "hover:cursor-not-allowed" : ""
+                }`}
+              />
+              {Object.keys(error).includes("botName") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["botName"]}
+                </p>
+              )}
+            </div>
+            <div className="my-3">
+              <p className="text-sm max-sm:text-xs my-1">
+                What is the primary purpose of the bot?
+              </p>
+              <textarea
+                rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  if (words.length <= 50) {
+                    setPrimaryPurpose(inputValue);
+                  }
+                  handleWordLimit(
+                    inputValue,
+                    10,
+                    50,
+                    "primaryPurpose",
+                    setError
+                  );
+                }}
+                value={primaryPurpose}
+                placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+              />
+              {Object.keys(error).includes("primaryPurpose") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["primaryPurpose"]}
+                </p>
+              )}
+            </div>
 
-          <div className="my-3">
-            <p className="text-sm max-sm:text-xs my-1">What tasks or functions should the bot perform?</p>
-            <textarea
-              rows={4}
-              required
-              disabled={checkIfView === null ? false : true}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                if (words.length <= 75) {
-                  setFunctionsNTasksOfBot(inputValue);
-                }
-                handleWordLimit(inputValue, 15, 75, "functionsNTasksOfBot", setError);
-              }}
-              value={functionsNTasksOfBot}
-              placeholder="List tasks or functions, e.g., 'Answer FAQs, process orders, provide account information.'"
-              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-            />
-            {Object.keys(error).includes("functionsNTasksOfBot") && (
-              <p className="text-red-500 text-xs mt-1">{(error as any)["functionsNTasksOfBot"]}</p>
-            )}
-          </div>
+            <div className="my-3">
+              <p className="text-sm max-sm:text-xs my-1">
+                What tasks or functions should the bot perform?
+              </p>
+              <textarea
+                rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  if (words.length <= 75) {
+                    setFunctionsNTasksOfBot(inputValue);
+                  }
+                  handleWordLimit(
+                    inputValue,
+                    15,
+                    75,
+                    "functionsNTasksOfBot",
+                    setError
+                  );
+                }}
+                value={functionsNTasksOfBot}
+                placeholder="List tasks or functions, e.g., 'Answer FAQs, process orders, provide account information.'"
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+              />
+              {Object.keys(error).includes("functionsNTasksOfBot") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["functionsNTasksOfBot"]}
+                </p>
+              )}
+            </div>
 
-          <div className="my-3">
-            <p className="text-sm max-sm:text-xs my-1">Provide the information the bot should have access to generate responses?</p>
-            <textarea
-              rows={4}
-              required
-              disabled={checkIfView === null ? false : true}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                if (words.length <= 100) {
-                  setInfoAccessToBots(inputValue);
-                }
-                handleWordLimit(inputValue, 20, 100, "infoAccessToBot", setError);
-              }}
-              value={infoAccessToBot}
-              placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
-              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-            />
-            {Object.keys(error).includes("infoAccessToBot") && (
-              <p className="text-red-500 text-xs mt-1">{(error as any)["infoAccessToBot"]}</p>
-            )}
-          </div>
+            <div className="my-3">
+              <p className="text-sm max-sm:text-xs my-1">
+                Provide the information the bot should have access to generate
+                responses?
+              </p>
+              <textarea
+                rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  if (words.length <= 100) {
+                    setInfoAccessToBots(inputValue);
+                  }
+                  handleWordLimit(
+                    inputValue,
+                    20,
+                    100,
+                    "infoAccessToBot",
+                    setError
+                  );
+                }}
+                value={infoAccessToBot}
+                placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+              />
+              {Object.keys(error).includes("infoAccessToBot") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["infoAccessToBot"]}
+                </p>
+              )}
+            </div>
 
-          <div className="my-3">
-            <p className="text-sm max-sm:text-xs my-1">Provide a few common FAQs the bot should use for commonly asked questions?</p>
-            <textarea
-              rows={4}
-              required
-              disabled={checkIfView === null ? false : true}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                if (words.length <= 50) {
-                  setCommanFaqs(inputValue);
-                }
-                handleWordLimit(inputValue, 10, 50, "commanFaqs", setError);
-              }}
-              value={commanFaqs}
-              placeholder="List example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
-              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-            />
-            {Object.keys(error).includes("commanFaqs") && (
-              <p className="text-red-500 text-xs mt-1">{(error as any)["commanFaqs"]}</p>
-            )}
-          </div>
+            <div className="my-3">
+              <p className="text-sm max-sm:text-xs my-1">
+                Provide a few common FAQs the bot should use for commonly asked
+                questions?
+              </p>
+              <textarea
+                rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  if (words.length <= 50) {
+                    setCommanFaqs(inputValue);
+                  }
+                  handleWordLimit(inputValue, 10, 50, "commanFaqs", setError);
+                }}
+                value={commanFaqs}
+                placeholder="List example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+              />
+              {Object.keys(error).includes("commanFaqs") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["commanFaqs"]}
+                </p>
+              )}
+            </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Upload any relevant document or pdf to add to the bot
@@ -595,6 +748,64 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   to enhance bot knowledge.
                 </p>
               </div>
+              {mediaData?.extracted_from_pdf && (
+                <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1 mt-2">
+                  {mediaData?.extracted_from_pdf.map((item) => (
+                    <div className="flex flex-row justify-between items-center">
+                      <div className="flex flex-row items-center gap-2">
+                        <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                        <span
+                          className={`text-xs text-blue-500 truncate ${
+                            item.isDeleted && "line-through"
+                          }`}
+                        >
+                          {item.fileName}
+                        </span>
+                      </div>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
@@ -604,7 +815,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <textarea
                 disabled={checkIfView === null ? false : true}
                 value={releventLinks}
-                required
+                required={!checkIfEdit}
                 onChange={(e) => {
                   setReleventLinks(e.target.value);
                   handleInputLinks(e.target.value, "releventLinks");
@@ -618,6 +829,62 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   {(error as any)["releventLinks"]}
                 </p>
               )}
+              {mediaData?.extracted_from_pdf &&
+                mediaData?.extracted_from_youtube.map((item) => (
+                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                    <div className="flex flex-row justify-between items-center">
+                      <Link
+                        href={item.fileName}
+                        target="_target"
+                        className={`text-xs text-blue-500 truncate ${
+                          item.isDeleted && "line-through"
+                        }`}
+                      >
+                        {item.fileName}
+                      </Link>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
             </div>
             {!checkIfView && (
               <>
