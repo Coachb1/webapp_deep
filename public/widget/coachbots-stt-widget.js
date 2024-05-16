@@ -330,7 +330,7 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
     }
   }
   else if (choice === "Yes") {
-    appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>")
+    // appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>")
   }
 }
 
@@ -1014,6 +1014,37 @@ const getBotDetails2 = async (botId) => {
       botWelcomeMessage = "Welcome to my custom bot.";
     } else if (botType === "deep_dive") {
       botWelcomeMessage = "Welcome to Deep Dive bot";
+      if (!window.user) {
+        // appendMessage2(emailForm);
+        if(botType === "deep_dive"){
+          uniqueSesssionContainerId = generateRandomAlphanumeric(6);
+          const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+            <b>Want to continue as Anonymous?</b>
+            </br> <div>
+                <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
+                <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
+                </div>
+            </div>`;
+
+
+            
+            // console.log("feedbacksessionid: ", uniqueSesssionContainerId);
+            // const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+            //     <b>Want to continue as Anonymous?</b>
+            //     </br> <div>
+            //         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
+            //         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
+            //         </div>
+            //     </div>`;
+      
+    
+          setTimeout(() => {
+            appendMessage2(optionData);
+          }, 100);
+          
+    
+        }
+      }
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
         "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
@@ -2498,7 +2529,7 @@ function handleEndConversation(isInActive) {
   console.log("end conversation clicked");
   if(isInActive === true){
     appendMessage2("<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>");
-  } else if (botType != 'deep_dive') {
+  } else  {
     appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
   }
 
@@ -2649,8 +2680,8 @@ function handleEndConversation(isInActive) {
             <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
             </div>
         </div>`;
-
-      appendMessage2(optionData);
+      sendBotTranscript2();
+      // appendMessage2(optionData);
 
     } else {
       isEmailFormstt = true;
@@ -5788,7 +5819,8 @@ loadExternalModule().then(() => {
                 sendBotTranscript2();
                 if (botType === 'deep_dive') {
                   signals.onResponse({
-                    html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
+                    // html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
+                    html: "<b> Thank you. you may continue with the session </b>"
                   });
                 } else {
                 signals.onResponse({ html: faqHtmlData });
