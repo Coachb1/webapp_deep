@@ -5786,13 +5786,13 @@ loadExternalModule().then(() => {
           console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
           if(askDeepDiveAccessCode){
               console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
-              askDeepDiveAccessCode = false;
               if(latestMessage !== globalBotDetails.data.access_code){
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'> Please enter a valid access code </p>",
                 });
                 return
               }
+              askDeepDiveAccessCode = false;
               latestMessage = "START"
           }
 
