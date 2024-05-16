@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
-import { Link2, Loader, PenBox, Users2, Wrench, X } from "lucide-react";
+import {
+  Link2,
+  Loader,
+  PenBox,
+  Users2,
+  X,
+  PlusCircle,
+  Wrench,
+} from "lucide-react";
 import {
   baseURL,
   basicAuth,
@@ -26,25 +34,25 @@ const AdminProfile = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
   const [changeLoading, setChangeLoading] = useState(false);
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
-
   const [selectedUser, setSelectedUser] = useState("");
   const [oldClientId, setOldClientId] = useState("");
   const [newClientId, setNewClientId] = useState("");
-
   const [allUsers, setAllUsers] = useState<
-    {
-      userEmail: string;
-      userClientId: string;
-    }[]
+    { userEmail: string; userClientId: string }[]
   >([]);
+  const [newClientInit, setNewClientInit] = useState(false);
+  const [newClientName, setNewClientName] = useState("");
+  const [newDomainName, setNewDomainName] = useState("");
+  const [newMemberEmails, setNewMemberEmails] = useState("");
+  const [newAllowedIps, setNewAllowedIps] = useState("");
+  const [newRestrictedPages, setNewRestrictedPages] = useState("");
 
+  // Fetch all clients data
   const getAllClientsData = () => {
     setLoading(true);
     fetch(`${baseURL}/accounts/client_id_user_modification?all_client=true`, {
       method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
+      headers: { Authorization: basicAuth },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -54,6 +62,7 @@ const AdminProfile = ({ user }: any) => {
       })
       .catch((err) => {
         setLoading(false);
+        toast.error("Error fetching client data.");
         console.error(err);
       });
   };
@@ -62,6 +71,7 @@ const AdminProfile = ({ user }: any) => {
     getAllClientsData();
   }, []);
 
+  // Handle changing the client's user
   const changeUsersClientHandler = () => {
     setChangeLoading(true);
     fetch(`${baseURL}/accounts/client_id_user_modification/`, {
@@ -79,22 +89,63 @@ const AdminProfile = ({ user }: any) => {
       .then((data) => {
         setChangeLoading(false);
         toast.success("Successfully changed the client.");
-        console.log(data);
         getAllClientsData();
-        cancelHandler();
+        cancelChangeClientHandler();
       })
       .catch((err) => {
         setChangeLoading(false);
-        toast.success("Error changing the client. Try again.");
+        toast.error("Error changing the client. Try again.");
         console.error(err);
       });
   };
 
-  const cancelHandler = () => {
+  // Handle adding a new client
+  const newClientHandler = () => {
+    setChangeLoading(true);
+    fetch(`${baseURL}/accounts/client_creation/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        client_name: newClientName,
+        domain_name: newDomainName,
+        member_emails: newMemberEmails,
+        allowed_ips: newAllowedIps,
+        restricted_pages: newRestrictedPages,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setChangeLoading(false);
+        toast.success("Successfully created the client.");
+        getAllClientsData();
+        cancelNewClientHandler();
+      })
+      .catch((err) => {
+        setChangeLoading(false);
+        toast.error("Error creating the client. Try again.");
+        console.error(err);
+      });
+  };
+
+  // Cancel changing the client's user
+  const cancelChangeClientHandler = () => {
     setChangeClientInit(false);
     setSelectedUser("");
     setOldClientId("");
     setNewClientId("");
+  };
+
+  // Cancel adding a new client
+  const cancelNewClientHandler = () => {
+    setNewClientInit(false);
+    setNewClientName("");
+    setNewDomainName("");
+    setNewMemberEmails("");
+    setNewAllowedIps("");
+    setNewRestrictedPages("");
   };
 
   return (
@@ -102,35 +153,27 @@ const AdminProfile = ({ user }: any) => {
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Admin's space</div>
       <div className="m-4 flex flex-row items-center">
         <p className="text-sm max-sm:text-xs">Bulk Upload</p>
-        <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
-            <>
-              <Link
-                href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
-                target="_blank"
-                className="max-sm:text-xs"
-              >
-                Link <Link2 className={`h-4 w-4 ml-2 inline`} />
-              </Link>
-            </>
-          </Button>
-        </>
+        <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Link
+            href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
+            target="_blank"
+            className="max-sm:text-xs"
+          >
+            Link <Link2 className="h-4 w-4 ml-2 inline" />
+          </Link>
+        </Button>
       </div>
       <div className="m-4 flex flex-row items-center">
         <p className="text-sm max-sm:text-xs">Django Dashboard</p>
-        <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
-            <>
-              <Link
-                href={`https://coach-api-ovh.coachbots.com/custom-admin`}
-                target="_blank"
-                className="max-sm:text-xs"
-              >
-                Link <Link2 className={`h-4 w-4 ml-2 inline`} />
-              </Link>
-            </>
-          </Button>
-        </>
+        <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Link
+            href={`https://coach-api-ovh.coachbots.com/custom-admin`}
+            target="_blank"
+            className="max-sm:text-xs"
+          >
+            Link <Link2 className="h-4 w-4 ml-2 inline" />
+          </Link>
+        </Button>
       </div>
       <div className="m-4 h-[2px] bg-gray-400 rounded-xl" />
       <div className="m-4 flex flex-col items-start">
@@ -138,15 +181,16 @@ const AdminProfile = ({ user }: any) => {
         <div className="mt-3 w-full flex flex-col gap-2">
           {loading && (
             <div className="text-xs w-full h-20 flex items-center justify-center">
-              <div>
-                <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
-              </div>
+              <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
             </div>
           )}
           {!loading &&
             clientsData.map((client, i) => (
-              <div className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2">
-                <span className=" max-sm:text-xs">{i + 1}</span>
+              <div
+                className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2"
+                key={i}
+              >
+                <span className="max-sm:text-xs">{i + 1}</span>
                 <span>-</span>
                 <p className="text-sm font-semibold max-sm:text-xs">
                   {client.clientName}
@@ -167,21 +211,18 @@ const AdminProfile = ({ user }: any) => {
         </div>
       </div>
       <div className="m-4 mt-6 flex flex-col items-start">
-        <p className="text-base max-sm:text-sm font-semibold ">Actions</p>
+        <p className="text-base max-sm:text-sm font-semibold">Actions</p>
         <div
           className={`mt-3 w-full p-2 rounded-md ${
             changeClientInit && "bg-blue-100 border border-blue-300"
           }`}
         >
           <Button
-            onClick={() => {
-              setChangeClientInit(true);
-            }}
+            onClick={() => setChangeClientInit(true)}
             disabled={clientsData.length === 0}
             variant={"default"}
-            className=" p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+            className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
           >
-            {" "}
             <Wrench className="inline h-4 w-4 mr-2" /> Change Users Client
           </Button>
 
@@ -193,17 +234,12 @@ const AdminProfile = ({ user }: any) => {
                   <Select
                     onValueChange={(value) => {
                       setSelectedUser(value);
-
-                      console.log(
-                        allUsers.filter((user) => user.userEmail === value)[0]
-                          .userClientId
-                      );
                       setOldClientId(
-                        allUsers.filter((user) => user.userEmail === value)[0]
-                          .userClientId
+                        allUsers.find((user) => user.userEmail === value)
+                          ?.userClientId || ""
                       );
                     }}
-                    defaultValue={allUsers[0].userEmail}
+                    defaultValue={allUsers[0]?.userEmail || ""}
                     value={selectedUser}
                   >
                     <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
@@ -214,7 +250,10 @@ const AdminProfile = ({ user }: any) => {
                     <SelectContent>
                       <SelectGroup>
                         {allUsers.map((user) => (
-                          <SelectItem value={user.userEmail}>
+                          <SelectItem
+                            key={user.userEmail}
+                            value={user.userEmail}
+                          >
                             {user.userEmail}
                           </SelectItem>
                         ))}
@@ -224,15 +263,15 @@ const AdminProfile = ({ user }: any) => {
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Old client</p>
-                  <Select value={oldClientId} disabled>
+                  <Select value={oldClientId || ""} disabled>
                     <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
                       <span className="text-gray-600 text-left">
                         {oldClientId && (
                           <>
                             {
-                              clientsData.filter(
+                              clientsData.find(
                                 (client) => client.clientId === oldClientId
-                              )[0].clientName
+                              )?.clientName
                             }{" "}
                             : {oldClientId}
                           </>
@@ -244,10 +283,7 @@ const AdminProfile = ({ user }: any) => {
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Select new client</p>
                   <Select
-                    onValueChange={(value) => {
-                      // setSkillFour(value);
-                      setNewClientId(value);
-                    }}
+                    onValueChange={(value) => setNewClientId(value)}
                     value={newClientId}
                   >
                     <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
@@ -255,9 +291,9 @@ const AdminProfile = ({ user }: any) => {
                         {newClientId && (
                           <>
                             {
-                              clientsData.filter(
+                              clientsData.find(
                                 (client) => client.clientId === newClientId
-                              )[0].clientName
+                              )?.clientName
                             }{" "}
                             : {newClientId}
                           </>
@@ -268,6 +304,7 @@ const AdminProfile = ({ user }: any) => {
                       <SelectGroup>
                         {clientsData.map((client) => (
                           <SelectItem
+                            key={client.clientId}
                             disabled={oldClientId === client.clientId}
                             value={client.clientId}
                           >
@@ -280,39 +317,139 @@ const AdminProfile = ({ user }: any) => {
                 </div>
               </div>
               <div className="self-end">
-                <div className="self-end">
-                  <Button
-                    variant={"destructive"}
-                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
-                    onClick={() => {
-                      cancelHandler();
-                    }}
-                  >
-                    Cancel <X className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button
-                    disabled={
-                      selectedUser.length === 0 ||
-                      oldClientId.length === 0 ||
-                      newClientId.length === 0
-                    }
-                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
-                    onClick={() => {
-                      changeUsersClientHandler();
-                    }}
-                  >
-                    {changeLoading ? (
-                      <>
-                        Changing{" "}
-                        <Loader className="ml-2 h-4 w-4 animate-spin" />
-                      </>
-                    ) : (
-                      <>
-                        Confirm change <PenBox className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
+                <Button
+                  variant={"destructive"}
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
+                  onClick={cancelChangeClientHandler}
+                >
+                  Cancel <X className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  disabled={
+                    selectedUser.length === 0 ||
+                    oldClientId.length === 0 ||
+                    newClientId.length === 0
+                  }
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
+                  onClick={changeUsersClientHandler}
+                >
+                  {changeLoading ? (
+                    <>
+                      Changing <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Confirm change <PenBox className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`mt-3 w-full p-2 rounded-md ${
+            newClientInit && "bg-blue-100 border border-blue-300"
+          }`}
+        >
+          <Button
+            onClick={() => setNewClientInit(true)}
+            variant={"default"}
+            className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+          >
+            <PlusCircle className="inline h-4 w-4 mr-2" /> Add New Client
+          </Button>
+
+          {newClientInit && (
+            <div className="flex flex-col gap-4 w-full justify-end">
+              <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+                <div className="w-full flex flex-row gap-4 items-start">
+                  <div className="w-1/2 flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Client Name</p>
+                    <input
+                      type="text"
+                      value={newClientName}
+                      onChange={(e) => setNewClientName(e.target.value)}
+                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-1/2 flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Domain Name</p>
+                    <input
+                      type="text"
+                      value={newDomainName}
+                      onChange={(e) => setNewDomainName(e.target.value)}
+                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
                 </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Member Emails</p>
+                  <textarea
+                    value={newMemberEmails}
+                    onChange={(e) => setNewMemberEmails(e.target.value)}
+                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Allowed IPs</p>
+                  <textarea
+                    value={newAllowedIps}
+                    onChange={(e) => setNewAllowedIps(e.target.value)}
+                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Restricted Pages</p>
+                  <Select
+                    onValueChange={(value) => setNewRestrictedPages(value)}
+                    value={newRestrictedPages}
+                  >
+                    <SelectTrigger className="w-1/2 p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0">
+                      <span className="text-gray-600 text-left">
+                        {newRestrictedPages}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="page1">Page 1</SelectItem>
+                        <SelectItem value="page2">Page 2</SelectItem>
+                        <SelectItem value="page3">Page 3</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="self-end">
+                <Button
+                  variant={"destructive"}
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
+                  onClick={cancelNewClientHandler}
+                >
+                  Cancel <X className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  disabled={
+                    newClientName.length === 0 ||
+                    newDomainName.length === 0 ||
+                    newMemberEmails.length === 0 ||
+                    newAllowedIps.length === 0 ||
+                    newRestrictedPages.length === 0
+                  }
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
+                  onClick={newClientHandler}
+                >
+                  {changeLoading ? (
+                    <>
+                      Creating <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Confirm <PenBox className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           )}
