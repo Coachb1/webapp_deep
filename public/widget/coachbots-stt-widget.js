@@ -1167,6 +1167,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
+      endSessionButton.setAttribute("id", "end-session-btn")
       if(botScenarioCase === "icons_by_ai"){
         endSessionButton.innerText = "End session";
       } else {
@@ -5513,7 +5514,6 @@ loadExternalModule().then(() => {
                 indvMessage.remove();
               }
             });
-
             if (messageText.innerText === "") {
               messageText.innerText +=
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
@@ -5574,6 +5574,20 @@ loadExternalModule().then(() => {
                   });
               });
             shadowRoot.getElementById("messages").scrollBy(0, 500);
+            endSessionButton.setAttribute(
+              "onmouseover",
+              "this.style.backgroundColor = '#e5e7eb'"
+            );
+            endSessionButton.setAttribute(
+              "onmouseleave",
+              "this.style.backgroundColor = '#9ca3af'"
+            );
+            endSessionButton.style.backgroundColor = "#9ca3af";
+            endSessionButton.style.color = "white";
+            endSessionButton.style.cursor = "pointer";
+            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+            endSessionButton.disabled = false;
+            console.log(endSessionButton);
             return Promise.resolve();
           }
 
@@ -6279,6 +6293,12 @@ loadExternalModule().then(() => {
                 } 
               }
 
+              const endSessionButton = document.getElementById("end-session-btn")
+              endSessionButton.style.cursor = "not-allowed"
+              endSessionButton.removeAttribute("onclick", `handleEndConversation()`)
+              endSessionButton.disabled = true;
+              console.log(endSessionButton)
+
               console.log("LATEST MESSAGE ===> ", latestMessage)
               const response = await fetch(
                 `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
@@ -6358,23 +6378,23 @@ loadExternalModule().then(() => {
               setTimeout(() => {
                 if (["avatar_bot","deep_dive"].includes(botType)) {
                   console.log("endSessionButton:", endSessionButton.disabled);
-                  if (endSessionButton && endSessionButton.disabled) {
-                    endSessionButton.setAttribute(
-                      "onmouseover",
-                      "this.style.backgroundColor = '#e5e7eb'"
-                    );
-                    endSessionButton.setAttribute(
-                      "onmouseleave",
-                      "this.style.backgroundColor = '#9ca3af'"
-                    );
-                    endSessionButton.style.backgroundColor = "#9ca3af";
-                    endSessionButton.style.color = "white";
-                    endSessionButton.setAttribute(
-                      "onclick",
-                      `handleEndConversation()`
-                    );
-                    endSessionButton.disabled = false;
-                  }
+                  // if (endSessionButton && endSessionButton.disabled) {
+                  //   endSessionButton.setAttribute(
+                  //     "onmouseover",
+                  //     "this.style.backgroundColor = '#e5e7eb'"
+                  //   );
+                  //   endSessionButton.setAttribute(
+                  //     "onmouseleave",
+                  //     "this.style.backgroundColor = '#9ca3af'"
+                  //   );
+                  //   endSessionButton.style.backgroundColor = "#9ca3af";
+                  //   endSessionButton.style.color = "white";
+                  //   endSessionButton.setAttribute(
+                  //     "onclick",
+                  //     `handleEndConversation()`
+                  //   );
+                  //   endSessionButton.disabled = false;
+                  // }
                 }
                 // if ( botType === "avatar_bot" )
                 // appendMessage2(
