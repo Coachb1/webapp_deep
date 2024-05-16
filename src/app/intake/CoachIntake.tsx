@@ -993,7 +993,7 @@ const CoachIntake = ({ user }: any) => {
           myHeaders.append("Content-Type", "application/json");
           // }
 
-          let reapproval = "false"; //CHECK HERE
+          let reapproval = "true";
           if (formType === "coachee") {
             reapproval = "false";
           }
