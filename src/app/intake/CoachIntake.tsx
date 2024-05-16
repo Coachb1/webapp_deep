@@ -691,6 +691,10 @@ const CoachIntake = ({ user }: any) => {
             characteristicsRateHigh
           );
           formdata.append("coaching_level", participantLevel);
+          formdata.append(
+            "coach_same_department",
+            `${coachMentInSameDep === "Yes" ? true : false}`
+          );
         }
 
         if (!checkIfEdit) {
@@ -765,7 +769,7 @@ const CoachIntake = ({ user }: any) => {
                       : "https://platform.coachbots.com"
                   }`,
                   fitment_answer: `${participantLevel},${
-                    coachMentInSameDep === "yes" ? true : false
+                    coachMentInSameDep === "Yes" ? true : false
                   },${outcomeSupported}`,
                   fitment_data: {
                     options: {
@@ -988,7 +992,7 @@ const CoachIntake = ({ user }: any) => {
 
           // Convert the object to JSON
           var formDataJSON = JSON.stringify(formDataObject);
-          console.log(formDataObject);
+          console.log(formDataObject,'===================profile to update =============================');
           // if (formType === "coachee") {
           myHeaders.append("Content-Type", "application/json");
           // }
