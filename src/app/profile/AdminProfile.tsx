@@ -18,25 +18,24 @@ import {
   parseClientUsers,
 } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import Select, { MultiValue, SingleValue } from "react-select";
 import { ClientDataType } from "@/lib/types";
 import UsersPopover from "@/components/ui/UsersPopover";
 import { toast } from "sonner";
+
+interface OptionType {
+  value: string;
+  label: string;
+}
 
 const AdminProfile = ({ user }: any) => {
   const [changeClientInit, setChangeClientInit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [changeLoading, setChangeLoading] = useState(false);
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [oldClientId, setOldClientId] = useState("");
-  const [newClientId, setNewClientId] = useState("");
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [oldClientId, setOldClientId] = useState<string | null>(null);
+  const [newClientId, setNewClientId] = useState<string | null>(null);
   const [allUsers, setAllUsers] = useState<
     { userEmail: string; userClientId: string }[]
   >([]);
@@ -45,108 +44,144 @@ const AdminProfile = ({ user }: any) => {
   const [newDomainName, setNewDomainName] = useState("");
   const [newMemberEmails, setNewMemberEmails] = useState("");
   const [newAllowedIps, setNewAllowedIps] = useState("");
-  const [newRestrictedPages, setNewRestrictedPages] = useState("");
+  const [newRestrictedPages, setNewRestrictedPages] = useState<OptionType[]>(
+    []
+  );
 
-  // Fetch all clients data
-  const getAllClientsData = () => {
+  const getAllClientsData = async () => {
     setLoading(true);
-    fetch(`${baseURL}/accounts/client_id_user_modification?all_client=true`, {
-      method: "GET",
-      headers: { Authorization: basicAuth },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientsData(parseClientData(data));
-        setAllUsers(parseClientUsers(data));
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast.error("Error fetching client data.");
-        console.error(err);
-      });
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+        {
+          method: "GET",
+          headers: { Authorization: basicAuth },
+        }
+      );
+      const data = await response.json();
+      setClientsData(parseClientData(data));
+      setAllUsers(parseClientUsers(data));
+    } catch (err) {
+      toast.error("Error fetching client data.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getAllClientsData();
   }, []);
 
-  // Handle changing the client's user
-  const changeUsersClientHandler = () => {
+  const changeUsersClientHandler = async () => {
     setChangeLoading(true);
-    fetch(`${baseURL}/accounts/client_id_user_modification/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        new_client_id: newClientId,
-        user_email: selectedUser,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setChangeLoading(false);
-        toast.success("Successfully changed the client.");
-        getAllClientsData();
-        cancelChangeClientHandler();
-      })
-      .catch((err) => {
-        setChangeLoading(false);
-        toast.error("Error changing the client. Try again.");
-        console.error(err);
-      });
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: basicAuth,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            new_client_id: newClientId,
+            user_email: selectedUser,
+          }),
+        }
+      );
+      const data = await response.json();
+      toast.success("Successfully changed the client.");
+      getAllClientsData();
+      cancelChangeClientHandler();
+    } catch (err) {
+      toast.error("Error changing the client. Try again.");
+      console.error(err);
+    } finally {
+      setChangeLoading(false);
+    }
   };
 
-  // Handle adding a new client
-  const newClientHandler = () => {
+  const newClientHandler = async () => {
     setChangeLoading(true);
-    fetch(`${baseURL}/accounts/client_creation/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
         client_name: newClientName,
+        restricted_pages: newRestrictedPages
+          .map((page) => page.value)
+          .join(","),
+        allowed_ips: newAllowedIps,
         domain_name: newDomainName,
         member_emails: newMemberEmails,
-        allowed_ips: newAllowedIps,
-        restricted_pages: newRestrictedPages,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setChangeLoading(false);
+      });
+
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      const response = await fetch(
+        `${baseURL}/accounts/create-client-id/`,
+        requestOptions
+      );
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        let errorMessage = "Unknown error";
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const result = await response.json();
+          errorMessage = result.error || errorMessage;
+        } else {
+          errorMessage = await response.text();
+        }
+        if (errorMessage.includes("name")) {
+          toast.error("Client already exists");
+        } else {
+          throw new Error(errorMessage);
+        }
+      } else {
+        const result = await response.text();
         toast.success("Successfully created the client.");
+        console.log(result);
         getAllClientsData();
         cancelNewClientHandler();
-      })
-      .catch((err) => {
-        setChangeLoading(false);
-        toast.error("Error creating the client. Try again.");
-        console.error(err);
-      });
+      }
+    } catch (error: any) {
+      toast.error(`Error creating the client: Client already exists`);
+      console.error(error);
+    } finally {
+      setChangeLoading(false);
+    }
   };
 
-  // Cancel changing the client's user
   const cancelChangeClientHandler = () => {
     setChangeClientInit(false);
-    setSelectedUser("");
-    setOldClientId("");
-    setNewClientId("");
+    setSelectedUser(null);
+    setOldClientId(null);
+    setNewClientId(null);
   };
 
-  // Cancel adding a new client
   const cancelNewClientHandler = () => {
     setNewClientInit(false);
     setNewClientName("");
     setNewDomainName("");
     setNewMemberEmails("");
     setNewAllowedIps("");
-    setNewRestrictedPages("");
+    setNewRestrictedPages([]);
   };
+
+  const restrictedPageOptions: OptionType[] = [
+    { value: "Network Directory", label: "Network Directory" },
+    { value: "Demo", label: "Demo" },
+    { value: "Library", label: "Library" },
+    { value: "Creator Studio", label: "Creator Studio" },
+    { value: "Profile", label: "Profile" },
+  ];
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
@@ -232,88 +267,74 @@ const AdminProfile = ({ user }: any) => {
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Select the user</p>
                   <Select
-                    onValueChange={(value) => {
-                      setSelectedUser(value);
-                      setOldClientId(
-                        allUsers.find((user) => user.userEmail === value)
-                          ?.userClientId || ""
-                      );
+                    onChange={(
+                      option: SingleValue<{ value: string; label: string }>
+                    ) => {
+                      if (option) {
+                        const value = option.value;
+                        setSelectedUser(value);
+                        setOldClientId(
+                          allUsers.find((user) => user.userEmail === value)
+                            ?.userClientId || ""
+                        );
+                      }
                     }}
-                    defaultValue={allUsers[0]?.userEmail || ""}
-                    value={selectedUser}
-                  >
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {selectedUser}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {allUsers.map((user) => (
-                          <SelectItem
-                            key={user.userEmail}
-                            value={user.userEmail}
-                          >
-                            {user.userEmail}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                    options={allUsers.map((user) => ({
+                      value: user.userEmail,
+                      label: user.userEmail,
+                    }))}
+                    value={
+                      selectedUser
+                        ? { value: selectedUser, label: selectedUser }
+                        : null
+                    }
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Old client</p>
-                  <Select value={oldClientId || ""} disabled>
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {oldClientId && (
-                          <>
-                            {
+                  <Select
+                    value={
+                      oldClientId
+                        ? {
+                            value: oldClientId,
+                            label: `${
                               clientsData.find(
                                 (client) => client.clientId === oldClientId
                               )?.clientName
-                            }{" "}
-                            : {oldClientId}
-                          </>
-                        )}
-                      </span>
-                    </SelectTrigger>
-                  </Select>
+                            } : ${oldClientId}`,
+                          }
+                        : null
+                    }
+                    isDisabled
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Select new client</p>
                   <Select
-                    onValueChange={(value) => setNewClientId(value)}
-                    value={newClientId}
-                  >
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {newClientId && (
-                          <>
-                            {
+                    onChange={(
+                      option: SingleValue<{ value: string; label: string }>
+                    ) => {
+                      if (option) {
+                        setNewClientId(option.value);
+                      }
+                    }}
+                    options={clientsData.map((client) => ({
+                      value: client.clientId,
+                      label: `${client.clientName} : ${client.clientId}`,
+                    }))}
+                    value={
+                      newClientId
+                        ? {
+                            value: newClientId,
+                            label: `${
                               clientsData.find(
                                 (client) => client.clientId === newClientId
                               )?.clientName
-                            }{" "}
-                            : {newClientId}
-                          </>
-                        )}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {clientsData.map((client) => (
-                          <SelectItem
-                            key={client.clientId}
-                            disabled={oldClientId === client.clientId}
-                            value={client.clientId}
-                          >
-                            {client.clientName} : {client.clientId}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                            } : ${newClientId}`,
+                          }
+                        : null
+                    }
+                  />
                 </div>
               </div>
               <div className="self-end">
@@ -325,11 +346,7 @@ const AdminProfile = ({ user }: any) => {
                   Cancel <X className="ml-2 h-4 w-4" />
                 </Button>
                 <Button
-                  disabled={
-                    selectedUser.length === 0 ||
-                    oldClientId.length === 0 ||
-                    newClientId.length === 0
-                  }
+                  disabled={!selectedUser || !oldClientId || !newClientId}
                   className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
                   onClick={changeUsersClientHandler}
                 >
@@ -366,21 +383,27 @@ const AdminProfile = ({ user }: any) => {
               <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
                 <div className="w-full flex flex-row gap-4 items-start">
                   <div className="w-1/2 flex flex-col gap-2 items-start">
-                    <p className="block text-sm font-medium">Client Name</p>
+                    <p className="block text-sm font-medium">
+                      Client Name <span className="text-red-500">*</span>
+                    </p>
                     <input
                       type="text"
                       value={newClientName}
                       onChange={(e) => setNewClientName(e.target.value)}
                       className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                      required
                     />
                   </div>
                   <div className="w-1/2 flex flex-col gap-2 items-start">
-                    <p className="block text-sm font-medium">Domain Name</p>
+                    <p className="block text-sm font-medium">
+                      Domain Name <span className="text-red-500">*</span>
+                    </p>
                     <input
                       type="text"
                       value={newDomainName}
                       onChange={(e) => setNewDomainName(e.target.value)}
                       className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                      required
                     />
                   </div>
                 </div>
@@ -403,22 +426,13 @@ const AdminProfile = ({ user }: any) => {
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Restricted Pages</p>
                   <Select
-                    onValueChange={(value) => setNewRestrictedPages(value)}
+                    isMulti
+                    options={restrictedPageOptions}
                     value={newRestrictedPages}
-                  >
-                    <SelectTrigger className="w-1/2 p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0">
-                      <span className="text-gray-600 text-left">
-                        {newRestrictedPages}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="page1">Page 1</SelectItem>
-                        <SelectItem value="page2">Page 2</SelectItem>
-                        <SelectItem value="page3">Page 3</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                    onChange={(selectedOptions: MultiValue<OptionType>) =>
+                      setNewRestrictedPages(selectedOptions as OptionType[])
+                    }
+                  />
                 </div>
               </div>
               <div className="self-end">
