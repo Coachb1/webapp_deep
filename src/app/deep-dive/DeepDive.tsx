@@ -118,21 +118,23 @@ const DeepDive = ({ user, renderType }: any) => {
 
         const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
 
-        const coachScribeIcon = document.getElementById("chat-icon2");
-        fetch("https://ipinfo.io/json")
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data.ip);
-            if (!allowedIPS.split(", ").includes(data.ip)) {
-              coachScribeIcon?.removeAttribute("onclick");
-              coachScribeIcon?.removeEventListener("click", () => {
-                toast.error("You are not allowed to access this bot.");
-              });
-              coachScribeIcon?.addEventListener("click", () => {
-                toast.error("You are not allowed to access this bot.");
-              });
-            }
-          });
+        if (allowedIPS !== "") {
+          const coachScribeIcon = document.getElementById("chat-icon2");
+          fetch("https://ipinfo.io/json")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data.ip);
+              if (!allowedIPS.split(", ").includes(data.ip)) {
+                coachScribeIcon?.removeAttribute("onclick");
+                coachScribeIcon?.removeEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+                coachScribeIcon?.addEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+              }
+            });
+        }
         setIsLoading(false);
       })
       .catch((err) => {
