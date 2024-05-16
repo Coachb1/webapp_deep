@@ -562,7 +562,7 @@ const CoachIntake = ({ user }: any) => {
           formdata.append("coaching_level", participantLevel);
           formdata.append(
             "coach_same_department",
-            `${coachMentInSameDep === "yes" ? true : false}`
+            `${coachMentInSameDep === "Yes" ? true : false}`
           );
           formdata.append(
             "allow_coachee_to_create_session",
@@ -679,6 +679,10 @@ const CoachIntake = ({ user }: any) => {
             characteristicsRateHigh
           );
           formdata.append("coaching_level", participantLevel);
+          formdata.append(
+            "coach_same_department",
+            `${coachMentInSameDep === "yes" ? true : false}`
+          );
         }
 
         if (!checkIfEdit) {
@@ -753,7 +757,7 @@ const CoachIntake = ({ user }: any) => {
                       : "https://platform.coachbots.com"
                   }`,
                   fitment_answer: `${participantLevel},${
-                    coachMentInSameDep === "yes" ? true : false
+                    coachMentInSameDep === "Yes" ? true : false
                   },${outcomeSupported}`,
                   fitment_data: {
                     options: {
@@ -1023,7 +1027,7 @@ const CoachIntake = ({ user }: any) => {
                   : "https://platform.coachbots.com"
               }`,
               fitment_answer: `${participantLevel},${
-                coachMentInSameDep === "yes" ? true : false
+                coachMentInSameDep === "Yes" ? true : false
               },${outcomeSupported}`,
               fitment_data: {
                 options: {
