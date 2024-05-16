@@ -128,7 +128,7 @@ const feedbackJsonConversion = (jsonData: any) => {
     })
     .sort(
       (a: any, b: any) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime(),
+        new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
   return sortedFeedback;
@@ -155,7 +155,7 @@ const Feedback = ({ user, renderType }: any) => {
   }
 
   const [positiveFeedbacks, setPositiveFeedbacks] = useState<feedbackType[]>(
-    [],
+    []
   );
 
   const [feedbackConversations, setFeedbackConversations] = useState<
@@ -193,7 +193,7 @@ const Feedback = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -216,22 +216,23 @@ const Feedback = ({ user, renderType }: any) => {
         }
 
         const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
-
-        const coachScribeIcon = document.getElementById("chat-icon2");
-        fetch("https://ipinfo.io/json")
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data.ip);
-            if (!allowedIPS.split(", ").includes(data.ip)) {
-              coachScribeIcon?.removeAttribute("onclick");
-              coachScribeIcon?.removeEventListener("click", () => {
-                toast.error("You are not allowed to access this bot.");
-              });
-              coachScribeIcon?.addEventListener("click", () => {
-                toast.error("You are not allowed to access this bot.");
-              });
-            }
-          });
+        if (allowedIPS !== "") {
+          const coachScribeIcon = document.getElementById("chat-icon2");
+          fetch("https://ipinfo.io/json")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data.ip);
+              if (!allowedIPS.split(", ").includes(data.ip)) {
+                coachScribeIcon?.removeAttribute("onclick");
+                coachScribeIcon?.removeEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+                coachScribeIcon?.addEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+              }
+            });
+        }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setProfileImage(data.data.owner_profile_image);
@@ -251,7 +252,7 @@ const Feedback = ({ user, renderType }: any) => {
             headers: {
               Authorization: basicAuth,
             },
-          },
+          }
         )
           .then((res) => res.json())
           .then((data) => {
@@ -283,7 +284,7 @@ const Feedback = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -292,12 +293,12 @@ const Feedback = ({ user, renderType }: any) => {
         if (data.critical_msgs.length > 0) {
           console.log(convertJsonToStateFormat(data.critical_msgs));
           const convertedCriticalFeedbacks = convertJsonToStateFormat(
-            data.critical_msgs,
+            data.critical_msgs
           );
           const sortedByLatestDates: feedbackConversationType[] =
             convertedCriticalFeedbacks.sort(
               (a: any, b: any) =>
-                new Date(b.date).getTime() - new Date(a.date).getTime(),
+                new Date(b.date).getTime() - new Date(a.date).getTime()
             );
           console.log(sortedByLatestDates);
           setFeedbackConversations(sortedByLatestDates);
@@ -554,7 +555,7 @@ const Feedback = ({ user, renderType }: any) => {
                                                   <span>
                                                     <b>Feedback Date</b> :{" "}
                                                     {convertDate(
-                                                      feedbacks.date,
+                                                      feedbacks.date
                                                     )}
                                                   </span>
                                                 </p>
@@ -589,14 +590,14 @@ const Feedback = ({ user, renderType }: any) => {
                                                           </div>
                                                         </div>
                                                       </>
-                                                    ),
+                                                    )
                                                   )}
                                                 </div>
                                               </AccordionContent>
                                             </AccordionItem>
                                           </Accordion>
                                         </div>
-                                      ),
+                                      )
                                     )}
                                   </div>
                                 </div>
