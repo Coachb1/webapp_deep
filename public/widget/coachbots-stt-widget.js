@@ -2501,7 +2501,7 @@ function handleEndConversation(isInActive) {
   console.log("end conversation clicked");
   if(isInActive === true){
     appendMessage2("<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>");
-  } else if (botType != 'deep_dive') {
+  } else  {
     appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
   }
 
@@ -2652,7 +2652,7 @@ function handleEndConversation(isInActive) {
             <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
             </div>
         </div>`;
-
+      sendBotTranscript2();
       // appendMessage2(optionData);
 
     } else {
