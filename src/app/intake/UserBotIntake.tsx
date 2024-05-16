@@ -748,7 +748,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   to enhance bot knowledge.
                 </p>
               </div>
-              {mediaData?.extracted_from_pdf && (
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_pdf.length > 0 && (
                 <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1 mt-2">
                   {mediaData?.extracted_from_pdf.map((item) => (
                     <div className="flex flex-row justify-between items-center">
@@ -829,9 +830,10 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   {(error as any)["releventLinks"]}
                 </p>
               )}
-              {mediaData?.extracted_from_pdf &&
-                mediaData?.extracted_from_youtube.map((item) => (
-                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_youtube.length > 0 && (
+                <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                  {mediaData?.extracted_from_youtube.map((item) => (
                     <div className="flex flex-row justify-between items-center">
                       <Link
                         href={item.fileName}
@@ -883,8 +885,9 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                         </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )}
             </div>
             {!checkIfView && (
               <>

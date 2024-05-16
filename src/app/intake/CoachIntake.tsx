@@ -993,7 +993,7 @@ const CoachIntake = ({ user }: any) => {
           myHeaders.append("Content-Type", "application/json");
           // }
 
-          let reapproval = "true"; //CHECK HERE
+          let reapproval = "false"; //CHECK HERE
           if (formType === "coachee") {
             reapproval = "false";
           }
@@ -1170,20 +1170,20 @@ const CoachIntake = ({ user }: any) => {
                     deletingDocs = mediaData?.extracted_from_pdf
                       .map((item) => {
                         if (item.isDeleted && item.fileName.includes(".docx")) {
-                          return item.fileName.trim();
+                          return item.fileName;
                         }
                       })
                       .filter((item) => item !== undefined)
-                      .join(", ");
+                      .join(",");
 
                     deletingPdfs = mediaData?.extracted_from_pdf
                       .map((item) => {
                         if (item.isDeleted && item.fileName.includes(".pdf")) {
-                          return item.fileName.trim();
+                          return item.fileName;
                         }
                       })
                       .filter((item) => item !== undefined)
-                      .join(", ");
+                      .join(",");
                   }
 
                   let deletingArticleLinks: string = "";
@@ -1195,7 +1195,7 @@ const CoachIntake = ({ user }: any) => {
                         }
                       })
                       .filter((item) => item !== undefined)
-                      .join(", ");
+                      .join(",");
                   }
 
                   let deletingYoutubeLinks: string = "";
@@ -1207,7 +1207,7 @@ const CoachIntake = ({ user }: any) => {
                         }
                       })
                       .filter((item) => item !== undefined)
-                      .join(", ");
+                      .join(",");
                   }
 
                   const deletedData = {
@@ -1239,7 +1239,6 @@ const CoachIntake = ({ user }: any) => {
                     // deleteExistingFiles ? "true" : "false"
                   );
                   filesPatchFormData.append("profile_id", `${userProfileId}`);
-
                   fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                     method: "PATCH",
                     headers: {
@@ -1657,6 +1656,12 @@ const CoachIntake = ({ user }: any) => {
                 //   );
                 // }
                 setMediaData(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+
+                console.log(
                   transformExtractedData(
                     resultingBot.signature_bot.data.media_data
                   )
@@ -2530,9 +2535,10 @@ const CoachIntake = ({ user }: any) => {
                           {(error as any)["linksReflectingWVpersonal"]}
                         </p>
                       )}
-                      {mediaData?.extracted_from_youtube &&
-                        mediaData?.extracted_from_youtube.map((item) => (
-                          <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {/* @ts-ignore */}
+                      {mediaData?.extracted_from_youtube.length > 0 && (
+                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                          {mediaData?.extracted_from_youtube.map((item) => (
                             <div className="flex flex-row justify-between items-center">
                               <Link
                                 href={item.fileName}
@@ -2588,8 +2594,9 @@ const CoachIntake = ({ user }: any) => {
                                 </div>
                               )}
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2620,9 +2627,10 @@ const CoachIntake = ({ user }: any) => {
                           {(error as any)["linksReflectyouWished"]}
                         </p>
                       )}
-                      {mediaData?.extracted_from_article &&
-                        mediaData?.extracted_from_article.map((item) => (
-                          <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {/* @ts-ignore */}
+                      {mediaData?.extracted_from_article.length > 0 ? (
+                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                          {mediaData?.extracted_from_article.map((item) => (
                             <div className="flex flex-row justify-between items-center">
                               <Link
                                 href={item.fileName}
@@ -2678,8 +2686,9 @@ const CoachIntake = ({ user }: any) => {
                                 </div>
                               )}
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className="my-3 ">
@@ -2706,7 +2715,8 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                  {mediaData?.extracted_from_pdf && (
+                  {/* @ts-ignore */}
+                  {mediaData?.extracted_from_pdf.length > 0 && (
                     <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                       {mediaData?.extracted_from_pdf.map((item) => (
                         <div className="flex flex-row justify-between items-center">
