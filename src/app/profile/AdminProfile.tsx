@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
-import { Link2, Loader, PenBox, Users2, Wrench, X } from "lucide-react";
+import {
+  Link2,
+  Loader,
+  PenBox,
+  Users2,
+  X,
+  PlusCircle,
+  Wrench,
+} from "lucide-react";
 import {
   baseURL,
   basicAuth,
@@ -10,127 +18,197 @@ import {
   parseClientUsers,
 } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import Select, { MultiValue, SingleValue } from "react-select";
 import { ClientDataType } from "@/lib/types";
 import UsersPopover from "@/components/ui/UsersPopover";
 import { toast } from "sonner";
+
+interface OptionType {
+  value: string;
+  label: string;
+}
 
 const AdminProfile = ({ user }: any) => {
   const [changeClientInit, setChangeClientInit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [changeLoading, setChangeLoading] = useState(false);
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
-
-  const [selectedUser, setSelectedUser] = useState("");
-  const [oldClientId, setOldClientId] = useState("");
-  const [newClientId, setNewClientId] = useState("");
-
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [oldClientId, setOldClientId] = useState<string | null>(null);
+  const [newClientId, setNewClientId] = useState<string | null>(null);
   const [allUsers, setAllUsers] = useState<
-    {
-      userEmail: string;
-      userClientId: string;
-    }[]
+    { userEmail: string; userClientId: string }[]
   >([]);
+  const [newClientInit, setNewClientInit] = useState(false);
+  const [newClientName, setNewClientName] = useState("");
+  const [newDomainName, setNewDomainName] = useState("");
+  const [newMemberEmails, setNewMemberEmails] = useState("");
+  const [newAllowedIps, setNewAllowedIps] = useState("");
+  const [newRestrictedPages, setNewRestrictedPages] = useState<OptionType[]>(
+    []
+  );
 
-  const getAllClientsData = () => {
+  const getAllClientsData = async () => {
     setLoading(true);
-    fetch(`${baseURL}/accounts/client_id_user_modification?all_client=true`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setClientsData(parseClientData(data));
-        setAllUsers(parseClientUsers(data));
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.error(err);
-      });
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+        {
+          method: "GET",
+          headers: { Authorization: basicAuth },
+        }
+      );
+      const data = await response.json();
+      setClientsData(parseClientData(data));
+      setAllUsers(parseClientUsers(data));
+    } catch (err) {
+      toast.error("Error fetching client data.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getAllClientsData();
   }, []);
 
-  const changeUsersClientHandler = () => {
+  const changeUsersClientHandler = async () => {
     setChangeLoading(true);
-    fetch(`${baseURL}/accounts/client_id_user_modification/`, {
-      method: "POST",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        new_client_id: newClientId,
-        user_email: selectedUser,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setChangeLoading(false);
-        toast.success("Successfully changed the client.");
-        console.log(data);
-        getAllClientsData();
-        cancelHandler();
-      })
-      .catch((err) => {
-        setChangeLoading(false);
-        toast.success("Error changing the client. Try again.");
-        console.error(err);
-      });
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: basicAuth,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            new_client_id: newClientId,
+            user_email: selectedUser,
+          }),
+        }
+      );
+      const data = await response.json();
+      toast.success("Successfully changed the client.");
+      getAllClientsData();
+      cancelChangeClientHandler();
+    } catch (err) {
+      toast.error("Error changing the client. Try again.");
+      console.error(err);
+    } finally {
+      setChangeLoading(false);
+    }
   };
 
-  const cancelHandler = () => {
-    setChangeClientInit(false);
-    setSelectedUser("");
-    setOldClientId("");
-    setNewClientId("");
+  const newClientHandler = async () => {
+    setChangeLoading(true);
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        client_name: newClientName,
+        restricted_pages: newRestrictedPages
+          .map((page) => page.value)
+          .join(","),
+        allowed_ips: newAllowedIps,
+        domain_name: newDomainName,
+        member_emails: newMemberEmails,
+      });
+
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      const response = await fetch(
+        `${baseURL}/accounts/create-client-id/`,
+        requestOptions
+      );
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        let errorMessage = "Unknown error";
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const result = await response.json();
+          errorMessage = result.error || errorMessage;
+        } else {
+          errorMessage = await response.text();
+        }
+        if (errorMessage.includes("name")) {
+          toast.error("Client already exists");
+        } else {
+          throw new Error(errorMessage);
+        }
+      } else {
+        const result = await response.text();
+        toast.success("Successfully created the client.");
+        console.log(result);
+        getAllClientsData();
+        cancelNewClientHandler();
+      }
+    } catch (error: any) {
+      toast.error(`Error creating the client: Client already exists`);
+      console.error(error);
+    } finally {
+      setChangeLoading(false);
+    }
   };
+
+  const cancelChangeClientHandler = () => {
+    setChangeClientInit(false);
+    setSelectedUser(null);
+    setOldClientId(null);
+    setNewClientId(null);
+  };
+
+  const cancelNewClientHandler = () => {
+    setNewClientInit(false);
+    setNewClientName("");
+    setNewDomainName("");
+    setNewMemberEmails("");
+    setNewAllowedIps("");
+    setNewRestrictedPages([]);
+  };
+
+  const restrictedPageOptions: OptionType[] = [
+    { value: "Network Directory", label: "Network Directory" },
+    { value: "Demo", label: "Demo" },
+    { value: "Library", label: "Library" },
+    { value: "Creator Studio", label: "Creator Studio" },
+    { value: "Profile", label: "Profile" },
+  ];
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Admin's space</div>
       <div className="m-4 flex flex-row items-center">
         <p className="text-sm max-sm:text-xs">Bulk Upload</p>
-        <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
-            <>
-              <Link
-                href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
-                target="_blank"
-                className="max-sm:text-xs"
-              >
-                Link <Link2 className={`h-4 w-4 ml-2 inline`} />
-              </Link>
-            </>
-          </Button>
-        </>
+        <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Link
+            href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
+            target="_blank"
+            className="max-sm:text-xs"
+          >
+            Link <Link2 className="h-4 w-4 ml-2 inline" />
+          </Link>
+        </Button>
       </div>
       <div className="m-4 flex flex-row items-center">
         <p className="text-sm max-sm:text-xs">Django Dashboard</p>
-        <>
-          <Button className="ml-8 h-6 w-fit max-sm:ml-2">
-            <>
-              <Link
-                href={`https://coach-api-ovh.coachbots.com/custom-admin`}
-                target="_blank"
-                className="max-sm:text-xs"
-              >
-                Link <Link2 className={`h-4 w-4 ml-2 inline`} />
-              </Link>
-            </>
-          </Button>
-        </>
+        <Button className="ml-8 h-6 w-fit max-sm:ml-2">
+          <Link
+            href={`https://coach-api-ovh.coachbots.com/custom-admin`}
+            target="_blank"
+            className="max-sm:text-xs"
+          >
+            Link <Link2 className="h-4 w-4 ml-2 inline" />
+          </Link>
+        </Button>
       </div>
       <div className="m-4 h-[2px] bg-gray-400 rounded-xl" />
       <div className="m-4 flex flex-col items-start">
@@ -138,15 +216,16 @@ const AdminProfile = ({ user }: any) => {
         <div className="mt-3 w-full flex flex-col gap-2">
           {loading && (
             <div className="text-xs w-full h-20 flex items-center justify-center">
-              <div>
-                <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
-              </div>
+              <Loader className="h-4 w-4 mr-2 animate-spin inline" /> Loading
             </div>
           )}
           {!loading &&
             clientsData.map((client, i) => (
-              <div className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2">
-                <span className=" max-sm:text-xs">{i + 1}</span>
+              <div
+                className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2"
+                key={i}
+              >
+                <span className="max-sm:text-xs">{i + 1}</span>
                 <span>-</span>
                 <p className="text-sm font-semibold max-sm:text-xs">
                   {client.clientName}
@@ -167,21 +246,18 @@ const AdminProfile = ({ user }: any) => {
         </div>
       </div>
       <div className="m-4 mt-6 flex flex-col items-start">
-        <p className="text-base max-sm:text-sm font-semibold ">Actions</p>
+        <p className="text-base max-sm:text-sm font-semibold">Actions</p>
         <div
           className={`mt-3 w-full p-2 rounded-md ${
             changeClientInit && "bg-blue-100 border border-blue-300"
           }`}
         >
           <Button
-            onClick={() => {
-              setChangeClientInit(true);
-            }}
+            onClick={() => setChangeClientInit(true)}
             disabled={clientsData.length === 0}
             variant={"default"}
-            className=" p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+            className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
           >
-            {" "}
             <Wrench className="inline h-4 w-4 mr-2" /> Change Users Client
           </Button>
 
@@ -191,128 +267,203 @@ const AdminProfile = ({ user }: any) => {
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Select the user</p>
                   <Select
-                    onValueChange={(value) => {
-                      setSelectedUser(value);
-
-                      console.log(
-                        allUsers.filter((user) => user.userEmail === value)[0]
-                          .userClientId
-                      );
-                      setOldClientId(
-                        allUsers.filter((user) => user.userEmail === value)[0]
-                          .userClientId
-                      );
+                    onChange={(
+                      option: SingleValue<{ value: string; label: string }>
+                    ) => {
+                      if (option) {
+                        const value = option.value;
+                        setSelectedUser(value);
+                        setOldClientId(
+                          allUsers.find((user) => user.userEmail === value)
+                            ?.userClientId || ""
+                        );
+                      }
                     }}
-                    defaultValue={allUsers[0].userEmail}
-                    value={selectedUser}
-                  >
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {selectedUser}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {allUsers.map((user) => (
-                          <SelectItem value={user.userEmail}>
-                            {user.userEmail}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                    options={allUsers.map((user) => ({
+                      value: user.userEmail,
+                      label: user.userEmail,
+                    }))}
+                    value={
+                      selectedUser
+                        ? { value: selectedUser, label: selectedUser }
+                        : null
+                    }
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Old client</p>
-                  <Select value={oldClientId} disabled>
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {oldClientId && (
-                          <>
-                            {
-                              clientsData.filter(
+                  <Select
+                    value={
+                      oldClientId
+                        ? {
+                            value: oldClientId,
+                            label: `${
+                              clientsData.find(
                                 (client) => client.clientId === oldClientId
-                              )[0].clientName
-                            }{" "}
-                            : {oldClientId}
-                          </>
-                        )}
-                      </span>
-                    </SelectTrigger>
-                  </Select>
+                              )?.clientName
+                            } : ${oldClientId}`,
+                          }
+                        : null
+                    }
+                    isDisabled
+                  />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
                   <p className="block text-sm font-medium">Select new client</p>
                   <Select
-                    onValueChange={(value) => {
-                      // setSkillFour(value);
-                      setNewClientId(value);
+                    onChange={(
+                      option: SingleValue<{ value: string; label: string }>
+                    ) => {
+                      if (option) {
+                        setNewClientId(option.value);
+                      }
                     }}
-                    value={newClientId}
-                  >
-                    <SelectTrigger className="w-full p-1 px-6 h-8 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0 ">
-                      <span className="text-gray-600 text-left">
-                        {newClientId && (
-                          <>
-                            {
-                              clientsData.filter(
+                    options={clientsData.map((client) => ({
+                      value: client.clientId,
+                      label: `${client.clientName} : ${client.clientId}`,
+                    }))}
+                    value={
+                      newClientId
+                        ? {
+                            value: newClientId,
+                            label: `${
+                              clientsData.find(
                                 (client) => client.clientId === newClientId
-                              )[0].clientName
-                            }{" "}
-                            : {newClientId}
-                          </>
-                        )}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {clientsData.map((client) => (
-                          <SelectItem
-                            disabled={oldClientId === client.clientId}
-                            value={client.clientId}
-                          >
-                            {client.clientName} : {client.clientId}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                              )?.clientName
+                            } : ${newClientId}`,
+                          }
+                        : null
+                    }
+                  />
                 </div>
               </div>
               <div className="self-end">
-                <div className="self-end">
-                  <Button
-                    variant={"destructive"}
-                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
-                    onClick={() => {
-                      cancelHandler();
-                    }}
-                  >
-                    Cancel <X className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button
-                    disabled={
-                      selectedUser.length === 0 ||
-                      oldClientId.length === 0 ||
-                      newClientId.length === 0
-                    }
-                    className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
-                    onClick={() => {
-                      changeUsersClientHandler();
-                    }}
-                  >
-                    {changeLoading ? (
-                      <>
-                        Changing{" "}
-                        <Loader className="ml-2 h-4 w-4 animate-spin" />
-                      </>
-                    ) : (
-                      <>
-                        Confirm change <PenBox className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
+                <Button
+                  variant={"destructive"}
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
+                  onClick={cancelChangeClientHandler}
+                >
+                  Cancel <X className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  disabled={!selectedUser || !oldClientId || !newClientId}
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
+                  onClick={changeUsersClientHandler}
+                >
+                  {changeLoading ? (
+                    <>
+                      Changing <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Confirm change <PenBox className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`mt-3 w-full p-2 rounded-md ${
+            newClientInit && "bg-blue-100 border border-blue-300"
+          }`}
+        >
+          <Button
+            onClick={() => setNewClientInit(true)}
+            variant={"default"}
+            className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+          >
+            <PlusCircle className="inline h-4 w-4 mr-2" /> Add New Client
+          </Button>
+
+          {newClientInit && (
+            <div className="flex flex-col gap-4 w-full justify-end">
+              <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+                <div className="w-full flex flex-row gap-4 items-start">
+                  <div className="w-1/2 flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">
+                      Client Name <span className="text-red-500">*</span>
+                    </p>
+                    <input
+                      type="text"
+                      value={newClientName}
+                      onChange={(e) => setNewClientName(e.target.value)}
+                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                      required
+                    />
+                  </div>
+                  <div className="w-1/2 flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">
+                      Domain Name <span className="text-red-500">*</span>
+                    </p>
+                    <input
+                      type="text"
+                      value={newDomainName}
+                      onChange={(e) => setNewDomainName(e.target.value)}
+                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                      required
+                    />
+                  </div>
                 </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Member Emails</p>
+                  <textarea
+                    value={newMemberEmails}
+                    onChange={(e) => setNewMemberEmails(e.target.value)}
+                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Allowed IPs</p>
+                  <textarea
+                    value={newAllowedIps}
+                    onChange={(e) => setNewAllowedIps(e.target.value)}
+                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                  />
+                </div>
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <p className="block text-sm font-medium">Restricted Pages</p>
+                  <Select
+                    isMulti
+                    options={restrictedPageOptions}
+                    value={newRestrictedPages}
+                    onChange={(selectedOptions: MultiValue<OptionType>) =>
+                      setNewRestrictedPages(selectedOptions as OptionType[])
+                    }
+                  />
+                </div>
+              </div>
+              <div className="self-end">
+                <Button
+                  variant={"destructive"}
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 text-sm w-fit mr-2"
+                  onClick={cancelNewClientHandler}
+                >
+                  Cancel <X className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  disabled={
+                    newClientName.length === 0 ||
+                    newDomainName.length === 0 ||
+                    newMemberEmails.length === 0 ||
+                    newAllowedIps.length === 0 ||
+                    newRestrictedPages.length === 0
+                  }
+                  className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
+                  onClick={newClientHandler}
+                >
+                  {changeLoading ? (
+                    <>
+                      Creating <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Confirm <PenBox className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           )}
