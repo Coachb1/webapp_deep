@@ -15,7 +15,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, convertTextToCorrectFormat } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  capitalizeText,
+  convertTextToCorrectFormat,
+} from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -69,7 +74,7 @@ const Coach = ({ user, renderType }: any) => {
   const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
     ""
   );
-  // const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
+  const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
 
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
@@ -218,6 +223,12 @@ const Coach = ({ user, renderType }: any) => {
                 });
             });
         }
+
+        if (data.data.scenario_case === "icons_by_ai") {
+          setDiscussionTopics(
+            data.data.profile_details.discussion_topic.split(",")
+          );
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -283,15 +294,23 @@ const Coach = ({ user, renderType }: any) => {
                   coaching experience.{" "}
                 </p>
               </div>
-              {/* {renderType !== "dynamic" && (
-                    <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                      This is where you will see the summary information of the
-                      particular coach avatar. The bot on this page demonstrates
-                      a conversation based on this profile.
-                    </p>
-                  )} */}
+              {discussiionTopics.length > 0 && (
+                <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-100 bg-gray-50 rounded-lg mb-4">
+                  <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
+                    Discussion Topics
+                  </h3>
+                  <div className="flex flex-row gap-2 justify-center flex-wrap">
+                    <>
+                      {discussiionTopics.map((topic) => (
+                        <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
+                          {capitalizeText(topic.trim())}
+                        </div>
+                      ))}
+                    </>
+                  </div>
+                </div>
+              )}
               {renderType === "dynamic" ? (
-                // coachDescription
                 <>
                   <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
                     <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
@@ -300,7 +319,7 @@ const Coach = ({ user, renderType }: any) => {
                         src={profileImage}
                       />
                     </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
+                    <p className="w-[80%] text-sm max-sm:text-xs max-sm:w-full text-left  max-sm:text-center">
                       {" "}
                       {coachDescription}
                     </p>
