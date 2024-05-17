@@ -50,14 +50,16 @@ const getknowledgeBotss = async (userEmail: string) => {
             // @ts-ignore
             "What is the primary purpose of the bot?"
           ];
-          knowledgeBotss.push({
-            bot_id: botJson.bot_id,
-            bot_name: item.bot_attributes.bot_name,
-            bot_type: botJson.bot_type,
-            description: description,
-            scenario_case: botJson.bot_scenario_case,
-            creator_name: botJson.creator_name,
-          });
+          if (item.signature_bot.is_approved){
+            knowledgeBotss.push({
+              bot_id: botJson.bot_id,
+              bot_name: item.bot_attributes.bot_name,
+              bot_type: botJson.bot_type,
+              description: description,
+              scenario_case: botJson.bot_scenario_case,
+              creator_name: botJson.creator_name,
+            });
+          }
         });
         return knowledgeBotss;
       } catch (error) {
