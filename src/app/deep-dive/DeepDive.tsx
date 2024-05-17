@@ -89,6 +89,8 @@ const DeepDive = ({ user, renderType }: any) => {
           console.error(err);
         });
     }
+    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    coachScribe.setAttribute("style", "display: none;");
 
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
@@ -106,8 +108,6 @@ const DeepDive = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
 
         if (data.error) {
           coachScribe.setAttribute("style", "display: none;");
@@ -136,6 +136,7 @@ const DeepDive = ({ user, renderType }: any) => {
             });
         }
         setIsLoading(false);
+        coachScribe.removeAttribute("style");
       })
       .catch((err) => {
         setIsLoading(false);

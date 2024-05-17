@@ -578,7 +578,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               </p>
               <input
                 required
-                disabled={checkIfEdit ? true : false}
+                disabled={(checkIfEdit ? true : false)  || (checkIfView ? true : false)}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
@@ -591,7 +591,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 placeholder="Project X bot, POSH bot, Digital literacy bot etc."
                 type="text"
                 className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
-                  checkIfEdit ? "hover:cursor-not-allowed" : ""
+                  checkIfEdit || checkIfView ? "hover:cursor-not-allowed" : ""
                 }`}
               />
               {Object.keys(error).includes("botName") && (
