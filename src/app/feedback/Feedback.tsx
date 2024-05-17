@@ -182,6 +182,9 @@ const Feedback = ({ user, renderType }: any) => {
         });
     }
 
+    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    coachScribe.setAttribute("style", "display: none;");
+
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
@@ -197,9 +200,6 @@ const Feedback = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
-
         if (renderType === "dynamic") {
           console.log("DYNAMIC FEEDBACK DATA ", data);
           if (data.error) {
@@ -241,6 +241,7 @@ const Feedback = ({ user, renderType }: any) => {
           setCurrentProjects(data.data.additional_data?.current_projects);
         }
         setIsLoading(false);
+        coachScribe.removeAttribute("style");
         fetch(
           `${baseURL}/accounts/get-user-feedback-data/?method=get&feedback_type=positive&bot_id=${
             renderType === "dynamic"
