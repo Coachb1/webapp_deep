@@ -58,11 +58,7 @@ const MyPages = ({ user }: any) => {
           const profileJson = await profile.json();
           console.log("profile", profileJson.data[0]);
 
-          setUserProfile(
-            profileJson.data.filter(
-              (profile: any) => profile.is_approved === true
-            )[0]
-          );
+          setUserProfile(profileJson.data[0]);
 
           fetch(
             `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
