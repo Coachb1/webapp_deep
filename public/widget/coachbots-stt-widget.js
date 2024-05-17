@@ -140,6 +140,7 @@ let UserProfileInfo;
 let sessionQnAdata = [];
 let intakebuttonText = 'Pre-Check'
 let askDeepDiveAccessCode = false;
+let quickMatchMessage;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -1832,6 +1833,7 @@ async function handleFaqButtonClick(question) {
     if (fitmentAnalysisInProgress) {
       return;
     }
+    fitmentAnalysisInProgress = true;
     saveBotEngagement(botId, userId2, "num_of_clicked_button");
     console.log(
       "profile_type",
@@ -1850,7 +1852,19 @@ async function handleFaqButtonClick(question) {
       );
       return;
     }
-    fitmentAnalysisInProgress = true;
+
+    if (quickMatchMessage){
+      appendMessage2(
+        `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
+          "Match Score",
+          quickMatchMessage,
+          "#fb923c"
+        )}</div>`
+      );
+      fitmentAnalysisInProgress = false;
+      fitmentContainerId += 1;
+      return
+    }
     appendMessage2(
       `<div id='fitment-container-${fitmentContainerId}'>${addStickerToMessage(
         "Match Score",
@@ -1896,6 +1910,9 @@ async function handleFaqButtonClick(question) {
         `fitment-container-${fitmentContainerId}`
       ).innerHTML = addStickerToMessage("Match Score", que_msg,"#fb923c");
       fitmentAnalysisInProgress = false;
+      fitmentContainerId += 1;
+      quickMatchMessage = que_msg
+
       return;
     }
 
