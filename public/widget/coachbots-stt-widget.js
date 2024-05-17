@@ -330,7 +330,7 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
     }
   }
   else if (choice === "Yes") {
-    // appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>")
+    appendMessage2("<p>Please click on <b>Begin Session</b> to continue..</p>")
   }
 }
 
@@ -2008,30 +2008,36 @@ async function handleFaqButtonClick(question) {
         return;
       }
       console.log(window.user,'is_logged_in')
-      if (botType === 'deep_dive' && !window.user) {
+      if (botType === 'deep_dive') {
         const today = new Date();
         const botExpiresAt = new Date(globalBotDetails.data.bot_expires_at);
-        
+
+        today.setHours(0, 0, 0, 0);
+        botExpiresAt.setHours(0, 0, 0, 0);
+
         console.log('expires_at: ', today,botExpiresAt)
-        if (botExpiresAt < today) {
+        if (today > botExpiresAt) {
             appendMessage2(
               addStickerToMessage(
                 "Begin Session",
-                `<b><p>Bot expired...</p></b>`,
+                `<b><p>This bot has been expired.</p></b>`,
                 '#22c55e'
               )
             );
             return
         }
-        appendMessage2(
-          addStickerToMessage(
-            "Begin Session",
-            `<b><p>Please enter bot access code.</p></b>`,
-            '#22c55e'
-          )
-        );
-
-        askDeepDiveAccessCode = true;
+        
+        if (!window.user){
+          appendMessage2(
+            addStickerToMessage(
+              "Begin Session",
+              `<b><p>Please enter bot access code.</p></b>`,
+              '#22c55e'
+            )
+          );
+  
+          askDeepDiveAccessCode = true;
+        }
 
     }
       saveBotEngagement(botId, userId2, "num_of_clicked_button");
