@@ -95,6 +95,7 @@ const CoachIntake = ({ user }: any) => {
   const [userId, setUserId] = useState("");
   const [isMentor, setIsMentor] = useState<boolean>();
   const [profileImage, setProfileImage] = useState<File>();
+  const [profileImageUrl, setProfileImageUrl] = useState<string>("");
   const [department, setDepartment] = useState("");
   const [about, setAbout] = useState("");
   const [areaDomain, setAreaDomain] = useState("");
@@ -530,9 +531,14 @@ const CoachIntake = ({ user }: any) => {
 
         if (!checkIfEdit) {
           //@ts-ignore
-          formdata.append("profile_image", profileImage, "coachprofile.jpg");
+          if (profileImage) {
+            formdata.append("profile_image", profileImage, profileImage.name);
+            console.log(formdata.get("profile_image"));
+          }
         }
-
+        if (checkIfEdit) {
+          formdata.append("profile_image_url", profileImageUrl);
+        }
         formdata.append("department", department);
 
         formdata.append("supported_outcome", outcomeSupported);
@@ -992,7 +998,10 @@ const CoachIntake = ({ user }: any) => {
 
           // Convert the object to JSON
           var formDataJSON = JSON.stringify(formDataObject);
-          console.log(formDataObject,'===================profile to update =============================');
+          console.log(
+            formDataObject,
+            "===================profile to update ============================="
+          );
           // if (formType === "coachee") {
           myHeaders.append("Content-Type", "application/json");
           // }
@@ -1012,280 +1021,321 @@ const CoachIntake = ({ user }: any) => {
           )
             .then((res) => res.json())
             .then((data) => {
-              console.log(data, "updated");
-              // setCreateLoading(false);
-              // if (!data.error && !data.detail) {
-              //   toast.loading(
-              //     "Your profile and Bot have been updated. Redirecting you to your profile.",
-              //     {
-              //       duration: 6000,
-              //     }
-              //   );
-              // resetAllStates();
-              // setTimeout(() => {
-              //   router.push("/profile");
-              // }, 6000);
-              // }
+              console.log(data);
+              if (!data.error) {
+                console.log(data, "updated");
+                // setCreateLoading(false);
+                // if (!data.error && !data.detail) {
+                //   toast.loading(
+                //     "Your profile and Bot have been updated. Redirecting you to your profile.",
+                //     {
+                //       duration: 6000,
+                //     }
+                //   );
+                // resetAllStates();
+                // setTimeout(() => {
+                //   router.push("/profile");
+                // }, 6000);
+                // }
 
-              if (formType === "coach") {
-                // myHeaders.append("Content-Type", "application/json");
-                // const avatarBotCreationFormData = {
-                //   bot_type: "avatar_bot",
-                //   profile_id: userProfileId,
-                //   bot_name: name,
-                //   email: user.email,
-                //   bot_details: { info: about, coach_name: name },
-                //   attributes: {
-                //     heading: `welcome to ${name}'s avatar bot`,
-                //   },
-                //   participant_id: userId,
-                //   bot_base_url: `${
-                //     subdomain === "playground"
-                //       ? "https://playground.coachbots.com"
-                //       : "https://platform.coachbots.com"
-                //   }`,
-                //   fitment_answer: `${participantLevel},${
-                //     coachMentInSameDep === "yes" ? true : false
-                //   },${outcomeSupported}`,
-                //   fitment_data: {
-                //     options: {
-                //       "1": ["Someone Senior", "Any level"],
-                //       "2": ["Yes", "No"],
-                //       "3": [
-                //         "Career advancement",
-                //         "Skill development",
-                //         "Introspection & reflection",
-                //         "Networking & leadership",
-                //       ],
-                //     },
-                //     mentee_que: {
-                //       "1": "What level of coach & mentor do you want?",
-                //       "2": "I want a coach & mentor someone from the same department.",
-                //       "3": "What kind of outcome do you want from these sessions the most?",
-                //     },
-                //     mentor_que: {
-                //       "1": "What level of participant do you want to coach & mentor?",
-                //       "2": "I want to coach & mentor someone in the same department.",
-                //       "3": "What kind of outcome can you support in these sessions the most?",
-                //     },
-                //   },
-                //   additional_data: {
-                //     profile_type: "coach",
-                //     area_domain: areaDomain,
-                //     experience: experience,
-                //     mentoring_preferences: mentoringPreferences,
-                //     mentoring_frameworks: mentoringPreferencess.join(", "),
-                //     dominant_point_of_view: povProgramParticipants,
-                //     problem_solving_approach: problemSolvingApproach,
-                //     admired_leaders: leaderNames,
-                //     profile_description: about,
-                //     department: department,
-                //     youtube_links: linksReflectingWVpersonal,
-                //     article_links: linksReflectyouWished,
-                //     voice_sample: voiceSample,
-                //     discuss_how_you_helped_others_in_coachMentoring:
-                //       discussInCARformat,
-                //     journey_and_background: journeyAndBackground,
-                //     provide_answers_using_emojis: `${
-                //       provideAnswersUsingEmojis === "yes" ? true : false
-                //     }`,
-                //     allow_coachee_to_create_session: `${
-                //       allowSessionNotes === "yes" ? true : false
-                //     }`,
-                //     fitment_answers: {
-                //       coachmentSelect,
-                //       participantLevel,
-                //       coachMentInSameDep,
-                //       outcomeSupported,
-                //     },
-                //     coach_qna: CoachMentorQnA.coach_qna,
-                //     mentor_qna: CoachMentorQnA.mentor_qna,
-                //   },
-                //   media_data: {
-                //     youtube_links: linksReflectingWVpersonal,
-                //     article_links: linksReflectyouWished,
-                //   },
-                // };
+                if (formType === "coach") {
+                  // myHeaders.append("Content-Type", "application/json");
+                  // const avatarBotCreationFormData = {
+                  //   bot_type: "avatar_bot",
+                  //   profile_id: userProfileId,
+                  //   bot_name: name,
+                  //   email: user.email,
+                  //   bot_details: { info: about, coach_name: name },
+                  //   attributes: {
+                  //     heading: `welcome to ${name}'s avatar bot`,
+                  //   },
+                  //   participant_id: userId,
+                  //   bot_base_url: `${
+                  //     subdomain === "playground"
+                  //       ? "https://playground.coachbots.com"
+                  //       : "https://platform.coachbots.com"
+                  //   }`,
+                  //   fitment_answer: `${participantLevel},${
+                  //     coachMentInSameDep === "yes" ? true : false
+                  //   },${outcomeSupported}`,
+                  //   fitment_data: {
+                  //     options: {
+                  //       "1": ["Someone Senior", "Any level"],
+                  //       "2": ["Yes", "No"],
+                  //       "3": [
+                  //         "Career advancement",
+                  //         "Skill development",
+                  //         "Introspection & reflection",
+                  //         "Networking & leadership",
+                  //       ],
+                  //     },
+                  //     mentee_que: {
+                  //       "1": "What level of coach & mentor do you want?",
+                  //       "2": "I want a coach & mentor someone from the same department.",
+                  //       "3": "What kind of outcome do you want from these sessions the most?",
+                  //     },
+                  //     mentor_que: {
+                  //       "1": "What level of participant do you want to coach & mentor?",
+                  //       "2": "I want to coach & mentor someone in the same department.",
+                  //       "3": "What kind of outcome can you support in these sessions the most?",
+                  //     },
+                  //   },
+                  //   additional_data: {
+                  //     profile_type: "coach",
+                  //     area_domain: areaDomain,
+                  //     experience: experience,
+                  //     mentoring_preferences: mentoringPreferences,
+                  //     mentoring_frameworks: mentoringPreferencess.join(", "),
+                  //     dominant_point_of_view: povProgramParticipants,
+                  //     problem_solving_approach: problemSolvingApproach,
+                  //     admired_leaders: leaderNames,
+                  //     profile_description: about,
+                  //     department: department,
+                  //     youtube_links: linksReflectingWVpersonal,
+                  //     article_links: linksReflectyouWished,
+                  //     voice_sample: voiceSample,
+                  //     discuss_how_you_helped_others_in_coachMentoring:
+                  //       discussInCARformat,
+                  //     journey_and_background: journeyAndBackground,
+                  //     provide_answers_using_emojis: `${
+                  //       provideAnswersUsingEmojis === "yes" ? true : false
+                  //     }`,
+                  //     allow_coachee_to_create_session: `${
+                  //       allowSessionNotes === "yes" ? true : false
+                  //     }`,
+                  //     fitment_answers: {
+                  //       coachmentSelect,
+                  //       participantLevel,
+                  //       coachMentInSameDep,
+                  //       outcomeSupported,
+                  //     },
+                  //     coach_qna: CoachMentorQnA.coach_qna,
+                  //     mentor_qna: CoachMentorQnA.mentor_qna,
+                  //   },
+                  //   media_data: {
+                  //     youtube_links: linksReflectingWVpersonal,
+                  //     article_links: linksReflectyouWished,
+                  //   },
+                  // };
 
-                // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                //   method: checkIfEdit ? "PATCH" : "POST",
-                //   headers: myHeaders,
-                //   body: checkIfEdit
-                //     ? JSON.stringify({
-                //         bot_id: botIUidFromParams,
-                //         profile_id: userProfileId,
-                //         updated_data: avatarBotCreationFormData,
-                //         is_overwrite: deleteExistingFiles ? "true" : "false",
-                //       })
-                //     : JSON.stringify(avatarBotCreationFormData),
-                // })
-                //   .then((res) => res.json())
-                //   .then((data) => {
-                //     console.log(data);
-                //     // setCreateLoading(false);
-                //     if (!data.error && !data.detail) {
-                console.log(referenceDocs.length, "length");
-                if (
-                  referenceDocs.length > 0 ||
-                  linksReflectingWVpersonal !== "" ||
-                  linksReflectyouWished !== "" ||
-                  mediaData?.extracted_from_article ||
-                  mediaData?.extracted_from_youtube ||
-                  mediaData?.extracted_from_pdf
-                ) {
-                  const filesPatchFormData = new FormData();
-                  if (referenceDocs.length > 0) {
-                    referenceDocs.forEach(({ file, text }) => {
-                      if (file.name.includes(".pdf")) {
-                        if (text) {
-                          filesPatchFormData.append(
-                            "pdf_data",
-                            `file_name:${file.name.trim()} text_file:${text}`
-                          );
-                          console.log(text);
-                        } else {
-                          filesPatchFormData.append(
-                            `attached_pdfs`,
-                            file,
-                            file.name.trim()
-                          );
-                        }
-                      } else if (file.name.includes(".docx")) {
-                        if (text) {
-                          filesPatchFormData.append(
-                            `doc_data`,
-                            `file_name:${file.name.trim()} text_file:${text}`
-                          );
-                          console.log(text);
-                        } else {
-                          filesPatchFormData.append(
-                            `attached_docs`,
-                            file,
-                            file.name.trim()
-                          );
-                        }
-                      }
-                    });
-                  }
-
-                  let deletingDocs: string = "";
-                  let deletingPdfs: string = "";
-                  if (mediaData?.extracted_from_pdf) {
-                    deletingDocs = mediaData?.extracted_from_pdf
-                      .map((item) => {
-                        if (item.isDeleted && item.fileName.includes(".docx")) {
-                          return item.fileName;
-                        }
-                      })
-                      .filter((item) => item !== undefined)
-                      .join(",");
-
-                    deletingPdfs = mediaData?.extracted_from_pdf
-                      .map((item) => {
-                        if (item.isDeleted && item.fileName.includes(".pdf")) {
-                          return item.fileName;
-                        }
-                      })
-                      .filter((item) => item !== undefined)
-                      .join(",");
-                  }
-
-                  let deletingArticleLinks: string = "";
-                  if (mediaData?.extracted_from_article) {
-                    deletingArticleLinks = mediaData?.extracted_from_article
-                      .map((item) => {
-                        if (item.isDeleted) {
-                          return item.fileName;
-                        }
-                      })
-                      .filter((item) => item !== undefined)
-                      .join(",");
-                  }
-
-                  let deletingYoutubeLinks: string = "";
-                  if (mediaData?.extracted_from_youtube) {
-                    deletingYoutubeLinks = mediaData?.extracted_from_youtube
-                      .map((item) => {
-                        if (item.isDeleted) {
-                          return item.fileName;
-                        }
-                      })
-                      .filter((item) => item !== undefined)
-                      .join(",");
-                  }
-
-                  const deletedData = {
-                    pdf_files: deletingPdfs,
-                    youtube_links: deletingYoutubeLinks,
-                    article_links: deletingArticleLinks,
-                    doc_files: deletingDocs,
-                  };
-
-                  console.log(deletedData);
-                  filesPatchFormData.append(
-                    "deleted_data",
-                    JSON.stringify(deletedData)
-                  );
-
-                  filesPatchFormData.append("bot_id", botIUidFromParams!);
-                  const media_data = {
-                    youtube_links: linksReflectingWVpersonal,
-                    article_links: linksReflectyouWished,
-                  };
-
-                  filesPatchFormData.append(
-                    "media_data",
-                    JSON.stringify(media_data)
-                  );
-                  filesPatchFormData.append(
-                    "is_overwrite",
-                    "false"
-                    // deleteExistingFiles ? "true" : "false"
-                  );
-                  filesPatchFormData.append("profile_id", `${userProfileId}`);
-                  fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                    method: "PATCH",
-                    headers: {
-                      Authorization: basicAuth,
-                    },
-                    body: filesPatchFormData,
-                  })
-                    .then((res) => res.json())
-                    .then((data) => {
-                      console.log(data);
-                      setCreateLoading(false);
-                      if (!data.error && !data.detail) {
-                        toast.success(
-                          "Successfully updated your profile. Redirecting you to your Profile page.",
-                          {
-                            duration: 6000,
+                  // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                  //   method: checkIfEdit ? "PATCH" : "POST",
+                  //   headers: myHeaders,
+                  //   body: checkIfEdit
+                  //     ? JSON.stringify({
+                  //         bot_id: botIUidFromParams,
+                  //         profile_id: userProfileId,
+                  //         updated_data: avatarBotCreationFormData,
+                  //         is_overwrite: deleteExistingFiles ? "true" : "false",
+                  //       })
+                  //     : JSON.stringify(avatarBotCreationFormData),
+                  // })
+                  //   .then((res) => res.json())
+                  //   .then((data) => {
+                  //     console.log(data);
+                  //     // setCreateLoading(false);
+                  //     if (!data.error && !data.detail) {
+                  console.log(referenceDocs.length, "length");
+                  if (
+                    referenceDocs.length > 0 ||
+                    linksReflectingWVpersonal !== "" ||
+                    linksReflectyouWished !== "" ||
+                    mediaData?.extracted_from_article ||
+                    mediaData?.extracted_from_youtube ||
+                    mediaData?.extracted_from_pdf
+                  ) {
+                    const filesPatchFormData = new FormData();
+                    if (referenceDocs.length > 0) {
+                      referenceDocs.forEach(({ file, text }) => {
+                        if (file.name.includes(".pdf")) {
+                          if (text) {
+                            filesPatchFormData.append(
+                              "pdf_data",
+                              `file_name:${file.name.trim()} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
+                            filesPatchFormData.append(
+                              `attached_pdfs`,
+                              file,
+                              file.name.trim()
+                            );
                           }
-                        );
-                        resetAllStates();
-                        setTimeout(() => {
-                          router.push("/profile");
-                        }, 4000);
-                      } else {
+                        } else if (file.name.includes(".docx")) {
+                          if (text) {
+                            filesPatchFormData.append(
+                              `doc_data`,
+                              `file_name:${file.name.trim()} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
+                            filesPatchFormData.append(
+                              `attached_docs`,
+                              file,
+                              file.name.trim()
+                            );
+                          }
+                        }
+                      });
+                    }
+
+                    let deletingDocs: string = "";
+                    let deletingPdfs: string = "";
+                    if (mediaData?.extracted_from_pdf) {
+                      deletingDocs = mediaData?.extracted_from_pdf
+                        .map((item) => {
+                          if (
+                            item.isDeleted &&
+                            item.fileName.includes(".docx")
+                          ) {
+                            return item.fileName;
+                          }
+                        })
+                        .filter((item) => item !== undefined)
+                        .join(",");
+
+                      deletingPdfs = mediaData?.extracted_from_pdf
+                        .map((item) => {
+                          if (
+                            item.isDeleted &&
+                            item.fileName.includes(".pdf")
+                          ) {
+                            return item.fileName;
+                          }
+                        })
+                        .filter((item) => item !== undefined)
+                        .join(",");
+                    }
+
+                    let deletingArticleLinks: string = "";
+                    if (mediaData?.extracted_from_article) {
+                      deletingArticleLinks = mediaData?.extracted_from_article
+                        .map((item) => {
+                          if (item.isDeleted) {
+                            return item.fileName;
+                          }
+                        })
+                        .filter((item) => item !== undefined)
+                        .join(",");
+                    }
+
+                    let deletingYoutubeLinks: string = "";
+                    if (mediaData?.extracted_from_youtube) {
+                      deletingYoutubeLinks = mediaData?.extracted_from_youtube
+                        .map((item) => {
+                          if (item.isDeleted) {
+                            return item.fileName;
+                          }
+                        })
+                        .filter((item) => item !== undefined)
+                        .join(",");
+                    }
+
+                    const deletedData = {
+                      pdf_files: deletingPdfs,
+                      youtube_links: deletingYoutubeLinks,
+                      article_links: deletingArticleLinks,
+                      doc_files: deletingDocs,
+                    };
+
+                    console.log(deletedData);
+                    filesPatchFormData.append(
+                      "deleted_data",
+                      JSON.stringify(deletedData)
+                    );
+
+                    filesPatchFormData.append("bot_id", botIUidFromParams!);
+                    const media_data = {
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                    };
+
+                    filesPatchFormData.append(
+                      "media_data",
+                      JSON.stringify(media_data)
+                    );
+                    filesPatchFormData.append(
+                      "is_overwrite",
+                      "false"
+                      // deleteExistingFiles ? "true" : "false"
+                    );
+                    filesPatchFormData.append("profile_id", `${userProfileId}`);
+                    fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                      method: "PATCH",
+                      headers: {
+                        Authorization: basicAuth,
+                      },
+                      body: filesPatchFormData,
+                    })
+                      .then((res) => res.json())
+                      .then((data) => {
+                        console.log(data);
                         setCreateLoading(false);
+                        if (!data.error && !data.detail) {
+                          toast.success(
+                            "Successfully updated your profile. Redirecting you to your Profile page.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                          resetAllStates();
+                          setTimeout(() => {
+                            router.push("/profile");
+                          }, 4000);
+                        } else {
+                          setCreateLoading(false);
+                          toast.error(
+                            "Error creating your coach profile. Please try again.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                        }
+                      })
+                      .catch((err) => {
                         toast.error(
                           "Error creating your coach profile. Please try again.",
                           {
                             duration: 6000,
                           }
                         );
+                        console.error(err);
+                        setCreateLoading(false);
+                      });
+                  } else {
+                    setCreateLoading(false);
+                    toast.success(
+                      "Successfully updated your profile. Redirecting you to your Profile page.",
+                      {
+                        duration: 6000,
                       }
-                    })
-                    .catch((err) => {
-                      toast.error(
-                        "Error creating your coach profile. Please try again.",
-                        {
-                          duration: 6000,
-                        }
-                      );
-                      console.error(err);
-                      setCreateLoading(false);
-                    });
+                    );
+                    resetAllStates();
+                    setTimeout(() => {
+                      router.push("/profile");
+                    }, 4000);
+                  }
+                  //   } else {
+                  //     setCreateLoading(false);
+                  //     if (data.error === "Bot already exists") {
+                  //       toast.error("Bot already exists");
+                  //     } else {
+                  //       setCreateLoading(false);
+                  //       toast.error(
+                  //         "Error creating your coach profile. Please try again.",
+                  //         {
+                  //           duration: 6000,
+                  //         }
+                  //       );
+                  //     }
+                  //   }
+                  // })
+                  // .catch((err) => {
+                  //   console.error(err);
+                  //   setCreateLoading(false);
+                  // });
                 } else {
+                  resetAllStates();
                   setCreateLoading(false);
                   toast.success(
                     "Successfully updated your profile. Redirecting you to your Profile page.",
@@ -1293,42 +1343,18 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
-                  resetAllStates();
                   setTimeout(() => {
                     router.push("/profile");
                   }, 4000);
                 }
-                //   } else {
-                //     setCreateLoading(false);
-                //     if (data.error === "Bot already exists") {
-                //       toast.error("Bot already exists");
-                //     } else {
-                //       setCreateLoading(false);
-                //       toast.error(
-                //         "Error creating your coach profile. Please try again.",
-                //         {
-                //           duration: 6000,
-                //         }
-                //       );
-                //     }
-                //   }
-                // })
-                // .catch((err) => {
-                //   console.error(err);
-                //   setCreateLoading(false);
-                // });
               } else {
-                resetAllStates();
-                setCreateLoading(false);
-                toast.success(
-                  "Successfully updated your profile. Redirecting you to your Profile page.",
+                toast.error(
+                  "Error creating your coach profile. Please try again.",
                   {
                     duration: 6000,
                   }
                 );
-                setTimeout(() => {
-                  router.push("/profile");
-                }, 4000);
+                setCreateLoading(false);
               }
             })
             .catch((err) => {
@@ -1948,6 +1974,29 @@ const CoachIntake = ({ user }: any) => {
     setMediaData(updatedData);
   };
 
+  const handleImageUpload = async (imageToUpload: File) => {
+    const formData = new FormData();
+    formData.append("image_file", imageToUpload, imageToUpload.name);
+
+    const response = await fetch(
+      "https://33dd-2409-4064-805-d52b-726a-edba-36e2-d8e7.ngrok-free.app/api/v1/documents/upload-image/",
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData.image_url;
+    } else {
+      return "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png";
+    }
+  };
+
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -2124,6 +2173,16 @@ const CoachIntake = ({ user }: any) => {
                         onChange={(e) => {
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
+                          if (checkIfEdit) {
+                            const uploadedImage = handleImageUpload(
+                              //@ts-ignore
+                              e.target.files[0]
+                            );
+                            uploadedImage.then((data) => {
+                              setProfileImageUrl(data);
+                              console.log(data);
+                            });
+                          }
                         }}
                         disabled={checkIfView === null ? false : true}
                         className="w-fit"
