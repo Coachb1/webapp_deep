@@ -437,43 +437,57 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 "Bot details for edit - User bot  [userBotIntake]",
                 data
               );
+              const testdata = data.data.filter(
+                (bot: any) => bot.signature_bot.bot_id === botIdFromParams
+              );
+              console.log(testdata);
               let resultingBot = getBotById(botIdFromParams!, data.data);
 
               console.log(resultingBot);
 
-              setBotName(resultingBot.bot_attributes.bot_name);
-              console.log(
-                transformExtractedData(
-                  resultingBot.signature_bot.data.media_data
-                )
-              );
-              setMediaData(
-                transformExtractedData(
-                  resultingBot.signature_bot.data.media_data
-                )
-              );
-              const parsedFaqJson = resultingBot.signature_bot.faqs;
-              setCommanFaqs(
-                parsedFaqJson[
-                  "Provide a few common FAQs the bot should use for commonly asked questions?"
-                ]
-              );
-              setFunctionsNTasksOfBot(
-                parsedFaqJson["What tasks or functions should the bot perform?"]
-              );
-              setInfoAccessToBots(
-                parsedFaqJson[
-                  "Provide the information the bot should have access to generate responses?"
-                ]
-              );
-              setPrimaryPurpose(
-                parsedFaqJson["What is the primary purpose of the bot?"]
-              );
-              // setReleventLinks(
-              //   parsedFaqJson[
-              //     "Provide any relevant links and make sure the links are publicly accessible"
-              //   ]
-              // );
+              if (resultingBot) {
+                setBotName(resultingBot.bot_attributes.bot_name);
+                console.log(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+                setMediaData(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+                let parsedFaqJson: any;
+                if (typeof resultingBot.signature_bot.faqs) {
+                  parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
+                } else {
+                  parsedFaqJson = resultingBot.signature_bot.faqs;
+                }
+                setCommanFaqs(
+                  parsedFaqJson[
+                    "Provide a few common FAQs the bot should use for commonly asked questions?"
+                  ]
+                );
+                setFunctionsNTasksOfBot(
+                  parsedFaqJson[
+                    "What tasks or functions should the bot perform?"
+                  ]
+                );
+                setInfoAccessToBots(
+                  parsedFaqJson[
+                    "Provide the information the bot should have access to generate responses?"
+                  ]
+                );
+                setPrimaryPurpose(
+                  parsedFaqJson["What is the primary purpose of the bot?"]
+                );
+
+                // setReleventLinks(
+                //   parsedFaqJson[
+                //     "Provide any relevant links and make sure the links are publicly accessible"
+                //   ]
+                // );
+              }
             });
         });
     }
@@ -578,7 +592,9 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               </p>
               <input
                 required
-                disabled={(checkIfEdit ? true : false)  || (checkIfView ? true : false)}
+                disabled={
+                  (checkIfEdit ? true : false) || (checkIfView ? true : false)
+                }
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);

@@ -126,7 +126,7 @@ const AdminProfile = ({ user }: any) => {
       };
 
       const response = await fetch(
-        `${baseURL}/accounts/create-client-id/`,
+        `${baseURL}/accounts/get-create-or-update-client-id/`,
         requestOptions
       );
 
@@ -235,7 +235,7 @@ const AdminProfile = ({ user }: any) => {
                   triggerComponent={
                     <Button
                       variant={"outline"}
-                      className="h-6 text-xs p-1 px-3 text-gray-500 ml-4"
+                      className="h-6 text-xs  px-3 text-gray-500 ml-4"
                     >
                       View users <Users2 className="inline h-4 w-4 ml-2" />
                     </Button>
@@ -288,6 +288,7 @@ const AdminProfile = ({ user }: any) => {
                         ? { value: selectedUser, label: selectedUser }
                         : null
                     }
+                    className="w-full text-sm"
                   />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
@@ -306,6 +307,7 @@ const AdminProfile = ({ user }: any) => {
                         : null
                     }
                     isDisabled
+                    className="w-full text-sm"
                   />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
@@ -321,6 +323,7 @@ const AdminProfile = ({ user }: any) => {
                     options={clientsData.map((client) => ({
                       value: client.clientId,
                       label: `${client.clientName} : ${client.clientId}`,
+                      isDisabled: client.clientId === oldClientId,
                     }))}
                     value={
                       newClientId
@@ -334,6 +337,7 @@ const AdminProfile = ({ user }: any) => {
                           }
                         : null
                     }
+                    className="w-full text-sm"
                   />
                 </div>
               </div>
@@ -366,7 +370,7 @@ const AdminProfile = ({ user }: any) => {
         </div>
 
         <div
-          className={`mt-3 w-full p-2 rounded-md ${
+          className={`mt-1 w-full p-2 rounded-md ${
             newClientInit && "bg-blue-100 border border-blue-300"
           }`}
         >
@@ -381,8 +385,8 @@ const AdminProfile = ({ user }: any) => {
           {newClientInit && (
             <div className="flex flex-col gap-4 w-full justify-end">
               <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
-                <div className="w-full flex flex-row gap-4 items-start">
-                  <div className="w-1/2 flex flex-col gap-2 items-start">
+                <div className="w-full flex flex-row max-sm:flex-col gap-4 max-sm:gap-2 items-start">
+                  <div className="w-1/2 max-sm:w-full flex flex-col gap-2 items-start">
                     <p className="block text-sm font-medium">
                       Client Name <span className="text-red-500">*</span>
                     </p>
@@ -390,20 +394,17 @@ const AdminProfile = ({ user }: any) => {
                       type="text"
                       value={newClientName}
                       onChange={(e) => setNewClientName(e.target.value)}
-                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
                       required
                     />
                   </div>
-                  <div className="w-1/2 flex flex-col gap-2 items-start">
-                    <p className="block text-sm font-medium">
-                      Domain Name <span className="text-red-500">*</span>
-                    </p>
+                  <div className="w-1/2 max-sm:w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Domain Name</p>
                     <input
                       type="text"
                       value={newDomainName}
                       onChange={(e) => setNewDomainName(e.target.value)}
-                      className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
-                      required
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
                     />
                   </div>
                 </div>
@@ -412,7 +413,7 @@ const AdminProfile = ({ user }: any) => {
                   <textarea
                     value={newMemberEmails}
                     onChange={(e) => setNewMemberEmails(e.target.value)}
-                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
                   />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
@@ -420,7 +421,7 @@ const AdminProfile = ({ user }: any) => {
                   <textarea
                     value={newAllowedIps}
                     onChange={(e) => setNewAllowedIps(e.target.value)}
-                    className="w-full p-1 px-6 max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
                   />
                 </div>
                 <div className="w-full flex flex-col gap-2 items-start">
@@ -432,6 +433,7 @@ const AdminProfile = ({ user }: any) => {
                     onChange={(selectedOptions: MultiValue<OptionType>) =>
                       setNewRestrictedPages(selectedOptions as OptionType[])
                     }
+                    className="w-full text-sm"
                   />
                 </div>
               </div>
@@ -444,13 +446,7 @@ const AdminProfile = ({ user }: any) => {
                   Cancel <X className="ml-2 h-4 w-4" />
                 </Button>
                 <Button
-                  disabled={
-                    newClientName.length === 0 ||
-                    newDomainName.length === 0 ||
-                    newMemberEmails.length === 0 ||
-                    newAllowedIps.length === 0 ||
-                    newRestrictedPages.length === 0
-                  }
+                  disabled={newClientName.length === 0}
                   className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
                   onClick={newClientHandler}
                 >
