@@ -46,10 +46,13 @@ const getknowledgeBotss = async (userEmail: string) => {
       try {
         getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
           const botJson = item.signature_bot;
-          const description = botJson.faqs[
-            // @ts-ignore
-            "What is the primary purpose of the bot?"
-          ];
+          let description : string = "";
+          if (typeof botJson.faqs === "string"){
+            //@ts-ignore
+            description = JSON.parse(botJson.faqs["What is the primary purpose of the bot?"])
+          } else {
+            description = botJson.faqs["What is the primary purpose of the bot?"]
+          }
           if (item.signature_bot.is_approved){
             knowledgeBotss.push({
               bot_id: botJson.bot_id,

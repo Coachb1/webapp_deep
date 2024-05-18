@@ -94,9 +94,12 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       .then((data) => {
         console.log("KNOWLEDGE BOT DETAILS : ", data);
 
-        const parsedFaqJson = JSON.parse(data.data.faqs);
-        console.log(parsedFaqJson);
-
+        let parsedFaqJson: any;
+        if (typeof data.data.faqs === "string") {
+          parsedFaqJson = JSON.parse(data.data.faqs);
+        } else {
+          parsedFaqJson = data.data.faqs;
+        }
         const coachScribe =
           document.getElementsByClassName("deep-chat-poc2")[0];
         console.log(
