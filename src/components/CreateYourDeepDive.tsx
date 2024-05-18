@@ -148,6 +148,13 @@ const CreateYourDeepDive = ({ user }: any) => {
     setExpiryDate("");
   };
 
+  const getTomorrowDate = () => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate());
+    return tomorrow.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  };
+
   return (
     <div className="w-full">
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
@@ -197,12 +204,13 @@ const CreateYourDeepDive = ({ user }: any) => {
               Expiry Date
             </p>
             <input
-              
               value={expiryDate}
               onChange={(e) => {
-                setExpiryDate(e.target.value);}
+                console.log(e.target.value)
+                setExpiryDate(e.target.value)}
               }
               type="date"
+              min={getTomorrowDate()}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
             
