@@ -458,7 +458,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   )
                 );
                 let parsedFaqJson: any;
-                if (typeof resultingBot.signature_bot.faqs) {
+                if (typeof resultingBot.signature_bot.faqs === "string") {
                   parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
                 } else {
                   parsedFaqJson = resultingBot.signature_bot.faqs;
