@@ -5476,6 +5476,19 @@ loadExternalModule().then(() => {
             });
 
           shadowRoot.getElementById("messages").scrollBy(0, 500);
+          endSessionButton.setAttribute(
+            "onmouseover",
+            "this.style.backgroundColor = '#e5e7eb'"
+          );
+          endSessionButton.setAttribute(
+            "onmouseleave",
+            "this.style.backgroundColor = '#9ca3af'"
+          );
+          endSessionButton.style.backgroundColor = "#9ca3af";
+          endSessionButton.style.color = "white";
+          endSessionButton.style.cursor = "pointer";
+          endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+          endSessionButton.disabled = false;
           return;
         }
 
