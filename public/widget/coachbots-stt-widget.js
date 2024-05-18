@@ -5312,7 +5312,6 @@ loadExternalModule().then(() => {
                   console.log(data);
                 });
             });
-
           return;
         }
         const decodedText = textDecoder.decode(value);
@@ -6360,13 +6359,14 @@ loadExternalModule().then(() => {
                   latestMessage += " Always respond in less than 50 tokens. Note: Never mention token count."
                 } 
               }
-
               const endSessionButton = document.getElementById("end-session-btn")
-              endSessionButton.style.cursor = "not-allowed"
-              endSessionButton.removeAttribute("onclick", `handleEndConversation()`)
-              endSessionButton.disabled = true;
-              console.log(endSessionButton)
-
+              if(endSessionButton){
+                endSessionButton.style.cursor = "not-allowed"
+                endSessionButton.removeAttribute("onclick", `handleEndConversation()`)
+                endSessionButton.disabled = true;
+                console.log(endSessionButton)
+              }
+              
               console.log("LATEST MESSAGE ===> ", latestMessage)
               const response = await fetch(
                 `${baseURL2}/coaching-conversations/${conversation_id2}/reply/`,
