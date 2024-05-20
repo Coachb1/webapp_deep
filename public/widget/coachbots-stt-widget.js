@@ -6354,11 +6354,11 @@ loadExternalModule().then(() => {
             }
             if (isBotInitialized == true) {
               //append addnl statement if user-message has <= 10 words
-              if(botType === "user_bot"){
-                if(latestMessage.split(" ").length <= 10){
-                  latestMessage += " Always respond in less than 50 tokens. Note: Never mention token count."
-                } 
-              }
+              // if(botType === "user_bot"){
+              //   if(latestMessage.split(" ").length <= 10){
+              //     latestMessage += " Always respond in less than 50 tokens. Note: Never mention token count."
+              //   } 
+              // }
               const endSessionButton = document.getElementById("end-session-btn")
               if(endSessionButton){
                 endSessionButton.style.cursor = "not-allowed"
