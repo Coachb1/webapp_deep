@@ -363,7 +363,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           patchFormData.append(
             "media_data",
             JSON.stringify({
-              youtube_links: releventLinks,
+              youtube_links: releventLinks.split(",").filter((link) => link.includes("youtube")).join(","),
+              article_links: releventLinks.split(",").filter((link) => !link.includes("youtube")).join(","),
             })
           );
 
@@ -380,7 +381,9 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              if (data.error) {
+              
+              if (data.error && data.msg) {
+                toast.error("Error creating your user bot, Please try again.");
               } else {
                 resetAllStates();
                 if (checkIfEdit) {
@@ -402,8 +405,10 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   }, 4000);
                 }
               }
+              setSubmitLoading(false);
             })
             .catch((err) => {
+              setSubmitLoading(false);
               console.error(err);
               toast.error("Error creating your user bot, Please try again.");
             });
@@ -837,7 +842,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   setReleventLinks(e.target.value);
                   handleInputLinks(e.target.value, "releventLinks");
                 }}
-                placeholder="youtube links) - Provide accessible links, e.g. '[YouTube link].'"
+                placeholder="Provide accessible links, e.g. '[YouTube link], [Article link] '"
                 rows={4}
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
               />
@@ -850,6 +855,64 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               {mediaData?.extracted_from_youtube.length > 0 && (
                 <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                   {mediaData?.extracted_from_youtube.map((item) => (
+                    <div className="flex flex-row justify-between items-center">
+                      <Link
+                        href={item.fileName}
+                        target="_target"
+                        className={`text-xs text-blue-500 truncate ${
+                          item.isDeleted && "line-through"
+                        }`}
+                      >
+                        {item.fileName}
+                      </Link>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_article.length > 0 && (
+                <div className="w-full mt-1 bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                  {mediaData?.extracted_from_article.map((item) => (
                     <div className="flex flex-row justify-between items-center">
                       <Link
                         href={item.fileName}
@@ -926,7 +989,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 </div>
                 <div>
                   {checkIfEdit ? (
-                    <Button disabled={submitLoading} className="h-8">
+                    <Button disabled={submitLoading } className="h-8">
                       {" "}
                       {submitLoading ? (
                         <>
