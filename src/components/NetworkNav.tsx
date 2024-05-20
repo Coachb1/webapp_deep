@@ -46,9 +46,9 @@ const NetworkNav = ({ user }: any) => {
   useEffect(() => {
     if (user) {
       CreateOrAssignClientId(user.email)
-      ?.then((resp) => resp.text())
-      .then((result) => {
-          console.log(`Success : data:`, result)
+        ?.then((resp) => resp.text())
+        .then((result) => {
+          console.log(`Success : data:`, result);
           getClientUserInfo(user.email)
             ?.then((res) => res.json())
             .then((data) => {
@@ -57,10 +57,10 @@ const NetworkNav = ({ user }: any) => {
               setRestrictedPages(data.data.user_info[0].restricted_pages);
               setRestrictedFeatures(data.data.user_info[0].restricted_features);
             });
-      })
-      .catch((error) => console.error('Error in create-or-assign-client-id',error));
-
-      
+        })
+        .catch((error) =>
+          console.error("Error in create-or-assign-client-id", error)
+        );
     }
   }, []);
 
@@ -85,7 +85,7 @@ const NetworkNav = ({ user }: any) => {
       } `}
     >
       <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden ">
-        {!restrictedPages?.includes("Network Directory") && (
+        {!restrictedPages?.includes("Network-directory") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -122,7 +122,7 @@ const NetworkNav = ({ user }: any) => {
             <Link href={"/library"}>Library</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Creator Studio") && (
+        {!restrictedPages?.includes("Creator-studio") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${

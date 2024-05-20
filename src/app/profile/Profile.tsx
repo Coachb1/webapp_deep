@@ -29,7 +29,11 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/app/profile/Competencies";
 import MyPages from "@/app/profile/MyPages";
-import { CreateOrAssignClientId, getClientUserInfo, getUserAccount } from "@/lib/utils";
+import {
+  CreateOrAssignClientId,
+  getClientUserInfo,
+  getUserAccount,
+} from "@/lib/utils";
 import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
@@ -56,9 +60,9 @@ const Profile = ({ user }: any) => {
         });
 
       CreateOrAssignClientId(user?.email)
-      ?.then((resp) => resp.text())
-      .then((result) => {
-          console.log(`Success : data:`, result)
+        ?.then((resp) => resp.text())
+        .then((result) => {
+          console.log(`Success : data:`, result);
           getClientUserInfo(user?.email)
             ?.then((res) => res.json())
             .then((data) => {
@@ -67,10 +71,10 @@ const Profile = ({ user }: any) => {
               setRestrictedPages(data.data.user_info[0].restricted_pages);
               setRestrictedFeatures(data.data.user_info[0].restricted_features);
             });
-      })
-      .catch((error) => console.error('Error in create-or-assign-client-id',error));
-  
-      
+        })
+        .catch((error) =>
+          console.error("Error in create-or-assign-client-id", error)
+        );
     }
   }, []);
 
@@ -92,7 +96,10 @@ const Profile = ({ user }: any) => {
               <span className="max-sm:hidden max-lg:hidden">{itemName}</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="hidden max-sm:block max-lg:block" side="right">
+          <TooltipContent
+            className="hidden max-sm:block max-lg:block"
+            side="right"
+          >
             <p>{itemName}</p>
           </TooltipContent>
         </Tooltip>
@@ -128,28 +135,28 @@ const Profile = ({ user }: any) => {
               id="ainfo"
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
             />
-            {!restrictedFeatures?.includes("My Connections") && (
+            {!restrictedFeatures?.includes("My-connections") && (
               <NavItem
                 id="mcon"
                 itemName={"My Connections"}
                 icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Action Plan & session notes") && (
+            {!restrictedFeatures?.includes("Action-session-notes") && (
               <NavItem
                 id="apsn"
                 itemName={"Action Plan & Session notes"}
                 icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Bot Conversations") && (
+            {!restrictedFeatures?.includes("Bot-conversations") && (
               <NavItem
                 id="bcon"
                 itemName={"Bot Conversations"}
                 icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("My Rewards") && (
+            {!restrictedFeatures?.includes("My-rewards") && (
               <NavItem
                 id="mrew"
                 itemName={"My Rewards"}
@@ -170,14 +177,14 @@ const Profile = ({ user }: any) => {
                 icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Email Signature") && (
+            {!restrictedFeatures?.includes("Email-signature") && (
               <NavItem
                 id="esign"
                 itemName={"Email Signature"}
                 icon={<MailCheck className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Platform-Admin") && (
+            {!restrictedFeatures?.includes("Super-admin") && (
               <>
                 {userRole === "super_admin" ? (
                   <NavItem
@@ -188,7 +195,7 @@ const Profile = ({ user }: any) => {
                 ) : null}
               </>
             )}
-            {!restrictedFeatures?.includes("Client - Admin Reports") && (
+            {!restrictedFeatures?.includes("Client-admin-reports") && (
               <>
                 {userRole === "super_admin" || userRole === "client_admin" ? (
                   <NavItem
