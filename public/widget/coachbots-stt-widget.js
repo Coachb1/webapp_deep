@@ -322,17 +322,62 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
   console.log(choice);
   disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
   if (choice === "No") {
+    isAnonymous = false;
     if (!window.user) {
-      isAnonymous = false;
       isEmailFormstt = true;
       formFieldsstt = ["name","email"];
       console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
+    else{
+      startDeepDiveConv();
+    }
   }
   else if (choice === "Yes") {
-    appendMessage2("<p>Please click on <b>Begin Session</b> to continue..</p>")
+    // appendMessage2("<p>Please click on <b>Begin Session</b> to continue..</p>")
+    // appendMessage2("Please let us know more about your context for this survey such as role , impact  and whatever else you may feel comfortable with.")
+    isAnonymous = true;
+    if (!window.user) {
+      isEmailFormstt = true;
+      formFieldsstt = ["name","email"];
+      console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+      appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
+    }
+    else{
+      startDeepDiveConv();
+    }
+
   }
+
+
+}
+
+const startDeepDiveConv = () => {
+
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = "START";
+    gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+    
+    setTimeout(() => {
+
+      var chatElement = document.getElementById("chat-element2");
+    const shdwroot = chatElement.shadowRoot;
+    const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+    console.log('deepdive-msgcont',messageContainers)
+    messageContainers.forEach((container) => {
+      console.log('deepdive-cont',container)
+      const messageText = container.querySelector(".user-message-text p");
+      if (
+        messageText &&
+        messageText.textContent.trim().toLowerCase() === "start"
+      ) {
+        container.remove();
+      }
+    });
+    }, 100);
+  }, 100);
 }
 
 const getUserOrAnonymousDetails = async (choice) => {
@@ -1014,38 +1059,7 @@ const getBotDetails2 = async (botId) => {
     if (botType === "user_bot") {
       botWelcomeMessage = "Welcome to my custom bot.";
     } else if (botType === "deep_dive") {
-      botWelcomeMessage = "Welcome to Deep Dive bot";
-      if (!window.user) {
-        // appendMessage2(emailForm);
-        if(botType === "deep_dive"){
-          uniqueSesssionContainerId = generateRandomAlphanumeric(6);
-          const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
-            <b>Want to continue as Anonymous?</b>
-            </br> <div>
-                <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
-                <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
-                </div>
-            </div>`;
-
-
-            
-            // console.log("feedbacksessionid: ", uniqueSesssionContainerId);
-            // const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
-            //     <b>Want to continue as Anonymous?</b>
-            //     </br> <div>
-            //         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('Yes')">Yes</button>
-            //         <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetails('No')">No</button>
-            //         </div>
-            //     </div>`;
-      
-    
-          setTimeout(() => {
-            appendMessage2(optionData);
-          }, 100);
-          
-    
-        }
-      }
+      botWelcomeMessage = " Welcome to the deep dive survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this on this page. The response to the survey can be totally anonymous - so repond frankly and give voice to critical topics important to the team. Click  begin 'session' to get started and respond in detail.";
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
         "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
@@ -2200,32 +2214,26 @@ async function handleFaqButtonClick(question) {
       //   botType === "avatar_bot"
       // );
       if (botType === 'deep_dive' && window.user){
-        gShadowRoot2.getElementById("text-input").focus();
+        // asking if want to anonymous or not
+
+        uniqueSesssionContainerId = generateRandomAlphanumeric(6);
+        const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+          <b>Want to continue as Anonymous?</b>
+          </br> <div>
+              <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
+              <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
+              </div>
+          </div>`;       
+  
         setTimeout(() => {
-          gShadowRoot2.getElementById("text-input").textContent = "START";
-          gShadowRoot2.querySelectorAll(".input-button")[1].click();
-
-          
-          setTimeout(() => {
-
-            var chatElement = document.getElementById("chat-element2");
-          const shdwroot = chatElement.shadowRoot;
-          const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
-          console.log('deepdive-msgcont',messageContainers)
-          messageContainers.forEach((container) => {
-            console.log('deepdive-cont',container)
-            const messageText = container.querySelector(".user-message-text p");
-            if (
-              messageText &&
-              messageText.textContent.trim().toLowerCase() === "start"
-            ) {
-              container.remove();
-            }
-          });
-          }, 100);
+          appendMessage2(
+            addStickerToMessage(
+              "Begin Session",
+              optionData,
+              '#22c55e'
+            )
+          );
         }, 100);
-        console.log(gShadowRoot2.getElementById("text-input"),'text input')
-        
       }
 
       if (
@@ -2489,6 +2497,9 @@ function sendBotTranscript2() {
   } else {
     userEmail = window.user.email;
   }
+  if(isAnonymous && botType === 'deep_dive'){
+    userName = "Anonymous User";
+  }
   console.log("User email : ", userEmail);
 
   queryParams2 = new URLSearchParams({
@@ -2554,7 +2565,12 @@ function handleEndConversation(isInActive) {
   if(isInActive === true){
     appendMessage2("<b>Due to inactivity, your session has ended. Please refresh the page to restart again anytime</b>");
   } else  {
-    appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
+    if (botType === 'deep_dive'){
+      appendMessage2("<b>Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.</b>")
+    }
+    else{
+      appendMessage2("<b>Your session has ended. Please refresh the page to restart again anytime</b>");
+    }
   }
 
   isSessionActiveStt = false;
@@ -5842,7 +5858,25 @@ loadExternalModule().then(() => {
                 return
               }
               askDeepDiveAccessCode = false;
-              latestMessage = "START"
+
+              // asking if want to anonymous or not
+
+              uniqueSesssionContainerId = generateRandomAlphanumeric(6);
+                const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+                  <b>Want to continue as Anonymous?</b>
+                  </br> <div>
+                      <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
+                      <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
+                      </div>
+                  </div>`;       
+          
+                setTimeout(() => {
+                  signals.onResponse({
+                    html: optionData
+                  })
+                }, 100);
+
+              return
           }
 
           if (isEmailFormstt) {
@@ -5853,7 +5887,7 @@ loadExternalModule().then(() => {
               });
             } else {
               isEmailFormstt = false;
-              if (botId != undefined && botType !== "feedback_bot") {
+              if (botId != undefined && botType === "deep_dive") {
                 const userEmail = emailNameformJsonstt["email"];
                 if(! isEmail(userEmail)){
                   console.log("email not valid 1")
@@ -5865,12 +5899,15 @@ loadExternalModule().then(() => {
                   return;
                 }
 
-                sendBotTranscript2();
+                console.log("isAnonymous", isAnonymous)
+                // sendBotTranscript2();
                 if (botType === 'deep_dive') {
                   signals.onResponse({
                     // html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-                    html: "<b> Thank you. you may continue with the session </b>"
+                    html: "<b> Thank you...</b>"
                   });
+                  startDeepDiveConv();
+                  return
                 } else {
                 signals.onResponse({ html: faqHtmlData });
                 }
