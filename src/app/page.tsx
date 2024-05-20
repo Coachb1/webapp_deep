@@ -15,7 +15,6 @@ export const metadata = constructMetadata({
   title: "Network - Coachbots",
 });
 
-
 const getClientUserInfo = async (
   userEmail: string | null | undefined,
   user: KindeUser | null
@@ -65,11 +64,22 @@ const getClientUserInfo = async (
             "isRestricted user : ",
             data.data.user_info[0].is_restricted
           );
+
+          console.log(
+            "Restricted Pages : ",
+            data.data.user_info[0].restricted_pages
+          );
+          console.log(
+            "Restricted Features : ",
+            data.data.user_info[0].restricted_features
+          );
           return {
             isDemoUser: data.data.user_info[0].is_demo_user,
             isRestricted: data.data.user_info[0].is_restricted,
             clientExpertise: data.data.user_info[0].coach_expertise,
             clientDepartments: data.data.user_info[0].departments,
+            restrictedPages: data.data.user_info[0].restricted_pages,
+            restrictedFeatures: data.data.user_info[0].restricted_features,
           };
         } else {
           return {
@@ -77,6 +87,8 @@ const getClientUserInfo = async (
             isRestricted: true,
             clientExpertise: null,
             clientDepartments: null,
+            restrictedPages: null,
+            restrictedFeatures: null,
           };
         }
       } else {
@@ -86,6 +98,8 @@ const getClientUserInfo = async (
           isRestricted: true,
           clientExpertise: null,
           clientDepartments: null,
+          restrictedPages: null,
+          restrictedFeatures: null,
         };
       }
     } else {
@@ -94,6 +108,8 @@ const getClientUserInfo = async (
         isRestricted: true,
         clientExpertise: null,
         clientDepartments: null,
+        restrictedPages: null,
+        restrictedFeatures: null,
       };
     }
   } else {
@@ -102,6 +118,8 @@ const getClientUserInfo = async (
       isRestricted: true,
       clientExpertise: null,
       clientDepartments: null,
+      restrictedPages: null,
+      restrictedFeatures: null,
     };
   }
 };
@@ -197,10 +215,14 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { isDemoUser, isRestricted, clientDepartments, clientExpertise } = await getClientUserInfo(
-    user?.email,
-    user
-  );
+  const {
+    isDemoUser,
+    isRestricted,
+    clientDepartments,
+    clientExpertise,
+    restrictedFeatures,
+    restrictedPages,
+  } = await getClientUserInfo(user?.email, user);
 
   let directoryProfilesData;
   if (!isRestricted || isDemoUser) {
@@ -223,6 +245,8 @@ const Page = async () => {
         userConnections={userConnections}
         clientDepartments={clientDepartments}
         clientExpertise={clientExpertise}
+        restrictedFeatures={restrictedFeatures}
+        restrictedPages={restrictedPages}
       />
     </div>
   );

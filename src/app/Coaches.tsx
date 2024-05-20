@@ -178,6 +178,8 @@ const Coaches = ({
   userConnections,
   clientDepartments,
   clientExpertise,
+  restrictedFeatures,
+  restrictedPages,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
@@ -185,6 +187,8 @@ const Coaches = ({
   userConnections: any;
   clientDepartments: any;
   clientExpertise: any;
+  restrictedPages: string | null;
+  restrictedFeatures: string | null;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -219,10 +223,10 @@ const Coaches = ({
   const [buttonLoading, setButtonLoading] = useState(true);
 
   //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
+  // const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  // const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+  //   null
+  // );
 
   const [userClientInfoData, setUserClientInfoData] =
     useState<UserClientInfoDataType>();
@@ -250,39 +254,6 @@ const Coaches = ({
 
   const totalPages = Math.ceil(coachesData.length / itemsPerPage);
   const maxPaginationLinks = 5;
-
-  // let clientDepartments : string = "";
-  // let clientExpertise :  string = "";
-  const getClientInfoForUser = (userEmail: string) => {
-    if (userEmail) {
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setUserClientInfoData(data.data);
-          console.log(data, "client user info");
-          // clientDepartments = data.data.user_info[0].departments
-          // clientExpertise = data.data.user_info[0].coach_expertise
-          // setClientDepartments(data.data.user_info[0].departments);
-          // setClientExpertise(data.data.user_info[0].coach_expertise);
-          console.log(
-            data.data.user_info[0].coach_expertise,
-            "data.data.user_info[0].coach_expertise"
-          );
-
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        })
-        .catch((err) => console.error(err));
-    }
-  };
 
   const getCoachesData = async () => {
     // setLoadingStates({
@@ -492,7 +463,7 @@ const Coaches = ({
   useEffect(() => {
     hideBots();
     if (user) {
-      getClientInfoForUser(user?.email!);
+      // getClientInfoForUser(user?.email!);
       getCoachesData();
       getUserAccount(user)
         .then((res) => res.json())
@@ -1228,7 +1199,7 @@ const Coaches = ({
         {" "}
         Peer to Peer network of leaders for growth.
       </p>
-      {!restrictedFeatures?.includes("Join the network") && (
+      {!restrictedFeatures?.includes("Join-the-network") && (
         <>
           <div
             id="join-the-network"
@@ -1514,12 +1485,14 @@ const Coaches = ({
                         className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
                         src={coach.profile_pic_url}
                       />
-                      <div className="mt-4">
-                        <LikeComponent
-                          profile_id={coach.profile_id}
-                          likesInfo={coach.admirer_ids}
-                        />
-                      </div>
+                      {!restrictedFeatures?.includes("Likes") && (
+                        <div className="mt-4">
+                          <LikeComponent
+                            profile_id={coach.profile_id}
+                            likesInfo={coach.admirer_ids}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className=" flex flex-col items-start justify-start w-full">
                       <div className="mb-2 flex flex-row items-center gap-1">
@@ -1578,7 +1551,8 @@ const Coaches = ({
                       </div>
                       <div className="flex flex-row max-sm:flex-col max-lg:flex-col items-center max-sm:items-start max-lg:items-start justify-start gap-2 max-sm:gap-1">
                         {coach.profile_type !== "coachee" &&
-                          coach.profile_type !== "mentee" && (
+                          coach.profile_type !== "mentee" &&
+                          !restrictedFeatures?.includes("Ratings") && (
                             <ReviewComponent
                               id={
                                 coach.id_for_target_selection ===
