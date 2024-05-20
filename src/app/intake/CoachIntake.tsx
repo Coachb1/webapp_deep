@@ -213,6 +213,8 @@ const CoachIntake = ({ user }: any) => {
   //mediaData
   const [mediaData, setMediaData] = useState<MediaData>();
 
+  const [dataModified, setDataModified] = useState(false);
+
   const resetAllStates = () => {
     setName("");
     setProfileId("");
@@ -1497,7 +1499,7 @@ const CoachIntake = ({ user }: any) => {
 
   const onCharacteristicsSelectLow = (val: string) => {
     setCharacteristicsRateLows(val);
-
+    setDataModified(true);
     const resetDisabledData = characteristicsList.map((option) => ({
       ...option,
       disabled: false,
@@ -1518,6 +1520,7 @@ const CoachIntake = ({ user }: any) => {
 
   const onCharacteristicsSelectHigh = (val: string) => {
     console.log(val);
+    setDataModified(true);
     setCharacteristicsRateHigh(val);
 
     const resetDisabledData = characteristicsList.map((option) => ({
@@ -1881,7 +1884,7 @@ const CoachIntake = ({ user }: any) => {
     const inputValue = input_value.trim();
     const words = inputValue.split(/\s+/);
     const wordCount = words.length;
-
+    setDataModified(true);
     console.log(`Input Value: "${inputValue}"`);
     console.log(`Words: ${JSON.stringify(words)}`);
     console.log(`Word Count: ${wordCount}`);
@@ -1907,6 +1910,7 @@ const CoachIntake = ({ user }: any) => {
     fieldName: string
   ) => {
     const inputValue = input_value;
+    setDataModified(true);
 
     if (inputValue.trim().split(" ").length >= minLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
@@ -1920,6 +1924,7 @@ const CoachIntake = ({ user }: any) => {
 
   const handleInputLinks = (input_value: string, fieldName: string) => {
     const inputValue = input_value;
+    setDataModified(true);
 
     if (fieldName === "linksReflectingWVpersonal") {
       if (isValidYoutubeLinks(inputValue)) {
@@ -1944,6 +1949,7 @@ const CoachIntake = ({ user }: any) => {
 
   const deleteMediaDataHandler = (fileName: string) => {
     const updatedData: any = { ...mediaData };
+    setDataModified(true);
 
     for (const category in updatedData) {
       if (Array.isArray(updatedData[category])) {
@@ -2136,6 +2142,7 @@ const CoachIntake = ({ user }: any) => {
                         value={experience}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setExperience(value);
                         }}
                         disabled={checkIfView === null ? false : true}
@@ -2171,6 +2178,7 @@ const CoachIntake = ({ user }: any) => {
                         name="myImage"
                         accept="image/*"
                         onChange={(e) => {
+                          setDataModified(true);
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
                           if (checkIfEdit) {
@@ -2178,10 +2186,16 @@ const CoachIntake = ({ user }: any) => {
                               //@ts-ignore
                               e.target.files[0]
                             );
-                            uploadedImage.then((data) => {
-                              setProfileImageUrl(data);
-                              console.log(data);
-                            });
+                            uploadedImage
+                              .then((data) => {
+                                setProfileImageUrl(data);
+                                console.log(data);
+                              })
+                              .catch((err) => {
+                                setProfileImageUrl(
+                                  "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+                              });
                           }
                         }}
                         disabled={checkIfView === null ? false : true}
@@ -2234,6 +2248,7 @@ const CoachIntake = ({ user }: any) => {
                       required
                       disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
+                        setDataModified(true);
                         setDepartment(value);
                       }}
                     >
@@ -2271,6 +2286,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={areaDomain}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setAreaDomain(value);
                         }}
                       >
@@ -2304,6 +2320,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={mentoringPreferences}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setMentoringPreferences(value);
                         }}
                       >
@@ -2582,6 +2599,7 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
+                          setDataModified(true);
                           setLinksReflectingWVpersonal(e.target.value);
                           handleInputLinks(
                             e.target.value,
@@ -2676,6 +2694,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
+                          setDataModified(true);
                           setLinksReflectyouWished(e.target.value);
                           handleInputLinks(
                             e.target.value,
@@ -2852,6 +2871,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={voiceSample}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setVoiceSample(value);
                         }}
                       >
@@ -2880,6 +2900,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={allowSessionNotes}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setAllowSessionNotes(value);
                         }}
                       >
@@ -2944,6 +2965,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={provideAnswersUsingEmojis}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setProvideAnswersUsingEmojis(value);
                         }}
                       >
@@ -3016,6 +3038,7 @@ const CoachIntake = ({ user }: any) => {
                             value={developmentFramewrok}
                             onChange={(e) => {
                               setDevelopmentFrameworks(e.target.value);
+                              setDataModified(true);
                               handleWordLimitMin(
                                 e.target.value,
                                 20,
@@ -3487,6 +3510,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setParticipantLevel(value);
                         }}
                       >
@@ -3514,6 +3538,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setCochMentInSameDep(value);
                         }}
                       >
@@ -3542,6 +3567,7 @@ const CoachIntake = ({ user }: any) => {
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setOutcomeSupported(value);
                         }}
                       >
@@ -3592,7 +3618,10 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                       <div>
                         {checkIfEdit ? (
-                          <Button disabled={createLoading} className="h-8">
+                          <Button
+                            disabled={createLoading || !dataModified}
+                            className="h-8"
+                          >
                             {" "}
                             {createLoading ? (
                               <>
@@ -3766,6 +3795,7 @@ const CoachIntake = ({ user }: any) => {
                         value={experience}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setExperience(value);
                         }}
                       >
@@ -3843,6 +3873,7 @@ const CoachIntake = ({ user }: any) => {
                       required
                       disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
+                        setDataModified(true);
                         setDepartment(value);
                       }}
                       value={department}
@@ -3880,6 +3911,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setParticipantLevel(value);
                         }}
                       >
@@ -3907,6 +3939,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setCochMentInSameDep(value);
                         }}
                       >
@@ -3935,6 +3968,7 @@ const CoachIntake = ({ user }: any) => {
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setOutcomeSupported(value);
                         }}
                       >
@@ -3987,7 +4021,7 @@ const CoachIntake = ({ user }: any) => {
                       <div className="flex flec-col">
                         {checkIfEdit ? (
                           <Button
-                            disabled={feedbackCreateLoading}
+                            disabled={feedbackCreateLoading || !dataModified}
                             className="h-8"
                           >
                             {" "}

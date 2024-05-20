@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, ReactNode, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,36 +33,6 @@ import { MediaData } from "@/lib/types";
 import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
-const handleWordLimit = (
-  input_value: string,
-  minLimit: number,
-  maxLimit: number,
-  fieldName: string,
-  setError: Function
-) => {
-  const inputValue = input_value.trim();
-  const words = inputValue.split(/\s+/);
-  const wordCount = words.length;
-
-  console.log(`Input Value: "${inputValue}"`);
-  console.log(`Words: ${JSON.stringify(words)}`);
-  console.log(`Word Count: ${wordCount}`);
-
-  if (wordCount >= minLimit && wordCount <= maxLimit) {
-    setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
-  } else if (wordCount < minLimit) {
-    setError((prevErrors: any) => ({
-      ...prevErrors,
-      [fieldName]: `Minimum ${minLimit} words are required.`,
-    }));
-  } else {
-    setError((prevErrors: any) => ({
-      ...prevErrors,
-      [fieldName]: `Maximum ${maxLimit} words are allowed.`,
-    }));
-  }
-};
 
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const params = useSearchParams();
@@ -96,6 +66,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   //mediaData
   const [mediaData, setMediaData] = useState<MediaData>();
 
+  const [dataModified, setDataModified] = useState(false);
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -106,6 +78,33 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         });
     }
   }, []);
+
+  const handleWordLimit = (
+    input_value: string,
+    minLimit: number,
+    maxLimit: number,
+    fieldName: string,
+    setError: Function
+  ) => {
+    const inputValue = input_value.trim();
+    const words = inputValue.split(/\s+/);
+    const wordCount = words.length;
+    setDataModified(true);
+
+    if (wordCount >= minLimit && wordCount <= maxLimit) {
+      setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
+    } else if (wordCount < minLimit) {
+      setError((prevErrors: any) => ({
+        ...prevErrors,
+        [fieldName]: `Minimum ${minLimit} words are required.`,
+      }));
+    } else {
+      setError((prevErrors: any) => ({
+        ...prevErrors,
+        [fieldName]: `Maximum ${maxLimit} words are allowed.`,
+      }));
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target?.files;
@@ -363,8 +362,14 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           patchFormData.append(
             "media_data",
             JSON.stringify({
-              youtube_links: releventLinks.split(",").filter((link) => link.includes("youtube")).join(","),
-              article_links: releventLinks.split(",").filter((link) => !link.includes("youtube")).join(","),
+              youtube_links: releventLinks
+                .split(",")
+                .filter((link) => link.includes("youtube"))
+                .join(","),
+              article_links: releventLinks
+                .split(",")
+                .filter((link) => !link.includes("youtube"))
+                .join(","),
             })
           );
 
@@ -381,7 +386,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              
+
               if (data.error && data.msg) {
                 toast.error("Error creating your user bot, Please try again.");
               } else {
@@ -487,11 +492,23 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   parsedFaqJson["What is the primary purpose of the bot?"]
                 );
 
-                // setReleventLinks(
-                //   parsedFaqJson[
-                //     "Provide any relevant links and make sure the links are publicly accessible"
-                //   ]
-                // );
+                const InitialKowledgeBotData = {
+                  name: resultingBot.bot_attributes.bot_name,
+                  primaryPurpose:
+                    parsedFaqJson["What is the primary purpose of the bot?"],
+                  commanFaqs:
+                    parsedFaqJson[
+                      "Provide a few common FAQs the bot should use for commonly asked questions?"
+                    ],
+                  functionsNTasksOfBot:
+                    parsedFaqJson[
+                      "What tasks or functions should the bot perform?"
+                    ],
+                  infoAccessToBot:
+                    parsedFaqJson[
+                      "Provide the information the bot should have access to generate responses?"
+                    ],
+                };
               }
             });
         });
@@ -501,6 +518,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [error, setError] = useState({});
 
   const handleInputLinks = (input_value: string, fieldName: string) => {
+    setDataModified(true);
     const inputValue = input_value;
 
     if (isValidLinks(inputValue)) {
@@ -989,7 +1007,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 </div>
                 <div>
                   {checkIfEdit ? (
-                    <Button disabled={submitLoading } className="h-8">
+                    <Button
+                      id="save-changes-btn"
+                      disabled={submitLoading || !dataModified}
+                      className="h-8"
+                    >
                       {" "}
                       {submitLoading ? (
                         <>
