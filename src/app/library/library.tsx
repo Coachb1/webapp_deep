@@ -531,7 +531,7 @@ const MyLibrary = ({ user }: any) => {
                   id="nav1"
                   className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
                 >
-                  {!restrictedPages?.includes("EQ-Areas") && (
+                  {!restrictedFeatures?.includes("EQ-Areas") && (
                     <Button
                       variant={"outline"}
                       className={`h-8 max-sm:text-sm`}
@@ -544,7 +544,7 @@ const MyLibrary = ({ user }: any) => {
                       Emotional Quotient Areas
                     </Button>
                   )}
-                  {!restrictedPages?.includes("Competency-library") && (
+                  {!restrictedFeatures?.includes("Competency-library") && (
                     <Button
                       onClick={() => {
                         document
@@ -559,7 +559,7 @@ const MyLibrary = ({ user }: any) => {
                       Competency Based Power Skills
                     </Button>
                   )}
-                  {!restrictedPages?.includes("Client-library") && (
+                  {!restrictedFeatures?.includes("Client-library") && (
                     <>
                       {categorisedTests.map((category) => (
                         <Button
@@ -579,7 +579,7 @@ const MyLibrary = ({ user }: any) => {
                     </>
                   )}
                 </div>
-                {!restrictedPages?.includes("Requested-scenarios") && (
+                {!restrictedFeatures?.includes("Requested-scenarios") && (
                   <>
                     <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
                     <div
@@ -642,7 +642,7 @@ const MyLibrary = ({ user }: any) => {
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
-                {!restrictedPages?.includes("EQ-Areas") && (
+                {!restrictedFeatures?.includes("EQ-Areas") && (
                   <>
                     <div
                       id="eq-tests"
@@ -958,7 +958,7 @@ const MyLibrary = ({ user }: any) => {
                   </>
                 )}
                 {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
-                {!restrictedPages?.includes("Client-library") && (
+                {!restrictedFeatures?.includes("Client-library") && (
                   <>
                     {categorisedTests.map((category, index) => (
                       <div
