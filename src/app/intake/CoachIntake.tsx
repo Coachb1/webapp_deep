@@ -303,6 +303,7 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDataModified(true);
     const selectedFiles = e.target?.files;
 
     if (selectedFiles) {
