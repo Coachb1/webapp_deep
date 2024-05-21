@@ -21,6 +21,7 @@ let user2;
 let codeAvailabilityUserChoice2 = false;
 let optedNo2 = false;
 let questionIndex2 = 0;
+let audioRes
 
 let gShadowRoot2;
 let globalReportUrl2 = "";
@@ -5518,11 +5519,158 @@ loadExternalModule().then(() => {
     });
   };  
 
+  const audioCanvasUI = (audio, canvas) => {
+    const canvasCtx = canvas.getContext("2d");
+    console.log(canvasCtx);
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    console.log(audioCtx);
+    const analyser = audioCtx.createAnalyser();
+    const source = audioCtx.createMediaElementSource(audio);
+
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.fftSize;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      requestAnimationFrame(draw);
+
+      analyser.getByteFrequencyData(dataArray);
+
+      canvasCtx.fillStyle = "#F3F4F6";
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let barHeight;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i];
+
+        canvasCtx.fillStyle = "red";
+        canvasCtx.fillRect(
+          x,
+          canvas.height - barHeight / 2,
+          barWidth,
+          barHeight / 2
+        );
+
+        x += barWidth + 1;
+      }
+    }
+
+    audio.onload = function () {
+      console.log("loaded");
+    };
+
+    audio.onplay = function () {
+      audioCtx.resume().then(() => {
+        draw();
+      });
+    };
+  };
+
+  async function audioSourceOpen(
+    inputText,
+    messageBubble,
+    index,
+    randomTextForId
+  ) {
+    const audioElement = document.createElement("audio");
+    audioElement.setAttribute(
+      "id",
+      `audio-player-stream-${index}-${randomTextForId}`
+    );
+    audioElement.autoplay = true;
+    const canvasElement = document.createElement("canvas");
+    canvasElement.setAttribute("id", `canvas-${index}-${randomTextForId}`);
+    canvasElement.width = 100;
+    canvasElement.height = 40;
+
+    audioCanvasUI(audioElement, canvasElement);
+
+    const mediaSource = new MediaSource();
+    audioElement.src = URL.createObjectURL(mediaSource);
+
+    const audioSourceElement = document.createElement("source");
+    audioElement.appendChild(audioSourceElement);
+
+    messageBubble.appendChild(audioElement);
+    messageBubble.appendChild(canvasElement);
+
+    mediaSource.addEventListener("sourceopen", async () => {
+      const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
+
+      const response = await fetch("https://api.openai.com/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer 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",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: inputText,
+          model: "tts-1",
+          response_format: "mp3",
+          voice: "echo",
+        }),
+      });
+
+      const reader = response.body.getReader();
+
+      if (index === 0) {
+        reader.read().then(function process({ done, value }) {
+          if (done) {
+            if (mediaSource.readyState === "open") mediaSource.endOfStream();
+            return;
+          }
+          sourceBuffer.appendBuffer(value);
+
+          sourceBuffer.addEventListener("updateend", () => {
+            if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+              reader.read().then(process);
+            }
+          });
+        });
+      } else {
+        const shadowRootAud =
+          document.getElementById("chat-element2").shadowRoot;
+        const previousPlayer = shadowRootAud.getElementById(
+          `audio-player-stream-${index - 1}-${randomTextForId}`
+        );
+        if (previousPlayer) {
+          previousPlayer.addEventListener("ended", () => {
+            console.log("PLAYER HAS ENDED");
+            reader.read().then(function process({ done, value }) {
+              if (done) {
+                if (mediaSource.readyState === "open")
+                  mediaSource.endOfStream();
+                return;
+              }
+              sourceBuffer.appendBuffer(value);
+
+              sourceBuffer.addEventListener("updateend", () => {
+                if (
+                  !sourceBuffer.updating &&
+                  mediaSource.readyState === "open"
+                ) {
+                  reader.read().then(process);
+                }
+              });
+            });
+          });
+        }
+      }
+    });
+  }
+
   const GeminiAiResponse = (
     userInputMessage,
     signals,
     conversationId,
-    latestMessage
+    latestMessage,
+    streamWithAudio
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
@@ -5550,27 +5698,7 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
-
-    function ensureProperEnding(str) {
-      // console.log(str)
-      if (str.startsWith("[") && !str.endsWith("]")) {
-        console.log("met condition 1");
-        return str.replace("[", "");
-      } else if (
-        str.startsWith(",") &&
-        !str.startsWith("[") &&
-        !str.endsWith("]")
-      ) {
-        console.log("met condition 2");
-        return str.replace(",", "");
-      } else if (str.endsWith("]")) {
-        console.log("met condition 3");
-        return str.replace(/^\s*,/, "").replace(/\]\s*$/, "");
-      } else {
-        console.log("met condition DE");
-        return str;
-      }
-    }
+    const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
     fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
@@ -5581,9 +5709,8 @@ loadExternalModule().then(() => {
       .then(async (response) => {
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        let partialData = "";
-        let existingTexts = [];
 
+        let index = 0;
         while (true) {
           const { done, value } = await reader?.read();
           if (done) {
@@ -5599,9 +5726,25 @@ loadExternalModule().then(() => {
             if (messageText.innerText === "") {
               messageText.innerText +=
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
             } else if (endsWithLowerCaseLetter(messageText.innerText)) {
               messageText.innerText +=
                 " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
             }
             console.log("Stream complete");
             console.log("STREAMED MESSAGE -> ", messageText.innerText);
@@ -5675,20 +5818,20 @@ loadExternalModule().then(() => {
 
           const decodedText = decoder.decode(value, { stream: !done });
           console.log(decodedText);
+          if (streamWithAudio) {
+            audioSourceOpen(
+              decodedText,
+              messageBubble,
+              index,
+              randomIdForAudioElement
+            );
+          }
           messageText.innerHTML += decodedText;
           signals.onResponse({
             html: ".",
           });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
-
-          // if(decodedText.length > 0 && decodedText !== "]"){
-          //   // console.log(ensureProperEnding(decodedText))
-          //   const data = JSON.parse(ensureProperEnding(decodedText));
-          //   console.log(data.candidates[0].content.parts[0].text)
-          //   messageText.innerHTML += data.candidates[0].content.parts[0].text.replace(/\*/g, '')
-
-          //   shadowRoot.getElementById("messages").scrollBy(0, 500);
-          // }
+          index++;
         }
       })
       .catch((error) => {
@@ -5806,6 +5949,9 @@ loadExternalModule().then(() => {
         if (body instanceof FormData) {
         } else {
           //
+          // let latestMessages = body.messages[body.messages.length - 1].text;
+          // GeminiAiResponse(latestMessages, signals,"",latestMessages, false)
+          // return;
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
@@ -6456,7 +6602,8 @@ loadExternalModule().then(() => {
                   responseData.coach_message_metadata.prompt,
                   signals,
                   conversation_id2,
-                  latestMessage
+                  latestMessage,
+                  false
                 );
               }
 
