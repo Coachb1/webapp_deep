@@ -141,6 +141,7 @@ let sessionQnAdata = [];
 let intakebuttonText = 'Pre-Check'
 let askDeepDiveAccessCode = false;
 let quickMatchMessage;
+let isSomeActivityActive=false;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -348,6 +349,8 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
     }
 
   }
+
+  isSomeActivityActive = false;
 
 
 }
@@ -2233,6 +2236,7 @@ async function handleFaqButtonClick(question) {
               '#22c55e'
             )
           );
+          isSomeActivityActive = true;
         }, 100);
       }
 
@@ -2617,6 +2621,7 @@ function handleEndConversation(isInActive) {
     endSessionButton.removeAttribute("onmouseleave");
     endSessionButton.style.backgroundColor = "#d3d3d3"; // to set gray color
     endSessionButton.style.color = "#a0a0a0";
+    endSessionButton.style.cursor = "";
     endSessionButton.disabled = true;
   }
 
@@ -5837,6 +5842,13 @@ loadExternalModule().then(() => {
             });
             return;
           }
+
+          if (isSomeActivityActive && botType === 'deep_dive') {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Not allowed! choose option to continue. </p>",
+            });
+            return;
+          }
           // to check session active or not
           // get latest message
           let latestMessage = body.messages[body.messages.length - 1].text;
@@ -5874,6 +5886,7 @@ loadExternalModule().then(() => {
                   signals.onResponse({
                     html: optionData
                   })
+                  isSomeActivityActive = true;
                 }, 100);
 
               return
