@@ -29,11 +29,13 @@ const LayoutComponent = ({
   children,
   isDemoUser,
   isRestricted,
+  restrictedPages,
 }: {
   user: KindeUser | null;
   children: React.ReactNode;
   isDemoUser: boolean;
   isRestricted: boolean;
+  restrictedPages: string;
 }) => {
   const pathname = usePathname();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
@@ -240,7 +242,10 @@ const LayoutComponent = ({
                   !pathname.includes("/deep-dive") ? (
                     <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
                       <div className="z-[999]">
-                        <NetworkNav user={user} />
+                        <NetworkNav
+                          restrictedPages={restrictedPages}
+                          user={user}
+                        />
                       </div>
                       {children}
                     </div>
