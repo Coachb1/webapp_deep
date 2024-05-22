@@ -146,6 +146,8 @@ let intakebuttonText = 'Pre-Check'
 let askDeepDiveAccessCode = false;
 let quickMatchMessage;
 let isSomeActivityActive=false;
+let askInitialQuestionDeepDive = false;
+let deepDiveInitialQueIndex;
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -335,7 +337,10 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
     else{
-      startDeepDiveConv();
+      // we are asking initial question
+      askInitialQuestionDeepDive=true;
+      deepDiveInitialQueIndex = 1;
+      appendMessage2(botInitialQuestions[`${deepDiveInitialQueIndex}`])
     }
   }
   else if (choice === "Yes") {
@@ -349,7 +354,9 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
     else{
-      startDeepDiveConv();
+      askInitialQuestionDeepDive=true;
+      deepDiveInitialQueIndex = 1;
+      appendMessage2(botInitialQuestions[`${deepDiveInitialQueIndex}`])
     }
 
   }
@@ -1226,6 +1233,7 @@ const getBotDetails2 = async (botId) => {
       } else {
         endSessionButton.innerText = "End and Email Summary";
       }
+      endSessionButton.style.cursor = "not-allowed";
       endSessionButton.disabled = true;
       buttonsWrapper.appendChild(endSessionButton);
     }
@@ -1311,6 +1319,11 @@ const getBotDetails2 = async (botId) => {
       CoachingForFitment = botDetails.data.coaching_for_fitment;
       faqButtonsWrapper.style.display = "block";
       faqButtonsWrapper.append(buttonsWrapper);
+      if (botType === 'deep_dive'){
+        botInitialQuestions = {
+          "1": "Please let us know more about your context for this survey such as role, impact and whatever else you may feel comfortable with."
+        }
+      }
       // appendMessage2(faqHtmlData);
     } else {
       feedbackBotInitialFlow("initial");
@@ -2625,7 +2638,7 @@ function handleEndConversation(isInActive) {
     endSessionButton.removeAttribute("onmouseleave");
     endSessionButton.style.backgroundColor = "#d3d3d3"; // to set gray color
     endSessionButton.style.color = "#a0a0a0";
-    endSessionButton.style.cursor = "";
+    endSessionButton.style.cursor = "not-allowed";
     endSessionButton.disabled = true;
   }
 
@@ -2722,13 +2735,31 @@ function handleEndConversation(isInActive) {
   if (!window.user) {
     // appendMessage2(emailForm);
     if(botType === "deep_dive"){
-      const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
-        <b>Want to continue as Anonymous?</b>
-        </br> <div>
-            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
-            <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
-            </div>
-        </div>`;
+      // const optionData = `<div id="anonymous-${uniqueSesssionContainerId}">
+      //   <b>Want to continue as Anonymous?</b>
+      //   </br> <div>
+      //       <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('Yes')">Yes</button>
+      //       <button onmouseover="this.style.cursor ='pointer'" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="getUserOrAnonymousDetailsDeepDive('No')">No</button>
+      //       </div>
+      //   </div>`;
+
+      // adding initial question to bot transcript
+      const botData = Object.entries(botInitialQuestionsQnA).reverse();
+      botData.forEach(element => {
+        sessionQnAdata.unshift(
+          {
+            "coach" : element[0],
+            "user": element[1]
+          }
+        )
+      });
+
+      sessionQnAdata.push({
+        'coach': "Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.",
+        'user': ""
+      })
+
+      console.log('deepdiveBottranscriptData', botData, sessionQnAdata)
       sendBotTranscript2();
       // appendMessage2(optionData);
 
@@ -2739,6 +2770,24 @@ function handleEndConversation(isInActive) {
     }
   } else {
     // if(botScenarioCase !== "icons_by_ai"){ //no email trigger for icons_by_ai :- row 707
+    if ( botType === 'deep_dive'){
+      const botData = Object.entries(botInitialQuestionsQnA).reverse();
+      botData.forEach(element => {
+        sessionQnAdata.unshift(
+          {
+            "coach" : element[0],
+            "user": element[1]
+          }
+        )
+      });
+
+      sessionQnAdata.push({
+        'coach': "Thank you for taking the time to check in on the important topic. You may receive a response transcript for your records only.",
+        'user': ""
+      })
+
+      console.log('deepdiveBottranscriptData', botData, sessionQnAdata)
+    }
       sendBotTranscript2();
     // }
   }
@@ -6009,6 +6058,25 @@ loadExternalModule().then(() => {
             console.log("SLICED \n", latestMessage)
           } 
 
+          // handling deepdive intial question
+          if (botType==='deep_dive' && askInitialQuestionDeepDive){
+            botInitialQuestionsQnA[botInitialQuestions[`${deepDiveInitialQueIndex}`]] = latestMessage
+            deepDiveInitialQueIndex += 1
+            console.log("botqna: ", botInitialQuestionsQnA,Object.keys(botInitialQuestions).length,deepDiveInitialQueIndex)
+
+            if (Object.keys(botInitialQuestions).length < deepDiveInitialQueIndex ){
+              console.log('ending initial question session')
+              askInitialQuestionDeepDive = false;
+              latestMessage = 'START'
+            }
+            else{
+              signals.onResponse({
+                html: botInitialQuestions[`${deepDiveInitialQueIndex}`]
+              })
+              return
+            }
+
+          }
           console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
           if(askDeepDiveAccessCode){
               console.log("askDeepDiveAccessCode", askDeepDiveAccessCode)
@@ -6064,11 +6132,13 @@ loadExternalModule().then(() => {
                 console.log("isAnonymous", isAnonymous)
                 // sendBotTranscript2();
                 if (botType === 'deep_dive') {
+                  askInitialQuestionDeepDive=true;
+                  deepDiveInitialQueIndex = 1;
+
                   signals.onResponse({
                     // html: "<b>Your session has ended. Please refresh the page to restart again anytime</b>"
-                    html: "<b> Thank you...</b>"
+                    html: `${botInitialQuestions[`${deepDiveInitialQueIndex}`]}`
                   });
-                  startDeepDiveConv();
                   return
                 } else {
                 signals.onResponse({ html: faqHtmlData });
