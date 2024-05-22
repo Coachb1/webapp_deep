@@ -29,40 +29,14 @@ interface CustomWindow extends Window {
 const windowDec: CustomWindow =
   typeof window !== "undefined" ? window : ({} as CustomWindow);
 
-const NetworkNav = ({ user }: any) => {
+const NetworkNav = ({ user, restrictedPages }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
   const { updateHelpModeState, helpModeState } = UseHelpMode();
 
-  //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
-
   const [scrolled, setScrolled] = useState<number>(0);
-  useEffect(() => {
-    if (user) {
-      CreateOrAssignClientId(user.email)
-        ?.then((resp) => resp.text())
-        .then((result) => {
-          console.log(`Success : data:`, result);
-          getClientUserInfo(user.email)
-            ?.then((res) => res.json())
-            .then((data) => {
-              console.log(data, "getClientUserInfo - NetworkNav");
-
-              setRestrictedPages(data.data.user_info[0].restricted_pages);
-              setRestrictedFeatures(data.data.user_info[0].restricted_features);
-            });
-        })
-        .catch((error) =>
-          console.error("Error in create-or-assign-client-id", error)
-        );
-    }
-  }, []);
 
   function handleScroll() {
     var scrolledUp = window.scrollY || window.pageYOffset;
@@ -169,35 +143,10 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <Link
-                  href={"/library"}
-                  // onClick={() => {
-                  //   router.push("/library");
-                  // }}
-                >
-                  {" "}
-                  Library
-                </Link>
+                <Link href={"/library"}> Library</Link>
               </DropdownMenuItem>
             )}
-            {/* {!restrictedPages?.includes("Guides") && (
-              <DropdownMenuItem
-                className={`${
-                  pathname.includes("/guides") ? "bg-gray-200" : null
-                }`}
-                asChild
-              >
-                <Link
-                  href={"/guides"}
-                  // onClick={() => {
-                  //   router.push("/guides");
-                  // }}
-                >
-                  {" "}
-                  Guides
-                </Link>
-              </DropdownMenuItem>
-            )} */}
+
             {!restrictedPages?.includes("Creator Studio") && (
               <DropdownMenuItem
                 className={`${
@@ -205,23 +154,7 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <Link
-                  href={"/create-scenario"}
-                  // onClick={() => {
-                  //   router.push("/create-scenario");
-                  // }}
-                >
-                  {" "}
-                  Creator Studio{" "}
-                  {/* <span>
-                    <Badge
-                      variant={"default"}
-                      className="bg-cyan-400 w-fit text-[10px] p-[2px] ml-1  hover:bg-cyan-400 text-white "
-                    >
-                      Experimental
-                    </Badge>
-                  </span> */}
-                </Link>
+                <Link href={"/create-scenario"}> Creator Studio </Link>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

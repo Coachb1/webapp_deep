@@ -38,7 +38,7 @@ const getClientUserInfo = async (
       const raw = JSON.stringify({
         email: userEmail,
       });
-      
+
       const requestOptions = {
         method: "POST",
         headers: myHeaders,
@@ -77,6 +77,7 @@ const getClientUserInfo = async (
             isRestricted: data.data.user_info[0].is_restricted,
             clientExpertise: data.data.user_info[0].coach_expertise,
             clientDepartments: data.data.user_info[0].departments,
+            restrictedPages: data.data.user_info[0].restricted_pages,
           };
         } else {
           return {
@@ -84,6 +85,7 @@ const getClientUserInfo = async (
             isRestricted: true,
             clientExpertise: null,
             clientDepartments: null,
+            restrictedPages: "",
           };
         }
       } else {
@@ -93,6 +95,7 @@ const getClientUserInfo = async (
           isRestricted: true,
           clientExpertise: null,
           clientDepartments: null,
+          restrictedPages: "",
         };
       }
     } else {
@@ -101,6 +104,7 @@ const getClientUserInfo = async (
         isRestricted: true,
         clientExpertise: null,
         clientDepartments: null,
+        restrictedPages: "",
       };
     }
   } else {
@@ -109,6 +113,7 @@ const getClientUserInfo = async (
       isRestricted: true,
       clientExpertise: null,
       clientDepartments: null,
+      restrictedPages: "",
     };
   }
 };
@@ -121,7 +126,7 @@ export default async function RootLayout({
   const { getUser } = getKindeServerSession();
   const user: KindeUser | null = await getUser();
 
-  const { isDemoUser, isRestricted } = await getClientUserInfo(
+  const { isDemoUser, isRestricted, restrictedPages } = await getClientUserInfo(
     user?.email,
     user
   );
@@ -141,6 +146,7 @@ export default async function RootLayout({
                 <AntdRegistry>
                   <Providers>
                     <LayoutComponent
+                      restrictedPages={restrictedPages}
                       user={user}
                       children={children}
                       isDemoUser={isDemoUser}
