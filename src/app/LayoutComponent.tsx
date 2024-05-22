@@ -29,11 +29,13 @@ const LayoutComponent = ({
   children,
   isDemoUser,
   isRestricted,
+  restrictedPages,
 }: {
   user: KindeUser | null;
   children: React.ReactNode;
   isDemoUser: boolean;
   isRestricted: boolean;
+  restrictedPages: string;
 }) => {
   const pathname = usePathname();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
@@ -240,7 +242,10 @@ const LayoutComponent = ({
                   !pathname.includes("/deep-dive") ? (
                     <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
                       <div className="z-[999]">
-                        <NetworkNav user={user} />
+                        <NetworkNav
+                          restrictedPages={restrictedPages}
+                          user={user}
+                        />
                       </div>
                       {children}
                     </div>
@@ -249,78 +254,6 @@ const LayoutComponent = ({
                   )}
                 </>
               )}
-            {/* {isRestricted ? (
-              <>
-                {isDemoUser ? (
-                  <>
-                    {" "}
-                    {subdomain === "platform" ? (
-                      <div className="deep-chat-poc hidden"></div>
-                    ) : (
-                      <div className="deep-chat-poc"></div>
-                    )}
-                    {showCoachBot ? (
-                      <div data-bot-id={botId} className="deep-chat-poc2"></div>
-                    ) : (
-                      <div className="deep-chat-poc2"></div>
-                    )}
-                    {!pathname.includes("/feedback") &&
-                    !pathname.includes("/coach") &&
-                    !pathname.includes("/subject-expert") &&
-                    !pathname.includes("/knowledge-bot") &&
-                    !pathname.includes("/deep-dive") ? (
-                      <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
-                        <div className="z-[999]">
-                          <NetworkNav user={user} />
-                        </div>
-                        {children}
-                      </div>
-                    ) : (
-                      <>{children}</>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <UnAuth user={user} />
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                {isDemoUser ? (
-                  <>
-                    {subdomain === "platform" ? (
-                      <div className="deep-chat-poc hidden"></div>
-                    ) : (
-                      <div className="deep-chat-poc"></div>
-                    )}
-                    {showCoachBot ? (
-                      <div data-bot-id={botId} className="deep-chat-poc2"></div>
-                    ) : (
-                      <div className="deep-chat-poc2"></div>
-                    )}
-                    {!pathname.includes("/feedback") &&
-                    !pathname.includes("/coach") &&
-                    !pathname.includes("/subject-expert") &&
-                    !pathname.includes("/knowledge-bot") &&
-                    !pathname.includes("/deep-dive") ? (
-                      <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
-                        <div className="z-[999]">
-                          <NetworkNav user={user} />
-                        </div>
-                        {children}
-                      </div>
-                    ) : (
-                      <>{children}</>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <UnAuth user={user} />
-                  </>
-                )}
-              </>
-            )} */}
           </>
         )}
       </>
