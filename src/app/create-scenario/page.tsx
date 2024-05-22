@@ -21,6 +21,8 @@ const getknowledgeBotss = async (userEmail: string) => {
 
     const responseData = await response.json();
     const clientName = responseData.data.user_info[0].client_name;
+    const restrictedFeatures =
+      responseData.data.user_info[0].restricted_features;
 
     if (clientName) {
       const getBotsDataResponse = await fetch(
@@ -46,14 +48,17 @@ const getknowledgeBotss = async (userEmail: string) => {
       try {
         getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
           const botJson = item.signature_bot;
-          let description : string = "";
-          if (typeof botJson.faqs === "string"){
-            //@ts-ignore
-            description = JSON.parse(botJson.faqs["What is the primary purpose of the bot?"])
+          let description: string = "";
+          if (typeof botJson.faqs === "string") {
+            description = JSON.parse(
+              //@ts-ignore
+              botJson.faqs["What is the primary purpose of the bot?"]
+            );
           } else {
-            description = botJson.faqs["What is the primary purpose of the bot?"]
+            description =
+              botJson.faqs["What is the primary purpose of the bot?"];
           }
-          if (item.signature_bot.is_approved){
+          if (item.signature_bot.is_approved) {
             knowledgeBotss.push({
               bot_id: botJson.bot_id,
               bot_name: item.bot_attributes.bot_name,
@@ -64,15 +69,24 @@ const getknowledgeBotss = async (userEmail: string) => {
             });
           }
         });
-        return knowledgeBotss;
+        return { knowledgeBotss, restrictedFeatures };
       } catch (error) {
-        return [];
+        return {
+          knowledgeBotss: [],
+          restrictedFeatures: "",
+        };
       }
     } else {
-      return [];
+      return {
+        knowledgeBotss: [],
+        restrictedFeatures: "",
+      };
     }
   } else {
-    return [];
+    return {
+      knowledgeBotss: [],
+      restrictedFeatures: "",
+    };
   }
 };
 
@@ -108,14 +122,18 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const knowledgeBots = await getknowledgeBotss(user?.email!);
+  const { knowledgeBotss, restrictedFeatures } = await getknowledgeBotss(
+    user?.email!
+  );
+
   const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
 
   return (
     <div>
       <CreateOwn
         user={user}
-        knowledgeBots={knowledgeBots}
+        restrictedFeatures={restrictedFeatures}
+        knowledgeBots={knowledgeBotss}
         deepdiveCreationAccess={deepdiveCreationAccess}
       />
     </div>
