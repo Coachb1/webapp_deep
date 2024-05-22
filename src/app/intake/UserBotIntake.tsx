@@ -779,6 +779,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   name="files"
                   accept=".pdf,.docx"
                   onChange={async (e) => {
+                    setDataModified(true)
                     handleFileChange(e);
                   }}
                 />
