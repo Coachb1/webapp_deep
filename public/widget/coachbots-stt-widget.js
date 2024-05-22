@@ -23,6 +23,9 @@ let optedNo2 = false;
 let questionIndex2 = 0;
 let audioRes
 
+let clientAllowAudioInteraction2; 
+let userAllowAudioInteraction2;
+let prioritiseUserAllowInteraction2;
 let gShadowRoot2;
 let globalReportUrl2 = "";
 let conversation_id2;
@@ -6591,6 +6594,17 @@ loadExternalModule().then(() => {
               console.log(responseData.coach_message_metadata.prompt);
 
               conversation_id2 = responseData["uid"];
+
+              let allowAudioInteraction = false;
+              console.log("clientAllowAudioInteraction2" , clientAllowAudioInteraction2)
+              console.log("userAllowAudioInteraction2" , userAllowAudioInteraction2)
+              console.log("prioritiseUserAllowInteraction2" , prioritiseUserAllowInteraction2)
+              if(prioritiseUserAllowInteraction2){
+                allowAudioInteraction = userAllowAudioInteraction2
+              } else {
+                allowAudioInteraction = clientAllowAudioInteraction2
+              }
+              console.log("allowAudioInteraction => ", allowAudioInteraction)
               //streaming responses
               if (botType === 'deep_dive'){
                 console.log('chatGemini#####################')
@@ -6616,7 +6630,7 @@ loadExternalModule().then(() => {
                   signals,
                   conversation_id2,
                   latestMessage,
-                  false
+                  allowAudioInteraction
                 );
               }
 
@@ -8266,6 +8280,9 @@ const openChatContainer2 = () => {
   })
     .then((response) => response.json())
     .then((data) => {
+      clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
       participantId2 = data.uid;
       userId2 = data.uid;
       userRole2 = data.role;
