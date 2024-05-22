@@ -132,8 +132,8 @@ export const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
 
 export const hideBots = () => {
-  const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-  const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+  const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+  const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
 
   if (coachScribe && coachtalk) {
     coachtalk.setAttribute("style", "display: none;");

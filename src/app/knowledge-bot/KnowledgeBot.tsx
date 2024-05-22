@@ -101,7 +101,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           parsedFaqJson = data.data.faqs;
         }
         const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
+          document.getElementsByClassName("coachbots-coachscribe")[0];
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,

@@ -301,7 +301,7 @@ const MyPages = ({ user }: any) => {
                               <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
                                 {`
 <div
-    class="deep-chat-poc2"
+    class="coachbots-coachscribe"
     data-bot-id="${bot.bot_id}"
 ></div>
 <script
@@ -317,7 +317,7 @@ const MyPages = ({ user }: any) => {
                           <CopyToClipboard
                             copyType="code"
                             textToCopy={`<div
-                                class="deep-chat-poc2"
+                                class="coachbots-coachscribe"
                                 data-bot-id="${bot.bot_id}"
                             ></div>
                             <script

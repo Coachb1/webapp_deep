@@ -89,7 +89,7 @@ const DeepDive = ({ user, renderType }: any) => {
           console.error(err);
         });
     }
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
     coachScribe.setAttribute("style", "display: none;");
 
     fetch(

@@ -1886,7 +1886,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-  deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
+  deepChatPocElement = document.getElementsByClassName("coachbots-coachtalk")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
       <div

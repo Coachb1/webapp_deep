@@ -126,8 +126,8 @@ const LayoutComponent = ({
   }, [pathname]);
 
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
     if (isDemoUser && !isRestricted && user) {
       if (pathname === "/profile") {
         coachtalk.setAttribute("style", "display: none;");
@@ -156,8 +156,8 @@ const LayoutComponent = ({
   }, [pathname, user, isDemoUser, isRestricted]);
 
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
     if (pathname === "/library") {
       if (coachScribe) {
         coachScribe.removeAttribute("style");
@@ -224,14 +224,14 @@ const LayoutComponent = ({
                 <>
                   {" "}
                   {subdomain === "platform" ? (
-                    <div className="deep-chat-poc hidden"></div>
+                    <div className="coachbots-coachtalk hidden"></div>
                   ) : (
-                    <div className="deep-chat-poc"></div>
+                    <div className="coachbots-coachtalk"></div>
                   )}
                   {showCoachBot ? (
-                    <div data-bot-id={botId} className="deep-chat-poc2"></div>
+                    <div data-bot-id={botId} className="coachbots-coachscribe"></div>
                   ) : (
-                    <div className="deep-chat-poc2"></div>
+                    <div className="coachbots-coachscribe"></div>
                   )}
                   {!pathname.includes("/feedback") &&
                   !pathname.includes("/coach") &&
@@ -255,14 +255,14 @@ const LayoutComponent = ({
                   <>
                     {" "}
                     {subdomain === "platform" ? (
-                      <div className="deep-chat-poc hidden"></div>
+                      <div className="coachbots-coachtalk hidden"></div>
                     ) : (
-                      <div className="deep-chat-poc"></div>
+                      <div className="coachbots-coachtalk"></div>
                     )}
                     {showCoachBot ? (
-                      <div data-bot-id={botId} className="deep-chat-poc2"></div>
+                      <div data-bot-id={botId} className="coachbots-coachscribe"></div>
                     ) : (
-                      <div className="deep-chat-poc2"></div>
+                      <div className="coachbots-coachscribe"></div>
                     )}
                     {!pathname.includes("/feedback") &&
                     !pathname.includes("/coach") &&
@@ -290,14 +290,14 @@ const LayoutComponent = ({
                 {isDemoUser ? (
                   <>
                     {subdomain === "platform" ? (
-                      <div className="deep-chat-poc hidden"></div>
+                      <div className="coachbots-coachtalk hidden"></div>
                     ) : (
-                      <div className="deep-chat-poc"></div>
+                      <div className="coachbots-coachtalk"></div>
                     )}
                     {showCoachBot ? (
-                      <div data-bot-id={botId} className="deep-chat-poc2"></div>
+                      <div data-bot-id={botId} className="coachbots-coachscribe"></div>
                     ) : (
-                      <div className="deep-chat-poc2"></div>
+                      <div className="coachbots-coachscribe"></div>
                     )}
                     {!pathname.includes("/feedback") &&
                     !pathname.includes("/coach") &&
