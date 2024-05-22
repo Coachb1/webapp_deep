@@ -100,7 +100,7 @@ const convertToJsonArray = (input: Category): StateType[] => {
   return resultArray;
 };
 
-const MyLibrary = ({ user }: any) => {
+const MyLibrary = ({ user, restrictedFeatures }: any) => {
   const [tests, setTests] = useState<StateType[]>([]);
   const [filteredTests, setFilteredTests] = useState<StateType[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -298,40 +298,12 @@ const MyLibrary = ({ user }: any) => {
       });
   };
 
-  //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
-
-  const getClientInfoForUser = (userEmail: string) => {
-    if (userEmail) {
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data, "client user info");
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        })
-        .catch((err) => console.error(err));
-    }
-  };
-
   useEffect(() => {
     if (user) {
       getTestsByCompetencies();
       getRequestedTests();
       getNewManagerTests();
       getAttemptedTestsList();
-      getClientInfoForUser(user.email);
 
       fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",

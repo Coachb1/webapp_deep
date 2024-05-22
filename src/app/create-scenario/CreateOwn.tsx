@@ -41,6 +41,7 @@ const CreateOwn = ({
   user,
   knowledgeBots,
   deepdiveCreationAccess,
+  restrictedFeatures,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -52,39 +53,13 @@ const CreateOwn = ({
     creator_name: string;
   }[];
   deepdiveCreationAccess: Boolean;
+  restrictedFeatures: string;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
   const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
   const [userId, setUserId] = useState("");
-
-  //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
-
-  const getClientInfoForUser = (userEmail: string) => {
-    if (userEmail) {
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data, "client user info");
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        })
-        .catch((err) => console.error(err));
-    }
-  };
 
   const [contextPrompt, setContextPrompt] = useState(
     "Please enter the context and search!"
@@ -123,7 +98,7 @@ const CreateOwn = ({
         .then((data) => {
           setUserId(data.uid);
         });
-      getClientInfoForUser(user.email!);
+      // getClientInfoForUser(user.email!);
     }
 
     setTimeout(() => {
@@ -1093,7 +1068,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="deepdive-creator"
-                  className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                  className={`pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center`}
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
