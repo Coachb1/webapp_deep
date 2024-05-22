@@ -107,7 +107,7 @@ const Coach = ({ user, renderType }: any) => {
         console.log("BOT DETAILS : ", data);
         console.log();
         const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
+          document.getElementsByClassName("coachbots-coachscribe")[0];
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -193,7 +193,7 @@ const Coach = ({ user, renderType }: any) => {
                     pathname !== "/coach/coach-d54cd-aravsharma"
                   ) {
                     const coachScribe =
-                      document.getElementsByClassName("deep-chat-poc2")[0];
+                      document.getElementsByClassName("coachbots-coachscribe")[0];
 
                     console.log(coachScribe);
                     const botButton = document.getElementsByClassName(

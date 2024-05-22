@@ -1544,8 +1544,8 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
 

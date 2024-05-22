@@ -162,7 +162,7 @@ export const LoginWall = () => {
   const [botId, setBotId] = useState("");
   useEffect(() => {
     console.log(pathname);
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
     if (pathname.includes("/feedback") || pathname.includes("/feedback/")) {
       coachScribe.removeAttribute("style");
       if (pathname === "/feedback") {
@@ -294,7 +294,7 @@ export const LoginWall = () => {
           <Feedback renderType="dynamic" />
           <Widgets from="feedbackDynamic" />
           <Script src="../widget/coachbots-stt-widget.js" />
-          <div data-bot-id={botId} className="deep-chat-poc2"></div>
+          <div data-bot-id={botId} className="coachbots-coachscribe"></div>
         </>
       )}
 
@@ -304,7 +304,7 @@ export const LoginWall = () => {
           <DeepDive renderType="dynamic" />
           <Widgets from="deepdiveDynamic" />
           <Script src="../widget/coachbots-stt-widget.js" />
-          <div data-bot-id={botId} className="deep-chat-poc2"></div>
+          <div data-bot-id={botId} className="coachbots-coachscribe"></div>
         </>
       )}
     </>

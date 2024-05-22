@@ -4498,7 +4498,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module2
 loadExternalModule().then(() => {
-  deepChatPocElement2 = document.getElementsByClassName("deep-chat-poc2")?.[0];
+  deepChatPocElement2 = document.getElementsByClassName("coachbots-coachscribe")?.[0];
   deepChatPocElement2.innerHTML = `
   <div class="chat-wrapper2">
     <div
@@ -4778,7 +4778,7 @@ loadExternalModule().then(() => {
   const chatIconContainer2 = document.getElementById("chat-icon2");
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
-  botId = document.querySelector(".deep-chat-poc2").dataset.botId;
+  botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
   // botId = 'stress-management-0032'
   const _ = getBotDetails2(botId);
 
@@ -5960,7 +5960,7 @@ loadExternalModule().then(() => {
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
-          //   const coachId = document.querySelector('.deep-chat-poc2').dataset.botId;
+          //   const coachId = document.querySelector('.coachbots-coachscribe').dataset.botId;
           console.log("Bot ID: ", botId);
           if(botId){
             LoadingMessageWithText("Response loading...")
@@ -8282,7 +8282,7 @@ const openChatContainer2 = () => {
     chatContainer2.style["transform-origin"] = "100% 50%";
 
     //to close other bot
-    botId = document.querySelector(".deep-chat-poc2").dataset.botId;
+    botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
     // botId = 'stress-management-0032'
 
     if (!botId) {
