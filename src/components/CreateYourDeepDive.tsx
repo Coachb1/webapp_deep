@@ -32,12 +32,14 @@ const CreateYourDeepDive = ({ user }: any) => {
   const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [userId, setUserId] = useState("");
-  const [expiryDate, setExpiryDate] = useState('');
+  const [expiryDate, setExpiryDate] = useState("");
 
   const [isLoading, setIsloading] = useState(false);
   const [loadingText, setLoadingText] = useState("Generating your deep dive.");
 
-  const [generatedDeepdiveData, setGeneratedDeepdiveData] = useState<DeepDiveType[]>([]);
+  const [generatedDeepdiveData, setGeneratedDeepdiveData] = useState<
+    DeepDiveType[]
+  >([]);
 
   useEffect(() => {
     if (user) {
@@ -57,7 +59,11 @@ const CreateYourDeepDive = ({ user }: any) => {
     if (wordCount < 5 || wordCount > 500) {
       console.log("too small or too large");
       setInputError(true);
-    } else if (expiryDate === undefined || expiryDate === "" || expiryDate === null) {
+    } else if (
+      expiryDate === undefined ||
+      expiryDate === "" ||
+      expiryDate === null
+    ) {
       setDateError(true);
     } else {
       setIsloading(true);
@@ -82,12 +88,9 @@ const CreateYourDeepDive = ({ user }: any) => {
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
       );
       let date = new Date(expiryDate).toISOString();
-      
-      console.log('expiry date', expiryDate, date)
-      formdata.append(
-        "expiry_date",
-        date
-      );
+
+      console.log("expiry date", expiryDate, date);
+      formdata.append("expiry_date", date);
 
       formdata.append(
         "attributes",
@@ -152,7 +155,7 @@ const CreateYourDeepDive = ({ user }: any) => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate());
-    return tomorrow.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   };
 
   return (
@@ -199,21 +202,20 @@ const CreateYourDeepDive = ({ user }: any) => {
 
             {/* expiry date */}
 
-            <div className="flex flex-row justify-between w-full">
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-              Expiry Date
-            </p>
-            <input
-              value={expiryDate}
-              onChange={(e) => {
-                console.log(e.target.value)
-                setExpiryDate(e.target.value)}
-              }
-              type="date"
-              min={getTomorrowDate()}
-              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
-            />
-            
+            <div className="flex flex-row gap-2 items-center w-full">
+              <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                Expiry Date
+              </p>
+              <input
+                value={expiryDate}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setExpiryDate(e.target.value);
+                }}
+                type="date"
+                min={getTomorrowDate()}
+                className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+              />
             </div>
             {dateError && (
               <>
@@ -232,7 +234,6 @@ const CreateYourDeepDive = ({ user }: any) => {
             <br />
 
             {/* expiry date ends */}
-
 
             <div className="flex items-center gap-2">
               <Button
@@ -263,7 +264,6 @@ const CreateYourDeepDive = ({ user }: any) => {
           </div>
           {generatedDeepdiveData.length > 0 && (
             <>
-
               <div className="flex flex-row gap-2 max-sm:flex-col">
                 {generatedDeepdiveData.map((dd, i) => (
                   <div
@@ -272,20 +272,15 @@ const CreateYourDeepDive = ({ user }: any) => {
                   >
                     <div>
                       <b className="my-1 text-gray-400">Deep Dive</b>
-                      <p className="text-base mt-3 font-semibold">
-                        {dd.title}
-                      </p>
+                      <p className="text-base mt-3 font-semibold">{dd.title}</p>
                       <p className="text-sm my-2">{dd.objective}</p>
                     </div>
                     <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
-                      <CopyToClipboard 
-                          textToCopy={dd.access_code} 
-                          copyType="Access Code" 
-                      />
                       <CopyToClipboard
-                        textToCopy={dd.link}
-                        copyType="Link"
+                        textToCopy={dd.access_code}
+                        copyType="Access Code"
                       />
+                      <CopyToClipboard textToCopy={dd.link} copyType="Link" />
                       <Button
                         variant={"link"}
                         className="max-sm:p-2 h-8 hover:brightness-105"
@@ -295,7 +290,8 @@ const CreateYourDeepDive = ({ user }: any) => {
                           href={`/${dd.link.replace(getLink(), "")}`}
                           target="_blank"
                         >
-                          <ExternalLink className="mr-2 w-4 h-4" /> Visit Deep Dive
+                          <ExternalLink className="mr-2 w-4 h-4" /> Visit Deep
+                          Dive
                         </Link>
                       </Button>
                     </div>
