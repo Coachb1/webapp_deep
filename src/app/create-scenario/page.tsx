@@ -69,23 +69,26 @@ const getknowledgeBotss = async (userEmail: string) => {
             });
           }
         });
-        return { knowledgeBotss, restrictedFeatures };
+        return { knowledgeBotss, restrictedFeatures, clientName };
       } catch (error) {
         return {
           knowledgeBotss: [],
           restrictedFeatures: "",
+          clientName: "",
         };
       }
     } else {
       return {
         knowledgeBotss: [],
         restrictedFeatures: "",
+        clientName: "",
       };
     }
   } else {
     return {
       knowledgeBotss: [],
       restrictedFeatures: "",
+      clientName: "",
     };
   }
 };
@@ -122,10 +125,10 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { knowledgeBotss, restrictedFeatures } = await getknowledgeBotss(
-    user?.email!
-  );
+  const { knowledgeBotss, restrictedFeatures, clientName } =
+    await getknowledgeBotss(user?.email!);
 
+  console.log(clientName);
   const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
 
   return (
@@ -135,6 +138,7 @@ const Page = async () => {
         restrictedFeatures={restrictedFeatures}
         knowledgeBots={knowledgeBotss}
         deepdiveCreationAccess={deepdiveCreationAccess}
+        clientName={clientName}
       />
     </div>
   );

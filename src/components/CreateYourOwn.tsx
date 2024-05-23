@@ -1,13 +1,30 @@
 "use client";
 
-import { Eraser, Loader } from "lucide-react";
+import {
+  AtSign,
+  ChevronLeft,
+  ChevronRight,
+  Eraser,
+  Loader,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
 import { useEffect, useRef, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  getUserAccount,
+  getUsersForClient,
+} from "@/lib/utils";
 import { toast } from "sonner";
+import Select, { MultiValue, SingleValue } from "react-select";
 
-const CreateYourOwn = ({ user, generatedHandler }: any) => {
+interface OptionType {
+  value: string;
+  label: string;
+}
+
+const CreateYourOwn = ({ user, clientName }: any) => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<
     {
@@ -20,16 +37,46 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [loadingText, setLoadingText] = useState("Creating simulation.");
+  const [clientUser, setClientUsers] = useState<
+    { userEmail: string; userName: string; userId: string }[]
+  >([]);
+  const [assignedToUsers, setAssignedToUsers] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  const [assignInit, setAssignInit] = useState(false);
+
+  const getClientUsers = async (clientName: string) => {
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+        {
+          method: "GET",
+          headers: { Authorization: basicAuth },
+        }
+      );
+      const data = await response.json();
+      setClientUsers(getUsersForClient(clientName, data));
+    } catch (err) {
+      toast.error("Error fetching client data.");
+      console.error(err);
+    } finally {
+    }
+  };
 
   useEffect(() => {
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setUserId(data.uid);
+          setUserName(data.name);
         });
+      getClientUsers(clientName);
     }
   }, []);
 
@@ -60,6 +107,12 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
+      params.set(
+        "assign_to",
+        assignedToUsers.map((user) => user.value.split("/")[1]).join(",")
+      );
+      params.set("assigned_by", userName);
+
       url.search = params;
 
       let awaitedData: NodeJS.Timeout | undefined;
@@ -127,6 +180,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
     setGenerationError(false);
     setInputError(false);
     setWordCount(0);
+    setAssignedToUsers([]);
   };
 
   return (
@@ -167,6 +221,53 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
                 Please describe your situation in 20-500 words.
               </p>
               <p className="font-bold text-gray-500 text-xs">{wordCount}/500</p>
+            </div>
+            <div className="mb-4 flex flex-row items-center max-sm:flex-col max-sm:items-start gap-2">
+              <Button
+                onClick={() => {
+                  setAssignInit((prev) => !prev);
+                }}
+                variant={"secondary"}
+                className="text-sm max-sm:text-xs py-1 px-2 h-fit font-bold max-sm:font-medium text-blue-500 min-w-fit"
+              >
+                <AtSign strokeWidth="3px" className="h-3 w-3 mr-1" /> Assign{" "}
+                <span>
+                  {assignInit ? (
+                    <ChevronLeft className="text-gray-700 " />
+                  ) : (
+                    <ChevronRight />
+                  )}
+                </span>
+              </Button>
+              {assignInit && (
+                <Select
+                  onChange={(selectedOptions: MultiValue<OptionType>) => {
+                    console.log(selectedOptions as OptionType[]);
+                    setAssignedToUsers(selectedOptions as OptionType[]);
+                  }}
+                  options={clientUser
+                    .map((user) => ({
+                      value: `${user.userName}/${user.userId}`,
+                      label: user.userName,
+                    }))
+                    .filter((user) => !user.value.includes(userId))}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderRadius: "8px",
+                    }),
+                    multiValueLabel: (styles, { data }) => ({
+                      ...styles,
+                      fontWeight: "bold",
+                      color: "#4b5563",
+                      borderRadius: "4px",
+                    }),
+                  }}
+                  isMulti
+                  value={assignedToUsers}
+                  className="w-full text-sm"
+                />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Button

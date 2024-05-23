@@ -86,7 +86,7 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user: any = await getUser();
 
-  const { restrictedFeatures } = await getClientUserInfo(user.email, user);
+  const { restrictedFeatures } = await getClientUserInfo(user?.email, user);
 
   return (
     <div>

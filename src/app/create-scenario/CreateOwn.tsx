@@ -42,6 +42,7 @@ const CreateOwn = ({
   knowledgeBots,
   deepdiveCreationAccess,
   restrictedFeatures,
+  clientName,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -54,6 +55,7 @@ const CreateOwn = ({
   }[];
   deepdiveCreationAccess: Boolean;
   restrictedFeatures: string;
+  clientName: string;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -98,7 +100,7 @@ const CreateOwn = ({
         .then((data) => {
           setUserId(data.uid);
         });
-      // getClientInfoForUser(user.email!);
+      console.log(clientName);
     }
 
     setTimeout(() => {
@@ -1052,7 +1054,10 @@ const CreateOwn = ({
                           <div className="w-full">
                             <div className="w-full flex flex-col items-center justify-center mb-10">
                               <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
-                                <CreateYourOwn user={user} />
+                                <CreateYourOwn
+                                  user={user}
+                                  clientName={clientName}
+                                />
                               </div>
                             </div>
                           </div>
