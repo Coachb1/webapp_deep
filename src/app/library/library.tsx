@@ -2,7 +2,6 @@
 
 import CopyToClipboard from "@/components/CopyToClipboard";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import PageFooter from "@/components/PageFooter";
 import {
   Accordion,
   AccordionContent,
@@ -217,7 +216,12 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                 test.assigned_to?.includes(userAccountsData.uid)
               );
 
-              setRequestedScenarios(data);
+              const requestedscenarios = data.filter(
+                (test: TestsType) =>
+                  !test.assigned_to?.includes(userAccountsData.uid)
+              );
+
+              setRequestedScenarios(requestedscenarios);
               setAssignedScenarios(assignedscenarios);
               setRequestedScenariosLoading(false);
             })
@@ -293,19 +297,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
             console.log("ConfiguredTestData", configureTestsData(data));
 
             setCategorisedTests(configureTestsData(data));
-            // //@ts-ignore
-            // const newManagerTests: newManagerTestsType[] = Object.entries(
-            //   data["Manager"]
-            // ).map(([domain, tests]) => ({ domain, tests }));
-            // setNewManagerTests(newManagerTests);
-            // SetFilteredNewManagerTests(newManagerTests);
-            // const tempConversionDomains = newManagerTests.map((test) => {
-            //   return {
-            //     label: test.domain,
-            //     value: test.domain,
-            //   };
-            // });
-            // setDomainOptionsNewManager(tempConversionDomains);
           })
           .catch((err) => console.error("Cannot retrive tests", err));
       });
@@ -371,15 +362,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
     }
   }, []);
 
-  // const onDomainSelectHandler = (val: string) => {
-  //   console.log(val);
-  //   const filtered = tests.filter((test) => {
-  //     return test.category.toLowerCase().includes(val.toLowerCase());
-  //   });
-  //   console.log(filtered);
-  //   setFilteredTests(filtered);
-  // };
-
   const onDomainSearchHandler = (value: string) => {
     console.log("search:", value);
     console.log("ALL:", tests);
@@ -390,24 +372,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
     console.log(filtered);
   };
 
-  // const onDomainSelectHandlerNewManager = (val: string) => {
-  //   console.log(val);
-  //   const filtered = newManagerTests.filter((test) => {
-  //     return test.domain.toLowerCase().includes(val.toLowerCase());
-  //   });
-  //   console.log(filtered);
-  //   SetFilteredNewManagerTests(filtered);
-  // };
-
-  // const onDomainSearchHandlerNewManager = (value: string) => {
-  //   console.log("search:", value);
-  //   console.log("ALL:", tests);
-  //   const filtered = newManagerTests.filter((test) => {
-  //     return test.domain.toLowerCase().includes(value.toLowerCase());
-  //   });
-  //   console.log(filtered);
-  //   SetFilteredNewManagerTests(filtered);
-  // };
   const [selectedDomain, setSelectedDomain] = useState("");
 
   const onDomainSelectHandler = (value: any) => {
@@ -501,13 +465,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                   <span>Simulations & Roleplays</span>
                 </p>
               </div>
-              <button
-                onClick={() => {
-                  getRequestedTests();
-                }}
-              >
-                test hello
-              </button>
               <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
                 <span>
                   {" "}
@@ -571,13 +528,32 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                     </>
                   )}
                 </div>
-                {!restrictedFeatures?.includes("Requested-scenarios") && (
-                  <>
-                    <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
-                    <div
-                      id="nav2"
-                      className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
-                    >
+
+                <>
+                  {!restrictedFeatures?.includes("Requested-scenarios") ||
+                    (!restrictedFeatures?.includes("Assigned-scenarios") && (
+                      <div className="self-center h-[2px] bg-gray-300 w-full max-sm:w-[80%]" />
+                    ))}
+
+                  <div
+                    id="nav2"
+                    className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
+                  >
+                    {!restrictedFeatures?.includes("Assigned-scenarios") && (
+                      <Button
+                        onClick={() => {
+                          document
+                            .getElementById("assigned-tests")
+                            ?.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                        }}
+                        className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                      >
+                        Assigned Scenarios <History className="h-4 w-4 ml-2" />
+                      </Button>
+                    )}
+                    {!restrictedFeatures?.includes("Requested-scenarios") && (
                       <Button
                         onClick={() => {
                           document
@@ -590,9 +566,9 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                       >
                         Requested Scenarios <History className="h-4 w-4 ml-2" />
                       </Button>
-                    </div>
-                  </>
-                )}
+                    )}
+                  </div>
+                </>
               </div>
 
               <hr className=" h-[3px] bg-gray-400 w-full" />
@@ -932,30 +908,15 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                             ))}
                           </>
                         )}
-                        {/* {competencyBasedPowerSkillsTests.length === 0 && (
-                      <div className="w-full">
-                        <div className="relative isolate mx-auto">
-                          <div>
-                            <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
-                              <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                                There are no data yet.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )} */}
                       </div>
                     </div>
                   </>
                 )}
-                {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 {!restrictedFeatures?.includes("Client-library") && (
                   <>
                     {categorisedTests.map((category, index) => (
                       <div
                         key={index}
-                        // id={category.category_name}
                         className="w-full flex flex-col items-center justify-center"
                       >
                         <div
@@ -1120,24 +1081,10 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                     ))}
                   </>
                 )}
-                {/* {newManagerTests.length === 0 && (
-                      <div className="w-full">
-                        <div className="relative isolate mx-auto">
-                          <div>
-                            <div className="mx-auto w-full mt-8 max-sm:w-[100%] z-50">
-                              <div className="rounded-xl text-sm text-gray-500 bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                                There are no data yet.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )} */}
-                {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
                 {!restrictedFeatures?.includes("Assigned-scenarios") && (
                   <>
                     <div
-                      id="requested-tests"
+                      id="assigned-tests"
                       className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
                     ></div>
                     <div className="w-full flex flex-col items-center justify-center">
@@ -1207,15 +1154,15 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                                 </div>
                                               </AccordionTrigger>
                                               <AccordionContent className="max-sm:text-xs">
-                                                <p>
-                                                  Assigned by{" "}
-                                                  <span className="font-bold">
-                                                    {test.assigned_by}
-                                                  </span>
-                                                </p>
                                                 <p className="text-left">
                                                   {" "}
                                                   {test.description}
+                                                </p>
+                                                <p className="my-2 text-sm max-sm:text-xs text-left bg-gray-200 w-fit rounded-sm py-1 px-2">
+                                                  Assigned by{" "}
+                                                  <span className="font-bold text-blue-500">
+                                                    {test.assigned_by}
+                                                  </span>
                                                 </p>
                                                 <div className="flex justify-end mt-2">
                                                   <CopyToClipboard
