@@ -1675,10 +1675,10 @@ const Coaches = ({
                               <Button
                                 variant={"secondary"}
                                 className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                                disabled={
-                                  coach.profile_type !== "icons_by_ai" &&
-                                  coacheeId.length === 0
-                                }
+                                // disabled={
+                                //   coach.profile_type !== "icons_by_ai" &&
+                                //   coacheeId.length === 0
+                                // }
                                 asChild={coacheeId.length !== 0}
                               >
                                 <Link

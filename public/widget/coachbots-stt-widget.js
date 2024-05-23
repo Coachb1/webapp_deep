@@ -1888,6 +1888,7 @@ async function handleFaqButtonClick(question) {
           "#fb923c"
         )
       );
+      fitmentAnalysisInProgress = false;
       return;
     }
 
@@ -2116,8 +2117,13 @@ async function handleFaqButtonClick(question) {
         "quick-match-button"
       );
       if (quickmatch && botType == 'avatar_bot'){
+        
         quickmatch.disabled = true;
         quickmatch.style.cursor = "not-allowed";
+        quickmatch.removeAttribute("onmouseover");
+        quickmatch.removeAttribute("onmouseleave");
+        quickmatch.style.background = "#d3d3d3";
+        quickmatch.style.color = "#a0a0a0";
       }
 
       const cannedMessageOne = document.getElementById("canned-btn-1")
@@ -2634,6 +2640,20 @@ function handleEndConversation(isInActive) {
         "quick-match-button"
       );
   if (quickmatch){
+    quickmatch.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#fb923c'"
+    );
+    quickmatch.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#f97316'"
+    );
+    quickmatch.setAttribute(
+      "onclick",
+      `handleFaqButtonClick('fitness_analysis')`
+    );
+  quickmatch.style.backgroundColor = '#f97316';
+  quickmatch.style.color = 'white';
   quickmatch.disabled = false;
   quickmatch.style.cursor = "pointer";
   }
