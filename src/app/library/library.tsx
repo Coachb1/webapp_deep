@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, History, Info, Loader, Workflow } from "lucide-react";
+import {
+  AtSign,
+  ChevronLeft,
+  History,
+  Info,
+  Loader,
+  Workflow,
+} from "lucide-react";
 import Link from "next/link";
 import {
   JSXElementConstructor,
@@ -124,6 +131,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
     newManagerTestsType[]
   >([]);
   const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
+  const [assignedScenarios, setAssignedScenarios] = useState<TestsType[]>([]);
 
   const [domainOptions, setDomainOptions] = useState<
     { label: string; value: string }[]
@@ -191,17 +199,26 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
       setRequestedScenariosLoading(true);
       getUserAccount(user)
         .then((res) => res.json())
-        .then((data) => {
-          fetch(`${baseURL}/tests/get-requested-tests/?user_id=${data.uid}`, {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
+        .then((userAccountsData) => {
+          fetch(
+            `${baseURL}/tests/get-requested-tests/?user_id=${userAccountsData.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
             .then((res) => res.json())
             .then((data) => {
-              console.log(data);
+              console.log("/tests/get-requested-tests", data);
+
+              const assignedscenarios = data.filter((test: TestsType) =>
+                test.assigned_to?.includes(userAccountsData.uid)
+              );
+
               setRequestedScenarios(data);
+              setAssignedScenarios(assignedscenarios);
               setRequestedScenariosLoading(false);
             })
             .catch((err) => {
@@ -239,10 +256,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
           console.error(err);
         });
     }
-  };
-
-  const CreateYourOwnGeneratedHandler = () => {
-    getRequestedTests();
   };
 
   const getNewManagerTests = () => {
@@ -488,6 +501,13 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                   <span>Simulations & Roleplays</span>
                 </p>
               </div>
+              <button
+                onClick={() => {
+                  getRequestedTests();
+                }}
+              >
+                test hello
+              </button>
               <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
                 <span>
                   {" "}
@@ -1114,6 +1134,116 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                       </div>
                     )} */}
                 {/* <Separator className="mt-10 w-[80%] max-sm:my-6 bg-gray-200" /> */}
+                {!restrictedFeatures?.includes("Assigned-scenarios") && (
+                  <>
+                    <div
+                      id="requested-tests"
+                      className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                    ></div>
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
+                        Assigned Scenarios
+                      </h1>
+                      <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                        <Info
+                          color="#9ca3af"
+                          className="h-4 w-4 inline text-gray-600 mr-2"
+                        />{" "}
+                        <span>
+                          {" "}
+                          Grayed bars indicate already attempted simulations
+                        </span>
+                      </div>
+                      {requestedScenariosLoading ? (
+                        <div className="bg-white my-16 max-sm:h-full max-sm:min-h-screen pb-16 flex justify-center items-center">
+                          <p className="p-2 text-sm max-sm:text-xs">
+                            {" "}
+                            <Loader className="animate-spin inline h-4 w-4 mr-2" />
+                            Loading...
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
+                          <div className="w-full">
+                            <div className="relative isolate mx-auto">
+                              <div>
+                                <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
+                                  <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                    {assignedScenarios.length > 0 ? (
+                                      <Accordion
+                                        type="single"
+                                        collapsible
+                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                      >
+                                        {assignedScenarios.map((test, i) => (
+                                          <>
+                                            <AccordionItem
+                                              key={i}
+                                              value={`item-${i + 1}`}
+                                              className={`${
+                                                i ===
+                                                assignedScenarios.length - 1
+                                                  ? "border-none"
+                                                  : "border-b"
+                                              } ${
+                                                attemptedTests.includes(
+                                                  test.test_code
+                                                )
+                                                  ? "bg-gray-200"
+                                                  : ""
+                                              } px-4`}
+                                            >
+                                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                                <div>
+                                                  {test.title}{" "}
+                                                  {test.is_recommended && (
+                                                    <Badge
+                                                      variant={"secondary"}
+                                                      className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
+                                                    >
+                                                      Recommended
+                                                    </Badge>
+                                                  )}
+                                                </div>
+                                              </AccordionTrigger>
+                                              <AccordionContent className="max-sm:text-xs">
+                                                <p>
+                                                  Assigned by{" "}
+                                                  <span className="font-bold">
+                                                    {test.assigned_by}
+                                                  </span>
+                                                </p>
+                                                <p className="text-left">
+                                                  {" "}
+                                                  {test.description}
+                                                </p>
+                                                <div className="flex justify-end mt-2">
+                                                  <CopyToClipboard
+                                                    copyType="code"
+                                                    textToCopy={test.test_code}
+                                                  />
+                                                </div>
+                                              </AccordionContent>
+                                            </AccordionItem>
+                                          </>
+                                        ))}
+                                      </Accordion>
+                                    ) : (
+                                      <p className="text-sm max-sm:text-xs text-gray-600 py-4">
+                                        You don't have any assigned scenarios
+                                        yet.
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
                 {!restrictedFeatures?.includes("Requested-scenarios") && (
                   <>
                     <div
@@ -1178,6 +1308,9 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                               <AccordionTrigger className="text-left max-sm:text-xs">
                                                 <div>
                                                   {test.title}{" "}
+                                                  {test.is_assigned && (
+                                                    <AtSign className="h-3 w-3 ml-1 inline font-bold text-blue-500" />
+                                                  )}
                                                   {test.is_recommended && (
                                                     <Badge
                                                       variant={"secondary"}

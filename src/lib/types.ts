@@ -58,6 +58,9 @@ export interface TestsType {
   test_code: string;
   test_type?: string;
   is_recommended: boolean;
+  is_assigned?: boolean;
+  assigned_by?: string;
+  assigned_to?: string;
 }
 
 export interface competencySkillsTestType {

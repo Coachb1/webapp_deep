@@ -133,7 +133,9 @@ export const basicAuth =
 
 export const hideBots = () => {
   const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
-  const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+  const coachScribe = document.getElementsByClassName(
+    "coachbots-coachscribe"
+  )[0];
 
   if (coachScribe && coachtalk) {
     coachtalk.setAttribute("style", "display: none;");
@@ -489,6 +491,27 @@ export function parseClientUsers(data: any) {
 
   return clientUsers;
 }
+
+export const getUsersForClient = (clientName: string, data: any) => {
+  const clientUsers: {
+    userEmail: string;
+    userName: string;
+    userId: string;
+  }[] = [];
+  if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+    data[clientName]
+      .filter((user: any) => user.user_email !== undefined)
+      .map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userName: user.name,
+          userId: user.user_id,
+        });
+      });
+  }
+
+  return clientUsers;
+};
 
 export function transformExtractedData(data: ExtractedData): MediaData {
   const mediaData: MediaData = {
