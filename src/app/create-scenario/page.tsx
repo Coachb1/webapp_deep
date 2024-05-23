@@ -14,15 +14,21 @@ export const metadata = constructMetadata({
 });
 
 const getUserAccountsData = async (user: KindeUser | null) => {
-  const userCreateResponse = await getUserAccount(user);
-  if (userCreateResponse.ok) {
-    const userCreateResults = await userCreateResponse.json();
-    return {
-      accessDenied:
-        userCreateResults.access_denied !== null
-          ? userCreateResults.access_denied
-          : "",
-    };
+  if (user) {
+    const userCreateResponse = await getUserAccount(user);
+    if (userCreateResponse.ok) {
+      const userCreateResults = await userCreateResponse.json();
+      return {
+        accessDenied:
+          userCreateResults.access_denied !== null
+            ? userCreateResults.access_denied
+            : "",
+      };
+    } else {
+      return {
+        accessDenied: "",
+      };
+    }
   } else {
     return {
       accessDenied: "",
