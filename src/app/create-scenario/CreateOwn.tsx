@@ -43,6 +43,7 @@ const CreateOwn = ({
   deepdiveCreationAccess,
   restrictedFeatures,
   clientName,
+  accessDenied,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -56,6 +57,7 @@ const CreateOwn = ({
   deepdiveCreationAccess: Boolean;
   restrictedFeatures: string;
   clientName: string;
+  accessDenied: string;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -767,18 +769,22 @@ const CreateOwn = ({
                     </Button>
                   )}
                   {!restrictedFeatures?.includes("Simulation-creator") && (
-                    <Button
-                      onClick={() => {
-                        document
-                          .getElementById("simulation-creator")
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                      }}
-                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
-                    >
-                      Simulation Creator
-                    </Button>
+                    <>
+                      {!accessDenied.includes("Simulation-creator") && (
+                        <Button
+                          onClick={() => {
+                            document
+                              .getElementById("simulation-creator")
+                              ?.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                          }}
+                          className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                        >
+                          Simulation Creator
+                        </Button>
+                      )}
+                    </>
                   )}
                   {deepdiveCreationAccess && (
                     <Button
@@ -1032,40 +1038,44 @@ const CreateOwn = ({
             </div>
             {!restrictedFeatures?.includes("Simulation-creator") && (
               <>
-                <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
-                <div
-                  id="simulation-creator"
-                  className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
-                ></div>
-                <div className="h-fit ">
-                  <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                {!accessDenied.includes("Simulation-creator") && (
+                  <>
+                    <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="simulation-creator"
-                      className="flex flex-col max-sm:flex-col w-full mx-auto "
-                    >
-                      <div>
-                        <div className="w-full flex flex-col items-center justify-center">
-                          <h1
-                            id="sc-id"
-                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
-                          >
-                            Simulation Creator
-                          </h1>
-                          <div className="w-full">
-                            <div className="w-full flex flex-col items-center justify-center mb-10">
-                              <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
-                                <CreateYourOwn
-                                  user={user}
-                                  clientName={clientName}
-                                />
+                      className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                    ></div>
+                    <div className="h-fit ">
+                      <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                        <div
+                          id="simulation-creator"
+                          className="flex flex-col max-sm:flex-col w-full mx-auto "
+                        >
+                          <div>
+                            <div className="w-full flex flex-col items-center justify-center">
+                              <h1
+                                id="sc-id"
+                                className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                              >
+                                Simulation Creator
+                              </h1>
+                              <div className="w-full">
+                                <div className="w-full flex flex-col items-center justify-center mb-10">
+                                  <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                                    <CreateYourOwn
+                                      user={user}
+                                      clientName={clientName}
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </MaxWidthWrapper>
                     </div>
-                  </MaxWidthWrapper>
-                </div>
+                  </>
+                )}
               </>
             )}
             {deepdiveCreationAccess && (

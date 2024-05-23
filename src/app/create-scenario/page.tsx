@@ -1,11 +1,34 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { baseURL, basicAuth, constructMetadata } from "@/lib/utils";
+import {
+  baseURL,
+  basicAuth,
+  constructMetadata,
+  getUserAccount,
+} from "@/lib/utils";
 import CreateOwn from "./CreateOwn";
 import { knowledgeBotJson } from "@/lib/types";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
   title: "Creator Studio - Coachbots",
 });
+
+const getUserAccountsData = async (user: KindeUser | null) => {
+  const userCreateResponse = await getUserAccount(user);
+  if (userCreateResponse.ok) {
+    const userCreateResults = await userCreateResponse.json();
+    return {
+      accessDenied:
+        userCreateResults.access_denied !== null
+          ? userCreateResults.access_denied
+          : "",
+    };
+  } else {
+    return {
+      accessDenied: "",
+    };
+  }
+};
 
 const getknowledgeBotss = async (userEmail: string) => {
   if (userEmail) {
@@ -128,6 +151,8 @@ const Page = async () => {
   const { knowledgeBotss, restrictedFeatures, clientName } =
     await getknowledgeBotss(user?.email!);
 
+  const { accessDenied } = await getUserAccountsData(user);
+
   console.log(clientName);
   const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
 
@@ -139,6 +164,7 @@ const Page = async () => {
         knowledgeBots={knowledgeBotss}
         deepdiveCreationAccess={deepdiveCreationAccess}
         clientName={clientName}
+        accessDenied={accessDenied}
       />
     </div>
   );
