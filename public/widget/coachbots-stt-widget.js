@@ -1263,6 +1263,10 @@ const getBotDetails2 = async (botId) => {
           sendMessage("Not exactly...")
         }
       );
+      cannedButtonOne.setAttribute(
+        "disabled",
+        true
+      )
 
       cannedButtonOne.setAttribute("id", `canned-btn-1`);
       cannedButtonOne.innerText = "Not exactly...";
@@ -2098,9 +2102,16 @@ async function handleFaqButtonClick(question) {
       const begginSessionButton = document.getElementById(
         "begin-session-button"
       );
+      if (begginSessionButton){
+        console.log("beggin-session-button",begginSessionButton)
       begginSessionButton.disabled = true;
+      begginSessionButton.removeAttribute("onmouseover");
+      begginSessionButton.removeAttribute("onmouseleave");
+      begginSessionButton.style.background = "#d3d3d3";
       begginSessionButton.style.cursor = "not-allowed";
+      begginSessionButton.style.color = "#a0a0a0";
 
+      }
       const quickmatch = document.getElementById(
         "quick-match-button"
       );
@@ -2600,8 +2611,22 @@ function handleEndConversation(isInActive) {
 
   const begginSessionButton = document.getElementById("begin-session-button");
   if (begginSessionButton){
-  begginSessionButton.disabled = false;
-  begginSessionButton.style.cursor = "pointer";
+    begginSessionButton.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#4ade80'"
+    );
+    begginSessionButton.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#22c55e'"
+    );
+    begginSessionButton.setAttribute(
+      "onclick",
+      `handleFaqButtonClick('something_else')`
+    );
+    begginSessionButton.disabled = false;
+    begginSessionButton.style.cursor = "pointer";
+    begginSessionButton.style.color = 'white';
+    begginSessionButton.style.backgroundColor = "#22c55e";
   }
 
   
@@ -2624,7 +2649,7 @@ function handleEndConversation(isInActive) {
         );
 
         const cannedMessageTwo = document.getElementById("canned-btn-2")
-        cannedMessageTwo.disabled = false
+        cannedMessageTwo.disabled = true
         // cannedMessageTwo.style.cursor = "pointer"
         cannedMessageTwo.setAttribute(
           "onmouseover",
@@ -6490,8 +6515,22 @@ loadExternalModule().then(() => {
                   // ****** enabling begin session button
                   if (botType === "avatar_bot") {
                     const begginSessionButton = document.getElementById("begin-session-button");
+                    begginSessionButton.setAttribute(
+                      "onmouseover",
+                      "this.style.backgroundColor = '#4ade80'"
+                    );
+                    begginSessionButton.setAttribute(
+                      "onmouseleave",
+                      "this.style.backgroundColor = '#22c55e'"
+                    );
+                    begginSessionButton.setAttribute(
+                      "onclick",
+                      `handleFaqButtonClick('something_else')`
+                    );
                     begginSessionButton.disabled = false;
                     begginSessionButton.style.cursor = "pointer";
+                    begginSessionButton.style.color = 'white';
+                    begginSessionButton.style.backgroundColor = "#22c55e";
                   } else{
                     
                       appendMessage2(`<b>Please scroll above to view the conversation and proceed accordingly.</b>`)
