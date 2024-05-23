@@ -1688,7 +1688,7 @@ const Coaches = ({
                                   {coach.profile_type === "skill_bot" ||
                                   coach.profile_type === "coachbots"
                                     ? "Skill Chat"
-                                    : "AI Framed"}
+                                    : "AI Frame"}
                                 </Link>
                               </Button>
                             </div>
