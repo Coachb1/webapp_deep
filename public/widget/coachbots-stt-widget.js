@@ -10,6 +10,31 @@ const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
 
 // const baseURL2="https://coach-api-ovh.coachbots.com/api/v1" //local
 
+const style = document.createElement('style');
+style.textContent = `
+    #dropdown {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        width: 200px;
+        display: none;
+        margin-top: 5px;
+        z-index: 1000;
+    }
+    .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+    .dropdown-item:hover {
+        background-color: #f1f1f1;
+    }
+    .hidden {
+        display: none;
+    }
+`;
+document.head.appendChild(style);
+
+
 let deepChatPocElement2;
 let sessionId2 = "";
 let userId2 = "";
@@ -149,6 +174,76 @@ let isSomeActivityActive=false;
 let askInitialQuestionDeepDive = false;
 let deepDiveInitialQueIndex;
 
+let selectedResponseType = undefined;
+
+function createBasicAuthToken2(key2 = "", secret2 = "") {
+  const token2 =
+    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
+  // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+  return token2;
+}
+
+const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
+
+let user_name2;
+let user_email2;
+
+if (window.user) {
+  user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""}`;
+  user_email2 = window.user.email;
+} else {
+  user_name2 = "coachbots_anonyoususer";
+  user_email2 = getAnonymousEmail();
+}
+
+if (window.LogRocket) {
+  window.LogRocket.identify(user_email2, {
+    name: user_name2,
+    email: user_email2,
+  });
+}
+
+// 2 - account creation
+fetch(`${baseURL2}/accounts/`, {
+  method: "POST",
+  headers: {
+    Authorization: `Basic ${basicAuthToken2}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    user_context: {
+      name: user_name2,
+      role: "member",
+      user_attributes: {
+        tag: "deepchat_profile",
+        attributes: {
+          name: user_name2,
+          username: user_name2,
+          email: user_email2,
+        },
+      },
+    },
+    identity_context: {
+      identity_type: "deepchat_unique_id",
+      value: user_email2,
+    },
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("START -> ", data)
+    clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
+    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+    selectedResponseType = data.preferences.response_style
+
+    participantId2 = data.uid;
+    userId2 = data.uid;
+    userRole2 = data.role;
+  })
+  .catch((err) => console.log(err));
+
 // sample recommendation data
 let recommendationsDataStt = [
   [
@@ -276,13 +371,7 @@ const fitment_analysis = {
   },
 };
 
-function createBasicAuthToken2(key2 = "", secret2 = "") {
-  const token2 =
-    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  // "MDU2MTUwZWYtYjliYS00NTRlLTkzYTYtMDliZDdjNzFlYjNiOjFkOWMwZGJhLTI0OTAtNDZmYS1hMTNiLTU3Yjg5NDdhNjMwMg==";
-  // "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
-  return token2;
-}
+
 
 function isTestCode(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
@@ -1168,6 +1257,145 @@ const getBotDetails2 = async (botId) => {
     //   intakeButton.innerText = intakebuttonText;
     //   buttonsWrapper.appendChild(intakeButton);
     // }
+
+    function convertTextToCorrectFormat(text) {
+      return text
+        .replace(/_/g, " ") 
+        .split(/\s+/)
+        .map((word) =>
+          word.replace(/(?:^|\s)([a-z])/g, (match, group) =>
+            group.toUpperCase()
+          )
+        )
+        .join(" ");
+    }
+
+    function convertTextToOriginalFormat(text) {
+      return text
+        .split(/\s+/)
+        .map((word) =>
+          word.replace(/(?:^|\s)([A-Z])/g, (match, group) =>
+            group.toLowerCase()
+          )
+        )
+        .join("_");
+    }
+
+    let dropdownButtonText = "Styles";
+    if (selectedResponseType) {
+      dropdownButtonText =
+        "Response style : " +
+        `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
+    }
+
+    if (["avatar_bot"].includes(botType)) {
+      const dropdownButton = document.createElement("button");
+      dropdownButton.id = "styles-dropdown-button";
+      dropdownButton.innerHTML = dropdownButtonText;
+      dropdownButton.setAttribute(
+        "style",
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : lightgray; color: black;`
+      );
+      buttonsWrapper.appendChild(dropdownButton);
+
+      const dropdown = document.createElement("div");
+      dropdown.id = "dropdown";
+      dropdown.style.position = "absolute";
+      dropdown.style.backgroundColor = "#f3f4f6";
+      dropdown.style.borderRadius = "4px";
+      dropdown.style.border = "1px solid #1f2937";
+      if (window.innerWidth < 768) {
+        dropdown.style.bottom = "7rem";
+        dropdown.style.left = "1rem";
+      } else {
+        dropdown.style.bottom = "6rem";
+        dropdown.style.left = "6rem";
+      }
+      dropdown.classList.add("hidden");
+
+      const options = [
+        "crusader",
+        "cheerleader",
+        "change_manager",
+        "calculator",
+        "chatter",
+        "co_creator",
+      ];
+      options.forEach((option, i) => {
+        const item = document.createElement("div");
+
+        item.style.padding = "8px 12px";
+        item.style.fontSize = "14px";
+        if (window.innerWidth < 768) {
+          item.style.fontSize = "12px";
+        } else {
+          item.style.fontSize = "14px";
+        }
+        item.setAttribute(
+          "onmouseover",
+          "this.style.backgroundColor = '#e5e7eb',this.style.cursor = 'pointer', this.style.borderRadius = '4px'"
+        );
+        item.setAttribute(
+          "onmouseleave",
+          "this.style.backgroundColor = '#f3f4f6',this.style.cursor = 'default', this.style.borderRadius = '4px'"
+        );
+        if (i !== options.length - 1) {
+          item.style.borderBottom = "1px solid #1f2937";
+        }
+        item.className = "dropdown-item";
+        item.textContent = convertTextToCorrectFormat(option);
+
+        item.addEventListener("click", (event) => {
+          console.log(
+            convertTextToOriginalFormat(event.target.textContent),
+            participantId2
+          );
+          fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user_id: participantId2,
+              response_style: convertTextToOriginalFormat(
+                event.target.textContent
+              ),
+            }),
+          })
+            .then((res) => {
+              res.json;
+            })
+            .then((data) => {
+              data;
+            });
+          dropdownButton.innerHTML =
+            "Response style : " + `<b>${event.target.textContent}</b>`;
+          dropdown.classList.add("hidden");
+          dropdown.style.display = "none";
+        });
+        dropdown.appendChild(item);
+      });
+
+      dropdownButton.addEventListener("click", () => {
+        const shadowRootForDropdowns =
+          document.getElementById("chat-element2").shadowRoot;
+        shadowRootForDropdowns.appendChild(dropdown);
+        console.log(dropdown);
+        dropdown.style.display =
+          dropdown.style.display === "block" ? "none" : "block";
+      });
+
+      document.addEventListener("click", (event) => {
+        if (
+          !dropdownButton.contains(event.target) &&
+          !dropdown.contains(event.target)
+        ) {
+          dropdown.classList.add("hidden");
+          dropdown.style.display = "none";
+        }
+      });
+    }
 
     if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive'].includes(botType)) {
       // faqButtonsGenerator("fitness_analysis", "Match Score");
@@ -4582,6 +4810,11 @@ async function handleOptionButtonClick2(labelText, area, information) {
     .catch((err) => console.log(err));
 }
 
+let chatInputFontSize = "14px";
+if(window.innerWidth < 768) {
+  chatInputFontSize = "12px"
+}
+
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
@@ -4731,7 +4964,7 @@ loadExternalModule().then(() => {
       style="border: none"
       textInput='{
         "styles": {
-          "text": {"color": "black", "fontSize" : "14px"},
+          "text": {"color": "black", "fontSize" : ${JSON.stringify(chatInputFontSize)}},
           "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
@@ -4810,17 +5043,17 @@ loadExternalModule().then(() => {
       style=" 
         position: absolute; 
         left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
-        bottom : ${window.innerWidth < 768 ? "15vh" : "5.5rem"}; 
+        bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
         width : 80%; 
         overflow: scroll;
         scrollbar-width : none;
         height : 36px; 
-        padding: 4px;
         display : flex;
         flex-direction : row;
         gap : 4px;
         background-color : white; 
         padding : 2px;
+        padding-top : ${window.innerWidth < 768 ? "4px" : "2px"}; 
         border-radius : 4px;
         display: none;
       ">
@@ -4915,7 +5148,8 @@ loadExternalModule().then(() => {
     chatContainer2.style.top = "0";
     chatContainer2.style.height = "100vh";
     chatContainer2.style.bottom = "0";
-    chatElementRef2.style.height = "88vh";
+    chatElementRef2.style.height = "87vh";
+    chatElementRef2.style.fontSize = "12px";
     chatElementRef2.style.width = "100vw";
     chatIconContainer2.style.position = "fixed";
     chatIconContainer2.style.width = "3rem";
@@ -8352,71 +8586,6 @@ const openChatContainer2 = () => {
 
   user2 = window.user;
   console.log(user2);
-
-  const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
-
-  // Using the ipinfo.io API
-  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     ipAddress2 = data.ip;
-  //   })
-  //   .catch((error) => console.error("Error fetching IP address:", error));
-
-  let user_name2;
-  let user_email2;
-
-  if (window.user) {
-    user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""}`;
-    user_email2 = window.user.email;
-  } else {
-    user_name2 = "coachbots_anonyoususer";
-    user_email2 = getAnonymousEmail();
-  }
-
-  if (window.LogRocket) {
-    window.LogRocket.identify(user_email2, {
-      name: user_name2,
-      email: user_email2,
-    });
-  }
-
-  // 2 - account creation
-  fetch(`${baseURL2}/accounts/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuthToken2}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user_context: {
-        name: user_name2,
-        role: "member",
-        user_attributes: {
-          tag: "deepchat_profile",
-          attributes: {
-            name: user_name2,
-            username: user_name2,
-            email: user_email2,
-          },
-        },
-      },
-      identity_context: {
-        identity_type: "deepchat_unique_id",
-        value: user_email2,
-      },
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
-      userAllowAudioInteraction2 = data.user_allow_audio_interactions;
-      prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
-      participantId2 = data.uid;
-      userId2 = data.uid;
-      userRole2 = data.role;
-    })
-    .catch((err) => console.log(err));
 
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
