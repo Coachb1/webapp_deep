@@ -5650,7 +5650,7 @@ loadExternalModule().then(() => {
       for (let i = 0; i < bufferLength; i++) {
         barHeight = dataArray[i];
 
-        canvasCtx.fillStyle = "red";
+        canvasCtx.fillStyle = "#2CC092";
         canvasCtx.fillRect(
           x,
           canvas.height - barHeight / 2,
