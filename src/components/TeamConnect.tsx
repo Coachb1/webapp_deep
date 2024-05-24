@@ -110,6 +110,10 @@ const TeamConnect = ({ clientName }: { clientName: string }) => {
                 onChange={(e) => {
                   setQuery(e.target.value.replace(/[\[\]]|\([^)]*\)/g, ""));
                   setInputError(false);
+
+                  if (e.target.value.length === 0) {
+                    setTaggedUserId("");
+                  }
                 }}
                 classNames={ClassNames}
                 rows={4}
@@ -129,7 +133,7 @@ const TeamConnect = ({ clientName }: { clientName: string }) => {
                   }}
                   data={clientUsers.map((user) => ({
                     id: user.userId,
-                    display: makeTaggableName(user.userName),
+                    display: makeTaggableName(user.userName) + "  ",
                   }))}
                 />
               </MentionsInput>
