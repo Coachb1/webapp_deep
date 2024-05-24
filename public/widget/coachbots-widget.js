@@ -82,6 +82,7 @@ let isEmailType = false;
 let recommendations = "";
 let isTestSignedIn;
 let clientName;
+let widgetClientId;
 let audioFileSrcMap = {}; // maping response to resquestionNumber
 let audioFileMap = {};
 let audioDuration;
@@ -2107,7 +2108,8 @@ loadExternalModule().then(() => {
   const chatIcon = document.getElementById("chat-icon");
   const chatbotHeading = document.getElementById("chatbot-heading");
   const closeFromTopp = document.getElementById("close-top");
-
+  widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
+  console.log("widget cliennt Id :",widgetClientId)
   //responsive styles for phones
   // if (window.innerWidth < 600) {
   //   chatContainer.style.width = "80vw";

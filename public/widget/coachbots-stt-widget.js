@@ -101,6 +101,7 @@ let uniqueSesssionContainerId;
 let FeedbackUserEmail;
 let feedbackUserName;
 let botId;
+let sttWidgetClientId;
 let botType;
 let botScenarioCase;
 let recommendationClicked = false;
@@ -4876,6 +4877,8 @@ loadExternalModule().then(() => {
   const chatbotHeading2 = document.getElementById("chatbot-heading2");
   const closeFromTopp2 = document.getElementById("close-top2");
   botId = document.querySelector(".coachbots-coachscribe").dataset.botId;
+  sttWidgetClientId = document.querySelector(".coachbots-coachscribe").dataset.clientId;
+  console.log("stt widget ClientID :",sttWidgetClientId)
   // botId = 'stress-management-0032'
   const _ = getBotDetails2(botId);
 
