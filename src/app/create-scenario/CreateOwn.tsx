@@ -777,6 +777,20 @@ const CreateOwn = ({
                       )}
                     </>
                   )}
+                  {!restrictedFeatures?.includes("Team-connect") && (
+                    <Button
+                      onClick={() => {
+                        document
+                          .getElementById("team-connect")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                      }}
+                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                    >
+                      Team-connect
+                    </Button>
+                  )}
                   {deepdiveCreationAccess && (
                     <Button
                       onClick={() => {
