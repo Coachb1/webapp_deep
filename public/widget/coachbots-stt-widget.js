@@ -4662,15 +4662,17 @@ function handleSurpriseMeButtonClick2(
     testCode2 = randomChallenge2.trim();
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+    optedNo2 = true;
+    userAcessAvailability2 = true;
     // gShadowRoot2.getElementById("surprise-button").disabled = true;
 
-    // removing button
-    const msg = gShadowRoot2.getElementById("surprise-button");
-    // button.parentNode.removeChild(button)
-    const que_msg = document.createElement("div");
-    que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-    // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    // // removing button
+    // const msg = gShadowRoot2.getElementById("surprise-button");
+    // // button.parentNode.removeChild(button)
+    // const que_msg = document.createElement("div");
+    // que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+    // // Replace the button with the "Thank you" message
+    // msg.parentNode.replaceChild(que_msg, msg);
     tempTestTitle = sampleTestCodesStt[randomChallenge2];
   } else {
     console.log("handling recommendation in surprise me");
@@ -4758,34 +4760,58 @@ function generateOptionButtons2() {
   });
 }
 
-//* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick2(labelText, area, information) {
-  console.log("button clicked in stt", labelText, area, information);
-  optedNo = true;
+const handleAttemptScenaiosSTT = async (title, test_code) =>{
+  console.log('Attempting Scenaios', test_code, title)
+
+  testCode2 = test_code;
+  userAcessAvailability2 = true;
+  optedNo2 = true;
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = labelText;
+    gShadowRoot2.getElementById("text-input").textContent = title;
     setTimeout(() => {
-      console.log(gShadowRoot2.querySelectorAll(".input-button"));
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
   }, 100);
+}
+
+//* Function to handle button click for no-code flow : start
+async function handleOptionButtonClick2(labelText) {
+  console.log("button clicked in stt", labelText);
+  const gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  const button = gShadowRoot2.getElementById("create-new-scenario");
+  button.disabled = true;
+
+  if (gShadowRoot2.querySelectorAll('#create-scenario-section').length > 0){
+    console.log('already existed')
+    return
+
+  }
+
+  optedNo = true;
+  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  console.log('currenturl',currentURL);
+
+  // gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
+  // gShadowRoot2.getElementById("text-input").focus();
+  // setTimeout(() => {
+  //   gShadowRoot2.getElementById("text-input").textContent = labelText;
+  //   setTimeout(() => {
+  //     console.log(gShadowRoot2.querySelectorAll(".input-button"));
+  //     gShadowRoot2.querySelectorAll(".input-button")[1].click();
+  //   }, 100);
+  // }, 100);
 
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
   );
   const params = new URLSearchParams();
   params.set("mode", "A");
-  params.set("area", area);
-  params.set(
-    "information",
-    JSON.stringify({ data: optionDetail[labelText], title: labelText })
-  );
   params.set(
     "url",
-    "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
+    currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
   url.search = params;
@@ -4801,12 +4827,55 @@ async function handleOptionButtonClick2(labelText, area, information) {
     .then((data) => {
       console.log("Dynamically created Test result", data);
       const challenges = data;
-      const randomIndex = Math.floor(Math.random() * challenges.length);
-      const randomChallenge = challenges[randomIndex];
+      // const randomIndex = Math.floor(Math.random() * challenges.length);
+      // const randomChallenge = challenges[randomIndex];
 
-      console.log(randomChallenge);
-      testCode2 = randomChallenge.test_code;
-      codeAvailabilityUserChoice2 = true;
+      let scenarios = [];
+      challenges.forEach(element => {
+        if (element.title){
+          scenarios.push(element)
+        }
+        
+      });
+
+      console.log('sucessfully crated scenarios: ', scenarios)
+      if (scenarios.length == 0){
+        appendMessage2("<p style='font-size: 14px;color: #991b1b;'>Scenario generation failed because of failure of page extraction</p>")
+        return
+      }
+      let divCont = '';
+      scenarios.forEach(element => {
+        divCont += `
+        <b style="font-size: 1.2em; color: #333;">${element.title}</b>
+        <div>
+          <button 
+            onmouseover="this.style.cursor ='pointer'" 
+            style="
+              margin-top: 15px;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 4px;
+              background-color: #007BFF;
+              color: white;
+              font-size: 1em;
+              transition: background-color 0.3s ease;
+            " 
+            onmouseout="this.style.backgroundColor = '#007BFF'"
+            onmouseover="this.style.backgroundColor = '#0056b3'"
+            onclick="handleAttemptScenaiosSTT('${element.title}', '${element.test_code}')">
+            Attempt
+          </button>
+        </div>
+        <br/>
+
+        `
+      }); 
+
+      appendMessage2(`
+      <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+      ${divCont}
+      </div>
+      `)
     })
     .catch((err) => console.log(err));
 }
@@ -7097,6 +7166,7 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: `<div id="option-button-container" >
                       <button id="surprise-button" style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
+                      <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2()">Create Scenario</button>
                       </div>
                       `,
             });
@@ -7179,6 +7249,21 @@ loadExternalModule().then(() => {
             sampleTestCodesValues.forEach((value) => {
               buttonTextArray.push(value.trim());
             });
+
+            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section b")
+            opiton_scenarios.forEach((b) =>{
+              const buttonText = b.textContent.trim();
+              buttonTextArray.push(buttonText);
+            })
+
+            if ( buttonTextArray.includes(latestMessage)){
+              if (responsesDone2 === false && questionIndex2 > 0) {
+                signals.onResponse({
+                  html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
+                });
+                return;
+              }
+            }
             //end
             console.log(
               "isAttemptingRecommendation : ",
@@ -7306,6 +7391,7 @@ loadExternalModule().then(() => {
             userEmail2.length === 0 &&
             codeAvailabilityUserChoice2
           ) {
+            console.log('test code: ', testCode2)
             try {
               if (questionIndex2 === 0) {
                 const response = await fetch(
@@ -7386,10 +7472,15 @@ loadExternalModule().then(() => {
                   //   }
                   const group_list = ["Demo", "free", "Free"];
                   // const my_lib = await getTestCodesByRule2("my_lib");
-                  const my_lib = await getClientInformationStt("my_lib");
-                  for (const item of my_lib) {
-                    if (item.emails.includes(user2.email)) {
-                      group_list.push(item.group);
+                  console.log('sttWidgetClientId : ', sttWidgetClientId)
+                  if (sttWidgetClientId != null){
+                    group_list.push(sttWidgetClientId)
+                  } else{
+                    const my_lib = await getClientInformationStt("my_lib");
+                    for (const item of my_lib) {
+                      if (item.emails.includes(user2.email)) {
+                        group_list.push(item.group);
+                      }
                     }
                   }
                   if (!group_list.includes(clientNameStt)) {
@@ -7417,6 +7508,10 @@ loadExternalModule().then(() => {
                     return;
                   }
                   const group_list = ["Demo", "free", "Free"];
+                  console.log('sttWidgetClientId',sttWidgetClientId)
+                  if (sttWidgetClientId != null){
+                    group_list.push(sttWidgetClientId)
+                  }
                   if (!group_list.includes(clientNameStt)) {
                     signals.onResponse({
                       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
