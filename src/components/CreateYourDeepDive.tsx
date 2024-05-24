@@ -142,7 +142,7 @@ const CreateYourDeepDive = ({ user }: any) => {
     }
   };
 
-  const clearHanlder = () => {
+  const clearHandler = () => {
     userContextRef.current.value = "";
     setGeneratedDeepdiveData([]);
     setGenerationError(false);
@@ -248,7 +248,7 @@ const CreateYourDeepDive = ({ user }: any) => {
               </Button>
               {!isLoading && (
                 <Button
-                  onClick={clearHanlder}
+                  onClick={clearHandler}
                   variant={"secondary"}
                   className="max-sm:p-2 h-8 hover:brightness-105"
                 >

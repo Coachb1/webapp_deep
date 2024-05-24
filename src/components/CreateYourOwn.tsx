@@ -18,6 +18,7 @@ import {
 } from "@/lib/utils";
 import { toast } from "sonner";
 import Select, { MultiValue, SingleValue } from "react-select";
+import { ClientUserType } from "@/lib/types";
 
 interface OptionType {
   value: string;
@@ -40,9 +41,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
   const [userName, setUserName] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [loadingText, setLoadingText] = useState("Creating simulation.");
-  const [clientUser, setClientUsers] = useState<
-    { userEmail: string; userName: string; userId: string }[]
-  >([]);
+  const [clientUser, setClientUsers] = useState<ClientUserType[]>([]);
   const [assignedToUsers, setAssignedToUsers] = useState<
     { label: string; value: string }[]
   >([]);

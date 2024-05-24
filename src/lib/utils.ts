@@ -512,6 +512,30 @@ export const getUsersForClient = (clientName: string, data: any) => {
 
   return clientUsers;
 };
+export const getUsersForClientForTeam = (clientName: string, data: any) => {
+  const clientUsers: {
+    userEmail: string;
+    userName: string;
+    userId: string;
+  }[] = [];
+  if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+    data[clientName]
+      .filter(
+        (user: any) =>
+          (user.user_email !== undefined && user.profile_type === "coachee") ||
+          user.profile_type === "mentee"
+      )
+      .map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userName: user.name,
+          userId: user.user_id,
+        });
+      });
+  }
+
+  return clientUsers;
+};
 
 export function transformExtractedData(data: ExtractedData): MediaData {
   const mediaData: MediaData = {
@@ -545,4 +569,9 @@ export function transformExtractedData(data: ExtractedData): MediaData {
   }
 
   return mediaData;
+}
+
+export function makeTaggableName(name: string) {
+  let taggableName = name.replace(/\s+/g, "").toLowerCase();
+  return taggableName;
 }

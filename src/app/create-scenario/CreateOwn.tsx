@@ -36,6 +36,7 @@ import Joyride from "react-joyride";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Badge } from "@/components/ui/badge";
 import CreateYourDeepDive from "@/components/CreateYourDeepDive";
+import TeamConnect from "@/components/TeamConnect";
 
 const CreateOwn = ({
   user,
@@ -739,16 +740,6 @@ const CreateOwn = ({
                   <span>Creator Studio</span>
                 </p>
               </div>
-              {/* <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
-                <span>
-                  {" "}
-                  Simulations and roleplays replicate real-world situations and
-                  interactions, evaluating our aptitude for success in the
-                  workplace. By mimicking scenarios we may encounter, they
-                  assess our interpersonal skills and provide detailed feedback
-                  on our performance and potential areas for improvement.
-                </span>
-              </div> */}
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div
                   id="ac-items"
@@ -818,7 +809,6 @@ const CreateOwn = ({
               </div>
 
               <hr className=" h-[3px] bg-gray-400 w-full" />
-              {/* <div className="bg-white h-[10px] w-full" /> */}
             </div>
             <div
               id="learning-ideas"
@@ -859,13 +849,6 @@ const CreateOwn = ({
                                 }}
                               >
                                 <TabsList className="grid w-full grid-cols-2 bg-gray-200 rounded-sm">
-                                  {/* <TabsTrigger
-                                  disabled={glGenerateLoading}
-                                  className="text-xs p-1 m-1"
-                                  value="google"
-                                >
-                                  HBR
-                                </TabsTrigger> */}
                                   <TabsTrigger
                                     disabled={glGenerateLoading}
                                     className="text-xs p-1 m-1"
@@ -928,27 +911,6 @@ const CreateOwn = ({
                           </form>
                         </div>
                         <div className="w-[80%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
-                          {/* {searchMode === "google" && (
-                          <>
-                            {googleSearchResults.length > 0 ? (
-                              <>
-                                {googleSearchResults.map((result) => (
-                                  <GoogleResultComponent
-                                    link={result.link}
-                                    title={result.title}
-                                    decsription={result.decsription}
-                                  />
-                                ))}
-                              </>
-                            ) : (
-                              <>
-                                <div className="h-full w-full text-sm max-sm:text-xs mt-12">
-                                  <p>{contextPrompt}</p>
-                                </div>
-                              </>
-                            )}
-                          </>
-                        )} */}
                           {searchMode === "youtube" && (
                             <>
                               {createLoading ? (
@@ -1066,6 +1028,45 @@ const CreateOwn = ({
                                       user={user}
                                       clientName={clientName}
                                     />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </MaxWidthWrapper>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+            {!restrictedFeatures?.includes("Team-connect") && (
+              <>
+                {!accessDenied.includes("Team-connect") && (
+                  <>
+                    <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
+                    <div
+                      id="team-connect"
+                      className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                    ></div>
+                    <div className="h-fit ">
+                      <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+                        <div
+                          id="team-connect"
+                          className="flex flex-col max-sm:flex-col w-full mx-auto "
+                        >
+                          <div>
+                            <div className="w-full flex flex-col items-center justify-center">
+                              <h1
+                                id="sc-id"
+                                className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                              >
+                                Team connect
+                              </h1>
+                              <div className="w-full">
+                                <div className="w-full flex flex-col items-center justify-center mb-10">
+                                  <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                                    <TeamConnect clientName={clientName} />
                                   </div>
                                 </div>
                               </div>
