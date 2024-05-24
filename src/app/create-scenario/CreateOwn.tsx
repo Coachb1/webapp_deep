@@ -45,6 +45,7 @@ const CreateOwn = ({
   restrictedFeatures,
   clientName,
   accessDenied,
+  accessAllowed
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -59,6 +60,7 @@ const CreateOwn = ({
   restrictedFeatures: string;
   clientName: string;
   accessDenied: string;
+  accessAllowed : string
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -761,7 +763,7 @@ const CreateOwn = ({
                   )}
                   {!restrictedFeatures?.includes("Simulation-creator") && (
                     <>
-                      {!accessDenied.includes("Simulation-creator") && (
+                      {accessAllowed.includes("Simulation-creator") && (
                         <Button
                           onClick={() => {
                             document
@@ -791,7 +793,7 @@ const CreateOwn = ({
                       Team-connect
                     </Button>
                   )}
-                  {deepdiveCreationAccess && (
+                   {accessAllowed.includes("Deepdive-creator") && (
                     <Button
                       onClick={() => {
                         document
@@ -1014,7 +1016,7 @@ const CreateOwn = ({
             </div>
             {!restrictedFeatures?.includes("Simulation-creator") && (
               <>
-                {!accessDenied.includes("Simulation-creator") && (
+                {accessAllowed.includes("Simulation-creator") && (
                   <>
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
@@ -1093,7 +1095,7 @@ const CreateOwn = ({
                 )}
               </>
             )}
-            {deepdiveCreationAccess && (
+            {accessAllowed.includes("Deepdive-creator") && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div

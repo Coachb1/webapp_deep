@@ -23,15 +23,21 @@ const getUserAccountsData = async (user: KindeUser | null) => {
           userCreateResults.access_denied !== null
             ? userCreateResults.access_denied
             : "",
+        accessAllowed:
+          userCreateResults.access_allowed !== null
+            ? userCreateResults.access_allowed
+            : "",
       };
     } else {
       return {
         accessDenied: "",
+        accessAllowed: "",
       };
     }
   } else {
     return {
       accessDenied: "",
+      accessAllowed: "",
     };
   }
 };
@@ -157,7 +163,7 @@ const Page = async () => {
   const { knowledgeBotss, restrictedFeatures, clientName } =
     await getknowledgeBotss(user?.email!);
 
-  const { accessDenied } = await getUserAccountsData(user);
+  const { accessDenied, accessAllowed } = await getUserAccountsData(user);
 
   console.log(clientName);
   const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
@@ -166,6 +172,7 @@ const Page = async () => {
     <div>
       <CreateOwn
         user={user}
+        accessAllowed={accessAllowed}
         restrictedFeatures={restrictedFeatures}
         knowledgeBots={knowledgeBotss}
         deepdiveCreationAccess={deepdiveCreationAccess}
