@@ -777,7 +777,7 @@ const CreateOwn = ({
                       )}
                     </>
                   )}
-                  {deepdiveCreationAccess && (
+                  {!restrictedFeatures?.includes("Team-connect") && (
                     <Button
                       onClick={() => {
                         document
@@ -791,7 +791,7 @@ const CreateOwn = ({
                       Team-connect
                     </Button>
                   )}
-                  {!restrictedFeatures?.includes("Team-connect") && (
+                  {deepdiveCreationAccess && (
                     <Button
                       onClick={() => {
                         document
