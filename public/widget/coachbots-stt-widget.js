@@ -28,7 +28,7 @@ style.textContent = `
     .dropdown-item:hover {
         background-color: #f1f1f1;
     }
-    .hidden {
+    .hiddenn {
         display: none;
     }
 `;
@@ -1312,7 +1312,7 @@ const getBotDetails2 = async (botId) => {
         dropdown.style.bottom = "6rem";
         dropdown.style.left = "6rem";
       }
-      dropdown.classList.add("hidden");
+      dropdown.classList.add("hiddenn");
 
       const options = [
         "crusader",
@@ -1372,7 +1372,7 @@ const getBotDetails2 = async (botId) => {
             });
           dropdownButton.innerHTML =
             "Response style : " + `<b>${event.target.textContent}</b>`;
-          dropdown.classList.add("hidden");
+          dropdown.classList.add("hiddenn");
           dropdown.style.display = "none";
         });
         dropdown.appendChild(item);
@@ -1392,7 +1392,7 @@ const getBotDetails2 = async (botId) => {
           !dropdownButton.contains(event.target) &&
           !dropdown.contains(event.target)
         ) {
-          dropdown.classList.add("hidden");
+          dropdown.classList.add("hiddenn");
           dropdown.style.display = "none";
         }
       });

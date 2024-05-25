@@ -10,11 +10,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
-import { HelpCircle, Info, Menu } from "lucide-react";
-import { TooltipWrapper } from "./TooltipWrapper";
-import { useEffect, useState } from "react";
-import { CreateOrAssignClientId, getClientUserInfo } from "@/lib/utils";
-import { Badge } from "./ui/badge";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Switch } from "./ui/switch";
 
@@ -58,7 +55,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
-      <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden ">
+      <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">
         {!restrictedPages?.includes("Network-directory") && (
           <Button
             variant={"outline"}
