@@ -95,9 +95,10 @@ const CreateYourDeepDive = ({ user }: any) => {
         "profile_image",
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
       );
-      let date = new Date(expiryDate).toISOString();
-      console.log(date)
-      formdata.append("expiry_date", expiryDate.toISOString());
+      let date = new Date();
+      date?.setTime(expiryDate?.getTime()! + 24 * 60 * 60 * 1000);
+      console.log(date.toISOString());
+      formdata.append("expiry_date", date.toISOString());
 
       formdata.append(
         "attributes",
@@ -228,14 +229,19 @@ const CreateYourDeepDive = ({ user }: any) => {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent side="right" className="w-auto p-0" align="start">
+                <PopoverContent
+                  side="right"
+                  className="w-auto p-0"
+                  align="start"
+                >
                   <Calendar
                     fromDate={getTodayDate()}
                     mode="single"
                     selected={expiryDate}
                     onSelect={(val) => {
-                      setExpiryDate(val)
-                      console.log(val?.toISOString())
+                      setExpiryDate(val);
+
+                      // console.log(val?.toISOString()! + 24 * 60 * 60 * 1000)
                     }}
                     initialFocus
                   />

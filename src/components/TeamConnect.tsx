@@ -35,6 +35,7 @@ const TeamConnect = ({ clientName }: { clientName: string }) => {
         }
       );
       const data = await response.json();
+      console.log(getUsersForClientForTeam(clientName, data))
       setClientUsers(getUsersForClientForTeam(clientName, data));
     } catch (err) {
       toast.error("Error fetching client data.");
