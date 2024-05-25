@@ -8,9 +8,11 @@ import copy from "clipboard-copy";
 const CopyToClipboard = ({
   textToCopy,
   copyType,
+  className,
 }: {
   textToCopy: string;
   copyType?: string;
+  className?: string;
 }) => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -31,7 +33,7 @@ const CopyToClipboard = ({
     <>
       <Button
         variant={"secondary"}
-        className="p-2 h-8 border border-gray-200"
+        className={`p-2 h-8 border border-gray-200 ${className}`}
         onClick={handleCopyClick}
       >
         {isCopied ? "Copied" : `Copy ${copyType} `}

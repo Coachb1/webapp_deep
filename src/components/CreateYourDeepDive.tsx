@@ -303,18 +303,27 @@ const CreateYourDeepDive = ({ user }: any) => {
                   >
                     <div>
                       <b className="my-1 text-gray-400">Deep Dive</b>
-                      <p className="text-base mt-3 font-semibold">{dd.title}</p>
-                      <p className="text-sm my-2">{dd.objective}</p>
+                      <p className="text-base max-sm:text-sm mt-3 font-semibold">
+                        {dd.title}
+                      </p>
+                      <p className="text-sm max-sm:text-xs my-2">
+                        {dd.objective}
+                      </p>
                     </div>
-                    <div className="flex justify-end max-sm:justify-center mt-6 gap-2">
+                    <div className="flex flex-row max-sm:flex-col text-sm max-sm:text-xs justify-end max-sm:justify-center mt-6 gap-2">
                       <CopyToClipboard
                         textToCopy={dd.access_code}
                         copyType="Access Code"
+                        className="text-sm max-sm:text-xs"
                       />
-                      <CopyToClipboard textToCopy={dd.link} copyType="Link" />
+                      <CopyToClipboard
+                        className="text-sm max-sm:text-xs"
+                        textToCopy={dd.link}
+                        copyType="Link"
+                      />
                       <Button
                         variant={"link"}
-                        className="max-sm:p-2 h-8 hover:brightness-105"
+                        className="max-sm:p-2 h-8 hover:brightness-105 text-sm max-sm:text-xs"
                         asChild
                       >
                         <Link
