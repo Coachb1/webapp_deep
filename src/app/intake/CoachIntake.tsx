@@ -422,25 +422,25 @@ const CoachIntake = ({ user }: any) => {
           console.error(err);
         });
     }
-    if (formType === "coachee") {
-      fetch(`${baseURL}/skills/get-characteristics-list/`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          const createLabelValuePairs = Array.from(
-            new Set(data.characteristic_list.map((val: string) => val))
-          ).map((val) => ({
-            label: val,
-            value: val,
-          }));
-          //@ts-ignore
-          setCharacteristicsList(createLabelValuePairs);
-        });
-    }
+    // if (formType === "coachee") {
+    fetch(`${baseURL}/skills/get-characteristics-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const createLabelValuePairs = Array.from(
+          new Set(data.characteristic_list.map((val: string) => val))
+        ).map((val) => ({
+          label: val,
+          value: val,
+        }));
+        //@ts-ignore
+        setCharacteristicsList(createLabelValuePairs);
+      });
+    // }
 
     if (user) {
       getUserAccount(user)
@@ -531,6 +531,9 @@ const CoachIntake = ({ user }: any) => {
         formdata.append("experience", experience);
 
         let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
+
+        formdata.append("low_rating_characteristics", characteristicsRateLows);
+        formdata.append("high_rating_characteristics", characteristicsRateHigh);
 
         if (!checkIfEdit) {
           //@ts-ignore
@@ -691,14 +694,6 @@ const CoachIntake = ({ user }: any) => {
           }
         } else if (formType === "coachee") {
           formdata.append("profile_type", profileType);
-          formdata.append(
-            "low_rating_characteristics",
-            characteristicsRateLows
-          );
-          formdata.append(
-            "high_rating_characteristics",
-            characteristicsRateHigh
-          );
           formdata.append("coaching_level", participantLevel);
           formdata.append(
             "coach_same_department",
@@ -1421,6 +1416,8 @@ const CoachIntake = ({ user }: any) => {
               current_projects: currentProjects,
               suggested_projects: suggestedProjects,
             },
+            low_rating_characteristics: characteristicsRateLows,
+            high_rating_characteristics: characteristicsRateHigh,
             bot_base_url: `${
               subdomain === "playground"
                 ? "https://playground.coachbots.com"
@@ -1545,7 +1542,9 @@ const CoachIntake = ({ user }: any) => {
   //handling edit
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
-    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
 
@@ -2420,6 +2419,30 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </div>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself near the lows.
+                    </p>
+                    <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
+                      value={characteristicsRateLows}
+                      onCharacteristicsSelect={onCharacteristicsSelectLow}
+                      options={characteristicsList}
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself highly.
+                    </p>
+                    <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
+                      value={characteristicsRateHigh}
+                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                      options={characteristicsList}
+                    />
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -4191,6 +4214,30 @@ const CoachIntake = ({ user }: any) => {
                       {(error as any)["currentProjects"]}
                     </p>
                   )}
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please rate the characteristics/skills on which you will
+                    rate yourself near the lows.
+                  </p>
+                  <CharactericticsSelect
+                    disabled={checkIfView === null ? false : true}
+                    value={characteristicsRateLows}
+                    onCharacteristicsSelect={onCharacteristicsSelectLow}
+                    options={characteristicsList}
+                  />
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please rate the characteristics/skills on which you will
+                    rate yourself highly.
+                  </p>
+                  <CharactericticsSelect
+                    disabled={checkIfView === null ? false : true}
+                    value={characteristicsRateHigh}
+                    onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                    options={characteristicsList}
+                  />
                 </div>
 
                 {!checkIfView && (
