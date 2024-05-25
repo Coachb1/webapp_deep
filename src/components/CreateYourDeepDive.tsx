@@ -1,12 +1,20 @@
 "use client";
 
-import { Eraser, ExternalLink, Loader } from "lucide-react";
+import { CalendarIcon, Eraser, ExternalLink, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useRef, useState } from "react";
 import CopyToClipboard from "./CopyToClipboard";
 import Link from "next/link";
 import { baseURL, basicAuth, getUserAccount, subdomain } from "@/lib/utils";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
 
 interface DeepDiveType {
   title: string;
@@ -32,7 +40,7 @@ const CreateYourDeepDive = ({ user }: any) => {
   const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [userId, setUserId] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState<Date | undefined>();
 
   const [isLoading, setIsloading] = useState(false);
   const [loadingText, setLoadingText] = useState("Generating your deep dive.");
@@ -61,7 +69,7 @@ const CreateYourDeepDive = ({ user }: any) => {
       setInputError(true);
     } else if (
       expiryDate === undefined ||
-      expiryDate === "" ||
+      expiryDate === undefined ||
       expiryDate === null
     ) {
       setDateError(true);
@@ -88,9 +96,8 @@ const CreateYourDeepDive = ({ user }: any) => {
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
       );
       let date = new Date(expiryDate).toISOString();
-
-      console.log("expiry date", expiryDate, date);
-      formdata.append("expiry_date", date);
+      console.log(date)
+      formdata.append("expiry_date", expiryDate.toISOString());
 
       formdata.append(
         "attributes",
@@ -148,14 +155,12 @@ const CreateYourDeepDive = ({ user }: any) => {
     setGenerationError(false);
     setInputError(false);
     setWordCount(0);
-    setExpiryDate("");
+    setExpiryDate(undefined);
   };
 
-  const getTomorrowDate = () => {
+  const getTodayDate = () => {
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate());
-    return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    return today;
   };
 
   return (
@@ -203,19 +208,39 @@ const CreateYourDeepDive = ({ user }: any) => {
             {/* expiry date */}
 
             <div className="flex flex-row gap-2 items-center w-full">
-              <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+              <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
                 Expiry Date
               </p>
-              <input
-                value={expiryDate}
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setExpiryDate(e.target.value);
-                }}
-                type="date"
-                min={getTomorrowDate()}
-                className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !expiryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {expiryDate ? (
+                      format(expiryDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent side="right" className="w-auto p-0" align="start">
+                  <Calendar
+                    fromDate={getTodayDate()}
+                    mode="single"
+                    selected={expiryDate}
+                    onSelect={(val) => {
+                      setExpiryDate(val)
+                      console.log(val?.toISOString())
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             {dateError && (
               <>
