@@ -61,12 +61,15 @@ const LayoutComponent = ({
             email: user?.email!,
           });
           console.log("USER SET");
-          window.user = user;
+          
         }
         setupLogRocketReact(LogRocket);
         setLogSessionStarted(true);
         console.log("LOG SESSION STARTED");
       }
+    }
+    if(user){
+      window.user = user;
     }
   }, []);
 
