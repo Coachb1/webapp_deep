@@ -184,6 +184,7 @@ const CoachIntake = ({ user }: any) => {
     file: File;
     id: number;
     text: string;
+    name: string;
   }
   const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
@@ -305,6 +306,7 @@ const CoachIntake = ({ user }: any) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setDataModified(true);
     const selectedFiles = e.target?.files;
+    const input_name = e.target?.name
 
     if (selectedFiles) {
       const filesArray = await Promise.all(
@@ -326,6 +328,7 @@ const CoachIntake = ({ user }: any) => {
             file: file,
             id: Math.floor(Math.random() * 10000),
             text: textContent,
+            name: input_name
           };
         })
       );
@@ -854,34 +857,46 @@ const CoachIntake = ({ user }: any) => {
                       //PATCH MEDIA DATA HERE
 
                       const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              "pdf_data",
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              `doc_data`,
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
+                      referenceDocs.forEach(({ file, text, name }) => {
+                        console.log('name',name)
+                        console.log('file',file.name)
+                        if (name === "optional_file"){
+                          filesPatchFormData.append(
+                            "optional_file",
+                            `file_name:${file.name} text_file:${text}`,
+                          );
+                          console.log(text);
+
+                        } else{
+
+                          if (file.name.includes(".pdf")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                "pdf_data",
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_pdfs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
+                          } else if (file.name.includes(".docx")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                `doc_data`,
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_docs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
                           }
                         }
                       });
@@ -2882,6 +2897,29 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </div>
                   )}
+                  <hr className="mt-2" />
+                  <div className="my-3 ">
+                    <p className="text-sm my-1">
+                      Please add any optional document or file that you believe are
+                      reference materials that may help your mentees and
+                      participants.
+                    </p>
+
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        type="file"
+                        className="w-full text-xs my-2"
+                        multiple
+                        name="optional_file"
+                        accept=".pdf,.docx"
+                        onChange={async (e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                    </div>
+                  </div>
                   <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
