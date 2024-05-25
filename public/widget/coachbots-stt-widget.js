@@ -187,6 +187,9 @@ function createBasicAuthToken2(key2 = "", secret2 = "") {
 
 const basicAuthToken2 = createBasicAuthToken2(key2, secret2);
 
+user2 = window.user;
+console.log(user2);
+
 let user_name2;
 let user_email2;
 
@@ -206,6 +209,8 @@ if (window.LogRocket) {
 }
 
 // 2 - account creation
+console.log("user_name2", user_name2)
+console.log("user_email2", user_email2)
 fetch(`${baseURL2}/accounts/`, {
   method: "POST",
   headers: {
@@ -8682,8 +8687,7 @@ const openChatContainer2 = () => {
     }
   }
 
-  user2 = window.user;
-  console.log(user2);
+
 
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
