@@ -41,11 +41,13 @@ import TeamConnect from "@/components/TeamConnect";
 const CreateOwn = ({
   user,
   knowledgeBots,
-  deepdiveCreationAccess,
+  // deepdiveCreationAccess,
   restrictedFeatures,
   clientName,
   accessDenied,
-  accessAllowed
+  accessAllowed,
+  coachId,
+  coacheeId,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -56,11 +58,13 @@ const CreateOwn = ({
     scenario_case: string;
     creator_name: string;
   }[];
-  deepdiveCreationAccess: Boolean;
+  // deepdiveCreationAccess: Boolean;
   restrictedFeatures: string;
   clientName: string;
   accessDenied: string;
-  accessAllowed : string
+  accessAllowed: string;
+  coachId: string;
+  coacheeId: string;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -793,7 +797,7 @@ const CreateOwn = ({
                       Team-connect
                     </Button>
                   )}
-                   {accessAllowed.includes("Deepdive-creator") && (
+                  {accessAllowed.includes("Deepdive-creator") && (
                     <Button
                       onClick={() => {
                         document
@@ -1082,7 +1086,11 @@ const CreateOwn = ({
                               <div className="w-full">
                                 <div className="w-full flex flex-col items-center justify-center mb-10">
                                   <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
-                                    <TeamConnect clientName={clientName} />
+                                    <TeamConnect
+                                      clientName={clientName}
+                                      coachId={coachId}
+                                      coacheeId={coacheeId}
+                                    />
                                   </div>
                                 </div>
                               </div>
