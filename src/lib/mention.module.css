@@ -4,6 +4,8 @@
   border-radius: 8px;
   font-size: 14px;
   background-color: #f1f5f9;
+  display: inline;
+  width: 1005;
 }
 
 .mentions--singleLine .mentions__control {
