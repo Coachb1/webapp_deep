@@ -162,7 +162,9 @@ export const LoginWall = () => {
   const [botId, setBotId] = useState("");
   useEffect(() => {
     console.log(pathname);
-    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     if (pathname.includes("/feedback") || pathname.includes("/feedback/")) {
       coachScribe.removeAttribute("style");
       if (pathname === "/feedback") {
@@ -200,8 +202,9 @@ export const LoginWall = () => {
                 </span>
                 BOTS
               </h1>
+              <p className="mt-4">AI enabled Coaching & Mentoring</p>
               <div className="p-4 max-sm:px-6">
-                <h2 className="text-4xl font-bold text-center text-[#034078] mb-4">
+                <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
                   How it works?
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-left">
