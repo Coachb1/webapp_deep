@@ -15,7 +15,15 @@ import { MentionsInput, Mention } from "react-mentions";
 
 import ClassNames from "@/lib/mention.module.css";
 
-const TeamConnect = ({ clientName }: { clientName: string }) => {
+const TeamConnect = ({
+  clientName,
+  coachId,
+  coacheeId,
+}: {
+  clientName: string;
+  coachId: string;
+  coacheeId: string;
+}) => {
   const [isLoading, setisLoading] = useState(false);
   const [clientUsers, setClientUsers] = useState<ClientUserType[]>([]);
   const [taggedUserId, setTaggedUserId] = useState("");
@@ -35,7 +43,7 @@ const TeamConnect = ({ clientName }: { clientName: string }) => {
         }
       );
       const data = await response.json();
-      console.log(getUsersForClientForTeam(clientName, data))
+      console.log(getUsersForClientForTeam(clientName, data));
       setClientUsers(getUsersForClientForTeam(clientName, data));
     } catch (err) {
       toast.error("Error fetching client data.");
@@ -102,87 +110,93 @@ const TeamConnect = ({ clientName }: { clientName: string }) => {
       <div className="w-full">
         <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
           <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-            <div>
-              <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-                Please enter your query
-              </p>
-              <MentionsInput
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value.replace(/[\[\]]|\([^)]*\)/g, ""));
-                  setInputError(false);
+            {coachId || coacheeId ? (
+              <div>
+                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  Please enter your query
+                </p>
+                <MentionsInput
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value.replace(/[\[\]]|\([^)]*\)/g, ""));
+                    setInputError(false);
 
-                  if (e.target.value.length === 0) {
-                    setTaggedUserId("");
-                  }
-                }}
-                classNames={ClassNames}
-                rows={4}
-                placeholder="Enter the query"
-                id="mentionInput"
-                ref={inputRef}
-              >
-                <Mention
-                  trigger="@"
-                  onAdd={(val) => {
-                    console.log("onAdd", val);
-                    setTaggedUserId((prev) =>
-                      prev.length > 0
-                        ? prev + "," + val.toString()
-                        : prev + val.toString()
-                    );
+                    if (e.target.value.length === 0) {
+                      setTaggedUserId("");
+                    }
                   }}
-                  data={clientUsers.map((user) => ({
-                    id: user.userId,
-                    display: makeTaggableName(user.userName) + "  ",
-                  }))}
-                />
-              </MentionsInput>
-              {inputError && (
-                <div className="flex flex-row justify-between w-full">
-                  <p className={`text-red-500 text-xs mb-1.5 self-start`}>
-                    Input should not be empty
-                  </p>
-                  <p className="font-bold text-gray-500 text-xs self-end"></p>
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={handleQuerySubmit}
-                  className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+                  classNames={ClassNames}
+                  rows={4}
+                  placeholder="Enter the query"
+                  id="mentionInput"
+                  ref={inputRef}
                 >
-                  {isLoading
-                    ? "Generating"
-                    : generatedData?.length > 0
-                    ? "Regenerate"
-                    : "Generate"}
-                  {isLoading && (
-                    <Loader className="h-4 w-4 inline ml-2 animate-spin" />
-                  )}
-                </Button>
-                {!isLoading && (
-                  <Button
-                    onClick={clearHandler}
-                    variant={"secondary"}
-                    className="max-sm:p-2 h-8 hover:brightness-105"
-                  >
-                    <Eraser className="mr-2 w-4 h-4" /> Clear
-                  </Button>
+                  <Mention
+                    trigger="@"
+                    onAdd={(val) => {
+                      console.log("onAdd", val);
+                      setTaggedUserId((prev) =>
+                        prev.length > 0
+                          ? prev + "," + val.toString()
+                          : prev + val.toString()
+                      );
+                    }}
+                    data={clientUsers.map((user) => ({
+                      id: user.userId,
+                      display: makeTaggableName(user.userName) + "  ",
+                    }))}
+                  />
+                </MentionsInput>
+                {inputError && (
+                  <div className="flex flex-row justify-between w-full">
+                    <p className={`text-red-500 text-xs mb-1.5 self-start`}>
+                      Input should not be empty
+                    </p>
+                    <p className="font-bold text-gray-500 text-xs self-end"></p>
+                  </div>
                 )}
-              </div>
-              {generatedData?.length > 0 && (
-                <>
-                  <div className="flex flex-row gap-2 max-sm:flex-col">
-                    <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                      <div>
-                        <b className="my-1 text-gray-400">Response</b>
-                        <p className="my-2">{generatedData}</p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleQuerySubmit}
+                    className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+                  >
+                    {isLoading
+                      ? "Generating"
+                      : generatedData?.length > 0
+                      ? "Regenerate"
+                      : "Generate"}
+                    {isLoading && (
+                      <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                    )}
+                  </Button>
+                  {!isLoading && (
+                    <Button
+                      onClick={clearHandler}
+                      variant={"secondary"}
+                      className="max-sm:p-2 h-8 hover:brightness-105"
+                    >
+                      <Eraser className="mr-2 w-4 h-4" /> Clear
+                    </Button>
+                  )}
+                </div>
+                {generatedData?.length > 0 && (
+                  <>
+                    <div className="flex flex-row gap-2 max-sm:flex-col">
+                      <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <b className="my-1 text-gray-400">Response</b>
+                          <p className="my-2">{generatedData}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-center py-10">
+                Please join the network to enable team insights feature.
+              </p>
+            )}
           </div>
         </div>
       </div>

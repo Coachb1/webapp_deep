@@ -3,6 +3,8 @@ import {
   baseURL,
   basicAuth,
   constructMetadata,
+  findCoachUID,
+  findCoacheeUID,
   getUserAccount,
 } from "@/lib/utils";
 import CreateOwn from "./CreateOwn";
@@ -18,16 +20,51 @@ const getUserAccountsData = async (user: KindeUser | null) => {
     const userCreateResponse = await getUserAccount(user);
     if (userCreateResponse.ok) {
       const userCreateResults = await userCreateResponse.json();
-      return {
-        accessDenied:
-          userCreateResults.access_denied !== null
-            ? userCreateResults.access_denied
-            : "",
-        accessAllowed:
-          userCreateResults.access_allowed !== null
-            ? userCreateResults.access_allowed
-            : "",
-      };
+
+      const profileResponse = await fetch(
+        `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userCreateResults.uid}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (profileResponse.ok) {
+        const profileResponseData = await profileResponse.json();
+        const isApprovedData = profileResponseData.data.filter(
+          (coachData: any) => coachData.is_approved === true
+        );
+        const coacheeId = findCoacheeUID(isApprovedData);
+        const coachId = findCoachUID(isApprovedData);
+
+        console.log("coachId", coachId);
+        console.log("coacheeId", coacheeId);
+        return {
+          accessDenied:
+            userCreateResults.access_denied !== null
+              ? userCreateResults.access_denied
+              : "",
+          accessAllowed:
+            userCreateResults.access_allowed !== null
+              ? userCreateResults.access_allowed
+              : "",
+          coachId,
+          coacheeId,
+        };
+      } else {
+        return {
+          accessDenied:
+            userCreateResults.access_denied !== null
+              ? userCreateResults.access_denied
+              : "",
+          accessAllowed:
+            userCreateResults.access_allowed !== null
+              ? userCreateResults.access_allowed
+              : "",
+        };
+      }
     } else {
       return {
         accessDenied: "",
@@ -128,33 +165,33 @@ const getknowledgeBotss = async (userEmail: string) => {
   }
 };
 
-const getDeepDiveCreationAcess = async (
-  userEmail: string | undefined | null
-) => {
-  if (userEmail) {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", basicAuth);
+// const getDeepDiveCreationAcess = async (
+//   userEmail: string | undefined | null
+// ) => {
+//   if (userEmail) {
+//     const myHeaders = new Headers();
+//     myHeaders.append("Authorization", basicAuth);
 
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-    };
+//     const requestOptions = {
+//       method: "GET",
+//       headers: myHeaders,
+//     };
 
-    const response = await fetch(
-      `${baseURL}/coaching-conversations/get-deep-dive-create-access/?email=${userEmail}`,
-      requestOptions
-    );
+//     const response = await fetch(
+//       `${baseURL}/coaching-conversations/get-deep-dive-create-access/?email=${userEmail}`,
+//       requestOptions
+//     );
 
-    if (response.ok) {
-      const responseData = await response.json();
-      return responseData.has_access;
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
-};
+//     if (response.ok) {
+//       const responseData = await response.json();
+//       return responseData.has_access;
+//     } else {
+//       return false;
+//     }
+//   } else {
+//     return false;
+//   }
+// };
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();
@@ -163,10 +200,11 @@ const Page = async () => {
   const { knowledgeBotss, restrictedFeatures, clientName } =
     await getknowledgeBotss(user?.email!);
 
-  const { accessDenied, accessAllowed } = await getUserAccountsData(user);
+  const { accessDenied, accessAllowed, coachId, coacheeId } =
+    await getUserAccountsData(user);
 
   console.log(clientName);
-  const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
+  // const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
 
   return (
     <div>
@@ -175,9 +213,11 @@ const Page = async () => {
         accessAllowed={accessAllowed}
         restrictedFeatures={restrictedFeatures}
         knowledgeBots={knowledgeBotss}
-        deepdiveCreationAccess={deepdiveCreationAccess}
+        // deepdiveCreationAccess={deepdiveCreationAccess}
         clientName={clientName}
         accessDenied={accessDenied}
+        coachId={coachId}
+        coacheeId={coacheeId}
       />
     </div>
   );
