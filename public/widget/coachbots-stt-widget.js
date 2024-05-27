@@ -4775,7 +4775,7 @@ const handleAttemptScenaiosSTT = async (title, test_code) =>{
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = title;
+    gShadowRoot2.getElementById("text-input").textContent = test_code;
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -4789,16 +4789,22 @@ async function handleOptionButtonClick2(labelText) {
   const button = gShadowRoot2.getElementById("create-new-scenario");
   button.disabled = true;
 
+
   if (gShadowRoot2.querySelectorAll('#create-scenario-section').length > 0){
     console.log('already existed')
     return
-
   }
 
+  
   optedNo = true;
-  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  var currentURL = "https://playground.coachbots.com/content-library"
   console.log('currenturl',currentURL);
+  
+  const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  appendMessage2(generationLoader)
 
+  const allMessages = gShadowRoot2.getElementById("messages").childNodes;
   // gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   // gShadowRoot2.getElementById("text-input").focus();
   // setTimeout(() => {
@@ -4831,6 +4837,12 @@ async function handleOptionButtonClick2(labelText) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
+      allMessages.forEach((indvMessage) => {
+        if (
+          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+          indvMessage.remove();
+        }
+      });
       const challenges = data;
       // const randomIndex = Math.floor(Math.random() * challenges.length);
       // const randomChallenge = challenges[randomIndex];
@@ -4845,24 +4857,25 @@ async function handleOptionButtonClick2(labelText) {
 
       console.log('sucessfully crated scenarios: ', scenarios)
       if (scenarios.length == 0){
-        appendMessage2("<p style='font-size: 14px;color: #991b1b;'>Scenario generation failed because of failure of page extraction</p>")
+        appendMessage2("<p style='font-size: 12px;color: #991b1b;'>Scenario generation failed because of failure of page extraction</p>")
         return
       }
       let divCont = '';
-      scenarios.forEach(element => {
+      scenarios.forEach((element, i) => {
         divCont += `
-        <b style="font-size: 1.2em; color: #333;">${element.title}</b>
+        <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
         <div>
           <button 
             onmouseover="this.style.cursor ='pointer'" 
             style="
-              margin-top: 15px;
-              padding: 10px 20px;
+              margin-top: 8px;
+              padding: 6px 10px;
               border: none;
               border-radius: 4px;
               background-color: #007BFF;
               color: white;
-              font-size: 1em;
+              font-size: 12px;
+              font-weight: 600;
               transition: background-color 0.3s ease;
             " 
             onmouseout="this.style.backgroundColor = '#007BFF'"
@@ -4871,16 +4884,14 @@ async function handleOptionButtonClick2(labelText) {
             Attempt
           </button>
         </div>
-        <br/>
-
         `
       }); 
 
       appendMessage2(`
-      <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+      <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
       ${divCont}
       </div>
-      `)
+      `);
     })
     .catch((err) => console.log(err));
 }
@@ -7171,7 +7182,7 @@ loadExternalModule().then(() => {
             signals.onResponse({
               html: `<div id="option-button-container" >
                       <button id="surprise-button" style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'" onclick="handleSurpriseMeButtonClick2()">Initiate a surprise Interaction</button>
-                      <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick2()">Create Scenario</button>
+                      <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleOptionButtonClick2()">Create Scenario</button>
                       </div>
                       `,
             });
