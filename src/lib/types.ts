@@ -289,3 +289,7 @@ export interface MediaData {
   extracted_from_pdf: MediaItem[];
   extracted_from_youtube: MediaItem[];
 }
+
+export interface OptionalMediaData {
+  extracted_from_optional_file: MediaItem[],
+}
