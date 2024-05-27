@@ -58,12 +58,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip } from "antd";
 
 interface CoachesDataType {
   id: number;
@@ -1272,31 +1267,16 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join as Coach or Mentor{" "}
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                        </TooltipTrigger>
-                        <TooltipContent className="w-[30%] m-0 p-0">
-                          <p>
-                            You can Join the CoachBot network as a Coach or
-                            Mentor. Our platform facilitates coaches and mentors
-                            in forming profiles, which evolve into AI Frames.{" "}
-                            <br />
-                            These interactive avatars offer a unique way to
-                            connect, granting Coachees and Mentees direct access
-                            to chat functionalities and customized resources.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    {/* <TooltipWrapper
-                      body={
-                        
-                      }
-                      tooltipName="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
-                      className="max-w-[40%]"
-                    /> */}
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                    </Tooltip>
                     {allCoaches.length > 0 ? (
                       <>
                         {allCoaches[0]?.is_approved ? (
@@ -1358,13 +1338,16 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join as Coachee or Mentee
-                    <TooltipWrapper
-                      body={
-                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                      }
-                      tooltipName="hello"
-                      className=""
-                    />
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                    </Tooltip>
                     {allCoaches.length > 0 ? (
                       <>
                         {allCoaches[0]?.is_approved ? (
@@ -1417,13 +1400,16 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join Feedback Network
-                    <TooltipWrapper
-                      body={
-                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                      }
-                      tooltipName="hello"
-                      className=""
-                    />
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                    </Tooltip>
                     {feedbackBots.length > 0 && (
                       <>
                         {feedbackBots[0]?.signature_bot.is_approved ? (
@@ -1452,7 +1438,7 @@ const Coaches = ({
             <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
               <Search className="mr-1 inline h-4 w-4" />
               <input
-                placeholder="What are you looking for?"
+                placeholder="Search for Any Profile"
                 className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
                 type="text"
                 onChange={(e) => {

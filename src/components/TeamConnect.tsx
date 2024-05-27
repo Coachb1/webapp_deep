@@ -4,16 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Eraser, Loader } from "lucide-react";
 import { ClientUserType } from "@/lib/types";
-import {
-  baseURL,
-  basicAuth,
-  getUsersForClientForTeam,
-  makeTaggableName,
-} from "@/lib/utils";
+import { baseURL, basicAuth, getUsersForClient } from "@/lib/utils";
 import { toast } from "sonner";
-import { MentionsInput, Mention } from "react-mentions";
 
-import ClassNames from "@/lib/mention.module.css";
+import { Select } from "antd";
 
 const TeamConnect = ({
   clientName,
@@ -28,7 +22,9 @@ const TeamConnect = ({
   const [clientUsers, setClientUsers] = useState<ClientUserType[]>([]);
   const [taggedUserId, setTaggedUserId] = useState("");
   const [query, setQuery] = useState("");
-  const [generatedData, setGeneratedData] = useState("");
+  const [generatedData, setGeneratedData] = useState<
+    { response: string; message: string } | undefined
+  >();
   const [inputError, setInputError] = useState(false);
 
   const inputRef = useRef(null);
@@ -43,8 +39,8 @@ const TeamConnect = ({
         }
       );
       const data = await response.json();
-      console.log(getUsersForClientForTeam(clientName, data));
-      setClientUsers(getUsersForClientForTeam(clientName, data));
+      console.log(getUsersForClient(clientName, data));
+      setClientUsers(getUsersForClient(clientName, data));
     } catch (err) {
       toast.error("Error fetching client data.");
       console.error(err);
@@ -83,7 +79,7 @@ const TeamConnect = ({
         if (response.ok) {
           const responseData = await response.json();
           console.log(responseData);
-          setGeneratedData(responseData.response);
+          setGeneratedData(responseData);
           if (responseData.error) {
             toast.error("Error! Please try again.");
           }
@@ -100,7 +96,7 @@ const TeamConnect = ({
 
   const clearHandler = () => {
     setQuery("");
-    setGeneratedData("");
+    setGeneratedData(undefined);
     setTaggedUserId("");
     setInputError(false);
   };
@@ -111,42 +107,66 @@ const TeamConnect = ({
         <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
           <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
             {coachId || coacheeId ? (
-              <div>
-                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+              <div className="w-full">
+                {/* <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                   Please enter your query
-                </p>
-                <MentionsInput
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value.replace(/[\[\]]|\([^)]*\)/g, ""));
-                    setInputError(false);
+                </p> */}
+                <div className="max-sm:text-sm">
+                  {" "}
+                  How can you interact with{" "}
+                  <span className="mr-2">
+                    @{" "}
+                    <Select
+                      showSearch
+                      className="w-[20%] max-sm:w-[40%]  max-lg:w-[40%]  max-md:w-[40%]"
+                      placeholder="Select a person"
+                      optionFilterProp="children"
+                      virtual={false}
+                      onChange={(value: string) => {
+                        console.log(`selected ${value}`);
+                        setTaggedUserId(value);
+                        // setTaggedUserId((prev) =>
+                        //   prev.length > 0
+                        //     ? prev + "," + value.toString()
+                        //     : prev + value.toString()
+                        // );
+                      }}
+                      onSearch={(value: string) => {
+                        console.log(`searched ${value}`);
+                      }}
+                      filterOption={(
+                        input: string,
+                        option?: { label: string; value: string }
+                      ) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={clientUsers.map((user) => ({
+                        label: user.userName,
+                        value: user.userId,
+                      }))}
+                    />
+                  </span>
+                  on
+                  <div className="flex flex-row items-end">
+                    <textarea
+                      onChange={(e) => {
+                        setQuery(
+                          e.target.value.replace(/[\[\]]|\([^)]*\)/g, "")
+                        );
+                        setInputError(false);
 
-                    if (e.target.value.length === 0) {
-                      setTaggedUserId("");
-                    }
-                  }}
-                  classNames={ClassNames}
-                  rows={4}
-                  placeholder="Enter the query"
-                  id="mentionInput"
-                  ref={inputRef}
-                >
-                  <Mention
-                    trigger="@"
-                    onAdd={(val) => {
-                      console.log("onAdd", val);
-                      setTaggedUserId((prev) =>
-                        prev.length > 0
-                          ? prev + "," + val.toString()
-                          : prev + val.toString()
-                      );
-                    }}
-                    data={clientUsers.map((user) => ({
-                      id: user.userId,
-                      display: makeTaggableName(user.userName) + "  ",
-                    }))}
-                  />
-                </MentionsInput>
+                        if (e.target.value.length === 0) {
+                          setTaggedUserId("");
+                        }
+                      }}
+                      rows={2}
+                      className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm bg-accent"
+                    ></textarea>{" "}
+                  </div>
+                </div>
+
                 {inputError && (
                   <div className="flex flex-row justify-between w-full">
                     <p className={`text-red-500 text-xs mb-1.5 self-start`}>
@@ -155,21 +175,22 @@ const TeamConnect = ({
                     <p className="font-bold text-gray-500 text-xs self-end"></p>
                   </div>
                 )}
-                <div className="flex items-center gap-2">
+                <div className="flex items-end justify-end gap-2 w-full">
                   <Button
                     onClick={handleQuerySubmit}
+                    disabled={isLoading}
                     className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
                   >
                     {isLoading
                       ? "Generating"
-                      : generatedData?.length > 0
+                      : generatedData
                       ? "Regenerate"
                       : "Generate"}
                     {isLoading && (
                       <Loader className="h-4 w-4 inline ml-2 animate-spin" />
                     )}
                   </Button>
-                  {!isLoading && (
+                  {/* {!isLoading && (
                     <Button
                       onClick={clearHandler}
                       variant={"secondary"}
@@ -177,16 +198,21 @@ const TeamConnect = ({
                     >
                       <Eraser className="mr-2 w-4 h-4" /> Clear
                     </Button>
-                  )}
+                  )} */}
                 </div>
-                {generatedData?.length > 0 && (
+                {generatedData && (
                   <>
                     <div className="flex flex-row gap-2 max-sm:flex-col">
                       <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                         <div>
                           <b className="my-1 text-gray-400">Response</b>
-                          <p className="my-2">{generatedData}</p>
+                          <p className="my-2">{generatedData.response}</p>
                         </div>
+                        {generatedData.response && (
+                          <div className="text-xs bg-blue-100 w-fit px-2 py-1 rounded-md">
+                            {generatedData.message}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>

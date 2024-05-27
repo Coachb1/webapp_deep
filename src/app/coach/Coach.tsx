@@ -25,6 +25,7 @@ import NetworkNav from "@/components/NetworkNav";
 import Image from "next/image";
 import { toast } from "sonner";
 import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
+import BotsNavigation from "@/components/BotsNavigation";
 
 const howItWorks = [
   {
@@ -106,8 +107,9 @@ const Coach = ({ user, renderType }: any) => {
       .then((data) => {
         console.log("BOT DETAILS : ", data);
         console.log();
-        const coachScribe =
-          document.getElementsByClassName("coachbots-coachscribe")[0];
+        const coachScribe = document.getElementsByClassName(
+          "coachbots-coachscribe"
+        )[0];
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -192,8 +194,9 @@ const Coach = ({ user, renderType }: any) => {
                     renderType === "dynamic" &&
                     pathname !== "/coach/coach-d54cd-aravsharma"
                   ) {
-                    const coachScribe =
-                      document.getElementsByClassName("coachbots-coachscribe")[0];
+                    const coachScribe = document.getElementsByClassName(
+                      "coachbots-coachscribe"
+                    )[0];
 
                     console.log(coachScribe);
                     const botButton = document.getElementsByClassName(
@@ -224,7 +227,10 @@ const Coach = ({ user, renderType }: any) => {
             });
         }
 
-        if (data.data.scenario_case === "icons_by_ai" && data.data.profile_details.discussion_topic !== null) {
+        if (
+          data.data.scenario_case === "icons_by_ai" &&
+          data.data.profile_details.discussion_topic !== null
+        ) {
           setDiscussionTopics(
             data.data.profile_details.discussion_topic.split(",")
           );
@@ -276,13 +282,26 @@ const Coach = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-3xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
-                {renderType === "dynamic"
-                  ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
-                  : "Welcome to the Aarav Sharma !🚀"}
-              </h1>
+              {botScenarioCase === "icons_by_ai" ? (
+                <>
+                  <h1 className="text-2xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
+                    Welcome to Lyfe
+                  </h1>
+                  <p className="my-2 font-semibold text-lg max-sm:text-sm text-gray-600">
+                    {convertTextToCorrectFormat(coachName)}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
+                    {renderType === "dynamic"
+                      ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
+                      : "Welcome to the Aarav Sharma !🚀"}
+                  </h1>
+                </>
+              )}
               <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+                <p className="p-2 border border-gray-200 bg-white rounded-lg text-sm max-sm:text-xs">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -294,29 +313,18 @@ const Coach = ({ user, renderType }: any) => {
                   coaching experience.{" "}
                 </p>
               </div>
-              {discussiionTopics.length > 0 && (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-100 bg-gray-50 rounded-lg mb-4">
-                  <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
-                    Discussion Topics
-                  </h3>
-                  <div className="flex flex-row gap-2 justify-center flex-wrap">
-                    <>
-                      {discussiionTopics.map((topic) => (
-                        <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
-                          {capitalizeText(topic.trim())}
-                        </div>
-                      ))}
-                    </>
-                  </div>
-                </div>
-              )}
+
               {renderType === "dynamic" ? (
                 <>
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
                     <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                        src={profileImage}
+                        src={
+                          profileImage
+                            ? profileImage
+                            : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                        }
                       />
                     </div>{" "}
                     <p className="w-[80%] text-sm max-sm:text-xs max-sm:w-full text-left  max-sm:text-center">
@@ -326,7 +334,7 @@ const Coach = ({ user, renderType }: any) => {
                   </div>
                 </>
               ) : (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
                   <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
@@ -350,6 +358,22 @@ const Coach = ({ user, renderType }: any) => {
                     for long-term, sustainable leadership development in the
                     dynamic corporate landscape.
                   </p>
+                </div>
+              )}
+              {discussiionTopics.length > 0 && (
+                <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg mt-4">
+                  <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
+                    Discussion Topics
+                  </h3>
+                  <div className="flex flex-row gap-2 justify-center flex-wrap">
+                    <>
+                      {discussiionTopics.map((topic) => (
+                        <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
+                          {capitalizeText(topic.trim())}
+                        </div>
+                      ))}
+                    </>
+                  </div>
                 </div>
               )}
             </div>
@@ -398,14 +422,16 @@ const Coach = ({ user, renderType }: any) => {
                   </Button>
                 </Link>
               )} */}
-              <Link href={"#benefits"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Benefits
-                </Button>
-              </Link>
+              {botScenarioCase !== "icons_by_ai" && (
+                <Link href={"#benefits"}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    Benefits
+                  </Button>
+                </Link>
+              )}
               {/* <Link target="_blank" href={coachBookLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
