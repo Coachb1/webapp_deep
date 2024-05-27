@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { ClientUserType } from "@/lib/types";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 interface OptionType {
   value: string;
@@ -106,11 +107,11 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
-      params.set(
-        "assign_to",
-        assignedToUsers.map((user) => user.value.split("/")[1]).join(",")
-      );
-      params.set("assigned_by", userName);
+      // params.set(
+      //   "assign_to",
+      //   assignedToUsers.map((user) => user.value.split("/")[1]).join(",")
+      // );
+      // params.set("assigned_by", userName);
 
       url.search = params;
 
@@ -182,6 +183,40 @@ const CreateYourOwn = ({ user, clientName }: any) => {
     setAssignedToUsers([]);
   };
 
+  const [assignLoading, setAssignLoading] = useState(false);
+
+  const assignSimulationHandler = async (testCodes: string) => {
+    setAssignLoading(true);
+    try {
+      const response = await fetch(`${baseURL}/tests/assign_simulation/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          test_codes: testCodes,
+          assigned_to: assignedToUsers
+            .map((user) => user.value.split("/")[1])
+            .join(","),
+          assigned_by: userName,
+        }),
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        toast.success("Succesfully assigned the simulations.");
+        setAssignedToUsers([]);
+      } else {
+        toast.error("Error assigning simulation");
+      }
+    } catch (error) {
+      toast.error("Error assigning simulation");
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
   return (
     <div className="w-full">
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
@@ -220,53 +255,6 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 Please describe your situation in 20-500 words.
               </p>
               <p className="font-bold text-gray-500 text-xs">{wordCount}/500</p>
-            </div>
-            <div className="mb-4 flex flex-row items-center max-sm:flex-col max-sm:items-start gap-2">
-              <Button
-                onClick={() => {
-                  setAssignInit((prev) => !prev);
-                }}
-                variant={"secondary"}
-                className="text-sm max-sm:text-xs py-1 px-2 h-fit font-bold max-sm:font-medium text-blue-500 min-w-fit"
-              >
-                <AtSign strokeWidth="3px" className="h-3 w-3 mr-1" /> Assign{" "}
-                <span>
-                  {assignInit ? (
-                    <ChevronLeft className="text-gray-700 " />
-                  ) : (
-                    <ChevronRight />
-                  )}
-                </span>
-              </Button>
-              {assignInit && (
-                <Select
-                  onChange={(selectedOptions: MultiValue<OptionType>) => {
-                    console.log(selectedOptions as OptionType[]);
-                    setAssignedToUsers(selectedOptions as OptionType[]);
-                  }}
-                  options={clientUser
-                    .map((user) => ({
-                      value: `${user.userName}/${user.userId}`,
-                      label: user.userName,
-                    }))
-                    .filter((user) => !user.value.includes(userId))}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      borderRadius: "8px",
-                    }),
-                    multiValueLabel: (styles, { data }) => ({
-                      ...styles,
-                      fontWeight: "bold",
-                      color: "#4b5563",
-                      borderRadius: "4px",
-                    }),
-                  }}
-                  isMulti
-                  value={assignedToUsers}
-                  className="w-full text-sm"
-                />
-              )}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -319,6 +307,60 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 </div>
               ))}
           </div>
+          {generatedTestData.length > 0 && (
+            <div className="mb-4 flex flex-col max-sm:flex-col max-sm:items-start mt-2 border border-gray-200 p-2 rounded-md bg-gray-50 shadow-sm">
+              <p className="text-sm my-2">Assign the simulation</p>
+              <div className={`flex flex-row items-center gap-2`}>
+                <Select
+                  placeholder="Select the users"
+                  onChange={(selectedOptions: MultiValue<OptionType>) => {
+                    console.log(selectedOptions as OptionType[]);
+                    setAssignedToUsers(selectedOptions as OptionType[]);
+                  }}
+                  options={clientUser
+                    .map((user) => ({
+                      value: `${user.userName}/${user.userId}`,
+                      label: user.userName,
+                    }))
+                    .filter((user) => !user.value.includes(userId))}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderRadius: "8px",
+                    }),
+                    multiValueLabel: (styles, { data }) => ({
+                      ...styles,
+                      fontWeight: "bold",
+                      color: "#4b5563",
+                      borderRadius: "4px",
+                    }),
+                  }}
+                  isMulti
+                  value={assignedToUsers}
+                  className="w-full text-sm"
+                />
+                <Button
+                  className="text-sm h-fit"
+                  onClick={() => {
+                    const testcodes = generatedTestData
+                      .map((test) => test.test_code)
+                      .join(",");
+                    assignSimulationHandler(testcodes);
+                  }}
+                  disabled={assignLoading || assignedToUsers.length === 0}
+                >
+                  {assignLoading ? (
+                    <>
+                      Assigning{" "}
+                      <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
           {generationError && !isLoading && (
             <>
               <hr className="my-2" />

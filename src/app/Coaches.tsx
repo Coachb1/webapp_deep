@@ -30,6 +30,7 @@ import {
   ChevronRight,
   ExternalLink,
   GlobeIcon,
+  Info,
   List,
   Loader,
   Search,
@@ -57,6 +58,12 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CoachesDataType {
   id: number;
@@ -1239,7 +1246,11 @@ const Coaches = ({
                     variant={"outline"}
                     className="h-fit w-fit"
                   >
-                    Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                    {" "}
+                    <>
+                      {" "}
+                      Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                    </>
                   </Button>
                 </div>
               </DropdownMenuTrigger>
@@ -1261,6 +1272,31 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join as Coach or Mentor{" "}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-[30%] m-0 p-0">
+                          <p>
+                            You can Join the CoachBot network as a Coach or
+                            Mentor. Our platform facilitates coaches and mentors
+                            in forming profiles, which evolve into AI Frames.{" "}
+                            <br />
+                            These interactive avatars offer a unique way to
+                            connect, granting Coachees and Mentees direct access
+                            to chat functionalities and customized resources.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    {/* <TooltipWrapper
+                      body={
+                        
+                      }
+                      tooltipName="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                      className="max-w-[40%]"
+                    /> */}
                     {allCoaches.length > 0 ? (
                       <>
                         {allCoaches[0]?.is_approved ? (
@@ -1322,6 +1358,13 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join as Coachee or Mentee
+                    <TooltipWrapper
+                      body={
+                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                      }
+                      tooltipName="hello"
+                      className=""
+                    />
                     {allCoaches.length > 0 ? (
                       <>
                         {allCoaches[0]?.is_approved ? (
@@ -1374,6 +1417,13 @@ const Coaches = ({
                     className="flex flex-row items-center justify-center"
                   >
                     Join Feedback Network
+                    <TooltipWrapper
+                      body={
+                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                      }
+                      tooltipName="hello"
+                      className=""
+                    />
                     {feedbackBots.length > 0 && (
                       <>
                         {feedbackBots[0]?.signature_bot.is_approved ? (
