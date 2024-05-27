@@ -573,7 +573,8 @@ const Coaches = ({
     if (newValues.length > 0 && newValues[0].length === 0) {
       setParentCheckedValues([]);
     }
-
+    console.log("COACHES DATA IN FILTER : ", coachesData);
+    console.log("SAVEDCOACHES DATA IN FILTER : ", savedCoachesData);
     if (newValues.length === 0) {
       console.log("no values selected");
       setCoachesData(savedCoachesData);
@@ -836,14 +837,15 @@ const Coaches = ({
     }
   };
 
-  const RequestionConnection = ({ coachId }: { coachId: string }) => {
+  const RequestionConnection = ({
+    coachId,
+    requestStatus,
+  }: {
+    coachId: string;
+    requestStatus: string;
+  }) => {
     const [requestLoading, setRequestLoading] = useState(false);
-    const [status, setStatus] = useState("");
-
-    useEffect(() => {
-      setStatus(findConnectionStatus(connections, coachId, coacheeId));
-      console.log(findConnectionStatus(connections, coachId, coacheeId));
-    }, [connections]);
+    const [status, setStatus] = useState(requestStatus);
 
     const requestConnectHandler = () => {
       console.log(coacheeId, coachId);
@@ -873,7 +875,20 @@ const Coaches = ({
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
             } else {
-              getConnectionsForCoachee(coacheeId);
+              const updatedCoachesData = coachesDataa.map((coach) =>
+                coach.profile_id === coachId
+                  ? { ...coach, status: "pending" }
+                  : coach
+              );
+              setStatus("pending");
+              console.log(updatedCoachesData);
+              setCoachesData(updatedCoachesData);
+              setSavedCoachesData(updatedCoachesData);
+              setParentCheckedValues([]);
+              // if (parentCheckedValues) {
+              //   handleUpdateCheckedValues(parentCheckedValues);
+              // }
+              // getConnectionsForCoachee(coacheeId);
             }
             setTimeout(() => {
               setRequestLoading(false);
@@ -893,7 +908,9 @@ const Coaches = ({
     return (
       <>
         <Button
-          disabled={requestLoading || status === "pending"}
+          disabled={
+            requestLoading || status === "pending" || status === "Requested"
+          }
           variant={"outline"}
           className="max-sm:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
@@ -906,7 +923,11 @@ const Coaches = ({
               Requesting
             </>
           ) : (
-            <>{status === "pending" ? "Requested" : "Request connection"}</>
+            <>
+              <>{!status && "Request Connection"}</>
+              <>{status === "pending" && "Requested"}</>
+              <>{status === "accepted" && "Accepted"}</>
+            </>
           )}
         </Button>
       </>
@@ -1483,7 +1504,11 @@ const Coaches = ({
                     <div className="">
                       <img
                         className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
-                        src={coach.profile_pic_url}
+                        src={
+                          coach.profile_pic_url
+                            ? coach.profile_pic_url
+                            : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
+                        }
                       />
                       {!restrictedFeatures?.includes("Likes") && (
                         <div className="mt-4">
@@ -1642,7 +1667,7 @@ const Coaches = ({
                           coach.profile_type === "mentor" ||
                           coach.profile_type === "coach-mentor") && (
                           <>
-                            {coach.status === "pending" && (
+                            {/* {coach.status === "pending" && (
                               <Button
                                 disabled
                                 variant={"outline"}
@@ -1650,11 +1675,11 @@ const Coaches = ({
                               >
                                 Requested
                               </Button>
-                            )}
+                            )} */}
                             <>
                               {coacheeId.length > 0 && (
                                 <>
-                                  {coach.status === "" && (
+                                  {/* {coach.status === "" && (
                                     <RequestionConnection
                                       coachId={coach.profile_id}
                                     />
@@ -1663,7 +1688,11 @@ const Coaches = ({
                                     <RequestionConnection
                                       coachId={coach.profile_id}
                                     />
-                                  )}
+                                  )} */}
+                                  <RequestionConnection
+                                    requestStatus={coach.status}
+                                    coachId={coach.profile_id}
+                                  />
                                 </>
                               )}
                             </>
