@@ -9,6 +9,7 @@ import {
   DomainData,
   ExtractedData,
   MediaData,
+  OptionalMediaData,
   TestData,
 } from "./types";
 
@@ -562,6 +563,34 @@ export function transformExtractedData(data: ExtractedData): MediaData {
             mediaData.extracted_from_pdf.push(fileObject);
           } else if (source === "extracted_from_youtube") {
             mediaData.extracted_from_youtube.push(fileObject);
+          }
+        }
+      }
+    }
+  }
+
+  return mediaData;
+}
+
+export function transformExtractedOptional(data: ExtractedData): OptionalMediaData {
+  const mediaData: OptionalMediaData = {
+   extracted_from_optional_file: []
+  };
+
+  for (const source in data) {
+    if (data.hasOwnProperty(source)) {
+      const files = data[source];
+      for (const fileName in files) {
+        if (files.hasOwnProperty(fileName)) {
+          const fileContent = files[fileName];
+          const fileObject = {
+            fileName,
+            fileContent,
+            isDeleted: false,
+          };
+          // Push the object into the corresponding array in mediaData
+          if (source === "extracted_from_optional_file") {
+            mediaData.extracted_from_optional_file.push(fileObject);
           }
         }
       }

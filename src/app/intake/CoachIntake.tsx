@@ -15,6 +15,7 @@ import {
   isValidLinks,
   isValidYoutubeLinks,
   transformExtractedData,
+  transformExtractedOptional,
 } from "@/lib/utils";
 import {
   File,
@@ -35,7 +36,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import { MediaData, UserClientInfoDataType } from "@/lib/types";
+import { MediaData, OptionalMediaData, UserClientInfoDataType } from "@/lib/types";
 import { Radio } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -184,6 +185,7 @@ const CoachIntake = ({ user }: any) => {
     file: File;
     id: number;
     text: string;
+    name: string;
   }
   const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
@@ -212,6 +214,7 @@ const CoachIntake = ({ user }: any) => {
 
   //mediaData
   const [mediaData, setMediaData] = useState<MediaData>();
+  const [optionalMediaData, setOptionalMediaData] = useState<OptionalMediaData>();
 
   const [dataModified, setDataModified] = useState(false);
 
@@ -305,6 +308,7 @@ const CoachIntake = ({ user }: any) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setDataModified(true);
     const selectedFiles = e.target?.files;
+    const input_name = e.target?.name
 
     if (selectedFiles) {
       const filesArray = await Promise.all(
@@ -326,6 +330,7 @@ const CoachIntake = ({ user }: any) => {
             file: file,
             id: Math.floor(Math.random() * 10000),
             text: textContent,
+            name: input_name
           };
         })
       );
@@ -854,34 +859,46 @@ const CoachIntake = ({ user }: any) => {
                       //PATCH MEDIA DATA HERE
 
                       const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              "pdf_data",
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              `doc_data`,
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
+                      referenceDocs.forEach(({ file, text, name }) => {
+                        console.log('name',name)
+                        console.log('file',file.name)
+                        if (name === "optional_file"){
+                          filesPatchFormData.append(
+                            "optional_file",
+                            `file_name:${file.name} text_file:${text}`,
+                          );
+                          console.log(text);
+
+                        } else{
+
+                          if (file.name.includes(".pdf")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                "pdf_data",
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_pdfs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
+                          } else if (file.name.includes(".docx")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                `doc_data`,
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_docs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
                           }
                         }
                       });
@@ -1229,11 +1246,24 @@ const CoachIntake = ({ user }: any) => {
                         .join(",");
                     }
 
+                    let deletingOptionalFiles : string = "";
+                    if (optionalMediaData?.extracted_from_optional_file) {
+                      deletingOptionalFiles = optionalMediaData?.extracted_from_optional_file
+                        .map((item) => {
+                          if (item.isDeleted) {
+                            return item.fileName;
+                          }
+                        })
+                        .filter((item) => item !== undefined)
+                        .join(",");
+                    }
+
                     const deletedData = {
                       pdf_files: deletingPdfs,
                       youtube_links: deletingYoutubeLinks,
                       article_links: deletingArticleLinks,
                       doc_files: deletingDocs,
+                      optional_files: deletingOptionalFiles
                     };
 
                     console.log(deletedData);
@@ -1700,6 +1730,10 @@ const CoachIntake = ({ user }: any) => {
                   )
                 );
 
+                setOptionalMediaData(
+                  transformExtractedOptional(resultingBot.bot_attributes.extracted_documents)
+                )
+
                 setLeaderNames(
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
@@ -1978,6 +2012,39 @@ const CoachIntake = ({ user }: any) => {
     }
 
     setMediaData(updatedData);
+  };
+
+  const deleteOptionalMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...optionalMediaData };
+    setDataModified(true);
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: true } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setOptionalMediaData(updatedData);
+  };
+
+  const undoDeleteOptionalMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...optionalMediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: false } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setOptionalMediaData(updatedData);
   };
 
   const handleImageUpload = async (imageToUpload: File) => {
@@ -2863,6 +2930,90 @@ const CoachIntake = ({ user }: any) => {
                                 disabled={!item.isDeleted}
                                 onClick={() => {
                                   undoDeleteMediaDataHandler(item.fileName);
+                                }}
+                              >
+                                <span className="max-sm:hidden">
+                                  Undo delete
+                                </span>
+                                <TooltipWrapper
+                                  className="hidden max-sm:block text-xs"
+                                  tooltipName="Undo delete"
+                                  body={
+                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                  }
+                                />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <hr className="mt-2" />
+                  <div className="my-3 ">
+                    <p className="text-sm my-1">
+                      Please add any optional document or file that you believe are
+                      reference materials that may help your mentees and
+                      participants.
+                    </p>
+
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        type="file"
+                        className="w-full text-xs my-2"
+                        multiple
+                        name="optional_file"
+                        accept=".pdf,.docx"
+                        onChange={async (e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                    </div>
+                  </div>
+                   {/* @ts-ignore */}
+                   {optionalMediaData?.extracted_from_optional_file.length > 0 && (
+                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {optionalMediaData?.extracted_from_optional_file.map((item) => (
+                        <div className="flex flex-row justify-between items-center">
+                          <div className="flex flex-row items-center gap-2">
+                            <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                            <span
+                              className={`text-xs text-blue-500 truncate ${
+                                item.isDeleted && "line-through"
+                              }`}
+                            >
+                              {item.fileName}
+                            </span>
+                          </div>
+                          {checkIfEdit && (
+                            <div className="flex flex-row gap-2 min-w-fit">
+                              <Button
+                                variant={"outline"}
+                                className="h-6 text-xs w-fit"
+                                type="button"
+                                disabled={item.isDeleted}
+                                onClick={() => {
+                                  deleteOptionalMediaDataHandler(item.fileName);
+                                }}
+                              >
+                                <span className="max-sm:hidden">Delete</span>
+                                <TooltipWrapper
+                                  className="hidden max-sm:block text-xs"
+                                  tooltipName="Delete"
+                                  body={
+                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                  }
+                                />
+                              </Button>
+                              <Button
+                                variant={"outline"}
+                                className="h-6 text-xs w-fit"
+                                type="button"
+                                disabled={!item.isDeleted}
+                                onClick={() => {
+                                  undoDeleteOptionalMediaDataHandler(item.fileName);
                                 }}
                               >
                                 <span className="max-sm:hidden">
