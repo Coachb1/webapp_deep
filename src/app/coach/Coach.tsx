@@ -1,7 +1,6 @@
 "use client";
 
 import NoLoginFlag from "@/components/NoLoginFlag";
-import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
   AccordionContent,
@@ -21,11 +20,8 @@ import {
   capitalizeText,
   convertTextToCorrectFormat,
 } from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
-import Image from "next/image";
 import { toast } from "sonner";
-import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
-import BotsNavigation from "@/components/BotsNavigation";
+import { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
@@ -318,8 +314,8 @@ const Coach = ({ user, renderType }: any) => {
 
               {renderType === "dynamic" ? (
                 <>
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
-                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
+                    <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                         src={
@@ -329,7 +325,7 @@ const Coach = ({ user, renderType }: any) => {
                         }
                       />
                     </div>{" "}
-                    <p className="w-[80%] text-sm max-sm:text-xs max-sm:w-full text-left  max-sm:text-center">
+                    <p className="w-[80%] whitespace-pre text-wrap text-sm max-sm:text-xs max-sm:w-full text-left max-sm:text-center">
                       {" "}
                       {coachDescription}
                     </p>

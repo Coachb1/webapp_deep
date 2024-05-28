@@ -444,7 +444,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                   <span>Simulations & Roleplays</span>
                 </p>
               </div>
-              <div className="my-0 max-sm:mt-0 py-0 text-sm max-sm:text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
+              <div className="w-[80%] max-sm:w-[95%] text-center text-gray-700 text-sm max-sm:text-xs max-sm:px-8">
                 <span>
                   {" "}
                   Simulations and roleplays replicate real-world situations and
