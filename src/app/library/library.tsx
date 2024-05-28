@@ -10,15 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  AtSign,
-  ChevronLeft,
-  History,
-  Info,
-  Loader,
-  Workflow,
-} from "lucide-react";
-import Link from "next/link";
+import { AtSign, History, Info, Loader } from "lucide-react";
 import {
   JSXElementConstructor,
   Key,
@@ -36,24 +28,15 @@ import {
   convertTextToCorrectFormat,
   getUserAccount,
 } from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
-import HeroAccordion from "@/components/HeroAccordion";
-import { EQTests, EQTestsCategorised } from "@/lib/test";
-import { Separator } from "@/components/ui/separator";
+import { EQTestsCategorised } from "@/lib/test";
 import SearchNSelect from "./SearchNSelect";
-import CreateYourOwn from "@/components/CreateYourOwn";
 import {
-  Categories,
   CategoryData,
-  competencySkillsTestType,
   newManagerTestsType,
   TestsType,
   TestData as TestDataType,
-  DomainData,
 } from "@/lib/types";
-import { useSearchParams } from "next/navigation";
 import HelpMode from "@/components/HelpMode";
-import { UseHelpMode } from "@/lib/helpmodeContext";
 
 interface Test {
   title: string;
@@ -461,7 +444,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                   <span>Simulations & Roleplays</span>
                 </p>
               </div>
-              <div className="my-0 mt-1 max-sm:mt-0 py-0 text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
+              <div className="my-0 max-sm:mt-0 py-0 text-sm max-sm:text-xs flex flex-row items-center text-center px-20 max-sm:px-8">
                 <span>
                   {" "}
                   Simulations and roleplays replicate real-world situations and
@@ -571,35 +554,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
               <div className="bg-white h-[10px] w-full" />
             </div>
 
-            <div className="mb-8">
-              <div
-                id="how-it-works"
-                className="flex flex-col max-sm:flex-col w-full mx-auto"
-              >
-                <div className="w-full flex flex-col items-center justify-center">
-                  <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
-                    How it works <Workflow className="ml-2 w-6 h-6 inline" />
-                  </h1>
-                  <div className="w-[80%] max-sm:w-[90%] max-lg:w-full">
-                    <div className="flex flex-col max-sm:text-xs max-sm:flex-col w-[64%] max-sm:w-[100%] mx-auto  mt-4 rounded-lg border p-4 max-sm:p-2">
-                      {[
-                        "Select the category of simulations.",
-                        "Scroll to the simulation and copy the access code.",
-                        "Enter the access code on the CoachScribe or CoachTalk to attempt.",
-                      ].map((step, i) => (
-                        <div key={i} className="flex flex-row">
-                          {" "}
-                          <span className="font-semibold mr-2 min-w-fit">
-                            Step {i + 1} :
-                          </span>{" "}
-                          <p>{step}</p>{" "}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div
               id="eq-tests"
               className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"

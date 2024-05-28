@@ -1220,7 +1220,7 @@ const Coaches = ({
       >
         Coaching & Performance Workbench
       </h1>
-      <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
+      <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
         {" "}
         Peer to Peer network of leaders for growth.
       </p>
