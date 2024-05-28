@@ -92,10 +92,10 @@ const VersionOne = ({ user }: any) => {
     <>
       <HelpMode steps={HelpModeSteps} forPage="demo" />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        <h1 className="text-5xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
+        <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
+        <p className="mt-5 max-w-prose text-zinc-700 text-sm max-sm:px-8">
           {" "}
           Toolkits and conversational coaching-learning for any scenario. The{" "}
           <b>User Demo</b> are the user-created avatars and bots, while the{" "}

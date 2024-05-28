@@ -36,7 +36,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import { MediaData, OptionalMediaData, UserClientInfoDataType } from "@/lib/types";
+import {
+  MediaData,
+  OptionalMediaData,
+  UserClientInfoDataType,
+} from "@/lib/types";
 import { Radio } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -214,7 +218,8 @@ const CoachIntake = ({ user }: any) => {
 
   //mediaData
   const [mediaData, setMediaData] = useState<MediaData>();
-  const [optionalMediaData, setOptionalMediaData] = useState<OptionalMediaData>();
+  const [optionalMediaData, setOptionalMediaData] =
+    useState<OptionalMediaData>();
 
   const [dataModified, setDataModified] = useState(false);
 
@@ -308,7 +313,7 @@ const CoachIntake = ({ user }: any) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setDataModified(true);
     const selectedFiles = e.target?.files;
-    const input_name = e.target?.name
+    const input_name = e.target?.name;
 
     if (selectedFiles) {
       const filesArray = await Promise.all(
@@ -330,7 +335,7 @@ const CoachIntake = ({ user }: any) => {
             file: file,
             id: Math.floor(Math.random() * 10000),
             text: textContent,
-            name: input_name
+            name: input_name,
           };
         })
       );
@@ -422,6 +427,24 @@ const CoachIntake = ({ user }: any) => {
           setName(
             `${user.given_name} ${user.family_name ? user.family_name : ""}`
           );
+
+          fetch(
+            `${baseURL}/accounts/get_low_high_skills/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              // onCharacteristicsSelectLow(data.low_skill);
+              // onCharacteristicsSelectHigh(data.high_skill);
+              setCharacteristicsRateLows(data.low_skill);
+              setCharacteristicsRateHigh(data.high_skill);
+            });
         })
         .catch((err) => {
           console.error(err);
@@ -464,28 +487,28 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              // if (
-              //   data.data.length > 0 &&
-              //   !checkIfEdit &&
-              //   !checkIfView &&
-              //   formType !== "knowledge-bot" &&
-              //   formType !== "feedback"
-              // ) {
-              //   if (
-              //     (formType === "coach" && profileTypes.includes("coach")) ||
-              //     profileTypes.includes("mentor") ||
-              //     profileTypes.includes("coachee") ||
-              //     profileTypes.includes("mentee")
-              //   ) {
-              //     setCanCreateProfile(false);
-              //     toast.loading(
-              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-              //     );
-              //     setTimeout(() => {
-              //       router.push("/");
-              //     }, 4000);
-              //   }
-              // }
+              if (
+                data.data.length > 0 &&
+                !checkIfEdit &&
+                !checkIfView &&
+                formType !== "knowledge-bot" &&
+                formType !== "feedback"
+              ) {
+                if (
+                  (formType === "coach" && profileTypes.includes("coach")) ||
+                  profileTypes.includes("mentor") ||
+                  profileTypes.includes("coachee") ||
+                  profileTypes.includes("mentee")
+                ) {
+                  setCanCreateProfile(false);
+                  toast.loading(
+                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              }
             })
             .catch((err) => {
               console.error(err);
@@ -503,7 +526,6 @@ const CoachIntake = ({ user }: any) => {
                 const FeedbackBot = data.data.filter(
                   (data: any) => data.signature_bot.bot_type === "feedback_bot"
                 );
-
                 if (FeedbackBot.length > 0) {
                   toast.loading(
                     "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
@@ -860,17 +882,15 @@ const CoachIntake = ({ user }: any) => {
 
                       const filesPatchFormData = new FormData();
                       referenceDocs.forEach(({ file, text, name }) => {
-                        console.log('name',name)
-                        console.log('file',file.name)
-                        if (name === "optional_file"){
+                        console.log("name", name);
+                        console.log("file", file.name);
+                        if (name === "optional_file") {
                           filesPatchFormData.append(
                             "optional_file",
-                            `file_name:${file.name} text_file:${text}`,
+                            `file_name:${file.name} text_file:${text}`
                           );
                           console.log(text);
-
-                        } else{
-
+                        } else {
                           if (file.name.includes(".pdf")) {
                             if (text) {
                               filesPatchFormData.append(
@@ -1246,16 +1266,17 @@ const CoachIntake = ({ user }: any) => {
                         .join(",");
                     }
 
-                    let deletingOptionalFiles : string = "";
+                    let deletingOptionalFiles: string = "";
                     if (optionalMediaData?.extracted_from_optional_file) {
-                      deletingOptionalFiles = optionalMediaData?.extracted_from_optional_file
-                        .map((item) => {
-                          if (item.isDeleted) {
-                            return item.fileName;
-                          }
-                        })
-                        .filter((item) => item !== undefined)
-                        .join(",");
+                      deletingOptionalFiles =
+                        optionalMediaData?.extracted_from_optional_file
+                          .map((item) => {
+                            if (item.isDeleted) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
                     }
 
                     const deletedData = {
@@ -1263,7 +1284,7 @@ const CoachIntake = ({ user }: any) => {
                       youtube_links: deletingYoutubeLinks,
                       article_links: deletingArticleLinks,
                       doc_files: deletingDocs,
-                      optional_files: deletingOptionalFiles
+                      optional_files: deletingOptionalFiles,
                     };
 
                     console.log(deletedData);
@@ -1731,8 +1752,10 @@ const CoachIntake = ({ user }: any) => {
                 );
 
                 setOptionalMediaData(
-                  transformExtractedOptional(resultingBot.bot_attributes.extracted_documents)
-                )
+                  transformExtractedOptional(
+                    resultingBot.bot_attributes.extracted_documents
+                  )
+                );
 
                 setLeaderNames(
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
@@ -2952,8 +2975,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="mt-2" />
                   <div className="my-3 ">
                     <p className="text-sm my-1">
-                      Please add any optional document or file that you believe are
-                      reference materials that may help your mentees and
+                      Please add any optional document or file that you believe
+                      are reference materials that may help your mentees and
                       participants.
                     </p>
 
@@ -2972,65 +2995,72 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                   {/* @ts-ignore */}
-                   {optionalMediaData?.extracted_from_optional_file.length > 0 && (
+                  {/* @ts-ignore */}
+                  {optionalMediaData?.extracted_from_optional_file.length >
+                    0 && (
                     <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                      {optionalMediaData?.extracted_from_optional_file.map((item) => (
-                        <div className="flex flex-row justify-between items-center">
-                          <div className="flex flex-row items-center gap-2">
-                            <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                            <span
-                              className={`text-xs text-blue-500 truncate ${
-                                item.isDeleted && "line-through"
-                              }`}
-                            >
-                              {item.fileName}
-                            </span>
-                          </div>
-                          {checkIfEdit && (
-                            <div className="flex flex-row gap-2 min-w-fit">
-                              <Button
-                                variant={"outline"}
-                                className="h-6 text-xs w-fit"
-                                type="button"
-                                disabled={item.isDeleted}
-                                onClick={() => {
-                                  deleteOptionalMediaDataHandler(item.fileName);
-                                }}
+                      {optionalMediaData?.extracted_from_optional_file.map(
+                        (item) => (
+                          <div className="flex flex-row justify-between items-center">
+                            <div className="flex flex-row items-center gap-2">
+                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                              <span
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
                               >
-                                <span className="max-sm:hidden">Delete</span>
-                                <TooltipWrapper
-                                  className="hidden max-sm:block text-xs"
-                                  tooltipName="Delete"
-                                  body={
-                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                  }
-                                />
-                              </Button>
-                              <Button
-                                variant={"outline"}
-                                className="h-6 text-xs w-fit"
-                                type="button"
-                                disabled={!item.isDeleted}
-                                onClick={() => {
-                                  undoDeleteOptionalMediaDataHandler(item.fileName);
-                                }}
-                              >
-                                <span className="max-sm:hidden">
-                                  Undo delete
-                                </span>
-                                <TooltipWrapper
-                                  className="hidden max-sm:block text-xs"
-                                  tooltipName="Undo delete"
-                                  body={
-                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                  }
-                                />
-                              </Button>
+                                {item.fileName}
+                              </span>
                             </div>
-                          )}
-                        </div>
-                      ))}
+                            {checkIfEdit && (
+                              <div className="flex flex-row gap-2 min-w-fit">
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={item.isDeleted}
+                                  onClick={() => {
+                                    deleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">Delete</span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Delete"
+                                    body={
+                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={!item.isDeleted}
+                                  onClick={() => {
+                                    undoDeleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">
+                                    Undo delete
+                                  </span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Undo delete"
+                                    body={
+                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
                     </div>
                   )}
                   <hr className="mt-2" />
