@@ -6,12 +6,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Widgets from "@/components/Widgets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
-import {
-  baseURL,
-  basicAuth,
-  getClientUserInfo,
-  getUserAccount,
-} from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { TabsList } from "@radix-ui/react-tabs";
 import {
@@ -31,10 +26,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
-import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
 import { UseHelpMode } from "@/lib/helpmodeContext";
-import { Badge } from "@/components/ui/badge";
 import CreateYourDeepDive from "@/components/CreateYourDeepDive";
 import TeamConnect from "@/components/TeamConnect";
 
@@ -758,7 +751,7 @@ const CreateOwn = ({
                   <span>Creator Studio</span>
                 </p>
               </div>
-              <p className="w-[80%] max-sm:w-[95%] text-center text-zinc-700 text-sm max-sm:text-xs max-sm:px-8">
+              <p className="w-[80%] max-sm:w-[95%] text-center text-gray-700 text-sm max-sm:text-xs max-sm:px-8">
                 Welcome to the Creator Studio, your hub for collaborative
                 innovation. Here, you'll find a suite of tools designed to
                 empower your team's performance. Generate simulations, resolve

@@ -189,7 +189,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   setInputError(true);
                 }
               }}
-              placeholder="Create a situation where the user needs to accomplish..."
+              placeholder="Discover insights on team conflicts and resolution strategies here"
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />

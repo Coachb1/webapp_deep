@@ -27,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { UseHelpMode } from "@/lib/helpmodeContext";
 
 import React from "react";
 import HelpMode from "@/components/HelpMode";
@@ -95,7 +94,7 @@ const VersionOne = ({ user }: any) => {
         <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 text-sm max-sm:px-8">
+        <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
           {" "}
           Toolkits and conversational coaching-learning for any scenario. The{" "}
           <b>User Demo</b> are the user-created avatars and bots, while the{" "}
