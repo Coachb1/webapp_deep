@@ -1300,8 +1300,18 @@ const getBotDetails2 = async (botId) => {
       dropdownButton.innerHTML = dropdownButtonText;
       dropdownButton.setAttribute(
         "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : lightgray; color: black;`
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background : white; color: #374151;`
       );
+
+      dropdownButton.setAttribute(
+        "onmouseover",
+        "this.style.backgroundColor = '#f9fafb'"
+      );
+      dropdownButton.setAttribute(
+        "onmouseleave",
+        "this.style.backgroundColor = 'white'"
+      );
+
       buttonsWrapper.appendChild(dropdownButton);
 
       const dropdown = document.createElement("div");
@@ -1324,7 +1334,7 @@ const getBotDetails2 = async (botId) => {
         "cheerleader",
         "change_manager",
         "calculator",
-        "chatter",
+        "conversationalist",
         "co_creator",
       ];
       options.forEach((option, i) => {
@@ -1408,15 +1418,15 @@ const getBotDetails2 = async (botId) => {
       const button = document.createElement("button");
       button.setAttribute(
         "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; min-width: fit-content; background : #f97316; color : white; `
+        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
       );
       button.setAttribute(
         "onmouseover",
-        "this.style.backgroundColor = '#fb923c'"
+        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
       );
       button.setAttribute(
         "onmouseleave",
-        "this.style.backgroundColor = '#f97316'"
+        "this.style.backgroundColor = 'white'"
       );
       button.setAttribute(
         "onclick",
@@ -1445,6 +1455,7 @@ const getBotDetails2 = async (botId) => {
         "onclick",
         `handleFaqButtonClick('something_else')`
       );
+
       begginSessionButton.setAttribute("id", `begin-session-button`);
       begginSessionButton.innerText = "Begin session";
       buttonsWrapper.appendChild(begginSessionButton);
