@@ -66,6 +66,7 @@ interface CoachesDataType {
   profile_id: string;
   department: string;
   bot_type: string;
+  bot_tag: string | null;
   profile_pic_url: string;
   profile_type: string;
   description: string;
@@ -466,6 +467,7 @@ const Coaches = ({
     hideBots();
     if (user) {
       // getClientInfoForUser(user?.email!);
+      console.log("COACHES DATA : ", coachesDataa);
       getCoachesData();
       getUserAccount(user)
         .then((res) => res.json())
@@ -1214,7 +1216,7 @@ const Coaches = ({
       </h1>
       <h1
         id="header-text"
-        className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl "
+        className="mt-0 text-4xl font-bold text-gray-600 max-sm:text-2xl"
       >
         Coaching & Performance Workbench
       </h1>
@@ -1573,9 +1575,24 @@ const Coaches = ({
                               </Badge>
                             ))}
                       </div>
-                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
-                        {convertTextToCorrectFormat(coach.name)}{" "}
-                      </p>{" "}
+                      {coach.profile_type === "icons_by_ai" ? (
+                        <>
+                          <div className="flex flex-col justify-start">
+                            {coach.bot_tag && (
+                              <p className="text-left text-[22px] font-semibold text-gray-700 max-sm:text-sm">
+                                {coach.bot_tag}
+                              </p>
+                            )}
+                            <p className="flex items-center text-wrap justify-center gap-2 text-left text-[16px] font-normal text-gray-700 max-sm:text-sm">
+                              {convertTextToCorrectFormat(coach.name)}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
+                          {convertTextToCorrectFormat(coach.name)}
+                        </p>
+                      )}{" "}
                       <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
                       </p>

@@ -67,6 +67,7 @@ const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
   const [coachName, setCoachName] = useState<string>("");
+  const [coachTagName, setCoachTagName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
@@ -126,6 +127,7 @@ const Coach = ({ user, renderType }: any) => {
             setInValidCoach(true);
           }
           setCoachName(data.data.bot_details.coach_name);
+          setCoachTagName(data.data.tag);
           setCoachDescription(data.data.bot_details.info);
           setProfileImage(data.data.owner_profile_image);
         }
@@ -285,7 +287,7 @@ const Coach = ({ user, renderType }: any) => {
               {botScenarioCase === "icons_by_ai" ? (
                 <>
                   <h1 className="text-2xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
-                    Welcome to Lyfe
+                    Welcome to {coachTagName}
                   </h1>
                   <p className="my-2 font-semibold text-lg max-sm:text-sm text-gray-600">
                     {convertTextToCorrectFormat(coachName)}

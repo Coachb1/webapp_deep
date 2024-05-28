@@ -458,10 +458,6 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
                 <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
                   {" "}
-                  <Link href={"v1"} className="hidden ">
-                    {" "}
-                    <ChevronLeft className="h-4 w-4 mr-1 inline" />{" "}
-                  </Link>{" "}
                   <span>Simulations & Roleplays</span>
                 </p>
               </div>

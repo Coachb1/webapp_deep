@@ -79,6 +79,7 @@ const CreateOwn = ({
   const [searchInputText, setSearchInputText] = useState<string | undefined>(
     ""
   );
+
   interface GoogleResultsType {
     link: string;
     title: string;
@@ -296,7 +297,8 @@ const CreateOwn = ({
                   disabled={
                     generatedLoading ||
                     summaryGenerationLoading ||
-                    expandLoading
+                    expandLoading ||
+                    generatedSummary.length > 0
                   }
                   variant="secondary"
                   className="h-8 border border-gray-200 max-sm:w-full"
@@ -705,6 +707,16 @@ const CreateOwn = ({
         "From a given user context, create any simulation or roleplay. These can be specific to your organizational use cases . For ideas on what could be created you can refer to the demo page. ",
     },
     {
+      target: "#tc-id",
+      content:
+        "Seeking insights from your team? Just ask! For instance, if you're stepping into a new role as a Project Engineer and need guidance on managing your new project manager, simply inquire. The feature will ensure tailored and relevant responses.",
+    },
+    {
+      target: "#dd-id",
+      content:
+        "Dive into team dynamics effortlessly. For Instance, As a project manager seeking insights on team conflicts, create a survey in Deep Dive and circulate it among your team members. Gather valuable feedback to address and resolve conflicts effectively.",
+    },
+    {
       target: "#kb-id",
       content:
         "For enterprise knowledge management, users can take any documents in the repository (or create one) and create a bot based on that knowledge content. It can also be internal department or project-specific bots.",
@@ -718,7 +730,7 @@ const CreateOwn = ({
           spotlightClicks
           locale={{ last: "End" }}
           continuous
-          scrollOffset={200}
+          scrollOffset={250}
           disableScrollParentFix
           callback={(callbackData) => {
             console.log(callbackData);
@@ -746,10 +758,18 @@ const CreateOwn = ({
                   <span>Creator Studio</span>
                 </p>
               </div>
+              <p className="w-[80%] max-sm:w-[95%] text-center text-zinc-700 text-sm max-sm:text-xs max-sm:px-8">
+                Welcome to the Creator Studio, your hub for collaborative
+                innovation. Here, you'll find a suite of tools designed to
+                empower your team's performance. Generate simulations, resolve
+                team queries, assign simulations, craft knowledge bots, and
+                generate deep dives. Elevate collaboration and innovation
+                effortlessly.
+              </p>
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div
                   id="ac-items"
-                  className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4"
+                  className="flex max-sm:px-2 justify-center items-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap mt-4 max-sm:mt-1"
                 >
                   {!restrictedFeatures?.includes("Learning-ideas") && (
                     <Button
@@ -760,7 +780,7 @@ const CreateOwn = ({
                             behavior: "smooth",
                           });
                       }}
-                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                      className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
                       Learning Ideas
                     </Button>
@@ -776,7 +796,7 @@ const CreateOwn = ({
                                 behavior: "smooth",
                               });
                           }}
-                          className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                          className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                         >
                           Simulation Creator
                         </Button>
@@ -792,7 +812,7 @@ const CreateOwn = ({
                             behavior: "smooth",
                           });
                       }}
-                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                      className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
                       Team Connect
                     </Button>
@@ -806,7 +826,7 @@ const CreateOwn = ({
                             behavior: "smooth",
                           });
                       }}
-                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                      className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
                       Create Your Deep Dive
                     </Button>
@@ -820,7 +840,7 @@ const CreateOwn = ({
                             behavior: "smooth",
                           });
                       }}
-                      className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
+                      className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
                       Knowledge Bots
                     </Button>
@@ -1025,7 +1045,7 @@ const CreateOwn = ({
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="simulation-creator"
-                      className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                      className="pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
                     ></div>
                     <div className="h-fit ">
                       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1067,7 +1087,7 @@ const CreateOwn = ({
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="team-connect"
-                      className="pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                      className="pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
                     ></div>
                     <div className="h-fit ">
                       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1078,7 +1098,7 @@ const CreateOwn = ({
                           <div>
                             <div className="w-full flex flex-col items-center justify-center">
                               <h1
-                                id="sc-id"
+                                id="tc-id"
                                 className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                               >
                                 Team Connect
@@ -1108,7 +1128,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="deepdive-creator"
-                  className={`pt-[27vh] mt-[-25vh]  max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center`}
+                  className={`pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center`}
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1119,7 +1139,7 @@ const CreateOwn = ({
                       <div>
                         <div className="w-full flex flex-col items-center justify-center">
                           <h1
-                            id="sc-id"
+                            id="dd-id"
                             className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                           >
                             Create Your Deep Dive
@@ -1143,7 +1163,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="knowledge-bots"
-                  className="pt-[27vh] mt-[-25vh]   max-sm:pt-[30vh] max-sm:mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                  className="pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh] w-full flex flex-col items-center justify-center"
                 ></div>
                 <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
