@@ -697,7 +697,7 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections.data.find(
+          const connection = userConnections?.data.find(
             (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
@@ -1579,11 +1579,11 @@ const Coaches = ({
                         <>
                           <div className="flex flex-col justify-start">
                             {coach.bot_tag && (
-                              <p className="text-left text-[22px] font-semibold text-gray-700 max-sm:text-sm">
+                              <p className="text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
                                 {coach.bot_tag}
                               </p>
                             )}
-                            <p className="flex items-center text-wrap justify-center gap-2 text-left text-[16px] font-normal text-gray-700 max-sm:text-sm">
+                            <p className="flex items-center text-wrap justify-center gap-2 text-left text-lg font-normal text-gray-700 max-sm:text-sm">
                               {convertTextToCorrectFormat(coach.name)}
                             </p>
                           </div>
@@ -1593,7 +1593,7 @@ const Coaches = ({
                           {convertTextToCorrectFormat(coach.name)}
                         </p>
                       )}{" "}
-                      <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
+                      <p className="my-1.5 font-semibold text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
                       </p>
                       <div className="flex flex-row items-center justify-start gap-2">

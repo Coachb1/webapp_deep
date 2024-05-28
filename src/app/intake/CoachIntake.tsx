@@ -81,6 +81,7 @@ const CoachIntake = ({ user }: any) => {
     "Design",
     "Engineering",
     "HR & Training",
+    "External",
   ]);
 
   const [areaDomains, setAreaDomains] = useState<string[]>([

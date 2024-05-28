@@ -5154,16 +5154,16 @@ loadExternalModule().then(() => {
       </span> 
       <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
-          <ul>
-            <li>1 . For Coaches/mentors in the Directory, Click on "End Session" to keep a record of sessions. Your coach/mentor is informed and a transcript is shared after the same. For Icons by AI, it will just keep the record of the conversation. </li>
-            <li>2 .  For any type of avatar or simulation bots, Unrelated questions, answers, or comments and very fast responses may cause system errors. The usage is meant to mimic how it works in the real world.  </li>
-            <li>3 . Keep responses within 10 to 400 words for optimum results. You can either type or speak out your responses. If it's a simulation/roleplay, the "Coach Talk", NLP will also provide you speech analysis in reports.</li>
+          <ul id="instructions-list">
+            <li>1 . To maintain a record of sessions with coaches/mentors listed in the Directory, simply click on "End Session". Your coach/mentor will receive notification, and a transcript will be shared afterward. For Icons by AI, conversation records are automatically kept. </li>
+            <li>2 . For all types of avatar or simulation bots, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. The aim is to simulate real-world interactions.</li>
+            <li>3 . Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses. In simulation or roleplay scenarios, "Coach Talk" NLP provides speech analysis in reports.</li>
             <li>4 . Guide bots are based on specific framework-based responses while user-generated bots are representations of the user's knowledge base on any topic. </li>
-            <li>5 . Simulations and roleplays are meant to practice how real-life scenarios play out. You can check the Explore page to review the scenarios covered. Both CoachTalk and Coachscribe can be used to handle them.</li>
-            <li>6 . In rare cases, there may be delays in responses and reports because of system availability issues.</li>
-            <li>7 . For AI frames/avatars, the model is a point of view of the coach on a particular topic, for best results stick to the area highlighted in the coach/mentor's page.</li>
-            <li>8 . Cochbot sessions should be assumed to have no prior memory, always restate your context for the current session.</li>
-            <li>9 . For user-created knowledge bots, always ask the questions related to skill area defined, for best results.</li>
+            <li>5 . Simulations and roleplays serve to replicate real-life scenarios. Explore the page to review covered scenarios. Both CoachTalk and Coachscribe are equipped to handle them.</li>
+            <li>6 . System availability issues may occasionally cause delays in responses and reports.</li>
+            <li>7 . AI frames/avatars represent the coach's perspective on a given topic. For optimal results, adhere to the highlighted area on the coach/mentor's page.</li>
+            <li>8 . Cochbot sessions are assumed to have no prior memory. It's advisable to restate your context at the beginning of each session.</li>
+            <li>9 . When interacting with user-created knowledge bots, direct your questions toward the defined skill area for the most effective results.</li>
           </ul>
         </div>
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -5180,6 +5180,7 @@ loadExternalModule().then(() => {
   const readMoreButton = document.getElementById('read-more-button')
   const instructionsPane = document.getElementById('instructions-pane')
   const closeInstructionsPane = document.getElementById('close-intructions-pane')
+  const instructionsPaneList = document.getElementById('instructions-list')
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -5199,6 +5200,23 @@ loadExternalModule().then(() => {
   console.log("stt widget ClientID :",sttWidgetClientId)
   // botId = 'stress-management-0032'
   const _ = getBotDetails2(botId);
+
+  if(botId){
+    const list = 
+    `<li>1 . For coaches/mentors in the directory, click on "End Session" to record sessions. Your coach/mentor will be notified, and a transcript will be shared afterward. For Icons by AI, it will only keep a record of the conversation. </li>
+     <li>2 . Any type of avatar or simulation bots should avoid unrelated questions, answers, or comments, and rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
+     <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. If it's a simulation or roleplay, "Coach Talk" NLP will also provide speech analysis in reports.</li>
+     <li>4 . Guide bots follow specific framework-based responses, while user-generated bots represent the user's knowledge base on any topic. </li>
+     <li>5 . Simulations and roleplays are designed to practice real-life scenarios. You can review covered scenarios on the Explore page. Both CoachTalk and Coachscribe can handle them.</li>
+     <li>6 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
+     <li>7 . For AI frames/avatars, the model represents the coach's point of view on a particular topic. For best results, stick to the highlighted area on the coach/mentor's page.</li>
+     <li>8 . Cochbot sessions should be assumed to have no prior memory. Always restate your context for the current session.</li>
+     <li>9 . For user-created knowledge bots, always ask questions related to the defined skill area for optimal results.</li>
+    `
+    instructionsPaneList.innerHTML = list
+  }
+
+
 
   //   appendMessage2(`<div id="option-button-container" >
   //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
