@@ -1109,7 +1109,7 @@ const Coaches = ({
         body: JSON.stringify({
           profile_id: profile_id,
           user_id: userId,
-          is_reverted: true,
+          is_revert: true,
         }),
       })
         .then((res) => res.json())

@@ -4786,7 +4786,7 @@ const handleAttemptScenaiosSTT = async (title, test_code) =>{
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   gShadowRoot2.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = test_code;
+    gShadowRoot2.getElementById("text-input").textContent = title;
     setTimeout(() => {
       gShadowRoot2.querySelectorAll(".input-button")[1].click();
     }, 100);
@@ -7295,7 +7295,7 @@ loadExternalModule().then(() => {
               buttonTextArray.push(value.trim());
             });
 
-            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section b")
+            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section p")
             opiton_scenarios.forEach((b) =>{
               const buttonText = b.textContent.trim();
               buttonTextArray.push(buttonText);
