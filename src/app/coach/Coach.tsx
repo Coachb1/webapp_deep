@@ -227,7 +227,8 @@ const Coach = ({ user, renderType }: any) => {
 
         if (
           data.data.scenario_case === "icons_by_ai" &&
-          data.data.profile_details.discussion_topic !== null
+          data.data.profile_details.discussion_topic !== null &&
+          data.data.profile_details.discussion_topic !== ""
         ) {
           setDiscussionTopics(
             data.data.profile_details.discussion_topic.split(",")
