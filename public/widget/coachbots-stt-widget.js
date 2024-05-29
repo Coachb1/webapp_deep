@@ -3336,7 +3336,7 @@ function LoadingMessageWithText(message){
    loadingElement.style.flexDirection = "row"
    loadingElement.style.alignItems = "center"
    const messageElement = document.createElement("span")
-   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</span>`
+   messageElement.innerHTML = `<b style="color : white; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</b>`
    messageElement.setAttribute("id", "loading-message")
    
    loadingElement.style.width = "fit-content"
@@ -5052,7 +5052,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#93c5fd"}
         }
       }'
       inputAreaStyle='{"paddingTop": "2rem"}'
