@@ -807,6 +807,12 @@ const Coaches = ({
     //   setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
+  //for request connection state revalidation
+  useEffect(() => {
+    setCoachesData(savedCoachesData)
+    handleUpdateCheckedValues(parentCheckedValues)
+  },[savedCoachesData])
+
   useEffect(() => {
     const scrollTimer = setTimeout(() => {
       console.log("NOWWWW");
@@ -844,9 +850,11 @@ const Coaches = ({
   const RequestionConnection = ({
     coachId,
     requestStatus,
+    stateCoachId,
   }: {
     coachId: string;
     requestStatus: string;
+    stateCoachId: string
   }) => {
     const [requestLoading, setRequestLoading] = useState(false);
     const [status, setStatus] = useState(requestStatus);
@@ -886,13 +894,7 @@ const Coaches = ({
               );
               setStatus("pending");
               console.log(updatedCoachesData);
-              setCoachesData(updatedCoachesData);
               setSavedCoachesData(updatedCoachesData);
-              setParentCheckedValues([]);
-              // if (parentCheckedValues) {
-              //   handleUpdateCheckedValues(parentCheckedValues);
-              // }
-              // getConnectionsForCoachee(coacheeId);
             }
             setTimeout(() => {
               setRequestLoading(false);
@@ -1745,6 +1747,7 @@ const Coaches = ({
                                   <RequestionConnection
                                     requestStatus={coach.status}
                                     coachId={coach.profile_id}
+                                    stateCoachId={coachId}
                                   />
                                 </>
                               )}
