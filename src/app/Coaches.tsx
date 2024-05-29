@@ -4,7 +4,6 @@ import FilterDropDown from "@/components/FilterDropDown";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 import {
   baseURL,
@@ -495,14 +494,6 @@ const Coaches = ({
                 (coachData: any) => coachData.is_approved === true
               );
 
-              // if (findCoacheeUID(isApprovedData)) {
-              //   getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              // } else if (findCoachUID(isApprovedData)) {
-              //   getConnectionsForCoach(findCoachUID(isApprovedData));
-              // } else {
-              //   setLoading(false);
-              // }
-
               if (isApprovedData.length > 0) {
                 setCoacheeId(findCoacheeUID(isApprovedData));
                 setCoachId(findCoachUID(isApprovedData));
@@ -807,11 +798,11 @@ const Coaches = ({
     //   setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
-  //for request connection state revalidation
+  //for state revalidation after profile actions
   useEffect(() => {
-    setCoachesData(savedCoachesData)
-    handleUpdateCheckedValues(parentCheckedValues)
-  },[savedCoachesData])
+    setCoachesData(savedCoachesData);
+    handleUpdateCheckedValues(parentCheckedValues);
+  }, [savedCoachesData]);
 
   useEffect(() => {
     const scrollTimer = setTimeout(() => {
@@ -854,7 +845,7 @@ const Coaches = ({
   }: {
     coachId: string;
     requestStatus: string;
-    stateCoachId: string
+    stateCoachId: string;
   }) => {
     const [requestLoading, setRequestLoading] = useState(false);
     const [status, setStatus] = useState(requestStatus);
@@ -988,6 +979,17 @@ const Coaches = ({
           setStarCount(data.average_rating);
           setTotalRating(data.total_ratings);
           setHoveredIndex(null);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === coachId
+              ? {
+                  ...coach,
+                  total_rating: data.total_ratings,
+                  rating: data.average_rating,
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
         });
     };
 
@@ -1091,6 +1093,13 @@ const Coaches = ({
           setIsLiked(true);
           setLikeCount((prevCount) => prevCount + 1);
 
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? { ...coach, admirer_ids: [...coach.admirer_ids, userId] }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
+
           setInitiated(false);
         })
         .catch((err) => {
@@ -1117,6 +1126,16 @@ const Coaches = ({
           console.log(data);
           setIsLiked(false);
           setLikeCount((prevCount) => prevCount - 1);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? {
+                  ...coach,
+                  admirer_ids: coach.admirer_ids.filter((id) => id !== userId),
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
 
           setInitiated(false);
         })

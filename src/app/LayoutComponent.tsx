@@ -47,8 +47,6 @@ const LayoutComponent = ({
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-
           window.userIdFromWebApp = data.uid;
         });
     }

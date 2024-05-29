@@ -299,7 +299,7 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               )}
               <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 border border-gray-200 bg-white rounded-lg text-sm max-sm:text-xs">
+                <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white  text-sm max-sm:text-xs">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -314,7 +314,7 @@ const Coach = ({ user, renderType }: any) => {
 
               {renderType === "dynamic" ? (
                 <>
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
                     <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
@@ -325,7 +325,7 @@ const Coach = ({ user, renderType }: any) => {
                         }
                       />
                     </div>{" "}
-                    <p className="w-[80%] text-sm max-sm:text-xs max-sm:w-full text-left max-sm:text-center">
+                    <p className="w-[80%] whitespace-pre text-wrap text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center ">
                       {" "}
                       {coachDescription}
                     </p>
