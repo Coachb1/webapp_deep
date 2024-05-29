@@ -282,7 +282,7 @@ const Coaches = ({
     );
     // console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
-    const allOtherProfiles = data.filter(
+    const allOtherProfiles = data?.filter(
       (profile: CoachesDataType) =>
         profile.bot_type !== "coachbots" &&
         profile.profile_type !== "icons_by_ai"

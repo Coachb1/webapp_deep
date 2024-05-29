@@ -5053,7 +5053,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#93c5fd"}
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#7fdbbe"}
         }
       }'
       inputAreaStyle='{"paddingTop": "2rem"}'

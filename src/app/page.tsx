@@ -135,8 +135,14 @@ const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
         },
       }
     );
-
-    return response.json();
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log("responseData :", responseData);
+      return responseData;
+    } else {
+      console.log("Error fetching Directory info : ", response.statusText);
+      return [];
+    }
   }
 };
 

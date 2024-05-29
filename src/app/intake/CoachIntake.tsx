@@ -41,7 +41,7 @@ import {
   OptionalMediaData,
   UserClientInfoDataType,
 } from "@/lib/types";
-import { Radio } from "antd";
+import { Radio, Tooltip } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
@@ -2361,15 +2361,16 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Select the area/domain that you are most passionate about
                       coaching and mentoring.{" "}
-                      <TooltipWrapper
-                        body={
-                          <span className="p-1 w-fit rounded-full hover:bg-gray-200 hover:cursor-pointer">
-                            <Info className="h-4 w-4 inline" color="#075985" />
-                          </span>
-                        }
-                        tooltipName="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
-                        className="max-sm:w-[40%] max-sm:flex-end w-[80%] max-md:w-[70%] max-lg:w-[80%] bg-blue-100 mx-4"
-                      />
+                      <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
+                    </Tooltip>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
