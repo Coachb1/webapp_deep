@@ -4874,32 +4874,33 @@ async function handleOptionButtonClick2(labelText) {
       let divCont = '';
       scenarios.forEach((element, i) => {
         divCont += `
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
-        <div>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
-            onmouseover="this.style.cursor ='pointer'" 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
             style="
               margin-top: 8px;
               padding: 6px 10px;
               border: none;
               border-radius: 4px;
-              background-color: #007BFF;
+              background-color: #16a34a;
               color: white;
               font-size: 12px;
               font-weight: 600;
               transition: background-color 0.3s ease;
             " 
-            onmouseout="this.style.backgroundColor = '#007BFF'"
-            onmouseover="this.style.backgroundColor = '#0056b3'"
+            onmouseout="this.style.backgroundColor = '#16a34a'"
             onclick="handleAttemptScenaiosSTT('${element.title}', '${element.test_code}')">
             Attempt
           </button>
+        </div>
         </div>
         `
       }); 
 
       appendMessage2(`
-      <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
+      <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
       `);
