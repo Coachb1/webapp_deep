@@ -26,6 +26,7 @@ const TeamConnect = ({
     { response: string; message: string } | undefined
   >();
   const [inputError, setInputError] = useState(false);
+  const [emptyUserError, setEmptyUserError] = useState(false);
 
   const inputRef = useRef(null);
 
@@ -56,7 +57,8 @@ const TeamConnect = ({
     console.log(query);
     console.log(taggedUserId);
 
-    if (query.length === 0) {
+    const queryLength = query.trim().split(" ").length;
+    if (queryLength < 10) {
       setInputError(true);
     } else {
       setisLoading(true);
@@ -170,11 +172,12 @@ const TeamConnect = ({
                 {inputError && (
                   <div className="flex flex-row justify-between w-full">
                     <p className={`text-red-500 text-xs mb-1.5 self-start`}>
-                      Input should not be empty
+                      Minimum 10 words are required.
                     </p>
                     <p className="font-bold text-gray-500 text-xs self-end"></p>
                   </div>
                 )}
+
                 <div className="flex items-end justify-end gap-2 w-full">
                   <Button
                     onClick={handleQuerySubmit}
