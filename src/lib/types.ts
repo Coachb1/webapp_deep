@@ -61,6 +61,7 @@ export interface TestsType {
   is_assigned?: boolean;
   assigned_by?: string;
   assigned_to?: string;
+  creator_user_id?: string;
 }
 
 export interface competencySkillsTestType {
