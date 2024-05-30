@@ -315,7 +315,7 @@ const Coach = ({ user, renderType }: any) => {
 
               {renderType === "dynamic" ? (
                 <>
-                  {botScenarioCase === "icons_by_ai" ? (
+                  {/* {botScenarioCase === "icons_by_ai" ? (
                     <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300">
                       <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                         <img
@@ -332,7 +332,7 @@ const Coach = ({ user, renderType }: any) => {
                         {coachDescription}
                       </p>
                     </div>
-                  ) : (
+                  ) : ( */}
                     <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
                       <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                         <img
@@ -349,7 +349,7 @@ const Coach = ({ user, renderType }: any) => {
                         {coachDescription}
                       </p>
                     </div>
-                  )}
+                  {/* )} */}
                 </>
               ) : (
                 <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
