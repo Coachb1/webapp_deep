@@ -174,6 +174,7 @@ let quickMatchMessage;
 let isSomeActivityActive=false;
 let askInitialQuestionDeepDive = false;
 let deepDiveInitialQueIndex;
+let responseSavedCount = 0;
 
 let selectedResponseType = undefined;
 
@@ -5946,19 +5947,22 @@ loadExternalModule().then(() => {
             });
 
           shadowRoot.getElementById("messages").scrollBy(0, 500);
-          endSessionButton.setAttribute(
-            "onmouseover",
-            "this.style.backgroundColor = '#e5e7eb'"
-          );
-          endSessionButton.setAttribute(
-            "onmouseleave",
-            "this.style.backgroundColor = '#9ca3af'"
-          );
-          endSessionButton.style.backgroundColor = "#9ca3af";
-          endSessionButton.style.color = "white";
-          endSessionButton.style.cursor = "pointer";
-          endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-          endSessionButton.disabled = false;
+          responseSavedCount += 1;
+          if (responseSavedCount >= 2 && botType.includes('deep_dive')){
+            endSessionButton.setAttribute(
+              "onmouseover",
+              "this.style.backgroundColor = '#e5e7eb'"
+            );
+            endSessionButton.setAttribute(
+              "onmouseleave",
+              "this.style.backgroundColor = '#9ca3af'"
+            );
+            endSessionButton.style.backgroundColor = "#9ca3af";
+            endSessionButton.style.color = "white";
+            endSessionButton.style.cursor = "pointer";
+            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+            endSessionButton.disabled = false;
+          }
           return;
         }
 
@@ -6253,20 +6257,23 @@ loadExternalModule().then(() => {
                   });
               });
             shadowRoot.getElementById("messages").scrollBy(0, 500);
-            endSessionButton.setAttribute(
-              "onmouseover",
-              "this.style.backgroundColor = '#e5e7eb'"
-            );
-            endSessionButton.setAttribute(
-              "onmouseleave",
-              "this.style.backgroundColor = '#9ca3af'"
-            );
-            endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "white";
-            endSessionButton.style.cursor = "pointer";
-            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-            endSessionButton.disabled = false;
-            console.log(endSessionButton);
+            responseSavedCount += 1;
+            if(responseSavedCount >= 2) {
+              endSessionButton.setAttribute(
+                "onmouseover",
+                "this.style.backgroundColor = '#e5e7eb'"
+              );
+              endSessionButton.setAttribute(
+                "onmouseleave",
+                "this.style.backgroundColor = '#9ca3af'"
+              );
+              endSessionButton.style.backgroundColor = "#9ca3af";
+              endSessionButton.style.color = "white";
+              endSessionButton.style.cursor = "pointer";
+              endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+              endSessionButton.disabled = false;
+              console.log(endSessionButton);
+          }
             return Promise.resolve();
           }
 
