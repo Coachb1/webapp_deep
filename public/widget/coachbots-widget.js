@@ -394,16 +394,18 @@ function LoadingMessageWithText2(message, shadowRoot){
   console.log(shadowRoot)
    //loading message 
    const loadingElement = shadowRoot.querySelector(".loading-message-text")
-   console.log(loadingElement)
-   loadingElement.style.display = "flex"
-   loadingElement.style.flexDirection = "row"
-   loadingElement.style.alignItems = "center"
-   const messageElement = document.createElement("span")
-   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; ; min-width: 4rem; margin-left: 2rem;">${message}</span>`
-   messageElement.setAttribute("id", "loading-message")
-   
-   loadingElement.style.width = "fit-content"
-   loadingElement.appendChild(messageElement)
+   //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
+   //  dotsFlashingElement.style.color = "#1f2937"
+    loadingElement.style.display = "flex"
+    loadingElement.style.flexDirection = "row"
+    loadingElement.style.alignItems = "center"
+    const messageElement = document.createElement("span")
+    messageElement.innerHTML = `<b style="color : white; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</b>`
+    messageElement.setAttribute("id", "loading-message")
+    
+    loadingElement.style.width = "fit-content"
+    loadingElement.appendChild(messageElement)
+    shadowRoot.getElementById("messages").scrollBy(0, 500);
 }
 
 //************** session management :start */
@@ -2076,7 +2078,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#7fdbbe"}
         }
       }'
       textInput='{
