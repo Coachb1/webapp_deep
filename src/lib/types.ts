@@ -268,6 +268,13 @@ export interface ClientUserType {
   userId: string;
 }
 
+export interface ClientUserTeamType {
+  userEmail: string;
+  userName: string;
+  userId: string;
+  profileType: string;
+}
+
 export interface ClientDataType {
   clientName: string;
   clientId: string;
@@ -291,5 +298,5 @@ export interface MediaData {
 }
 
 export interface OptionalMediaData {
-  extracted_from_optional_file: MediaItem[],
+  extracted_from_optional_file: MediaItem[];
 }

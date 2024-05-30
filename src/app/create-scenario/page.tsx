@@ -6,6 +6,7 @@ import {
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
+  getUsersForClientForTeam,
 } from "@/lib/utils";
 import CreateOwn from "./CreateOwn";
 import { knowledgeBotJson } from "@/lib/types";
@@ -79,6 +80,7 @@ const getUserAccountsData = async (user: KindeUser | null) => {
   }
 };
 
+let clientName: string = "";
 const getknowledgeBotss = async (userEmail: string) => {
   if (userEmail) {
     const response = await fetch(
@@ -92,7 +94,7 @@ const getknowledgeBotss = async (userEmail: string) => {
     );
 
     const responseData = await response.json();
-    const clientName = responseData.data.user_info[0].client_name;
+    clientName = responseData.data.user_info[0].client_name;
     const restrictedFeatures =
       responseData.data.user_info[0].restricted_features;
 
@@ -165,6 +167,28 @@ const getknowledgeBotss = async (userEmail: string) => {
   }
 };
 
+const getClientUsers = async () => {
+  if (!clientName) return { clientUsers: [] };
+  const response = await fetch(
+    `${baseURL}/accounts/client_id_user_modification`,
+    {
+      method: "GET",
+      headers: { Authorization: basicAuth },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    return {
+      clientUsers: getUsersForClientForTeam(clientName, data),
+    };
+  } else {
+    return {
+      clientUsers: [],
+    };
+  }
+};
+
 // const getDeepDiveCreationAcess = async (
 //   userEmail: string | undefined | null
 // ) => {
@@ -204,7 +228,7 @@ const Page = async () => {
     await getUserAccountsData(user);
 
   console.log(clientName);
-  // const deepdiveCreationAccess = await getDeepDiveCreationAcess(user?.email);
+  const { clientUsers } = await getClientUsers();
 
   return (
     <div>
@@ -213,11 +237,11 @@ const Page = async () => {
         accessAllowed={accessAllowed}
         restrictedFeatures={restrictedFeatures}
         knowledgeBots={knowledgeBotss}
-        // deepdiveCreationAccess={deepdiveCreationAccess}
         clientName={clientName}
         accessDenied={accessDenied}
         coachId={coachId}
         coacheeId={coacheeId}
+        clientUsers={clientUsers}
       />
     </div>
   );
