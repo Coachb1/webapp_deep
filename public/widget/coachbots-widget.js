@@ -98,6 +98,11 @@ let emailNameformJson = {};
 let formFields = [];
 let userResponses = [];
 let DuplicateResponseCount = 0;
+let snnipetConfig;
+let askAccessBotCode = false;
+let clientAllowAudioInteraction;
+let userAllowAudioInteraction;
+let prioritiseUserAllowInteraction;
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -394,16 +399,18 @@ function LoadingMessageWithText2(message, shadowRoot){
   console.log(shadowRoot)
    //loading message 
    const loadingElement = shadowRoot.querySelector(".loading-message-text")
-   console.log(loadingElement)
-   loadingElement.style.display = "flex"
-   loadingElement.style.flexDirection = "row"
-   loadingElement.style.alignItems = "center"
-   const messageElement = document.createElement("span")
-   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; ; min-width: 4rem; margin-left: 2rem;">${message}</span>`
-   messageElement.setAttribute("id", "loading-message")
-   
-   loadingElement.style.width = "fit-content"
-   loadingElement.appendChild(messageElement)
+   //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
+   //  dotsFlashingElement.style.color = "#1f2937"
+    loadingElement.style.display = "flex"
+    loadingElement.style.flexDirection = "row"
+    loadingElement.style.alignItems = "center"
+    const messageElement = document.createElement("span")
+    messageElement.innerHTML = `<b style="color : white; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</b>`
+    messageElement.setAttribute("id", "loading-message")
+    
+    loadingElement.style.width = "fit-content"
+    loadingElement.appendChild(messageElement)
+    shadowRoot.getElementById("messages").scrollBy(0, 500);
 }
 
 //************** session management :start */
@@ -1827,26 +1834,88 @@ const handleProceedClick = async (choice) => {
 
 const handleAttemptScenaios = async (title, test_code) =>{
   console.log('Attempting Scenaios', test_code, title)
-
   testCode = test_code;
   userAcessAvailability = true;
   optedNo = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  // gShadowRoot.getElementById("text-input").focus();
+  // setTimeout(() => {
+  //   gShadowRoot.getElementById("text-input").textContent = title;
+  //   setTimeout(() => {
+  //     gShadowRoot.querySelector(".input-button").click();
+  //   }, 100);
+  // }, 100);
+
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
     gShadowRoot.getElementById("text-input").textContent = title;
+    gShadowRoot.querySelector(".input-button").click();
+
+    
     setTimeout(() => {
-      gShadowRoot.querySelector(".input-button").click();
+
+      var chatElement = document.getElementById("chat-element");
+    const shdwroot = chatElement.shadowRoot;
+    const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+    messageContainers.forEach((container) => {
+      const messageText = container.querySelector(".user-message-text p");
+      if (
+        messageText &&
+        messageText.textContent.trim() === title.trim()
+      ) {
+        container.remove();
+      }
+    });
     }, 100);
   }, 100);
 }
 //* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick(labelText, area, information) {
-  console.log("button clicked", labelText, area, information);
+async function handleOptionButtonClick(labelText, signals, is_regenerate=false) {
+  console.log("button clicked", labelText, is_regenerate);
   const gShadowRoot = document.getElementById("chat-element").shadowRoot;
+
+  if(is_regenerate){
+    gShadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent = "No";
+    gShadowRoot.querySelector(".input-button").click();
+
+    
+    setTimeout(() => {
+
+      var chatElement = document.getElementById("chat-element");
+      const shdwroot = chatElement.shadowRoot;
+      let cont = []
+      const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+      messageContainers.forEach((container,i) => {
+        console.log(i,messageContainers.length - 1)
+        const messageText = container.querySelector(".user-message-text p");
+        if (
+          messageText &&
+          messageText.textContent.trim() === "No"
+           
+        ) {
+          cont.push(container)
+        }
+
+      });
+      cont.forEach((element,i) => {
+        if ( i === (cont.length-1)){
+          element.remove();
+        }
+      });
+
+      }, 100);
+    }, 100);
+    
+    return;
+  }
+      
   const button = gShadowRoot.getElementById("create-new-scenario");
-  button.disabled = true;
+  if (button) {
+    button.disabled = true;
+  }
 
   if (gShadowRoot.querySelector("#create-scenario-section")){
     console.log(`already existed`,gShadowRoot.querySelector("#create-scenario-section") )
@@ -1854,8 +1923,13 @@ async function handleOptionButtonClick(labelText, area, information) {
   }
   optedNo = true;
   var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = "https://playground.coachbots.com/content-library"
   console.log('currenturl',currentURL);
 
+  const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  appendMessage(generationLoader)
+
+  const allMessages = gShadowRoot.getElementById("messages").childNodes;
 
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
   const params = new URLSearchParams();
@@ -1877,6 +1951,12 @@ async function handleOptionButtonClick(labelText, area, information) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
+      allMessages.forEach((indvMessage) => {
+        if (
+          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+          indvMessage.remove();
+        }
+      });
       const challenges = data;
       // const randomIndex = Math.floor(Math.random() * challenges.length);
       // const randomChallenge = challenges[randomIndex];
@@ -1888,6 +1968,42 @@ async function handleOptionButtonClick(labelText, area, information) {
         }
         
       });
+      if (scenarios.length == 0){
+        console.log('failed to generate')
+        
+        const ErrorDiv =  `
+        <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
+        <p style="font-size: 16px; color: #333; margin: 0;">Scenario generation failed because of failure of page extraction</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            style="
+              margin-top: 8px;
+              padding: 6px 10px;
+              border: none;
+              border-radius: 4px;
+              background-color: #16a34a;
+              color: white;
+              font-size: 12px;
+              font-weight: 600;
+              transition: background-color 0.3s ease;
+            " 
+            onmouseout="this.style.backgroundColor = '#16a34a'"
+            onclick="handleOptionButtonClick('','',true)">
+            Regenerate
+          </button>
+        </div>
+        </div>
+        `
+        if (signals){
+          signals.onResponse({
+            html: ErrorDiv
+          })
+        } else{
+          appendMessage(ErrorDiv)
+        }
+        return;
+      }
 
       console.log('sucessfully crated scenarios: ', scenarios)
       // console.log(randomChallenge);
@@ -1895,38 +2011,51 @@ async function handleOptionButtonClick(labelText, area, information) {
       // codeAvailabilityUserChoice = true;
 
       let divCont = '';
-      scenarios.forEach(element => {
+      scenarios.forEach((element,i) => {
+        console.log('element', element);
         divCont += `
-        <b style="font-size: 1.2em; color: #333;">${element.title}</b>
-        <div>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
+        <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
-            onmouseover="this.style.cursor ='pointer'" 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
             style="
-              margin-top: 15px;
-              padding: 10px 20px;
+              margin-top: 8px;
+              padding: 6px 10px;
               border: none;
               border-radius: 4px;
-              background-color: #007BFF;
+              background-color: #16a34a;
               color: white;
-              font-size: 1em;
+              font-size: 12px;
+              font-weight: 600;
               transition: background-color 0.3s ease;
             " 
-            onmouseout="this.style.backgroundColor = '#007BFF'"
-            onmouseover="this.style.backgroundColor = '#0056b3'"
+            onmouseout="this.style.backgroundColor = '#16a34a'"
             onclick="handleAttemptScenaios('${element.title}', '${element.test_code}')">
             Attempt
           </button>
         </div>
-        <br/>
-
+        </div>
         `
       }); 
 
+      if (signals){
+        signals.onResponse(
+          {
+            html: `
+            <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+            ${divCont}
+            </div>
+            `
+          }
+        )
+      } else {
       appendMessage(`
       <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
       ${divCont}
       </div>
       `)
+      }
     })
     .catch((err) => console.log(err));
 }
@@ -2076,7 +2205,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#7fdbbe"}
         }
       }'
       textInput='{
@@ -2168,6 +2297,10 @@ loadExternalModule().then(() => {
   const chatbotHeading = document.getElementById("chatbot-heading");
   const closeFromTopp = document.getElementById("close-top");
   widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
+  snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
+  console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
+
+
   console.log("widget cliennt Id :",widgetClientId)
   //responsive styles for phones
   // if (window.innerWidth < 600) {
@@ -2324,36 +2457,48 @@ loadExternalModule().then(() => {
       `;
   }
 
-  chatElementRef.initialMessages = [
-    {
-      html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
-      </p>`,
-      role: "ai",
-    },
-    {
-      html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-      role: "user",
-    },
-  ];
+  if (Object.keys(snnipetConfig).length > 0){
+    chatElementRef.initialMessages = [
+      {
+        html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+        role: "ai",
+      },
+    ];
+    askAccessBotCode = true;
+  } else{
 
-  chatElementRef.htmlClassUtilities = {
-    ["deep-chat-temporary-message"]: {
-      styles: {
-        default: {},
+    chatElementRef.initialMessages = [
+      {
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+        </p>`,
+        role: "ai",
       },
-    },
-    ["button"]: {
-      styles: {
-        default: {
-          backgroundColor: "transparent",
-        },
-        hover: {
-          backgroundColor: "white",
+      {
+        html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+        role: "user",
+      },
+    ];
+    chatElementRef.htmlClassUtilities = {
+      ["deep-chat-temporary-message"]: {
+        styles: {
+          default: {},
         },
       },
-    },
-  };
+      ["button"]: {
+        styles: {
+          default: {
+            backgroundColor: "transparent",
+          },
+          hover: {
+            backgroundColor: "white",
+          },
+        },
+      },
+    };
+  }
+
+  
 
   // set email and name
   //   const setNameEmail = async (inputEmail, inputName) => {
@@ -2924,6 +3069,27 @@ loadExternalModule().then(() => {
                 lastAudioMessageBubble.length - 1
               ].remove();
           }
+
+          // const audioFileBodySize = body.get("files").size
+          // if (audioFileBodySize === 0) {
+          //   const shadowRoot =
+          //     document.getElementById("chat-element").shadowRoot;
+          //   const lastAudioMessageBubble = shadowRoot.querySelectorAll(
+          //     ".user-message-text.audio-message"
+          //   );
+          //   lastAudioMessageBubble.forEach((element) => {
+          //     console.log(element)
+          //   })
+          //   lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove()
+          //   const allMessages = shadowRoot.getElementById("messages").childNodes;
+          //   allMessages.forEach((indvMessage) => {
+          //     if (
+          //       indvMessage.innerText === "."
+          //     ) {
+          //       indvMessage.remove();
+          //     }
+          //   });
+          // }
         }
         if (body instanceof FormData) {
           //AUDIO RESPONSES
@@ -2993,7 +3159,7 @@ loadExternalModule().then(() => {
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
           let file = audioFile;
-          if (file.name.length === 0 || file.size === "") {
+          if (file === undefined || file?.name.length === 0 || file?.size === "") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
             });
@@ -3452,12 +3618,42 @@ loadExternalModule().then(() => {
           // const latestMessage = body.messages[body.messages.length - 1].text;
 
           let latestMessage = body.messages[body.messages.length - 1].text;
+          globalSignals = signals
           //slicing 400 words from user responses > 400 words
           if(latestMessage.split(" ").length >= 400){
             latestMessage = latestMessage.split(" ").slice(0, 400).join(" ")
 
             console.log("SLICED \n", latestMessage)
           } 
+
+          if (askAccessBotCode){
+            const code = 'DEMO2024'
+            if (latestMessage === code){
+              console.log("Access Code Matched")
+              askAccessBotCode = false
+              if (snnipetConfig.isDemo === 'true'){
+                handleOptionButtonClick("",signals)
+              } else{
+                signals.onResponse(
+                  {
+                    html: `<b>Do you have access code for your simulation?</b><br/><br/>
+                  <div class="deep-chat-temporary-message">
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                  `
+
+                  }
+                )
+                
+                
+              }
+              return;
+            }
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+            });
+            return;
+          }
 
           if (isEmailForm) {
             await proceedFormFlow(latestMessage);
@@ -3519,13 +3715,25 @@ loadExternalModule().then(() => {
             return;
           } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
-            signals.onResponse({
-              html: `<div id="option-button-container" >
-                    <button id="surprise-button" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
-                    <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick()">Create Scenario</button>
-                    </div>
-                    `,
-            });
+            console.log(window.location.hostname,'domain')
+            if (window.location.hostname != "coachbots.com"){
+              // signals.onResponse({
+              //   html: "<b>Please enter the access code to get started.</b>",
+              // });
+              // NoFlowAskCode = true;
+              handleOptionButtonClick("",signals)
+            } else {
+              signals.onResponse({
+                html: "<b>Please ask your administrator for test codes.</b>",
+              });
+            }
+            // signals.onResponse({
+            //   html: `<div id="option-button-container" >
+            //         <button id="surprise-button" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
+            //         <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick()">Create Scenario</button>
+            //         </div>
+            //         `,
+            // });
             // signals.onResponse({
             //   text: "No problem , here are a few samples you can try out (Experimental):",
             //   html: `
@@ -3701,6 +3909,12 @@ loadExternalModule().then(() => {
             "QBEWUOM",
           ];
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
+            if (snnipetConfig.isDemo === 'true' && isTestCode(latestMessage)){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'><b>This feature blocked...</b></p>",
+              })
+              return;
+            }
             const shadowRoot = document.getElementById("chat-element").shadowRoot;
             if (optedNo === false) {
               testCode = latestMessage // body.messages[0].text;
@@ -3777,6 +3991,21 @@ loadExternalModule().then(() => {
                 testType = questionData.results[0].test_type;
                 orch_details =
                   questionData.results[0].orchestrated_conversation_details;
+
+                if (Object.keys(snnipetConfig).length > 0){
+                  isImmersive = snnipetConfig.allowAudioInteraction === 'true';
+                } else{
+                  console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
+                  console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
+                  console.log("prioritiseUserAllowInteraction" , prioritiseUserAllowInteraction)
+                  if(prioritiseUserAllowInteraction){
+                    allowAudioInteraction = userAllowAudioInteraction
+                  } else {
+                    allowAudioInteraction = clientAllowAudioInteraction
+                  }
+                }
+                  console.log('isImmersive', isImmersive)
+                  
 
                 if (TestUIInfo) {
                   if (Object.keys(TestUIInfo).length > 0) {
@@ -5193,6 +5422,10 @@ const openChatContainer = () => {
   })
     .then((response) => response.json())
     .then((data) => {
+      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
       participantId = data.uid;
       userId = data.uid;
       userRole = data.role;
