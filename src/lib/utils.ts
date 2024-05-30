@@ -518,19 +518,17 @@ export const getUsersForClientForTeam = (clientName: string, data: any) => {
     userEmail: string;
     userName: string;
     userId: string;
+    profileType: string;
   }[] = [];
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
-      .filter(
-        (user: any) =>
-          (user.user_email !== undefined && user.profile_type === "coachee") ||
-          user.profile_type === "mentee"
-      )
+      .filter((user: any) => user.user_email !== undefined)
       .map((user: any) => {
         clientUsers.push({
           userEmail: user.user_email,
           userName: user.name,
           userId: user.user_id,
+          profileType: user.profile_type || "",
         });
       });
   }
@@ -572,9 +570,11 @@ export function transformExtractedData(data: ExtractedData): MediaData {
   return mediaData;
 }
 
-export function transformExtractedOptional(data: ExtractedData): OptionalMediaData {
+export function transformExtractedOptional(
+  data: ExtractedData
+): OptionalMediaData {
   const mediaData: OptionalMediaData = {
-   extracted_from_optional_file: []
+    extracted_from_optional_file: [],
   };
 
   for (const source in data) {

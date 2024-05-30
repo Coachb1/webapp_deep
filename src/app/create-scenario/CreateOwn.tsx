@@ -30,6 +30,7 @@ import Joyride from "react-joyride";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import CreateYourDeepDive from "@/components/CreateYourDeepDive";
 import TeamConnect from "@/components/TeamConnect";
+import { ClientUserTeamType } from "@/lib/types";
 
 const CreateOwn = ({
   user,
@@ -41,6 +42,7 @@ const CreateOwn = ({
   accessAllowed,
   coachId,
   coacheeId,
+  clientUsers,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -51,13 +53,13 @@ const CreateOwn = ({
     scenario_case: string;
     creator_name: string;
   }[];
-  // deepdiveCreationAccess: Boolean;
   restrictedFeatures: string;
   clientName: string;
   accessDenied: string;
   accessAllowed: string;
   coachId: string;
   coacheeId: string;
+  clientUsers: ClientUserTeamType[];
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -104,6 +106,7 @@ const CreateOwn = ({
           setUserId(data.uid);
         });
       console.log(clientName);
+      console.log(clientUsers);
     }
 
     setTimeout(() => {
@@ -1100,6 +1103,7 @@ const CreateOwn = ({
                                 <div className="w-full flex flex-col items-center justify-center mb-10">
                                   <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
                                     <TeamConnect
+                                      clientUsers={clientUsers}
                                       clientName={clientName}
                                       coachId={coachId}
                                       coacheeId={coacheeId}
