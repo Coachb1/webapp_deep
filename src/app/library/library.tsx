@@ -201,7 +201,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
 
               const requestedscenarios = data.filter(
                 (test: TestsType) =>
-                  !test.assigned_to?.includes(userAccountsData.uid)
+                  test.creator_user_id?.includes(userAccountsData.uid)
               );
 
               setRequestedScenarios(requestedscenarios);
