@@ -4821,7 +4821,7 @@ const handleAttemptScenaiosSTT = async (title, test_code) =>{
 }
 
 //* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick2(labelText,signals,is_regenerate) {
+async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   console.log("button clicked in stt", labelText);
   const gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
