@@ -2924,6 +2924,27 @@ loadExternalModule().then(() => {
                 lastAudioMessageBubble.length - 1
               ].remove();
           }
+
+          // const audioFileBodySize = body.get("files").size
+          // if (audioFileBodySize === 0) {
+          //   const shadowRoot =
+          //     document.getElementById("chat-element").shadowRoot;
+          //   const lastAudioMessageBubble = shadowRoot.querySelectorAll(
+          //     ".user-message-text.audio-message"
+          //   );
+          //   lastAudioMessageBubble.forEach((element) => {
+          //     console.log(element)
+          //   })
+          //   lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove()
+          //   const allMessages = shadowRoot.getElementById("messages").childNodes;
+          //   allMessages.forEach((indvMessage) => {
+          //     if (
+          //       indvMessage.innerText === "."
+          //     ) {
+          //       indvMessage.remove();
+          //     }
+          //   });
+          // }
         }
         if (body instanceof FormData) {
           //AUDIO RESPONSES
@@ -2993,7 +3014,7 @@ loadExternalModule().then(() => {
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
           let file = audioFile;
-          if (file.name.length === 0 || file.size === "") {
+          if (file === undefined || file?.name.length === 0 || file?.size === "") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
             });
