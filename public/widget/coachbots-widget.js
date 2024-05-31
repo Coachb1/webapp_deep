@@ -1962,12 +1962,17 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       // const randomChallenge = challenges[randomIndex];
 
       let scenarios = [];
-      challenges.forEach(element => {
-        if (element.title){
-          scenarios.push(element)
-        }
-        
-      });
+      try{
+        challenges.forEach(element => {
+          if (element.title){
+            scenarios.push(element)
+          }
+          
+        });
+      } catch(e){
+        console.error(e);
+      }
+
       if (scenarios.length == 0){
         console.log('failed to generate')
         
@@ -3717,7 +3722,7 @@ loadExternalModule().then(() => {
             optedNo = true;
             console.log(window.location.hostname,'domain')
             if (!["playground.coachbots.com","platform.coachbots.com",'localhost'].includes(window.location.hostname)){
-              
+
               handleOptionButtonClick("",signals)
             } else {
               signals.onResponse({
