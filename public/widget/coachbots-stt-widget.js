@@ -4879,8 +4879,8 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   // var currentURL = "https://playground.coachbots.com/content-library"
   console.log('currenturl',currentURL);
   
-  const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
-  appendMessage2(generationLoader)
+  // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  // appendMessage2(generationLoader)
 
   const allMessages = gShadowRoot2.getElementById("messages").childNodes;
   // gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
@@ -4915,12 +4915,12 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
-      allMessages.forEach((indvMessage) => {
-        if (
-          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
-          indvMessage.remove();
-        }
-      });
+      // allMessages.forEach((indvMessage) => {
+      //   if (
+      //     indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+      //     indvMessage.remove();
+      //   }
+      // });
       const challenges = data;
       // const randomIndex = Math.floor(Math.random() * challenges.length);
       // const randomChallenge = challenges[randomIndex];
@@ -6537,6 +6537,9 @@ loadExternalModule().then(() => {
           // let latestMessages = body.messages[body.messages.length - 1].text;
           // GeminiAiResponse(latestMessages, signals,"",latestMessages, false)
           // return;
+          if(body.messages[body.messages.length - 1].text === "No"){
+            LoadingMessageWithText("Please wait, we are generating your scenario!!")
+          }
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
