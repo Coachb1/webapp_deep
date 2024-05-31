@@ -4879,8 +4879,8 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   // var currentURL = "https://playground.coachbots.com/content-library"
   console.log('currenturl',currentURL);
   
-  const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
-  appendMessage2(generationLoader)
+  // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  // appendMessage2(generationLoader)
 
   const allMessages = gShadowRoot2.getElementById("messages").childNodes;
   // gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
@@ -4915,12 +4915,12 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
-      allMessages.forEach((indvMessage) => {
-        if (
-          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
-          indvMessage.remove();
-        }
-      });
+      // allMessages.forEach((indvMessage) => {
+      //   if (
+      //     indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+      //     indvMessage.remove();
+      //   }
+      // });
       const challenges = data;
       // const randomIndex = Math.floor(Math.random() * challenges.length);
       // const randomChallenge = challenges[randomIndex];
@@ -4974,8 +4974,9 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
       let divCont = '';
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
-        <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #16a34a; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${i == 0 ? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -6536,6 +6537,9 @@ loadExternalModule().then(() => {
           // let latestMessages = body.messages[body.messages.length - 1].text;
           // GeminiAiResponse(latestMessages, signals,"",latestMessages, false)
           // return;
+          if(body.messages[body.messages.length - 1].text === "No"){
+            LoadingMessageWithText("Please wait, we are generating your scenario!!")
+          }
           // TEXT RESPONSES
           //change mic state active to default on send
           var chatElement = document.getElementById("chat-element2");
