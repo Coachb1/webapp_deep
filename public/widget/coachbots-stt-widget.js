@@ -7678,7 +7678,7 @@ loadExternalModule().then(() => {
                     isImmersiveStt = clientAllowAudioInteraction2
                   }
                 }
-                console.log('isImmersive', isImmersive)
+                console.log('isImmersive', isImmersiveSTT)
                 if (testType2 === "mcq") {
                   globalQuestionLengthStt = Math.log2(questionLength2 + 1);
                   globalQuestionDataStt = questionData2;
