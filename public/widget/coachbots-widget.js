@@ -3716,11 +3716,8 @@ loadExternalModule().then(() => {
           } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
             console.log(window.location.hostname,'domain')
-            if (window.location.hostname != "coachbots.com"){
-              // signals.onResponse({
-              //   html: "<b>Please enter the access code to get started.</b>",
-              // });
-              // NoFlowAskCode = true;
+            if (!["playground.coachbots.com","platform.coachbots.com",'localhost'].includes(window.location.hostname)){
+              
               handleOptionButtonClick("",signals)
             } else {
               signals.onResponse({
