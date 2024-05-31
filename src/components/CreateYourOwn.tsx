@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eraser,
+  Info,
   Loader,
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -20,6 +21,7 @@ import { toast } from "sonner";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { ClientUserType } from "@/lib/types";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Radio, Tooltip } from "antd";
 
 interface OptionType {
   value: string;
@@ -48,6 +50,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
   >([]);
 
   const [assignInit, setAssignInit] = useState(false);
+  const [simulationType, setSimulationType] = useState("short");
 
   const getClientUsers = async (clientName: string) => {
     try {
@@ -107,11 +110,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
-      // params.set(
-      //   "assign_to",
-      //   assignedToUsers.map((user) => user.value.split("/")[1]).join(",")
-      // );
-      // params.set("assigned_by", userName);
+      params.set("is_micro", `${simulationType === "short" ? true : false}`);
 
       url.search = params;
 
@@ -222,6 +221,27 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
+            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 my-2">
+              Select your simulation type
+            </p>
+            <Radio.Group
+              value={simulationType}
+              options={[
+                {
+                  label: "Short",
+                  value: "short",
+                },
+                {
+                  label: "Standard",
+                  value: "standard",
+                },
+              ]}
+              onChange={(e) => {
+                console.log(e.target.value);
+                setSimulationType(e.target.value);
+              }}
+              optionType="button"
+            />
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
               Please enter the situation that you want to practice
             </p>
