@@ -4926,12 +4926,18 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
       // const randomChallenge = challenges[randomIndex];
 
       let scenarios = [];
-      challenges.forEach(element => {
-        if (element.title){
-          scenarios.push(element)
-        }
+      try{
+
+        challenges.forEach(element => {
+          if (element.title){
+            scenarios.push(element)
+          }
+        });
+      } catch(e){
+        console.error(`go error ${e}`)
+      }
+
         
-      });
 
       console.log('sucessfully crated scenarios: ', scenarios)
       if (scenarios.length == 0){
