@@ -107,15 +107,15 @@ let prioritiseUserAllowInteraction;
 // sample TEst codes
 const sampleTestCodes = {
   QEEG5VY: "AWS Cloud Training",
-  QMFMKQ4: "Team Building Post Training Check In",
-  QUPR9AO: "Education Sales Rep Selling A Diploma Course",
-  QLDQ2IY: "Coaching Assistant In Assertive Communication",
-  QKLX4V0: "Hotel Receptionist Handle Angry Guest",
+  QMFMKQ4: "Team Building Post-Training Check-In",
+  QUPR9AO: "Education Sales Rep Selling a Diploma Course",
+  QLDQ2IY: "Coaching Assistant in Assertive Communication",
+  QKLX4V0: "Hotel Receptionist: Handling an Angry Guest",
   QULNNNE: "Luxury Real Estate Sales Agent",
-  QZ4R9QW: "Cabin Crew Dealing With Angry Customer",
+  QZ4R9QW: "Cabin Crew Dealing with an Angry Customer",
   QJV5AEY: "Bank Branch Employee Service Call",
-  QEYTB3I: "First Time Manager Feedback In Corporate Office",
-  QYCZJDN: "Patient Care By Nurse",
+  QEYTB3I: "First-Time Manager Feedback in a Corporate Office",
+  QYCZJDN: "Patient Care by a Nurse",
   Q125Z1B: "Factory Shop Floor Leadership",
   Q9QW1HF: "Health Package Sales Rep Discussion",
   QHYRLGN: "Insurance Sales Rep Call",
@@ -127,82 +127,82 @@ let recommendationsData = [
   [
     {
       title:
-        "Pursuing career growth : Discussing the next steps in the career ladder",
+        "Pursuing Career Growth: Discussing the Next Steps in the Career Ladder",
       code: "QG8OTQR",
     },
     {
       title:
-        "Pursuing professional development : Aligning career Goals with company's vision",
+        "Pursuing Professional Development: Aligning Career Goals with Company's Vision",
       code: "QMWNNU5",
     },
   ], // batch one
   [
     {
       title:
-        "Handling change and uncertainty : Navigating uncertainty in a new role",
+        "Handling Change and Uncertainty: Navigating Uncertainty in a New Role",
       code: "QXA0FHL",
     },
     {
       title:
-        "Handling change and uncertainty : Seeking Guidance on Adapting to New Leadership",
+        "Handling Change and Uncertainty: Seeking Guidance on Adapting to New Leadership",
       code: "QTXLXON",
     },
   ], // batch two
   [
     {
-      title: "Team building & Leadership : Teams using Agile Strategies",
+      title: "Team Building & Leadership: Teams using Agile Strategies",
       code: "QQJPCFI",
     },
     {
       title:
-        "Leadership initiatives : Seeking Guidance on Leading Team Through Crisis",
+        "Leadership Initiatives: Seeking Guidance on Leading Team Through Crisis",
       code: "QO269IW",
     },
   ], // batch three
   [
     {
       title:
-        "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement",
+        "Making Ethical Decisions: Evaluating Cost vs. Sustainability in Procurement",
       code: "QHZPPK1",
     },
     {
       title:
-        "Resource allocation decisions : Securing Project Resources from other teams",
+        "Resource Allocation Decisions: Securing Project Resources from Other Teams",
       code: "QDL75HD",
     },
   ], // batch four
   [
     {
       title:
-        "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion",
+        "Managing Work-Life Balance: Balancing Workload and Setting Boundaries Discussion",
       code: "QTTDTXG",
     },
     {
       title:
-        "Managing Team Conflicts : Addressing Team Conflicts Over Missed Deadline",
+        "Managing Team Conflicts: Addressing Team Conflicts Over Missed Deadline",
       code: "QWN8XTF",
     },
   ], // batch five
   [
     {
       title:
-        "Collaborating on resource allocation : Resource Allocation Tensions",
+        "Collaborating on Resource Allocation: Resource Allocation Tensions",
       code: "QSKUOD0",
     },
     {
-      title: "Navigating team dynamics: Aligning Team Direction",
+      title: "Navigating Team Dynamics: Aligning Team Direction",
       code: "QKN7VPO",
     },
   ], // batch six
   [
     {
       title:
-        "Strategizing cross functional projects: Navigating cross-project challenges",
+        "Strategizing Cross-Functional Projects: Navigating Cross-Project Challenges",
       code: "Q7E1DGY",
     },
     {
       title:
-        "Interdepartmental collaboration : Harmonizing Data Interpretations",
+        "Interdepartmental Collaboration: Harmonizing Data Interpretations",
       code: "QP22B9R",
     },
   ], // batch seven
@@ -1962,12 +1962,17 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       // const randomChallenge = challenges[randomIndex];
 
       let scenarios = [];
-      challenges.forEach(element => {
-        if (element.title){
-          scenarios.push(element)
-        }
-        
-      });
+      try{
+        challenges.forEach(element => {
+          if (element.title){
+            scenarios.push(element)
+          }
+          
+        });
+      } catch(e){
+        console.error(e);
+      }
+
       if (scenarios.length == 0){
         console.log('failed to generate')
         
@@ -3716,11 +3721,8 @@ loadExternalModule().then(() => {
           } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
             console.log(window.location.hostname,'domain')
-            if (window.location.hostname != "coachbots.com"){
-              // signals.onResponse({
-              //   html: "<b>Please enter the access code to get started.</b>",
-              // });
-              // NoFlowAskCode = true;
+            if (!["playground.coachbots.com","platform.coachbots.com",'localhost'].includes(window.location.hostname)){
+
               handleOptionButtonClick("",signals)
             } else {
               signals.onResponse({
