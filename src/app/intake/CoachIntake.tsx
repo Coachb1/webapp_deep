@@ -27,7 +27,7 @@ import {
   Trash2,
   UndoDot,
 } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
@@ -547,356 +547,655 @@ const CoachIntake = ({ user }: any) => {
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (user) {
-        setCreateLoading(true);
-        var myHeaders = new Headers();
-        myHeaders.append("Authorization", basicAuth);
-        var formdata = new FormData();
-        formdata.append("name", name);
-        formdata.append("user_id", userId);
-        formdata.append("email", user.email);
-        formdata.append("about", about);
-        formdata.append("experience", experience);
-
-        let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
-
-        formdata.append("low_rating_characteristics", characteristicsRateLows);
-        formdata.append("high_rating_characteristics", characteristicsRateHigh);
-
-        if (!checkIfEdit) {
-          //@ts-ignore
-          if (profileImage) {
-            formdata.append("profile_image", profileImage, profileImage.name);
-            console.log(formdata.get("profile_image"));
-          }
-        }
-        if (checkIfEdit) {
-          formdata.append("profile_image_url", profileImageUrl);
-        }
-        formdata.append("department", department);
-
-        formdata.append("supported_outcome", outcomeSupported);
-        formdata.append("bot_type", "avatar_bot");
-
-        if (formType == "coach") {
-          formdata.append(
-            "profile_type",
-            profileType === "coach-mentor" || profileType === "coach"
-              ? "coach"
-              : "mentor"
-          );
-          formdata.append(
-            "is_mentor",
-            JSON.stringify(profileType === "coach-mentor" ? true : false)
-          );
-          formdata.append("area_domain", areaDomain);
-          formdata.append("mentoring_preferences", mentoringPreferences);
-          formdata.append(
-            "mentoring_frameworks",
-            JSON.stringify(mentoringPreferencess.join(", "))
-          ); //coachMentFrameworks);
-          formdata.append("dominant_point_of_view", povProgramParticipants);
-          formdata.append("problem_solving_approach", problemSolvingApproach);
-          formdata.append(
-            "provided_links",
-            JSON.stringify({
-              youtube_links: linksReflectingWVpersonal,
-              article_links: linksReflectyouWished,
-            })
-          );
-          formdata.append("admired_leaders", leaderNames);
-
-          formdata.append(
-            "voice_sample",
-            `${voiceSample === "yes" ? true : false}`
-          );
-          formdata.append("coaching_for_fitment", coachmentSelect);
-          formdata.append("coaching_level", participantLevel);
-          formdata.append(
-            "coach_same_department",
-            `${coachMentInSameDep === "Yes" ? true : false}`
-          );
-          formdata.append(
-            "allow_coachee_to_create_session",
-            `${allowSessionNotes === "yes" ? true : false}`
-          );
-          formdata.append(
-            "significant_challenges_and_solutions",
-            significantChallenges
-          );
-          formdata.append(
-            "common_phrases_and_expressions",
-            phrasesNExpressions
-          );
-          formdata.append("mentorship_contribution", discussInCARformat);
-          formdata.append("journey_and_background", journeyAndBackground);
-
-          if (profileType === "coach") {
-            const coachQna = {
-              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                foundationalValues,
-              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                developmentFramewrok,
-              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                coachingProcessOverview,
-              "How do you handle situations where I feel stuck or unsure about my next steps?":
-                handlingSituations,
-              "How can I integrate the lessons from these sessions into my daily life?":
-                integratingLessons,
-              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                guidanceOnCoachingProcess,
-            };
-
-            CoachMentorQnA.coach_qna = coachQna;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                coach: coachQna,
-              })
-            );
-          } else if (profileType === "mentor") {
-            const QnaMentor = {
-              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                differentCareerPath,
-              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                problemSolvingApproachInDomain,
-              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                overviewofMentoring,
-              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                opportunitiesOfGrowth,
-              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                commonChallengesOrObstacles,
-              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                opinionsAboutKeyQualities,
-            };
-
-            CoachMentorQnA.mentor_qna = QnaMentor;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                mentor: QnaMentor,
-              })
-            );
-          } else if (profileType === "coach-mentor") {
-            const qnaCoach = {
-              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                foundationalValues,
-              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                developmentFramewrok,
-              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                coachingProcessOverview,
-              "How do you handle situations where I feel stuck or unsure about my next steps?":
-                handlingSituations,
-              "How can I integrate the lessons from these sessions into my daily life?":
-                integratingLessons,
-              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                guidanceOnCoachingProcess,
-            };
-            CoachMentorQnA.coach_qna = qnaCoach;
-
-            const qnaMentor = {
-              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                differentCareerPath,
-              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                problemSolvingApproachInDomain,
-              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                overviewofMentoring,
-              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                opportunitiesOfGrowth,
-              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                commonChallengesOrObstacles,
-              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                opinionsAboutKeyQualities,
-            };
-            CoachMentorQnA.mentor_qna = qnaMentor;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                coach: qnaCoach,
-                mentor: qnaMentor,
-              })
-            );
-          }
-        } else if (formType === "coachee") {
-          formdata.append("profile_type", profileType);
-          formdata.append("coaching_level", participantLevel);
-          formdata.append(
-            "coach_same_department",
-            `${coachMentInSameDep === "Yes" ? true : false}`
-          );
-        }
-
-        if (!checkIfEdit) {
+      if (characteristicsRateHigh && characteristicsRateLows) {
+        if (user) {
+          setCreateLoading(true);
           var myHeaders = new Headers();
           myHeaders.append("Authorization", basicAuth);
+          var formdata = new FormData();
+          formdata.append("name", name);
+          formdata.append("user_id", userId);
+          formdata.append("email", user.email);
+          formdata.append("about", about);
+          formdata.append("experience", experience);
 
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: formdata,
-          };
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
-            requestOptions
-          )
-            .then((response) => response.json())
-            .then((result) => {
-              console.log(result);
+          let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
 
-              const queryparam = new URLSearchParams({
-                method: "post",
-                qna: JSON.stringify({
-                  "1": {
-                    coach:
-                      "What level of coach/mentor do you want to interact with ?",
-                    cochee: participantLevel,
-                  },
-                  "2": {
-                    coach:
-                      "I want a coach & mentor someone from the same department.",
-                    cochee: coachMentInSameDep === "Yes" ? true : false,
-                  },
-                  "3": {
-                    coach:
-                      "What kind of outcome do you want from these sessions the most?",
-                    cochee: outcomeSupported,
-                  },
-                }),
-                qna_type: "fitment",
-                user_id: userId,
-              });
+          formdata.append(
+            "low_rating_characteristics",
+            characteristicsRateLows
+          );
+          formdata.append(
+            "high_rating_characteristics",
+            characteristicsRateHigh
+          );
 
-              const resp = fetch(
-                `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+          if (!checkIfEdit) {
+            //@ts-ignore
+            if (profileImage) {
+              formdata.append("profile_image", profileImage, profileImage.name);
+              console.log(formdata.get("profile_image"));
+            }
+          }
+          if (checkIfEdit) {
+            formdata.append("profile_image_url", profileImageUrl);
+          }
+          formdata.append("department", department);
 
-              setProfileId(result.data.uid);
-              userProfileId = result.data.uid;
+          formdata.append("supported_outcome", outcomeSupported);
+          formdata.append("bot_type", "avatar_bot");
 
-              if (formType === "coach") {
-                myHeaders.append("Content-Type", "application/json");
-                const avatarBotCreationFormData = {
-                  bot_type: "avatar_bot",
-                  profile_id: result.data.uid,
-                  bot_name: name,
-                  email: user.email,
-                  bot_details: { info: about, coach_name: name },
-                  attributes: {
-                    heading: `welcome to ${name}'s avatar bot`,
-                  },
-                  participant_id: userId,
-                  bot_base_url: `${
-                    subdomain === "playground"
-                      ? "https://playground.coachbots.com"
-                      : "https://platform.coachbots.com"
-                  }`,
-                  fitment_answer: `${participantLevel},${
-                    coachMentInSameDep === "Yes" ? true : false
-                  },${outcomeSupported}`,
-                  fitment_data: {
-                    options: {
-                      "1": ["Someone Senior", "Any level"],
-                      "2": ["Yes", "No"],
-                      "3": [
-                        "Career advancement",
-                        "Skill development",
-                        "Introspection & reflection",
-                        "Networking & leadership",
-                      ],
-                    },
-                    mentee_que: {
-                      "1": "What level of coach & mentor do you want?",
-                      "2": "I want a coach & mentor someone from the same department.",
-                      "3": "What kind of outcome do you want from these sessions the most?",
-                    },
-                    mentor_que: {
-                      "1": "What level of participant do you want to coach & mentor?",
-                      "2": "I want to coach & mentor someone in the same department.",
-                      "3": "What kind of outcome can you support in these sessions the most?",
-                    },
-                  },
-                  additional_data: {
-                    profile_type: "coach",
-                    area_domain: areaDomain,
-                    experience: experience,
-                    mentoring_preferences: mentoringPreferences,
-                    mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
-                    dominant_point_of_view: povProgramParticipants,
-                    problem_solving_approach: problemSolvingApproach,
-                    admired_leaders: leaderNames,
-                    profile_description: about,
-                    department: department,
-                    youtube_links: linksReflectingWVpersonal,
-                    article_links: linksReflectyouWished,
-                    voice_sample: voiceSample,
-                    discuss_how_you_helped_others_in_coachMentoring:
-                      discussInCARformat,
-                    journey_and_background: journeyAndBackground,
-                    provide_answers_using_emojis: `${
-                      provideAnswersUsingEmojis === "yes" ? true : false
-                    }`,
-                    common_phrases_and_expressions: phrasesNExpressions,
-                    significant_challenges_and_solutions: significantChallenges,
-                    allow_coachee_to_create_session: `${
-                      allowSessionNotes === "yes" ? true : false
-                    }`,
-                    fitment_answers: {
-                      coachmentSelect,
-                      participantLevel,
-                      coachMentInSameDep,
-                      outcomeSupported,
-                    },
-                    coach_qna: CoachMentorQnA.coach_qna,
-                    mentor_qna: CoachMentorQnA.mentor_qna,
-                  },
-                  media_data: {
-                    youtube_links: linksReflectingWVpersonal,
-                    article_links: linksReflectyouWished,
-                  },
-                };
+          if (formType == "coach") {
+            formdata.append(
+              "profile_type",
+              profileType === "coach-mentor" || profileType === "coach"
+                ? "coach"
+                : "mentor"
+            );
+            formdata.append(
+              "is_mentor",
+              JSON.stringify(profileType === "coach-mentor" ? true : false)
+            );
+            formdata.append("area_domain", areaDomain);
+            formdata.append("mentoring_preferences", mentoringPreferences);
+            formdata.append(
+              "mentoring_frameworks",
+              JSON.stringify(mentoringPreferencess.join(", "))
+            ); //coachMentFrameworks);
+            formdata.append("dominant_point_of_view", povProgramParticipants);
+            formdata.append("problem_solving_approach", problemSolvingApproach);
+            formdata.append(
+              "provided_links",
+              JSON.stringify({
+                youtube_links: linksReflectingWVpersonal,
+                article_links: linksReflectyouWished,
+              })
+            );
+            formdata.append("admired_leaders", leaderNames);
 
-                fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                  method: checkIfEdit ? "PATCH" : "POST",
-                  headers: myHeaders,
-                  body: checkIfEdit
-                    ? JSON.stringify({
-                        bot_id: botIUidFromParams,
-                        updated_data: avatarBotCreationFormData,
-                      })
-                    : JSON.stringify(avatarBotCreationFormData),
+            formdata.append(
+              "voice_sample",
+              `${voiceSample === "yes" ? true : false}`
+            );
+            formdata.append("coaching_for_fitment", coachmentSelect);
+            formdata.append("coaching_level", participantLevel);
+            formdata.append(
+              "coach_same_department",
+              `${coachMentInSameDep === "Yes" ? true : false}`
+            );
+            formdata.append(
+              "allow_coachee_to_create_session",
+              `${allowSessionNotes === "yes" ? true : false}`
+            );
+            formdata.append(
+              "significant_challenges_and_solutions",
+              significantChallenges
+            );
+            formdata.append(
+              "common_phrases_and_expressions",
+              phrasesNExpressions
+            );
+            formdata.append("mentorship_contribution", discussInCARformat);
+            formdata.append("journey_and_background", journeyAndBackground);
+
+            if (profileType === "coach") {
+              const coachQna = {
+                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                  foundationalValues,
+                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                  developmentFramewrok,
+                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                  coachingProcessOverview,
+                "How do you handle situations where I feel stuck or unsure about my next steps?":
+                  handlingSituations,
+                "How can I integrate the lessons from these sessions into my daily life?":
+                  integratingLessons,
+                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                  guidanceOnCoachingProcess,
+              };
+
+              CoachMentorQnA.coach_qna = coachQna;
+
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  coach: coachQna,
                 })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-                    if (!data.error && !data.detail && !data.msg) {
-                      //PATCH MEDIA DATA HERE
+              );
+            } else if (profileType === "mentor") {
+              const QnaMentor = {
+                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                  differentCareerPath,
+                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                  problemSolvingApproachInDomain,
+                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                  overviewofMentoring,
+                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                  opportunitiesOfGrowth,
+                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                  commonChallengesOrObstacles,
+                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                  opinionsAboutKeyQualities,
+              };
 
-                      const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file, text, name }) => {
-                        console.log("name", name);
-                        console.log("file", file.name);
-                        if (name === "optional_file") {
-                          filesPatchFormData.append(
-                            "optional_file",
-                            `file_name:${file.name} text_file:${text}`
-                          );
-                          console.log(text);
+              CoachMentorQnA.mentor_qna = QnaMentor;
+
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  mentor: QnaMentor,
+                })
+              );
+            } else if (profileType === "coach-mentor") {
+              const qnaCoach = {
+                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                  foundationalValues,
+                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                  developmentFramewrok,
+                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                  coachingProcessOverview,
+                "How do you handle situations where I feel stuck or unsure about my next steps?":
+                  handlingSituations,
+                "How can I integrate the lessons from these sessions into my daily life?":
+                  integratingLessons,
+                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                  guidanceOnCoachingProcess,
+              };
+              CoachMentorQnA.coach_qna = qnaCoach;
+
+              const qnaMentor = {
+                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                  differentCareerPath,
+                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                  problemSolvingApproachInDomain,
+                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                  overviewofMentoring,
+                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                  opportunitiesOfGrowth,
+                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                  commonChallengesOrObstacles,
+                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                  opinionsAboutKeyQualities,
+              };
+              CoachMentorQnA.mentor_qna = qnaMentor;
+
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  coach: qnaCoach,
+                  mentor: qnaMentor,
+                })
+              );
+            }
+          } else if (formType === "coachee") {
+            formdata.append("profile_type", profileType);
+            formdata.append("coaching_level", participantLevel);
+            formdata.append(
+              "coach_same_department",
+              `${coachMentInSameDep === "Yes" ? true : false}`
+            );
+          }
+
+          if (!checkIfEdit) {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", basicAuth);
+
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: formdata,
+            };
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
+              requestOptions
+            )
+              .then((response) => response.json())
+              .then((result) => {
+                console.log(result);
+
+                const queryparam = new URLSearchParams({
+                  method: "post",
+                  qna: JSON.stringify({
+                    "1": {
+                      coach:
+                        "What level of coach/mentor do you want to interact with ?",
+                      cochee: participantLevel,
+                    },
+                    "2": {
+                      coach:
+                        "I want a coach & mentor someone from the same department.",
+                      cochee: coachMentInSameDep === "Yes" ? true : false,
+                    },
+                    "3": {
+                      coach:
+                        "What kind of outcome do you want from these sessions the most?",
+                      cochee: outcomeSupported,
+                    },
+                  }),
+                  qna_type: "fitment",
+                  user_id: userId,
+                });
+
+                const resp = fetch(
+                  `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                setProfileId(result.data.uid);
+                userProfileId = result.data.uid;
+
+                if (formType === "coach") {
+                  myHeaders.append("Content-Type", "application/json");
+                  const avatarBotCreationFormData = {
+                    bot_type: "avatar_bot",
+                    profile_id: result.data.uid,
+                    bot_name: name,
+                    email: user.email,
+                    bot_details: { info: about, coach_name: name },
+                    attributes: {
+                      heading: `welcome to ${name}'s avatar bot`,
+                    },
+                    participant_id: userId,
+                    bot_base_url: `${
+                      subdomain === "playground"
+                        ? "https://playground.coachbots.com"
+                        : "https://platform.coachbots.com"
+                    }`,
+                    fitment_answer: `${participantLevel},${
+                      coachMentInSameDep === "Yes" ? true : false
+                    },${outcomeSupported}`,
+                    fitment_data: {
+                      options: {
+                        "1": ["Someone Senior", "Any level"],
+                        "2": ["Yes", "No"],
+                        "3": [
+                          "Career advancement",
+                          "Skill development",
+                          "Introspection & reflection",
+                          "Networking & leadership",
+                        ],
+                      },
+                      mentee_que: {
+                        "1": "What level of coach & mentor do you want?",
+                        "2": "I want a coach & mentor someone from the same department.",
+                        "3": "What kind of outcome do you want from these sessions the most?",
+                      },
+                      mentor_que: {
+                        "1": "What level of participant do you want to coach & mentor?",
+                        "2": "I want to coach & mentor someone in the same department.",
+                        "3": "What kind of outcome can you support in these sessions the most?",
+                      },
+                    },
+                    additional_data: {
+                      profile_type: "coach",
+                      area_domain: areaDomain,
+                      experience: experience,
+                      mentoring_preferences: mentoringPreferences,
+                      mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
+                      dominant_point_of_view: povProgramParticipants,
+                      problem_solving_approach: problemSolvingApproach,
+                      admired_leaders: leaderNames,
+                      profile_description: about,
+                      department: department,
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                      voice_sample: voiceSample,
+                      discuss_how_you_helped_others_in_coachMentoring:
+                        discussInCARformat,
+                      journey_and_background: journeyAndBackground,
+                      provide_answers_using_emojis: `${
+                        provideAnswersUsingEmojis === "yes" ? true : false
+                      }`,
+                      common_phrases_and_expressions: phrasesNExpressions,
+                      significant_challenges_and_solutions:
+                        significantChallenges,
+                      allow_coachee_to_create_session: `${
+                        allowSessionNotes === "yes" ? true : false
+                      }`,
+                      fitment_answers: {
+                        coachmentSelect,
+                        participantLevel,
+                        coachMentInSameDep,
+                        outcomeSupported,
+                      },
+                      coach_qna: CoachMentorQnA.coach_qna,
+                      mentor_qna: CoachMentorQnA.mentor_qna,
+                    },
+                    media_data: {
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                    },
+                  };
+
+                  fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                    method: checkIfEdit ? "PATCH" : "POST",
+                    headers: myHeaders,
+                    body: checkIfEdit
+                      ? JSON.stringify({
+                          bot_id: botIUidFromParams,
+                          updated_data: avatarBotCreationFormData,
+                        })
+                      : JSON.stringify(avatarBotCreationFormData),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(data);
+                      if (!data.error && !data.detail && !data.msg) {
+                        //PATCH MEDIA DATA HERE
+
+                        const filesPatchFormData = new FormData();
+                        referenceDocs.forEach(({ file, text, name }) => {
+                          console.log("name", name);
+                          console.log("file", file.name);
+                          if (name === "optional_file") {
+                            filesPatchFormData.append(
+                              "optional_file",
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
+                            if (file.name.includes(".pdf")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  "pdf_data",
+                                  `file_name:${file.name} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_pdfs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            } else if (file.name.includes(".docx")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  `doc_data`,
+                                  `file_name:${file.name} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_docs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            }
+                          }
+                        });
+
+                        filesPatchFormData.append("bot_id", data.bot_uid);
+
+                        const media_data = {
+                          youtube_links: linksReflectingWVpersonal,
+                          article_links: linksReflectyouWished,
+                        };
+                        filesPatchFormData.append(
+                          "media_data",
+                          JSON.stringify(media_data)
+                        );
+
+                        console.log(referenceDocs);
+                        fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                          method: "PATCH",
+                          headers: {
+                            Authorization: basicAuth,
+                          },
+                          body: filesPatchFormData,
+                        })
+                          .then((res) => res.json())
+                          .then((data) => {
+                            console.log(data);
+                            setCreateLoading(false);
+                            if (!data.error && !data.detail) {
+                              toast.success(
+                                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                                {
+                                  duration: 6000,
+                                }
+                              );
+                              resetAllStates();
+                              setTimeout(() => {
+                                router.push("/");
+                              }, 4000);
+                            } else {
+                              setCreateLoading(false);
+                              toast.error(
+                                "Error creating your coach profile. Please try again.",
+                                {
+                                  duration: 6000,
+                                }
+                              );
+                            }
+                          })
+                          .catch((err) => {
+                            toast.error(
+                              "Error creating your coach profile. Please try again.",
+                              {
+                                duration: 6000,
+                              }
+                            );
+                            console.error(err);
+                            setCreateLoading(false);
+                          });
+                      } else {
+                        setCreateLoading(false);
+                        if (data.error === "Bot already exists") {
+                          toast.error("Bot already exists");
                         } else {
+                          setCreateLoading(false);
+                          toast.error(
+                            "Error creating your coach profile. Please try again.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                        }
+                      }
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      setCreateLoading(false);
+                      toast.error(
+                        "Error creating your coach profile. Please try again.",
+                        {
+                          duration: 6000,
+                        }
+                      );
+                    });
+                } else {
+                  resetAllStates();
+                  setCreateLoading(false);
+                  toast.success(
+                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              })
+              .catch((error) => {
+                console.log("error", error);
+                setCreateLoading(false);
+                toast.error(
+                  "Error creating your coach profile. Please try again."
+                );
+              });
+          } else {
+            console.log("edit", myHeaders);
+            // Create a plain JavaScript object
+            const formDataObject: { [key: string]: any } = {};
+            formdata.forEach((value, key) => {
+              formDataObject[key] = value;
+            });
+
+            // Convert the object to JSON
+            var formDataJSON = JSON.stringify(formDataObject);
+            console.log(
+              formDataObject,
+              "===================profile to update ============================="
+            );
+            // if (formType === "coachee") {
+            myHeaders.append("Content-Type", "application/json");
+            // }
+
+            let reapproval = "true";
+            if (formType === "coachee") {
+              reapproval = "false";
+            }
+            console.log(reapproval);
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
+              {
+                method: "PATCH",
+                headers: myHeaders,
+                body: formDataJSON,
+              }
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+                if (!data.error) {
+                  console.log(data, "updated");
+                  // setCreateLoading(false);
+                  // if (!data.error && !data.detail) {
+                  //   toast.loading(
+                  //     "Your profile and Bot have been updated. Redirecting you to your profile.",
+                  //     {
+                  //       duration: 6000,
+                  //     }
+                  //   );
+                  // resetAllStates();
+                  // setTimeout(() => {
+                  //   router.push("/profile");
+                  // }, 6000);
+                  // }
+
+                  if (formType === "coach") {
+                    // myHeaders.append("Content-Type", "application/json");
+                    // const avatarBotCreationFormData = {
+                    //   bot_type: "avatar_bot",
+                    //   profile_id: userProfileId,
+                    //   bot_name: name,
+                    //   email: user.email,
+                    //   bot_details: { info: about, coach_name: name },
+                    //   attributes: {
+                    //     heading: `welcome to ${name}'s avatar bot`,
+                    //   },
+                    //   participant_id: userId,
+                    //   bot_base_url: `${
+                    //     subdomain === "playground"
+                    //       ? "https://playground.coachbots.com"
+                    //       : "https://platform.coachbots.com"
+                    //   }`,
+                    //   fitment_answer: `${participantLevel},${
+                    //     coachMentInSameDep === "yes" ? true : false
+                    //   },${outcomeSupported}`,
+                    //   fitment_data: {
+                    //     options: {
+                    //       "1": ["Someone Senior", "Any level"],
+                    //       "2": ["Yes", "No"],
+                    //       "3": [
+                    //         "Career advancement",
+                    //         "Skill development",
+                    //         "Introspection & reflection",
+                    //         "Networking & leadership",
+                    //       ],
+                    //     },
+                    //     mentee_que: {
+                    //       "1": "What level of coach & mentor do you want?",
+                    //       "2": "I want a coach & mentor someone from the same department.",
+                    //       "3": "What kind of outcome do you want from these sessions the most?",
+                    //     },
+                    //     mentor_que: {
+                    //       "1": "What level of participant do you want to coach & mentor?",
+                    //       "2": "I want to coach & mentor someone in the same department.",
+                    //       "3": "What kind of outcome can you support in these sessions the most?",
+                    //     },
+                    //   },
+                    //   additional_data: {
+                    //     profile_type: "coach",
+                    //     area_domain: areaDomain,
+                    //     experience: experience,
+                    //     mentoring_preferences: mentoringPreferences,
+                    //     mentoring_frameworks: mentoringPreferencess.join(", "),
+                    //     dominant_point_of_view: povProgramParticipants,
+                    //     problem_solving_approach: problemSolvingApproach,
+                    //     admired_leaders: leaderNames,
+                    //     profile_description: about,
+                    //     department: department,
+                    //     youtube_links: linksReflectingWVpersonal,
+                    //     article_links: linksReflectyouWished,
+                    //     voice_sample: voiceSample,
+                    //     discuss_how_you_helped_others_in_coachMentoring:
+                    //       discussInCARformat,
+                    //     journey_and_background: journeyAndBackground,
+                    //     provide_answers_using_emojis: `${
+                    //       provideAnswersUsingEmojis === "yes" ? true : false
+                    //     }`,
+                    //     allow_coachee_to_create_session: `${
+                    //       allowSessionNotes === "yes" ? true : false
+                    //     }`,
+                    //     fitment_answers: {
+                    //       coachmentSelect,
+                    //       participantLevel,
+                    //       coachMentInSameDep,
+                    //       outcomeSupported,
+                    //     },
+                    //     coach_qna: CoachMentorQnA.coach_qna,
+                    //     mentor_qna: CoachMentorQnA.mentor_qna,
+                    //   },
+                    //   media_data: {
+                    //     youtube_links: linksReflectingWVpersonal,
+                    //     article_links: linksReflectyouWished,
+                    //   },
+                    // };
+
+                    // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                    //   method: checkIfEdit ? "PATCH" : "POST",
+                    //   headers: myHeaders,
+                    //   body: checkIfEdit
+                    //     ? JSON.stringify({
+                    //         bot_id: botIUidFromParams,
+                    //         profile_id: userProfileId,
+                    //         updated_data: avatarBotCreationFormData,
+                    //         is_overwrite: deleteExistingFiles ? "true" : "false",
+                    //       })
+                    //     : JSON.stringify(avatarBotCreationFormData),
+                    // })
+                    //   .then((res) => res.json())
+                    //   .then((data) => {
+                    //     console.log(data);
+                    //     // setCreateLoading(false);
+                    //     if (!data.error && !data.detail) {
+                    console.log(referenceDocs.length, "length");
+                    if (
+                      referenceDocs.length > 0 ||
+                      linksReflectingWVpersonal !== "" ||
+                      linksReflectyouWished !== "" ||
+                      mediaData?.extracted_from_article ||
+                      mediaData?.extracted_from_youtube ||
+                      mediaData?.extracted_from_pdf
+                    ) {
+                      const filesPatchFormData = new FormData();
+                      if (referenceDocs.length > 0) {
+                        referenceDocs.forEach(({ file, text }) => {
                           if (file.name.includes(".pdf")) {
                             if (text) {
                               filesPatchFormData.append(
                                 "pdf_data",
-                                `file_name:${file.name} text_file:${text}`
+                                `file_name:${file.name.trim()} text_file:${text}`
                               );
                               console.log(text);
                             } else {
@@ -910,7 +1209,7 @@ const CoachIntake = ({ user }: any) => {
                             if (text) {
                               filesPatchFormData.append(
                                 `doc_data`,
-                                `file_name:${file.name} text_file:${text}`
+                                `file_name:${file.name.trim()} text_file:${text}`
                               );
                               console.log(text);
                             } else {
@@ -921,21 +1220,107 @@ const CoachIntake = ({ user }: any) => {
                               );
                             }
                           }
-                        }
-                      });
+                        });
+                      }
 
-                      filesPatchFormData.append("bot_id", data.bot_uid);
+                      let deletingDocs: string = "";
+                      let deletingPdfs: string = "";
+                      if (mediaData?.extracted_from_pdf) {
+                        deletingDocs = mediaData?.extracted_from_pdf
+                          .map((item) => {
+                            if (
+                              item.isDeleted &&
+                              item.fileName.includes(".docx")
+                            ) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
 
+                        deletingPdfs = mediaData?.extracted_from_pdf
+                          .map((item) => {
+                            if (
+                              item.isDeleted &&
+                              item.fileName.includes(".pdf")
+                            ) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingArticleLinks: string = "";
+                      if (mediaData?.extracted_from_article) {
+                        deletingArticleLinks = mediaData?.extracted_from_article
+                          .map((item) => {
+                            if (item.isDeleted) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingYoutubeLinks: string = "";
+                      if (mediaData?.extracted_from_youtube) {
+                        deletingYoutubeLinks = mediaData?.extracted_from_youtube
+                          .map((item) => {
+                            if (item.isDeleted) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingOptionalFiles: string = "";
+                      if (optionalMediaData?.extracted_from_optional_file) {
+                        deletingOptionalFiles =
+                          optionalMediaData?.extracted_from_optional_file
+                            .map((item) => {
+                              if (item.isDeleted) {
+                                return item.fileName;
+                              }
+                            })
+                            .filter((item) => item !== undefined)
+                            .join(",");
+                      }
+
+                      const deletedData = {
+                        pdf_files: deletingPdfs,
+                        youtube_links: deletingYoutubeLinks,
+                        article_links: deletingArticleLinks,
+                        doc_files: deletingDocs,
+                        optional_files: deletingOptionalFiles,
+                      };
+
+                      console.log(deletedData);
+                      filesPatchFormData.append(
+                        "deleted_data",
+                        JSON.stringify(deletedData)
+                      );
+
+                      filesPatchFormData.append("bot_id", botIUidFromParams!);
                       const media_data = {
                         youtube_links: linksReflectingWVpersonal,
                         article_links: linksReflectyouWished,
                       };
+
                       filesPatchFormData.append(
                         "media_data",
                         JSON.stringify(media_data)
                       );
-
-                      console.log(referenceDocs);
+                      filesPatchFormData.append(
+                        "is_overwrite",
+                        "false"
+                        // deleteExistingFiles ? "true" : "false"
+                      );
+                      filesPatchFormData.append(
+                        "profile_id",
+                        `${userProfileId}`
+                      );
                       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                         method: "PATCH",
                         headers: {
@@ -949,14 +1334,14 @@ const CoachIntake = ({ user }: any) => {
                           setCreateLoading(false);
                           if (!data.error && !data.detail) {
                             toast.success(
-                              "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                              "Successfully updated your profile. Redirecting you to your Profile page.",
                               {
                                 duration: 6000,
                               }
                             );
                             resetAllStates();
                             setTimeout(() => {
-                              router.push("/");
+                              router.push("/profile");
                             }, 4000);
                           } else {
                             setCreateLoading(false);
@@ -980,379 +1365,38 @@ const CoachIntake = ({ user }: any) => {
                         });
                     } else {
                       setCreateLoading(false);
-                      if (data.error === "Bot already exists") {
-                        toast.error("Bot already exists");
-                      } else {
-                        setCreateLoading(false);
-                        toast.error(
-                          "Error creating your coach profile. Please try again.",
-                          {
-                            duration: 6000,
-                          }
-                        );
-                      }
-                    }
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    setCreateLoading(false);
-                    toast.error(
-                      "Error creating your coach profile. Please try again.",
-                      {
-                        duration: 6000,
-                      }
-                    );
-                  });
-              } else {
-                resetAllStates();
-                setCreateLoading(false);
-                toast.success(
-                  "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                  {
-                    duration: 6000,
-                  }
-                );
-                setTimeout(() => {
-                  router.push("/");
-                }, 4000);
-              }
-            })
-            .catch((error) => {
-              console.log("error", error);
-              setCreateLoading(false);
-              toast.error(
-                "Error creating your coach profile. Please try again."
-              );
-            });
-        } else {
-          console.log("edit", myHeaders);
-          // Create a plain JavaScript object
-          const formDataObject: { [key: string]: any } = {};
-          formdata.forEach((value, key) => {
-            formDataObject[key] = value;
-          });
-
-          // Convert the object to JSON
-          var formDataJSON = JSON.stringify(formDataObject);
-          console.log(
-            formDataObject,
-            "===================profile to update ============================="
-          );
-          // if (formType === "coachee") {
-          myHeaders.append("Content-Type", "application/json");
-          // }
-
-          let reapproval = "true";
-          if (formType === "coachee") {
-            reapproval = "false";
-          }
-          console.log(reapproval);
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
-            {
-              method: "PATCH",
-              headers: myHeaders,
-              body: formDataJSON,
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              if (!data.error) {
-                console.log(data, "updated");
-                // setCreateLoading(false);
-                // if (!data.error && !data.detail) {
-                //   toast.loading(
-                //     "Your profile and Bot have been updated. Redirecting you to your profile.",
-                //     {
-                //       duration: 6000,
-                //     }
-                //   );
-                // resetAllStates();
-                // setTimeout(() => {
-                //   router.push("/profile");
-                // }, 6000);
-                // }
-
-                if (formType === "coach") {
-                  // myHeaders.append("Content-Type", "application/json");
-                  // const avatarBotCreationFormData = {
-                  //   bot_type: "avatar_bot",
-                  //   profile_id: userProfileId,
-                  //   bot_name: name,
-                  //   email: user.email,
-                  //   bot_details: { info: about, coach_name: name },
-                  //   attributes: {
-                  //     heading: `welcome to ${name}'s avatar bot`,
-                  //   },
-                  //   participant_id: userId,
-                  //   bot_base_url: `${
-                  //     subdomain === "playground"
-                  //       ? "https://playground.coachbots.com"
-                  //       : "https://platform.coachbots.com"
-                  //   }`,
-                  //   fitment_answer: `${participantLevel},${
-                  //     coachMentInSameDep === "yes" ? true : false
-                  //   },${outcomeSupported}`,
-                  //   fitment_data: {
-                  //     options: {
-                  //       "1": ["Someone Senior", "Any level"],
-                  //       "2": ["Yes", "No"],
-                  //       "3": [
-                  //         "Career advancement",
-                  //         "Skill development",
-                  //         "Introspection & reflection",
-                  //         "Networking & leadership",
-                  //       ],
-                  //     },
-                  //     mentee_que: {
-                  //       "1": "What level of coach & mentor do you want?",
-                  //       "2": "I want a coach & mentor someone from the same department.",
-                  //       "3": "What kind of outcome do you want from these sessions the most?",
-                  //     },
-                  //     mentor_que: {
-                  //       "1": "What level of participant do you want to coach & mentor?",
-                  //       "2": "I want to coach & mentor someone in the same department.",
-                  //       "3": "What kind of outcome can you support in these sessions the most?",
-                  //     },
-                  //   },
-                  //   additional_data: {
-                  //     profile_type: "coach",
-                  //     area_domain: areaDomain,
-                  //     experience: experience,
-                  //     mentoring_preferences: mentoringPreferences,
-                  //     mentoring_frameworks: mentoringPreferencess.join(", "),
-                  //     dominant_point_of_view: povProgramParticipants,
-                  //     problem_solving_approach: problemSolvingApproach,
-                  //     admired_leaders: leaderNames,
-                  //     profile_description: about,
-                  //     department: department,
-                  //     youtube_links: linksReflectingWVpersonal,
-                  //     article_links: linksReflectyouWished,
-                  //     voice_sample: voiceSample,
-                  //     discuss_how_you_helped_others_in_coachMentoring:
-                  //       discussInCARformat,
-                  //     journey_and_background: journeyAndBackground,
-                  //     provide_answers_using_emojis: `${
-                  //       provideAnswersUsingEmojis === "yes" ? true : false
-                  //     }`,
-                  //     allow_coachee_to_create_session: `${
-                  //       allowSessionNotes === "yes" ? true : false
-                  //     }`,
-                  //     fitment_answers: {
-                  //       coachmentSelect,
-                  //       participantLevel,
-                  //       coachMentInSameDep,
-                  //       outcomeSupported,
-                  //     },
-                  //     coach_qna: CoachMentorQnA.coach_qna,
-                  //     mentor_qna: CoachMentorQnA.mentor_qna,
-                  //   },
-                  //   media_data: {
-                  //     youtube_links: linksReflectingWVpersonal,
-                  //     article_links: linksReflectyouWished,
-                  //   },
-                  // };
-
-                  // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                  //   method: checkIfEdit ? "PATCH" : "POST",
-                  //   headers: myHeaders,
-                  //   body: checkIfEdit
-                  //     ? JSON.stringify({
-                  //         bot_id: botIUidFromParams,
-                  //         profile_id: userProfileId,
-                  //         updated_data: avatarBotCreationFormData,
-                  //         is_overwrite: deleteExistingFiles ? "true" : "false",
-                  //       })
-                  //     : JSON.stringify(avatarBotCreationFormData),
-                  // })
-                  //   .then((res) => res.json())
-                  //   .then((data) => {
-                  //     console.log(data);
-                  //     // setCreateLoading(false);
-                  //     if (!data.error && !data.detail) {
-                  console.log(referenceDocs.length, "length");
-                  if (
-                    referenceDocs.length > 0 ||
-                    linksReflectingWVpersonal !== "" ||
-                    linksReflectyouWished !== "" ||
-                    mediaData?.extracted_from_article ||
-                    mediaData?.extracted_from_youtube ||
-                    mediaData?.extracted_from_pdf
-                  ) {
-                    const filesPatchFormData = new FormData();
-                    if (referenceDocs.length > 0) {
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              "pdf_data",
-                              `file_name:${file.name.trim()} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              `doc_data`,
-                              `file_name:${file.name.trim()} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
+                      toast.success(
+                        "Successfully updated your profile. Redirecting you to your Profile page.",
+                        {
+                          duration: 6000,
                         }
-                      });
+                      );
+                      resetAllStates();
+                      setTimeout(() => {
+                        router.push("/profile");
+                      }, 4000);
                     }
-
-                    let deletingDocs: string = "";
-                    let deletingPdfs: string = "";
-                    if (mediaData?.extracted_from_pdf) {
-                      deletingDocs = mediaData?.extracted_from_pdf
-                        .map((item) => {
-                          if (
-                            item.isDeleted &&
-                            item.fileName.includes(".docx")
-                          ) {
-                            return item.fileName;
-                          }
-                        })
-                        .filter((item) => item !== undefined)
-                        .join(",");
-
-                      deletingPdfs = mediaData?.extracted_from_pdf
-                        .map((item) => {
-                          if (
-                            item.isDeleted &&
-                            item.fileName.includes(".pdf")
-                          ) {
-                            return item.fileName;
-                          }
-                        })
-                        .filter((item) => item !== undefined)
-                        .join(",");
-                    }
-
-                    let deletingArticleLinks: string = "";
-                    if (mediaData?.extracted_from_article) {
-                      deletingArticleLinks = mediaData?.extracted_from_article
-                        .map((item) => {
-                          if (item.isDeleted) {
-                            return item.fileName;
-                          }
-                        })
-                        .filter((item) => item !== undefined)
-                        .join(",");
-                    }
-
-                    let deletingYoutubeLinks: string = "";
-                    if (mediaData?.extracted_from_youtube) {
-                      deletingYoutubeLinks = mediaData?.extracted_from_youtube
-                        .map((item) => {
-                          if (item.isDeleted) {
-                            return item.fileName;
-                          }
-                        })
-                        .filter((item) => item !== undefined)
-                        .join(",");
-                    }
-
-                    let deletingOptionalFiles: string = "";
-                    if (optionalMediaData?.extracted_from_optional_file) {
-                      deletingOptionalFiles =
-                        optionalMediaData?.extracted_from_optional_file
-                          .map((item) => {
-                            if (item.isDeleted) {
-                              return item.fileName;
-                            }
-                          })
-                          .filter((item) => item !== undefined)
-                          .join(",");
-                    }
-
-                    const deletedData = {
-                      pdf_files: deletingPdfs,
-                      youtube_links: deletingYoutubeLinks,
-                      article_links: deletingArticleLinks,
-                      doc_files: deletingDocs,
-                      optional_files: deletingOptionalFiles,
-                    };
-
-                    console.log(deletedData);
-                    filesPatchFormData.append(
-                      "deleted_data",
-                      JSON.stringify(deletedData)
-                    );
-
-                    filesPatchFormData.append("bot_id", botIUidFromParams!);
-                    const media_data = {
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                    };
-
-                    filesPatchFormData.append(
-                      "media_data",
-                      JSON.stringify(media_data)
-                    );
-                    filesPatchFormData.append(
-                      "is_overwrite",
-                      "false"
-                      // deleteExistingFiles ? "true" : "false"
-                    );
-                    filesPatchFormData.append("profile_id", `${userProfileId}`);
-                    fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                      method: "PATCH",
-                      headers: {
-                        Authorization: basicAuth,
-                      },
-                      body: filesPatchFormData,
-                    })
-                      .then((res) => res.json())
-                      .then((data) => {
-                        console.log(data);
-                        setCreateLoading(false);
-                        if (!data.error && !data.detail) {
-                          toast.success(
-                            "Successfully updated your profile. Redirecting you to your Profile page.",
-                            {
-                              duration: 6000,
-                            }
-                          );
-                          resetAllStates();
-                          setTimeout(() => {
-                            router.push("/profile");
-                          }, 4000);
-                        } else {
-                          setCreateLoading(false);
-                          toast.error(
-                            "Error creating your coach profile. Please try again.",
-                            {
-                              duration: 6000,
-                            }
-                          );
-                        }
-                      })
-                      .catch((err) => {
-                        toast.error(
-                          "Error creating your coach profile. Please try again.",
-                          {
-                            duration: 6000,
-                          }
-                        );
-                        console.error(err);
-                        setCreateLoading(false);
-                      });
+                    //   } else {
+                    //     setCreateLoading(false);
+                    //     if (data.error === "Bot already exists") {
+                    //       toast.error("Bot already exists");
+                    //     } else {
+                    //       setCreateLoading(false);
+                    //       toast.error(
+                    //         "Error creating your coach profile. Please try again.",
+                    //         {
+                    //           duration: 6000,
+                    //         }
+                    //       );
+                    //     }
+                    //   }
+                    // })
+                    // .catch((err) => {
+                    //   console.error(err);
+                    //   setCreateLoading(false);
+                    // });
                   } else {
+                    resetAllStates();
                     setCreateLoading(false);
                     toast.success(
                       "Successfully updated your profile. Redirecting you to your Profile page.",
@@ -1360,59 +1404,29 @@ const CoachIntake = ({ user }: any) => {
                         duration: 6000,
                       }
                     );
-                    resetAllStates();
                     setTimeout(() => {
                       router.push("/profile");
                     }, 4000);
                   }
-                  //   } else {
-                  //     setCreateLoading(false);
-                  //     if (data.error === "Bot already exists") {
-                  //       toast.error("Bot already exists");
-                  //     } else {
-                  //       setCreateLoading(false);
-                  //       toast.error(
-                  //         "Error creating your coach profile. Please try again.",
-                  //         {
-                  //           duration: 6000,
-                  //         }
-                  //       );
-                  //     }
-                  //   }
-                  // })
-                  // .catch((err) => {
-                  //   console.error(err);
-                  //   setCreateLoading(false);
-                  // });
                 } else {
-                  resetAllStates();
-                  setCreateLoading(false);
-                  toast.success(
-                    "Successfully updated your profile. Redirecting you to your Profile page.",
+                  toast.error(
+                    "Error creating your coach profile. Please try again.",
                     {
                       duration: 6000,
                     }
                   );
-                  setTimeout(() => {
-                    router.push("/profile");
-                  }, 4000);
+                  setCreateLoading(false);
                 }
-              } else {
-                toast.error(
-                  "Error creating your coach profile. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
+              })
+              .catch((err) => {
+                console.error(err);
+                toast.error("Error updating your profile. Please try again.");
                 setCreateLoading(false);
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              toast.error("Error updating your profile. Please try again.");
-              setCreateLoading(false);
-            });
+              });
+          }
         }
+      } else {
+        toast.info("Please select the high and low skills");
       }
     } catch (error) {
       console.log(error);
@@ -1423,127 +1437,131 @@ const CoachIntake = ({ user }: any) => {
 
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (user) {
-      console.log("user feedback", user);
-      setFeedbackCreateLoading(true);
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", basicAuth);
+    if (characteristicsRateHigh && characteristicsRateLows) {
+      if (user) {
+        console.log("user feedback", user);
+        setFeedbackCreateLoading(true);
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
 
-      var requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-      };
-      fetch(
-        `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          console.log("feedback bot profile data", result);
-          userProfileId = result.data.length > 0 ? result.data[0].uid : null;
-          console.log(userProfileId);
-          var feedbackFormdata = {
-            bot_type: "feedback_bot",
-            bot_name: name,
-            profile_id: userProfileId,
-            email: user.email,
-            attributes: {
-              heading: "welcome to feedback bot",
+        var requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+        };
+        fetch(
+          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
+          requestOptions
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            console.log("feedback bot profile data", result);
+            userProfileId = result.data.length > 0 ? result.data[0].uid : null;
+            console.log(userProfileId);
+            var feedbackFormdata = {
+              bot_type: "feedback_bot",
+              bot_name: name,
+              profile_id: userProfileId,
+              email: user.email,
+              attributes: {
+                heading: "welcome to feedback bot",
+                feedback_questions: {
+                  "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+                  "2": "Regarding workplace team management skills, how would you rate my skills?",
+                  "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+                  "4": "How would like to see me implement the feedback you have provided so far?",
+                },
+              },
               feedback_questions: {
                 "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
                 "2": "Regarding workplace team management skills, how would you rate my skills?",
                 "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
                 "4": "How would like to see me implement the feedback you have provided so far?",
               },
-            },
-            feedback_questions: {
-              "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-              "2": "Regarding workplace team management skills, how would you rate my skills?",
-              "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-              "4": "How would like to see me implement the feedback you have provided so far?",
-            },
-            participant_id: userId,
-            additional_data: {
-              short_profile_bio: profileBio,
-              current_projects: currentProjects,
-              suggested_projects: suggestedProjects,
-            },
-            low_rating_characteristics: characteristicsRateLows,
-            high_rating_characteristics: characteristicsRateHigh,
-            bot_base_url: `${
-              subdomain === "playground"
-                ? "https://playground.coachbots.com"
-                : "https://platform.coachbots.com"
-            }`,
-          };
+              participant_id: userId,
+              additional_data: {
+                short_profile_bio: profileBio,
+                current_projects: currentProjects,
+                suggested_projects: suggestedProjects,
+              },
+              low_rating_characteristics: characteristicsRateLows,
+              high_rating_characteristics: characteristicsRateHigh,
+              bot_base_url: `${
+                subdomain === "playground"
+                  ? "https://playground.coachbots.com"
+                  : "https://platform.coachbots.com"
+              }`,
+            };
 
-          var myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-          myHeaders.append("Authorization", basicAuth);
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", basicAuth);
 
-          fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-            method: checkIfEdit ? "PATCH" : "POST",
-            headers: myHeaders,
-            body: checkIfEdit
-              ? JSON.stringify({
-                  bot_id: botIUidFromParams,
-                  updated_data: feedbackFormdata,
-                })
-              : JSON.stringify(feedbackFormdata),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              setFeedbackCreateLoading(false);
+            fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+              method: checkIfEdit ? "PATCH" : "POST",
+              headers: myHeaders,
+              body: checkIfEdit
+                ? JSON.stringify({
+                    bot_id: botIUidFromParams,
+                    updated_data: feedbackFormdata,
+                  })
+                : JSON.stringify(feedbackFormdata),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+                setFeedbackCreateLoading(false);
 
-              if (!data.error && !data.detail) {
-                if (checkIfEdit) {
-                  toast.success("Successfully Updated your feedback bot.", {
-                    duration: 6000,
-                  });
-                  setTimeout(() => {
-                    router.push("/profile");
-                  }, 4000);
+                if (!data.error && !data.detail) {
+                  if (checkIfEdit) {
+                    toast.success("Successfully Updated your feedback bot.", {
+                      duration: 6000,
+                    });
+                    setTimeout(() => {
+                      router.push("/profile");
+                    }, 4000);
+                  } else {
+                    toast.success(
+                      "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                      {
+                        duration: 6000,
+                      }
+                    );
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 4000);
+                  }
+                  resetAllStates();
                 } else {
-                  toast.success(
-                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                  toast.error(
+                    "Error creating your feedback bot. Please try again.",
                     {
                       duration: 6000,
                     }
                   );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
                 }
-                resetAllStates();
-              } else {
-                toast.error(
-                  "Error creating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              if (checkIfEdit) {
-                toast.error(
-                  "Error Updating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              } else {
-                toast.error(
-                  "Error creating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              }
-            });
-        });
+              })
+              .catch((err) => {
+                console.error(err);
+                if (checkIfEdit) {
+                  toast.error(
+                    "Error Updating your feedback bot. Please try again.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                } else {
+                  toast.error(
+                    "Error creating your feedback bot. Please try again.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                }
+              });
+          });
+      }
+    } else {
+      toast.info("Please select the high and low skills");
     }
   };
 
@@ -2362,15 +2380,15 @@ const CoachIntake = ({ user }: any) => {
                       Select the area/domain that you are most passionate about
                       coaching and mentoring.{" "}
                       <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
-                    </Tooltip>
+                        overlayInnerStyle={{
+                          backgroundColor: "white",
+                          color: "black",
+                          padding: "8px",
+                        }}
+                        title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
+                      >
+                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
+                      </Tooltip>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup

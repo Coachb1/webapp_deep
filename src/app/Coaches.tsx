@@ -1457,45 +1457,50 @@ const Coaches = ({
             assistance even when life gets busy!
           </p>
         </div>
-        <div id="search-filter">
-          <div className="my-4">
-            <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
-              <Search className="mr-1 inline h-4 w-4" />
-              <input
-                placeholder="Search for Any Profile"
-                className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
-                type="text"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  handleUpdateCheckedValues([e.target.value]);
-                }}
-              />
+        {!restrictedFeatures?.includes("Search-filter") && (
+          <div id="search-filter">
+            <div className="my-4">
+              <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
+                <Search className="mr-1 inline h-4 w-4" />
+                <input
+                  placeholder="Search for Any Profile"
+                  className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+                  type="text"
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    handleUpdateCheckedValues([e.target.value]);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <div>
+                <FilterDropDown
+                  filtersCategory={filterCategroies}
+                  setParentCheckedValues={setParentCheckedValues}
+                  checkedValues={parentCheckedValues}
+                  onUpdateCheckedValues={handleUpdateCheckedValues}
+                />
+                <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
+                  This is a combination filter. It works when the result
+                  satisfies each selection criterion.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mt-4">
-            <div>
-              <FilterDropDown
-                filtersCategory={filterCategroies}
-                setParentCheckedValues={setParentCheckedValues}
-                checkedValues={parentCheckedValues}
-                onUpdateCheckedValues={handleUpdateCheckedValues}
-              />
-              <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
-                This is a combination filter. It works when the result satisfies
-                each selection criterion.
-              </p>
-            </div>
-          </div>
-        </div>
+        )}
         <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />
-        <Badge
-          variant={"secondary"}
-          className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
-        >
-          Profiles with displayed coach/mentor emails use AI-generated
-          responses, with an average response time of 24 hours. The real user's
-          email is also kept in CC; they may choose to respond or not.
-        </Badge>
+        {!restrictedFeatures?.includes("DirProfile-msg") && (
+          <Badge
+            variant={"secondary"}
+            className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
+          >
+            Profiles with displayed coach/mentor emails use AI-generated
+            responses, with an average response time of 24 hours. The real
+            user's email is also kept in CC; they may choose to respond or not.
+          </Badge>
+        )}
+
         <div className="mt-2 ">
           {loading && (
             <div className="flex w-full flex-row items-center justify-center pb-12">
