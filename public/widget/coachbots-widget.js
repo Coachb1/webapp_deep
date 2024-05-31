@@ -3826,7 +3826,7 @@ loadExternalModule().then(() => {
               buttonTextArray.push(buttonText);
             });
 
-            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section b")
+            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section p")
             opiton_scenarios.forEach((b) =>{
               const buttonText = b.textContent.trim();
               buttonTextArray.push(buttonText);
