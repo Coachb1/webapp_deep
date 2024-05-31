@@ -4974,8 +4974,9 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
       let divCont = '';
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
-        <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #16a34a; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${i == 0 ? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
