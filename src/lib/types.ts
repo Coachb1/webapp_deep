@@ -106,6 +106,7 @@ export interface TestData {
   test_code: string;
   test_type: string;
   is_recommended: boolean;
+  is_micro?: boolean;
 }
 
 export interface DomainData {
