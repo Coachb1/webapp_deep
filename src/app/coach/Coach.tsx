@@ -257,7 +257,7 @@ const Coach = ({ user, renderType }: any) => {
             const items = lines.slice(1);
 
             return (
-              <section className="text-sm max-sm:text-xs" key={index}>
+              <section className="text-sm max-sm:text-xs text-wrap" key={index}>
                 <h2 className="font-medium">{title}</h2>
                 <ul className="list-none list-inside">
                   {items.map((item, itemIndex) => (
