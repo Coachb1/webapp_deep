@@ -3639,6 +3639,50 @@ function findRelatedItemsStt(data, targetCode) {
     : null;
 }
 
+const audioCanvasUiForQuestions = (audio, canvas) => {
+  const canvasCtx = canvas.getContext("2d");
+  console.log(canvasCtx);
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  console.log(audioCtx);
+  const analyser = audioCtx.createAnalyser();
+  const source = audioCtx.createMediaElementSource(audio);
+
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize = 256;
+  const bufferLength = analyser.fftSize;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function draw() {
+    requestAnimationFrame(draw);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+
+      canvasCtx.fillStyle = "#2CC092";
+      canvasCtx.fillRect(
+        x,
+        canvas.height - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      );
+
+      x += barWidth + 1;
+    }
+  }
+
+  draw()
+}
+
 const audioCanvasUI = (audio, canvas) => {
   const canvasCtx = canvas.getContext("2d");
   console.log(canvasCtx);
@@ -3821,17 +3865,29 @@ const handleProceedClickStt = async (choice) => {
             const objectUrl = URL.createObjectURL(blob);
 
             console.log(objectUrl, "url");
+            const randomIdForAudioElement = generateRandomAlphanumeric(5);
+            const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
             initialQuestionTextStt =
               queDiv +
-              `<div ><audio style="${
+              `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
-              }" controls autoplay>
+              }" autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`;
+              </audio>
+              
+              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="200"></canvas>
+              </div>`;
+
+              setTimeout(() => {
+                const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
+                const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+                console.log(audioElement, canvasElement)
+                audioCanvasUiForQuestions(audioElement, canvasElement)
+              }, 100);
 
             console.log(initialQuestionTextStt);
           }
@@ -3891,18 +3947,30 @@ const handleProceedClickStt = async (choice) => {
           console.log("respnse", blob);
 
           const objectUrl = URL.createObjectURL(blob);
+          const randomIdForAudioElement = generateRandomAlphanumeric(5);
+          const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div ><audio style="${
+            `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
-            }" controls autoplay>
+            }" autoplay>
             <source src=${objectUrl} type="audio/mpeg" />
             Your browser does not support the audio element.
-            </audio></div>`;
+            </audio>
+            
+            <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+            </div>`;
+
+            setTimeout(() => {
+              const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
+              const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+              console.log(audioElement, canvasElement)
+              audioCanvasUiForQuestions(audioElement, canvasElement)
+            }, 100);
         }
 
         if (responderName) {
@@ -5858,19 +5926,33 @@ loadExternalModule().then(() => {
     console.log("respnse", blob);
 
     const objectUrl = URL.createObjectURL(blob);
-
+    const randomIdForAudioElement = generateRandomAlphanumeric(5);
+    const shadowRoot = document.getElementById("chat-element2").shadowRoot
+    
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div ><audio style="${
+      `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
-      }" controls autoplay>
+      }" autoplay>
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
-      </audio></div>`;
+      </audio>
+      <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+      </div>`;
 
+    setTimeout(() => {
+      const audioElement = shadowRoot.getElementById(
+        `audio-player-${randomIdForAudioElement}`
+      );
+      const canvasElement = shadowRoot.getElementById(
+        `canvas-audio-${randomIdForAudioElement}`
+      );
+      console.log(audioElement, canvasElement);
+      audioCanvasUiForQuestions(audioElement, canvasElement);
+    }, 100);
     return audioCont;
   };
 
