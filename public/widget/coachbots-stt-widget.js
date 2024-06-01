@@ -5023,6 +5023,10 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
     currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
+  console.log('is_micro', snnipetConfigSTT.isMicro)
+  if (snnipetConfigSTT.isMicro){
+    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  }
   url.search = params;
 
   await fetch(url, {
@@ -5034,7 +5038,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("Dynamically created Test result", data);
+      console.log("Dynamically created Test result stt", data);
       // allMessages.forEach((indvMessage) => {
       //   if (
       //     indvMessage.innerText === "Please wait, we are generating your scenarios...") {
@@ -5050,7 +5054,9 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
 
         challenges.forEach(element => {
           if (element.title){
-            scenarios.push(element)
+            if (element.test_type !== 'dynamic_discussion_thread'){
+              scenarios.push(element)
+            }
           }
         });
       } catch(e){
@@ -5065,7 +5071,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
         
         const ErrorDiv =  `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
-        <p style="font-size: 16px; color: #333; margin: 0;">Scenario generation failed because of failure of page extraction</p>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -5102,7 +5108,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
       scenarios.forEach((element, i) => {
         divCont += `
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${i == 0 ? "Simulation" : "Roleplay" }</div>
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 

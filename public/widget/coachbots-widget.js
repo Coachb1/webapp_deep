@@ -1939,6 +1939,10 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
     currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
+  console.log('is_micro', snnipetConfig.isMicro)
+  if (snnipetConfig.isMicro){
+    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
+  }
   url.search = params;
 
   await fetch(url, {
@@ -1965,7 +1969,9 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       try{
         challenges.forEach(element => {
           if (element.title){
-            scenarios.push(element)
+            if (element.test_type !== 'dynamic_discussion_thread'){
+              scenarios.push(element)
+            }
           }
           
         });
@@ -1978,7 +1984,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         
         const ErrorDiv =  `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
-        <p style="font-size: 16px; color: #333; margin: 0;">Scenario generation failed because of failure of page extraction</p>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -2019,8 +2025,9 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       scenarios.forEach((element,i) => {
         console.log('element', element);
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
-        <p style="font-size: 16px; color: #333; margin: 0; ${i === 1 && "margin-top : 10px"}">${element.title}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test'? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -2035,31 +2042,38 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
               font-weight: 600;
               transition: background-color 0.3s ease;
             " 
-            onmouseout="this.style.backgroundColor = '#16a34a'"
-            onclick="handleAttemptScenaios('${element.title}', '${element.test_code}')">
+            id="attempt-btn-${i}"
+            onmouseout="this.style.backgroundColor = '#16a34a'">
             Attempt
           </button>
         </div>
         </div>
         `
+        setTimeout(() => {
+          const btn = gShadowRoot.getElementById(`attempt-btn-${i}`)
+          btn.onclick = () => {
+            handleAttemptScenaios(element.title, element.test_code)
+          }
+        }, 100);
       }); 
+
 
       if (signals){
         signals.onResponse(
           {
             html: `
-            <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
             ${divCont}
             </div>
             `
           }
         )
-      } else {
+      } else{
       appendMessage(`
-      <div id='create-scenario-section' style="margin: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; max-width: 300px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+      <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
-      `)
+      `);
       }
     })
     .catch((err) => console.log(err));
@@ -4001,9 +4015,9 @@ loadExternalModule().then(() => {
                   console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
                   console.log("prioritiseUserAllowInteraction" , prioritiseUserAllowInteraction)
                   if(prioritiseUserAllowInteraction){
-                    allowAudioInteraction = userAllowAudioInteraction
+                    isImmersive = userAllowAudioInteraction
                   } else {
-                    allowAudioInteraction = clientAllowAudioInteraction
+                    isImmersive = clientAllowAudioInteraction
                   }
                 }
                   console.log('isImmersive', isImmersive)
