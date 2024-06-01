@@ -1,25 +1,11 @@
 "use client";
 
-import CopyToClipboard from "@/components/CopyToClipboard";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AtSign, History, Info, Loader } from "lucide-react";
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useEffect,
-  useState,
-} from "react";
+import { History, Info, Loader } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   baseURL,
   basicAuth,
@@ -37,6 +23,14 @@ import {
   TestData as TestDataType,
 } from "@/lib/types";
 import HelpMode from "@/components/HelpMode";
+import LibraryTestsAccordian from "./LibraryTestsAccordian";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import CopyToClipboard from "@/components/CopyToClipboard";
 
 interface Test {
   title: string;
@@ -199,9 +193,8 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                 test.assigned_to?.includes(userAccountsData.uid)
               );
 
-              const requestedscenarios = data.filter(
-                (test: TestsType) =>
-                  test.creator_user_id?.includes(userAccountsData.uid)
+              const requestedscenarios = data.filter((test: TestsType) =>
+                test.creator_user_id?.includes(userAccountsData.uid)
               );
 
               setRequestedScenarios(requestedscenarios);
@@ -716,9 +709,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                     <div
                       id="competency-tests"
                       className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh] w-full flex flex-col items-center justify-center"
-                    >
-                      {/* <Separator className="w-[80%] bg-gray-200 " /> */}
-                    </div>
+                    ></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         Competency Based Power Skills{" "}
@@ -784,69 +775,10 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                         <div>
                                           <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
                                             <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                              <Accordion
-                                                type="single"
-                                                collapsible
-                                                className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                              >
-                                                {skills.tests.length > 0 &&
-                                                  skills.tests.map(
-                                                    (test: any, i: number) => (
-                                                      <>
-                                                        <AccordionItem
-                                                          key={i}
-                                                          value={`item-${
-                                                            Number(i) + 1
-                                                          }`}
-                                                          className={`${
-                                                            i ===
-                                                            skills.tests
-                                                              .length -
-                                                              1
-                                                              ? "border-none"
-                                                              : "border-b"
-                                                          } ${
-                                                            attemptedTests.includes(
-                                                              test.test_code
-                                                            )
-                                                              ? "bg-gray-200"
-                                                              : ""
-                                                          } px-4`}
-                                                        >
-                                                          <AccordionTrigger className="text-left max-sm:text-xs">
-                                                            <div>
-                                                              {test.title}{" "}
-                                                              {test.is_recommended && (
-                                                                <Badge
-                                                                  variant={
-                                                                    "secondary"
-                                                                  }
-                                                                  className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-                                                                >
-                                                                  Recommended
-                                                                </Badge>
-                                                              )}
-                                                            </div>
-                                                          </AccordionTrigger>
-                                                          <AccordionContent className="max-sm:text-xs">
-                                                            <p className="text-left">
-                                                              {" "}
-                                                              {test.description}
-                                                            </p>
-                                                            <div className="flex justify-end mt-2">
-                                                              <CopyToClipboard
-                                                                textToCopy={
-                                                                  test.test_code
-                                                                }
-                                                                copyType="code"
-                                                              />
-                                                            </div>
-                                                          </AccordionContent>
-                                                        </AccordionItem>
-                                                      </>
-                                                    )
-                                                  )}
-                                              </Accordion>
+                                              <LibraryTestsAccordian
+                                                tests={skills.tests}
+                                                attemptedTests={attemptedTests}
+                                              />
                                             </div>
                                           </div>
                                         </div>
@@ -872,10 +804,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                         <div
                           id={category.category_name}
                           className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
-                        >
-                          {/* <Separator className="w-[80%] bg-gray-200 " /> */}
-                        </div>
-                        {/* Category Name */}
+                        ></div>
                         <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                           {convertTextToCorrectFormat(category.category_name)}
                         </h1>
@@ -930,93 +859,10 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                       <div>
                                         <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
                                           <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                            <Accordion
-                                              type="single"
-                                              collapsible
-                                              className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                            >
-                                              {domains.tests.map(
-                                                (
-                                                  test: {
-                                                    title: string;
-                                                    description:
-                                                      | string
-                                                      | number
-                                                      | boolean
-                                                      | ReactElement<
-                                                          any,
-                                                          | string
-                                                          | JSXElementConstructor<any>
-                                                        >
-                                                      | Iterable<ReactNode>
-                                                      | ReactPortal
-                                                      | null
-                                                      | undefined;
-                                                    test_code: string;
-                                                    is_recommended: boolean;
-                                                  },
-                                                  i: Key | null | undefined
-                                                ) => (
-                                                  <AccordionItem
-                                                    key={i}
-                                                    value={`item-${
-                                                      Number(i) + 1
-                                                    }`}
-                                                    className={`${
-                                                      i ===
-                                                      domains.tests.length - 1
-                                                        ? "border-none"
-                                                        : "border-b"
-                                                    } ${
-                                                      attemptedTests.includes(
-                                                        test.test_code
-                                                      )
-                                                        ? "bg-gray-200"
-                                                        : ""
-                                                    } px-4`}
-                                                  >
-                                                    <AccordionTrigger className="text-left max-sm:text-xs">
-                                                      <div>
-                                                        {test.title.includes(
-                                                          ":"
-                                                        ) ? (
-                                                          <>
-                                                            {test.title
-                                                              .split(":")[1]
-                                                              .trim()}
-                                                          </>
-                                                        ) : (
-                                                          <>{test.title}</>
-                                                        )}
-                                                        {test.is_recommended && (
-                                                          <Badge
-                                                            variant={
-                                                              "secondary"
-                                                            }
-                                                            className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-                                                          >
-                                                            Recommended
-                                                          </Badge>
-                                                        )}
-                                                      </div>
-                                                    </AccordionTrigger>
-                                                    <AccordionContent className="max-sm:text-xs">
-                                                      <p className="text-left">
-                                                        {test.description}
-                                                      </p>
-                                                      <div className="flex justify-end mt-2">
-                                                        <CopyToClipboard
-                                                          textToCopy={
-                                                            test.test_code
-                                                          }
-                                                          copyType="code"
-                                                        />
-                                                      </div>
-                                                    </AccordionContent>
-                                                  </AccordionItem>
-                                                )
-                                              )}
-                                            </Accordion>
+                                            <LibraryTestsAccordian
+                                              tests={domains.tests}
+                                              attemptedTests={attemptedTests}
+                                            />
                                           </div>
                                         </div>
                                       </div>
@@ -1067,64 +913,11 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                 <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
                                   <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                     {assignedScenarios.length > 0 ? (
-                                      <Accordion
-                                        type="single"
-                                        collapsible
-                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                      >
-                                        {assignedScenarios.map((test, i) => (
-                                          <>
-                                            <AccordionItem
-                                              key={i}
-                                              value={`item-${i + 1}`}
-                                              className={`${
-                                                i ===
-                                                assignedScenarios.length - 1
-                                                  ? "border-none"
-                                                  : "border-b"
-                                              } ${
-                                                attemptedTests.includes(
-                                                  test.test_code
-                                                )
-                                                  ? "bg-gray-200"
-                                                  : ""
-                                              } px-4`}
-                                            >
-                                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                                <div>
-                                                  {test.title}{" "}
-                                                  {test.is_recommended && (
-                                                    <Badge
-                                                      variant={"secondary"}
-                                                      className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-                                                    >
-                                                      Recommended
-                                                    </Badge>
-                                                  )}
-                                                </div>
-                                              </AccordionTrigger>
-                                              <AccordionContent className="max-sm:text-xs">
-                                                <p className="text-left">
-                                                  {" "}
-                                                  {test.description}
-                                                </p>
-                                                <p className="my-2 text-sm max-sm:text-xs text-left bg-gray-200 w-fit rounded-sm py-1 px-2">
-                                                  Assigned by{" "}
-                                                  <span className="font-bold text-blue-500">
-                                                    {test.assigned_by}
-                                                  </span>
-                                                </p>
-                                                <div className="flex justify-end mt-2">
-                                                  <CopyToClipboard
-                                                    copyType="code"
-                                                    textToCopy={test.test_code}
-                                                  />
-                                                </div>
-                                              </AccordionContent>
-                                            </AccordionItem>
-                                          </>
-                                        ))}
-                                      </Accordion>
+                                      <LibraryTestsAccordian
+                                        attemptedTests={attemptedTests}
+                                        tests={assignedScenarios}
+                                        type={"assigned"}
+                                      />
                                     ) : (
                                       <p className="text-sm max-sm:text-xs text-gray-600 py-4">
                                         You don't have any assigned scenarios
@@ -1146,9 +939,7 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                     <div
                       id="requested-tests"
                       className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
-                    >
-                      {/* <Separator className="w-[80%] bg-gray-200 " /> */}
-                    </div>
+                    ></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         Requested Scenarios
@@ -1179,61 +970,11 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                                 <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
                                   <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                     {requestedScenarios.length > 0 ? (
-                                      <Accordion
-                                        type="single"
-                                        collapsible
-                                        className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                      >
-                                        {requestedScenarios.map((test, i) => (
-                                          <>
-                                            <AccordionItem
-                                              key={i}
-                                              value={`item-${i + 1}`}
-                                              className={`${
-                                                i ===
-                                                requestedScenarios.length - 1
-                                                  ? "border-none"
-                                                  : "border-b"
-                                              } ${
-                                                attemptedTests.includes(
-                                                  test.test_code
-                                                )
-                                                  ? "bg-gray-200"
-                                                  : ""
-                                              } px-4`}
-                                            >
-                                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                                <div>
-                                                  {test.title}{" "}
-                                                  {test.is_assigned && (
-                                                    <AtSign className="h-3 w-3 ml-1 inline font-bold text-blue-500" />
-                                                  )}
-                                                  {test.is_recommended && (
-                                                    <Badge
-                                                      variant={"secondary"}
-                                                      className="ml-2 rounded-sm bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-                                                    >
-                                                      Recommended
-                                                    </Badge>
-                                                  )}
-                                                </div>
-                                              </AccordionTrigger>
-                                              <AccordionContent className="max-sm:text-xs">
-                                                <p className="text-left">
-                                                  {" "}
-                                                  {test.description}
-                                                </p>
-                                                <div className="flex justify-end mt-2">
-                                                  <CopyToClipboard
-                                                    copyType="code"
-                                                    textToCopy={test.test_code}
-                                                  />
-                                                </div>
-                                              </AccordionContent>
-                                            </AccordionItem>
-                                          </>
-                                        ))}
-                                      </Accordion>
+                                      <LibraryTestsAccordian
+                                        tests={requestedScenarios}
+                                        attemptedTests={attemptedTests}
+                                        type={"requested"}
+                                      />
                                     ) : (
                                       <p className="text-sm max-sm:text-xs text-gray-600 py-4">
                                         You don't have any requested scenarios,
@@ -1250,32 +991,10 @@ const MyLibrary = ({ user, restrictedFeatures }: any) => {
                     </div>
                   </>
                 )}
-                {/* <div
-                  id="create-new"
-                  className="pt-[44vh] max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-34vh]  w-full flex flex-col items-center justify-center"
-                ></div>
-                <div className="w-full flex flex-col items-center justify-center">
-                  <Badge
-                    variant={"secondary"}
-                    className="bg-cyan-400 text-xs hover:bg-cyan-400 text-white -ml-[8rem] -mb-[14px] z-[2]"
-                  >
-                    Experimental
-                  </Badge>
-                  <div className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
-                    <h1>Create new Scenario </h1>
-                  </div>
-                  <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] mx-auto">
-                    <CreateYourOwn
-                      user={user}
-                      generatedHandler={CreateYourOwnGeneratedHandler}
-                    />
-                  </div>
-                </div> */}
               </MaxWidthWrapper>
             </div>
           </div>
         </div>
-        {/* <PageFooter /> */}
       </main>
     </div>
   );

@@ -80,6 +80,11 @@ const getClientUserInfo = async (
             clientDepartments: data.data.user_info[0].departments,
             restrictedPages: data.data.user_info[0].restricted_pages,
             restrictedFeatures: data.data.user_info[0].restricted_features,
+            headings : {
+              heading : data.data.user_info[0].heading,
+              subHeading : data.data.user_info[0].sub_heading,
+              tagLine : data.data.user_info[0].tag_line
+            }
           };
         } else {
           return {
@@ -137,7 +142,6 @@ const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
     );
     if (response.ok) {
       const responseData = await response.json();
-      console.log("responseData :", responseData);
       return responseData;
     } else {
       console.log("Error fetching Directory info : ", response.statusText);
@@ -228,6 +232,7 @@ const Page = async () => {
     clientExpertise,
     restrictedFeatures,
     restrictedPages,
+    headings
   } = await getClientUserInfo(user?.email, user);
 
   let directoryProfilesData;
@@ -253,6 +258,7 @@ const Page = async () => {
         clientExpertise={clientExpertise}
         restrictedFeatures={restrictedFeatures}
         restrictedPages={restrictedPages}
+        headings={headings}
       />
     </div>
   );

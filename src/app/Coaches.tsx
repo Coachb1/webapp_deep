@@ -182,6 +182,7 @@ const Coaches = ({
   clientExpertise,
   restrictedFeatures,
   restrictedPages,
+  headings,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
@@ -191,6 +192,13 @@ const Coaches = ({
   clientExpertise: any;
   restrictedPages: string | null;
   restrictedFeatures: string | null;
+  headings:
+    | {
+        heading: string | null;
+        subHeading: string | null;
+        tagLine: string | null;
+      }
+    | undefined;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -1239,11 +1247,15 @@ const Coaches = ({
         id="header-text"
         className="mt-0 text-4xl font-bold text-gray-600 max-sm:text-2xl"
       >
-        Coaching & Performance Workbench
+        {headings?.heading
+          ? headings?.heading
+          : "Coaching & Performance Workbench"}
       </h1>
       <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
         {" "}
-        Peer to Peer network of leaders for growth.
+        {headings?.subHeading
+          ? headings?.subHeading
+          : "Peer to Peer network of leaders for growth."}
       </p>
       {!restrictedFeatures?.includes("Join-the-network") && (
         <>
@@ -1453,8 +1465,9 @@ const Coaches = ({
       <div id="list" className="min-h-screen w-full max-sm:px-2">
         <div className="my-4">
           <p className="font-semibold text-gray-500 max-sm:text-sm">
-            We enable deep and meaningful coaching conversations with AI
-            assistance even when life gets busy!
+            {headings?.tagLine
+              ? headings.tagLine
+              : "We enable deep and meaningful coaching conversations with AI assistance even when life gets busy!"}
           </p>
         </div>
         {!restrictedFeatures?.includes("Search-filter") && (
