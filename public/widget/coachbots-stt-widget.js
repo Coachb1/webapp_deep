@@ -3639,6 +3639,58 @@ function findRelatedItemsStt(data, targetCode) {
     : null;
 }
 
+const audioCanvasUI = (audio, canvas) => {
+  const canvasCtx = canvas.getContext("2d");
+  console.log(canvasCtx);
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  console.log(audioCtx);
+  const analyser = audioCtx.createAnalyser();
+  const source = audioCtx.createMediaElementSource(audio);
+
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize = 256;
+  const bufferLength = analyser.fftSize;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function draw() {
+    requestAnimationFrame(draw);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+
+      canvasCtx.fillStyle = "#2CC092";
+      canvasCtx.fillRect(
+        x,
+        canvas.height - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      );
+
+      x += barWidth + 1;
+    }
+  }
+
+  audio.onload = function () {
+    console.log("loaded");
+  };
+
+  audio.onplay = function () {
+    audioCtx.resume().then(() => {
+      draw();
+    });
+  };
+};
+
 const handleProceedClickStt = async (choice) => {
   if (choice == "Yes") {
     isProceedStt = "true";
@@ -4977,11 +5029,12 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
         return;
       }
 
+      const shadowRoot = document.getElementById("chat-element2").shadowRoot
       let divCont = '';
       scenarios.forEach((element, i) => {
         divCont += `
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #16a34a; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${i == 0 ? "Simulation" : "Roleplay" }</div>
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${i == 0 ? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
@@ -4997,13 +5050,21 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
               font-weight: 600;
               transition: background-color 0.3s ease;
             " 
-            onmouseout="this.style.backgroundColor = '#16a34a'"
-            onclick="handleAttemptScenaiosSTT('${element.title}', '${element.test_code}')">
+            id="attempt-btn-${i}"
+            onmouseout="this.style.backgroundColor = '#16a34a'">
             Attempt
           </button>
         </div>
         </div>
         `
+
+        setTimeout(() => {
+          const btn = shadowRoot.getElementById(`attempt-btn-${i}`)
+          btn.onclick = () => {
+            handleAttemptScenaiosSTT(element.title, element.test_code)
+          }
+        }, 100);
+
       }); 
 
       if (signals){
@@ -6106,58 +6167,6 @@ loadExternalModule().then(() => {
       }
     });
   };  
-
-  const audioCanvasUI = (audio, canvas) => {
-    const canvasCtx = canvas.getContext("2d");
-    console.log(canvasCtx);
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    console.log(audioCtx);
-    const analyser = audioCtx.createAnalyser();
-    const source = audioCtx.createMediaElementSource(audio);
-
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    analyser.fftSize = 256;
-    const bufferLength = analyser.fftSize;
-    const dataArray = new Uint8Array(bufferLength);
-
-    function draw() {
-      requestAnimationFrame(draw);
-
-      analyser.getByteFrequencyData(dataArray);
-
-      canvasCtx.fillStyle = "#F3F4F6";
-      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const barWidth = (canvas.width / bufferLength) * 2.5;
-      let barHeight;
-      let x = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        barHeight = dataArray[i];
-
-        canvasCtx.fillStyle = "#2CC092";
-        canvasCtx.fillRect(
-          x,
-          canvas.height - barHeight / 2,
-          barWidth,
-          barHeight / 2
-        );
-
-        x += barWidth + 1;
-      }
-    }
-
-    audio.onload = function () {
-      console.log("loaded");
-    };
-
-    audio.onplay = function () {
-      audioCtx.resume().then(() => {
-        draw();
-      });
-    };
-  };
 
   async function audioSourceOpen(
     inputText,
