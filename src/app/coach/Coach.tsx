@@ -257,7 +257,7 @@ const Coach = ({ user, renderType }: any) => {
             const items = lines.slice(1);
 
             return (
-              <section className="text-sm max-sm:text-xs" key={index}>
+              <section className="text-sm max-sm:text-xs text-wrap" key={index}>
                 <h2 className="font-medium">{title}</h2>
                 <ul className="list-none list-inside">
                   {items.map((item, itemIndex) => (
@@ -349,7 +349,7 @@ const Coach = ({ user, renderType }: any) => {
               {renderType === "dynamic" ? (
                 <>
                   {botScenarioCase === "icons_by_ai" ? (
-                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300 ">
+                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300  max-w-[100%]">
                       <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                         <img
                           className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
