@@ -242,6 +242,39 @@ const Coach = ({ user, renderType }: any) => {
       });
   }, []);
 
+  const parseTextToJSX = (text: string) => {
+    const sections = text.trim().split("\n\n");
+
+    return (
+      <div className="space-y-2 -mt-6 max-sm:mt-0">
+        {sections.map((section, index) => {
+          const lines = section
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line !== "");
+          if (lines.length > 0) {
+            const title = lines[0];
+            const items = lines.slice(1);
+
+            return (
+              <section className="text-sm max-sm:text-xs" key={index}>
+                <h2 className="font-medium">{title}</h2>
+                <ul className="list-none list-inside">
+                  {items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="my-1">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  };
+
   const CoachBotBody = () => {
     return (
       <div suppressHydrationWarning={true}>
@@ -315,7 +348,7 @@ const Coach = ({ user, renderType }: any) => {
 
               {renderType === "dynamic" ? (
                 <>
-                  {/* {botScenarioCase === "icons_by_ai" ? (
+                  {botScenarioCase === "icons_by_ai" ? (
                     <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300">
                       <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                         <img
@@ -329,10 +362,10 @@ const Coach = ({ user, renderType }: any) => {
                       </div>{" "}
                       <p className="w-[80%] overflow-x-scroll no-scrollbar whitespace-pre text-wrap text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center ">
                         {" "}
-                        {coachDescription}
+                        {parseTextToJSX(coachDescription)}
                       </p>
                     </div>
-                  ) : ( */}
+                  ) : (
                     <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
                       <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
                         <img
@@ -349,7 +382,7 @@ const Coach = ({ user, renderType }: any) => {
                         {coachDescription}
                       </p>
                     </div>
-                  {/* )} */}
+                  )}
                 </>
               ) : (
                 <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
