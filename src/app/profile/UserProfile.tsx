@@ -10,7 +10,6 @@ import {
   PartifipantsforLeaderBoardTypes,
   baseURL,
   basicAuth,
-  convertTextToCorrectFormat,
   getUserAccount,
 } from "@/lib/utils";
 import HelpMode from "@/components/HelpMode";
@@ -51,7 +50,6 @@ const UserProfile = ({ user, userRole }: any) => {
     useState(false);
   const [clientAllowAudioInteractions, setClientAllowAudioInteractions] =
     useState(false);
-  // const [allowUserAudioInteractionPrioritise, setAllowUserAudioInteractionPrioritise] =
   const [interactionLoading, setInteractionLoading] = useState(false);
 
   const [plLoading, setplLoading] = useState(true);
@@ -151,11 +149,11 @@ const UserProfile = ({ user, userRole }: any) => {
           .then(async (data) => {
             console.log("user_profile", data);
 
-            setUserAllowAudioInteractions(data.user_allow_audio_interactions);
-            if (data.prioritize_user_audio_interaction) {
-              setIsAllowToggle(data.user_allow_audio_interactions);
+            if (data.client_allow_audio_interactions) {
+              setIsAllowToggle(true);
+              setUserAllowAudioInteractions(data.user_allow_audio_interactions);
             } else {
-              setIsAllowToggle(data.client_allow_audio_interactions);
+              setIsAllowToggle(false);
             }
 
             const userId = data.uid;
@@ -318,9 +316,6 @@ const UserProfile = ({ user, userRole }: any) => {
       <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 max-sm:pl-2 pt-2 flex flex-row items-center ">
         <p>Account Information </p>
-        {/* <span className="">
-          <Badge className="ml-4">{convertTextToCorrectFormat(userRole)}</Badge>
-        </span> */}
       </div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
@@ -365,32 +360,29 @@ const UserProfile = ({ user, userRole }: any) => {
           </>
         </div>
 
-        {isAllowToggle && (
-          <>
-            <hr />
-
-            <div
-              id="audio-interaction"
-              className="my-4 w-fit flex flex-row items-center"
-            >
-              <p className="text-sm max-sm:text-xs">
-                Allow audio interaction in bots
-              </p>
-              <div className="ml-8 flex flex-row items-center gap-2">
-                <span className="text-sm font-bold text-gray-600">No</span>
-                <Switch
-                  disabled={interactionLoading}
-                  checked={userAllowAudioInteractions}
-                  onCheckedChange={(val) => {
-                    console.log(val);
-                    allowAudioInteractionHandler(val);
-                  }}
-                />
-                <span className="text-sm font-bold text-gray-600">Yes</span>
-              </div>
+        <>
+          <hr />
+          <div
+            id="audio-interaction"
+            className="my-4 w-fit flex flex-row items-center"
+          >
+            <p className="text-sm max-sm:text-xs">
+              Allow audio interaction in bots
+            </p>
+            <div className="ml-8 flex flex-row items-center gap-2">
+              <span className="text-sm font-bold text-gray-600">No</span>
+              <Switch
+                disabled={interactionLoading || !isAllowToggle}
+                checked={userAllowAudioInteractions}
+                onCheckedChange={(val) => {
+                  console.log(val);
+                  allowAudioInteractionHandler(val);
+                }}
+              />
+              <span className="text-sm font-bold text-gray-600">Yes</span>
             </div>
-          </>
-        )}
+          </div>
+        </>
         <hr />
         <div className="mt-4 mb-4">
           <div
