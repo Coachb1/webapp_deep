@@ -7351,11 +7351,13 @@ loadExternalModule().then(() => {
                 console.log("clientAllowAudioInteraction2" , clientAllowAudioInteraction2)
                 console.log("userAllowAudioInteraction2" , userAllowAudioInteraction2)
                 console.log("prioritiseUserAllowInteraction2" , prioritiseUserAllowInteraction2)
-                if(prioritiseUserAllowInteraction2){
+
+                if(clientAllowAudioInteraction2){
                   allowAudioInteraction = userAllowAudioInteraction2
                 } else {
-                  allowAudioInteraction = clientAllowAudioInteraction2
+                  allowAudioInteraction = false
                 }
+
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
               //streaming responses
@@ -7783,11 +7785,13 @@ loadExternalModule().then(() => {
                   console.log("clientAllowAudioInteraction2" , clientAllowAudioInteraction2)
                   console.log("userAllowAudioInteraction2" , userAllowAudioInteraction2)
                   console.log("prioritiseUserAllowInteraction2" , prioritiseUserAllowInteraction2)
-                  if(prioritiseUserAllowInteraction2){
+
+                  if(clientAllowAudioInteraction2){
                     isImmersiveStt = userAllowAudioInteraction2
                   } else {
-                    isImmersiveStt = clientAllowAudioInteraction2
+                    isImmersiveStt = false
                   }
+
                 }
                 console.log('isImmersive', isImmersiveStt)
                 if (testType2 === "mcq") {

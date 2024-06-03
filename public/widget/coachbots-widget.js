@@ -4107,15 +4107,17 @@ loadExternalModule().then(() => {
 
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
-                } else{
+                } else {
                   console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
                   console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
                   console.log("prioritiseUserAllowInteraction" , prioritiseUserAllowInteraction)
-                  if(prioritiseUserAllowInteraction){
+
+                  if(clientAllowAudioInteraction){
                     isImmersive = userAllowAudioInteraction
                   } else {
-                    isImmersive = clientAllowAudioInteraction
+                    isImmersive = false
                   }
+
                 }
                   console.log('isImmersive', isImmersive)
                   
