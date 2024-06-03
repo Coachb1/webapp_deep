@@ -1508,9 +1508,9 @@ const Coaches = ({
             variant={"secondary"}
             className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
           >
-            Profiles with displayed coach/mentor emails use AI-generated
-            responses, with an average response time of 24 hours. The real
-            user's email is also kept in CC; they may choose to respond or not.
+            Profiles that have listed emails indicate that those coaches have a
+            email avatar that can respond as well. (AI responses, with 24 hour
+            average response times)
           </Badge>
         )}
 
