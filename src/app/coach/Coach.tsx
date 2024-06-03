@@ -246,7 +246,7 @@ const Coach = ({ user, renderType }: any) => {
     const sections = text.trim().split("\n\n");
 
     return (
-      <div className="space-y-2 -mt-6 max-sm:mt-0">
+      <div className="space-y-2 max-sm:mt-0">
         {sections.map((section, index) => {
           const lines = section
             .split("\n")
