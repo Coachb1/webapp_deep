@@ -480,6 +480,7 @@ export function parseClientUsers(data: any) {
   const clientUsers: {
     userEmail: string;
     userClientId: string;
+    isDemoUser: boolean;
   }[] = [];
 
   for (const clientName in data) {
@@ -490,6 +491,7 @@ export function parseClientUsers(data: any) {
         clientUsers.push({
           userEmail: user.user_email,
           userClientId: clientData.client_id,
+          isDemoUser: user.is_demo_user,
         });
       });
     }
