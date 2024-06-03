@@ -3879,7 +3879,7 @@ const handleProceedClickStt = async (choice) => {
               Your browser does not support the audio element.
               </audio>
               
-              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="200"></canvas>
+              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
               </div>`;
 
               setTimeout(() => {
