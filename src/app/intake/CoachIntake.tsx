@@ -23,17 +23,14 @@ import {
   Loader,
   PenLine,
   SendHorizonal,
-  Trash,
   Trash2,
   UndoDot,
 } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
-import { Switch } from "@/components/ui/switch";
 import { useSearchParams, useRouter } from "next/navigation";
-import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
 import {
@@ -41,7 +38,7 @@ import {
   OptionalMediaData,
   UserClientInfoDataType,
 } from "@/lib/types";
-import { Radio, Tooltip } from "antd";
+import { Radio, Select, Tooltip } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
@@ -61,10 +58,6 @@ const CoachIntake = ({ user }: any) => {
   let userProfileId = params.get("profile_id");
 
   const router = useRouter();
-
-  // if (checkIfEdit) {
-  //   const [editLoading, setEditLoading] = useState(true);
-  // }
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
@@ -142,6 +135,8 @@ const CoachIntake = ({ user }: any) => {
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
     boolean | string
   >();
+
+  const [discussionTopics, setDiscussionTopics] = useState("");
 
   const [mentoringPreferences, setMentoringPreferences] = useState("");
   const [coachMentFrameworks, setCoachMentFrameworks] = useState("");
@@ -270,6 +265,8 @@ const CoachIntake = ({ user }: any) => {
     setOpportunitiesOfGrowth("");
     setCommenChallengesOrObstacles("");
     setOpinionsAboutKeyQualities("");
+
+    setDiscussionTopics("");
   };
 
   const getClientInfoForUser = (userEmail: string) => {
@@ -570,6 +567,7 @@ const CoachIntake = ({ user }: any) => {
             characteristicsRateHigh
           );
 
+          formdata.append("discussion_topic", discussionTopics);
           if (!checkIfEdit) {
             //@ts-ignore
             if (profileImage) {
@@ -1699,6 +1697,11 @@ const CoachIntake = ({ user }: any) => {
                 setAreaDomain(
                   resultingBot.signature_bot.data.additional_data.area_domain.trim()
                 );
+
+                setDiscussionTopics(
+                  resultingBot.signature_bot.data.additional_data
+                    .discussion_topic
+                );
                 // setAreaDomain(
                 //   resultingBot.signature_bot.data.additional_data.area_domain
                 //     ?.split(",")
@@ -1935,6 +1938,8 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.high_rating_characteristics
                 );
 
+                setDiscussionTopics(resultingBot.discussion_topic);
+
                 setParticipantLevel(resultingBot.coaching_level);
                 setCochMentInSameDep(
                   resultingBot.coach_same_department ? "Yes" : "No"
@@ -2020,6 +2025,18 @@ const CoachIntake = ({ user }: any) => {
           [fieldName]: `Please enter the valid article link(s).`,
         }));
       }
+    }
+  };
+
+  const handleDiscussionTopics = (input: string, fieldName: string) => {
+    const inputValuesArr = input.split(", ");
+    if (inputValuesArr.length > 5) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Maximum 5 topics could be added.`,
+      }));
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
     }
   };
 
@@ -2719,6 +2736,34 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add the discussion topics
+                    </p>
+                    <div>
+                      <textarea
+                        rows={2}
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        value={discussionTopics}
+                        onChange={(e) => {
+                          setDataModified(true);
+                          setDiscussionTopics(e.target.value);
+                          handleDiscussionTopics(
+                            e.target.value,
+                            "discussionTopics"
+                          );
+                        }}
+                        placeholder="You can enter 4-5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                      />
+                    </div>
+                    {Object.keys(error).includes("discussionTopics") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        a{(error as any)["discussionTopics"]}
+                      </p>
+                    )}
+                  </div>
                   <hr />
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -2995,9 +3040,9 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="mt-2" />
                   <div className="my-3 ">
                     <p className="text-sm my-1">
-                      Please add any optional document or file that you believe
-                      are reference materials that may help your mentees and
-                      participants.
+                      Please upload any personality assessment (e.g. DISC) or
+                      other profiles that you might have. It will be used for
+                      recommendation of the appropriate coaching style.
                     </p>
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
@@ -4115,6 +4160,34 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </RadioGroup>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add the discussion topics (Separated by comma)
+                    </p>
+                    <div>
+                      <textarea
+                        rows={2}
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        value={discussionTopics}
+                        onChange={(e) => {
+                          setDataModified(true);
+                          setDiscussionTopics(e.target.value);
+                          handleDiscussionTopics(
+                            e.target.value,
+                            "discussionTopics"
+                          );
+                        }}
+                        placeholder="You can enter 4- 5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                      />
+                    </div>
+                    {Object.keys(error).includes("discussionTopics") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["discussionTopics"]}
+                      </p>
+                    )}
                   </div>
                   <hr className="my-2" />
                   <div className="my-2">
