@@ -258,7 +258,7 @@ const Coach = ({ user, renderType }: any) => {
 
             return (
               <section className="text-sm max-sm:text-xs text-wrap" key={index}>
-                <h2 className="font-medium">{title}</h2>
+                <h2 className="">{title}</h2>
                 <ul className="list-none list-inside">
                   {items.map((item, itemIndex) => (
                     <li key={itemIndex} className="my-1 text-wrap">
