@@ -281,6 +281,7 @@ export interface ClientDataType {
   clientName: string;
   clientId: string;
   Users: ClientUserType[];
+  allowAudioInteractions?: boolean;
 }
 
 export interface ExtractedData {

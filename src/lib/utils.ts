@@ -458,6 +458,10 @@ export function parseClientData(data: any): ClientDataType[] {
       const client: ClientDataType = {
         clientName,
         clientId: clientData.client_id,
+        allowAudioInteractions:
+          data[clientName].length > 0
+            ? data[clientName][0].allow_audio_interactions
+            : false,
         Users: data[clientName].map((user: any) => ({
           userEmail: user.user_email,
           userName: user.name,
