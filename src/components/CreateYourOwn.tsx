@@ -224,24 +224,36 @@ const CreateYourOwn = ({ user, clientName }: any) => {
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 my-2">
               Select your simulation type
             </p>
-            <Radio.Group
-              value={simulationType}
-              options={[
-                {
-                  label: "Short",
-                  value: "short",
-                },
-                {
-                  label: "Standard",
-                  value: "standard",
-                },
-              ]}
-              onChange={(e) => {
-                console.log(e.target.value);
-                setSimulationType(e.target.value);
-              }}
-              optionType="button"
-            />
+            <div className="flex flex-row items-center">
+              <Radio.Group
+                value={simulationType}
+                options={[
+                  {
+                    label: "Short",
+                    value: "short",
+                  },
+                  {
+                    label: "Standard",
+                    value: "standard",
+                  },
+                ]}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setSimulationType(e.target.value);
+                }}
+                optionType="button"
+              />
+              <Tooltip
+                overlayInnerStyle={{
+                  backgroundColor: "white",
+                  color: "black",
+                  padding: "8px",
+                }}
+                title="Short scenarios are three questions long, while standard scenarios are in six questions conversational format."
+              >
+                <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+              </Tooltip>
+            </div>
             <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
               Please enter the situation that you want to practice
             </p>
