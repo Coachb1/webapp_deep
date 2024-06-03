@@ -20,7 +20,7 @@ import {
 import { useEffect, useState } from "react";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { ClientDataType } from "@/lib/types";
-import UsersPopover from "@/components/ui/UsersPopover";
+import { UsersPopover, ActionsPopver } from "@/components/ui/UsersPopover";
 import { toast } from "sonner";
 
 interface OptionType {
@@ -52,13 +52,15 @@ const AdminProfile = ({ user }: any) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+        `${baseURL}/accounts/client_id_user_modification`,
         {
           method: "GET",
           headers: { Authorization: basicAuth },
         }
       );
       const data = await response.json();
+      console.log(data);
+      console.log(parseClientData(data));
       setClientsData(parseClientData(data));
       setAllUsers(parseClientUsers(data));
     } catch (err) {
@@ -222,25 +224,41 @@ const AdminProfile = ({ user }: any) => {
           {!loading &&
             clientsData.map((client, i) => (
               <div
-                className="bg-gray-200 p-2 w-full rounded-md flex flex-row items-center gap-2"
+                className="bg-gray-200 p-2 w-full rounded-md flex flex-row max-sm:flex-col"
                 key={i}
               >
-                <span className="max-sm:text-xs">{i + 1}</span>
-                <span>-</span>
-                <p className="text-sm font-semibold max-sm:text-xs">
-                  {client.clientName}
-                </p>
-                <UsersPopover
-                  Users={client.Users}
-                  triggerComponent={
-                    <Button
-                      variant={"outline"}
-                      className="h-6 text-xs  px-3 text-gray-500 ml-4"
-                    >
-                      View users <Users2 className="inline h-4 w-4 ml-2" />
-                    </Button>
-                  }
-                />
+                <div className="flex flex-row items-center gap-2">
+                  <span className="max-sm:text-xs">{i + 1}</span>
+                  <span>-</span>
+                  <p className="text-sm font-semibold max-sm:text-xs">
+                    {client.clientName}
+                  </p>
+                </div>
+                <div className="flex flex-row max-sm:flex-col gap-2 w-fit justify-start">
+                  <UsersPopover
+                    Users={client.Users}
+                    triggerComponent={
+                      <Button
+                        variant={"outline"}
+                        className="h-6 text-xs  px-3 text-gray-500 ml-4 max-sm:ml-0"
+                      >
+                        View users <Users2 className="inline h-4 w-4 ml-2 " />
+                      </Button>
+                    }
+                  />
+                  <ActionsPopver
+                    clientId={client.clientId}
+                    allowAudioInteractions={client.allowAudioInteractions}
+                    triggerComponent={
+                      <Button
+                        variant={"outline"}
+                        className="h-6 text-xs  px-3 text-gray-500 ml-2 max-sm:ml-0"
+                      >
+                        Actions
+                      </Button>
+                    }
+                  />
+                </div>
               </div>
             ))}
         </div>

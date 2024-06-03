@@ -374,7 +374,7 @@ const UserProfile = ({ user, userRole }: any) => {
               className="my-4 w-fit flex flex-row items-center"
             >
               <p className="text-sm max-sm:text-xs">
-                Allow audio interaction in avatar bots
+                Allow audio interaction in bots
               </p>
               <div className="ml-8 flex flex-row items-center gap-2">
                 <span className="text-sm font-bold text-gray-600">No</span>
