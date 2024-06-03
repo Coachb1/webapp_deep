@@ -1887,27 +1887,30 @@ const Coaches = ({
           )}
           {!loading && coachesData.length === 0 && (
             <div className="flex w-full flex-row items-center justify-center">
-              <div className="mt-12 flex items-center">
-                {coachesData.length === 0 && (
-                  <>
-                    <span>
-                      The existing choices are too narrow. Please use lesser
-                      search parameters.
-                    </span>
-                  </>
-                )}
-                {parentCheckedValues.includes("External") ||
-                  (parentCheckedValues.includes("accepted") && (
-                    <div className="flex flex-col gap-2">
-                      {parentCheckedValues.includes("accepted") &&
-                        connectedCoaches.length === 0 && (
-                          <span>
-                            You do not have any connections yet. Keep exploring.
-                          </span>
-                        )}
-                    </div>
-                  ))}
-              </div>
+              {!restrictedFeatures?.includes("Search-filter") && (
+                <div className="mt-12 flex items-center">
+                  {coachesData.length === 0 && (
+                    <>
+                      <span>
+                        The existing choices are too narrow. Please use lesser
+                        search parameters.
+                      </span>
+                    </>
+                  )}
+                  {parentCheckedValues.includes("External") ||
+                    (parentCheckedValues.includes("accepted") && (
+                      <div className="flex flex-col gap-2">
+                        {parentCheckedValues.includes("accepted") &&
+                          connectedCoaches.length === 0 && (
+                            <span>
+                              You do not have any connections yet. Keep
+                              exploring.
+                            </span>
+                          )}
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           )}
         </div>
