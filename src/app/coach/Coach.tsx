@@ -333,7 +333,7 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               )}
               <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white  text-sm max-sm:text-xs">
+                <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -349,8 +349,23 @@ const Coach = ({ user, renderType }: any) => {
               {renderType === "dynamic" ? (
                 <>
                   {botScenarioCase === "icons_by_ai" ? (
-                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300  max-w-[100%]">
-                      <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
+                    // <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300  max-w-[100%]">
+                    // <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
+                    //   <img
+                    //     className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                    //     src={
+                    //       profileImage
+                    //         ? profileImage
+                    //         : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                    //     }
+                    //   />
+                    // </div>
+                    //   <p className="w-[80%] overflow-x-scroll no-scrollbar whitespace-pre text-wrap text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center">
+                    //     {parseTextToJSX(coachDescription)}
+                    //   </p>
+                    // </div>
+                    <div className="flex flex-row items-start justify-around max-sm:flex-col max-sm:justify-center max-sm:items-center overflow-x-scroll no-scrollbar border-b-2 border-dashed border-gray-300 pb-4">
+                      <div className="w-[20%] max-sm:w-fit max-sm:mb-4">
                         <img
                           className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
                           src={
@@ -360,7 +375,7 @@ const Coach = ({ user, renderType }: any) => {
                           }
                         />
                       </div>
-                      <p className="w-[80%] overflow-x-scroll no-scrollbar whitespace-pre text-wrap text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center">
+                      <p className="w-[80%] max-sm:w-full text-wrap text-left max-sm:text-justify">
                         {parseTextToJSX(coachDescription)}
                       </p>
                     </div>
