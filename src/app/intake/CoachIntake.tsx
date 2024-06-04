@@ -57,6 +57,10 @@ const CoachIntake = ({ user }: any) => {
   const profileTypeFromParams = params.get("profile_type");
   let userProfileId = params.get("profile_id");
 
+  const adminEdit = params.get("admin_edit");
+  const userIdParams = params.get("user_id");
+  const userEmailParams = params.get("user_email");
+  const userNameParams = params.get("user_name");
   const router = useRouter();
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
@@ -86,6 +90,8 @@ const CoachIntake = ({ user }: any) => {
     "Career Navigation",
     "Culture Alignment",
     "Workplace Skills",
+    "Fitness",
+    "Finance",
   ]);
 
   //intake fields state
@@ -290,7 +296,11 @@ const CoachIntake = ({ user }: any) => {
             data.data.user_info[0].departments !== ""
           ) {
             console.log(data.data.user_info[0].departments, "Departments");
-            setDepartments(data.data.user_info[0].departments.split(","));
+            setDepartments(
+              data.data.user_info[0].departments
+                .split(",")
+                .map((dep: string) => dep.trim())
+            );
           }
 
           if (
@@ -301,7 +311,11 @@ const CoachIntake = ({ user }: any) => {
               data.data.user_info[0].coach_expertise,
               "coach_expertise"
             );
-            setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
+            setAreaDomains(
+              data.data.user_info[0].coach_expertise
+                .split(",")
+                .map((exp: string) => exp.trim())
+            );
           }
         })
         .catch((err) => console.error(err));
@@ -414,8 +428,8 @@ const CoachIntake = ({ user }: any) => {
     } else if (formType === "coachee") {
       setProfileType("coachee");
     }
-    if (user) {
-      getClientInfoForUser(user.email);
+    if (user && !adminEdit) {
+      // getClientInfoForUser(user.email);
       getUserAccount(user)
         .then((response) => response.json())
         .then((data) => {
@@ -447,7 +461,28 @@ const CoachIntake = ({ user }: any) => {
         .catch((err) => {
           console.error(err);
         });
+    } else if (adminEdit && userEmailParams && userIdParams && userNameParams) {
+      // getClientInfoForUser(userEmailParams);
+      setUserId(userIdParams);
+      setName(userNameParams);
+      userIdd = userIdParams;
+      fetch(
+        `${baseURL}/accounts/get_low_high_skills/?user_id=${userIdParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setCharacteristicsRateLows(data.low_skill);
+          setCharacteristicsRateHigh(data.high_skill);
+        });
     }
+
     // if (formType === "coachee") {
     fetch(`${baseURL}/skills/get-characteristics-list/`, {
       method: "GET",
@@ -472,8 +507,9 @@ const CoachIntake = ({ user }: any) => {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          let user_id = adminEdit ? userIdParams : data.uid;
           fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${user_id}`,
             {
               headers: {
                 Authorization: basicAuth,
@@ -489,6 +525,7 @@ const CoachIntake = ({ user }: any) => {
                 data.data.length > 0 &&
                 !checkIfEdit &&
                 !checkIfView &&
+                !adminEdit &&
                 formType !== "knowledge-bot" &&
                 formType !== "feedback"
               ) {
@@ -512,7 +549,12 @@ const CoachIntake = ({ user }: any) => {
               console.error(err);
             });
 
-          if (formType === "feedback" && !checkIfEdit && !checkIfView) {
+          if (
+            formType === "feedback" &&
+            !checkIfEdit &&
+            !checkIfView &&
+            !adminEdit
+          ) {
             fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
               headers: {
                 Authorization: basicAuth,
@@ -552,7 +594,7 @@ const CoachIntake = ({ user }: any) => {
           var formdata = new FormData();
           formdata.append("name", name);
           formdata.append("user_id", userId);
-          formdata.append("email", user.email);
+          formdata.append("email", adminEdit ? userEmailParams : user.email);
           formdata.append("about", about);
           formdata.append("experience", experience);
 
@@ -1459,7 +1501,7 @@ const CoachIntake = ({ user }: any) => {
               bot_type: "feedback_bot",
               bot_name: name,
               profile_id: userProfileId,
-              email: user.email,
+              email: userEmailParams ? userEmailParams : user.email,
               attributes: {
                 heading: "welcome to feedback bot",
                 feedback_questions: {
@@ -1616,6 +1658,12 @@ const CoachIntake = ({ user }: any) => {
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
 
+    if (user && !adminEdit) {
+      getClientInfoForUser(user.email);
+    } else if (adminEdit && userEmailParams) {
+      getClientInfoForUser(userEmailParams);
+    }
+
     console.log("hello 1");
     if (checkIfEdit === "true" || checkIfView === "true") {
       console.log("hello 2");
@@ -1631,7 +1679,8 @@ const CoachIntake = ({ user }: any) => {
         getUserAccount(user)
           .then((res) => res.json())
           .then((data) => {
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            let user_id = userIdParams ? userIdParams : data.uid;
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${user_id}`, {
               headers: {
                 Authorization: basicAuth,
               },
@@ -1666,8 +1715,9 @@ const CoachIntake = ({ user }: any) => {
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
+            const user_id = userIdParams ? userIdParams : data.uid;
             fetch(
-              `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
+              `${baseURL}/accounts/get-bots/?user_id=${user_id}&approved_only=false`,
               {
                 headers: {
                   Authorization: basicAuth,
@@ -1966,9 +2016,9 @@ const CoachIntake = ({ user }: any) => {
     const words = inputValue.split(/\s+/);
     const wordCount = words.length;
     setDataModified(true);
-    console.log(`Input Value: "${inputValue}"`);
-    console.log(`Words: ${JSON.stringify(words)}`);
-    console.log(`Word Count: ${wordCount}`);
+    // console.log(`Input Value: "${inputValue}"`);
+    // console.log(`Words: ${JSON.stringify(words)}`);
+    // console.log(`Word Count: ${wordCount}`);
 
     if (wordCount >= minLimit && wordCount <= maxLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
@@ -2760,7 +2810,7 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                     {Object.keys(error).includes("discussionTopics") && (
                       <p className="text-red-500 text-xs mt-1">
-                        a{(error as any)["discussionTopics"]}
+                        {(error as any)["discussionTopics"]}
                       </p>
                     )}
                   </div>
@@ -4541,7 +4591,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       {checkIfEdit ? (
                         <Button
-                          disabled={feedbackCreateLoading}
+                          disabled={feedbackCreateLoading || !dataModified}
                           className="h-8"
                         >
                           {" "}

@@ -16,6 +16,7 @@ import ClientActions from "./super-admin/ClientActions";
 import UserActivities from "./super-admin/UserActivities";
 import AddNewClient from "./super-admin/AddNewClient";
 import Clients from "./super-admin/Clients";
+import ProfileActions from "./super-admin/ProfilesActions";
 
 const AdminProfile = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
@@ -87,22 +88,25 @@ const AdminProfile = ({ user }: any) => {
       <div className="m-4 h-[2px] bg-gray-400 rounded-xl" />
       <Clients clientsData={clientsData} loading={loading} />
 
-      <div className="m-4 mt-6 flex flex-col items-start">
+      <div className="m-4 my-6">
         <p className="text-base max-sm:text-sm font-semibold">Actions</p>
+        <div className="flex flex-row items-start gap-4 max-sm:flex-wrap max-md:flex-wrap max-lg:flex-wrap my-2">
+          <ClientActions
+            clientsData={clientsData}
+            allUsers={allUsers}
+            getAllClientsData={getAllClientsData}
+          />
 
-        <ClientActions
-          clientsData={clientsData}
-          allUsers={allUsers}
-          getAllClientsData={getAllClientsData}
-        />
+          <UserActivities
+            clientsData={clientsData}
+            allUsers={allUsers}
+            getAllClientsData={getAllClientsData}
+          />
 
-        <UserActivities
-          clientsData={clientsData}
-          allUsers={allUsers}
-          getAllClientsData={getAllClientsData}
-        />
+          <AddNewClient getAllClientsData={getAllClientsData} />
 
-        <AddNewClient getAllClientsData={getAllClientsData} />
+          <ProfileActions />
+        </div>
       </div>
     </div>
   );

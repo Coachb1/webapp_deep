@@ -59,7 +59,7 @@ import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
 
-interface CoachesDataType {
+export interface CoachesDataType {
   id: number;
   name: string;
   profile_id: string;
@@ -89,6 +89,8 @@ interface CoachesDataType {
   total_engagement_with_question_count: number | null;
   total_without_question_count: number | null;
   visual_tag: string;
+  user_id?: string;
+  email?: string;
   id_for_target_selection?: string;
 }
 
