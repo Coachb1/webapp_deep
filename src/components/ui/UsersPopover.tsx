@@ -29,15 +29,26 @@ export const UsersPopover = ({
       content={
         <>
           <div className="max-h-[30vh]  overflow-auto no-scrollbar w-full">
-            {Users.map((user, i) => (
-              <div key={i}>
-                <div className="w-full my-2">
-                  <p className="text-sm font-semibold">{user.userName}</p>
-                  <p className="text-[12px] text-blue-500">{user.userEmail}</p>
-                </div>
-                {Users.length !== i + 1 && <Separator />}
+            {Users.length > 0 ? (
+              <>
+                {" "}
+                {Users.map((user, i) => (
+                  <div key={i}>
+                    <div className="w-full my-2">
+                      <p className="text-sm font-semibold">{user.userName}</p>
+                      <p className="text-[12px] text-blue-500">
+                        {user.userEmail}
+                      </p>
+                    </div>
+                    {Users.length !== i + 1 && <Separator />}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className="h-20 w-full flex flex-row items-center justify-center">
+                <p className="text-sm text-gray-500">No Users</p>
               </div>
-            ))}
+            )}
           </div>
           <div className="w-full py-2 flex flex-row justify-end mb-0 pb-0">
             <a onClick={hide}>Close</a>
