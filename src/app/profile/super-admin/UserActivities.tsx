@@ -5,7 +5,8 @@ import Select, { SingleValue } from "react-select";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
-import { Loader, PenBox, Wrench, X } from "lucide-react";
+import { Loader, PenBox, User, Wrench, X } from "lucide-react";
+import { Modal } from "antd";
 
 interface UserActivitiesProps {
   clientsData: { clientId: string; clientName: string }[];
@@ -67,21 +68,25 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
   };
 
   return (
-    <div
-      className={`mt-3 w-full p-2 rounded-md ${
-        userModificationInit && "bg-blue-100 border border-blue-300"
-      }`}
-    >
+    <div>
       <Button
         onClick={() => setUserModificationInit(true)}
         disabled={clientsData.length === 0}
         variant={"default"}
-        className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
       >
-        <Wrench className="inline h-4 w-4 mr-2" /> User Activities
+        <User className="inline h-4 w-4 mr-2" /> User Activities
       </Button>
 
-      {userModificationInit && (
+      <Modal
+        title="User Activities"
+        centered
+        open={userModificationInit}
+        onCancel={() => setUserModificationInit(false)}
+        width={window.innerWidth < 768 ? "80%" : "60%"}
+        className="w-full"
+        footer={false}
+      >
         <div className="flex flex-col gap-4 w-full justify-end">
           <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-col gap-2 items-start">
@@ -187,7 +192,7 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
             </Button>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

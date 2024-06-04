@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Loader, PenBox, PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Modal } from "antd";
 
 interface OptionType {
   value: string;
@@ -102,20 +103,24 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   };
 
   return (
-    <div
-      className={`mt-1 w-full p-2 rounded-md ${
-        newClientInit && "bg-blue-100 border border-blue-300"
-      }`}
-    >
+    <div>
       <Button
         onClick={() => setNewClientInit(true)}
         variant={"default"}
-        className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
       >
         <PlusCircle className="inline h-4 w-4 mr-2" /> Add New Client
       </Button>
 
-      {newClientInit && (
+      <Modal
+        title="Add New Client"
+        centered
+        open={newClientInit}
+        width={window.innerWidth < 768 ? "80%" : "60%"}
+        className="w-full"
+        footer={false}
+        onCancel={() => setNewClientInit(false)}
+      >
         <div className="flex flex-col gap-4 w-full justify-end">
           <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-row max-sm:flex-col gap-4 max-sm:gap-2 items-start">
@@ -195,7 +200,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
             </Button>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

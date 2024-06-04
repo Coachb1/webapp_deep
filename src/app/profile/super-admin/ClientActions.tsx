@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { ClientDataType } from "@/lib/types";
 import { Loader, PenBox, Wrench, X } from "lucide-react";
+import { Modal } from "antd";
 
 interface ClientActionsProps {
   clientsData: ClientDataType[];
@@ -62,21 +63,25 @@ const ClientActions: React.FC<ClientActionsProps> = ({
   };
 
   return (
-    <div
-      className={`mt-3 w-full p-2 rounded-md ${
-        changeClientInit && "bg-blue-100 border border-blue-300"
-      }`}
-    >
+    <div>
       <Button
         onClick={() => setChangeClientInit(true)}
         disabled={clientsData.length === 0}
         variant={"default"}
-        className="p-2 h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
       >
         <Wrench className="inline h-4 w-4 mr-2" /> Change Users Client
       </Button>
 
-      {changeClientInit && (
+      <Modal
+        title="Change Users Client"
+        centered
+        open={changeClientInit}
+        onCancel={() => setChangeClientInit(false)}
+        width={window.innerWidth < 768 ? "80%" : "60%"}
+        className="w-full"
+        footer={false}
+      >
         <div className="flex flex-col gap-4 w-full justify-end">
           <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-col gap-2 items-start">
@@ -181,7 +186,7 @@ const ClientActions: React.FC<ClientActionsProps> = ({
             </Button>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };
