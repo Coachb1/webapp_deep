@@ -34,9 +34,12 @@ interface DataType {
   editButton: React.ReactNode;
   isVisible: string;
   id: number;
+  avatarBotId: string | null;
 }
 
 type DataIndex = keyof DataType;
+
+let profileTypes = ["coach", "mentor", "coach-mentor", "coachee", "mentee"];
 
 const ProfileActions = () => {
   const [open, setOpen] = useState(false);
@@ -104,10 +107,36 @@ const ProfileActions = () => {
     );
   };
 
-  const EditButton = () => {
+  const EditButton = ({
+    profileId,
+    profileType,
+    botId,
+    botUid,
+    userEmail,
+    userName,
+    userId,
+  }: {
+    profileType: string;
+    botId: string | null;
+    botUid: string;
+    profileId: string;
+    userId: string | undefined;
+    userEmail: string | undefined;
+    userName: string;
+  }) => {
+    const editBotLinks = () => {
+      const coachProfileTypes = ["coach", "mentor", "coach-mentor"];
+      const coacheeProfileTypes = ["coachee", "mentee"];
+      if (coachProfileTypes.includes(profileType)) {
+        return `/intake?type=coach&edit=true&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=avatar_bot&uid=&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+      } else {
+        return `/intake?type=coachee&edit=true&bot_id=&profile_id=${profileId}&profile_type=${profileType}&bot_type=coachee&uid=&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+      }
+    };
+
     return (
       <div>
-        <Link href={""}>
+        <Link target="_blank" href={editBotLinks()}>
           <Button
             variant={"secondary"}
             className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
@@ -133,7 +162,12 @@ const ProfileActions = () => {
       const data = await response.json();
       console.log(data);
       const parsedData = data
-        .filter((profile: CoachesDataType) => profile.profile_type === "coach")
+        // .filter(
+        //   (profile: CoachesDataType) =>
+        //     profile.profile_type === "coach" ||
+        //     profile.profile_type === "mentor" ||
+        //     profile.profile_type === "coach-mentor" || profile.profile_type === "knoledge_bot"
+        // )
         .map((profile: CoachesDataType, i: number) => ({
           key: i,
           name: profile.name,
@@ -150,9 +184,25 @@ const ProfileActions = () => {
               isVisible={profile.is_visible}
             />
           ),
-          editButton: <EditButton />,
+          editButton:
+            (profile.profile_type === "coachee" ||
+              profile.profile_type === "mentee") &&
+            profile.email ? (
+              <EditButton
+                profileId={profile.profile_id}
+                profileType={profile.profile_type}
+                botId={profile.avatar_bot_id}
+                botUid=""
+                userEmail={profile.email}
+                userName={profile.name}
+                userId={profile.user_id}
+              />
+            ) : (
+              "-"
+            ),
           isVisible: profile.is_visible,
           id: profile.id,
+          avatarBotId: profile.avatar_bot_id,
         }));
       console.log(parsedData);
       setDirectoryProfiles(parsedData);
@@ -218,13 +268,13 @@ const ProfileActions = () => {
           >
             Search
           </AtndButton>
-          <AtndButton
+          {/* <AtndButton
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
             style={{ width: 90 }}
           >
             Reset
-          </AtndButton>
+          </AtndButton> */}
           <AtndButton
             type="link"
             size="small"
@@ -280,17 +330,24 @@ const ProfileActions = () => {
       ...getColumnSearchProps("email"),
     },
     {
+      title: "Profile type",
+      dataIndex: "profileType",
+      key: "profileType",
+      width: "20%",
+      ...getColumnSearchProps("profileType"),
+    },
+    {
       title: "Is Approved?",
       dataIndex: "approveHandler",
       key: "approveHandler",
       width: "20%",
     },
-    // {
-    //   title: "Edit",
-    //   dataIndex: "editButton",
-    //   key: "editButton",
-    //   width: "20%",
-    // },
+    {
+      title: "Edit",
+      dataIndex: "editButton",
+      key: "editButton",
+      width: "20%",
+    },
   ];
 
   return (
@@ -308,12 +365,12 @@ const ProfileActions = () => {
         open={open}
         onOk={() => setOpen(false)}
         onCancel={() => setOpen(false)}
-        width={"60%"}
-        className="h-[90vh] overflow-scroll no-scrollbar"
+        width={window.innerWidth < 768 ? "80%" : "60%"}
+        className="h-[90vh] max-sm:w-[90%] overflow-scroll no-scrollbar"
         footer={false}
       >
         <Table
-          className="overflow-clip"
+          className="overflow-scroll no-scrollbar"
           columns={columns}
           dataSource={directoryProfiles}
         />
