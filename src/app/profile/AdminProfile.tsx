@@ -34,15 +34,21 @@ const AdminProfile = ({ user }: any) => {
   const [changeLoading, setChangeLoading] = useState(false);
   const [userUpdateLoading, setUserUpdateLoading] = useState(false);
   const [userModificationInit, setUserModificationInit] = useState(false);
-  const [selectedUserForUpdate, setSelectedUserForUpdate] = useState<string | null>(null);
-  const [oldActiveStatus, setOldActiveStatus] = useState<boolean| string | null>(null);
-  const [newActiveStatus, setNewActiveStatus] = useState<boolean| string | null>(null);
+  const [selectedUserForUpdate, setSelectedUserForUpdate] = useState<
+    string | null
+  >(null);
+  const [oldActiveStatus, setOldActiveStatus] = useState<
+    boolean | string | null
+  >(null);
+  const [newActiveStatus, setNewActiveStatus] = useState<
+    boolean | string | null
+  >(null);
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [oldClientId, setOldClientId] = useState<string | null>(null);
   const [newClientId, setNewClientId] = useState<string | null>(null);
   const [allUsers, setAllUsers] = useState<
-    { userEmail: string; userClientId: string; isDemoUser: boolean}[]
+    { userEmail: string; userClientId: string; isDemoUser: boolean }[]
   >([]);
   const [newClientInit, setNewClientInit] = useState(false);
   const [newClientName, setNewClientName] = useState("");
@@ -111,7 +117,12 @@ const AdminProfile = ({ user }: any) => {
 
   const updateUserStatusHandler = async () => {
     setUserUpdateLoading(true);
-    console.log(`updateUserStatusHandler  `, newActiveStatus,selectedUserForUpdate, oldActiveStatus)
+    console.log(
+      `updateUserStatusHandler  `,
+      newActiveStatus,
+      selectedUserForUpdate,
+      oldActiveStatus
+    );
     try {
       const response = await fetch(
         `${baseURL}/accounts/client_id_user_modification/`,
@@ -231,7 +242,9 @@ const AdminProfile = ({ user }: any) => {
     <div className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Admin's space</div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm max-sm:text-xs">Bulk Upload</p>
+        <p className="text-sm max-sm:text-xs w-[15%] max-sm:w-[40%] max-lg:w-[40%]">
+          Bulk Upload
+        </p>
         <Button className="ml-8 h-6 w-fit max-sm:ml-2">
           <Link
             href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
@@ -243,7 +256,9 @@ const AdminProfile = ({ user }: any) => {
         </Button>
       </div>
       <div className="m-4 flex flex-row items-center">
-        <p className="text-sm max-sm:text-xs">Django Dashboard</p>
+        <p className="text-sm max-sm:text-xs w-[15%] max-sm:w-[40%] max-lg:w-[40%]">
+          Django Dashboard
+        </p>
         <Button className="ml-8 h-6 w-fit max-sm:ml-2">
           <Link
             href={`https://coach-api-ovh.coachbots.com/custom-admin`}
@@ -269,20 +284,20 @@ const AdminProfile = ({ user }: any) => {
                 className="bg-gray-200 p-2 w-full rounded-md flex flex-row max-sm:flex-col"
                 key={i}
               >
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-2 w-[20%] max-md:w-[50%] max-lg:w-[40%] max-sm:w-full">
                   <span className="max-sm:text-xs">{i + 1}</span>
                   <span>-</span>
                   <p className="text-sm font-semibold max-sm:text-xs">
                     {client.clientName}
                   </p>
                 </div>
-                <div className="flex flex-row max-sm:flex-col gap-2 w-fit justify-start">
+                <div className="flex flex-row  gap-2 max-sm:w-full justify-start max-sm:mt-2">
                   <UsersPopover
                     Users={client.Users}
                     triggerComponent={
                       <Button
                         variant={"outline"}
-                        className="h-6 text-xs  px-3 text-gray-500 ml-4 max-sm:ml-0"
+                        className="h-6 text-xs  px-3 text-gray-500 ml-4 max-sm:ml-0 max-sm:w-full"
                       >
                         View users <Users2 className="inline h-4 w-4 ml-2 " />
                       </Button>
@@ -294,7 +309,7 @@ const AdminProfile = ({ user }: any) => {
                     triggerComponent={
                       <Button
                         variant={"outline"}
-                        className="h-6 text-xs  px-3 text-gray-500 ml-2 max-sm:ml-0"
+                        className="h-6 text-xs  px-3 text-gray-500 ml-2 max-sm:ml-0 max-sm:w-full"
                       >
                         Actions
                       </Button>
@@ -431,7 +446,7 @@ const AdminProfile = ({ user }: any) => {
 
         <div
           className={`mt-3 w-full p-2 rounded-md ${
-            userModificationInit  && "bg-blue-100 border border-blue-300"
+            userModificationInit && "bg-blue-100 border border-blue-300"
           }`}
         >
           <Button
@@ -453,8 +468,10 @@ const AdminProfile = ({ user }: any) => {
                       if (option) {
                         const value = option.value;
                         setSelectedUserForUpdate(value);
-                        const user = allUsers.find((user) => user.userEmail === value);
-                        setOldActiveStatus(user? user.isDemoUser : null);
+                        const user = allUsers.find(
+                          (user) => user.userEmail === value
+                        );
+                        setOldActiveStatus(user ? user.isDemoUser : null);
                       }
                     }}
                     options={allUsers.map((user) => ({
@@ -463,7 +480,10 @@ const AdminProfile = ({ user }: any) => {
                     }))}
                     value={
                       selectedUserForUpdate
-                        ? { value: selectedUserForUpdate, label: selectedUserForUpdate }
+                        ? {
+                            value: selectedUserForUpdate,
+                            label: selectedUserForUpdate,
+                          }
                         : null
                     }
                     className="w-full text-sm"
@@ -526,7 +546,9 @@ const AdminProfile = ({ user }: any) => {
                   Cancel <X className="ml-2 h-4 w-4" />
                 </Button>
                 <Button
-                  disabled = {selectedUserForUpdate === null || newActiveStatus === null}
+                  disabled={
+                    selectedUserForUpdate === null || newActiveStatus === null
+                  }
                   className="max-sm:p-2 h-7 mt-2 hover:brightness-105 bg-blue-600"
                   onClick={updateUserStatusHandler}
                 >
