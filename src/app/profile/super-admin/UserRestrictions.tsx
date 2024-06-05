@@ -44,9 +44,10 @@ const UserRestrictions = ({
         body: JSON.stringify({
           user_id: selectedUser,
           role: userRole,
-          access_denied: restrictedFeatures
-            .map((restr) => restr.value)
-            .join(","),
+          access_denied:
+            restrictedFeatures.length > 0
+              ? restrictedFeatures.map((restr) => restr.value).join(",")
+              : "",
         }),
       });
 

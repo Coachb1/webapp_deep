@@ -147,7 +147,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
             setGeneratedTestData(data);
             setIsloading(false);
             setLoadingText("Creating simulation.");
-            if (data[0].message) {
+            if (data[0].message || data[0].error) {
               toast.error("Error generating the scenarios.");
               setGenerationError(true);
             }
@@ -320,7 +320,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
               generatedTestData.map((test, i) => (
                 <div
                   key={i}
-                  className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
+                  className="w-full max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
                 >
                   <div>
                     <b className="my-1 text-gray-400">
@@ -338,7 +338,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 </div>
               ))}
           </div>
-          {generatedTestData.length > 0 && (
+          {!generationError && generatedTestData.length > 0 && (
             <div className="mb-4 flex flex-col max-sm:flex-col max-sm:items-start mt-2 border border-gray-200 p-2 rounded-md bg-gray-50 shadow-sm">
               <p className="text-sm my-2">Assign the simulation</p>
               <div className={`flex flex-row items-center gap-2`}>
