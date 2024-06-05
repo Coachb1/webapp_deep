@@ -2023,8 +2023,11 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
   );
   params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
   console.log('is_micro', snnipetConfig.isMicro)
-  if (snnipetConfig.isMicro){
+  if (snnipetConfig.isMicro !== undefined){
     params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
+  }
+  if (snnipetConfig.flavour !== undefined){
+    params.set("flavour", snnipetConfig.flavour);
   }
   url.search = params;
 

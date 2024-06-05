@@ -5024,9 +5024,13 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   );
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
   console.log('is_micro', snnipetConfigSTT.isMicro)
-  if (snnipetConfigSTT.isMicro){
+  if (snnipetConfigSTT.isMicro !== undefined){
     params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
   }
+  if (snnipetConfigSTT.flavour !== undefined){
+    params.set("flavour", snnipetConfigSTT.flavour);
+  }
+
   url.search = params;
 
   await fetch(url, {

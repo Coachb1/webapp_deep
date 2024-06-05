@@ -170,7 +170,6 @@ const CreateOwn = ({
           title: video_title,
         })
       );
-      params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
       url.search = params;
