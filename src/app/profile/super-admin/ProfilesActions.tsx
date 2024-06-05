@@ -115,6 +115,67 @@ const ProfileActions = () => {
     );
   };
 
+  const VisibleComponent = ({
+    id,
+    isApproved,
+    isVisible,
+  }: {
+    id: number;
+    isApproved: boolean;
+    isVisible: boolean;
+  }) => {
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [checked, setChecked] = useState<boolean>();
+
+    useEffect(() => {
+      setChecked(isVisible);
+    }, []);
+
+    const approveProfileHandler = async (is_visble: boolean) => {
+      setSaveLoading(true);
+      try {
+        const response = await fetch(`${baseURL}/accounts/profile_approvals/`, {
+          method: "PATCH",
+          headers: {
+            Authorization: basicAuth,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: id,
+            approved: isApproved,
+            visible: is_visble,
+            is_delete: false,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setChecked(data.updated.is_visible);
+          console.log(data);
+          toast.success("Succesfully saved the preferences.");
+        }
+      } catch (error) {
+        toast.error("Error saving the preferences!");
+      } finally {
+        setSaveLoading(false);
+      }
+    };
+
+    return (
+      <div>
+        <Switch
+          className="flex flex-row items-center"
+          checked={checked}
+          loading={saveLoading}
+          onChange={(val) => {
+            console.log(val);
+            approveProfileHandler(val);
+          }}
+        />
+      </div>
+    );
+  };
+
   const EditButton = ({
     profileId,
     profileType,
@@ -191,6 +252,13 @@ const ProfileActions = () => {
           isApproved: profile.is_approved,
           approveHandler: (
             <ApproveComponent
+              id={profile.id}
+              isApproved={profile.is_approved}
+              isVisible={profile.is_visible}
+            />
+          ),
+          visibleHandler: (
+            <VisibleComponent
               id={profile.id}
               isApproved={profile.is_approved}
               isVisible={profile.is_visible}
@@ -353,6 +421,12 @@ const ProfileActions = () => {
       ...getColumnSearchProps("profileType"),
     },
     {
+      title: "Is Visible?",
+      dataIndex: "visibleHandler",
+      key: "visibleHandler",
+      width: "20%",
+    },
+    {
       title: "Is Approved?",
       dataIndex: "approveHandler",
       key: "approveHandler",
@@ -382,7 +456,7 @@ const ProfileActions = () => {
         open={open}
         onOk={() => setOpen(false)}
         onCancel={() => setOpen(false)}
-        width={window.innerWidth < 768 ? "80%" : "60%"}
+        width={window.innerWidth < 768 ? "80%" : "75%"}
         className="h-[90vh] max-sm:w-[90%] overflow-scroll no-scrollbar"
         footer={false}
       >
