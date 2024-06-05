@@ -783,7 +783,7 @@ const CreateOwn = ({
                   )}
                   {!restrictedFeatures?.includes("Simulation-creator") && (
                     <>
-                      {accessAllowed.includes("Simulation-creator") && (
+                      {!accessDenied.includes("Simulation-creator") && (
                         <Button
                           onClick={() => {
                             document
@@ -813,7 +813,7 @@ const CreateOwn = ({
                       Team Connect
                     </Button>
                   )}
-                  {accessAllowed.includes("Deepdive-creator") && (
+                  {!accessDenied.includes("Deepdive-creator") && (
                     <Button
                       onClick={() => {
                         document
@@ -1036,7 +1036,7 @@ const CreateOwn = ({
             </div>
             {!restrictedFeatures?.includes("Simulation-creator") && (
               <>
-                {accessAllowed.includes("Simulation-creator") && (
+                {!accessDenied.includes("Simulation-creator") && (
                   <>
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
@@ -1120,7 +1120,7 @@ const CreateOwn = ({
                 )}
               </>
             )}
-            {accessAllowed.includes("Deepdive-creator") && (
+            {!accessDenied.includes("Deepdive-creator") && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div

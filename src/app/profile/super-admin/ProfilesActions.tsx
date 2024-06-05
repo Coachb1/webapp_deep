@@ -39,12 +39,20 @@ interface DataType {
 
 type DataIndex = keyof DataType;
 
-let profileTypes = ["coach", "mentor", "coach-mentor", "coachee", "mentee"];
+let profileTypes = [
+  "coach",
+  "mentor",
+  "coach-mentor",
+  "coachee",
+  "mentee",
+  "knowledge_bot",
+];
 
 const ProfileActions = () => {
   const [open, setOpen] = useState(false);
 
   const [directoryProfiles, setDirectoryProfiles] = useState<[]>([]);
+  const [profilesLoading, setProfilesLoading] = useState(true);
 
   const ApproveComponent = ({
     id,
@@ -128,9 +136,13 @@ const ProfileActions = () => {
       const coachProfileTypes = ["coach", "mentor", "coach-mentor"];
       const coacheeProfileTypes = ["coachee", "mentee"];
       if (coachProfileTypes.includes(profileType)) {
-        return `/intake?type=coach&edit=true&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=avatar_bot&uid=&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
-      } else {
+        return `/intake?type=coach&edit=true&bot_id=${botId}&profile_id=${profileId}&profile_type=${profileType}&bot_type=avatar_bot&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+      } else if (coacheeProfileTypes.includes(profileType)) {
         return `/intake?type=coachee&edit=true&bot_id=&profile_id=${profileId}&profile_type=${profileType}&bot_type=coachee&uid=&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+      } else if (profileType === "knowledge_bot") {
+        return `/intake?type=knowledge-bot&edit=true&bot_id=${botId}&uid=${botUid}&admin_edit=true&user_id=${userId}&user_email=${userEmail}&user_name=${userName}`;
+      } else {
+        return "";
       }
     };
 
@@ -185,14 +197,16 @@ const ProfileActions = () => {
             />
           ),
           editButton:
-            (profile.profile_type === "coachee" ||
-              profile.profile_type === "mentee") &&
-            profile.email ? (
+            profileTypes.includes(profile.profile_type) && profile.email ? (
               <EditButton
                 profileId={profile.profile_id}
                 profileType={profile.profile_type}
-                botId={profile.avatar_bot_id}
-                botUid=""
+                botId={
+                  profile.profile_type === "knowledge_bot"
+                    ? profile.custom_user_bot_id!
+                    : profile.avatar_bot_id
+                }
+                botUid={profile.bot_uid!}
                 userEmail={profile.email}
                 userName={profile.name}
                 userId={profile.user_id}
@@ -209,6 +223,8 @@ const ProfileActions = () => {
     } catch (err) {
       toast.error("Error fetching directory data.");
       console.error(err);
+    } finally {
+      setProfilesLoading(false);
     }
   };
 
@@ -326,7 +342,7 @@ const ProfileActions = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      width: "20%",
+      width: "30%",
       ...getColumnSearchProps("email"),
     },
     {
@@ -354,8 +370,9 @@ const ProfileActions = () => {
     <>
       <Button
         onClick={() => setOpen(true)}
+        disabled={profilesLoading}
         variant={"default"}
-        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500 border-transparent border hover:border-blue-500"
       >
         <Users className="inline h-4 w-4 mr-2" /> Profiles
       </Button>
@@ -370,6 +387,7 @@ const ProfileActions = () => {
         footer={false}
       >
         <Table
+          rowClassName={"text-sm max-sm:text-xs"}
           className="overflow-scroll no-scrollbar"
           columns={columns}
           dataSource={directoryProfiles}

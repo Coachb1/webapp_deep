@@ -303,3 +303,12 @@ export interface MediaData {
 export interface OptionalMediaData {
   extracted_from_optional_file: MediaItem[];
 }
+
+export interface AllUserDataType {
+  userEmail: string;
+  userClientId: string;
+  isDemoUser: boolean;
+  userId: string;
+  userRole: string;
+  userDeniedAccesses: string;
+}

@@ -156,7 +156,12 @@ export default async function RootLayout({
                 </AntdRegistry>
               </ThemeProvider>
             </>
-            <Toaster theme="light" richColors position="top-right" />
+            <Toaster
+              theme="light"
+              closeButton
+              richColors
+              position="top-right"
+            />
           </body>
         </>
       </HelpModeProvider>

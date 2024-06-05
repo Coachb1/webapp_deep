@@ -92,6 +92,8 @@ export interface CoachesDataType {
   user_id?: string;
   email?: string;
   id_for_target_selection?: string;
+  bot_uid?: string;
+  custom_user_bot_id?: string;
 }
 
 interface FilterCategoriesType {

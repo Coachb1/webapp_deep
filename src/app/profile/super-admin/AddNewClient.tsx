@@ -107,7 +107,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       <Button
         onClick={() => setNewClientInit(true)}
         variant={"default"}
-        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500"
+        className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500 border-transparent border hover:border-blue-500"
       >
         <PlusCircle className="inline h-4 w-4 mr-2" /> Add New Client
       </Button>
