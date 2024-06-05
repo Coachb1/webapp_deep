@@ -242,14 +242,15 @@ fetch(`${baseURL2}/accounts/`, {
   .then((response) => response.json())
   .then((data) => {
     console.log("START -> ", data)
-    clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
-    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
-    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
-    selectedResponseType = data.preferences.response_style
-
     participantId2 = data.uid;
     userId2 = data.uid;
     userRole2 = data.role;
+
+    clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
+    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+    selectedResponseType = data.preferences?.response_style
+    
   })
   .catch((err) => console.log(err));
 
