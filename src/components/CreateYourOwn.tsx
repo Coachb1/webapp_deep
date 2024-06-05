@@ -107,7 +107,6 @@ const CreateYourOwn = ({ user, clientName }: any) => {
           title: "",
         })
       );
-      params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
       params.set("is_micro", `${simulationType === "short" ? true : false}`);
