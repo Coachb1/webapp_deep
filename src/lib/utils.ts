@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { Metadata } from "next";
 import {
+  AllUserDataType,
   Categories,
   CategoryData,
   ClientDataType,
@@ -500,6 +501,31 @@ export function parseClientUsers(data: any) {
   return clientUsers;
 }
 
+export function getAllUsers(data: any) {
+  const clientUsers: AllUserDataType[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+      const clientData = data[clientName][0];
+
+      data[clientName].map((user: any) => {
+        if (user.user_email) {
+          clientUsers.push({
+            userEmail: user.user_email,
+            userClientId: clientData.client_id,
+            isDemoUser: user.is_demo_user,
+            userId: user.user_id,
+            userRole: user.role,
+            userDeniedAccesses: user.access_denied,
+          });
+        }
+      });
+    }
+  }
+
+  return clientUsers;
+}
+
 export const getUsersForClient = (clientName: string, data: any) => {
   const clientUsers: {
     userEmail: string;
@@ -520,6 +546,7 @@ export const getUsersForClient = (clientName: string, data: any) => {
 
   return clientUsers;
 };
+
 export const getUsersForClientForTeam = (clientName: string, data: any) => {
   const clientUsers: {
     userEmail: string;

@@ -6,17 +6,19 @@ import { Link2 } from "lucide-react";
 import {
   baseURL,
   basicAuth,
+  getAllUsers,
   parseClientData,
   parseClientUsers,
 } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { ClientDataType } from "@/lib/types";
+import { AllUserDataType, ClientDataType } from "@/lib/types";
 import { toast } from "sonner";
 import ClientActions from "./super-admin/ClientActions";
 import UserActivities from "./super-admin/UserActivities";
 import AddNewClient from "./super-admin/AddNewClient";
 import Clients from "./super-admin/Clients";
 import ProfileActions from "./super-admin/ProfilesActions";
+import UserRestrictions from "./super-admin/UserRestrictions";
 
 const AdminProfile = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
@@ -25,6 +27,8 @@ const AdminProfile = ({ user }: any) => {
   const [allUsers, setAllUsers] = useState<
     { userEmail: string; userClientId: string; isDemoUser: boolean }[]
   >([]);
+
+  const [allUsersAccount, setAllUsersAccount] = useState<AllUserDataType[]>([]);
 
   const getAllClientsData = async () => {
     setLoading(true);
@@ -41,6 +45,8 @@ const AdminProfile = ({ user }: any) => {
       console.log(parseClientData(data));
       setClientsData(parseClientData(data));
       setAllUsers(parseClientUsers(data));
+      console.log(getAllUsers(data));
+      setAllUsersAccount(getAllUsers(data));
     } catch (err) {
       toast.error("Error fetching client data.");
       console.error(err);
@@ -106,6 +112,11 @@ const AdminProfile = ({ user }: any) => {
           <AddNewClient getAllClientsData={getAllClientsData} />
 
           <ProfileActions />
+
+          <UserRestrictions
+            allUsers={allUsersAccount}
+            getAllClientsData={getAllClientsData}
+          />
         </div>
       </div>
     </div>

@@ -41,6 +41,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
 
+  const adminEdit = params.get("admin_edit");
+  const userIdParams = params.get("user_id");
+  const userEmailParams = params.get("user_email");
+  const userNameParams = params.get("user_name");
+
   const [userId, setUserId] = useState("");
   //user input states
   const [botName, setBotName] = useState("");
@@ -69,13 +74,15 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [dataModified, setDataModified] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !adminEdit) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
         });
+    } else if (adminEdit) {
+      setUserId(userIdParams!);
     }
   }, []);
 
@@ -215,14 +222,15 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     setSubmitLoading(true);
     // if (!checkIfEdit) {
     var formdata = new FormData();
-    formdata.append(
-      "name",
-      `${user.given_name} ${user.family_name ? user.family_name : ""}`
-    );
+    const user_name = adminEdit
+      ? userNameParams
+      : `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+    formdata.append("name", user_name!);
     formdata.append("user_id", userId);
     formdata.append("bot_name", botName);
     formdata.append("participant_id", userId);
-    formdata.append("email", user.email!);
+    const user_email = adminEdit ? userEmailParams : user.email;
+    formdata.append("email", user_email!);
     formdata.append("bot_type", "user_bot");
     formdata.append(
       "profile_image",
@@ -232,7 +240,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     formdata.append(
       "attributes",
       JSON.stringify({
-        heading: `welcome to ${user.given_name}'s user bot`,
+        heading: `welcome to ${user_name}'s user bot`,
       })
     );
 
@@ -436,7 +444,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+          const user_id = adminEdit ? userIdParams : data.uid;
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${user_id}`, {
             headers: {
               Authorization: basicAuth,
             },
@@ -779,7 +788,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   name="files"
                   accept=".pdf,.docx"
                   onChange={async (e) => {
-                    setDataModified(true)
+                    setDataModified(true);
                     handleFileChange(e);
                   }}
                 />
