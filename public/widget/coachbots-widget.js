@@ -1953,6 +1953,241 @@ const handleAttemptScenaios = async (title, test_code) =>{
     }, 100);
   }, 100);
 }
+
+async function handleScenarioRegenerationCT(signals) {
+  const gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
+  console.log(signals)
+
+
+  const regenerateButton = gShadowRoot2.getElementById("scenario-regenerate-button")
+  const regerationErr = gShadowRoot2.getElementById("scenario-err-regenerate-button")
+  if(regenerateButton){
+    regenerateButton.disabled = true;
+    regenerateButton.style.cursor = "wait";
+    regenerateButton.removeAttribute("onclick")
+  } 
+
+  if(regerationErr) {
+    regerationErr.disabled = true;
+    regerationErr.style.cursor = "wait";
+    regerationErr.removeAttribute("onclick")
+  }
+ if(false){
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = "No";
+    gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+    setTimeout(() => {
+      var chatElement = document.getElementById("chat-element2");
+      const shdwroot = chatElement.shadowRoot;
+      let cont = [];
+      const messageContainers = shdwroot.querySelectorAll(
+        ".outer-message-container"
+      );
+      messageContainers.forEach((container, i) => {
+        const messageText = container.querySelector(".user-message-text p");
+        if (messageText && messageText.textContent.trim() === "No") {
+          cont.push(container);
+        }
+      });
+      cont.forEach((element, i) => {
+        if (i === cont.length - 1) {
+          element.remove();
+        }
+      });
+    }, 100);
+  }, 100);
+ }
+
+
+  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+
+  const url = new URL(
+    `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
+  );
+  const params = new URLSearchParams();
+  params.set("mode", "A");
+  params.set(
+    "url",
+    currentURL
+  );
+  params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
+  console.log('is_micro', snnipetConfigSTT.isMicro)
+  if (snnipetConfigSTT.isMicro !== undefined){
+    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  }
+  if (snnipetConfigSTT.flavour !== undefined){
+    params.set("flavour", snnipetConfigSTT.flavour);
+  }
+
+  // params.set("regeneration", true);
+
+  url.search = params;
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamically created Test result stt", data);
+
+      if(regenerateButton){
+        regenerateButton.style.cursor = "not-allowed";
+      }
+      // allMessages.forEach((indvMessage) => {
+      //   if (
+      //     indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+      //     indvMessage.remove();
+      //   }
+      // });
+      const challenges = data;
+      // const randomIndex = Math.floor(Math.random() * challenges.length);
+      // const randomChallenge = challenges[randomIndex];
+
+      let scenarios = [];
+      try {
+        if (challenges.length > 2) {
+          const element1 = challenges[challenges.length - 1];
+
+          if (element1.title) {
+            if (element1.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element1);
+            }
+          }
+
+          const element2 = challenges[challenges.length - 2];
+
+          if (element2.title) {
+            if (element2.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element2);
+            }
+          }
+        } else {
+          challenges.forEach((element) => {
+            if (element.title) {
+              if (element.test_type !== "dynamic_discussion_thread") {
+                scenarios.push(element);
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error(`go error ${e}`);
+      }
+
+      console.log('sucessfully crated scenarios: ', scenarios)
+      if (scenarios.length == 0){
+        console.log('failed to generate')
+        
+        const ErrorDiv =  `
+        <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+
+        <button 
+        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+        style="
+          background-color: #bfdbfe; 
+          border-radius : 6px; 
+          font-size: 14px; 
+          font-weight : 600; 
+          border: 1px solid #1d4ed8; 
+          color : #1d4ed8; 
+          width : 100%; 
+          padding: 4px; 
+          margin : 8px 0 0 0;
+        "
+        onmouseout="this.style.backgroundColor = '#bfdbfe'"
+        id="scenario-err-regenerate-button"
+        >
+          Regenerate
+        </button>
+        </div>
+        </div>
+        `
+
+        setTimeout(() => {
+          setTimeout(() => {
+            const regenerateButton = shadowRoot.getElementById(
+              "scenario-err-regenerate-button"
+            );
+            regenerateButton.onclick = () => {
+              handleScenarioRegenerationCT(signals);
+            };
+          }, 50);
+        }, 100);
+       
+        if (false){
+          signals.onResponse({
+            html: ErrorDiv
+          })
+        } else{
+          appendMessage(ErrorDiv)
+        }
+        return;
+      }
+
+      const shadowRoot = document.getElementById("chat-element2").shadowRoot
+      let divCont = '';
+      scenarios.forEach((element, i) => {
+        divCont += `
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            style="
+              margin-top: 8px;
+              padding: 6px 10px;
+              border: none;
+              border-radius: 4px;
+              background-color: #16a34a;
+              color: white;
+              font-size: 12px;
+              font-weight: 600;
+              transition: background-color 0.3s ease;
+            " 
+            id="attempt-btn-regen-${i}"
+            onmouseout="this.style.backgroundColor = '#16a34a'">
+            Attempt
+          </button>
+        </div>
+        </div>
+        `
+
+        setTimeout(() => {
+          const btn = gShadowRoot.getElementById(`attempt-btn-regen-${i}`)
+          btn.onclick = () => {
+            handleAttemptScenaios(element.title, element.test_code)
+          }
+        }, 100);
+
+      }); 
+
+
+      if (false) {
+        signals.onResponse({
+          html: `<div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
+            ${divCont}
+            </div>`,
+        });
+      } else {
+        appendMessage(`
+            <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            ${divCont}
+            </div>
+            `);
+      }
+    })
+    .catch((err) => console.log(err));
+}
+
 //* Function to handle button click for no-code flow : start
 async function handleOptionButtonClick(labelText, signals, is_regenerate=false) {
   console.log("button clicked", labelText, is_regenerate);
@@ -2009,8 +2244,8 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
   // var currentURL = "https://playground.coachbots.com/content-library"
   console.log('currenturl',currentURL);
 
-  const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
-  appendMessage(generationLoader)
+  // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  // appendMessage(generationLoader)
 
   const allMessages = gShadowRoot.getElementById("messages").childNodes;
 
@@ -2030,6 +2265,8 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
     params.set("flavour", snnipetConfig.flavour);
   }
   url.search = params;
+
+  const shadowRoot = document.getElementById("chat-element").shadowRoot
 
   await fetch(url, {
     method: "POST",
@@ -2052,17 +2289,34 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       // const randomChallenge = challenges[randomIndex];
 
       let scenarios = [];
-      try{
-        challenges.forEach(element => {
-          if (element.title){
-            if (element.test_type !== 'dynamic_discussion_thread'){
-              scenarios.push(element)
+      try {
+        if (challenges.length > 2) {
+          const element1 = challenges[challenges.length - 1];
+
+          if (element1.title) {
+            if (element1.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element1);
             }
           }
-          
-        });
-      } catch(e){
-        console.error(e);
+
+          const element2 = challenges[challenges.length - 2];
+
+          if (element2.title) {
+            if (element2.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element2);
+            }
+          }
+        } else {
+          challenges.forEach((element) => {
+            if (element.title) {
+              if (element.test_type !== "dynamic_discussion_thread") {
+                scenarios.push(element);
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error(`go error ${e}`);
       }
 
       if (scenarios.length == 0){
@@ -2072,26 +2326,36 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
-          <button 
-            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
-            style="
-              margin-top: 8px;
-              padding: 6px 10px;
-              border: none;
-              border-radius: 4px;
-              background-color: #16a34a;
-              color: white;
-              font-size: 12px;
-              font-weight: 600;
-              transition: background-color 0.3s ease;
-            " 
-            onmouseout="this.style.backgroundColor = '#16a34a'"
-            onclick="handleOptionButtonClick('','',true)">
-            Regenerate
-          </button>
+        <button 
+        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+        style="
+          background-color: #bfdbfe; 
+          border-radius : 6px; 
+          font-size: 14px; 
+          font-weight : 600; 
+          border: 1px solid #1d4ed8; 
+          color : #1d4ed8; 
+          width : 100%; 
+          padding: 4px; 
+          margin : 8px 0 0 0;
+        "
+        onmouseout="this.style.backgroundColor = '#bfdbfe'"
+        id="scenario-err-regenerate-button"
+        >
+          Regenerate
+        </button>
         </div>
         </div>
         `
+
+        setTimeout(() => {
+          const regenerateButton = shadowRoot.getElementById(
+            "scenario-err-regenerate-button"
+          );
+          regenerateButton.onclick = () => {
+            handleScenarioRegenerationCT(signals);
+          };
+        }, 100);
         if (signals){
           signals.onResponse({
             html: ErrorDiv
@@ -2107,6 +2371,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       // testCode = randomChallenge.test_code;
       // codeAvailabilityUserChoice = true;
 
+      
       let divCont = '';
       scenarios.forEach((element,i) => {
         console.log('element', element);
@@ -2150,10 +2415,34 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
             html: `
             <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
             ${divCont}
+            <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+            style="
+              background-color: #bfdbfe; 
+              border-radius : 6px; 
+              font-size: 14px; 
+              font-weight : 600; 
+              border: 1px solid #1d4ed8; 
+              color : #1d4ed8; 
+              width : 100%; 
+              padding: 4px; 
+              margin : 8px 0 0 0;
+            "
+            onmouseout="this.style.backgroundColor = '#bfdbfe'"
+            id="scenario-regenerate-button"
+            >
+              Regenerate
+            </button>
             </div>
             `
           }
         )
+        setTimeout(() => {
+          const regenerateButton = shadowRoot.getElementById("scenario-regenerate-button")
+          regenerateButton.onclick = () => {
+            handleScenarioRegenerationCT(signals)
+          }
+      }, 50);
       } else{
       appendMessage(`
       <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
@@ -3745,10 +4034,14 @@ loadExternalModule().then(() => {
             console.log("SLICED \n", latestMessage)
           } 
 
+          const shadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+
           if (askAccessBotCode){
             const code = 'DEMO2024'
             if (latestMessage === code){
               console.log("Access Code Matched")
+              LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
                 handleOptionButtonClick("",signals)
@@ -3767,6 +4060,8 @@ loadExternalModule().then(() => {
                 
               }
               return;
+            } else {
+              LoadingMessageWithText2("Response loading...", shadowRoot)
             }
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
