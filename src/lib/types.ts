@@ -287,6 +287,9 @@ export interface ClientDataType {
 export interface ExtractedData {
   [source: string]: { [fileName: string]: string };
 }
+export interface ExtractedDataCochee {
+  [fileName: string]: string;
+}
 
 export interface MediaItem {
   fileName: string;

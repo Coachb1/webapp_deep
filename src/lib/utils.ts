@@ -9,6 +9,7 @@ import {
   ClientDataType,
   DomainData,
   ExtractedData,
+  ExtractedDataCochee,
   MediaData,
   OptionalMediaData,
   TestData,
@@ -628,6 +629,30 @@ export function transformExtractedOptional(
           }
         }
       }
+    }
+  }
+
+  return mediaData;
+}
+
+export function transformExtractedOptionalCoachee(
+  data: ExtractedDataCochee
+): OptionalMediaData {
+  const mediaData: OptionalMediaData = {
+    extracted_from_optional_file: [],
+  };
+
+  const files = data;
+  for (const fileName in files) {
+    if (files.hasOwnProperty(fileName)) {
+      const fileContent = files[fileName];
+      const fileObject = {
+        fileName,
+        fileContent,
+        isDeleted: false,
+      };
+      // Push the object into the corresponding array in mediaData
+      mediaData.extracted_from_optional_file.push(fileObject);
     }
   }
 
