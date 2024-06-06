@@ -16,6 +16,7 @@ import {
   isValidYoutubeLinks,
   transformExtractedData,
   transformExtractedOptional,
+  transformExtractedOptionalCoachee,
 } from "@/lib/utils";
 import {
   File,
@@ -774,7 +775,20 @@ const CoachIntake = ({ user }: any) => {
               "coach_same_department",
               `${coachMentInSameDep === "Yes" ? true : false}`
             );
+
+            referenceDocs.forEach(({ file, text, name }) => {
+              if (name === "optional_file") {
+                const fileName: any = file.name;
+                const fileData: any = {};
+                fileData[fileName] = text;
+
+                formdata.append("optional_file_data", JSON.stringify(fileData));
+                console.log(fileData);
+              }
+            });
           }
+
+          // return;
 
           if (!checkIfEdit) {
             var myHeaders = new Headers();
@@ -785,6 +799,7 @@ const CoachIntake = ({ user }: any) => {
               headers: myHeaders,
               body: formdata,
             };
+
             fetch(
               `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
               requestOptions
@@ -1998,6 +2013,12 @@ const CoachIntake = ({ user }: any) => {
                 setOutcomeSupported(resultingBot.supported_outcome);
 
                 setDepartment(resultingBot.department);
+
+                setOptionalMediaData(
+                  transformExtractedOptionalCoachee(
+                    resultingBot.optional_file_data
+                  )
+                );
               });
           });
       }
@@ -4185,6 +4206,98 @@ const CoachIntake = ({ user }: any) => {
                       options={characteristicsList}
                     />
                   </div>
+                  <hr className="mt-2" />
+                  <div className="my-3 ">
+                    <p className="text-sm my-1">
+                      Please upload any personality assessment (e.g. DISC) or
+                      other profiles that you might have. It will be used for
+                      recommendation of the appropriate coaching style.
+                    </p>
+
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        type="file"
+                        className="w-full text-xs my-2"
+                        multiple
+                        name="optional_file"
+                        accept=".pdf,.docx"
+                        onChange={async (e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* @ts-ignore */}
+                  {optionalMediaData?.extracted_from_optional_file.length >
+                    0 && (
+                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {optionalMediaData?.extracted_from_optional_file.map(
+                        (item) => (
+                          <div className="flex flex-row justify-between items-center">
+                            <div className="flex flex-row items-center gap-2">
+                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                              <span
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
+                              >
+                                {item.fileName}
+                              </span>
+                            </div>
+                            {checkIfEdit && (
+                              <div className="flex flex-row gap-2 min-w-fit">
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={item.isDeleted}
+                                  onClick={() => {
+                                    deleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">Delete</span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Delete"
+                                    body={
+                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={!item.isDeleted}
+                                  onClick={() => {
+                                    undoDeleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">
+                                    Undo delete
+                                  </span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Undo delete"
+                                    body={
+                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                  <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please list your department affiliation.

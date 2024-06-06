@@ -700,7 +700,7 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections?.data.find(
+          const connection = userConnections?.data?.find(
             (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
