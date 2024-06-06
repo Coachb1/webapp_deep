@@ -27,6 +27,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   const [newRestrictedPages, setNewRestrictedPages] = useState<OptionType[]>(
     []
   );
+  const [newRestrictedFeatures, setNewRestrictedFeatures] = useState<
+    OptionType[]
+  >([]);
 
   const restrictedPageOptions: OptionType[] = [
     { value: "Network Directory", label: "Network Directory" },
@@ -34,6 +37,30 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     { value: "Library", label: "Library" },
     { value: "Creator Studio", label: "Creator Studio" },
     { value: "Profile", label: "Profile" },
+  ];
+
+  const restrictedFeaturesOptions: OptionType[] = [
+    { value: "Join-the-network", label: "Join the network" },
+    { value: "Likes", label: "Likes" },
+    { value: "Ratings", label: "Ratings" },
+    { value: "Requested-scenarios", label: "Requested scenarios" },
+    { value: "Assigned-scenarios", label: "Assigned scenarios" },
+    { value: "Client-library", label: "Client library" },
+    { value: "Competency-library", label: "Competency library" },
+    { value: "EQ-Areas", label: "EQ Areas" },
+    { value: "Learning-ideas", label: "Learning ideas" },
+    { value: "Simulation-creator", label: "Simulation creator" },
+    { value: "Knowledge-bots", label: "Knowledge bots" },
+    { value: "Team-connect", label: "Team connect" },
+    { value: "My-connections", label: "My connections" },
+    { value: "Action-session-notes", label: "Action session notes" },
+    { value: "Bot-conversations", label: "Bot conversations" },
+    { value: "My-rewards", label: "My rewards" },
+    { value: "Competencies", label: "Competencies" },
+    { value: "IDP", label: "IDP" },
+    { value: "Email-signature", label: "Email signature" },
+    { value: "Super-admin", label: "Super admin" },
+    { value: "Client-admin-reports", label: "Client admin reports" },
   ];
 
   const newClientHandler = async () => {
@@ -46,6 +73,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       const raw = JSON.stringify({
         client_name: newClientName,
         restricted_pages: newRestrictedPages
+          .map((page) => page.value)
+          .join(","),
+        restricted_features: newRestrictedFeatures
           .map((page) => page.value)
           .join(","),
         allowed_ips: newAllowedIps,
@@ -170,6 +200,18 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                 value={newRestrictedPages}
                 onChange={(selectedOptions: MultiValue<OptionType>) =>
                   setNewRestrictedPages(selectedOptions as OptionType[])
+                }
+                className="w-full text-sm"
+              />
+            </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Restricted Features</p>
+              <Select
+                isMulti
+                options={restrictedFeaturesOptions}
+                value={newRestrictedFeatures}
+                onChange={(selectedOptions: MultiValue<OptionType>) =>
+                  setNewRestrictedFeatures(selectedOptions as OptionType[])
                 }
                 className="w-full text-sm"
               />
