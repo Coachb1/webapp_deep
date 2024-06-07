@@ -2,7 +2,7 @@ const key = "";
 const secret = "";
 const subdomain = window.location.hostname.split(".")[0];
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "http://127.0.0.1:8001/api/v1"   / local baseurl
+// const devUrl = "http://127.0.0.1:8001/api/v1"   // local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === "platform" ? prodUrl : devUrl;
@@ -103,6 +103,8 @@ let askAccessBotCode = false;
 let clientAllowAudioInteraction;
 let userAllowAudioInteraction;
 let prioritiseUserAllowInteraction;
+let AttemptTestDirect = false;
+
 
 // sample TEst codes
 const sampleTestCodes = {
@@ -1296,6 +1298,7 @@ let clearMultipleBodyData = false;
 // to reset all variables
 const resetAllVariables = async () => {
   //* reset all variables : start
+  AttemptTestDirect = false;
   responsesDone = false;
   questionIndex = 0;
   userResponses = [];
@@ -1529,10 +1532,12 @@ const handleProceedClick = async (choice) => {
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option");
     // button.parentNode.removeChild(button)
-    const que_msg = document.createElement("div");
-    que_msg.innerHTML = "Please Wait.."; // You can customize the message here
-    // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    if (msg){
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = "Please Wait.."; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+    }
 
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
@@ -1920,6 +1925,7 @@ const handleAttemptScenaios = async (title, test_code) =>{
   testCode = test_code;
   userAcessAvailability = true;
   optedNo = true;
+  AttemptTestDirect = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   // gShadowRoot.getElementById("text-input").focus();
@@ -2004,7 +2010,7 @@ async function handleScenarioRegenerationCT(signals) {
   var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
 
   const url = new URL(
-    `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
+    `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
   );
   const params = new URLSearchParams();
   params.set("mode", "A");
@@ -2017,11 +2023,8 @@ async function handleScenarioRegenerationCT(signals) {
   if (snnipetConfigSTT.isMicro !== undefined){
     params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
   }
-  if (snnipetConfigSTT.flavour !== undefined){
-    params.set("flavour", snnipetConfigSTT.flavour);
-  }
 
-  // params.set("regeneration", true);
+  params.set("regeneration", true);
 
   url.search = params;
 
@@ -2139,6 +2142,7 @@ async function handleScenarioRegenerationCT(signals) {
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
         <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -2379,6 +2383,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
         <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test'? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -3108,7 +3113,7 @@ loadExternalModule().then(() => {
   };
 
   const getClientInformation = async (use_case, user_id) => {
-    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    const url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
     if (user_id && use_case === "user_info") {
       url += `&user_id=${user_id}`;
@@ -4839,8 +4844,17 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
+                    if ( AttemptTestDirect){
+                      signals.onResponse({
+                        html: "Get ready! Your scenario starts now. Good luck!",
+                      })
+                      setTimeout(() => {
+                        handleProceedClick('Yes')
+                      }, 1000);
+                      
+                    }
 
-                    if (senarioMediaDescription) {
+                    if (senarioMediaDescription && !AttemptTestDirect) {
                       let embeddingUrl = "";
                       if (senarioMediaDescription.length > 0) {
                         if (senarioMediaDescription.includes("youtube.com")) {
@@ -5016,6 +5030,7 @@ loadExternalModule().then(() => {
                     } else if (
                       mediaProps &&
                       Object.keys(mediaProps).includes("test_image")
+                      && !AttemptTestDirect
                     ) {
                       console.log("Media props here", mediaProps);
                       console.log("SHOW MEDIA PROPS here", mediaProps);
@@ -5064,10 +5079,12 @@ loadExternalModule().then(() => {
                       );
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
-                      signals.onResponse({
-                        html: questionText,
-                        text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                      });
+                      if (!AttemptTestDirect){
+                        signals.onResponse({
+                          html: questionText,
+                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                        });
+                      }
                     }
                     // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
                   } else {
@@ -5075,6 +5092,7 @@ loadExternalModule().then(() => {
                       testType != "orchestrated_conversation" &&
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
+                      && !AttemptTestDirect
                     ) {
                       let responderName;
                       let strList = questionText.replaceAll("*", "").split(":");
