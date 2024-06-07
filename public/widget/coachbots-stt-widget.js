@@ -8792,8 +8792,7 @@ loadExternalModule().then(() => {
                     if (
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread" &&
-                      testType2 != "coaching" &&
-                      !AttemptTestDirectSTT
+                      testType2 != "coaching" 
                     ) {
                       let responderName;
                       let strList = questionText2
