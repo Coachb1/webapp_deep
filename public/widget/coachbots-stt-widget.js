@@ -4948,66 +4948,89 @@ const handleAttemptScenaiosSTT = async (title, test_code) =>{
 
 async function handleScenarioRegeneration(signals) {
   const gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
-  console.log(signals)
+  console.log(signals);
 
-
-  const regenerateButton = gShadowRoot2.getElementById("scenario-regenerate-button")
-  if(regenerateButton){
+  const regenerateButton = gShadowRoot2.getElementById(
+    "scenario-regenerate-button"
+  );
+  if (regenerateButton) {
     regenerateButton.disabled = true;
     regenerateButton.style.cursor = "wait";
-    regenerateButton.removeAttribute("onclick")
+    regenerateButton.removeAttribute("onclick");
+
+    regenerateButton.innerText = "Regenerating..."
   }
- if(false){
-  gShadowRoot2.getElementById("text-input").focus();
-  setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = "No";
-    gShadowRoot2.querySelectorAll(".input-button")[1].click();
 
+  const errRegenerateButton = gShadowRoot2.getElementById(
+    "scenario-err-regenerate-button"
+  );
+
+  if(errRegenerateButton) {
+    errRegenerateButton.disabled = true;
+    errRegenerateButton.style.cursor = "wait";
+    errRegenerateButton.removeAttribute("onclick");
+
+    errRegenerateButton.innerText = "Regenerating..."
+  }
+  
+  if (false) {
+    gShadowRoot2.getElementById("text-input").focus();
     setTimeout(() => {
-      var chatElement = document.getElementById("chat-element2");
-      const shdwroot = chatElement.shadowRoot;
-      let cont = [];
-      const messageContainers = shdwroot.querySelectorAll(
-        ".outer-message-container"
-      );
-      messageContainers.forEach((container, i) => {
-        const messageText = container.querySelector(".user-message-text p");
-        if (messageText && messageText.textContent.trim() === "No") {
-          cont.push(container);
-        }
-      });
-      cont.forEach((element, i) => {
-        if (i === cont.length - 1) {
-          element.remove();
-        }
-      });
+      gShadowRoot2.getElementById("text-input").textContent = "No";
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+      setTimeout(() => {
+        var chatElement = document.getElementById("chat-element2");
+        const shdwroot = chatElement.shadowRoot;
+        let cont = [];
+        const messageContainers = shdwroot.querySelectorAll(
+          ".outer-message-container"
+        );
+        messageContainers.forEach((container, i) => {
+          const messageText = container.querySelector(".user-message-text p");
+          if (messageText && messageText.textContent.trim() === "No") {
+            cont.push(container);
+          }
+        });
+        cont.forEach((element, i) => {
+          if (i === cont.length - 1) {
+            element.remove();
+          }
+        });
+      }, 100);
     }, 100);
-  }, 100);
- }
+  }
 
+  var currentURL =
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "") +
+    window.location.pathname +
+    window.location.search +
+    window.location.hash;
 
-  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
 
   const url = new URL(
     `${baseURL2}/tests/get_or_create_test_scenarios_by_site/`
   );
   const params = new URLSearchParams();
   params.set("mode", "A");
-  params.set(
-    "url",
-    currentURL
-  );
+  params.set("url", currentURL);
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log('is_micro', snnipetConfigSTT.isMicro)
-  if (snnipetConfigSTT.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  console.log("is_micro", snnipetConfigSTT.isMicro);
+  if (snnipetConfigSTT.isMicro !== undefined) {
+    params.set(
+      "is_micro",
+      `${snnipetConfigSTT.isMicro === "true" ? true : false}`
+    );
   }
-
 
   params.set("regeneration", true);
 
   url.search = params;
-
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
     headers: {
@@ -5019,7 +5042,9 @@ async function handleScenarioRegeneration(signals) {
     .then((data) => {
       console.log("Dynamically created Test result stt", data);
 
-      if(regenerateButton){
+     
+
+      if (regenerateButton) {
         regenerateButton.style.cursor = "not-allowed";
       }
       // allMessages.forEach((indvMessage) => {
@@ -5063,11 +5088,13 @@ async function handleScenarioRegeneration(signals) {
         console.error(`go error ${e}`);
       }
 
-      console.log('sucessfully crated scenarios: ', scenarios)
-      if (scenarios.length == 0){
-        console.log('failed to generate')
+      console.log("sucessfully crated scenarios: ", scenarios);
+      if (scenarios.length == 0) {
+        console.log("failed to generate");
+
         
-        const ErrorDiv =  `
+
+        const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
@@ -5086,41 +5113,64 @@ async function handleScenarioRegeneration(signals) {
           margin : 8px 0 0 0;
         "
         onmouseout="this.style.backgroundColor = '#bfdbfe'"
-        id="scenario-err-regenerate-button"
+        id="scenario-err-regenerate-buttonn"
         >
           Regenerate
         </button>
         </div>
         </div>
-        `
+        `;
 
-          setTimeout(() => {
-            const regenerateButton = shadowRoot.getElementById(
-              "scenario-err-regenerate-button"
-            );
-            regenerateButton.onclick = () => {
-              handleScenarioRegeneration(signals);
-            };
-          }, 50);
-       
-        if (false){
+        setTimeout(() => {
+          const regenerateButton = shadowRoot.getElementById(
+            "scenario-err-regenerate-buttonn"
+          );
+          regenerateButton.onclick = () => {
+            handleScenarioRegeneration(signals);
+          };
+        }, 50);
+
+        if (false) {
           signals.onResponse({
-            html: ErrorDiv
-          })
-        } else{
-          appendMessage(ErrorDiv)
+            html: ErrorDiv,
+          });
+        } else {
+          appendMessage(ErrorDiv);
         }
         return;
       }
 
-      const shadowRoot = document.getElementById("chat-element2").shadowRoot
-      let divCont = '';
+      const prevScenarioComponent = shadowRoot.getElementById(
+        "create-scenario-section"
+      );
+
+      if(prevScenarioComponent){
+        prevScenarioComponent.parentNode.remove()
+      }
+
+      const prevErrorSection = shadowRoot.getElementById(
+        "error-section"
+      );
+
+      if(prevErrorSection){
+        prevErrorSection.parentNode.remove()
+      }
+
+      let divCont = "";
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
+          i === 1 && "margin-top : 10px"
+        }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
+          element.test_type === "test" ? "Simulation" : "Roleplay"
+        }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
+          element.title
+        }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
+          element.description
+        }</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -5141,17 +5191,15 @@ async function handleScenarioRegeneration(signals) {
           </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
-          const btn = shadowRoot.getElementById(`attempt-btn-regen-${i}`)
+          const btn = shadowRoot.getElementById(`attempt-btn-regen-${i}`);
           btn.onclick = () => {
-            handleAttemptScenaiosSTT(element.title, element.test_code)
-          }
+            handleAttemptScenaiosSTT(element.title, element.test_code);
+          };
         }, 100);
-
-      }); 
-
+      });
 
       if (false) {
         signals.onResponse({
@@ -5161,7 +5209,7 @@ async function handleScenarioRegeneration(signals) {
         });
       } else {
         appendMessage2(`
-            <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
             ${divCont}
             </div>
             `);
@@ -5171,63 +5219,59 @@ async function handleScenarioRegeneration(signals) {
 }
 
 //* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
+async function handleOptionButtonClick2(
+  labelText,
+  signals,
+  is_regenerate = false
+) {
   console.log("button clicked in stt", labelText);
   const gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
 
-  if(is_regenerate){
+  if (is_regenerate) {
     gShadowRoot2.getElementById("text-input").focus();
-  setTimeout(() => {
-    gShadowRoot2.getElementById("text-input").textContent = "No";
-    gShadowRoot2.querySelectorAll(".input-button")[1].click();
-
-    
     setTimeout(() => {
+      gShadowRoot2.getElementById("text-input").textContent = "No";
+      gShadowRoot2.querySelectorAll(".input-button")[1].click();
 
-      var chatElement = document.getElementById("chat-element2");
-      const shdwroot = chatElement.shadowRoot;
-      let cont = []
-      const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
-      messageContainers.forEach((container,i) => {
-        console.log(i,messageContainers.length - 1)
-        const messageText = container.querySelector(".user-message-text p");
-        if (
-          messageText &&
-          messageText.textContent.trim() === "No"
-           
-        ) {
-          cont.push(container)
-        }
-
-      });
-      cont.forEach((element,i) => {
-        if ( i === (cont.length-1)){
-          element.remove();
-        }
-      });
-
+      setTimeout(() => {
+        var chatElement = document.getElementById("chat-element2");
+        const shdwroot = chatElement.shadowRoot;
+        let cont = [];
+        const messageContainers = shdwroot.querySelectorAll(
+          ".outer-message-container"
+        );
+        messageContainers.forEach((container, i) => {
+          console.log(i, messageContainers.length - 1);
+          const messageText = container.querySelector(".user-message-text p");
+          if (messageText && messageText.textContent.trim() === "No") {
+            cont.push(container);
+          }
+        });
+        cont.forEach((element, i) => {
+          if (i === cont.length - 1) {
+            element.remove();
+          }
+        });
       }, 100);
     }, 100);
-    
+
     return;
   }
   const button = gShadowRoot2.getElementById("create-new-scenario");
-  if (button){
-  button.disabled = true;
+  if (button) {
+    button.disabled = true;
   }
 
-
-  if (gShadowRoot2.querySelectorAll('#create-scenario-section').length > 0){
-    console.log('already existed')
-    return
+  if (gShadowRoot2.querySelectorAll("#create-scenario-section").length > 0) {
+    console.log("already existed");
+    return;
   }
 
-  
   optedNo = true;
   var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
-  // var currentURL = "https://playground.coachbots.com/content-library"
-  console.log('currenturl',currentURL);
-  
+//  var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
+  console.log("currenturl", currentURL);
+
   // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
   // appendMessage2(generationLoader)
 
@@ -5247,21 +5291,21 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
   );
   const params = new URLSearchParams();
   params.set("mode", "A");
-  params.set(
-    "url",
-    currentURL
-  );
+  params.set("url", currentURL);
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log('is_micro', snnipetConfigSTT.isMicro)
-  if (snnipetConfigSTT.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  console.log("is_micro", snnipetConfigSTT.isMicro);
+  if (snnipetConfigSTT.isMicro !== undefined) {
+    params.set(
+      "is_micro",
+      `${snnipetConfigSTT.isMicro === "true" ? true : false}`
+    );
   }
-  if (snnipetConfigSTT.flavour !== undefined){
+  if (snnipetConfigSTT.flavour !== undefined) {
     params.set("flavour", snnipetConfigSTT.flavour);
   }
 
   url.search = params;
-
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot;
   await fetch(url, {
     method: "POST",
     headers: {
@@ -5313,14 +5357,12 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
         console.error(`go error ${e}`);
       }
 
-        
+      console.log("sucessfully crated scenarios: ", scenarios);
+      console.log(signals);
+      if (scenarios.length == 0) {
+        console.log("failed to generate");
 
-      console.log('sucessfully crated scenarios: ', scenarios)
-      console.log(signals)
-      if (scenarios.length == 0){
-        console.log('failed to generate')
-        
-        const ErrorDiv =  `
+        const ErrorDiv = `
         <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
@@ -5338,12 +5380,12 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
               transition: background-color 0.3s ease;
             " 
             onmouseout="this.style.backgroundColor = '#16a34a'"
-            id="scenario-err-regenerate-button"
+            id="scenario-err-regenerate-button">
             Regenerate
           </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
           const regenerateButton = shadowRoot.getElementById(
@@ -5352,7 +5394,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
           regenerateButton.onclick = () => {
             handleScenarioRegeneration(signals);
           };
-        }, 50);
+        }, 100);
         if (signals) {
           signals.onResponse({
             html: ErrorDiv,
@@ -5363,14 +5405,21 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
         return;
       }
 
-      const shadowRoot = document.getElementById("chat-element2").shadowRoot
-      let divCont = '';
+      let divCont = "";
       scenarios.forEach((element, i) => {
         divCont += `
-        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
-        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
-        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
-        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${
+          i === 1 && "margin-top : 10px"
+        }">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${
+          element.test_type === "test" ? "Simulation" : "Roleplay"
+        }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${
+          element.title
+        }</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${
+          element.description
+        }</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
             style="
@@ -5390,24 +5439,23 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
           </button>
         </div>
         </div>
-        `
+        `;
 
         setTimeout(() => {
-          const btn = shadowRoot.getElementById(`attempt-btn-${i}`)
+          const btn = shadowRoot.getElementById(`attempt-btn-${i}`);
           btn.onclick = () => {
-            handleAttemptScenaiosSTT(element.title, element.test_code)
-          }
+            handleAttemptScenaiosSTT(element.title, element.test_code);
+          };
         }, 100);
+      });
 
-      }); 
-
-      if (signals){
-        signals.onResponse(
-          {
-            html: `
-            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
+      if (signals) {
+        signals.onResponse({
+          html: `
+            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
             ${divCont}
 
+              <div style="display:flex; flex-direction: row; justify-content: flex-end;">
               <button 
               onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
               style="
@@ -5417,7 +5465,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
                 font-weight : 600; 
                 border: 1px solid #1d4ed8; 
                 color : #1d4ed8; 
-                width : 100%; 
+                width : fit-content;
                 padding: 4px; 
                 margin : 8px 0 0 0;
               "
@@ -5426,20 +5474,22 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
               >
                 Regenerate
               </button>
+              </div>
             </div>
-            `
-          }
-        )
+            `,
+        });
 
         setTimeout(() => {
-            const regenerateButton = shadowRoot.getElementById("scenario-regenerate-button")
-            regenerateButton.onclick = () => {
-              handleScenarioRegeneration(signals)
-            }
+          const regenerateButton = shadowRoot.getElementById(
+            "scenario-regenerate-button"
+          );
+          regenerateButton.onclick = () => {
+            handleScenarioRegeneration(signals);
+          };
         }, 50);
-      } else{
-      appendMessage2(`
-      <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
+      } else {
+        appendMessage2(`
+      <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
       `);

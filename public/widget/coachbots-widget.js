@@ -1965,18 +1965,27 @@ async function handleScenarioRegenerationCT(signals) {
   console.log(signals)
 
 
-  const regenerateButton = gShadowRoot2.getElementById("scenario-regenerate-button")
-  const regerationErr = gShadowRoot2.getElementById("scenario-err-regenerate-button")
-  if(regenerateButton){
+  const regenerateButton = gShadowRoot2.getElementById(
+    "scenario-regenerate-button"
+  );
+  if (regenerateButton) {
     regenerateButton.disabled = true;
     regenerateButton.style.cursor = "wait";
-    regenerateButton.removeAttribute("onclick")
-  } 
+    regenerateButton.removeAttribute("onclick");
 
-  if(regerationErr) {
-    regerationErr.disabled = true;
-    regerationErr.style.cursor = "wait";
-    regerationErr.removeAttribute("onclick")
+    regenerateButton.innerText = "Regenerating..."
+  }
+
+  const errRegenerateButton = gShadowRoot2.getElementById(
+    "scenario-err-regenerate-button"
+  );
+
+  if(errRegenerateButton) {
+    errRegenerateButton.disabled = true;
+    errRegenerateButton.style.cursor = "wait";
+    errRegenerateButton.removeAttribute("onclick");
+
+    errRegenerateButton.innerText = "Regenerating..."
   }
  if(false){
   gShadowRoot2.getElementById("text-input").focus();
@@ -2008,6 +2017,7 @@ async function handleScenarioRegenerationCT(signals) {
 
 
   var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
 
   const url = new URL(
     `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
@@ -2135,6 +2145,22 @@ async function handleScenarioRegenerationCT(signals) {
         return;
       }
 
+      const prevScenarioComponent = gShadowRoot2.getElementById(
+        "create-scenario-section"
+      );
+
+      if(prevScenarioComponent){
+        prevScenarioComponent.parentNode.remove()
+      }
+
+      const prevErrorSection = gShadowRoot2.getElementById(
+        "error-section"
+      );
+
+      if(prevErrorSection){
+        prevErrorSection.parentNode.remove()
+      }
+
       const shadowRoot = document.getElementById("chat-element2").shadowRoot
       let divCont = '';
       scenarios.forEach((element, i) => {
@@ -2177,13 +2203,13 @@ async function handleScenarioRegenerationCT(signals) {
 
       if (false) {
         signals.onResponse({
-          html: `<div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
+          html: `<div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
             ${divCont}
             </div>`,
         });
       } else {
         appendMessage(`
-            <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
             ${divCont}
             </div>
             `);
@@ -2245,7 +2271,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
   }
   optedNo = true;
   var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
-  // var currentURL = "https://playground.coachbots.com/content-library"
+  // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
   console.log('currenturl',currentURL);
 
   // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
@@ -2418,8 +2444,9 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
         signals.onResponse(
           {
             html: `
-            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 300px;">
+            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
             ${divCont}
+            <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
             <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
             style="
@@ -2429,7 +2456,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
               font-weight : 600; 
               border: 1px solid #1d4ed8; 
               color : #1d4ed8; 
-              width : 100%; 
+              width : fit-content; 
               padding: 4px; 
               margin : 8px 0 0 0;
             "
@@ -2438,6 +2465,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
             >
               Regenerate
             </button>
+            </div>
             </div>
             `
           }
@@ -2450,7 +2478,7 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
       }, 50);
       } else{
       appendMessage(`
-      <div id='create-scenario-section' style="max-width: 300px;display: flex; flex-direction: column; gap: 4px;">
+      <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
       ${divCont}
       </div>
       `);
