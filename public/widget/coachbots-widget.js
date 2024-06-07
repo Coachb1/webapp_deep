@@ -1025,19 +1025,22 @@ async function submitEmailAndName() {
       name: window.user.given_name,
     });
   }
-  // await fetch(
-  //   `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
-  //   {
-  //     method: "POST",
-  //     headers: {
-  //       Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // )
-  //   .then((response) => response.json())
-  //   .then((data) => {
-      // console.log("name email updated, sending email");
+  if (!window.user){
+    await fetch(
+      `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("name email updated, sending email",data);
+      });
+    }
       sendEmail(sessionId, globalReportUrl);
       increaseActionPoint(userId, "interaction_attempted");
 
@@ -1912,7 +1915,12 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    appendMessage("<b>Your session is terminated. You can restart again!</b>");
+    if (Object.keys(snnipetConfig).length > 0){
+      appendMessage("<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>");
+      
+    } else{
+      appendMessage("<b>Your session is terminated. You can restart again!</b>");
+    }
 
      //enable Copy Paste
      const textInputElement = gshadowRoot.getElementById("text-input")
@@ -1928,6 +1936,16 @@ const handleAttemptScenaios = async (title, test_code) =>{
   AttemptTestDirect = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  const createScenraiobtn = gShadowRoot.querySelectorAll("#create-scenario-section button")
+  if (createScenraiobtn){
+    createScenraiobtn.forEach((btn) => {
+      btn.disabled = true;
+      btn.style.cursor = "not-allowed";
+      btn.removeAttribute("onclick");
+      btn.removeAttribute('onmouseover');
+      btn.removeAttribute('onmouseout');
+    })
+  }
   // gShadowRoot.getElementById("text-input").focus();
   // setTimeout(() => {
   //   gShadowRoot.getElementById("text-input").textContent = title;
@@ -4229,9 +4247,15 @@ loadExternalModule().then(() => {
             resetAllVariables().then(() => {
               console.log("Your session is terminated. You can restart again!");
 
-              signals.onResponse({
-                html: "<b>Your session is terminated. You can restart again!</b>",
-              });
+              if (Object.keys(snnipetConfig).length > 0){
+                signals.onResponse({
+                  html: "<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>",
+                });
+              } else{
+                signals.onResponse({
+                  html: "<b>Your session is terminated. You can restart again!</b>",
+                });
+              }
 
               //Enable Copy Paste
               var chatElementRef2 = document.getElementById("chat-element");
