@@ -177,6 +177,7 @@ let deepDiveInitialQueIndex;
 let responseSavedCount = 0;
 let snnipetConfigSTT;
 let askAccessBotCodeSTT = false;
+let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
 
@@ -3510,7 +3511,7 @@ const setHoverPointsStt = (
 // to reset all variables
 const resetAllVariablesStt = async () => {
   //* reset all variables : start
-
+  AttemptTestDirectSTT = false;
   isAttemptingRecommendation = false;
   responsesDone2 = false;
   questionIndex2 = 0;
@@ -3742,10 +3743,12 @@ const handleProceedClickStt = async (choice) => {
     const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option2");
     // button.parentNode.removeChild(button)
+    if (msg){
     const que_msg = document.createElement("div");
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
+    }
 
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
@@ -4908,6 +4911,7 @@ const handleAttemptScenaiosSTT = async (title, test_code) =>{
   testCode2 = test_code;
   userAcessAvailability2 = true;
   optedNo2 = true;
+  AttemptTestDirectSTT = true;
 
   gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
   // gShadowRoot2.getElementById("text-input").focus();
@@ -4998,11 +5002,9 @@ async function handleScenarioRegeneration(signals) {
   if (snnipetConfigSTT.isMicro !== undefined){
     params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
   }
-  if (snnipetConfigSTT.flavour !== undefined){
-    params.set("flavour", snnipetConfigSTT.flavour);
-  }
 
-  // params.set("regeneration", true);
+
+  params.set("regeneration", true);
 
   url.search = params;
 
@@ -5118,6 +5120,7 @@ async function handleScenarioRegeneration(signals) {
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
         <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
         <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
@@ -5367,7 +5370,7 @@ async function handleOptionButtonClick2(labelText,signals,is_regenerate=false) {
         <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
         <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
         <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
-        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
           <button 
             onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
             style="
@@ -8480,8 +8483,17 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;"  onmouseover="this.style.cursor ='pointer'" onclick="handleProceedClickStt('Yes')">Yes</button>
                         <button style="margin-top:5px;  width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onmouseover="this.style.cursor ='pointer'"  onclick="handleProceedClickStt('No')">No</button>
                     </div>`;
+                    if ( AttemptTestDirectSTT){
+                      signals.onResponse({
+                        html: "Get ready! Your scenario starts now. Good luck!",
+                      })
+                      setTimeout(() => {
+                        handleProceedClickStt('Yes')
+                      }, 1000);
+                      
+                    }
                     console.log(senarioMediaDescription2, "mediadesc");
-                    if (senarioMediaDescription2) {
+                    if (senarioMediaDescription2 && !AttemptTestDirectSTT) {
                       let embeddingUrl2 = "";
                       if (senarioMediaDescription2.length > 0) {
                         console.log(senarioMediaDescription2);
@@ -8652,7 +8664,8 @@ loadExternalModule().then(() => {
                       });
                     } else if (
                       mediaPropsStt &&
-                      Object.keys(mediaPropsStt).includes("test_image")
+                      Object.keys(mediaPropsStt).includes("test_image") 
+                      && !AttemptTestDirectSTT
                     ) {
                       console.log("Media props here", mediaPropsStt);
                       console.log("SHOW MEDIA PROPS here", mediaPropsStt);
@@ -8718,16 +8731,19 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       // proceed buttion will show
-                      signals.onResponse({
-                        html: questionText2,
-                        text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
-                      });
+                      if ( !AttemptTestDirectSTT){
+                        signals.onResponse({
+                          html: questionText2,
+                          text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
+                        });
+                      }
                     }
                   } else {
                     if (
                       testType2 != "orchestrated_conversation" &&
                       testType2 != "dynamic_discussion_thread" &&
-                      testType2 != "coaching"
+                      testType2 != "coaching" &&
+                      !AttemptTestDirectSTT
                     ) {
                       let responderName;
                       let strList = questionText2
