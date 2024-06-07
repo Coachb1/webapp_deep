@@ -5120,7 +5120,7 @@ loadExternalModule().then(() => {
                       testType != "orchestrated_conversation" &&
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
-                      && !AttemptTestDirect
+                      
                     ) {
                       let responderName;
                       let strList = questionText.replaceAll("*", "").split(":");
