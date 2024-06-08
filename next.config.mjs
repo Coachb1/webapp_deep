@@ -6,7 +6,7 @@ import os from "os";
 
 dotenv.config();
 
-const hostname = os.hostname()
+const hostname = os.hostname();
 
 const nextConfig = {
   reactStrictMode: true,
@@ -22,9 +22,15 @@ const nextConfig = {
     ANTHROPIC_API_KEY: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
     GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
   },
-  compiler : {
-    removeConsole : hostname.includes("play") || hostname.includes("playground") ? { exclude: ["error", "warn"] } : false
-  }
+  compiler: {
+    removeConsole:
+      hostname.includes("play") ||
+      hostname.includes("playground") ||
+      hostname.includes("platform") ||
+      hostname.includes("plat")
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
 };
 
 export default nextConfig;
