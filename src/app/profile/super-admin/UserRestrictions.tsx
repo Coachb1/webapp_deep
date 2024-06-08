@@ -96,12 +96,13 @@ const UserRestrictions = ({
     const userRestrictionsPrev = allUsers
       .find((user) => user.userId === selectedUser)
       ?.userDeniedAccesses?.split(",")
+      .filter((restr) => restr.trim().length > 0)
       .map((restr) => ({
         value: restr.trim(),
         label: restr.trim(),
       }));
 
-    console.log(userRestrictionsPrev);
+    console.log(userRestrictionsPrev,'userRestrictionsPrev');
 
     if (userRestrictionsPrev?.length! > 0) {
       setRestrictedFeatures(userRestrictionsPrev!);
