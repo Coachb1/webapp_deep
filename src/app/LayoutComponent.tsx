@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DemoPage, LoginWall, UnAuth } from "./UnAuthpage";
 import {
-  baseURL,
-  basicAuth,
   getUserAccount,
   hideBots,
+  hideConsoleLogs,
   subdomain,
 } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
@@ -42,6 +41,7 @@ const LayoutComponent = ({
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
 
+  hideConsoleLogs();
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -59,14 +59,13 @@ const LayoutComponent = ({
             email: user?.email!,
           });
           console.log("USER SET");
-          
         }
         setupLogRocketReact(LogRocket);
         setLogSessionStarted(true);
         console.log("LOG SESSION STARTED");
       }
     }
-    if(user){
+    if (user) {
       window.user = user;
     }
   }, []);
@@ -130,7 +129,9 @@ const LayoutComponent = ({
 
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
-    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     if (isDemoUser && !isRestricted && user) {
       if (pathname === "/profile") {
         coachtalk.setAttribute("style", "display: none;");
@@ -160,7 +161,9 @@ const LayoutComponent = ({
 
   useEffect(() => {
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
-    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     if (pathname === "/library") {
       if (coachScribe) {
         coachScribe.removeAttribute("style");
@@ -232,7 +235,10 @@ const LayoutComponent = ({
                     <div className="coachbots-coachtalk"></div>
                   )}
                   {showCoachBot ? (
-                    <div data-bot-id={botId} className="coachbots-coachscribe"></div>
+                    <div
+                      data-bot-id={botId}
+                      className="coachbots-coachscribe"
+                    ></div>
                   ) : (
                     <div className="coachbots-coachscribe"></div>
                   )}
