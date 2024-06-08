@@ -40,14 +40,6 @@ const HelpMode = ({
             ) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
-
-            if (
-              callbackData.action === "next" &&
-              callbackData.step.target === "#eq-cat" &&
-              callbackData.status === "running"
-            ) {
-              window.scrollTo({ top: 200, behavior: "smooth" });
-            }
           }}
           steps={steps}
         />

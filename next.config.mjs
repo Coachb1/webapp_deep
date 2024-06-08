@@ -6,6 +6,8 @@ import os from "os";
 
 dotenv.config();
 
+const hostname = os.hostname();
+
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config) => {
@@ -21,8 +23,7 @@ const nextConfig = {
     GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
   },
   compiler: {
-    removeConsole:
-      !process.env.NODE_ENV === "development" ? { exclude: ["error"] } : false,
+    removeConsole: !hostname.includes("local") ? { exclude: ["error"] } : false,
   },
 };
 
