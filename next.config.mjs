@@ -23,7 +23,7 @@ const nextConfig = {
     GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
   },
   compiler : {
-    removeConsole : hostname.includes("playground") ? { exclude: ["error", "warn"] } : false
+    removeConsole : hostname.includes("play") || hostname.includes("playground") ? { exclude: ["error", "warn"] } : false
   }
 };
 
