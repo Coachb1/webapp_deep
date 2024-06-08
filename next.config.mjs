@@ -6,8 +6,6 @@ import os from "os";
 
 dotenv.config();
 
-const hostname = os.hostname();
-
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config) => {
@@ -24,10 +22,7 @@ const nextConfig = {
   },
   compiler: {
     removeConsole:
-      hostname.includes("play") ||
-      hostname.includes("playground") ||
-      hostname.includes("platform") ||
-      hostname.includes("plat")
+      !process.env.NODE_ENV === "development"
         ? { exclude: ["error", "warn"] }
         : false,
   },
