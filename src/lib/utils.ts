@@ -144,8 +144,12 @@ export const hideBots = () => {
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
   }
+};
 
-  console.log("Hidden");
+export const hideConsoleLogs = () => {
+  if (!baseURL.includes("prod")) {
+    return (console.log = function () {});
+  }
 };
 
 export const getUserAccount = (user: any) => {
