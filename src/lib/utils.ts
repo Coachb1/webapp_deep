@@ -147,7 +147,7 @@ export const hideBots = () => {
 };
 
 export const hideConsoleLogs = () => {
-  if (!baseURL.includes("prod")) {
+  if (baseURL.includes("prod")) {
     return (console.log = function () {});
   }
 };
