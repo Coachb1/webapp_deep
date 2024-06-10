@@ -20,6 +20,15 @@ interface CustomWindow extends Window {
   userIdFromWebApp?: any;
 }
 
+const emptyObject = {
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: null,
+  clientDepartments: null,
+  restrictedPages: "",
+  restrictedFeatures: "",
+};
+
 const getClientUserInfo = async (
   userEmail: string | null | undefined,
   user: KindeUser | null
@@ -78,43 +87,20 @@ const getClientUserInfo = async (
             clientExpertise: data.data.user_info[0].coach_expertise,
             clientDepartments: data.data.user_info[0].departments,
             restrictedPages: data.data.user_info[0].restricted_pages,
+            restrictedFeatures: data.data.user_info[0].restricted_features,
           };
         } else {
-          return {
-            isDemoUser: false,
-            isRestricted: true,
-            clientExpertise: null,
-            clientDepartments: null,
-            restrictedPages: "",
-          };
+          return emptyObject;
         }
       } else {
         console.error(`[layout] Failed to run CreateOrAssignClientId`);
-        return {
-          isDemoUser: false,
-          isRestricted: true,
-          clientExpertise: null,
-          clientDepartments: null,
-          restrictedPages: "",
-        };
+        return emptyObject;
       }
     } else {
-      return {
-        isDemoUser: false,
-        isRestricted: true,
-        clientExpertise: null,
-        clientDepartments: null,
-        restrictedPages: "",
-      };
+      return emptyObject;
     }
   } else {
-    return {
-      isDemoUser: false,
-      isRestricted: true,
-      clientExpertise: null,
-      clientDepartments: null,
-      restrictedPages: "",
-    };
+    return emptyObject;
   }
 };
 
@@ -126,13 +112,17 @@ export default async function RootLayout({
   const { getUser } = getKindeServerSession();
   const user: KindeUser | null = await getUser();
 
-  const { isDemoUser, isRestricted, restrictedPages } = await getClientUserInfo(
-    user?.email,
-    user
-  );
+  const { isDemoUser, isRestricted, restrictedPages, restrictedFeatures } =
+    await getClientUserInfo(user?.email, user);
 
   return (
     <html lang="en" className="bg-white">
+      <head>
+        {!restrictedFeatures.includes("Accessibility-widget") && (
+          <script src="https://cdn.jsdelivr.net/gh/PrabothCharith/accessibility-plugin@main/accessibility-menu.min.js"></script>
+        )}
+      </head>
+
       <HelpModeProvider>
         <>
           <body className={inter.className} suppressHydrationWarning={true}>

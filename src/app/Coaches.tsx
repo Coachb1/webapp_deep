@@ -1293,9 +1293,6 @@ const Coaches = ({
                   <div className="flex flex-row justify-center items-center">
                     <Button
                       variant={"link"}
-                      onClick={() => {
-                        router.push("/intake/?type=coach");
-                      }}
                       className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
                       disabled={
                         allCoaches.length > 0 ||
@@ -1303,48 +1300,51 @@ const Coaches = ({
                           !["coach", "mentor"].includes(canJoinAs))
                       }
                     >
-                      Join as Coach or Mentor{" "}
-                      {allCoaches.length > 0 ? (
-                        <>
-                          {allCoaches[0]?.is_approved ? (
-                            <>
-                              {coachId ? (
-                                <Badge className="ml-2">Already Joined</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {allCoaches[0]?.profile_type === "coach" ||
-                              allCoaches[0]?.profile_type === "mentor" ||
-                              allCoaches[0]?.profile_type === "coach-mentor" ? (
-                                <Badge className="ml-2">Requested</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </>
-                      ) : canJoinAs?.length !== 0 &&
-                        !["coach", "mentor"].includes(canJoinAs) ? (
-                        <Badge
-                          variant={"secondary"}
-                          className="ml-2 border border-gray-400"
-                        >
-                          Not Allowed
-                        </Badge>
-                      ) : null}
+                      <Link href={"/intake/?type=coach"}>
+                        Join as Coach or Mentor{" "}
+                        {allCoaches.length > 0 ? (
+                          <>
+                            {allCoaches[0]?.is_approved ? (
+                              <>
+                                {coachId ? (
+                                  <Badge className="ml-2">Already Joined</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {allCoaches[0]?.profile_type === "coach" ||
+                                allCoaches[0]?.profile_type === "mentor" ||
+                                allCoaches[0]?.profile_type ===
+                                  "coach-mentor" ? (
+                                  <Badge className="ml-2">Requested</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ) : canJoinAs?.length !== 0 &&
+                          !["coach", "mentor"].includes(canJoinAs) ? (
+                          <Badge
+                            variant={"secondary"}
+                            className="ml-2 border border-gray-400"
+                          >
+                            Not Allowed
+                          </Badge>
+                        ) : null}
+                      </Link>
                     </Button>
                     <Tooltip
                       overlayInnerStyle={{
@@ -1363,9 +1363,6 @@ const Coaches = ({
                   <div className="flex flex-row justify-center items-center">
                     <Button
                       variant={"link"}
-                      onClick={() => {
-                        router.push("/intake/?type=coachee");
-                      }}
                       disabled={
                         allCoaches.length > 0 ||
                         (canJoinAs?.length !== 0 &&
@@ -1373,47 +1370,49 @@ const Coaches = ({
                       }
                       className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
                     >
-                      Join as Coachee or Mentee
-                      {allCoaches.length > 0 ? (
-                        <>
-                          {allCoaches[0]?.is_approved ? (
-                            <>
-                              {coacheeId ? (
-                                <Badge className="ml-2">Already Joined</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {allCoaches[0]?.profile_type === "coachee" ||
-                              allCoaches[0]?.profile_type === "mentee" ? (
-                                <Badge className="ml-2">Requested</Badge>
-                              ) : (
-                                <Badge
-                                  variant={"secondary"}
-                                  className="ml-2 border border-gray-400"
-                                >
-                                  Not Allowed
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </>
-                      ) : canJoinAs?.length !== 0 &&
-                        !["coachee", "mentee"].includes(canJoinAs) ? (
-                        <Badge
-                          variant={"secondary"}
-                          className="ml-2 border border-gray-400"
-                        >
-                          Not Allowed
-                        </Badge>
-                      ) : null}
+                      <Link href={"/intake/?type=coachee"}>
+                        Join as Coachee or Mentee
+                        {allCoaches.length > 0 ? (
+                          <>
+                            {allCoaches[0]?.is_approved ? (
+                              <>
+                                {coacheeId ? (
+                                  <Badge className="ml-2">Already Joined</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {allCoaches[0]?.profile_type === "coachee" ||
+                                allCoaches[0]?.profile_type === "mentee" ? (
+                                  <Badge className="ml-2">Requested</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ) : canJoinAs?.length !== 0 &&
+                          !["coachee", "mentee"].includes(canJoinAs) ? (
+                          <Badge
+                            variant={"secondary"}
+                            className="ml-2 border border-gray-400"
+                          >
+                            Not Allowed
+                          </Badge>
+                        ) : null}
+                      </Link>
                     </Button>
                     <Tooltip
                       overlayInnerStyle={{
@@ -1427,27 +1426,26 @@ const Coaches = ({
                     </Tooltip>
                   </div>
                 </DropdownMenuItem>
-                {/* )} */}
                 <DropdownMenuItem asChild>
                   <div className="flex flex-row justify-center items-center">
                     <Button
                       variant={"link"}
-                      onClick={() => {
-                        router.push("/intake/?type=feedback");
-                      }}
                       disabled={feedbackBots.length > 0}
+                      asChild
                       className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
                     >
-                      Join Feedback Network
-                      {feedbackBots.length > 0 && (
-                        <>
-                          {feedbackBots[0]?.signature_bot.is_approved ? (
-                            <Badge className="ml-2">Already Joined</Badge>
-                          ) : (
-                            <Badge className="ml-2">Requested</Badge>
-                          )}
-                        </>
-                      )}
+                      <Link href={"/intake/?type=feedback"}>
+                        Join Feedback Network
+                        {feedbackBots.length > 0 && (
+                          <>
+                            {feedbackBots[0]?.signature_bot.is_approved ? (
+                              <Badge className="ml-2">Already Joined</Badge>
+                            ) : (
+                              <Badge className="ml-2">Requested</Badge>
+                            )}
+                          </>
+                        )}
+                      </Link>
                     </Button>
                     <Tooltip
                       overlayInnerStyle={{
