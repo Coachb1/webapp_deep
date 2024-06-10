@@ -2588,6 +2588,16 @@ loadExternalModule().then(() => {
       hiegth: 75vh;
     "
   >
+  <div 
+  style="
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+  background-color: #f3f4f6;
+  border-radius: 1rem 1rem 0 0;
+">
     <div 
     style="
       display: flex;
@@ -2596,7 +2606,6 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      margin-bottom: 0.4rem;
     ">
    
     <h1 style="
@@ -2620,6 +2629,10 @@ loadExternalModule().then(() => {
     </span>
     BOTS
   </h1>
+  </div>
+  <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+  <p>Accessibility features may not work inside the bot.</p>
+</div>
     <div 
       id="close-top" 
       onmouseover="this.style.cursor ='pointer'"
@@ -2638,7 +2651,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat 
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 70vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}

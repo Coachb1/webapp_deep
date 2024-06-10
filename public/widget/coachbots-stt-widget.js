@@ -5604,6 +5604,16 @@ loadExternalModule().then(() => {
     "
   >
     <div 
+      style="
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: fit-content;
+      background-color: #f3f4f6;
+      border-radius: 1rem 1rem 0 0;
+    ">
+    <div 
     style="
       display: flex;
       justify-content: center;
@@ -5611,9 +5621,7 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      margin-bottom: 0.4rem;
     ">
-
     <h1 style="
       margin : 8px;
       color : #2DC092;
@@ -5635,7 +5643,10 @@ loadExternalModule().then(() => {
       </span>
       BOTS
     </h1>
-   
+    </div>
+    <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+    <p>Accessibility features may not work inside the bot.</p>
+  </div>
     <div 
       id="close-top2" 
       onmouseover="this.style.cursor ='pointer'"
@@ -5650,11 +5661,10 @@ loadExternalModule().then(() => {
         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
       </svg>
     </div>
-    
     </div>
     <deep-chat
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 70vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
