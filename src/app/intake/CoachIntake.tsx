@@ -921,6 +921,7 @@ const CoachIntake = ({ user }: any) => {
                       },
                       coach_qna: CoachMentorQnA.coach_qna,
                       mentor_qna: CoachMentorQnA.mentor_qna,
+                      discussion_topic: discussionTopics
                     },
                     media_data: {
                       youtube_links: linksReflectingWVpersonal,
