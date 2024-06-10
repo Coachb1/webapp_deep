@@ -259,6 +259,7 @@ const CoachIntake = ({ user }: any) => {
     setPhrasesNExpressions("");
     setDiscussInCARformat("");
     setProvideAnswersUsingEmojis("");
+    setMentoringPreferencess([]);
 
     setFoundationalValues("");
     setDevelopmentFrameworks("");
