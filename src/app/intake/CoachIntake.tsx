@@ -922,7 +922,7 @@ const CoachIntake = ({ user }: any) => {
                       },
                       coach_qna: CoachMentorQnA.coach_qna,
                       mentor_qna: CoachMentorQnA.mentor_qna,
-                      discussion_topic: discussionTopics
+                      discussion_topic: discussionTopics,
                     },
                     media_data: {
                       youtube_links: linksReflectingWVpersonal,
@@ -1707,11 +1707,13 @@ const CoachIntake = ({ user }: any) => {
                 let resultingBot = getBotById(botIdFromParams!, data.data);
 
                 console.log("Bot details for edit - Feedback", data);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 if (botIdFromParams?.includes("feedback")) {
                   setProfileBio(
                     resultingBot.signature_bot.data.additional_data.short_profile_bio?.trim()
@@ -1746,11 +1748,13 @@ const CoachIntake = ({ user }: any) => {
                 const resultingBot = getBotById(botIdFromParams!, dataa.data);
 
                 console.log("Bot details for edit - Coach", resultingBot);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 setProfileType(profileTypeFromParams!);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
@@ -1985,11 +1989,13 @@ const CoachIntake = ({ user }: any) => {
                 console.log(data);
                 const resultingBot = data.data;
                 console.log("Bot details for edit - coachee", resultingBot);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 setAbout(resultingBot.about?.trim());
                 setExperience(resultingBot.experience);
                 setProfileType(resultingBot.profile_type);
@@ -3121,7 +3127,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
@@ -3915,10 +3921,10 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {[
-                          "Career advancement",
-                          "Skill development",
-                          "Introspection & reflection",
-                          "Networking & leadership",
+                          "Career Advancement",
+                          "Skill Development",
+                          "Introspection & Reflection",
+                          "Networking & Leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem
@@ -4219,7 +4225,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
@@ -4436,10 +4442,10 @@ const CoachIntake = ({ user }: any) => {
                         }}
                       >
                         {[
-                          "Career advancement",
-                          "Skill development",
-                          "Introspection & reflection",
-                          "Networking & leadership",
+                          "Career Advancement",
+                          "Skill Development",
+                          "Introspection & Reflection",
+                          "Networking & Leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem

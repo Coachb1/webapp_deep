@@ -119,7 +119,7 @@ export default async function RootLayout({
     <html lang="en" className="bg-white">
       <head>
         {!restrictedFeatures.includes("Accessibility-widget") && (
-          <script src="https://cdn.jsdelivr.net/gh/PrabothCharith/accessibility-plugin@main/accessibility-menu.min.js"></script>
+          <script src="../widget/accessibility.js"></script>
         )}
       </head>
 

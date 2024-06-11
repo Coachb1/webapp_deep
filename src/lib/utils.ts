@@ -458,24 +458,35 @@ export function parseClientData(data: any): ClientDataType[] {
   const clients: ClientDataType[] = [];
 
   for (const clientName in data) {
-    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+    if (data.hasOwnProperty(clientName)) {
       const clientData = data[clientName][0];
 
-      const client: ClientDataType = {
-        clientName,
-        clientId: clientData.client_id,
-        allowAudioInteractions:
-          data[clientName].length > 0
-            ? data[clientName][0].allow_audio_interactions
-            : false,
-        Users: data[clientName].map((user: any) => ({
-          userEmail: user.user_email,
-          userName: user.name,
-          userId: user.user_id,
-        })),
-      };
+      if (clientData) {
+        const client: ClientDataType = {
+          clientName,
+          clientId: clientData?.client_id,
+          allowAudioInteractions:
+            data[clientName].length > 0
+              ? data[clientName][0].allow_audio_interactions
+              : false,
+          Users: data[clientName].map((user: any) => ({
+            userEmail: user.user_email,
+            userName: user.name,
+            userId: user.user_id,
+          })),
+        };
 
-      clients.push(client);
+        clients.push(client);
+      } else {
+        const client: ClientDataType = {
+          clientName,
+          clientId: "",
+          allowAudioInteractions: false,
+          Users: [],
+        };
+
+        clients.push(client);
+      }
     }
   }
 
