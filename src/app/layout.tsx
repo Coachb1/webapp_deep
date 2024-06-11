@@ -72,8 +72,10 @@ const getClientUserInfo = async (
           }
         );
 
+        
         if (response.ok) {
           const data = await response.json();
+          console.log(data.data.user_info[0])
           console.log(
             "[layout] get-client-information > ",
             "isDemo user : ",
