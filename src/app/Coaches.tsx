@@ -1431,7 +1431,6 @@ const Coaches = ({
                     <Button
                       variant={"link"}
                       disabled={feedbackBots.length > 0}
-                      asChild
                       className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
                     >
                       <Link href={"/intake/?type=feedback"}>
