@@ -145,7 +145,7 @@ const Profile = ({ user }: any) => {
             {!restrictedFeatures?.includes("Action-session-notes") && (
               <NavItem
                 id="apsn"
-                itemName={"Action Plan & Session notes"}
+                itemName={"Action Plans & Session Notes"}
                 icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
             )}
@@ -215,7 +215,7 @@ const Profile = ({ user }: any) => {
               <MyPages user={user} />
             </div>
           )}
-          {selectedItem === "Action Plan & Session notes" && (
+          {selectedItem === "Action Plans & Session Notes" && (
             <SessionNotes user={user} />
           )}
           {selectedItem === "Bot Conversations" && (
