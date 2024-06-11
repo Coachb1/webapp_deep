@@ -1779,12 +1779,9 @@ const Coaches = ({
                                 className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
                                 disabled={
                                   coacheeId.length === 0 &&
-                                  userId !== coach.user_id
+                                  userId !== coach.user_id && coach.profile_type !== "icons_by_ai"
                                 }
-                                // asChild={
-                                //   coacheeId.length !== 0 &&
-                                //   userId !== coach.user_id
-                                // }
+                              
                               >
                                 <Link
                                   href={handleLinks(coach.avatar_bot_url)}
