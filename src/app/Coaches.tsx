@@ -270,29 +270,13 @@ const Coaches = ({
   const maxPaginationLinks = 5;
 
   const getCoachesData = async () => {
-    // setLoadingStates({
-    //   icon: <List className="h-4 w-4 mr-2" />,
-    //   text: "Loading Profile summaries",
-    // });
-    //GET COACHES
-    // await fetch(
-    //   `${baseURL}/accounts/get-directory-informations/?email=${user?.email!}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: basicAuth,
-    //     },
-    //   }
-    // )
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    const data = coachesDataa;
-    console.log(data);
+    const data = coachesDataa.sort(
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+    );
 
     const iconsByAiProfiles = data.filter(
       (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
     );
-    // console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
     const allOtherProfiles = data?.filter(
       (profile: CoachesDataType) =>
@@ -300,12 +284,8 @@ const Coaches = ({
         profile.profile_type !== "icons_by_ai"
     );
 
-    // console.log(allOtherProfiles, "allOtherProfiles");
-
     setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
     setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
-
-    // setLoading(false);
 
     const profileTypeOptions: string[] = Array.from(
       new Set(data.map((profile: CoachesDataType) => profile.profile_type))
@@ -401,8 +381,6 @@ const Coaches = ({
               ],
       },
     ]);
-    // })
-    // .catch((error) => console.log("error", error));
   };
 
   const getFormattedCoachName = (name: string) => {
@@ -1799,11 +1777,14 @@ const Coaches = ({
                               <Button
                                 variant={"secondary"}
                                 className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                                // disabled={
-                                //   coach.profile_type !== "icons_by_ai" &&
-                                //   coacheeId.length === 0
+                                disabled={
+                                  coacheeId.length === 0 &&
+                                  userId !== coach.user_id
+                                }
+                                // asChild={
+                                //   coacheeId.length !== 0 &&
+                                //   userId !== coach.user_id
                                 // }
-                                asChild={coacheeId.length !== 0}
                               >
                                 <Link
                                   href={handleLinks(coach.avatar_bot_url)}
