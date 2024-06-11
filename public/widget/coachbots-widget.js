@@ -106,6 +106,132 @@ let prioritiseUserAllowInteraction;
 let AttemptTestDirect = false;
 
 
+let clientBasedBotHeaderText2 = "";
+let clientBasedBotFooterText2 = "";
+let clientBasedReadHereText2 = "";
+
+
+function createBasicAuthToken(key = "", secret = "") {
+  const token =
+    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // const token =
+  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+  return token;
+}
+
+const basicAuthToken = createBasicAuthToken(key, secret);
+
+user = window.user;
+console.log(" User details ", user);
+console.log(user === undefined);
+
+
+  let user_name;
+  let user_email;
+
+  console.log(user)
+
+  if (user) {
+    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+    user_email = user.email;
+  } else {
+    user_name = "coachbots_anonyoususer";
+    user_email = getAnonymousEmail();
+  }
+
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email, {
+      name: user_name,
+      email: user_email,
+    });
+  }
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name,
+            username: user_name,
+            email: user_email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
+
+
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+      
+          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
+      
+      
+          const headerText2 = document.getElementById("header-text2");
+          const footerText2 = document.getElementById("footer-text2");
+          const instructionsPaneList2 = document.getElementById('instructions-list2')
+          console.log(headerText2);
+          console.log(footerText2);
+      
+          if (clientBasedBotHeaderText2) {
+            headerText2.innerText = clientBasedBotHeaderText2;
+          }
+      
+          if (clientBasedBotFooterText2) {
+            footerText2.innerText = clientBasedBotFooterText2;
+          }
+      
+          if (clientBasedReadHereText2) {
+            const list = clientBasedReadHereText2
+              .trim()
+              .split("\n")
+              .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+              });
+
+              instructionsPaneList2.innerHTML = list;
+          }
+        });
+
+    })
+    .catch((err) => console.log(err));
+
+
+
+
+
 // sample TEst codes
 const sampleTestCodes = {
   QEEG5VY: "AWS Cloud Training",
@@ -210,15 +336,7 @@ let recommendationsData = [
   ], // batch seven
 ];
 
-function createBasicAuthToken(key = "", secret = "") {
-  const token =
-    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  // const token =
-  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
-  return token;
-}
 
-const basicAuthToken = createBasicAuthToken(key, secret);
 
 function getCredentialsForm() {
   let credentialsForm;
@@ -2631,7 +2749,9 @@ loadExternalModule().then(() => {
   </h1>
   </div>
   <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
-  <p>Accessibility features may not work inside the bot.</p>
+  <p id="header-text2" style="font-size: ${
+    window.innerWidth < 768 ? "10px" : "12px"
+  };">Accessibility features may not work inside the bot.</p>
 </div>
     <div 
       id="close-top" 
@@ -2705,15 +2825,14 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> Usage direction for Coachbots. Follow the instructions for optimum performance. 
-      <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
           Read here
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
-          <ul>
+          <ul id="instructions-list2">
             <li>1 . For Coaches/mentors in the Directory, Click on "End Session" to keep a record of sessions. Your coach/mentor is informed and a transcript is shared after the same. For Icons by AI, it will just keep the record of the conversation. </li>
             <li>2 .  For any type of avatar or simulation bots, Unrelated questions, answers, or comments and very fast responses may cause system errors. The usage is meant to mimic how it works in the real world.  </li>
             <li>3 . Keep responses within 10 to 400 words for optimum results. You can either type or speak out your responses. If it's a simulation/roleplay, the "Coach Talk", NLP will also provide you speech analysis in reports.</li>
@@ -5783,9 +5902,7 @@ const openChatContainer = () => {
   let audioChunks = [];
   let stream;
 
-  user = window.user;
-  console.log(" User details ", user);
-  console.log(user === undefined);
+
 
   async function startRecording() {
     try {
@@ -5874,59 +5991,59 @@ const openChatContainer = () => {
   //     user_email = `${user_name}-${sid}@gmail.com`;
   //   }
 
-  let user_name;
-  let user_email;
+  // let user_name;
+  // let user_email;
 
-  if (user) {
-    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
-    user_email = user.email;
-  } else {
-    user_name = "coachbots_anonyoususer";
-    user_email = getAnonymousEmail();
-  }
+  // if (user) {
+  //   user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+  //   user_email = user.email;
+  // } else {
+  //   user_name = "coachbots_anonyoususer";
+  //   user_email = getAnonymousEmail();
+  // }
 
-  if (window.LogRocket) {
-    window.LogRocket.identify(user_email, {
-      name: user_name,
-      email: user_email,
-    });
-  }
-  fetch(`${baseURL}/accounts/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuthToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user_context: {
-        name: user_name,
-        role: "member",
-        user_attributes: {
-          tag: "deepchat_profile",
-          attributes: {
-            name: user_name,
-            username: user_name,
-            email: user_email,
-          },
-        },
-      },
-      identity_context: {
-        identity_type: "deepchat_unique_id",
-        value: user_email,
-      },
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
-      userAllowAudioInteraction = data.user_allow_audio_interactions;
-      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+  // if (window.LogRocket) {
+  //   window.LogRocket.identify(user_email, {
+  //     name: user_name,
+  //     email: user_email,
+  //   });
+  // }
+  // fetch(`${baseURL}/accounts/`, {
+  //   method: "POST",
+  //   headers: {
+  //     Authorization: `Basic ${basicAuthToken}`,
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     user_context: {
+  //       name: user_name,
+  //       role: "member",
+  //       user_attributes: {
+  //         tag: "deepchat_profile",
+  //         attributes: {
+  //           name: user_name,
+  //           username: user_name,
+  //           email: user_email,
+  //         },
+  //       },
+  //     },
+  //     identity_context: {
+  //       identity_type: "deepchat_unique_id",
+  //       value: user_email,
+  //     },
+  //   }),
+  // })
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+  //     userAllowAudioInteraction = data.user_allow_audio_interactions;
+  //     prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
 
-      participantId = data.uid;
-      userId = data.uid;
-      userRole = data.role;
-    })
-    .catch((err) => console.log(err));
+  //     participantId = data.uid;
+  //     userId = data.uid;
+  //     userRole = data.role;
+  //   })
+  //   .catch((err) => console.log(err));
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;

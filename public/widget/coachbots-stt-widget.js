@@ -181,6 +181,11 @@ let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
 
+
+let clientBasedBotHeaderText = "";
+let clientBasedBotFooterText = "";
+let clientBasedReadHereText = "";
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -251,6 +256,52 @@ fetch(`${baseURL2}/accounts/`, {
     userAllowAudioInteraction2 = data.user_allow_audio_interactions;
     prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
     selectedResponseType = data.preferences?.response_style
+
+    fetch(
+      `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${basicAuthToken2}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("get-client-information : ", data);
+
+        clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
+        clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
+        clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
+
+
+        const headerText = document.getElementById("header-text");
+        const footerText = document.getElementById("footer-text");
+        const instructionsPaneList = document.getElementById('instructions-list')
+        console.log(headerText);
+        console.log(footerText);
+
+        if (clientBasedBotHeaderText) {
+          headerText.innerText = clientBasedBotHeaderText;
+        }
+
+        if (clientBasedBotFooterText) {
+          footerText.innerText = clientBasedBotFooterText;
+        }
+
+        if (clientBasedReadHereText) {
+          const list = clientBasedReadHereText
+            .trim()
+            .split("\n")
+            .map((item) => {
+              return `<li>${item.trim()}</li>`;
+            });
+
+          instructionsPaneList.innerHTML = list;
+        }
+
+        
+      });
     
   })
   .catch((err) => console.log(err));
@@ -5645,7 +5696,9 @@ loadExternalModule().then(() => {
     </h1>
     </div>
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
-    <p>Accessibility features may not work inside the bot.</p>
+    <p id="header-text" style="font-size: ${
+      window.innerWidth < 768 ? "10px" : "12px"
+    };">Accessibility features may not work inside the bot.</p>
   </div>
     <div 
       id="close-top2" 
@@ -5777,7 +5830,7 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> Usage direction for Coachbots. Follow the instructions for optimum performance. 
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
           Read here
@@ -5887,7 +5940,7 @@ loadExternalModule().then(() => {
     chatContainer2.style.top = "0";
     chatContainer2.style.height = "100vh";
     chatContainer2.style.bottom = "0";
-    chatElementRef2.style.height = "87vh";
+    chatElementRef2.style.height = "85vh";
     chatElementRef2.style.fontSize = "12px";
     chatElementRef2.style.width = "100vw";
     chatIconContainer2.style.position = "fixed";
