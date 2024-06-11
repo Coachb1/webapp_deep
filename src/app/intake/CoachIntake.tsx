@@ -2189,16 +2189,13 @@ const CoachIntake = ({ user }: any) => {
     const formData = new FormData();
     formData.append("image_file", imageToUpload, imageToUpload.name);
 
-    const response = await fetch(
-      "https://33dd-2409-4064-805-d52b-726a-edba-36e2-d8e7.ngrok-free.app/api/v1/documents/upload-image/",
-      {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );
+    const response = await fetch(`${baseURL}/documents/upload-image/`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: basicAuth,
+      },
+    });
 
     if (response.ok) {
       const responseData = await response.json();
@@ -4182,6 +4179,23 @@ const CoachIntake = ({ user }: any) => {
                         onChange={(e) => {
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
+
+                          if (checkIfEdit) {
+                            const uploadedImage = handleImageUpload(
+                              //@ts-ignore
+                              e.target.files[0]
+                            );
+                            uploadedImage
+                              .then((data) => {
+                                setProfileImageUrl(data);
+                                console.log(data);
+                              })
+                              .catch((err) => {
+                                setProfileImageUrl(
+                                  "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+                              });
+                          }
                         }}
                         className="w-fit"
                       />{" "}
