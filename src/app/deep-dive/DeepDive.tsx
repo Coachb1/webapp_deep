@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { getUserAccount } from "@/lib/utils";
+import { getUserAccount, parseData } from "@/lib/utils";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -77,6 +77,9 @@ const DeepDive = ({ user, renderType }: any) => {
 
   const [invalidId, setInValidCoach] = useState(false);
 
+  const [dynamicHowItWorks, setDynamicHowItWorks] =
+    useState<{ heading: string; description: string }[]>(howItWorks);
+
   //for owner verific
   const [userId, setUserId] = useState<string>("");
   const [userIdFromBotDetails, setUserIdFromBotDetails] = useState<string>("");
@@ -120,6 +123,12 @@ const DeepDive = ({ user, renderType }: any) => {
         }
         setTitle(data.data.deep_dive_data.bot_title);
         setBotObjective(data.data.deep_dive_data.bot_objective);
+
+        if (data.data.page_information.how_it_works) {
+          const parsedData = parseData(data.data.page_information.how_it_works);
+          console.log(parsedData);
+          setDynamicHowItWorks(parsedData);
+        }
 
         const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
 
@@ -218,12 +227,12 @@ const DeepDive = ({ user, renderType }: any) => {
                           collapsible
                           className="w-full text-gray-500 max-sm:p-4 "
                         >
-                          {howItWorks.map((test, i) => (
+                          {dynamicHowItWorks.map((test, i) => (
                             <AccordionItem
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === dynamicHowItWorks.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }

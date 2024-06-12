@@ -669,3 +669,10 @@ export function makeTaggableName(name: string) {
   let taggableName = name.replace(/\s+/g, "").toLowerCase();
   return taggableName;
 }
+
+export function parseData(data: any) {
+  return Object.keys(data).map((key: any) => ({
+    heading: key,
+    description: data[key],
+  }));
+}

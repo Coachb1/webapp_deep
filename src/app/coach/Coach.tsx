@@ -19,6 +19,7 @@ import {
   basicAuth,
   capitalizeText,
   convertTextToCorrectFormat,
+  parseData,
 } from "@/lib/utils";
 import { toast } from "sonner";
 import { NavProfileWoProfile } from "@/components/NavProfile";
@@ -59,6 +60,13 @@ const benefitsData = [
   },
 ];
 
+const dummyData = {
+  "Transcript Email":
+    "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
+  "Advice Anytime, Anywhere":
+    "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
+};
+
 const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
@@ -73,6 +81,12 @@ const Coach = ({ user, renderType }: any) => {
     ""
   );
   const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
+
+  const [dynamicHowItWorks, setDynamicHowItWorks] =
+    useState<{ heading: string; description: string }[]>(howItWorks);
+
+  const [dynamicBenefits, setDynamicBenefits] =
+    useState<{ heading: string; description: string }[]>(benefitsData);
 
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
@@ -130,6 +144,19 @@ const Coach = ({ user, renderType }: any) => {
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
         }
+
+        if (data.data.page_information.how_it_works) {
+          const parsedData = parseData(data.data.page_information.how_it_works);
+          console.log(parsedData);
+          setDynamicHowItWorks(parsedData);
+        }
+
+        if (data.data.page_information.benefits) {
+          const parsedData = parseData(data.data.page_information.benefits);
+          console.log(parsedData);
+          setDynamicBenefits(parsedData);
+        }
+
         if (data.data.bot_details.is_login_required) {
           if (!user) {
             coachScribe.setAttribute("style", "display: none;");
@@ -348,21 +375,6 @@ const Coach = ({ user, renderType }: any) => {
               {renderType === "dynamic" ? (
                 <>
                   {botScenarioCase === "icons_by_ai" ? (
-                    // <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-start max-sm:items-center gap-2 justify-start p-2 pb-4 border-b-2 border-dashed border-gray-300  max-w-[100%]">
-                    // <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
-                    //   <img
-                    //     className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                    //     src={
-                    //       profileImage
-                    //         ? profileImage
-                    //         : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                    //     }
-                    //   />
-                    // </div>
-                    //   <p className="w-[80%] overflow-x-scroll no-scrollbar whitespace-pre text-wrap text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center">
-                    //     {parseTextToJSX(coachDescription)}
-                    //   </p>
-                    // </div>
                     <div className="flex flex-row items-start justify-around max-sm:flex-col max-sm:justify-center max-sm:items-center overflow-x-scroll no-scrollbar border-b-2 border-dashed border-gray-300 pb-4">
                       <div className="w-[20%] max-sm:w-fit max-sm:mb-4">
                         <img
@@ -397,7 +409,7 @@ const Coach = ({ user, renderType }: any) => {
                   )}
                 </>
               ) : (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg">
+                <div className="text-sm max-sm:text-xs  text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
                   <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
@@ -534,12 +546,12 @@ const Coach = ({ user, renderType }: any) => {
                             collapsible
                             className="w-full text-gray-500 max-sm:p-4 "
                           >
-                            {howItWorks.map((test, i) => (
+                            {dynamicHowItWorks.map((test, i) => (
                               <AccordionItem
                                 key={i}
                                 value={`item-${i + 1}`}
                                 className={
-                                  i === howItWorks.length - 1
+                                  i === dynamicHowItWorks.length - 1
                                     ? "border-none"
                                     : "border-b"
                                 }
@@ -581,12 +593,12 @@ const Coach = ({ user, renderType }: any) => {
                           collapsible
                           className="w-full text-gray-500 max-sm:p-4 "
                         >
-                          {benefitsData.map((test, i) => (
+                          {dynamicBenefits.map((test, i) => (
                             <AccordionItem
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === dynamicBenefits.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }
