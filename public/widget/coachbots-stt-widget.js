@@ -439,7 +439,7 @@ function isTestCode2(text) {
   return text.length == 7 && (text[0] == "q" || text[0] == "Q");
 }
 
-function isDuplicateResponse(text) {
+function isDuplicateResponseStt(text) {
   return userResponses2.includes(text);
 }
 
@@ -8033,7 +8033,7 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
-              if (isDuplicateResponse(latestMessage)) {
+              if (isDuplicateResponseStt(latestMessage)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt().then(() => {
@@ -8085,7 +8085,7 @@ loadExternalModule().then(() => {
                 });
                 return;
               }
-              if (isDuplicateResponse(latestMessage)) {
+              if (isDuplicateResponseStt(latestMessage)) {
                 DuplicateResponseCount2 += 1;
                 if (DuplicateResponseCount2 > 1) {
                   resetAllVariablesStt();
@@ -8885,7 +8885,7 @@ loadExternalModule().then(() => {
                       let responderName;
                       let strList = questionText2
                         .replaceAll("*", "")
-                        .split(":");
+                        .split(":", 2);
                       if (strList.length > 1) {
                         questionText2 = strList[1];
                         responderName = `<b>${strList[0]}:</b><br>`;

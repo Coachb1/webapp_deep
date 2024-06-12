@@ -44,7 +44,7 @@ const CreateYourDeepDive = ({ user }: any) => {
 
   const [isLoading, setIsloading] = useState(false);
   const [loadingText, setLoadingText] = useState("Generating your deep dive.");
-
+  const [numOfTries, setNumOfTries] = useState<number>(0);
   const [generatedDeepdiveData, setGeneratedDeepdiveData] = useState<
     DeepDiveType[]
   >([]);
@@ -59,6 +59,15 @@ const CreateYourDeepDive = ({ user }: any) => {
         });
     }
   }, [user]);
+
+  const incrementTries = () => {
+    if (numOfTries < 5) {
+      setNumOfTries(prevTries => prevTries + 1);
+    } else {
+      setNumOfTries(0);
+    }
+    console.log('increased num of tries to- ',numOfTries)
+  };
 
   const handleGenerateSurvey = () => {
     setGenerationError(false);
@@ -115,6 +124,12 @@ const CreateYourDeepDive = ({ user }: any) => {
             : "https://platform.coachbots.com/"
         }`
       );
+      const add_prompt_list = ['crusader','cheerleader','change_manager','calculator','conversationalist','co_creator']
+      console.log(numOfTries,'numOfTries')
+      formdata.append(
+        "additional_prompt_for_deep",
+        add_prompt_list[numOfTries]
+      );
 
       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
         method: "POST",
@@ -134,9 +149,11 @@ const CreateYourDeepDive = ({ user }: any) => {
             };
 
             setGeneratedDeepdiveData([generatedData]);
+            incrementTries();
             toast.success("Successfully created your deep dive.");
           } else {
             setGenerationError(true);
+            setNumOfTries(0);
             toast.error("Error creating your deep dive.");
           }
           setIsloading(false);

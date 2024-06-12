@@ -3791,7 +3791,7 @@ loadExternalModule().then(() => {
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`];
               }
               let responderName;
-              let strList = questionText.replaceAll("*", "").split(":");
+              let strList = questionText.replaceAll("*", "").split(":", 2);
               if (strList.length > 1) {
                 questionText = strList[1];
                 responderName = `<b>${strList[0]}:</b><br>`;
@@ -3993,7 +3993,7 @@ loadExternalModule().then(() => {
 
               if (testType === "coaching") {
                 let responderName;
-                const strList = questionText.split(":");
+                const strList = questionText.split(":", 2);
                 if (strList.length > 1) {
                   responderName = `<b>${strList[0]}:</b><br>`;
                   questionText = strList[1];
@@ -5279,7 +5279,7 @@ loadExternalModule().then(() => {
                       
                     ) {
                       let responderName;
-                      let strList = questionText.replaceAll("*", "").split(":");
+                      let strList = questionText.replaceAll("*", "").split(":", 2);
                       if (strList.length > 1) {
                         questionText = strList[1];
                         responderName = `<b>${strList[0]}:</b><br>`;
@@ -5510,7 +5510,7 @@ loadExternalModule().then(() => {
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
                     let responderName;
-                    const strList = questionText.split(":");
+                    const strList = questionText.split(":", 2);
                     if (strList.length > 1) {
                       responderName = `<b>${strList[0]}:</b><br>`;
                       questionText = strList[1];
@@ -5599,7 +5599,7 @@ loadExternalModule().then(() => {
 
                       const qRespnse = await questionResponse.json();
                       questionText = qRespnse["response_text"];
-
+                      console.log('dynamic or orch response',qRespnse)
                       // checking if botname is present or not
                       const responder_name = qRespnse.responder_display_name;
                       if (!questionText.includes(responder_name)) {
@@ -5624,7 +5624,7 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
-                    const stringList = questionText.split(":");
+                    const stringList = questionText.split(":", 2);
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
