@@ -48,7 +48,7 @@ const LibraryTestsAccordian = ({
                       {test.title}{" "}
                       {type === "requested" && (
                         <>
-                          {test.is_assigned && (
+                          {test.assigned_to && (
                             <AtSign className="h-3 w-3 ml-1 inline font-bold text-blue-500" />
                           )}
                         </>
