@@ -709,7 +709,7 @@ const CreateOwn = ({
     {
       target: "#dd-id",
       content:
-        "Dive into team dynamics effortlessly. For Instance, As a project manager seeking insights on team conflicts, create a survey in Deep Dive and circulate it among your team members. Gather valuable feedback to address and resolve conflicts effectively.",
+        "Dive into team dynamics. For Instance, As a project manager seeking insights on team conflicts, create a survey in Deep Dive and circulate it to your team. Gather valuable feedback to resolve conflicts. Note: You can copy the Link and access code to circulate.",
     },
     {
       target: "#kb-id",
