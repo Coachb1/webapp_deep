@@ -268,11 +268,17 @@ const CreateYourDeepDive = ({ user }: any) => {
 
             <div className="flex items-center gap-2">
               <Button
-                disabled={isLoading && generatedDeepdiveData.length > 0}
+                disabled={isLoading}
                 onClick={handleGenerateSurvey}
                 className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
               >
-                {isLoading ? "Generating" : "Generate"}
+                {generatedDeepdiveData.length > 0
+                  ? isLoading
+                    ? "Regenerating"
+                    : "Regenerate"
+                  : isLoading
+                  ? "Generating"
+                  : "Generate"}
                 {isLoading && (
                   <Loader className="h-4 w-4 inline ml-2 animate-spin" />
                 )}

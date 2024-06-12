@@ -8,10 +8,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { getUserAccount } from "@/lib/utils";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
@@ -96,7 +94,7 @@ const DeepDive = ({ user, renderType }: any) => {
         });
     }
     const coachScribe = document.getElementsByClassName(
-      "coachbots-coachscribe"
+      "coachbots-coachscribe",
     )[0];
     coachScribe.setAttribute("style", "display: none;");
 
@@ -111,7 +109,7 @@ const DeepDive = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      }
+      },
     )
       .then((res) => res.json())
       .then((data) => {
@@ -160,6 +158,11 @@ const DeepDive = ({ user, renderType }: any) => {
           <Script src="../widget/coachbots-stt-widget.js" />
         )}
 
+        <div className="fixed max-sm:hidden right-[100px] bottom-12">
+          <span className="mr-6 text-sm font-bold">Try Now</span>
+          <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+        </div>
+
         {invalidId && renderType === "dynamic" && (
           <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
             <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
@@ -197,25 +200,6 @@ const DeepDive = ({ user, renderType }: any) => {
                 </>
               </div>
             </div>
-            {/* <div className="mt-8 flex flex-row flex-wrap gap-2 max-sm:items-center max-sm:justify-center z-10">
-              <Link href={"#howItWorks"}>
-                <Button
-                  variant={"secondary"}
-                  className="h-8 border border-gray-200 hover:cursor-pointer"
-                >
-                  How it works
-                </Button>
-              </Link>
-
-              <Link href={"#benefits"}>
-                <Button
-                  variant={"secondary"}
-                  className="h-8 border border-gray-200 hover:cursor-pointer"
-                >
-                  Benefits
-                </Button>
-              </Link>
-            </div> */}
             <div className="w-full  pt-20 -mt-20 " id="howItWorks">
               <div className={`flex w-full justify-center`}>
                 <Badge
