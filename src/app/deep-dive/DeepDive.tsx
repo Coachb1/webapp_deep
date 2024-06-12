@@ -20,47 +20,53 @@ import { toast } from "sonner";
 
 const howItWorks = [
   {
-    heading: "Thumbs Up or Thumbs Down",
+    heading:
+      "1. What is a deep dive survey and how it is different from the normal pulse surveys?",
     description:
-      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback. Thumbs Down maintains privacy, with no email notification to allow internal resolution.",
+      "Deep dive surveys are like running 1:1 check ins or interviews with your target subjects to really understand the core issue at hand and the story behind it. Something that is not possible in normal pulse surveys. Ths will greatly aid in the the decision making beyond just numbers.",
   },
   {
-    heading: "Follow-up Questions",
+    heading: "2. Circulate with Ease",
     description:
-      "Users who thumbs up can answer additional customized questions, providing more detailed, meaningful feedback to drive insights.",
+      "Each survey comes with a unique link and access code, making it simple to share and ensuring only intended recipients can provide feedback.",
   },
   {
-    heading: "Optional Anonymity",
+    heading: "3. Gather Valuable Feedback",
     description:
-      "After completing the feedback process, clients can choose to submit their feedback along with their email address or remain anonymous.",
+      "Responses are collected and analyzed to highlight underlying issues and areas for improvement, offering deeper insights than standard survey tools.",
   },
   {
-    heading: "Email Summaries",
+    heading: "4. Resolve Conflicts Effectively",
     description:
-      "At the end of the feedback process both parties receive an email with a feedback summary, promoting transparency and accountability.",
+      "The detailed feedback helps you understand the root causes of conflicts, facilitating targeted and effective resolution strategies.",
   },
 ];
 
 const benefitsData = [
   {
-    heading: "Real-time Recognition",
+    heading: "Enhanced Team Understanding",
     description:
-      "The bot owner and the user receive instant email notifications the moment a user selects thumbs-up, to celebrate positive feedback right away. This enables a culture of recognition and motivation.",
+      "Gain deeper insights into the underlying causes of team conflicts, allowing for more targeted and effective interventions.",
   },
   {
-    heading: "Enhanced Team Relations",
+    heading: "Improved Conflict Resolution",
     description:
-      "Regular feedback fosters strong team relationships, helping you understand their needs better and improving overall satisfaction. It can be also used to gather feedback from external stakeholders like vendors, clients as well.",
+      "By identifying specific issues and areas for improvement, you can implement strategies to resolve conflicts more efficiently and prevent them from recurring.",
   },
   {
-    heading: "Improved Accountability",
+    heading: "Increased Team Productivity",
     description:
-      "Email summaries create transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
+      "Addressing and mitigating conflicts leads to a more harmonious work environment, which in turn boosts overall team productivity and collaboration.",
   },
   {
-    heading: "PMS Integration",
+    heading: "Anonymity and Honesty",
     description:
-      "Seamless integration with performance management systems sends feedback data automatically, minimizing manual processes.",
+      "The anonymous nature of the survey encourages team members to provide honest and candid feedback, ensuring that you receive genuine insights.",
+  },
+  {
+    heading: "Empowered Team Members",
+    description:
+      "Involving the team in the feedback process empowers them, making them feel heard and valued, which can improve morale and engagement.",
   },
 ];
 
@@ -89,7 +95,9 @@ const DeepDive = ({ user, renderType }: any) => {
           console.error(err);
         });
     }
-    const coachScribe = document.getElementsByClassName("coachbots-coachscribe")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     coachScribe.setAttribute("style", "display: none;");
 
     fetch(
@@ -189,7 +197,7 @@ const DeepDive = ({ user, renderType }: any) => {
                 </>
               </div>
             </div>
-            <div className="mt-8 flex flex-row flex-wrap gap-2 max-sm:items-center max-sm:justify-center z-10">
+            {/* <div className="mt-8 flex flex-row flex-wrap gap-2 max-sm:items-center max-sm:justify-center z-10">
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -207,7 +215,7 @@ const DeepDive = ({ user, renderType }: any) => {
                   Benefits
                 </Button>
               </Link>
-            </div>
+            </div> */}
             <div className="w-full  pt-20 -mt-20 " id="howItWorks">
               <div className={`flex w-full justify-center`}>
                 <Badge
@@ -278,7 +286,7 @@ const DeepDive = ({ user, renderType }: any) => {
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === benefitsData.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }
