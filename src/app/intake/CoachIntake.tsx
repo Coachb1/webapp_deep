@@ -2313,10 +2313,8 @@ const CoachIntake = ({ user }: any) => {
                       disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 80) {
-                          setAbout(inputValue);
-                        }
+
+                        setAbout(inputValue);
                         handleWordLimit(
                           inputValue,
                           30,
@@ -2419,10 +2417,8 @@ const CoachIntake = ({ user }: any) => {
                       disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 80) {
-                          setJourneyAndBackground(inputValue);
-                        }
+
+                        setJourneyAndBackground(inputValue);
                         handleWordLimit(
                           inputValue,
                           50,
@@ -2661,10 +2657,8 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          const words = inputValue.trim().split(/\s+/);
-                          if (words.length <= 80) {
-                            setPovProgramParticipants(inputValue);
-                          }
+
+                          setPovProgramParticipants(inputValue);
                           handleWordLimit(
                             inputValue,
                             30,
@@ -2697,10 +2691,8 @@ const CoachIntake = ({ user }: any) => {
                         value={problemSolvingApproach}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          const words = inputValue.trim().split(/\s+/);
-                          if (words.length <= 80) {
-                            setProblemSolvingApproach(inputValue);
-                          }
+
+                          setProblemSolvingApproach(inputValue);
                           handleWordLimit(
                             inputValue,
                             30,
@@ -2733,10 +2725,8 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          const words = inputValue.trim().split(/\s+/);
-                          if (words.length <= 80) {
-                            setSignificantChallenges(inputValue);
-                          }
+
+                          setSignificantChallenges(inputValue);
                           handleWordLimit(
                             inputValue,
                             50,
@@ -2770,10 +2760,8 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          const words = inputValue.trim().split(/\s+/);
-                          if (words.length <= 80) {
-                            setPhrasesNExpressions(inputValue);
-                          }
+
+                          setPhrasesNExpressions(inputValue);
                           handleWordLimit(
                             inputValue,
                             50,
@@ -3278,10 +3266,8 @@ const CoachIntake = ({ user }: any) => {
                         value={discussInCARformat}
                         onChange={(e) => {
                           const inputValue = e.target.value;
-                          const words = inputValue.trim().split(/\s+/);
-                          if (words.length <= 80) {
-                            setDiscussInCARformat(inputValue);
-                          }
+
+                          setDiscussInCARformat(inputValue);
                           handleWordLimit(
                             inputValue,
                             50,
@@ -3427,10 +3413,8 @@ const CoachIntake = ({ user }: any) => {
                             value={coachingProcessOverview}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setCoachingProcessOverview(inputValue);
-                              }
+
+                              setCoachingProcessOverview(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3464,10 +3448,8 @@ const CoachIntake = ({ user }: any) => {
                             value={handlingSituations}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setHandlingSituations(inputValue);
-                              }
+
+                              setHandlingSituations(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3501,10 +3483,8 @@ const CoachIntake = ({ user }: any) => {
                             value={integratingLessons}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setIntegratongLessons(inputValue);
-                              }
+
+                              setIntegratongLessons(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3539,10 +3519,8 @@ const CoachIntake = ({ user }: any) => {
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setGuidanceOnCoachingProcess(inputValue);
-                              }
+
+                              setGuidanceOnCoachingProcess(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3583,10 +3561,8 @@ const CoachIntake = ({ user }: any) => {
                             value={differentCareerPath}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setDifferentCareerPath(inputValue);
-                              }
+
+                              setDifferentCareerPath(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3621,10 +3597,8 @@ const CoachIntake = ({ user }: any) => {
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setProblemSolvingApproachInDomain(inputValue);
-                              }
+
+                              setProblemSolvingApproachInDomain(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3669,10 +3643,8 @@ const CoachIntake = ({ user }: any) => {
                             value={overviewofMentoring}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setOverviewOfMentoring(inputValue);
-                              }
+
+                              setOverviewOfMentoring(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3707,10 +3679,8 @@ const CoachIntake = ({ user }: any) => {
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setOpportunitiesOfGrowth(inputValue);
-                              }
+
+                              setOpportunitiesOfGrowth(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3746,10 +3716,8 @@ const CoachIntake = ({ user }: any) => {
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setCommenChallengesOrObstacles(inputValue);
-                              }
+
+                              setCommenChallengesOrObstacles(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -3784,10 +3752,8 @@ const CoachIntake = ({ user }: any) => {
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const words = inputValue.trim().split(/\s+/);
-                              if (words.length <= 80) {
-                                setOpinionsAboutKeyQualities(inputValue);
-                              }
+
+                              setOpinionsAboutKeyQualities(inputValue);
                               handleWordLimit(
                                 inputValue,
                                 50,
@@ -4110,10 +4076,8 @@ const CoachIntake = ({ user }: any) => {
                       required
                       onChange={(e) => {
                         const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 80) {
-                          setAbout(inputValue);
-                        }
+
+                        setAbout(inputValue);
                         handleWordLimit(
                           inputValue,
                           30,
@@ -4631,10 +4595,8 @@ const CoachIntake = ({ user }: any) => {
                     disabled={checkIfView === null ? false : true}
                     onChange={(e) => {
                       const inputValue = e.target.value;
-                      const words = inputValue.trim().split(/\s+/);
-                      if (words.length <= 50) {
-                        setProfileBio(inputValue);
-                      }
+
+                      setProfileBio(inputValue);
                       handleWordLimit(inputValue, 20, 50, "Profile Bio");
                     }}
                     placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
@@ -4658,10 +4620,8 @@ const CoachIntake = ({ user }: any) => {
                     required
                     onChange={(e) => {
                       const inputValue = e.target.value;
-                      const words = inputValue.trim().split(/\s+/);
-                      if (words.length <= 80) {
-                        setCurrentProjects(inputValue);
-                      }
+
+                      setCurrentProjects(inputValue);
                       handleWordLimit(inputValue, 50, 80, "currentProjects");
                     }}
                     placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."

@@ -272,238 +272,269 @@ const IDPIntake = ({ user }: any) => {
                 />
               </div>
               <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      Few professional accomplishments you are proud of?
-                    </p>
-                    <textarea
-                      value={professionalAcc}
-                      required
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 100) {
-                          setProfessionalAcc(inputValue);
-                        }
-                        handleWordLimit(inputValue, 50, 100, "professionalAcc", setError);
-                      }}
-                      placeholder="List a few significant achievements in your career."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("professionalAcc") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["professionalAcc"]}
-                      </p>
-                    )}
-                  </div>
+                <p className="text-sm max-sm:text-xs my-1">
+                  Few professional accomplishments you are proud of?
+                </p>
+                <textarea
+                  value={professionalAcc}
+                  required
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What areas of work do you often get critical feedback or you believe is your drawback?
-                    </p>
-                    <textarea
-                      required
-                      value={criticalFeedback}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setCriticalFeedback(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "criticalFeedback", setError);
-                      }}
-                      placeholder="Identify areas where improvement is needed or commonly criticized."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("criticalFeedback") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["criticalFeedback"]}
-                      </p>
-                    )}
-                  </div>
+                    setProfessionalAcc(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      50,
+                      100,
+                      "professionalAcc",
+                      setError
+                    );
+                  }}
+                  placeholder="List a few significant achievements in your career."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("professionalAcc") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["professionalAcc"]}
+                  </p>
+                )}
+              </div>
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What are some areas you want to improve?
-                    </p>
-                    <textarea
-                      required
-                      value={areasToImprove}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setAreasToImprove(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "areasToImprove", setError);
-                      }}
-                      placeholder="Specify aspects you aim to enhance in your work performance."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("areasToImprove") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["areasToImprove"]}
-                      </p>
-                    )}
-                  </div>
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What areas of work do you often get critical feedback or you
+                  believe is your drawback?
+                </p>
+                <textarea
+                  required
+                  value={criticalFeedback}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What would you believe may derail your plan?
-                    </p>
-                    <textarea
-                      required
-                      value={planDerialCause}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setPlanDerialCause(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "planDerialCause", setError);
-                      }}
-                      placeholder="Highlight factors that could obstruct your plans or progress."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("planDerialCause") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["planDerialCause"]}
-                      </p>
-                    )}
-                  </div>
+                    setCriticalFeedback(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "criticalFeedback",
+                      setError
+                    );
+                  }}
+                  placeholder="Identify areas where improvement is needed or commonly criticized."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("criticalFeedback") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["criticalFeedback"]}
+                  </p>
+                )}
+              </div>
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What is the immediate 90 day focus?
-                    </p>
-                    <textarea
-                      required
-                      value={ninetyDayFocus}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setNinetyDayFocus(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "ninetyDayFocus", setError);
-                      }}
-                      placeholder="Describe immediate goals and objectives for eg. Prioritizing project deadlines, and refining task delegation."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("ninetyDayFocus") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["ninetyDayFocus"]}
-                      </p>
-                    )}
-                  </div>
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What are some areas you want to improve?
+                </p>
+                <textarea
+                  required
+                  value={areasToImprove}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What are your long term (12-24 months) goals?
-                    </p>
-                    <textarea
-                      required
-                      value={longTermGoals}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 100) {
-                          setLongTermGoals(inputValue);
-                        }
-                        handleWordLimit(inputValue, 50, 100, "longTermGoals", setError);
-                      }}
-                      placeholder="Describe goal for the next 12-24 months for eg. Attain advanced certification in the field, contribute to impactful projects etc."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("longTermGoals") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["longTermGoals"]}
-                      </p>
-                    )}
-                  </div>
+                    setAreasToImprove(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "areasToImprove",
+                      setError
+                    );
+                  }}
+                  placeholder="Specify aspects you aim to enhance in your work performance."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("areasToImprove") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["areasToImprove"]}
+                  </p>
+                )}
+              </div>
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What do you believe should be your priorities?
-                    </p>
-                    <textarea
-                      required
-                      value={priorities}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setPriorities(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "priorities", setError);
-                      }}
-                      placeholder="Determine what tasks or objectives hold the highest importance eg. Balancing project deadlines, fostering team collaboration etc."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("priorities") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["priorities"]}
-                      </p>
-                    )}
-                  </div>
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What would you believe may derail your plan?
+                </p>
+                <textarea
+                  required
+                  value={planDerialCause}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What learning and certifications do you already have?
-                    </p>
-                    <textarea
-                      required
-                      value={learningNcertificates}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setLearningNcertificates(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "learningNcertificates", setError);
-                      }}
-                      placeholder="Detail relevant training and certifications you've attained eg. Hold certifications in A, B, C. Actively pursuing continuous learning opportunities in D and E."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("learningNcertificates") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["learningNcertificates"]}
-                      </p>
-                    )}
-                  </div>
+                    setPlanDerialCause(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "planDerialCause",
+                      setError
+                    );
+                  }}
+                  placeholder="Highlight factors that could obstruct your plans or progress."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("planDerialCause") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["planDerialCause"]}
+                  </p>
+                )}
+              </div>
 
-                  <div className="my-3">
-                    <p className="text-sm max-sm:text-xs my-1">
-                      What domain and subject areas do you specialize in?
-                    </p>
-                    <textarea
-                      required
-                      value={domainSpecialised}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        const words = inputValue.trim().split(/\s+/);
-                        if (words.length <= 50) {
-                          setDomainSpecialised(inputValue);
-                        }
-                        handleWordLimit(inputValue, 20, 50, "domainSpecialised", setError);
-                      }}
-                      placeholder="Specify your expertise in domain and subject matter areas eg. Specializing in X domain with expertise in Y and Z subject areas."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("domainSpecialised") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["domainSpecialised"]}
-                      </p>
-                    )}
-                  </div>
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What is the immediate 90 day focus?
+                </p>
+                <textarea
+                  required
+                  value={ninetyDayFocus}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+
+                    setNinetyDayFocus(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "ninetyDayFocus",
+                      setError
+                    );
+                  }}
+                  placeholder="Describe immediate goals and objectives for eg. Prioritizing project deadlines, and refining task delegation."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("ninetyDayFocus") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["ninetyDayFocus"]}
+                  </p>
+                )}
+              </div>
+
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What are your long term (12-24 months) goals?
+                </p>
+                <textarea
+                  required
+                  value={longTermGoals}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+
+                    setLongTermGoals(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      50,
+                      100,
+                      "longTermGoals",
+                      setError
+                    );
+                  }}
+                  placeholder="Describe goal for the next 12-24 months for eg. Attain advanced certification in the field, contribute to impactful projects etc."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("longTermGoals") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["longTermGoals"]}
+                  </p>
+                )}
+              </div>
+
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What do you believe should be your priorities?
+                </p>
+                <textarea
+                  required
+                  value={priorities}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+
+                    setPriorities(inputValue);
+                    handleWordLimit(inputValue, 20, 50, "priorities", setError);
+                  }}
+                  placeholder="Determine what tasks or objectives hold the highest importance eg. Balancing project deadlines, fostering team collaboration etc."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("priorities") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["priorities"]}
+                  </p>
+                )}
+              </div>
+
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What learning and certifications do you already have?
+                </p>
+                <textarea
+                  required
+                  value={learningNcertificates}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+
+                    setLearningNcertificates(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "learningNcertificates",
+                      setError
+                    );
+                  }}
+                  placeholder="Detail relevant training and certifications you've attained eg. Hold certifications in A, B, C. Actively pursuing continuous learning opportunities in D and E."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("learningNcertificates") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["learningNcertificates"]}
+                  </p>
+                )}
+              </div>
+
+              <div className="my-3">
+                <p className="text-sm max-sm:text-xs my-1">
+                  What domain and subject areas do you specialize in?
+                </p>
+                <textarea
+                  required
+                  value={domainSpecialised}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+
+                    setDomainSpecialised(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "domainSpecialised",
+                      setError
+                    );
+                  }}
+                  placeholder="Specify your expertise in domain and subject matter areas eg. Specializing in X domain with expertise in Y and Z subject areas."
+                  rows={3}
+                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                />
+                {Object.keys(error).includes("domainSpecialised") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["domainSpecialised"]}
+                  </p>
+                )}
+              </div>
 
               <div>
                 {checkIfEdit ? (

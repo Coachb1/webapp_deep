@@ -18,25 +18,24 @@ import { toast } from "sonner";
 
 const howItWorks = [
   {
-    heading:
-      "1. What is a deep dive survey and how it is different from the normal pulse surveys?",
+    heading: "1. What is this survey about and why I am receiving it?",
     description:
-      "Deep dive surveys are like running 1:1 check ins or interviews with your target subjects to really understand the core issue at hand and the story behind it. Something that is not possible in normal pulse surveys. Ths will greatly aid in the the decision making beyond just numbers.",
+      "The organization or your manager may be seeking deeper insights critical to the policies and future direction. You can help them with your input and that's why you have received it. It's like having a quick check to make your point.",
   },
   {
-    heading: "2. Circulate with Ease",
+    heading: "2. Is it mandatory and is there any deadline?",
     description:
-      "Each survey comes with a unique link and access code, making it simple to share and ensuring only intended recipients can provide feedback.",
+      "The details will be included in the email communication that you receive.",
   },
   {
-    heading: "3. Gather Valuable Feedback",
+    heading: "3. What is the importance of this survey?",
     description:
-      "Responses are collected and analyzed to highlight underlying issues and areas for improvement, offering deeper insights than standard survey tools.",
+      "Your input will be critical to shape the future organizational policies in this direction. We encourage you to participate",
   },
   {
-    heading: "4. Resolve Conflicts Effectively",
+    heading: "4. Is this survey really anonymous?",
     description:
-      "The detailed feedback helps you understand the root causes of conflicts, facilitating targeted and effective resolution strategies.",
+      "The survey will prompt you if you want to keep the interaction anonymous. If chosen, the organizational as well as the AI models will never record or store your personal information.",
   },
 ];
 
@@ -94,7 +93,7 @@ const DeepDive = ({ user, renderType }: any) => {
         });
     }
     const coachScribe = document.getElementsByClassName(
-      "coachbots-coachscribe",
+      "coachbots-coachscribe"
     )[0];
     coachScribe.setAttribute("style", "display: none;");
 
@@ -109,7 +108,7 @@ const DeepDive = ({ user, renderType }: any) => {
         headers: {
           Authorization: basicAuth,
         },
-      },
+      }
     )
       .then((res) => res.json())
       .then((data) => {
@@ -246,7 +245,7 @@ const DeepDive = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
-            <div className="w-full  pt-20 -mt-20 " id="benefits">
+            {/* <div className="w-full  pt-20 -mt-20 " id="benefits">
               <div className={`flex w-full justify-center`}>
                 <Badge
                   variant={"secondary"}
@@ -291,7 +290,7 @@ const DeepDive = ({ user, renderType }: any) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </>
