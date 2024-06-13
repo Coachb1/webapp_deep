@@ -43,6 +43,7 @@ const CreateOwn = ({
   coachId,
   coacheeId,
   clientUsers,
+  userRole,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -60,6 +61,7 @@ const CreateOwn = ({
   coachId: string;
   coacheeId: string;
   clientUsers: ClientUserTeamType[];
+  userRole: string;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -98,6 +100,8 @@ const CreateOwn = ({
     useState<YoutubeResultsType[]>([]);
   const [messageShown, setMessageShown] = useState(false);
 
+  const [scenarioCreationAccess, setScenarioCreationAccess] = useState(false);
+  const [deepDiveCreatorAcess, setDeepDiveCreatorAccess] = useState(false);
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -107,6 +111,26 @@ const CreateOwn = ({
         });
       console.log(clientName);
       console.log(clientUsers);
+    }
+
+    if (
+      ["admin", "super_admin", "client_admin", "deep_dive_creator"].includes(
+        userRole
+      )
+    ) {
+      setDeepDiveCreatorAccess(true);
+    } else {
+      if (!accessDenied.includes("Deepdive-creator")) {
+        setDeepDiveCreatorAccess(true);
+      }
+    }
+
+    if (["admin", "super_admin", "client_admin"].includes(userRole)) {
+      setScenarioCreationAccess(true);
+    } else {
+      if (!accessDenied.includes("Simulation-creator")) {
+        setScenarioCreationAccess(true);
+      }
     }
 
     setTimeout(() => {
@@ -780,23 +804,19 @@ const CreateOwn = ({
                       Learning Ideas
                     </Button>
                   )}
-                  {!restrictedFeatures?.includes("Simulation-creator") && (
-                    <>
-                      {!accessDenied.includes("Simulation-creator") && (
-                        <Button
-                          onClick={() => {
-                            document
-                              .getElementById("simulation-creator")
-                              ?.scrollIntoView({
-                                behavior: "smooth",
-                              });
-                          }}
-                          className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
-                        >
-                          Simulation Creator
-                        </Button>
-                      )}
-                    </>
+                  {scenarioCreationAccess && (
+                    <Button
+                      onClick={() => {
+                        document
+                          .getElementById("simulation-creator")
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                      }}
+                      className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
+                    >
+                      Simulation Creator
+                    </Button>
                   )}
                   {!restrictedFeatures?.includes("Team-connect") && (
                     <Button
@@ -812,7 +832,8 @@ const CreateOwn = ({
                       Team Connect
                     </Button>
                   )}
-                  {!accessDenied.includes("Deepdive-creator") && (
+
+                  {deepDiveCreatorAcess && (
                     <Button
                       onClick={() => {
                         document
@@ -1033,48 +1054,46 @@ const CreateOwn = ({
                 )}
               </MaxWidthWrapper>
             </div>
-            {!restrictedFeatures?.includes("Simulation-creator") && (
+
+            {scenarioCreationAccess && (
               <>
-                {!accessDenied.includes("Simulation-creator") && (
-                  <>
-                    <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
+                <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
+                <div
+                  id="simulation-creator"
+                  className="pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
+                ></div>
+                <div className="h-fit ">
+                  <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
                     <div
                       id="simulation-creator"
-                      className="pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
-                    ></div>
-                    <div className="h-fit ">
-                      <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
-                        <div
-                          id="simulation-creator"
-                          className="flex flex-col max-sm:flex-col w-full mx-auto "
-                        >
-                          <div>
-                            <div className="w-full flex flex-col items-center justify-center">
-                              <h1
-                                id="sc-id"
-                                className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
-                              >
-                                Simulation Creator
-                              </h1>
-                              <div className="w-full">
-                                <div className="w-full flex flex-col items-center justify-center mb-10">
-                                  <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
-                                    <CreateYourOwn
-                                      user={user}
-                                      clientName={clientName}
-                                    />
-                                  </div>
-                                </div>
+                      className="flex flex-col max-sm:flex-col w-full mx-auto "
+                    >
+                      <div>
+                        <div className="w-full flex flex-col items-center justify-center">
+                          <h1
+                            id="sc-id"
+                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                          >
+                            Simulation Creator
+                          </h1>
+                          <div className="w-full">
+                            <div className="w-full flex flex-col items-center justify-center mb-10">
+                              <div className="flex flex-col max-sm:flex-col w-[80%] max-sm:w-[90%] mx-auto">
+                                <CreateYourOwn
+                                  user={user}
+                                  clientName={clientName}
+                                />
                               </div>
                             </div>
                           </div>
                         </div>
-                      </MaxWidthWrapper>
+                      </div>
                     </div>
-                  </>
-                )}
+                  </MaxWidthWrapper>
+                </div>
               </>
             )}
+
             {!restrictedFeatures?.includes("Team-connect") && (
               <>
                 {!accessDenied.includes("Team-connect") && (
@@ -1119,7 +1138,7 @@ const CreateOwn = ({
                 )}
               </>
             )}
-            {!accessDenied.includes("Deepdive-creator") && (
+            {deepDiveCreatorAcess && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
