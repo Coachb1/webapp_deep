@@ -28,9 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  GlobeIcon,
   Info,
-  List,
   Loader,
   Search,
   Star,
@@ -47,15 +45,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
-import { profile } from "console";
-import Coach from "./coach/Coach";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
-import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
 
@@ -551,8 +545,13 @@ const Coaches = ({
   const [connectedCoaches, setConnectedCoaches] = useState<CoachesDataType[]>(
     []
   );
-  const handleUpdateCheckedValues = (newValues: string[]) => {
-    setCurrentPage(1);
+  const handleUpdateCheckedValues = (
+    newValues: string[],
+    silentUpdate?: string
+  ) => {
+    if (!silentUpdate) {
+      setCurrentPage(1);
+    }
     setParentCheckedValues(newValues);
     console.log(newValues);
     if (newValues.length > 0 && newValues[0].length === 0) {
@@ -772,26 +771,12 @@ const Coaches = ({
         }
       }
     }, 300);
-
-    //default filter for - icons by ai
-    //   handleUpdateCheckedValues(["icons_by_ai"]);
-    //   const filteredData = filterData(
-    //     ["icons_by_ai"].includes("Connected")
-    //       ? coachesData.filter(
-    //           (coachData) => coachData.profile_type === "icons_by_ai"
-    //         )
-    //       : savedCoachesData.filter(
-    //           (coachData) => coachData.profile_type === "icons_by_ai"
-    //         ),
-    //     ["icons_by_ai"]
-    //   );
-    //   setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
 
   //for state revalidation after profile actions
   useEffect(() => {
     setCoachesData(savedCoachesData);
-    handleUpdateCheckedValues(parentCheckedValues);
+    handleUpdateCheckedValues(parentCheckedValues, "yes");
   }, [savedCoachesData]);
 
   useEffect(() => {
@@ -868,7 +853,7 @@ const Coaches = ({
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
             } else {
-              const updatedCoachesData = coachesDataa.map((coach) =>
+              const updatedCoachesData = savedCoachesData.map((coach) =>
                 coach.profile_id === coachId
                   ? { ...coach, status: "pending" }
                   : coach
@@ -1739,28 +1724,9 @@ const Coaches = ({
                           coach.profile_type === "mentor" ||
                           coach.profile_type === "coach-mentor") && (
                           <>
-                            {/* {coach.status === "pending" && (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className=" max-sm:text-sm max-sm:w-full border border-gray-300"
-                              >
-                                Requested
-                              </Button>
-                            )} */}
                             <>
                               {coacheeId.length > 0 && (
                                 <>
-                                  {/* {coach.status === "" && (
-                                    <RequestionConnection
-                                      coachId={coach.profile_id}
-                                    />
-                                  )}
-                                  {coach.status === "available" && (
-                                    <RequestionConnection
-                                      coachId={coach.profile_id}
-                                    />
-                                  )} */}
                                   <RequestionConnection
                                     requestStatus={coach.status}
                                     coachId={coach.profile_id}
@@ -1779,9 +1745,9 @@ const Coaches = ({
                                 className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
                                 disabled={
                                   coacheeId.length === 0 &&
-                                  userId !== coach.user_id && coach.profile_type !== "icons_by_ai"
+                                  userId !== coach.user_id &&
+                                  coach.profile_type !== "icons_by_ai"
                                 }
-                              
                               >
                                 <Link
                                   href={handleLinks(coach.avatar_bot_url)}
@@ -1839,8 +1805,6 @@ const Coaches = ({
                       </PaginationItem>
                     );
                   } else if (
-                    // (index === maxPaginationLinks - 3 &&
-                    //   currentPage > maxPaginationLinks - 3) ||
                     (index === 1 && currentPage > 4 && totalPages > 5) ||
                     (index === totalPages - 2 &&
                       currentPage < totalPages - 3 &&
