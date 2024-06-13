@@ -86,26 +86,26 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user: any = await getUser();
 
-  const getGuidesListResponse: SkillnRoleBotsType[] = await getAllBots();
+  // const getGuidesListResponse: SkillnRoleBotsType[] = await getAllBots();
 
-  const roleBots: SkillnRoleBotsType[] = getGuidesListResponse.filter(
-    (bot) => bot.scenario_case === "role_bot"
-  );
-  const skillBots: SkillnRoleBotsType[] = getGuidesListResponse.filter(
-    (bot) => bot.scenario_case === "skill_guide"
-  );
+  // const roleBots: SkillnRoleBotsType[] = getGuidesListResponse.filter(
+  //   (bot) => bot.scenario_case === "role_bot"
+  // );
+  // const skillBots: SkillnRoleBotsType[] = getGuidesListResponse.filter(
+  //   (bot) => bot.scenario_case === "skill_guide"
+  // );
 
-  const knowledgeBots = await getknowledgeBotss(user?.email!);
+  // const knowledgeBots = await getknowledgeBotss(user?.email!);
   // console.log(knowledgeBots);
 
   return (
     <div>
-      <Guides
+      {/* <Guides
         user={user}
         roleBots={roleBots}
         skillBots={skillBots}
         knowledgeBots={knowledgeBots}
-      />
+      /> */}
     </div>
   );
 };
