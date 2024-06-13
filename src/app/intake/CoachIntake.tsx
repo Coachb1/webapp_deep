@@ -1483,7 +1483,7 @@ const CoachIntake = ({ user }: any) => {
           }
         }
       } else {
-        toast.info("Please select the high and low skills");
+        toast.warning("Please select the high and low skills");
       }
     } catch (error) {
       console.log(error);
@@ -1618,7 +1618,7 @@ const CoachIntake = ({ user }: any) => {
           });
       }
     } else {
-      toast.info("Please select the high and low skills");
+      toast.warning("Please select the high and low skills");
     }
   };
 
@@ -2228,8 +2228,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createSubmitHandler(e);
                   e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createSubmitHandler(e);
+                  }
                 }}
               >
                 <div className="flex flex-col gap-2">
@@ -3996,7 +4004,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createSubmitHandler(e);
+                  e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createSubmitHandler(e);
+                  }
                 }}
               >
                 {checkIfView && (
@@ -4533,7 +4550,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createFeedbackSubmitHandler(e);
+                  e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createFeedbackSubmitHandler(e);
+                  }
                 }}
               >
                 <div className="flex flex-col gap-2">

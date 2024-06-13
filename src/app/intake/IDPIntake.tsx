@@ -250,7 +250,16 @@ const IDPIntake = ({ user }: any) => {
           <form
             className="text-left"
             onSubmit={(e: FormEvent<HTMLFormElement>) => {
-              submitHandler(e);
+              e.preventDefault();
+              const errors = Object.values(error).filter(
+                //@ts-ignore
+                (err: string) => err.length > 0
+              );
+              if (errors.length > 0) {
+                toast.warning("Please enter the valid inputs.");
+              } else {
+                submitHandler(e);
+              }
             }}
           >
             <Badge
