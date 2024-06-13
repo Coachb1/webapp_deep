@@ -80,7 +80,6 @@ const IDPIntake = ({ user }: any) => {
   const [openDialog, setOpenDialog] = useState(false);
 
   const resetAllStates = () => {
-    setName("");
     setProfessionalAcc("");
     setCriticalFeedback("");
     setAreasToImprove("");
