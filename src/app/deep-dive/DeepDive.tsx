@@ -18,22 +18,22 @@ import { toast } from "sonner";
 
 const howItWorks = [
   {
-    heading: "1. What is this survey about and why I am receiving it?",
+    heading: "What is this survey about and why I am receiving it?",
     description:
       "The organization or your manager may be seeking deeper insights critical to the policies and future direction. You can help them with your input and that's why you have received it. It's like having a quick check to make your point.",
   },
   {
-    heading: "2. Is it mandatory and is there any deadline?",
+    heading: "Is it mandatory and is there any deadline?",
     description:
       "The details will be included in the email communication that you receive.",
   },
   {
-    heading: "3. What is the importance of this survey?",
+    heading: "What is the importance of this survey?",
     description:
       "Your input will be critical to shape the future organizational policies in this direction. We encourage you to participate",
   },
   {
-    heading: "4. Is this survey really anonymous?",
+    heading: "Is this survey really anonymous?",
     description:
       "The survey will prompt you if you want to keep the interaction anonymous. If chosen, the organizational as well as the AI models will never record or store your personal information.",
   },
