@@ -18,9 +18,8 @@ import {
   getUsersForClient,
 } from "@/lib/utils";
 import { toast } from "sonner";
-import Select, { MultiValue, SingleValue } from "react-select";
+import Select, { MultiValue } from "react-select";
 import { ClientUserType } from "@/lib/types";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Radio, Tooltip } from "antd";
 
 interface OptionType {
@@ -293,7 +292,13 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 onClick={handleGenerateSenario}
                 className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
               >
-                {isLoading ? "Generating" : "Generate"}
+                {generatedTestData.length > 0
+                  ? isLoading
+                    ? "Regenerating"
+                    : "Regenerate"
+                  : isLoading
+                  ? "Generating"
+                  : "Generate"}
                 {isLoading && (
                   <Loader className="h-4 w-4 inline ml-2 animate-spin" />
                 )}

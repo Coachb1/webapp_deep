@@ -53,6 +53,7 @@ const getUserAccountsData = async (user: KindeUser | null) => {
               : "",
           coachId,
           coacheeId,
+          userRole: userCreateResults.role,
         };
       } else {
         return {
@@ -224,7 +225,7 @@ const Page = async () => {
   const { knowledgeBotss, restrictedFeatures, clientName } =
     await getknowledgeBotss(user?.email!);
 
-  const { accessDenied, accessAllowed, coachId, coacheeId } =
+  const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
     await getUserAccountsData(user);
 
   console.log(clientName);
@@ -242,6 +243,7 @@ const Page = async () => {
         coachId={coachId}
         coacheeId={coacheeId}
         clientUsers={clientUsers}
+        userRole={userRole}
       />
     </div>
   );
