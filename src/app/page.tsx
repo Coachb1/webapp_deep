@@ -136,7 +136,7 @@ const getDirectoryProfiles = async (
   const accountResponse = await getUserAccount(user);
   const userAccount = await accountResponse.json();
 
-  const recommendationProfileIDs: string[] = userAccount.coach_recommendation;
+  const recommendationProfileIDs: string[] = userAccount.coach_recommendation || [];
   if (userEmail) {
     const response = await fetch(
       `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
