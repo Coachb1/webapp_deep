@@ -5839,15 +5839,14 @@ loadExternalModule().then(() => {
       <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
           <ul id="instructions-list">
-            <li>1 . To maintain a record of sessions with coaches/mentors listed in the Directory, simply click on "End Session". Your coach/mentor will receive notification, and a transcript will be shared afterward. For Icons by AI, conversation records are automatically kept. </li>
-            <li>2 . For all types of avatar or simulation bots, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. The aim is to simulate real-world interactions.</li>
-            <li>3 . Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses. In simulation or roleplay scenarios, "Coach Talk" NLP provides speech analysis in reports.</li>
-            <li>4 . Guide bots are based on specific framework-based responses while user-generated bots are representations of the user's knowledge base on any topic. </li>
-            <li>5 . Simulations and roleplays serve to replicate real-life scenarios. Explore the page to review covered scenarios. Both CoachTalk and Coachscribe are equipped to handle them.</li>
-            <li>6 . System availability issues may occasionally cause delays in responses and reports.</li>
-            <li>7 . AI frames/avatars represent the coach's perspective on a given topic. For optimal results, adhere to the highlighted area on the coach/mentor's page.</li>
-            <li>8 . Cochbot sessions are assumed to have no prior memory. It's advisable to restate your context at the beginning of each session.</li>
-            <li>9 . When interacting with user-created knowledge bots, direct your questions toward the defined skill area for the most effective results.</li>
+            <li>1 . For Coaching interactions : To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary ". Your coach/mentor will receive notification, and a transcript will be shared afterward. For Icons by AI, no emails are going sent.  </li>
+            <li>2 . For Simulations; Depending upon the subject and context these may take several forms. The short version contains 3 questions and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+            <li>3 . For Deep dive surveys : Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+            <li>4 . For Feedback Bots: Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publically, critical feedback is delivered over email privately. </li>
+            <li>5 . In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+            <li>6 . Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+            <li>7 . System availability issues may occasionally cause delays in responses and reports. </li>
+            <li>8 . For best results consider the system has no prior memory and restate your context whenever possible.</li>
           </ul>
         </div>
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -5887,21 +5886,31 @@ loadExternalModule().then(() => {
   // botId = 'stress-management-0032'
   const _ = getBotDetails2(botId);
 
-  if(botId){
+  // if(botId){
+  //   const list = 
+  //   `<li>1 . For coaches/mentors in the directory, click on "End Session" to record sessions. Your coach/mentor will be notified, and a transcript will be shared afterward. For Icons by AI, it will only keep a record of the conversation. </li>
+  //    <li>2 . Any type of avatar or simulation bots should avoid unrelated questions, answers, or comments, and rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
+  //    <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. If it's a simulation or roleplay, "Coach Talk" NLP will also provide speech analysis in reports.</li>
+  //    <li>4 . Guide bots follow specific framework-based responses, while user-generated bots represent the user's knowledge base on any topic. </li>
+  //    <li>5 . Simulations and roleplays are designed to practice real-life scenarios. You can review covered scenarios on the Explore page. Both CoachTalk and Coachscribe can handle them.</li>
+  //    <li>6 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
+  //    <li>7 . For AI frames/avatars, the model represents the coach's point of view on a particular topic. For best results, stick to the highlighted area on the coach/mentor's page.</li>
+  //    <li>8 . Cochbot sessions should be assumed to have no prior memory. Always restate your context for the current session.</li>
+  //    <li>9 . For user-created knowledge bots, always ask questions related to the defined skill area for optimal results.</li>
+  //   `
+  //   instructionsPaneList.innerHTML = list
+  // }
+
+  if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
-    `<li>1 . For coaches/mentors in the directory, click on "End Session" to record sessions. Your coach/mentor will be notified, and a transcript will be shared afterward. For Icons by AI, it will only keep a record of the conversation. </li>
-     <li>2 . Any type of avatar or simulation bots should avoid unrelated questions, answers, or comments, and rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
-     <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. If it's a simulation or roleplay, "Coach Talk" NLP will also provide speech analysis in reports.</li>
-     <li>4 . Guide bots follow specific framework-based responses, while user-generated bots represent the user's knowledge base on any topic. </li>
-     <li>5 . Simulations and roleplays are designed to practice real-life scenarios. You can review covered scenarios on the Explore page. Both CoachTalk and Coachscribe can handle them.</li>
-     <li>6 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
-     <li>7 . For AI frames/avatars, the model represents the coach's point of view on a particular topic. For best results, stick to the highlighted area on the coach/mentor's page.</li>
-     <li>8 . Cochbot sessions should be assumed to have no prior memory. Always restate your context for the current session.</li>
-     <li>9 . For user-created knowledge bots, always ask questions related to the defined skill area for optimal results.</li>
+    `<li>1 . The simulations generated by our skills engine and AI pipeline are designed for real-world comprehension and practice based on the learning content presented on the page. The simulation may not be generated if the page's content is restricted or unreadable. </li>
+     <li>2 . You should avoid responding with unrelated questions, answers, or comments, and extremely rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
+     <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. For audio responses, a speech analysis in reports will be provided.</li>
+     <li>4 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
+     <li>5 . The feedback reports may not instantaneously capture all the data. Simply try refreshing the page if anything appears missing. Thanks!</li>
     `
     instructionsPaneList.innerHTML = list
   }
-
 
 
   //   appendMessage2(`<div id="option-button-container" >
