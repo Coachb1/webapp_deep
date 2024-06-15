@@ -150,11 +150,13 @@ const getDirectoryProfiles = async (
     if (response.ok) {
       let responseData = await response.json();
       console.log('recommendationProfileIDs',recommendationProfileIDs)
-      const updatedResponseData = responseData.map((coachData: CoachesDataType) =>
-        recommendationProfileIDs.includes(coachData.profile_id)
-          ? { ...coachData, is_recommended: true }
-          : coachData
-      );
+      const updatedResponseData = responseData.map((coachData: CoachesDataType) => {
+        if (recommendationProfileIDs && recommendationProfileIDs.includes(coachData.profile_id)) {
+          return { ...coachData, is_recommended: true };
+        } else {
+          return coachData;
+        }
+      });
       
       // Assign the updated data back to responseData if necessary
       responseData = updatedResponseData;
