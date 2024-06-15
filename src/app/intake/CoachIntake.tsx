@@ -525,29 +525,29 @@ const CoachIntake = ({ user }: any) => {
               console.log("Can create coach?", data);
               const profileTypes = getProfileTypes(data.data);
 
-              // if (
-              //   data.data.length > 0 &&
-              //   !checkIfEdit &&
-              //   !checkIfView &&
-              //   !adminEdit &&
-              //   formType !== "knowledge-bot" &&
-              //   formType !== "feedback"
-              // ) {
-              //   if (
-              //     (formType === "coach" && profileTypes.includes("coach")) ||
-              //     profileTypes.includes("mentor") ||
-              //     profileTypes.includes("coachee") ||
-              //     profileTypes.includes("mentee")
-              //   ) {
-              //     setCanCreateProfile(false);
-              //     toast.loading(
-              //       "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
-              //     );
-              //     setTimeout(() => {
-              //       router.push("/");
-              //     }, 4000);
-              //   }
-              // }
+              if (
+                data.data.length > 0 &&
+                !checkIfEdit &&
+                !checkIfView &&
+                !adminEdit &&
+                formType !== "knowledge-bot" &&
+                formType !== "feedback"
+              ) {
+                if (
+                  (formType === "coach" && profileTypes.includes("coach")) ||
+                  profileTypes.includes("mentor") ||
+                  profileTypes.includes("coachee") ||
+                  profileTypes.includes("mentee")
+                ) {
+                  setCanCreateProfile(false);
+                  toast.loading(
+                    "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              }
             })
             .catch((err) => {
               console.error(err);
@@ -4472,7 +4472,7 @@ const CoachIntake = ({ user }: any) => {
                         rows={2}
                         disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
-                        value={opportunitiesOfGrowth}
+                        value={challengesToHelp}
                         onChange={(e) => {
                           const inputValue = e.target.value;
 
