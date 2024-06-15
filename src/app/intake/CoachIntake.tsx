@@ -778,6 +778,7 @@ const CoachIntake = ({ user }: any) => {
               "coach_same_department",
               `${coachMentInSameDep === "Yes" ? true : false}`
             );
+            formdata.append("problem_statement",`${challengesToHelp}`);
 
             referenceDocs.forEach(({ file, text, name }) => {
               if (name === "optional_file") {

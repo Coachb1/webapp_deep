@@ -148,17 +148,17 @@ const getDirectoryProfiles = async (
       }
     );
     if (response.ok) {
-      const responseData = await response.json();
-
-      // recommendationProfileIDs.forEach((profileId) => {
-      //   responseData.map((coachData: CoachesDataType) =>
-      //     coachData.profile_id.includes(profileId)
-      //       ? { ...coachData, is_recommended: true }
-      //       : coachData
-      //   );
-      // });
-
-      // console.log(responseData);
+      let responseData = await response.json();
+      console.log('recommendationProfileIDs',recommendationProfileIDs)
+      const updatedResponseData = responseData.map((coachData: CoachesDataType) =>
+        recommendationProfileIDs.includes(coachData.profile_id)
+          ? { ...coachData, is_recommended: true }
+          : coachData
+      );
+      
+      // Assign the updated data back to responseData if necessary
+      responseData = updatedResponseData;
+      console.log(responseData);
       return responseData;
     } else {
       console.log("Error fetching Directory info : ", response.statusText);
