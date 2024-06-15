@@ -88,6 +88,7 @@ export interface CoachesDataType {
   id_for_target_selection?: string;
   bot_uid?: string;
   custom_user_bot_id?: string;
+  is_recommended?: boolean;
 }
 
 interface FilterCategoriesType {
@@ -264,10 +265,15 @@ const Coaches = ({
   const maxPaginationLinks = 5;
 
   const getCoachesData = async () => {
-    const data = coachesDataa.sort(
-      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
-    );
+    const data = coachesDataa
+      .sort(
+        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+      )
+      .map((coach) =>
+        coach.bot_tag === "Fitzy" ? { ...coach, is_recommended: true } : coach
+      );
 
+    console.log("data", data);
     const iconsByAiProfiles = data.filter(
       (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
     );
@@ -522,33 +528,61 @@ const Coaches = ({
       return inputArray;
     }
 
-    return inputArray.filter((obj) => {
-      return filterArray.every((filter) => {
-        for (const prop in obj) {
-          if (
-            obj.hasOwnProperty(prop) &&
-            obj[prop as keyof CoachesDataType] &&
-            prop !== "description" // Skip filtering for the "description" property
-          ) {
-            const propValue =
-              obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
-            if (propValue.includes(filter.toLowerCase())) {
-              return true;
+    if (filterArray.includes("recommended")) {
+      return inputArray
+        .filter((coach) => coach.is_recommended)
+        .filter((obj) => {
+          return filterArray
+            .filter((searchStr) => searchStr !== "recommended")
+            .every((filter) => {
+              for (const prop in obj) {
+                if (
+                  obj.hasOwnProperty(prop) &&
+                  obj[prop as keyof CoachesDataType] &&
+                  prop !== "description" // Skip filtering for the "description" property
+                ) {
+                  const propValue =
+                    obj[
+                      prop as keyof CoachesDataType
+                    ]!.toString().toLowerCase();
+                  if (propValue.includes(filter.toLowerCase())) {
+                    return true;
+                  }
+                }
+              }
+              return false;
+            });
+        });
+    } else {
+      return inputArray.filter((obj) => {
+        return filterArray.every((filter) => {
+          for (const prop in obj) {
+            if (
+              obj.hasOwnProperty(prop) &&
+              obj[prop as keyof CoachesDataType] &&
+              prop !== "description" // Skip filtering for the "description" property
+            ) {
+              const propValue =
+                obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
+              if (propValue.includes(filter.toLowerCase())) {
+                return true;
+              }
             }
           }
-        }
-        return false;
+          return false;
+        });
       });
-    });
+    }
   }
 
   const [connectedCoaches, setConnectedCoaches] = useState<CoachesDataType[]>(
     []
   );
   const handleUpdateCheckedValues = (
-    newValues: string[],
+    newValuesId: string[],
     silentUpdate?: string
   ) => {
+    const newValues = newValuesId.map((ch) => ch.trim());
     if (!silentUpdate) {
       setCurrentPage(1);
     }
@@ -650,6 +684,19 @@ const Coaches = ({
             ),
         newValues
       );
+      console.log(filteredData);
+      setCoachesData(filteredData);
+    } else if (newValues.includes("recommended")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter((coach) => coach.is_recommended)
+          : savedCoachesData.filter((coach) => coach.is_recommended),
+        newValues
+      );
+      // const filteredData =
+      newValues.includes("Connected")
+        ? coachesData.filter((coach) => coach.is_recommended)
+        : savedCoachesData.filter((coach) => coach.is_recommended);
       console.log(filteredData);
       setCoachesData(filteredData);
     } else {
@@ -1578,6 +1625,11 @@ const Coaches = ({
                                 {convertTextToCorrectFormat(tag)}
                               </Badge>
                             ))}
+                        {coach.is_recommended && (
+                          <Badge className="bg-blue-100 text-[12px] text-blue-700 hover:bg-emerald-200">
+                            AI Recommended
+                          </Badge>
+                        )}
                       </div>
                       {coach.profile_type === "icons_by_ai" ? (
                         <>

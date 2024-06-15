@@ -7,7 +7,7 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import Coaches from "./Coaches";
+import Coaches, { CoachesDataType } from "./Coaches";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { connectionType } from "@/lib/types";
 
@@ -80,11 +80,11 @@ const getClientUserInfo = async (
             clientDepartments: data.data.user_info[0].departments,
             restrictedPages: data.data.user_info[0].restricted_pages,
             restrictedFeatures: data.data.user_info[0].restricted_features,
-            headings : {
-              heading : data.data.user_info[0].heading,
-              subHeading : data.data.user_info[0].sub_heading,
-              tagLine : data.data.user_info[0].tag_line
-            }
+            headings: {
+              heading: data.data.user_info[0].heading,
+              subHeading: data.data.user_info[0].sub_heading,
+              tagLine: data.data.user_info[0].tag_line,
+            },
           };
         } else {
           return {
@@ -129,7 +129,14 @@ const getClientUserInfo = async (
   }
 };
 
-const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
+const getDirectoryProfiles = async (
+  userEmail: string | null | undefined,
+  user: KindeUser | null
+) => {
+  const accountResponse = await getUserAccount(user);
+  const userAccount = await accountResponse.json();
+
+  const recommendationProfileIDs: string[] = userAccount.coach_recommendation;
   if (userEmail) {
     const response = await fetch(
       `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
@@ -142,6 +149,16 @@ const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
     );
     if (response.ok) {
       const responseData = await response.json();
+
+      // recommendationProfileIDs.forEach((profileId) => {
+      //   responseData.map((coachData: CoachesDataType) =>
+      //     coachData.profile_id.includes(profileId)
+      //       ? { ...coachData, is_recommended: true }
+      //       : coachData
+      //   );
+      // });
+
+      // console.log(responseData);
       return responseData;
     } else {
       console.log("Error fetching Directory info : ", response.statusText);
@@ -232,12 +249,12 @@ const Page = async () => {
     clientExpertise,
     restrictedFeatures,
     restrictedPages,
-    headings
+    headings,
   } = await getClientUserInfo(user?.email, user);
 
   let directoryProfilesData;
   if (!isRestricted || isDemoUser) {
-    directoryProfilesData = await getDirectoryProfiles(user?.email);
+    directoryProfilesData = await getDirectoryProfiles(user?.email, user);
   }
 
   let userConnections: connectionType[] = [];

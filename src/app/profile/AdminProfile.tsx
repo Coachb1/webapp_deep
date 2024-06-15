@@ -19,6 +19,7 @@ import AddNewClient from "./super-admin/AddNewClient";
 import Clients from "./super-admin/Clients";
 import ProfileActions from "./super-admin/ProfilesActions";
 import UserRestrictions from "./super-admin/UserRestrictions";
+import SystemInfo from "./super-admin/SystemInfo";
 
 const AdminProfile = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
@@ -117,6 +118,8 @@ const AdminProfile = ({ user }: any) => {
             allUsers={allUsersAccount}
             getAllClientsData={getAllClientsData}
           />
+
+          <SystemInfo />
         </div>
       </div>
     </div>
