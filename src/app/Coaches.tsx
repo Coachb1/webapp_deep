@@ -1882,10 +1882,17 @@ const Coaches = ({
                 <div className="mt-12 flex items-center">
                   {coachesData.length === 0 && (
                     <>
-                      <span>
-                        The existing choices are too narrow. Please use lesser
-                        search parameters.
-                      </span>
+                      {parentCheckedValues.includes("recommended") ? (
+                        <span>
+                          Currently no system recommendations available. You may
+                          check back next week.
+                        </span>
+                      ) : (
+                        <span>
+                          The existing choices are too narrow. Please use lesser
+                          search parameters.
+                        </span>
+                      )}
                     </>
                   )}
                   {parentCheckedValues.includes("External") ||
