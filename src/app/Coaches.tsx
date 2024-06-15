@@ -265,13 +265,9 @@ const Coaches = ({
   const maxPaginationLinks = 5;
 
   const getCoachesData = async () => {
-    const data = coachesDataa
-      .sort(
-        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
-      )
-      .map((coach) =>
-        coach.bot_tag === "Fitzy" ? { ...coach, is_recommended: true } : coach
-      );
+    const data = coachesDataa.sort(
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+    );
 
     console.log("data", data);
     const iconsByAiProfiles = data.filter(
