@@ -2216,6 +2216,7 @@ const CoachIntake = ({ user }: any) => {
           </span>
           BOTS
         </h1>
+        <Badge variant={"outline"}>Private. For system use only</Badge>
         {formType === "knowledge-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">

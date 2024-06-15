@@ -238,7 +238,8 @@ const IDPIntake = ({ user }: any) => {
           )}
         </DialogContent>
       </Dialog> */}
-      <div className="flex flex-col text-sm max-sm:text-xs justify-center items-center w-full">
+      <Badge variant={"outline"}>Private. For system use only</Badge>
+      <div className="flex flex-col text-sm max-sm:text-xs justify-center items-center w-full mt-2">
         <div className="bg-white w-full h-fit p-4  rounded-md mb-4">
           <h1 className="text-xl max-sm:text-sm text-left text-gray-600 font-bold">
             Individual Development Plan Intake
