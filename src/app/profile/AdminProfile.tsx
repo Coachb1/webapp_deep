@@ -20,6 +20,7 @@ import Clients from "./super-admin/Clients";
 import ProfileActions from "./super-admin/ProfilesActions";
 import UserRestrictions from "./super-admin/UserRestrictions";
 import SystemInfo from "./super-admin/SystemInfo";
+import RecommendationProfiles from "./super-admin/RecommendationProfiles";
 
 const AdminProfile = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
@@ -97,7 +98,7 @@ const AdminProfile = ({ user }: any) => {
 
       <div className="m-4 my-6">
         <p className="text-base max-sm:text-sm font-semibold">Actions</p>
-        <div className="flex flex-row items-start gap-4 max-sm:flex-wrap max-md:flex-wrap max-lg:flex-wrap my-2">
+        <div className="flex flex-row items-start gap-4 flex-wrap my-2">
           <ClientActions
             clientsData={clientsData}
             allUsers={allUsers}
@@ -120,6 +121,11 @@ const AdminProfile = ({ user }: any) => {
           />
 
           <SystemInfo />
+
+          <RecommendationProfiles
+            allUsers={allUsersAccount}
+            dataLoading={loading}
+          />
         </div>
       </div>
     </div>
