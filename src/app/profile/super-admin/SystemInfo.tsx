@@ -6,22 +6,64 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Download, User } from "lucide-react";
-import { Input, Modal } from "antd";
-import Link from "next/link";
+import { Input, Modal, Progress } from "antd";
+import { saveAs } from "file-saver";
 
 const SystemInfo = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState(false);
+
+  const downloadHandler = async () => {
+    setLoading(true);
+    setProgress(0);
+    setError(false);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `${baseURL}/accounts/get-user-details/`, true);
+    xhr.setRequestHeader("Authorization", basicAuth);
+    xhr.responseType = "blob";
+
+    xhr.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        setProgress(Number(percentComplete.toFixed(0)));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        saveAs(blob, "System_info.xlsx");
+        toast.success("Successfully downloaded the file");
+      } else {
+        toast.error("Error downloading the file. Try again.");
+      }
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    };
+
+    xhr.onerror = () => {
+      toast.error("Error downloading the file. Try again.");
+      setTimeout(() => {
+        setLoading(false);
+        setError(true);
+      }, 2000);
+    };
+
+    xhr.send();
+  };
 
   return (
     <div>
       <Button
         onClick={() => setModalOpen(true)}
-        disabled={loading}
         variant={"default"}
         className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500 border-transparent border hover:border-blue-500"
       >
-        <User className="inline h-4 w-4 mr-2" /> System Info
+        <Download className="inline h-4 w-4 mr-2" /> System Info
       </Button>
 
       <Modal
@@ -45,18 +87,19 @@ const SystemInfo = () => {
                   value={"System_info.xlsx"}
                   className="w-full"
                 ></Input>
-                <Link
-                  href={""}
-                  download
+                <Button
+                  disabled={loading}
                   onClick={() => {
-                    setTimeout(() => {
-                      toast.success("Successfully downloaded.");
-                    }, 1000);
+                    downloadHandler();
                   }}
-                  className="flex flex-row gap-2 items-center border bg-blue-200 rounded-md px-2 font-semibold h-full"
+                  className="h-fit p-1.5"
                 >
-                  <Download className="h-4 w-4" /> <p>Download</p>
-                </Link>
+                  <Download className="h-4 w-4 mr-2" /> <p>Download</p>
+                </Button>
+              </div>
+              <div className={`w-full mt-2 ${!loading && "hidden"}`}>
+                <p>Download Progress</p>
+                <Progress percent={progress} size="small" />
               </div>
             </div>
           </div>
