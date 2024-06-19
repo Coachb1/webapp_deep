@@ -76,8 +76,14 @@ const getClientUserInfo = async (
           return {
             isDemoUser: data.data.user_info[0].is_demo_user,
             isRestricted: data.data.user_info[0].is_restricted,
-            clientExpertise: data.data.user_info[0].coach_expertise,
-            clientDepartments: data.data.user_info[0].departments,
+            clientExpertise: data.data.user_info[0].coach_expertise.replace(
+              /\s/g,
+              ""
+            ),
+            clientDepartments: data.data.user_info[0].departments.replace(
+              /\s/g,
+              ""
+            ),
             restrictedPages: data.data.user_info[0].restricted_pages,
             restrictedFeatures: data.data.user_info[0].restricted_features,
             headings: {
@@ -149,18 +155,22 @@ const getDirectoryProfiles = async (
     );
     if (response.ok) {
       let responseData = await response.json();
-      console.log('recommendationProfileIDs',recommendationProfileIDs)
-      const updatedResponseData = responseData.map((coachData: CoachesDataType) => {
-        if (recommendationProfileIDs && recommendationProfileIDs.includes(coachData.profile_id)) {
-          return { ...coachData, is_recommended: true };
-        } else {
-          return coachData;
+      console.log("recommendationProfileIDs", recommendationProfileIDs);
+      const updatedResponseData = responseData.map(
+        (coachData: CoachesDataType) => {
+          if (
+            recommendationProfileIDs &&
+            recommendationProfileIDs.includes(coachData.profile_id)
+          ) {
+            return { ...coachData, is_recommended: true };
+          } else {
+            return coachData;
+          }
         }
-      });
-      
+      );
+
       // Assign the updated data back to responseData if necessary
       responseData = updatedResponseData;
-      console.log(responseData);
       return responseData;
     } else {
       console.log("Error fetching Directory info : ", response.statusText);

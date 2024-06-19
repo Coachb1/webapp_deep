@@ -272,7 +272,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   setInputError(true);
                 }
               }}
-              placeholder="Create a situation where the user needs to accomplish..."
+              placeholder="Provide a brief scenario involving a complex decision-making situation in a business or professional setting. For Eg: A marketing team must decide on the best strategy to increase brand awareness while working with a limited budget and tight deadlines."
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />
