@@ -44,6 +44,7 @@ import HelpMode from "@/components/HelpMode";
 const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
   const [userRole, setUserRole] = useState("");
+  const [userId, setUserId] = useState("");
 
   //client based restrictions
   const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
@@ -56,7 +57,9 @@ const Profile = ({ user }: any) => {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setUserRole(data.role);
+          setUserId(data.uid);
         });
 
       CreateOrAssignClientId(user?.email)
@@ -223,7 +226,9 @@ const Profile = ({ user }: any) => {
           )}
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
-          {selectedItem === "Admin" && <AdminProfile user={user} />}
+          {selectedItem === "Admin" && (
+            <AdminProfile userId={userId} user={user} />
+          )}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
           {selectedItem === "Admin Reports" && <AdminReports user={user} />}
