@@ -3693,6 +3693,19 @@ function findRelatedItemsStt(data, targetCode) {
 }
 
 const audioCanvasUiForQuestions = (audio, canvas) => {
+  const shadowRoot = document.getElementById("chat-element2").shadowRoot
+  const audioElements = shadowRoot.querySelectorAll("audio")
+  if (audioElements.length > 1) {
+    audioElements.forEach((element, i) => {
+      if (
+        element.id.includes("audio-player-") &&
+        i !== audioElements.length - 1
+      ) {
+        element.pause();
+      }
+    });
+  }
+  
   const canvasCtx = canvas.getContext("2d");
   console.log(canvasCtx);
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();

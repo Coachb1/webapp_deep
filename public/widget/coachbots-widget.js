@@ -1604,6 +1604,20 @@ function generateRandomAlphanumeric(length) {
 }
 
 const audioCanvasUiForQuestionsStt = (audio, canvas) => {
+
+  const shadowRoot = document.getElementById("chat-element").shadowRoot
+  const audioElements = shadowRoot.querySelectorAll("audio")
+  if (audioElements.length > 1) {
+    audioElements.forEach((element, i) => {
+      if (
+        element.id.includes("audio-player-") &&
+        i !== audioElements.length - 1
+      ) {
+        element.pause();
+      }
+    });
+  }
+
   const canvasCtx = canvas.getContext("2d");
   console.log(canvasCtx);
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1795,7 +1809,7 @@ const handleProceedClick = async (choice) => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
                 console.log(audioElement, canvasElement)
-                audioCanvasUiForQuestions(audioElement, canvasElement)
+                audioCanvasUiForQuestionsStt(audioElement, canvasElement)
               }, 100);
 
             console.log(initialQuestionText);
@@ -1873,7 +1887,7 @@ const handleProceedClick = async (choice) => {
             const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
             const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
             console.log(audioElement, canvasElement)
-            audioCanvasUiForQuestions(audioElement, canvasElement)
+            audioCanvasUiForQuestionsStt(audioElement, canvasElement)
           }, 100);
         }
         if (responderName) {
@@ -3382,7 +3396,7 @@ loadExternalModule().then(() => {
       const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
       const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement)
-      audioCanvasUiForQuestions(audioElement, canvasElement)
+      audioCanvasUiForQuestionsStt(audioElement, canvasElement)
     }, 100);
 
     return audioCont;
