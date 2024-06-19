@@ -314,4 +314,5 @@ export interface AllUserDataType {
   userId: string;
   userRole: string;
   userDeniedAccesses: string;
+  userProfileId?: string;
 }

@@ -22,7 +22,7 @@ import UserRestrictions from "./super-admin/UserRestrictions";
 import SystemInfo from "./super-admin/SystemInfo";
 import RecommendationProfiles from "./super-admin/RecommendationProfiles";
 
-const AdminProfile = ({ user }: any) => {
+const AdminProfile = ({ user, userId }: { user: any; userId: string }) => {
   const [loading, setLoading] = useState(true);
 
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
@@ -122,10 +122,7 @@ const AdminProfile = ({ user }: any) => {
 
           <SystemInfo />
 
-          <RecommendationProfiles
-            allUsers={allUsersAccount}
-            dataLoading={loading}
-          />
+          <RecommendationProfiles />
         </div>
       </div>
     </div>
