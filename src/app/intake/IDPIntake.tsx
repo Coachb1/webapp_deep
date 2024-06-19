@@ -47,11 +47,6 @@ const handleWordLimit = (
       ...prevErrors,
       [fieldName]: `Minimum ${minLimit} words are required.`,
     }));
-  } else {
-    setError((prevErrors: any) => ({
-      ...prevErrors,
-      [fieldName]: `Maximum ${maxLimit} words are allowed.`,
-    }));
   }
 };
 
