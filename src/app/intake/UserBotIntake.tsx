@@ -105,11 +105,6 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         ...prevErrors,
         [fieldName]: `Minimum ${minLimit} words are required.`,
       }));
-    } else {
-      setError((prevErrors: any) => ({
-        ...prevErrors,
-        [fieldName]: `Maximum ${maxLimit} words are allowed.`,
-      }));
     }
   };
 
@@ -630,9 +625,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
-                  if (words.length <= 10) {
-                    setBotName(inputValue);
-                  }
+                  setBotName(inputValue);
                   handleWordLimit(inputValue, 3, 10, "botName", setError);
                 }}
                 value={botName}
@@ -659,9 +652,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
-                  if (words.length <= 50) {
-                    setPrimaryPurpose(inputValue);
-                  }
+                  setPrimaryPurpose(inputValue);
                   handleWordLimit(
                     inputValue,
                     10,
@@ -692,9 +683,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
-                  if (words.length <= 75) {
-                    setFunctionsNTasksOfBot(inputValue);
-                  }
+                  setFunctionsNTasksOfBot(inputValue);
                   handleWordLimit(
                     inputValue,
                     15,
@@ -726,9 +715,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
-                  if (words.length <= 100) {
-                    setInfoAccessToBots(inputValue);
-                  }
+                  setInfoAccessToBots(inputValue);
                   handleWordLimit(
                     inputValue,
                     20,
@@ -760,9 +747,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   const words = inputValue.trim().split(/\s+/);
-                  if (words.length <= 50) {
-                    setCommanFaqs(inputValue);
-                  }
+                  setCommanFaqs(inputValue);
                   handleWordLimit(inputValue, 10, 50, "commanFaqs", setError);
                 }}
                 value={commanFaqs}

@@ -2049,9 +2049,6 @@ const CoachIntake = ({ user }: any) => {
     const words = inputValue.split(/\s+/);
     const wordCount = words.length;
     setDataModified(true);
-    // console.log(`Input Value: "${inputValue}"`);
-    // console.log(`Words: ${JSON.stringify(words)}`);
-    // console.log(`Word Count: ${wordCount}`);
 
     if (wordCount >= minLimit && wordCount <= maxLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
@@ -2059,11 +2056,6 @@ const CoachIntake = ({ user }: any) => {
       setError((prevErrors) => ({
         ...prevErrors,
         [fieldName]: `Minimum ${minLimit} words are required.`,
-      }));
-    } else {
-      setError((prevErrors) => ({
-        ...prevErrors,
-        [fieldName]: `Maximum ${maxLimit} words are allowed.`,
       }));
     }
   };
