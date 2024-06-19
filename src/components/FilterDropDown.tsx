@@ -140,7 +140,7 @@ const FilterDropDown = ({
           </label>
         </div>
       </div>
-      <div className="mt-2 flex flex-row items-center gap-2">
+      <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
         {checkedValues.map((checkedItem) => (
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
             <p className="text-sm px-1">

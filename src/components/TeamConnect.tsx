@@ -151,6 +151,7 @@ const TeamConnect = ({
                         );
                         setInputError(false);
                       }}
+                      placeholder="Seeking insights from your team. For eg, I want to seek insight about @Amol as my new Project Manager in my new project"
                       rows={2}
                       className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm bg-accent"
                     ></textarea>{" "}

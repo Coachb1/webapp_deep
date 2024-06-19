@@ -62,11 +62,11 @@ const CreateYourDeepDive = ({ user }: any) => {
 
   const incrementTries = () => {
     if (numOfTries < 5) {
-      setNumOfTries(prevTries => prevTries + 1);
+      setNumOfTries((prevTries) => prevTries + 1);
     } else {
       setNumOfTries(0);
     }
-    console.log('increased num of tries to- ',numOfTries)
+    console.log("increased num of tries to- ", numOfTries);
   };
 
   const handleGenerateSurvey = () => {
@@ -124,8 +124,15 @@ const CreateYourDeepDive = ({ user }: any) => {
             : "https://platform.coachbots.com/"
         }`
       );
-      const add_prompt_list = ['crusader','cheerleader','change_manager','calculator','conversationalist','co_creator']
-      console.log(numOfTries,'numOfTries')
+      const add_prompt_list = [
+        "crusader",
+        "cheerleader",
+        "change_manager",
+        "calculator",
+        "conversationalist",
+        "co_creator",
+      ];
+      console.log(numOfTries, "numOfTries");
       formdata.append(
         "additional_prompt_for_deep",
         add_prompt_list[numOfTries]
@@ -206,7 +213,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   setInputError(true);
                 }
               }}
-              placeholder="Discover insights on team conflicts and resolution strategies here"
+              placeholder="Dive into team dynamics. For eg, As a Team Leader in the Construction company, I want to know views about work from office policy from my employees. "
               rows={8}
               className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
             />

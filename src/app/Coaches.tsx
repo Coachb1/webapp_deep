@@ -1204,7 +1204,7 @@ const Coaches = ({
     {
       target: "#search-filter",
       content:
-        "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up.  ",
+        "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
     },
     {
       target: "#participant-listing",
