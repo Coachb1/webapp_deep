@@ -778,7 +778,7 @@ const CoachIntake = ({ user }: any) => {
               "coach_same_department",
               `${coachMentInSameDep === "Yes" ? true : false}`
             );
-            formdata.append("problem_statement",`${challengesToHelp}`);
+            formdata.append("problem_statement", `${challengesToHelp}`);
 
             referenceDocs.forEach(({ file, text, name }) => {
               if (name === "optional_file") {
@@ -2025,6 +2025,7 @@ const CoachIntake = ({ user }: any) => {
 
                 setDepartment(resultingBot.department);
 
+                setChallengesToHelp(resultingBot.problem_statement);
                 setOptionalMediaData(
                   transformExtractedOptionalCoachee(
                     resultingBot.optional_file_data
@@ -2116,6 +2117,18 @@ const CoachIntake = ({ user }: any) => {
       setError((prevErrors) => ({
         ...prevErrors,
         [fieldName]: `Maximum 5 topics could be added.`,
+      }));
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    }
+  };
+
+  const handleProblemStatement = (input: string, fieldName: string) => {
+    const inputValuesArr = input.split(", ");
+    if (inputValuesArr.length > 2) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Maximum 2 challenges could be added.`,
       }));
     } else {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
@@ -4476,13 +4489,12 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         value={challengesToHelp}
                         onChange={(e) => {
+                          setDataModified(true);
                           const inputValue = e.target.value;
 
                           setChallengesToHelp(inputValue);
-                          handleWordLimit(
+                          handleProblemStatement(
                             inputValue,
-                            50,
-                            80,
                             "challengesToHelp"
                           );
                         }}

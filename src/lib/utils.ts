@@ -676,3 +676,9 @@ export function parseData(data: any) {
     description: data[key],
   }));
 }
+
+export function excludeSpecialCharacters(inputString: string) {
+  const regex = /[^a-zA-Z0-9!.,? ]/g;
+  const cleanedString = inputString.replace(regex, "");
+  return cleanedString;
+}

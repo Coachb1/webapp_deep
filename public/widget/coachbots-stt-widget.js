@@ -6140,6 +6140,13 @@ loadExternalModule().then(() => {
     },
   };
 
+
+  function excludeSpecialCharacters(inputString) {
+    const regex = /[^a-zA-Z0-9!.,? ]/g;
+    const cleanedString = inputString.replace(regex, "");
+    return cleanedString;
+  }
+  
   // to check word limit (limit set to 0, row 669)
   function isValidMessageStt(text, limit = 0, is_greater = false) {
     const words = text.split(" ");
@@ -6494,7 +6501,7 @@ loadExternalModule().then(() => {
         }
         const decodedText = textDecoder.decode(value);
 
-        messageText.innerText += decodedText;
+        messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     });
@@ -6674,7 +6681,7 @@ loadExternalModule().then(() => {
 
         const decodedText = textDecoder.decode(value, { stream: !done });
         console.log(decodedText);
-        messageText.innerHTML += decodedText;
+        messageText.innerHTML += excludeSpecialCharacters(decodedText);
         signals.onResponse({
           html: ".",
         });
@@ -6941,7 +6948,7 @@ loadExternalModule().then(() => {
               randomIdForAudioElement
             );
           }
-          messageText.innerHTML += decodedText;
+          messageText.innerHTML += excludeSpecialCharacters(decodedText);
           signals.onResponse({
             html: ".",
           });
@@ -7051,7 +7058,7 @@ loadExternalModule().then(() => {
         }
         const decodedText = textDecoder.decode(value);
 
-        messageText.innerText += decodedText;
+        messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     });
