@@ -3154,7 +3154,7 @@ loadExternalModule().then(() => {
   //   };
 
   // to check word limit
-  function isValidMessage(text, limit=15,is_greater=false) {
+  function isValidMessage(text, limit=10,is_greater=false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
