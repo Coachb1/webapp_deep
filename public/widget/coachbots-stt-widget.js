@@ -6161,7 +6161,7 @@ loadExternalModule().then(() => {
   }
   
   // to check word limit (limit set to 0, row 669)
-  function isValidMessageStt(text, limit = 0, is_greater = false) {
+  function isValidMessageStt(text, limit = 10, is_greater = false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -7287,7 +7287,7 @@ loadExternalModule().then(() => {
           if (botType === "feedback_bot" && isFeedbackConvInProcess) {
             if (!isValidMessageStt(latestMessage)) {
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
               });
               return;
             }
@@ -7519,7 +7519,7 @@ loadExternalModule().then(() => {
 
                 if(!isValidMessageStt(latestMessage) && !options.includes(latestMessage)){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                   });
                   return;
                 }
@@ -7535,7 +7535,7 @@ loadExternalModule().then(() => {
               } else {
                 if(!isValidMessageStt(latestMessage)){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>",
+                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                   });
                   return;
                 }
@@ -7656,7 +7656,7 @@ loadExternalModule().then(() => {
             // here checking word limits for signature bot responses
             if (!isValidMessageStt(latestMessage)) {
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>`,
               });
               return;
             }
@@ -8065,7 +8065,7 @@ loadExternalModule().then(() => {
             if (isAttemptingRecommendation == true && isProceedStt == "true") {
               if (isValidMessageStt(latestMessage) == false) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }
@@ -8117,7 +8117,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 10 words */
               if (!isValidMessageStt(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Response does not meet minimum length criterion.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }
