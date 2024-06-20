@@ -127,7 +127,7 @@ const getDirectoryProfiles = async (
 
       let updatedResponseData: CoachesDataType[] = [];
 
-      recommendationProfileIDs.forEach((rec) => {
+      recommendationProfileIDs?.forEach((rec) => {
         const reccCoach = responseData.find(
           (coach: CoachesDataType) => coach.profile_id === rec
         );

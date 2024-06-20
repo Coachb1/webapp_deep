@@ -7820,11 +7820,18 @@ loadExternalModule().then(() => {
 
               } else if (botType === 'user_bot'){
                 console.log('anthropic#####################')
-                anthropicAiResponse(
+                // anthropicAiResponse(
+                //   responseData.coach_message_metadata.prompt,
+                //   signals,
+                //   conversation_id2,
+                //   latestMessage
+                // );
+                GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
                   conversation_id2,
-                  latestMessage
+                  latestMessage,
+                  allowAudioInteraction
                 );
               } else {
                 GeminiAiResponse(

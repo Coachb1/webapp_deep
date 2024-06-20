@@ -2050,7 +2050,7 @@ const CoachIntake = ({ user }: any) => {
     const wordCount = words.length;
     setDataModified(true);
 
-    if (wordCount >= minLimit && wordCount <= maxLimit) {
+    if (wordCount >= minLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
     } else if (wordCount < minLimit) {
       setError((prevErrors) => ({

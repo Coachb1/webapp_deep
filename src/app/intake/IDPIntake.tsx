@@ -40,7 +40,7 @@ const handleWordLimit = (
   console.log(`Words: ${JSON.stringify(words)}`);
   console.log(`Word Count: ${wordCount}`);
 
-  if (wordCount >= minLimit && wordCount <= maxLimit) {
+  if (wordCount >= minLimit) {
     setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
   } else if (wordCount < minLimit) {
     setError((prevErrors: any) => ({
