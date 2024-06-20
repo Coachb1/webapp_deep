@@ -28,10 +28,10 @@ import Link from "next/link";
 import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
 
-const VersionOne = ({ user }: any) => {
+const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
   if (user) {
     const userEmail = user?.email;
@@ -59,34 +59,45 @@ const VersionOne = ({ user }: any) => {
     }
   }
 
-  const HelpModeSteps = [
-    {
-      target: "#user-demos",
-      content:
-        "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
-    },
-    {
-      target: "#system-demos",
-      content:
-        "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
-    },
-    {
-      target: ".chat-icon",
-      content:
-        "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
-    },
-    {
-      target: ".chat-icon2",
-      content:
-        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
-    },
-    {
-      target: "#manager-plus",
-      disableScrolling: false,
-      content:
-        "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
-    },
-  ];
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
+
+  useEffect(() => {
+    const dynamicHelpText = helpModeText?.demo;
+    setHelpModeSteps([
+      {
+        target: "#user-demos",
+        content: dynamicHelpText?.user_demos
+          ? dynamicHelpText.user_demos
+          : "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
+      },
+      {
+        target: "#system-demos",
+        content: dynamicHelpText?.system_demos
+          ? dynamicHelpText.system_demos
+          : "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+      },
+      {
+        target: ".chat-icon",
+        content: dynamicHelpText?.coachTalk
+          ? dynamicHelpText.coachTalk
+          : "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
+      },
+      {
+        target: ".chat-icon2",
+        content: dynamicHelpText?.coachScribe
+          ? dynamicHelpText.coachScribe
+          : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
+      },
+      {
+        target: "#manager-plus",
+        disableScrolling: false,
+        content: dynamicHelpText?.manager_plus
+          ? dynamicHelpText.manager_plus
+          : "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
+      },
+    ]);
+  }, []);
+
   return (
     <>
       <HelpMode steps={HelpModeSteps} forPage="demo" />

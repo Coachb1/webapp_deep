@@ -15,6 +15,17 @@ export const metadata = constructMetadata({
   title: "Network - Coachbots",
 });
 
+const emptyData = {
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: null,
+  clientDepartments: null,
+  restrictedPages: null,
+  restrictedFeatures: null,
+  headings: null,
+  helpText: null,
+};
+
 const getClientUserInfo = async (
   userEmail: string | null | undefined,
   user: KindeUser | null
@@ -57,22 +68,6 @@ const getClientUserInfo = async (
 
         if (response.ok) {
           const data = await response.json();
-          console.log(
-            "get-client-information > ",
-            "isDemo user : ",
-            data.data.user_info[0].is_demo_user,
-            "isRestricted user : ",
-            data.data.user_info[0].is_restricted
-          );
-
-          console.log(
-            "Restricted Pages : ",
-            data.data.user_info[0].restricted_pages
-          );
-          console.log(
-            "Restricted Features : ",
-            data.data.user_info[0].restricted_features
-          );
           return {
             isDemoUser: data.data.user_info[0].is_demo_user,
             isRestricted: data.data.user_info[0].is_restricted,
@@ -91,47 +86,20 @@ const getClientUserInfo = async (
               subHeading: data.data.user_info[0].sub_heading,
               tagLine: data.data.user_info[0].tag_line,
             },
+            helpText: data.data.user_info[0].help_text,
           };
         } else {
-          return {
-            isDemoUser: false,
-            isRestricted: true,
-            clientExpertise: null,
-            clientDepartments: null,
-            restrictedPages: null,
-            restrictedFeatures: null,
-          };
+          return emptyData;
         }
       } else {
         console.error(`Failed to run CreateOrAssignClientId`);
-        return {
-          isDemoUser: false,
-          isRestricted: true,
-          clientExpertise: null,
-          clientDepartments: null,
-          restrictedPages: null,
-          restrictedFeatures: null,
-        };
+        return emptyData;
       }
     } else {
-      return {
-        isDemoUser: false,
-        isRestricted: true,
-        clientExpertise: null,
-        clientDepartments: null,
-        restrictedPages: null,
-        restrictedFeatures: null,
-      };
+      return emptyData;
     }
   } else {
-    return {
-      isDemoUser: false,
-      isRestricted: true,
-      clientExpertise: null,
-      clientDepartments: null,
-      restrictedPages: null,
-      restrictedFeatures: null,
-    };
+    return emptyData;
   }
 };
 
@@ -156,7 +124,25 @@ const getDirectoryProfiles = async (
     if (response.ok) {
       let responseData = await response.json();
       console.log("recommendationProfileIDs", recommendationProfileIDs);
-      const updatedResponseData = responseData.map(
+
+      let updatedResponseData: CoachesDataType[] = [];
+
+      recommendationProfileIDs.forEach((rec) => {
+        const reccCoach = responseData.find(
+          (coach: CoachesDataType) => coach.profile_id === rec
+        );
+        if (reccCoach) {
+          updatedResponseData.push(reccCoach);
+        }
+      });
+
+      responseData.forEach((coach: CoachesDataType) => {
+        if (!updatedResponseData.includes(coach)) {
+          updatedResponseData.push(coach);
+        }
+      });
+
+      updatedResponseData = updatedResponseData.map(
         (coachData: CoachesDataType) => {
           if (
             recommendationProfileIDs &&
@@ -169,9 +155,7 @@ const getDirectoryProfiles = async (
         }
       );
 
-      // Assign the updated data back to responseData if necessary
-      responseData = updatedResponseData;
-      return responseData;
+      return updatedResponseData;
     } else {
       console.log("Error fetching Directory info : ", response.statusText);
       return [];
@@ -262,6 +246,7 @@ const Page = async () => {
     restrictedFeatures,
     restrictedPages,
     headings,
+    helpText,
   } = await getClientUserInfo(user?.email, user);
 
   let directoryProfilesData;
@@ -280,7 +265,7 @@ const Page = async () => {
     <div suppressHydrationWarning>
       <Coaches
         user={user}
-        coachesDataa={directoryProfilesData}
+        coachesDataa={directoryProfilesData || []}
         UserJoiningPreviledges={UserJoiningPreviledges}
         userConnections={userConnections}
         clientDepartments={clientDepartments}
@@ -288,6 +273,7 @@ const Page = async () => {
         restrictedFeatures={restrictedFeatures}
         restrictedPages={restrictedPages}
         headings={headings}
+        helpModeText={helpText}
       />
     </div>
   );

@@ -44,6 +44,7 @@ const CreateOwn = ({
   coacheeId,
   clientUsers,
   userRole,
+  helpModeText,
 }: {
   user: KindeUser | null;
   knowledgeBots: {
@@ -62,6 +63,7 @@ const CreateOwn = ({
   coacheeId: string;
   clientUsers: ClientUserTeamType[];
   userRole: string;
+  helpModeText: any;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
@@ -102,6 +104,9 @@ const CreateOwn = ({
 
   const [scenarioCreationAccess, setScenarioCreationAccess] = useState(false);
   const [deepDiveCreatorAcess, setDeepDiveCreatorAccess] = useState(false);
+
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -132,6 +137,47 @@ const CreateOwn = ({
         setScenarioCreationAccess(true);
       }
     }
+
+    const dynamicHelpText = helpModeText?.creator_studio;
+
+    setHelpModeSteps([
+      {
+        target: "#ac-items",
+        content: dynamicHelpText?.action_items
+          ? dynamicHelpText.action_items
+          : "Action items for this page. You can get learning ideas specific to your context and create your own learning.",
+      },
+      {
+        target: "#li-id",
+        content: dynamicHelpText?.learning_ideas
+          ? dynamicHelpText.learning_ideas
+          : "Generate summary learning from various learning videos like TedTalks and Youtube videos. These can then be used for simulation creation as needed. ",
+      },
+      {
+        target: "#sc-id",
+        content: dynamicHelpText?.scenario_creator
+          ? dynamicHelpText.scenario_creator
+          : "From a given user context, create any simulation or roleplay. These can be specific to your organizational use cases . For ideas on what could be created you can refer to the demo page. ",
+      },
+      {
+        target: "#tc-id",
+        content: dynamicHelpText?.team_connect
+          ? dynamicHelpText.team_connect
+          : "Seeking insights from your team? Just ask! For instance, if you're stepping into a new role as a Project Engineer and need guidance on managing your new project manager, simply inquire. The feature will ensure tailored and relevant responses.",
+      },
+      {
+        target: "#dd-id",
+        content: dynamicHelpText?.deep_dive
+          ? dynamicHelpText.deep_dive
+          : "Dive into team dynamics. For Instance, As a project manager seeking insights on team conflicts, create a survey in Deep Dive and circulate it to your team. Gather valuable feedback to resolve conflicts. Note: You can copy the Link and access code to circulate.",
+      },
+      {
+        target: "#kb-id",
+        content: dynamicHelpText?.knowledge_bots
+          ? dynamicHelpText.knowledge_bots
+          : "For enterprise knowledge management, users can take any documents in the repository (or create one) and create a bot based on that knowledge content. It can also be internal department or project-specific bots.",
+      },
+    ]);
 
     setTimeout(() => {
       if (scrollViewFromParams) {
@@ -709,38 +755,6 @@ const CreateOwn = ({
     }
   };
 
-  const HelpModeSteps = [
-    {
-      target: "#ac-items",
-      content:
-        "Action items for this page. You can get learning ideas specific to your context and create your own learning.",
-    },
-    {
-      target: "#li-id",
-      content:
-        "Generate summary learning from various learning videos like TedTalks and Youtube videos. These can then be used for simulation creation as needed. ",
-    },
-    {
-      target: "#sc-id",
-      content:
-        "From a given user context, create any simulation or roleplay. These can be specific to your organizational use cases . For ideas on what could be created you can refer to the demo page. ",
-    },
-    {
-      target: "#tc-id",
-      content:
-        "Seeking insights from your team? Just ask! For instance, if you're stepping into a new role as a Project Engineer and need guidance on managing your new project manager, simply inquire. The feature will ensure tailored and relevant responses.",
-    },
-    {
-      target: "#dd-id",
-      content:
-        "Dive into team dynamics. For Instance, As a project manager seeking insights on team conflicts, create a survey in Deep Dive and circulate it to your team. Gather valuable feedback to resolve conflicts. Note: You can copy the Link and access code to circulate.",
-    },
-    {
-      target: "#kb-id",
-      content:
-        "For enterprise knowledge management, users can take any documents in the repository (or create one) and create a bot based on that knowledge content. It can also be internal department or project-specific bots.",
-    },
-  ];
   const { helpModeState, updateHelpModeState } = UseHelpMode();
   return (
     <div>

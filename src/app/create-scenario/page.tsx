@@ -98,6 +98,7 @@ const getknowledgeBotss = async (userEmail: string) => {
     clientName = responseData.data.user_info[0].client_name;
     const restrictedFeatures =
       responseData.data.user_info[0].restricted_features;
+    const helpText = responseData.data.user_info[0].restricted_features;
 
     if (clientName) {
       const getBotsDataResponse = await fetch(
@@ -150,6 +151,7 @@ const getknowledgeBotss = async (userEmail: string) => {
           knowledgeBotss: [],
           restrictedFeatures: "",
           clientName: "",
+          helpText: helpText,
         };
       }
     } else {
@@ -157,6 +159,7 @@ const getknowledgeBotss = async (userEmail: string) => {
         knowledgeBotss: [],
         restrictedFeatures: "",
         clientName: "",
+        helpText: null,
       };
     }
   } else {
@@ -164,6 +167,7 @@ const getknowledgeBotss = async (userEmail: string) => {
       knowledgeBotss: [],
       restrictedFeatures: "",
       clientName: "",
+      helpText: null,
     };
   }
 };
@@ -190,39 +194,11 @@ const getClientUsers = async () => {
   }
 };
 
-// const getDeepDiveCreationAcess = async (
-//   userEmail: string | undefined | null
-// ) => {
-//   if (userEmail) {
-//     const myHeaders = new Headers();
-//     myHeaders.append("Authorization", basicAuth);
-
-//     const requestOptions = {
-//       method: "GET",
-//       headers: myHeaders,
-//     };
-
-//     const response = await fetch(
-//       `${baseURL}/coaching-conversations/get-deep-dive-create-access/?email=${userEmail}`,
-//       requestOptions
-//     );
-
-//     if (response.ok) {
-//       const responseData = await response.json();
-//       return responseData.has_access;
-//     } else {
-//       return false;
-//     }
-//   } else {
-//     return false;
-//   }
-// };
-
 const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { knowledgeBotss, restrictedFeatures, clientName } =
+  const { knowledgeBotss, restrictedFeatures, clientName, helpText } =
     await getknowledgeBotss(user?.email!);
 
   const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
@@ -244,6 +220,7 @@ const Page = async () => {
         coacheeId={coacheeId}
         clientUsers={clientUsers}
         userRole={userRole}
+        helpModeText={helpText}
       />
     </div>
   );

@@ -41,7 +41,7 @@ import MyComnnections from "./MyConnections";
 import AdminReports from "./AdminReports";
 import HelpMode from "@/components/HelpMode";
 
-const Profile = ({ user }: any) => {
+const Profile = ({ user, helpModeText }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState("");
@@ -214,7 +214,11 @@ const Profile = ({ user }: any) => {
         <div className="w-[80%] max-sm:w-[90%] max-lg:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
-              <UserProfile user={user} userRole={userRole} />
+              <UserProfile
+                user={user}
+                userRole={userRole}
+                helpModeText={helpModeText}
+              />
               <MyPages user={user} />
             </div>
           )}

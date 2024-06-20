@@ -98,7 +98,8 @@ interface FilterCategoriesType {
 
 function addIdForTargetSelection(
   profiles: CoachesDataType[],
-  HelpModeSteps: any[]
+  HelpModeSteps: any[],
+  dynamicHelpText: any
 ) {
   // Initialize flags to track the first occurrence of each profile type
   let firstIconsByAiFound = false;
@@ -127,26 +128,30 @@ function addIdForTargetSelection(
       HelpModeSteps.push(
         {
           target: "#first_coach_profile",
-          content:
-            "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
+          content: dynamicHelpText?.first_coach_profile
+            ? dynamicHelpText?.first_coach_profile
+            : "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
           placement: "auto",
         },
         {
           target: "#email",
-          content:
-            "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+          content: dynamicHelpText?.email
+            ? dynamicHelpText.email
+            : "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
         },
         {
           target: "#reviews",
           disableScrolling: true,
-          content:
-            "Coaches and Mentors can get review ratings from anyone in the network. ",
+          content: dynamicHelpText?.reviews
+            ? dynamicHelpText.reviews
+            : "Coaches and Mentors can get review ratings from anyone in the network. ",
         },
         {
           target: "#feedback",
           disableScrolling: true,
-          content:
-            "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
+          content: dynamicHelpText?.feedback
+            ? dynamicHelpText.feedback
+            : "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
         }
       );
     }
@@ -182,6 +187,7 @@ const Coaches = ({
   restrictedFeatures,
   restrictedPages,
   headings,
+  helpModeText,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
@@ -191,13 +197,12 @@ const Coaches = ({
   clientExpertise: any;
   restrictedPages: string | null;
   restrictedFeatures: string | null;
-  headings:
-    | {
-        heading: string | null;
-        subHeading: string | null;
-        tagLine: string | null;
-      }
-    | undefined;
+  headings: {
+    heading: string | null;
+    subHeading: string | null;
+    tagLine: string | null;
+  } | null;
+  helpModeText: any;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -227,24 +232,11 @@ const Coaches = ({
   const [coachId, setCoachId] = useState("");
   const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
-  // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const [buttonLoading, setButtonLoading] = useState(true);
 
-  //client based restrictions
-  // const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  // const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-  //   null
-  // );
-
-  const [userClientInfoData, setUserClientInfoData] =
-    useState<UserClientInfoDataType>();
-
-  // const [clientDepartments, setClientDepartments] = useState<string[] | null>(
-  //   null
-  // );
-
-  // const [clientExpertise, setClientExpertise] = useState<string[] | null>(null);
+  const [dynamicHelpText, setDynamicHelpText] = useState<any>();
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
   //pagination logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -379,62 +371,6 @@ const Coaches = ({
     ]);
   };
 
-  const getFormattedCoachName = (name: string) => {
-    return name.replace(/([^a-zA-Z0-9])\1+/g, "$1");
-  };
-
-  const getConnectionsForCoachee = (coacheeId: string) => {
-    if (coacheeId) {
-      fetch(
-        `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setConnections(data.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  };
-
-  const getConnectionsForCoach = (coachId: string) => {
-    if (coachId) {
-      fetch(
-        `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setConnections(data.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-          console.log(err);
-        });
-    } else {
-      setLoading(false);
-    }
-  };
-
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
@@ -454,6 +390,39 @@ const Coaches = ({
       // getClientInfoForUser(user?.email!);
       console.log("COACHES DATA : ", coachesDataa);
       getCoachesData();
+
+      const dynamicHelpTextt = helpModeText?.network_directory;
+      setDynamicHelpText(helpModeText?.network_directory);
+      // const DynHelpText = ;
+      //helpmode text
+      setHelpModeSteps([
+        {
+          target: "#header-text",
+          content: dynamicHelpTextt?.header_text
+            ? dynamicHelpTextt.header_text
+            : "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
+        },
+        {
+          target: "#join-the-network",
+          content: dynamicHelpTextt?.join_the_network
+            ? dynamicHelpTextt.join_the_network
+            : "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
+        },
+        {
+          target: "#search-filter",
+          content: dynamicHelpTextt?.search_filter
+            ? dynamicHelpTextt.search_filter
+            : "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
+        },
+        {
+          target: "#participant-listing",
+          disableScrolling: true,
+          content: dynamicHelpTextt?.participant_listing
+            ? dynamicHelpTextt.participant_listing
+            : `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
+        },
+      ]);
+
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
@@ -748,13 +717,15 @@ const Coaches = ({
       setCoachesData(
         addIdForTargetSelection(
           [...connectedCoaches, ...unconnectedCoaches],
-          HelpModeSteps
+          HelpModeSteps,
+          dynamicHelpText
         )
       );
       setSavedCoachesData(
         addIdForTargetSelection(
           [...connectedCoaches, ...unconnectedCoaches],
-          HelpModeSteps
+          HelpModeSteps,
+          dynamicHelpText
         )
       );
     } else if (coachId.length > 0) {
@@ -784,13 +755,15 @@ const Coaches = ({
       setCoachesData(
         addIdForTargetSelection(
           [...connectedCoaches, ...unconnectedCoaches],
-          HelpModeSteps
+          HelpModeSteps,
+          dynamicHelpText
         )
       );
       setSavedCoachesData(
         addIdForTargetSelection(
           [...connectedCoaches, ...unconnectedCoaches],
-          HelpModeSteps
+          HelpModeSteps,
+          dynamicHelpText
         )
       );
     }
@@ -1190,29 +1163,6 @@ const Coaches = ({
     );
   };
 
-  const HelpModeSteps = [
-    {
-      target: "#header-text",
-      content:
-        "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
-    },
-    {
-      target: "#join-the-network",
-      content:
-        "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
-    },
-    {
-      target: "#search-filter",
-      content:
-        "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
-    },
-    {
-      target: "#participant-listing",
-      disableScrolling: true,
-      content: `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
-    },
-  ];
-
   const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
@@ -1225,7 +1175,6 @@ const Coaches = ({
           scrollOffset={100}
           disableScrollParentFix
           callback={(callbackData) => {
-            // console.log(callbackData);
             if (
               callbackData.action === "close" ||
               callbackData.action === "reset"

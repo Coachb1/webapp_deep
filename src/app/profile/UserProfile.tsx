@@ -33,7 +33,7 @@ interface KudosDetailsType {
   total_users: number;
 }
 
-const UserProfile = ({ user, userRole }: any) => {
+const UserProfile = ({ user, userRole, helpModeText }: any) => {
   const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
@@ -137,11 +137,83 @@ const UserProfile = ({ user, userRole }: any) => {
   };
 
   const [isAllowToggle, setIsAllowToggle] = useState(false);
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
       pathname.push("/api/auth/login");
     }
+
+    const dynamicHelpText = helpModeText?.profile;
+    setHelpModeSteps([
+      {
+        target: "#session-reports",
+        content: dynamicHelpText?.session_reports
+          ? dynamicHelpText.session_reports
+          : "While the user interacts with the bots for simulations and roleplays - a detailed feedback report is generated. All the feedback reports for the particular user can be viewed in a consolidated manner here.",
+      },
+      {
+        target: "#personal-leaderboard",
+        content: dynamicHelpText?.personal_leaderboard
+          ? dynamicHelpText.personal_leaderboard
+          : "Leaderboard position for the particular user depending upon the score achievement and usage.",
+      },
+      {
+        target: "#kudos-board",
+        content: dynamicHelpText?.kudos_board
+          ? dynamicHelpText.kudos_board
+          : "Peer feedback network stats based on feedback received from peer group.",
+      },
+      {
+        target: "#directory-profile",
+        content: dynamicHelpText?.directory_profile
+          ? dynamicHelpText.directory_profile
+          : "Ability to view and update directory profile, AI frames and feedback network profiles. ",
+      },
+      {
+        target: "#mcon",
+        content: dynamicHelpText?.my_connections
+          ? dynamicHelpText.my_connections
+          : "Connections betweeen Coach/Mentor and Coachee/Mentee",
+      },
+      {
+        target: "#apsn",
+        content: dynamicHelpText?.action_plan_session_notes
+          ? dynamicHelpText.action_plan_session_notes
+          : "The network participants can add session notes and action plans for each other. ",
+      },
+      {
+        target: "#bcon",
+        content: dynamicHelpText?.bot_conversations
+          ? dynamicHelpText.bot_conversations
+          : "Conversations with the user's AI avatar (AI-frame) or user's interaction with other bots. The feedback page bot interactions are also requested here.",
+      },
+      {
+        target: "#mrew",
+        content: dynamicHelpText?.my_rewards
+          ? dynamicHelpText.my_rewards
+          : "Customized reward point system customized to each client.",
+      },
+      {
+        target: "#comp",
+        content: dynamicHelpText?.competencies
+          ? dynamicHelpText.competencies
+          : "Pre-defined competencies and skills can be set from this section. This can be customized for each client. This will help customize the user's library based on these skills.",
+      },
+      {
+        target: "#idp",
+        content: dynamicHelpText?.idp
+          ? dynamicHelpText.idp
+          : "Users can generate individual development plans and simulations they should practice depending on this specific practice.",
+      },
+      {
+        target: "#esign",
+        content: dynamicHelpText?.email_sign
+          ? dynamicHelpText.email_sign
+          : "Email signatures for use by the coach or mentor.",
+      },
+    ]);
+
     try {
       if (user) {
         getUserAccount(user)
@@ -236,61 +308,6 @@ const UserProfile = ({ user, userRole }: any) => {
         setInteractionLoading(false);
       });
   };
-
-  const HelpModeSteps = [
-    {
-      target: "#session-reports",
-      content:
-        "While the user interacts with the bots for simulations and roleplays - a detailed feedback report is generated. All the feedback reports for the particular user can be viewed in a consolidated manner here.",
-    },
-    {
-      target: "#personal-leaderboard",
-      content:
-        "Leaderboard position for the particular user depending upon the score achievement and usage.",
-    },
-    {
-      target: "#kudos-board",
-      content:
-        "Peer feedback network stats based on feedback received from peer group.",
-    },
-    {
-      target: "#directory-profile",
-      content:
-        "Ability to view and update directory profile, AI frames and feedback network profiles. ",
-    },
-    {
-      target: "#mcon",
-      content: "Connections betweeen Coach/Mentor and Coachee/Mentee",
-    },
-    {
-      target: "#apsn",
-      content:
-        "The network participants can add session notes and action plans for each other. ",
-    },
-    {
-      target: "#bcon",
-      content:
-        "Conversations with the user's AI avatar (AI-frame) or user's interaction with other bots. The feedback page bot interactions are also requested here.",
-    },
-    {
-      target: "#mrew",
-      content: "Customized reward point system customized to each client.",
-    },
-    {
-      target: "#comp",
-      content:
-        "Pre-defined competencies and skills can be set from this section. This can be customized for each client. This will help customize the user's library based on these skills.",
-    },
-    {
-      target: "#idp",
-      content:
-        "Users can generate individual development plans and simulations they should practice depending on this specific practice.",
-    },
-    {
-      target: "#esign",
-      content: "Email signatures for use by the coach or mentor.",
-    },
-  ];
 
   if (userRole === "super_admin") {
     HelpModeSteps.push({
