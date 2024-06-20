@@ -58,26 +58,31 @@ const getClientUserInfo = async (
           const data = await response.json();
           return {
             restrictedFeatures: data.data.user_info[0].restricted_features,
+            helpText: data.data.user_info[0].help_text,
           };
         } else {
           return {
             restrictedFeatures: "",
+            helpText: null,
           };
         }
       } else {
         console.error(`[layout] Failed to run CreateOrAssignClientId`);
         return {
           restrictedFeatures: "",
+          helpText: null,
         };
       }
     } else {
       return {
         restrictedFeatures: "",
+        helpText: null,
       };
     }
   } else {
     return {
       restrictedFeatures: "",
+      helpText: null,
     };
   }
 };
@@ -86,11 +91,18 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user: any = await getUser();
 
-  const { restrictedFeatures } = await getClientUserInfo(user?.email, user);
+  const { restrictedFeatures, helpText } = await getClientUserInfo(
+    user?.email,
+    user
+  );
 
   return (
     <div>
-      <MyLibrary restrictedFeatures={restrictedFeatures} user={user} />
+      <MyLibrary
+        restrictedFeatures={restrictedFeatures}
+        user={user}
+        helpModeText={helpText}
+      />
       <Widgets />
     </div>
   );
