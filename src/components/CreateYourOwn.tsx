@@ -50,6 +50,17 @@ const CreateYourOwn = ({ user, clientName }: any) => {
 
   const [assignInit, setAssignInit] = useState(false);
   const [simulationType, setSimulationType] = useState("short");
+  const [numOfTries, setNumOfTries] = useState<number>(0);
+
+
+  const incrementTries = () => {
+    if (numOfTries < 5) {
+      setNumOfTries((prevTries) => prevTries + 1);
+    } else {
+      setNumOfTries(0);
+    }
+    console.log("increased num of tries to- ", numOfTries);
+  };
 
   const getClientUsers = async (clientName: string) => {
     try {
@@ -108,6 +119,15 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       );
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
+      const add_prompt_list = [
+        'role_play',
+        'normal',
+        'interview',
+        'checkin',
+        'case'
+      ]
+      console.log(add_prompt_list[numOfTries],numOfTries,'numoftries')
+      params.set("flavour", add_prompt_list[numOfTries])
       params.set("is_micro", `${simulationType === "short" ? true : false}`);
 
       url.search = params;
@@ -146,9 +166,11 @@ const CreateYourOwn = ({ user, clientName }: any) => {
             setGeneratedTestData(data);
             setIsloading(false);
             setLoadingText("Creating simulation.");
+            incrementTries();
             if (data[0].message || data[0].error) {
               toast.error("Error generating the scenarios.");
               setGenerationError(true);
+              setNumOfTries(0);
             }
             if (awaitedData) clearTimeout(awaitedData);
             if (retryTimeout) clearTimeout(retryTimeout);
