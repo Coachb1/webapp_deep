@@ -105,7 +105,7 @@ let userAllowAudioInteraction;
 let prioritiseUserAllowInteraction;
 let AttemptTestDirect = false;
 
-
+let allowPastingAtClientLevel;
 let clientBasedBotHeaderText2 = "";
 let clientBasedBotFooterText2 = "";
 let clientBasedReadHereText2 = "";
@@ -194,6 +194,7 @@ console.log(user === undefined);
         .then((data) => {
           console.log("get-client-information : ", data);
       
+          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
           clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
           clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
           clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
@@ -5919,6 +5920,22 @@ const openChatContainer = () => {
   if(window.innerWidth < 600){
     coachScribeChatIcon.style.display = "none"
     coachScribeContainer.style.display = "none"
+  }
+
+  const shadowR = document.getElementById("chat-element").shadowRoot
+
+  const container = shadowR.getElementById("container")
+  container.oncopy = () => {
+    alert("Copying is not allowed")
+    return false
+  }
+
+  const inputField = shadowR.getElementById("text-input")
+  if(allowPastingAtClientLevel){
+    inputField.onpaste = () => {
+      alert("Pasting is not allowed.")
+      return false
+    }
   }
 
   let backdrop2 = document.getElementById("backdrop2")

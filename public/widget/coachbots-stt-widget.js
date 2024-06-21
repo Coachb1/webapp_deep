@@ -181,6 +181,8 @@ let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
 
+let allowPastingAtClientLevelStt;
+
 
 let clientBasedBotHeaderText = "";
 let clientBasedBotFooterText = "";
@@ -269,11 +271,12 @@ fetch(`${baseURL2}/accounts/`, {
       .then((res) => res.json())
       .then((data) => {
         console.log("get-client-information : ", data);
+        allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
 
         clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
         clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
         clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
-
+       
 
         const headerText = document.getElementById("header-text");
         const footerText = document.getElementById("footer-text");
@@ -9495,6 +9498,22 @@ const openChatContainer2 = () => {
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
 
+  const shadowR = document.getElementById("chat-element2").shadowRoot
+
+  const container = shadowR.getElementById("container")
+  container.oncopy = () => {
+    alert("Copying is not allowed")
+    return false
+  }
+
+  const inputField = shadowR.getElementById("text-input")
+  if(allowPastingAtClientLevelStt){
+    inputField.onpaste = () => {
+      alert("Pasting is not allowed.")
+      return false
+    }
+  }
+
   //end session due to inactivity :- row 708
   if (botId && botType !== "user_bot") {
     if (isBotInitialized === true) {
@@ -9504,7 +9523,6 @@ const openChatContainer2 = () => {
       }, 1800000);
     }
   }
-
 
 
   if (chatContainer2.style.scale === "1") {
@@ -9553,7 +9571,7 @@ const closeFromTop2 = () => {
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
-  
+
   //end session due to inactivity :- row 708
   // setTimeout(() => {
   //   if(isBotInitialized === true){
