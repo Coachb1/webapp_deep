@@ -3153,6 +3153,12 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
+  function excludeSpecialCharacters2(inputString) {
+    const regex = /[^a-zA-Z0-9!.,:? ]/g;
+    const cleanedString = inputString.replace(regex, "");
+    return cleanedString;
+  }
+
   // to check word limit
   function isValidMessage(text, limit=10,is_greater=false) {
     const words = text.split(" ");
@@ -5649,12 +5655,12 @@ loadExternalModule().then(() => {
                     testType === "orchestrated_conversation" ||
                     testType === "dynamic_discussion_thread"
                   ) {
-                    const stringList = questionText.split(":", 2);
+                    const stringList = questionText.split(":");
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      questionText = stringList[1];
                       responderName = `<b>${stringList[0]}:</b><br>`;
+                      questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                     }
                     if (isImmersive && questionIndex != 0) {
                       questionText = await TTSContainer(questionText);
