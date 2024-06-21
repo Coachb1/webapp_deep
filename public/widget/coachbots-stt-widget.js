@@ -6155,7 +6155,7 @@ loadExternalModule().then(() => {
 
 
   function excludeSpecialCharacters(inputString) {
-    const regex = /[^a-zA-Z0-9!.,? ]/g;
+    const regex = /[^a-zA-Z0-9!.,:? ]/g;
     const cleanedString = inputString.replace(regex, "");
     return cleanedString;
   }
@@ -9266,12 +9266,12 @@ loadExternalModule().then(() => {
                     testType2 === "dynamic_discussion_thread"
                   ) {
                     console.log("ismmersive", isImmersiveStt, questionText2);
-                    const stringList = questionText2.split(":", 2);
+                    const stringList = questionText2.split(":");
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      questionText2 = stringList[1];
                       responderName = `<b>${stringList[0]}:</b><br>`;
+                      questionText2 = excludeSpecialCharacters(stringList.join("").replace(stringList[0], ""));
                     }
                     if (isImmersiveStt && questionIndex2 != 0) {
                       questionText2 = await TTSContainerSTT(questionText2);
