@@ -76,6 +76,7 @@ let reportType2 = "interactionSessionReport";
 let questionId2;
 let userResponse2;
 let reportUrl2 = "";
+let responder_name2 = "";
 
 let testId2;
 let resQuestionNumber2;
@@ -6162,6 +6163,16 @@ loadExternalModule().then(() => {
     const cleanedString = inputString.replace(regex, "");
     return cleanedString;
   }
+
+  function removeResponderTypeNameStt(responderDisplayName, responseText) {
+    const responderType = responderDisplayName.toLowerCase();
+
+    const regex = new RegExp(responderType, "i");
+
+    let updatedText = responseText.replace(regex, "").trim();
+
+    return updatedText;
+  }
   
   // to check word limit (limit set to 0, row 669)
   function isValidMessageStt(text, limit = 10, is_greater = false) {
@@ -9247,7 +9258,7 @@ loadExternalModule().then(() => {
                       const qRespnse2 = await questionResponse2.json();
                       questionText2 = qRespnse2["response_text"];
                       // checking if botname is present or not
-                      const responder_name2 = qRespnse2.responder_display_name;
+                      responder_name2 = qRespnse2.responder_display_name;
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
                       }
@@ -9263,6 +9274,8 @@ loadExternalModule().then(() => {
                     }
                   }
                 }
+
+
                 if (resQuestionNumber2 != questionLength2) {
                   if (
                     testType2 === "orchestrated_conversation" ||
@@ -9273,8 +9286,8 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      responderName = `<b>${stringList[0]}:</b><br>`;
-                      questionText2 = excludeSpecialCharacters(stringList.join("").replace(stringList[0], ""));
+                      responderName = `<b>${responder_name2}:</b><br>`;
+                      questionText2 = removeResponderTypeNameStt(responder_name2,excludeSpecialCharacters(stringList.join("")));
                     }
                     if (isImmersiveStt && questionIndex2 != 0) {
                       questionText2 = await TTSContainerSTT(questionText2);
