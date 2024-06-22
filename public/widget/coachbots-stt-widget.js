@@ -6159,7 +6159,7 @@ loadExternalModule().then(() => {
 
 
   function excludeSpecialCharacters(inputString) {
-    const regex = /[^a-zA-Z0-9!.,:? ]/g;
+    const regex = /[^a-zA-Z0-9!.,:'? ]/g;
     const cleanedString = inputString.replace(regex, "");
     return cleanedString;
   }
