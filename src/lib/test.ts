@@ -554,19 +554,20 @@ export const DescoveryPlus: Test[] = [
 
 export const oneTwoOne: Test[] = [
   {
-    domain: "Contribute effectively in team settings",
-    test_code: "QO3CBR3",
-    title: "Handling communication in team meetings as a new employee",
+    domain: "Delegation and Task Prioritization",
+    test_code: "QQMTKIU",
+    title:
+      "Optimizing Delegation and Task Prioritization for the Thompson Project Deadline",
     description:
-      "The new business analyst who had joined 3 months ago, was working on a new project. In the daily standup meetings, the manager, Neha noticed he would only speak when asked a direct question. He did not voluntarily provide updates or suggestions, even though he had good ideas that would benefit the project. The team felt that the business analyst's quiet nature was hindering collaboration. After observing this for 2 weeks, Neha decided to have a one-on-one discussion with him to better understand his perspective. Respond to this situation as the business analyst.",
+      "The Thompson project is a critical initiative for the organization, with a rapidly approaching deadline. The project scope has expanded significantly, and the current project team is overwhelmed with the workload. The manager must evaluate the team's bandwidth and prioritize tasks to ensure the successful completion of the project within the given timeline. You are the project manager, interacting with the team lead. Your intent is to optimize the delegation and task prioritization to meet the Thompson project deadline.",
     interaction_mode: "Audio",
   },
   {
-    domain: "Work Life Balance Discussion",
-    test_code: "Q0HP80X",
-    title: "Managing workload and addressing burnout",
+    domain: "Work-Life Balance and Conflict Resolution",
+    test_code: "QL4JI6A",
+    title: "Navigating Workload Challenges and Fostering Work-Life Balance",
     description:
-      "Following a recent acquisition, the surge in project load became a prominent issue. Employees faced an increased workload, leading to difficulties in preserving a healthy work-life balance and affecting the quality of project deliverables. The overwhelming situation prompted a team member to seek a discussion with the manager, Amit to address the growing challenges in managing work-related stress and employee burnout. Respond to this situation as the team member.",
+      "The marketing team at a leading technology company is under immense pressure to deliver a high-profile campaign for a new product launch within a tight timeline. The team has been working long hours and weekends to meet the aggressive targets set by the executive leadership. However, the manager has noticed that the team members' productivity and morale have started to decline, and there are signs of burnout and work-life balance issues. You are the marketing manager, interacting with the team members. Your intent is to address the workload challenges and foster a healthy work-life balance within the team.",
     interaction_mode: "Audio",
   },
 ];
@@ -809,19 +810,19 @@ export const roundFeedback: Test[] = [
 
 export const meetings: Test[] = [
   {
-    domain: "Collaborating on resource allocation",
-    test_code: "QSKUOD0",
-    title: "Resource Allocation Tensions",
+    domain: "Driving Digital Transformation",
+    test_code: "Q97STR8",
+    title: "Aligning Teams and Overcoming Resistance",
     description:
-      "There has been an unexpected surge in demand for the company's software services following a major government initiative. This surge has created resource constraints, with multiple projects competing for limited talent and infrastructure. As a result, the company is facing challenges in meeting client deadlines and managing team dynamics. As tensions rise, they must navigate the delicate balance between advocating for their needs and maintaining a cooperative team dynamic. They have a meeting to discuss how to handle this situation in a collaborative manner. These are the opening comments from Vikram, Rahul, Sakshi. Join in the discussion as a team member.",
+      "The marketing department of a leading consumer electronics company is facing significant challenges as it navigates a digital transformation initiative. The company has recognized the need to modernize its e-commerce platform, improve data analytics capabilities, and enhance the overall customer experience. However, the transition has been met with resistance from some long-tenured employees who are skeptical of the proposed changes. The senior leadership team has communicated the vision and rationale for the digital transformation, emphasizing the benefits of increased efficiency, data-driven decision-making, and competitiveness in the rapidly evolving market. Despite these efforts, the middle managers are struggling to effectively implement the changes and address the concerns raised by their teams. The situation has reached a critical juncture, with the need to align the entire organization and overcome the resistance to ensure the success of the digital transformation project. You are Anita, the marketing director, interacting with Rajesh, the sales manager, Parul, the team member and Neha, the IT project manager. Rajesh, Parul and Neha will ask you questions related to driving the digital transformation initiative and addressing the resistance within the organization. Your intent is to effectively communicate the vision, address concerns, and foster a collaborative environment to achieve the desired outcomes.",
     interaction_mode: "Audio",
   },
   {
-    domain: "Strategizing cross functional projects",
-    test_code: "Q7E1DGY",
-    title: "Navigating cross-project challenges",
+    domain: "Navigating Organizational Change",
+    test_code: "Q67G437",
+    title: "Addressing Employees' Concerns and Ensuring Smooth Transition",
     description:
-      "Employees from various departments of the company have gathered for an essential meeting. The primary agenda is to address cross-project challenges that have arisen due to overlapping deadlines, resource constraints, and shifting priorities. The objective of this meeting is to foster collaboration and devise strategies to navigate these challenges effectively. These are the opening comments from Anuv(Project Manager), Sahil(Project Supervisor), Sakshi(Project Accountant), Sachin(Project Specialist).  Join in the discussion as a team member.",
+      "The marketing department of a leading e-commerce company is facing a major transformation. The company has decided to implement a new customer relationship management (CRM) system to streamline its operations and improve customer service. However, the change has caused significant resistance among the marketing team, who are concerned about job security, the steep learning curve, and the potential impact on their day-to-day responsibilities. The senior marketing manager, Rupesh, has organized a small group discussion to address these concerns and facilitate an open dialogue with his team. The goal is to create a safe space for employees to voice their questions and anxieties, and for Rupesh to provide clear information and assurances to manage the resistance and ensure a successful transition to the new system. You are Rupesh, the senior marketing manager, interacting with Neha, Aaditya, and Priya. Neha, Aaditya, and Priya will ask you questions related to the implementation of the new CRM system and the concerns of the marketing team. Your intent is to address their concerns, provide clear information, and facilitate a smooth transition to the new system.",
     interaction_mode: "Audio",
   },
 ];
