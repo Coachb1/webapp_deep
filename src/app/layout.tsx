@@ -120,9 +120,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className="bg-white">
       <head>
-        {!restrictedFeatures.includes("Accessibility-widget") && (
+        {/* {!restrictedFeatures.includes("Accessibility-widget") && (
           <script src="../widget/accessibility.js"></script>
-        )}
+        )} */}
       </head>
 
       <HelpModeProvider>

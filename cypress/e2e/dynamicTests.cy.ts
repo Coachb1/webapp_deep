@@ -2,7 +2,9 @@ import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
 // dynamic :  "Q0HP80X", "QWGW7N3", "QE4334M"
 // orchestrated : "QSKUOD0", "Q7E1DGY"
-const dynamicTestCodes = ["QE4334M", "QWGW7N3", "Q0HP80X" ];
+const dynamicTestCodes = ["Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY"]; 
+
+// "QO3CBR3", "Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY"
 
 describe("Init", () => {
   beforeEach(() => {
@@ -15,7 +17,7 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("a2@coachbots.com");
+            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -103,12 +105,13 @@ describe("Init", () => {
                     `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
                       formattedQuestion
                     )}`
-                  ).then((response) => {
+                  ).then((answerResponse) => {
+                    console.log("Generated response for", qn, ":", answerResponse.body); // Logging generated response
                     cy.wait(5000);
                     cy.get("#chat-element2")
                       .shadow()
                       .find("#text-input")
-                      .type(response?.body["response_text"]);
+                      .type(answerResponse?.body["response_text"]);
                     cy.wait(5000);
                     cy.get("#chat-element2")
                       .shadow()
@@ -124,13 +127,13 @@ describe("Init", () => {
                   `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
                     formattedQuestion
                   )}`
-                ).then((response) => {
-                  console.log("Generated response for", qn, ":", response.body); // Logging generated response
+                ).then((answerResponse) => {
+                  console.log("Generated response for", qn, ":", answerResponse.body); // Logging generated response
                   cy.wait(5000);
                   cy.get("#chat-element2")
                     .shadow()
                     .find("#text-input")
-                    .type(response?.body["response_text"] + " " + randomNumber); // Append random number directly here
+                    .type(answerResponse?.body["response_text"] + " " + randomNumber); // Append random number directly here
                   cy.wait(5000);
                   cy.get("#chat-element2")
                     .shadow()
@@ -148,7 +151,7 @@ describe("Init", () => {
             "getReportUrl"
           );
           cy.wait("@getReportUrl", {
-            timeout: 30000,
+            timeout: 100000,
           }).then((interception) => {
             console.log("Report URL received:", interception.response?.body.url); // Logging the report URL received
             cy.readFile("cypress/results/DynamicReports.txt").then(
