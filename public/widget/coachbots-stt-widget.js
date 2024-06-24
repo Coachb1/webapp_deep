@@ -6159,19 +6159,18 @@ loadExternalModule().then(() => {
 
 
   function excludeSpecialCharacters(inputString) {
-    const regex = /[^a-zA-Z0-9!.,:'? ]/g;
-    const cleanedString = inputString.replace(regex, "");
-    return cleanedString;
+    return  inputString.replace(/[*#]+/g, '');
   }
 
   function removeResponderTypeNameStt(responderDisplayName, responseText) {
-    const responderType = responderDisplayName.toLowerCase();
-
+    const responderType = responderDisplayName.trim().toLowerCase();
     const regex = new RegExp(responderType, "i");
-
     let updatedText = responseText.replace(regex, "").trim();
-
     return updatedText;
+  }
+
+  function capitalizeFirstLetterStt(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
   
   // to check word limit (limit set to 0, row 669)
@@ -9286,8 +9285,8 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      responderName = `<b>${responder_name2}:</b><br>`;
-                      questionText2 = removeResponderTypeNameStt(responder_name2,excludeSpecialCharacters(stringList.join("")));
+                      responderName = `<b>${capitalizeFirstLetterStt(responder_name2)}:</b><br>`;
+                      questionText2 = removeResponderTypeNameStt(responder_name2, excludeSpecialCharacters(stringList.join("")));
                     }
                     if (isImmersiveStt && questionIndex2 != 0) {
                       questionText2 = await TTSContainerSTT(questionText2);
