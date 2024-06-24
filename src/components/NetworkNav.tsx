@@ -67,7 +67,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <Link href={"/"}>Network Directory</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Demo") && (
+        {!restrictedPages?.includes("Explore") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -77,7 +77,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             } `}
             asChild
           >
-            <Link href={"/content-library"}>Demo</Link>
+            <Link href={"/content-library"}>Explore</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Library") && (
@@ -123,14 +123,14 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                 <Link href={"/"}> Network directory</Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Demo") && (
+            {!restrictedPages?.includes("Explore") && (
               <DropdownMenuItem
                 className={`${
                   pathname === "/content-library" ? "bg-gray-200" : null
                 }`}
                 asChild
               >
-                <Link href={"/content-library"}>Demo</Link>
+                <Link href={"/content-library"}>Explore</Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Library") && (
