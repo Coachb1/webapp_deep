@@ -6422,7 +6422,7 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
-  const anthropicAiResponse = (
+  const anthropicAiResponse =  async (
     userInputMessage,
     signals,
     conversationId,
@@ -6456,12 +6456,14 @@ loadExternalModule().then(() => {
 
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
-    fetch("/api/anthropic", {
+    const response = await fetch("/api/anthropic", {
       method: "POST",
       body: JSON.stringify({
         userInput: userInputMessage,
       }),
-    }).then(async (response) => {
+    })
+
+    if(response.ok){
       const reader = response.body.getReader();
       const textDecoder = new TextDecoder("utf-8");
 
@@ -6479,7 +6481,9 @@ loadExternalModule().then(() => {
 
             if (
               indvMessage.innerText === "." ||
-              indvMessage.innerText === "..."
+              indvMessage.innerText === "..." ||
+              indvMessage.innerText === "" ||
+              indvMessage.innerText === " " ||  !indvMessage.innerText?.length > 0 
             ) {
               indvMessage.remove();
             }
@@ -6587,8 +6591,7 @@ loadExternalModule().then(() => {
         messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
-    }).catch((error) => {
-      console.log(error)
+    } else {
       console.log("trying OpenAiResponse")
       OpenAiResponse(
         userInputMessage,
@@ -6597,7 +6600,7 @@ loadExternalModule().then(() => {
         latestMessage,
         streamWithAudio
       );
-    })
+    }
   };
 
   function endsWithLowerCaseLetter(str) {
@@ -6854,7 +6857,7 @@ loadExternalModule().then(() => {
     });
   }
 
-  const GeminiAiResponse = (
+  const GeminiAiResponse = async (
     userInputMessage,
     signals,
     conversationId,
@@ -6889,157 +6892,158 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
-    fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
+    const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
       }),
     })
-      .then(async (response) => {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
 
-        let index = 0;
-        while (true) {
-          const { done, value } = await reader?.read();
-          if (done) {
-            allMessages.forEach((indvMessage) => {
-              if (
-                indvMessage.innerText === "." ||
-                indvMessage.innerText === "..." ||
-                indvMessage.innerText === " "
-              ) {
-                indvMessage.remove();
-              }
-            });
-            if (messageText.innerText === "") {
-              messageText.innerText +=
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomTextForId
-                );
-              }
-            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomTextForId
-                );
-              }
+    if(response.ok) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      let index = 0;
+      while (true) {
+        const { done, value } = await reader?.read();
+        if (done) {
+          allMessages.forEach((indvMessage) => {
+            if (
+              indvMessage.innerText === "." ||
+              indvMessage.innerText === "..." ||
+              indvMessage.innerText === " " ||
+              indvMessage.innerText === ""
+            ) {
+              indvMessage.remove();
             }
-            console.log("Stream complete");
-            console.log("STREAMED MESSAGE -> ", messageText.innerText);
-            finished = true;
-
-            // add user question and bot answer to the session
-            sessionQnAdata.push({
-              user: latestMessage,
-              coach: messageText.innerText,
-            });
-            console.log(
-              "sessionQnAdata :",
-              sessionQnAdata,
-              "conversationId :",
-              conversationId
-            );
-
-            fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
-              method: "POST",
-              headers: {
-                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                ai_response: messageText.innerText,
-                conversation_id: conversationId,
-              }),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                console.log(data);
-              })
-              .catch((err) => {
-                console.error(err);
-                fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Basic ${createBasicAuthToken2(
-                      key2,
-                      secret2
-                    )}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    ai_response: messageText.innerText,
-                    conversation_id: conversationId,
-                  }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    console.log(data);
-                  });
-              });
-            shadowRoot.getElementById("messages").scrollBy(0, 500);
-            responseSavedCount += 1;
-            if(responseSavedCount >= 2) {
-              endSessionButton.setAttribute(
-                "onmouseover",
-                "this.style.backgroundColor = '#e5e7eb'"
-              );
-              endSessionButton.setAttribute(
-                "onmouseleave",
-                "this.style.backgroundColor = '#9ca3af'"
-              );
-              endSessionButton.style.backgroundColor = "#9ca3af";
-              endSessionButton.style.color = "white";
-              endSessionButton.style.cursor = "pointer";
-              endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-              endSessionButton.disabled = false;
-              console.log(endSessionButton);
-          }
-            return Promise.resolve();
-          }
-
-          const decodedText = decoder.decode(value, { stream: !done });
-          console.log(decodedText);
-          if (streamWithAudio) {
-            audioSourceOpen(
-              decodedText,
-              messageBubble,
-              index,
-              randomIdForAudioElement
-            );
-          }
-          messageText.innerHTML += excludeSpecialCharacters(decodedText);
-          signals.onResponse({
-            html: ".",
           });
+          if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          }
+          console.log("Stream complete");
+          console.log("STREAMED MESSAGE -> ", messageText.innerText);
+          finished = true;
+
+          // add user question and bot answer to the session
+          sessionQnAdata.push({
+            user: latestMessage,
+            coach: messageText.innerText,
+          });
+          console.log(
+            "sessionQnAdata :",
+            sessionQnAdata,
+            "conversationId :",
+            conversationId
+          );
+
+          fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ai_response: messageText.innerText,
+              conversation_id: conversationId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.error(err);
+              fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Basic ${createBasicAuthToken2(
+                    key2,
+                    secret2
+                  )}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ai_response: messageText.innerText,
+                  conversation_id: conversationId,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                });
+            });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
-          index++;
+          responseSavedCount += 1;
+          if(responseSavedCount >= 2) {
+            endSessionButton.setAttribute(
+              "onmouseover",
+              "this.style.backgroundColor = '#e5e7eb'"
+            );
+            endSessionButton.setAttribute(
+              "onmouseleave",
+              "this.style.backgroundColor = '#9ca3af'"
+            );
+            endSessionButton.style.backgroundColor = "#9ca3af";
+            endSessionButton.style.color = "white";
+            endSessionButton.style.cursor = "pointer";
+            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+            endSessionButton.disabled = false;
+            console.log(endSessionButton);
         }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        console.log("trying anthropicAiResponse")
-        anthropicAiResponse(
-          userInputMessage,
-          signals,
-          conversationId,
-          latestMessage,
-          streamWithAudio
-        );
-      });
+          return Promise.resolve();
+        }
+
+        const decodedText = decoder.decode(value, { stream: !done });
+        console.log(decodedText);
+        if (streamWithAudio) {
+          audioSourceOpen(
+            decodedText,
+            messageBubble,
+            index,
+            randomIdForAudioElement
+          );
+        }
+        messageText.innerHTML += excludeSpecialCharacters(decodedText);
+        signals.onResponse({
+          html: ".",
+        });
+        shadowRoot.getElementById("messages").scrollBy(0, 500);
+        index++;
+      }
+    } else {
+      console.log("trying anthropicAiResponse")
+      LoadingMessageWithText("Please wait for your response.")
+      anthropicAiResponse(
+        userInputMessage,
+        signals,
+        conversationId,
+        latestMessage,
+        streamWithAudio
+      );
+    }
   };
 
-  const OpenAiResponse = (
+  const OpenAiResponse = async (
     userInputMessage,
     signals,
     conversationId,
@@ -7074,12 +7078,14 @@ loadExternalModule().then(() => {
 
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
-    fetch("/api/openai", {
+    const response = await fetch("/api/openai", {
       method: "POST",
       body: JSON.stringify({
         userInput: userInputMessage,
       }),
-    }).then(async (response) => {
+    })
+    
+    if(response.ok){
       const reader = response.body.getReader();
       const textDecoder = new TextDecoder("utf-8");
 
@@ -7097,7 +7103,9 @@ loadExternalModule().then(() => {
 
             if (
               indvMessage.innerText === "." ||
-              indvMessage.innerText === "..."
+              indvMessage.innerText === "..." ||
+               indvMessage.innerText === "" ||
+              indvMessage.innerText === " " ||  !indvMessage.innerText?.length > 0 
             ) {
               indvMessage.remove();
             }
@@ -7192,7 +7200,11 @@ loadExternalModule().then(() => {
         messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
-    });
+    } else {
+      signals.onResponse({
+        html : "<b>Error while generating your response.</b>"
+      })
+    }
   };
 
   //No condition STT pending
