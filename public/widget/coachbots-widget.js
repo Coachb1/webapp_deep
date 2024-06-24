@@ -3155,16 +3155,18 @@ loadExternalModule().then(() => {
   //   };
 
   function excludeSpecialCharacters2(inputString) {
-    const regex = /[^a-zA-Z0-9!.,:'? ]/g;
-    const cleanedString = inputString.replace(regex, "");
-    return cleanedString;
+    return  inputString.replace(/[*#]+/g, '');
   }
 
   function removeResponderTypeName(responderDisplayName, responseText) {
-    const responderType = responderDisplayName.toLowerCase();
+    const responderType = responderDisplayName.trim().toLowerCase();
     const regex = new RegExp(responderType, "i");
     let updatedText = responseText.replace(regex, "").trim();
     return updatedText;
+  }
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   // to check word limit
@@ -3643,7 +3645,7 @@ loadExternalModule().then(() => {
           if (isImmersive) {
             questionText = questionText.replace(`${responder_name}`, "");
             questionText = questionText.replace(`:`, "");
-            questionText = responder_name + " : " + questionText;
+            questionText = capitalizeFirstLetter(responder_name) + " : " + questionText;
           }
 
           console.log(testResponseText);
