@@ -6426,7 +6426,8 @@ loadExternalModule().then(() => {
     userInputMessage,
     signals,
     conversationId,
-    latestMessage
+    latestMessage,
+    streamWithAudio
   ) => {
     console.log('anthropic', userInputMessage)
     const messageNode = document.createElement("div");
@@ -6453,6 +6454,8 @@ loadExternalModule().then(() => {
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
 
+    const randomIdForAudioElement = generateRandomAlphanumeric(10);
+
     fetch("/api/anthropic", {
       method: "POST",
       body: JSON.stringify({
@@ -6466,6 +6469,8 @@ loadExternalModule().then(() => {
         html: "...",
       });
 
+      let index = 0;
+      let chunks = []
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -6478,6 +6483,43 @@ loadExternalModule().then(() => {
             ) {
               indvMessage.remove();
             }
+
+            if(chunks.length > 0){
+              audioSourceOpen(
+                chunks.join(" "),
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+              console.log(chunks.join(" "))
+              chunks = []
+              index++;
+            }
+
+            if (messageText.innerText === "") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
+            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
+            }
+
           });
 
           // add user question and bot answer to the session
@@ -6527,26 +6569,36 @@ loadExternalModule().then(() => {
         }
         const decodedText = textDecoder.decode(value);
 
+       if(streamWithAudio){
+        chunks.push(decodedText)
+        if(chunks.length > 10){
+          audioSourceOpen(
+            chunks.join(" "),
+            messageBubble,
+            index,
+            randomIdForAudioElement
+          );
+          console.log(chunks.join(" "))
+          chunks = []
+          index++;
+        }
+       }
+
         messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
-    });
+    }).catch((error) => {
+      console.log(error)
+      console.log("trying OpenAiResponse")
+      OpenAiResponse(
+        userInputMessage,
+        signals,
+        conversationId,
+        latestMessage,
+        streamWithAudio
+      );
+    })
   };
-
-  function processString(inputString) {
-    // Define regular expressions for patterns to remove
-    const pattern1 = /0:"\s*/g;  // Matches "0:" with optional whitespace
-    const pattern2 = /"\s*/g;    // Matches " with optional whitespace
-    const pattern3 = /\n\n/g;    // Matches two consecutive newline characters
-  
-    // Remove patterns from the input string
-    const processedString = inputString
-      .replace(pattern1, '')    // Remove pattern1
-      .replace(pattern2, '')    // Remove pattern2
-      .replace(pattern3, '');   // Remove pattern3
-  
-    return processedString;
-  }
 
   function endsWithLowerCaseLetter(str) {
     const pattern = /[a-z]$/;
@@ -6629,14 +6681,6 @@ loadExternalModule().then(() => {
             }
           });
           
-          // if (messageText.innerText === "") {
-          //   messageText.innerText +=
-          //     "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-          // } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-          //   messageText.innerText +=
-          //     " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-          // }
-          // add user question and bot answer to the session
           sessionQnAdata.push({
             user: userInputMessage,
             coach: messageText.innerText,
@@ -6984,6 +7028,14 @@ loadExternalModule().then(() => {
       })
       .catch((error) => {
         console.error("Error:", error);
+        console.log("trying anthropicAiResponse")
+        anthropicAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio
+        );
       });
   };
 
@@ -6991,7 +7043,8 @@ loadExternalModule().then(() => {
     userInputMessage,
     signals,
     conversationId,
-    latestMessage
+    latestMessage,
+    streamWithAudio
   ) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
@@ -7019,6 +7072,8 @@ loadExternalModule().then(() => {
     sessionQnAdata.push({ user: latestMessage, coach: messageText.innerText });
     console.log("sessionQnAdata :", sessionQnAdata);
 
+    const randomIdForAudioElement = generateRandomAlphanumeric(10);
+
     fetch("/api/openai", {
       method: "POST",
       body: JSON.stringify({
@@ -7032,6 +7087,8 @@ loadExternalModule().then(() => {
         html: "...",
       });
 
+      let index = 0;
+      let chunks = []
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -7043,6 +7100,42 @@ loadExternalModule().then(() => {
               indvMessage.innerText === "..."
             ) {
               indvMessage.remove();
+            }
+
+            if(chunks.length > 0){
+              audioSourceOpen(
+                chunks.join(" "),
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+              console.log(chunks.join(" "))
+              chunks = []
+              index++;
+            }
+
+            if (messageText.innerText === "") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
+            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
             }
           });
 
@@ -7082,7 +7175,19 @@ loadExternalModule().then(() => {
 
           return;
         }
+
         const decodedText = textDecoder.decode(value);
+        if(chunks.length > 0){
+          audioSourceOpen(
+            chunks.join(" "),
+            messageBubble,
+            index,
+            randomIdForAudioElement
+          );
+          console.log(chunks.join(" "))
+          chunks = []
+          index++;
+        }
 
         messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
@@ -7821,24 +7926,18 @@ loadExternalModule().then(() => {
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
               //streaming responses
-              if (botType === 'deep_dive'){
-                console.log('chatGemini#####################')
+              if (botType === "deep_dive") {
+                console.log("chatGemini#####################");
 
                 ChatGeminiAiResponse(
                   latestMessage,
                   signals,
                   conversation_id2,
                   responseData.coach_message_metadata.prompt
-                )
+                );
+              } else if (botType === "user_bot") {
+                console.log("anthropic#####################");
 
-              } else if (botType === 'user_bot'){
-                console.log('anthropic#####################')
-                // anthropicAiResponse(
-                //   responseData.coach_message_metadata.prompt,
-                //   signals,
-                //   conversation_id2,
-                //   latestMessage
-                // );
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
