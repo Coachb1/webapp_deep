@@ -7032,7 +7032,6 @@ loadExternalModule().then(() => {
       }
     } else {
       console.log("trying anthropicAiResponse")
-      LoadingMessageWithText("Please wait for your response.")
       anthropicAiResponse(
         userInputMessage,
         signals,
