@@ -4513,7 +4513,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
                 });
                 return;
               }
