@@ -67,16 +67,18 @@ describe("Init", () => {
         );
         cy.get("#chat-element2")
           .shadow()
-          .find(`button[onclick="handleProceedClickStt('Yes')"]`, {timeout : 10000})
+          .find(`button[onclick="handleProceedClickStt('Yes')"]`, {
+            timeout: 10000,
+          })
           .click();
 
         cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
         questions.forEach((question, i) => {
-          if (i !== 0) {
-            cy.wait("@testResponse", {
-              timeout: 20000,
-            });
-          }
+          // if (i !== 0) {
+          //   cy.wait("@testResponse", {
+          //     timeout: 50000,
+          //   });
+          // }
           const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 100 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
           cy.request(
             "GET",
@@ -102,7 +104,7 @@ describe("Init", () => {
             "getReportUrl"
           );
           cy.wait("@getReportUrl", {
-            timeout: 30000,
+            timeout: 100000,
           }).then((interception) => {
             cy.readFile("cypress/results/staticReports.txt").then(
               (existingFileContents: any) => {

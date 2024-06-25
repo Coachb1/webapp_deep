@@ -1708,7 +1708,7 @@ const Coaches = ({
                         )}
                       </div>
                       <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
-                        {coach.status === "accepted" && (
+                        {coach.status === "accepted" ? (
                           <Button
                             disabled
                             variant={"outline"}
@@ -1716,24 +1716,28 @@ const Coaches = ({
                           >
                             Connected
                           </Button>
-                        )}
-                        {(coach.profile_type === "coach" ||
-                          coach.profile_type === "mentor" ||
-                          coach.profile_type === "coach-mentor") && (
+                        ) : (
                           <>
-                            <>
-                              {coacheeId.length > 0 && (
+                            {(coach.profile_type === "coach" ||
+                              coach.profile_type === "mentor" ||
+                              coach.profile_type === "coach-mentor") && (
+                              <>
                                 <>
-                                  <RequestionConnection
-                                    requestStatus={coach.status}
-                                    coachId={coach.profile_id}
-                                    stateCoachId={coachId}
-                                  />
+                                  {coacheeId.length > 0 && (
+                                    <>
+                                      <RequestionConnection
+                                        requestStatus={coach.status}
+                                        coachId={coach.profile_id}
+                                        stateCoachId={coachId}
+                                      />
+                                    </>
+                                  )}
                                 </>
-                              )}
-                            </>
+                              </>
+                            )}
                           </>
                         )}
+
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
                             <div className="max-sm:w-full">
