@@ -1161,7 +1161,7 @@ async function submitEmailAndName() {
       });
     }
       sendEmail(sessionId, globalReportUrl);
-      increaseActionPoint(userId, "interaction_attempted");
+      // increaseActionPoint(userId, "interaction_attempted");
 
       if (!window.user) {
         // append custom message to chat
@@ -1176,7 +1176,13 @@ async function submitEmailAndName() {
       if (recommDiv) {
         appendMessage(recommDiv);
       }
+      const page_name = questionData.results[0].page_name
+      console.log(page_name,'page_name')
+
       resetAllVariables();
+      if ( page_name !== 'explore'){
+        increaseActionPoint(userId, "interaction_attempted");
+      }
     // })
     // .catch((err) => {
     //   console.log(err);
