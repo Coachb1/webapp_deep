@@ -1,10 +1,9 @@
 import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
-// dynamic :  "Q0HP80X", "QWGW7N3", "QE4334M"
-// orchestrated : "QSKUOD0", "Q7E1DGY"
-const dynamicTestCodes = ["Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY"]; 
-
-// "QO3CBR3", "Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY"
+//dynamic : "Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY", "QQMTKIU"
+// GD : Q97STR8
+//userFirst : QJAZ7IE
+const dynamicTestCodes = ["QJAZ7IE", "Q97STR8", "QQMTKIU"];
 
 describe("Init", () => {
   beforeEach(() => {
@@ -17,7 +16,9 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
+            cy.get('[data-testid="auth-email-field"]').type(
+              "xivij12069@hutov.com"
+            );
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -55,7 +56,7 @@ describe("Init", () => {
         .shadow()
         .find(".input-button-svg.inside-right")
         .click();
-      cy.wait(20000)
+      cy.wait(20000);
       cy.get("#chat-element2")
         .shadow()
         .find(`button[onclick="handleProceedClickStt('Yes')"]`, {
@@ -83,66 +84,78 @@ describe("Init", () => {
           interception.response?.body.results[0]
             .orchestrated_conversation_details.initial_messages[0];
 
-            questions.forEach((qn: any, i: number) => {
-              let randomNumber = Math.floor(Math.random() * 100) + 1; // Generate a random number between 1 and 100
-              if (i > 0) {
-                cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
-                cy.wait("@testResponse");
-                if (i > 1) {
-                  cy.wait("@testResponse");
-                }
-                cy.wait("@testResponse", {
-                  timeout: 20000,
-                }).then((interception) => {
-                  console.log(
-                    `response_text ${i}`,
-                    interception.response?.body.response_text
-                  );
-                  question = interception.response?.body.response_text + randomNumber; // Append random number to response
-                  const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 50 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
-                  cy.request(
-                    "GET",
-                    `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
-                      formattedQuestion
-                    )}`
-                  ).then((answerResponse) => {
-                    console.log("Generated response for", qn, ":", answerResponse.body); // Logging generated response
-                    cy.wait(5000);
-                    cy.get("#chat-element2")
-                      .shadow()
-                      .find("#text-input")
-                      .type(answerResponse?.body["response_text"]);
-                    cy.wait(5000);
-                    cy.get("#chat-element2")
-                      .shadow()
-                      .find(".input-button-svg.inside-right")
-                      .click();
-                  });
-                });
-              } else {
-                question = qn + " " + randomNumber; // Append random number to initial question
-                const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 50 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
-                cy.request(
-                  "GET",
-                  `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
-                    formattedQuestion
-                  )}`
-                ).then((answerResponse) => {
-                  console.log("Generated response for", qn, ":", answerResponse.body); // Logging generated response
-                  cy.wait(5000);
-                  cy.get("#chat-element2")
-                    .shadow()
-                    .find("#text-input")
-                    .type(answerResponse?.body["response_text"] + " " + randomNumber); // Append random number directly here
-                  cy.wait(5000);
-                  cy.get("#chat-element2")
-                    .shadow()
-                    .find(".input-button-svg.inside-right")
-                    .click();
-                });
-              }
+        questions.forEach((qn: any, i: number) => {
+          let randomNumber = Math.floor(Math.random() * 100) + 1; // Generate a random number between 1 and 100
+          if (i > 0) {
+            cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
+            cy.wait("@testResponse");
+            if (i > 1) {
+              cy.wait("@testResponse");
+            }
+            cy.wait("@testResponse", {
+              timeout: 20000,
+            }).then((interception) => {
+              console.log(
+                `response_text ${i}`,
+                interception.response?.body.response_text
+              );
+              question =
+                interception.response?.body.response_text + randomNumber; // Append random number to response
+              const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 50 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
+              cy.request(
+                "GET",
+                `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
+                  formattedQuestion
+                )}`
+              ).then((answerResponse) => {
+                console.log(
+                  "Generated response for",
+                  qn,
+                  ":",
+                  answerResponse.body
+                ); // Logging generated response
+                cy.wait(5000);
+                cy.get("#chat-element2")
+                  .shadow()
+                  .find("#text-input")
+                  .type(answerResponse?.body["response_text"]);
+                cy.wait(5000);
+                cy.get("#chat-element2")
+                  .shadow()
+                  .find(".input-button-svg.inside-right")
+                  .click();
+              });
             });
-            
+          } else {
+            question = qn + " " + randomNumber; // Append random number to initial question
+            const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 50 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
+            cy.request(
+              "GET",
+              `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
+                formattedQuestion
+              )}`
+            ).then((answerResponse) => {
+              console.log(
+                "Generated response for",
+                qn,
+                ":",
+                answerResponse.body
+              ); // Logging generated response
+              cy.wait(5000);
+              cy.get("#chat-element2")
+                .shadow()
+                .find("#text-input")
+                .type(
+                  answerResponse?.body["response_text"] + " " + randomNumber
+                ); // Append random number directly here
+              cy.wait(5000);
+              cy.get("#chat-element2")
+                .shadow()
+                .find(".input-button-svg.inside-right")
+                .click();
+            });
+          }
+        });
 
         cy.wait("@testResponse", {
           timeout: 30000,
@@ -153,7 +166,10 @@ describe("Init", () => {
           cy.wait("@getReportUrl", {
             timeout: 100000,
           }).then((interception) => {
-            console.log("Report URL received:", interception.response?.body.url); // Logging the report URL received
+            console.log(
+              "Report URL received:",
+              interception.response?.body.url
+            ); // Logging the report URL received
             cy.readFile("cypress/results/DynamicReports.txt").then(
               (existingFileContents: any) => {
                 const appendedFileContents =
