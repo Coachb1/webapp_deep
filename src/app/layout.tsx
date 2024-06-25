@@ -72,10 +72,9 @@ const getClientUserInfo = async (
           }
         );
 
-        
         if (response.ok) {
           const data = await response.json();
-          console.log(data.data.user_info[0])
+          console.log(data.data.user_info[0]);
           console.log(
             "[layout] get-client-information > ",
             "isDemo user : ",
@@ -120,7 +119,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="bg-white">
       <head>
-        {!restrictedFeatures.includes("Accessibility-widget") && (
+        {!restrictedFeatures?.includes("Accessibility-widget") && (
           <script src="../widget/accessibility.js"></script>
         )}
       </head>
