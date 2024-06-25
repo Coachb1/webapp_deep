@@ -6176,6 +6176,7 @@ loadExternalModule().then(() => {
   // to check word limit (limit set to 0, row 669)
   function isValidMessageStt(text, limit = 10, is_greater = false) {
     const words = text.split(" ");
+    console.log("text : ",text, "words : ",words, "words length : ",words.length, "limit : ",limit, "is_greater : ",is_greater)
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
       uppercaseArray.includes("SKIP") &&
@@ -6190,6 +6191,7 @@ loadExternalModule().then(() => {
         return true;
       }
     } else {
+      console.log("words length and cond : ",words.length, words.length < limit)
       if (words.length < limit) {
         return false;
       } else {
@@ -7306,7 +7308,7 @@ loadExternalModule().then(() => {
             if (Object.keys(botInitialQuestions).length < deepDiveInitialQueIndex ){
               console.log('ending initial question session')
               askInitialQuestionDeepDive = false;
-              latestMessage = 'START'
+              // latestMessage = 'START'
             }
             else{
               signals.onResponse({
@@ -7415,6 +7417,7 @@ loadExternalModule().then(() => {
           }
           if (botType === "feedback_bot" && isFeedbackConvInProcess) {
             if (!isValidMessageStt(latestMessage)) {
+              console.log('0')
               signals.onResponse({
                 html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>`,
               });
@@ -7663,6 +7666,7 @@ loadExternalModule().then(() => {
                 });
               } else {
                 if(!isValidMessageStt(latestMessage)){
+                  console.log('1')
                   signals.onResponse({
                     html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
                   });
@@ -7784,6 +7788,7 @@ loadExternalModule().then(() => {
             }
             // here checking word limits for signature bot responses
             if (!isValidMessageStt(latestMessage)) {
+              console.log('2)','latestmsg',latestMessage)
               signals.onResponse({
                 html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>`,
               });
@@ -8187,6 +8192,7 @@ loadExternalModule().then(() => {
             );
             if (isAttemptingRecommendation == true && isProceedStt == "true") {
               if (isValidMessageStt(latestMessage) == false) {
+                console.log('3')
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
                 });
@@ -8239,6 +8245,7 @@ loadExternalModule().then(() => {
               }
               //************* check if user message is atleast 10 words */
               if (!isValidMessageStt(latestMessage)) {
+                console.log('4')
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
                 });
