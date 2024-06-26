@@ -49,6 +49,11 @@ const CreateYourDeepDive = ({ user }: any) => {
     DeepDiveType[]
   >([]);
 
+  const [industry, setIndustry] = useState("");
+  const [department, setDepartment] = useState("");
+  const [respondentHierarchy, setRespondentHierarchy] = useState("");
+  const [respondedentSkillSet, setRespondentSkillSet] = useState("");
+
   useEffect(() => {
     if (user) {
       getUserAccount(user)
@@ -88,7 +93,7 @@ const CreateYourDeepDive = ({ user }: any) => {
       myHeaders.append("Authorization", basicAuth);
       var formdata = new FormData();
       formdata.append(
-        "name",
+        "p",
         `${user.given_name} ${user.family_name ? user.family_name : ""}`
       );
       formdata.append(
@@ -99,7 +104,10 @@ const CreateYourDeepDive = ({ user }: any) => {
       formdata.append("participant_id", userId);
       formdata.append("email", user.email!);
       formdata.append("bot_type", "deep_dive");
-      formdata.append("context", userContextRef.current.value);
+      formdata.append(
+        "context",
+        `${userContextRef.current.value} \nIndustry : ${industry}\nDepartment : ${department}\nRespondent Heirarcy : ${respondentHierarchy}\nRespondent Skillset : ${respondedentSkillSet}`
+      );
       formdata.append(
         "profile_image",
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
@@ -181,6 +189,10 @@ const CreateYourDeepDive = ({ user }: any) => {
     setInputError(false);
     setWordCount(0);
     setExpiryDate(undefined);
+    setDepartment("");
+    setIndustry("");
+    setRespondentHierarchy("");
+    setRespondentSkillSet("");
   };
 
   const getTodayDate = () => {
@@ -192,135 +204,190 @@ const CreateYourDeepDive = ({ user }: any) => {
     <div className="w-full">
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-          <div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-              Please enter your deep dive objective
-            </p>
-            <textarea
-              ref={userContextRef}
-              onKeyDown={() => {
-                setInputError(false);
-              }}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                const count = words.length;
+          <div className="">
+            <div className="flex flex-col gap-2">
+              <div>
+                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  Please enter your deep dive objective
+                </p>
+                <textarea
+                  ref={userContextRef}
+                  onKeyDown={() => {
+                    setInputError(false);
+                  }}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const words = inputValue.trim().split(/\s+/);
+                    const count = words.length;
 
-                if (count <= 500) {
-                  setWordCount(count);
-                  setInputError(count < 5 || count > 500);
-                } else {
-                  setInputError(true);
-                }
-              }}
-              placeholder="Dive into team dynamics. For eg, As a Team Leader in the Construction company, I want to know views about work from office policy from my employees. "
-              rows={8}
-              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
-            />
-            <div className="flex flex-row justify-between w-full">
-              <p
-                className={`text-red-500 text-xs mb-1.5 self-start ${
-                  !inputError && "invisible"
-                }`}
-              >
-                Please describe your deep dive in 5-500 words.
-              </p>
-              <p className="font-bold text-gray-500 text-xs self-end">
-                {wordCount}/500
-              </p>
-            </div>
-
-            {/* expiry date */}
-
-            <div className="flex flex-row gap-2 items-center w-full">
-              <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
-                Expiry Date
-              </p>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal",
-                      !expiryDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {expiryDate ? (
-                      format(expiryDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="right"
-                  className="w-auto p-0"
-                  align="start"
-                >
-                  <Calendar
-                    fromDate={getTodayDate()}
-                    mode="single"
-                    selected={expiryDate}
-                    onSelect={(val) => {
-                      setExpiryDate(val);
-
-                      // console.log(val?.toISOString()! + 24 * 60 * 60 * 1000)
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            {dateError && (
-              <>
-                <br />
+                    if (count <= 500) {
+                      setWordCount(count);
+                      setInputError(count < 5 || count > 500);
+                    } else {
+                      setInputError(true);
+                    }
+                  }}
+                  placeholder="Dive into team dynamics. For eg, As a Team Leader in the Construction company, I want to know views about work from office policy from my employees. "
+                  rows={8}
+                  className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                />
                 <div className="flex flex-row justify-between w-full">
                   <p
-                    className={`text-red-500 text-xs mb-1.5 self-start ${
-                      !dateError && "invisible"
+                    className={`text-red-500 text-xs self-start ${
+                      !inputError && "invisible"
                     }`}
                   >
-                    Please select the date.
+                    Please describe your deep dive in 5-500 words.
+                  </p>
+                  <p className="font-bold text-gray-500 text-xs self-end">
+                    {wordCount}/500
                   </p>
                 </div>
-              </>
-            )}
-            <br />
+              </div>
+              <div className="flex flex-row  max-sm:flex-col w-full gap-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Industry
+                  </p>
+                  <input
+                    type="text"
+                    value={industry}
+                    onChange={(e) => {
+                      setIndustry(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Department
+                  </p>
+                  <input
+                    type="text"
+                    value={department}
+                    onChange={(e) => {
+                      setDepartment(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row max-sm:flex-col w-full gap-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Respondent Heirarcy
+                  </p>
+                  <input
+                    type="text"
+                    value={respondentHierarchy}
+                    onChange={(e) => {
+                      setRespondentHierarchy(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Respondent skillset
+                  </p>
+                  <input
+                    type="text"
+                    value={respondedentSkillSet}
+                    onChange={(e) => {
+                      setRespondentSkillSet(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                <div className="flex flex-row gap-2 items-center w-full">
+                  <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
+                    Expiry Date
+                  </p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] justify-start text-left font-normal",
+                          !expiryDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {expiryDate ? (
+                          format(expiryDate, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="right"
+                      className="w-auto p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        fromDate={getTodayDate()}
+                        mode="single"
+                        selected={expiryDate}
+                        onSelect={(val) => {
+                          setExpiryDate(val);
 
-            {/* expiry date ends */}
-
-            <div className="flex items-center gap-2">
-              <Button
-                disabled={isLoading}
-                onClick={handleGenerateSurvey}
-                className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
-              >
-                {generatedDeepdiveData.length > 0
-                  ? isLoading
-                    ? "Regenerating"
-                    : "Regenerate"
-                  : isLoading
-                  ? "Generating"
-                  : "Generate"}
-                {isLoading && (
-                  <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                          // console.log(val?.toISOString()! + 24 * 60 * 60 * 1000)
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                {dateError && (
+                  <>
+                    <br />
+                    <div className="flex flex-row justify-between w-full">
+                      <p
+                        className={`text-red-500 text-xs mb-1.5 self-start ${
+                          !dateError && "invisible"
+                        }`}
+                      >
+                        Please select the date.
+                      </p>
+                    </div>
+                  </>
                 )}
-              </Button>
-              {!isLoading && (
+              </div>
+              <div className="flex items-center gap-2 mt-2">
                 <Button
-                  onClick={clearHandler}
-                  variant={"secondary"}
-                  className="max-sm:p-2 h-8 hover:brightness-105"
+                  disabled={isLoading}
+                  onClick={handleGenerateSurvey}
+                  className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
                 >
-                  <Eraser className="mr-2 w-4 h-4" /> Clear
+                  {generatedDeepdiveData.length > 0
+                    ? isLoading
+                      ? "Regenerating"
+                      : "Regenerate"
+                    : isLoading
+                    ? "Generating"
+                    : "Generate"}
+                  {isLoading && (
+                    <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                  )}
                 </Button>
-              )}
-              {isLoading && (
-                <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
-                  {loadingText}
-                </span>
-              )}
+                {!isLoading && (
+                  <Button
+                    onClick={clearHandler}
+                    variant={"secondary"}
+                    className="max-sm:p-2 h-8 hover:brightness-105"
+                  >
+                    <Eraser className="mr-2 w-4 h-4" /> Clear
+                  </Button>
+                )}
+                {isLoading && (
+                  <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
+                    {loadingText}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           {generatedDeepdiveData.length > 0 && (
@@ -333,12 +400,10 @@ const CreateYourDeepDive = ({ user }: any) => {
                   >
                     <div>
                       <b className="my-1 text-gray-400">Deep Dive</b>
-                      <p className="text-base max-sm:text-sm mt-3 font-semibold">
+                      <p className="text-sm max-sm:text-xs mt-3 font-semibold">
                         {dd.title}
                       </p>
-                      <p className="text-sm max-sm:text-xs my-2">
-                        {dd.objective}
-                      </p>
+                      <p className="text-[12px] my-2">{dd.objective}</p>
                     </div>
                     <div className="flex flex-row max-sm:flex-col text-sm max-sm:text-xs justify-end max-sm:justify-center mt-6 gap-2">
                       <CopyToClipboard
