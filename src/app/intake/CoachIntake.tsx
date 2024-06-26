@@ -1250,7 +1250,14 @@ const CoachIntake = ({ user }: any) => {
                     ) {
                       const filesPatchFormData = new FormData();
                       if (referenceDocs.length > 0) {
-                        referenceDocs.forEach(({ file, text }) => {
+                        referenceDocs.forEach(({ file, text, name }) => {
+                          if (name === "optional_file") {
+                            filesPatchFormData.append(
+                              "optional_file",
+                              `file_name:${file.name} text_file:${text}`
+                            );
+                            console.log(text);
+                          } else {
                           if (file.name.includes(".pdf")) {
                             if (text) {
                               filesPatchFormData.append(
@@ -1280,6 +1287,7 @@ const CoachIntake = ({ user }: any) => {
                               );
                             }
                           }
+                        }
                         });
                       }
 
