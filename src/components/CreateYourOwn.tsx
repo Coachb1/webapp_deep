@@ -48,10 +48,14 @@ const CreateYourOwn = ({ user, clientName }: any) => {
     { label: string; value: string }[]
   >([]);
 
+  const [industry, setIndustry] = useState("");
+  const [objective, setObjective] = useState("");
+  const [department, setDepartment] = useState("");
+  const [keyStakeholders, setKeyStakeholders] = useState("");
+
   const [assignInit, setAssignInit] = useState(false);
   const [simulationType, setSimulationType] = useState("short");
   const [numOfTries, setNumOfTries] = useState<number>(0);
-
 
   const incrementTries = () => {
     if (numOfTries < 5) {
@@ -113,21 +117,23 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       params.set(
         "information",
         JSON.stringify({
-          data: { information: userContextRef.current.value },
+          data: {
+            information: `${userContextRef.current.value}\nObjective : ${objective}\nIndustry : ${industry}\nDepartment : ${department}\nKey Stakeholders : ${keyStakeholders}`,
+          },
           title: "",
         })
       );
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
       const add_prompt_list = [
-        'role_play',
-        'normal',
-        'interview',
-        'checkin',
-        'case'
-      ]
-      console.log(add_prompt_list[numOfTries],numOfTries,'numoftries')
-      params.set("flavour", add_prompt_list[numOfTries])
+        "role_play",
+        "normal",
+        "interview",
+        "checkin",
+        "case",
+      ];
+      console.log(add_prompt_list[numOfTries], numOfTries, "numoftries");
+      params.set("flavour", add_prompt_list[numOfTries]);
       params.set("is_micro", `${simulationType === "short" ? true : false}`);
 
       url.search = params;
@@ -200,6 +206,8 @@ const CreateYourOwn = ({ user, clientName }: any) => {
     setInputError(false);
     setWordCount(0);
     setAssignedToUsers([]);
+    setIndustry("");
+    setDepartment("");
   };
 
   const [assignLoading, setAssignLoading] = useState(false);
@@ -274,71 +282,134 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
               </Tooltip>
             </div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-              Please enter the situation that you want to practice
-            </p>
-            <textarea
-              ref={userContextRef}
-              onKeyDown={() => {
-                setInputError(false);
-              }}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
-                const count = words.length;
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row max-sm:flex-col w-full gap-2 mt-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Objective
+                  </p>
+                  <input
+                    type="text"
+                    value={objective}
+                    onChange={(e) => {
+                      setObjective(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Industry
+                  </p>
+                  <input
+                    type="text"
+                    value={industry}
+                    onChange={(e) => {
+                      setIndustry(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row max-sm:flex-col w-full gap-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Department
+                  </p>
+                  <input
+                    type="text"
+                    value={department}
+                    onChange={(e) => {
+                      setDepartment(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Key Stakeholders
+                  </p>
+                  <input
+                    type="text"
+                    value={keyStakeholders}
+                    onChange={(e) => {
+                      setKeyStakeholders(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 ">
+                  Please enter the situation that you want to practice
+                </p>
+                <textarea
+                  ref={userContextRef}
+                  onKeyDown={() => {
+                    setInputError(false);
+                  }}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const words = inputValue.trim().split(/\s+/);
+                    const count = words.length;
 
-                if (count <= 500) {
-                  setWordCount(count);
-                  setInputError(count < 20 || count > 500);
-                } else {
-                  setInputError(true);
-                }
-              }}
-              placeholder="Provide a brief scenario involving a complex decision-making situation in a business or professional setting. For Eg: A marketing team must decide on the best strategy to increase brand awareness while working with a limited budget and tight deadlines."
-              rows={8}
-              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
-            />
-            <div className="flex flex-row justify-between w-full">
-              <p
-                className={`text-red-500 text-xs mb-1.5 self-start ${
-                  !inputError && "invisible"
-                }`}
-              >
-                Please describe your situation in 20-500 words.
-              </p>
-              <p className="font-bold text-gray-500 text-xs">{wordCount}/500</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                disabled={isLoading}
-                onClick={handleGenerateSenario}
-                className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
-              >
-                {generatedTestData.length > 0
-                  ? isLoading
-                    ? "Regenerating"
-                    : "Regenerate"
-                  : isLoading
-                  ? "Generating"
-                  : "Generate"}
-                {isLoading && (
-                  <Loader className="h-4 w-4 inline ml-2 animate-spin" />
-                )}
-              </Button>
-              {!isLoading && (
+                    if (count <= 500) {
+                      setWordCount(count);
+                      setInputError(count < 20 || count > 500);
+                    } else {
+                      setInputError(true);
+                    }
+                  }}
+                  placeholder="Provide a brief scenario involving a complex decision-making situation in a business or professional setting. For Eg: A marketing team must decide on the best strategy to increase brand awareness while working with a limited budget and tight deadlines."
+                  rows={8}
+                  className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                />
+                <div className="flex flex-row justify-between w-full">
+                  <p
+                    className={`text-red-500 text-xs self-start ${
+                      !inputError && "invisible"
+                    }`}
+                  >
+                    Please describe your situation in 20-500 words.
+                  </p>
+                  <p className="font-bold text-gray-500 text-xs">
+                    {wordCount}/500
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
                 <Button
-                  onClick={clearHanlder}
-                  variant={"secondary"}
-                  className="max-sm:p-2 h-8 hover:brightness-105"
+                  disabled={isLoading}
+                  onClick={handleGenerateSenario}
+                  className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
                 >
-                  <Eraser className="mr-2 w-4 h-4" /> Clear
+                  {generatedTestData.length > 0
+                    ? isLoading
+                      ? "Regenerating"
+                      : "Regenerate"
+                    : isLoading
+                    ? "Generating"
+                    : "Generate"}
+                  {isLoading && (
+                    <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                  )}
                 </Button>
-              )}
-              {isLoading && (
-                <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
-                  {loadingText}
-                </span>
-              )}
+                {!isLoading && (
+                  <Button
+                    onClick={clearHanlder}
+                    variant={"secondary"}
+                    className="max-sm:p-2 h-8 hover:brightness-105"
+                  >
+                    <Eraser className="mr-2 w-4 h-4" /> Clear
+                  </Button>
+                )}
+                {isLoading && (
+                  <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
+                    {loadingText}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
