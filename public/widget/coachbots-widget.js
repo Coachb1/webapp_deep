@@ -2853,7 +2853,7 @@ loadExternalModule().then(() => {
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
-        <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list2">
             <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
