@@ -2853,15 +2853,14 @@ loadExternalModule().then(() => {
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
           <ul id="instructions-list2">
-           <li>1 . For Coaching interactions : To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary ". Your coach/mentor will receive notification, and a transcript will be shared afterward. For Icons by AI, no emails are going sent.  </li>
-           <li>2 . For Simulations; Depending upon the subject and context these may take several forms. The short version contains 3 questions and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-           <li>3 . For Deep dive surveys : Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
-           <li>4 . For Feedback Bots: Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publically, critical feedback is delivered over email privately. </li>
-           <li>5 . In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-           <li>6 . Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-           <li>7 . System availability issues may occasionally cause delays in responses and reports. </li>
-           <li>8 . For best results consider the system has no prior memory and restate your context whenever possible.</li>
+            <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+              <li><strong>3. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
         <span id="close-intructions-pane2" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
