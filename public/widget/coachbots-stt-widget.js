@@ -31,6 +31,25 @@ style.textContent = `
     .hiddenn {
         display: none;
     }
+
+    .ist-sc::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .ist-sc::-webkit-scrollbar-thumb {
+      background: #9ca3af;
+      border-radius: 10px;
+    }
+
+    .ist-sc::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .ist-sc {
+      scrollbar-width: thin;
+      scrollbar-color: #888 #f1f1f1;
+    }
 `;
 document.head.appendChild(style);
 
@@ -5751,7 +5770,9 @@ loadExternalModule().then(() => {
       style="border: none"
       textInput='{
         "styles": {
-          "text": {"color": "black", "fontSize" : ${JSON.stringify(chatInputFontSize)}},
+          "text": {"color": "black", "fontSize" : ${JSON.stringify(
+            chatInputFontSize
+          )}},
           "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #9ca3af", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
@@ -5853,18 +5874,49 @@ loadExternalModule().then(() => {
           Read here
         </button>
       </span> 
-      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
-        <div style="font-size: 12px;">
+      <div id="instructions-pane" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${
+        window.innerWidth < 768 ? "5px" : "25px"
+      }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
           <ul id="instructions-list">
-            <li>1 . For Coaching interactions : To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary ". Your coach/mentor will receive notification, and a transcript will be shared afterward. For Icons by AI, no emails are going sent.  </li>
-            <li>2 . For Simulations; Depending upon the subject and context these may take several forms. The short version contains 3 questions and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-            <li>3 . For Deep dive surveys : Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
-            <li>4 . For Feedback Bots: Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publically, critical feedback is delivered over email privately. </li>
-            <li>5 . In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-            <li>6 . Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
-            <li>7 . System availability issues may occasionally cause delays in responses and reports. </li>
-            <li>8 . For best results consider the system has no prior memory and restate your context whenever possible.</li>
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+              <li><strong>3. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
+        </div>
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ol>
+            <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
+            <li><strong>2. Ask Open-Ended Questions:</strong> Instead of "yes" or "no" questions, ask open-ended questions that encourage deeper conversation and insightful responses from your AI Coach. Here are some examples:
+              <ul>
+                <li>"What strategies can I use to overcome my public speaking anxiety?"</li>
+                <li>"How can I break down this large project into manageable steps?"</li>
+                <li>"What are some alternative approaches I haven't considered?"</li>
+              </ul>
+            </li>
+            <li><strong>3. Provide Context:</strong> Give your AI Coach context for your situation. The more details you provide, the better your coach can understand your challenges and provide relevant advice. For example:
+              <ul>
+                <li>"I have an upcoming presentation in front of a large audience, and I feel very nervous."</li>
+                <li>"I'm starting a new fitness routine, but I find it difficult to stay motivated."</li>
+              </ul>
+            </li>
+            <li><strong>4. Utilize Powerful Questions:</strong> Leverage different prompting techniques to guide your AI Coach and get more specific or customized responses:
+              <ul>
+                <li>Clarification Questions: "Can you elaborate on that point?" or "Could you give me an example?"</li>
+                <li>Reflective Questions: "That's an interesting perspective. Can you tell me more about...?" or "So, what you're saying is...?"</li>
+                <li>Action-Oriented Questions: "Based on this, what actionable steps can I take?" or "How can I apply this advice to my specific situation?"</li>
+              </ul>
+            </li>
+            <li><strong>5. Share Your Thoughts & Feelings:</strong> Don't hesitate to share your thoughts and feelings with your AI Coach. Open communication allows for a more productive coaching experience.</li>
+            <li><strong>6. Follow Up & Track Progress:</strong> After your session, reflect on the insights and advice you received. Set clear action steps and track your progress over time. This helps you stay motivated and measure the impact of your coaching sessions.</li>
+            <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
+            <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
+          </ol>
         </div>
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -5900,23 +5952,7 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
-  // botId = 'stress-management-0032'
   const _ = getBotDetails2(botId);
-
-  // if(botId){
-  //   const list = 
-  //   `<li>1 . For coaches/mentors in the directory, click on "End Session" to record sessions. Your coach/mentor will be notified, and a transcript will be shared afterward. For Icons by AI, it will only keep a record of the conversation. </li>
-  //    <li>2 . Any type of avatar or simulation bots should avoid unrelated questions, answers, or comments, and rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
-  //    <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. If it's a simulation or roleplay, "Coach Talk" NLP will also provide speech analysis in reports.</li>
-  //    <li>4 . Guide bots follow specific framework-based responses, while user-generated bots represent the user's knowledge base on any topic. </li>
-  //    <li>5 . Simulations and roleplays are designed to practice real-life scenarios. You can review covered scenarios on the Explore page. Both CoachTalk and Coachscribe can handle them.</li>
-  //    <li>6 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
-  //    <li>7 . For AI frames/avatars, the model represents the coach's point of view on a particular topic. For best results, stick to the highlighted area on the coach/mentor's page.</li>
-  //    <li>8 . Cochbot sessions should be assumed to have no prior memory. Always restate your context for the current session.</li>
-  //    <li>9 . For user-created knowledge bots, always ask questions related to the defined skill area for optimal results.</li>
-  //   `
-  //   instructionsPaneList.innerHTML = list
-  // }
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
@@ -5928,36 +5964,6 @@ loadExternalModule().then(() => {
     `
     instructionsPaneList.innerHTML = list
   }
-
-
-  //   appendMessage2(`<div id="option-button-container" >
-  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick('Integrating a New Team Member')">Integrating a New Team Member</button>
-
-  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Effective Customer Service Management')">Effective Customer Service Management</button>
-
-  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Growth Through Feedback')">Cultivating Growth Through Feedback</button>
-
-  //                     <button style="margin-top:5px; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Cultivating Team Impartiality')">Cultivating Team Impartiality</button>
-
-  //                     <button style="margin:5px 0; width:100%; padding:6px 4px; border: 1px solid lightgray; border-radius: 4px;"  onclick="handleOptionButtonClick('Managing Meeting Momentum')">Managing Meeting Momentum</button>
-  //                 </div>`)
-
-  //responsive styles for phones
-  // if (window.innerWidth < 600) {
-  //   chatContainer2.style.width = "80vw";
-  //   chatContainer2.style.right = "10vw";
-  //   chatContainer2.style.height = "78vh";
-  //   chatContainer2.style.bottom = "12vh";
-  //   chatElementRef2.style.height = "65vh";
-  //   chatElementRef2.style.width = "80vw";
-  //   chatIconContainer2.style.position = "fixed";
-  //   chatIconContainer2.style.width = "3rem";
-  //   chatIconContainer2.style.height = "3rem";
-  //   chatContainer2.style.position = "fixed";
-  //   closeFromTopp2.style.width = "30px";
-  //   closeFromTopp2.style.left = "0.3rem";
-  //   closeFromTopp2.style.top = "0.2rem";
-  // }
 
   if (window.innerWidth < 600) {
     chatContainer2.style.borderRadius = "0"
