@@ -5878,7 +5878,7 @@ loadExternalModule().then(() => {
         window.innerWidth < 768 ? "5px" : "25px"
       }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
@@ -5889,7 +5889,7 @@ loadExternalModule().then(() => {
           </ul>
         </div>
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
           <ol>
             <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
             <li><strong>2. Ask Open-Ended Questions:</strong> Instead of "yes" or "no" questions, ask open-ended questions that encourage deeper conversation and insightful responses from your AI Coach. Here are some examples:
