@@ -66,6 +66,7 @@ let codeAvailabilityUserChoice2 = false;
 let optedNo2 = false;
 let questionIndex2 = 0;
 let audioRes
+let wordLimit = 15;
 
 let clientAllowAudioInteraction2; 
 let userAllowAudioInteraction2;
@@ -6180,7 +6181,7 @@ loadExternalModule().then(() => {
   }
   
   // to check word limit (limit set to 0, row 669)
-  function isValidMessageStt(text, limit = 10, is_greater = false) {
+  function isValidMessageStt(text, limit = wordLimit, is_greater = false) {
     const words = text.split(" ");
     console.log("text : ",text, "words : ",words, "words length : ",words.length, "limit : ",limit, "is_greater : ",is_greater)
     let uppercaseArray = words.map((element) => element.toUpperCase());
@@ -7425,7 +7426,7 @@ loadExternalModule().then(() => {
             if (!isValidMessageStt(latestMessage)) {
               console.log('0')
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
               });
               return;
             }
@@ -7657,7 +7658,7 @@ loadExternalModule().then(() => {
 
                 if(!isValidMessageStt(latestMessage) && !options.includes(latestMessage)){
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
+                    html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                   });
                   return;
                 }
@@ -7674,7 +7675,7 @@ loadExternalModule().then(() => {
                 if(!isValidMessageStt(latestMessage)){
                   console.log('1')
                   signals.onResponse({
-                    html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
+                    html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                   });
                   return;
                 }
@@ -7793,10 +7794,10 @@ loadExternalModule().then(() => {
               }
             }
             // here checking word limits for signature bot responses
-            if (!isValidMessageStt(latestMessage)) {
+            if (!isValidMessageStt(latestMessage) && botScenarioCase !== "icons_by_ai") {
               console.log('2)','latestmsg',latestMessage)
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
               });
               return;
             }
@@ -8200,7 +8201,7 @@ loadExternalModule().then(() => {
               if (isValidMessageStt(latestMessage) == false) {
                 console.log('3')
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
+                  html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                 });
                 return;
               }
@@ -8253,7 +8254,7 @@ loadExternalModule().then(() => {
               if (!isValidMessageStt(latestMessage)) {
                 console.log('4')
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
+                  html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
                 });
                 return;
               }
