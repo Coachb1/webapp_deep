@@ -31,6 +31,7 @@ import { UseHelpMode } from "@/lib/helpmodeContext";
 import CreateYourDeepDive from "@/components/CreateYourDeepDive";
 import TeamConnect from "@/components/TeamConnect";
 import { ClientUserTeamType } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
 
 const CreateOwn = ({
   user,
@@ -1088,7 +1089,8 @@ const CreateOwn = ({
                             id="sc-id"
                             className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                           >
-                            Simulation Creator
+                            Simulation Creator{" "}
+                            <Badge className="ml-2">Beta</Badge>
                           </h1>
                           <div className="w-full">
                             <div className="w-full flex flex-col items-center justify-center mb-10">
@@ -1169,9 +1171,10 @@ const CreateOwn = ({
                         <div className="w-full flex flex-col items-center justify-center">
                           <h1
                             id="dd-id"
-                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md  flex flex-row items-center justify-center"
                           >
-                            Create Your Deep Dive
+                            Create Your Deep Dive{" "}
+                            <Badge className="ml-2">Beta</Badge>
                           </h1>
                           <div className="w-full">
                             <div className="w-full flex flex-col items-center justify-center mb-10">
