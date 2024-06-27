@@ -252,6 +252,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   <input
                     type="text"
                     value={industry}
+                    placeholder="Specify the industry e.g., Construction"
                     onChange={(e) => {
                       setIndustry(e.target.value);
                     }}
@@ -265,6 +266,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   <input
                     type="text"
                     value={department}
+                    placeholder="Identify the department e.g., Project Management"
                     onChange={(e) => {
                       setDepartment(e.target.value);
                     }}
@@ -279,6 +281,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   </p>
                   <input
                     type="text"
+                    placeholder="Describe the hierarchical level of the respondents e.g.,Middle Management, Entry-Level"
                     value={respondentHierarchy}
                     onChange={(e) => {
                       setRespondentHierarchy(e.target.value);
@@ -292,6 +295,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   </p>
                   <input
                     type="text"
+                    placeholder="Outline the skills of the respondents. e.g., Budget Management"
                     value={respondedentSkillSet}
                     onChange={(e) => {
                       setRespondentSkillSet(e.target.value);
