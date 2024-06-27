@@ -313,6 +313,7 @@ export function configureTestsData(
             test_code: test.test_code,
             test_type: test.test_type,
             is_recommended: test.is_recommended,
+            is_micro: test.is_micro,
           }));
           domainFilterOptions.push({ label: domain, value: domain });
           return {
