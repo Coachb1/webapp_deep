@@ -45,7 +45,11 @@ const LibraryTestsAccordian = ({
                 >
                   <AccordionTrigger className="text-left max-sm:text-xs">
                     <div>
-                      {test.title}{" "}
+                      {type === "categorised" ? (
+                        <>{test.title.split(":")[1]}</>
+                      ) : (
+                        <>{test.title}</>
+                      )}
                       {type === "requested" && (
                         <>
                           {test.assigned_to && (
