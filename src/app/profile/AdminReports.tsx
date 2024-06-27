@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Link2 } from "lucide-react";
 import HelpMode from "@/components/HelpMode";
 import { reportsLinksSelector } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 const AdminReports = ({ user }: any) => {
   const HelpModeSteps = [
@@ -36,7 +37,9 @@ const AdminReports = ({ user }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <HelpMode steps={HelpModeSteps} />
-      <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500">Client Admin</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-blue-500 flex flex-row items-center">
+        Client Admin <Badge className="ml-2">Beta</Badge>
+      </div>
       <div id="kudosreport" className="m-4 flex flex-row items-center w-fit">
         <p className="text-sm max-sm:text-xs">Kudos Board</p>
         <>

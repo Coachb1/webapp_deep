@@ -21,6 +21,7 @@ import ProfileActions from "./super-admin/ProfilesActions";
 import UserRestrictions from "./super-admin/UserRestrictions";
 import SystemInfo from "./super-admin/SystemInfo";
 import RecommendationProfiles from "./super-admin/RecommendationProfiles";
+import DataIntegration from "./super-admin/DataIntegration";
 
 const AdminProfile = ({ user, userId }: { user: any; userId: string }) => {
   const [loading, setLoading] = useState(true);
@@ -123,6 +124,8 @@ const AdminProfile = ({ user, userId }: { user: any; userId: string }) => {
           <SystemInfo />
 
           <RecommendationProfiles />
+
+          <DataIntegration />
         </div>
       </div>
     </div>
