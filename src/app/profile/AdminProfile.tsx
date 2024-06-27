@@ -23,7 +23,15 @@ import SystemInfo from "./super-admin/SystemInfo";
 import RecommendationProfiles from "./super-admin/RecommendationProfiles";
 import DataIntegration from "./super-admin/DataIntegration";
 
-const AdminProfile = ({ user, userId }: { user: any; userId: string }) => {
+const AdminProfile = ({
+  user,
+  userId,
+  clientName,
+}: {
+  user: any;
+  userId: string;
+  clientName: string;
+}) => {
   const [loading, setLoading] = useState(true);
 
   const [clientsData, setClientsData] = useState<ClientDataType[]>([]);
@@ -125,7 +133,7 @@ const AdminProfile = ({ user, userId }: { user: any; userId: string }) => {
 
           <RecommendationProfiles />
 
-          <DataIntegration />
+          <DataIntegration clientName={clientName} />
         </div>
       </div>
     </div>

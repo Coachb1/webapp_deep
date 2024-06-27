@@ -290,6 +290,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   </p>
                   <input
                     type="text"
+                    placeholder="Define the primary goal"
                     value={objective}
                     onChange={(e) => {
                       setObjective(e.target.value);
@@ -304,6 +305,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   <input
                     type="text"
                     value={industry}
+                    placeholder="Specify the industry this plan pertains to"
                     onChange={(e) => {
                       setIndustry(e.target.value);
                     }}
@@ -319,6 +321,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   <input
                     type="text"
                     value={department}
+                    placeholder="Identify the department (e.g., Marketing)"
                     onChange={(e) => {
                       setDepartment(e.target.value);
                     }}
@@ -331,6 +334,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   </p>
                   <input
                     type="text"
+                    placeholder="List the key individual (e.g.,Marketing Team)"
                     value={keyStakeholders}
                     onChange={(e) => {
                       setKeyStakeholders(e.target.value);

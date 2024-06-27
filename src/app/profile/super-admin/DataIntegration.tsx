@@ -2,12 +2,44 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { baseURL, basicAuth } from "@/lib/utils";
 import { Input, Modal } from "antd";
-import { Database } from "lucide-react";
+import { Database, Loader } from "lucide-react";
 import { useState } from "react";
-const DataIntegration = () => {
+import { toast } from "sonner";
+
+const DataIntegration = ({ clientName }: { clientName: string }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState("");
+
+  const submitHandler = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/save-webhook-url?webhook_url=${webhookUrl}&client_id=${clientName}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        toast.success("Succesfully uploaded webhook url.");
+      } else {
+        toast.error("Error saving the webhook url.");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error saving the webhook url.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <Button
@@ -15,8 +47,7 @@ const DataIntegration = () => {
         variant={"default"}
         className="h-8 text-xs bg-blue-100 hover:bg-blue-50 text-blue-500 border-transparent border hover:border-blue-500 flex flex-row items-center justify-center"
       >
-        <Database className="inline h-4 w-4 mr-2" /> Data Integration
-        <Badge className="ml-2">Beta</Badge>
+        <Database className="inline h-4 w-4 mr-2" /> Data Integration (Beta)
       </Button>
 
       <Modal
@@ -39,19 +70,30 @@ const DataIntegration = () => {
                 User Interaction data Webhook{" "}
               </p>
               <div className="w-full flex flex-row gap-2 items-center justify-center">
-                <Input className="w-full"></Input>
+                <Input
+                  className="w-full text-blue-500"
+                  style={{ color: "#3b82f6" }}
+                  onChange={(e) => {
+                    setWebhookUrl(e.target.value);
+                  }}
+                />
                 <Button
                   disabled={loading}
-                  onClick={() => {}}
+                  onClick={() => {
+                    submitHandler();
+                  }}
                   className="h-fit p-1.5 px-4"
                 >
-                  Submit
+                  {loading ? (
+                    <>
+                      Submitting{" "}
+                      <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>Submit</>
+                  )}
                 </Button>
               </div>
-              {/* <div className={`w-full mt-2 ${!loading && "hidden"}`}>
-                <p>Download Progress</p>
-                <Progress percent={progress} size="small" />
-              </div> */}
             </div>
           </div>
         </div>

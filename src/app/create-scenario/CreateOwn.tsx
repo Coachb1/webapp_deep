@@ -1087,7 +1087,7 @@ const CreateOwn = ({
                         <div className="w-full flex flex-col items-center justify-center">
                           <h1
                             id="sc-id"
-                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
+                            className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md flex flex-row items-center justify-center"
                           >
                             Simulation Creator{" "}
                             <Badge className="ml-2">Beta</Badge>

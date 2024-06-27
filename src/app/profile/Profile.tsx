@@ -45,6 +45,7 @@ const Profile = ({ user, helpModeText }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState("");
+  const [clientName, setClientName] = useState("");
 
   //client based restrictions
   const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
@@ -70,6 +71,7 @@ const Profile = ({ user, helpModeText }: any) => {
             ?.then((res) => res.json())
             .then((data) => {
               console.log(data, "getClientUserInfo - userProfile");
+              setClientName(data.data.user_info[0].client_name);
 
               setRestrictedPages(data.data.user_info[0].restricted_pages);
               setRestrictedFeatures(data.data.user_info[0].restricted_features);
@@ -231,7 +233,7 @@ const Profile = ({ user, helpModeText }: any) => {
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
           {selectedItem === "Admin" && (
-            <AdminProfile userId={userId} user={user} />
+            <AdminProfile userId={userId} user={user} clientName={clientName} />
           )}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
