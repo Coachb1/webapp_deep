@@ -633,9 +633,9 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                                 : undefined
                                             }
                                             variant={"default"}
-                                            className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                            className="bg-teal-100 h-6 w-fit text-sm py-3 text-gray-600 mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                           >
-                                            <>✨ {domains.domain}</>
+                                            <> EQ Area : {domains.domain}</>
                                           </Badge>
                                         </div>
 
@@ -774,7 +774,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                         variant={"default"}
                                         className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                       >
-                                        <>✨ {skills.domain}</>
+                                        <>Competency : {skills.domain}</>
                                       </Badge>
                                     </div>
 
@@ -854,7 +854,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                       className="bg-[#2DC092] hover:bg-[#2DC092] h-6 w-fit text-white text-sm py-3 text-center mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                     >
                                       <>
-                                        ✨{" "}
+                                        Category :{" "}
                                         {convertTextToCorrectFormat(
                                           domains.domain
                                         )}
@@ -869,6 +869,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                           <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
                                             <LibraryTestsAccordian
                                               tests={domains.tests}
+                                              type={"categorised"}
                                               attemptedTests={attemptedTests}
                                             />
                                           </div>

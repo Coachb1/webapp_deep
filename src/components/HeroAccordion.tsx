@@ -22,9 +22,9 @@ const HeroAccordion = ({ tests, badgeText, user, id }: testTypes) => {
         <div className={`w-full flex justify-center`}>
           <Badge
             variant={"secondary"}
-            className="bg-[#2DC092] h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+            className="bg-gray-300 h-6 w-fit text-gray-600 py-3 text-center mb-8 mt-12 max-sm:mt-8 text-sm"
           >
-            ✨ {badgeText}
+            System Demo : {badgeText}
           </Badge>
         </div>
         <div>
