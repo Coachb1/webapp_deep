@@ -45,7 +45,7 @@ const LibraryTestsAccordian = ({
                 >
                   <AccordionTrigger className="text-left max-sm:text-xs">
                     <div>
-                      {type === "categorised" ? (
+                      {test.title?.includes(":") ? (
                         <>{test.title.split(":")[1]}</>
                       ) : (
                         <>{test.title}</>
@@ -110,7 +110,11 @@ const LibraryTestsAccordian = ({
                 >
                   <AccordionTrigger className="text-left max-sm:text-xs">
                     <div>
-                      {test.title}{" "}
+                      {test.title?.includes(":") ? (
+                        <>{test.title.split(":")[1]}</>
+                      ) : (
+                        <>{test.title}</>
+                      )}
                       {test.is_recommended && (
                         <Badge
                           variant={"secondary"}
