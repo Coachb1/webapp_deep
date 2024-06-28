@@ -2449,8 +2449,8 @@ async function handleFaqButtonClick(question) {
         quickmatch.style.cursor = "not-allowed";
         quickmatch.removeAttribute("onmouseover");
         quickmatch.removeAttribute("onmouseleave");
-        quickmatch.style.background = "#d3d3d3";
-        quickmatch.style.color = "#a0a0a0";
+        quickmatch.style.background = "white";
+        quickmatch.style.color = "black";
       }
 
       const cannedMessageOne = document.getElementById("canned-btn-1")
@@ -2963,26 +2963,23 @@ function handleEndConversation(isInActive) {
   }
 
   
-  const quickmatch = document.getElementById(
-        "quick-match-button"
-      );
-  if (quickmatch){
+  const quickmatch = document.getElementById("quick-match-button");
+  if (quickmatch) {
     quickmatch.setAttribute(
       "onmouseover",
-      "this.style.backgroundColor = '#fb923c'"
+      "this.style.backgroundColor = '#f9fafb'"
     );
     quickmatch.setAttribute(
       "onmouseleave",
-      "this.style.backgroundColor = '#f97316'"
+      "this.style.backgroundColor = 'white'"
     );
     quickmatch.setAttribute(
       "onclick",
       `handleFaqButtonClick('fitness_analysis')`
     );
-  quickmatch.style.backgroundColor = '#f97316';
-  quickmatch.style.color = 'white';
-  quickmatch.disabled = false;
-  quickmatch.style.cursor = "pointer";
+    quickmatch.style.color = "black";
+    quickmatch.disabled = false;
+    quickmatch.style.cursor = "pointer";
   }
 
   const cannedMessageOne = document.getElementById("canned-btn-1")
