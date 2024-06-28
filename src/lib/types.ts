@@ -58,6 +58,10 @@ export interface TestsType {
   test_code: string;
   test_type?: string;
   is_recommended: boolean;
+  is_assigned?: boolean;
+  assigned_by?: string;
+  assigned_to?: string;
+  creator_user_id?: string;
 }
 
 export interface competencySkillsTestType {
@@ -102,6 +106,7 @@ export interface TestData {
   test_code: string;
   test_type: string;
   is_recommended: boolean;
+  is_micro?: boolean;
 }
 
 export interface DomainData {
@@ -162,6 +167,7 @@ export interface knowledgeBotJson {
     bot_type: string;
     bot_scenario_case: string;
     creator_name: string;
+    is_approved: boolean;
   };
   bot_attributes: {
     bot_name: string;
@@ -256,4 +262,57 @@ export interface BotDetailsType {
     admirer_ids: any; // Update type if it's known
     ui_information: any; // Update type if it's known
   };
+}
+
+export interface ClientUserType {
+  userEmail: string;
+  userName: string;
+  userId: string;
+}
+
+export interface ClientUserTeamType {
+  userEmail: string;
+  userName: string;
+  userId: string;
+  profileType: string;
+}
+
+export interface ClientDataType {
+  clientName: string;
+  clientId: string;
+  Users: ClientUserType[];
+  allowAudioInteractions?: boolean;
+}
+
+export interface ExtractedData {
+  [source: string]: { [fileName: string]: string };
+}
+export interface ExtractedDataCochee {
+  [fileName: string]: string;
+}
+
+export interface MediaItem {
+  fileName: string;
+  fileContent: string;
+  isDeleted: boolean;
+}
+
+export interface MediaData {
+  extracted_from_article: MediaItem[];
+  extracted_from_pdf: MediaItem[];
+  extracted_from_youtube: MediaItem[];
+}
+
+export interface OptionalMediaData {
+  extracted_from_optional_file: MediaItem[];
+}
+
+export interface AllUserDataType {
+  userEmail: string;
+  userClientId: string;
+  isDemoUser: boolean;
+  userId: string;
+  userRole: string;
+  userDeniedAccesses: string;
+  userProfileId?: string;
 }

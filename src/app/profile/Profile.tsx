@@ -29,7 +29,11 @@ import {
 } from "@/components/ui/tooltip";
 import Competencies from "@/app/profile/Competencies";
 import MyPages from "@/app/profile/MyPages";
-import { getClientUserInfo, getUserAccount } from "@/lib/utils";
+import {
+  CreateOrAssignClientId,
+  getClientUserInfo,
+  getUserAccount,
+} from "@/lib/utils";
 import AdminProfile from "@/app/profile/AdminProfile";
 import IDP from "@/app/profile/IDP";
 import EmailSign from "./EmailSign";
@@ -37,9 +41,11 @@ import MyComnnections from "./MyConnections";
 import AdminReports from "./AdminReports";
 import HelpMode from "@/components/HelpMode";
 
-const Profile = ({ user }: any) => {
+const Profile = ({ user, helpModeText }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
   const [userRole, setUserRole] = useState("");
+  const [userId, setUserId] = useState("");
+  const [clientName, setClientName] = useState("");
 
   //client based restrictions
   const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
@@ -52,17 +58,28 @@ const Profile = ({ user }: any) => {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setUserRole(data.role);
+          setUserId(data.uid);
         });
 
-      getClientUserInfo(user?.email)
-        ?.then((res) => res.json())
-        .then((data) => {
-          console.log(data, "getClientUserInfo - userProfile");
+      CreateOrAssignClientId(user?.email)
+        ?.then((resp) => resp.text())
+        .then((result) => {
+          console.log(`Success : data:`, result);
+          getClientUserInfo(user?.email)
+            ?.then((res) => res.json())
+            .then((data) => {
+              console.log(data, "getClientUserInfo - userProfile");
+              setClientName(data.data.user_info[0].client_name);
 
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        });
+              setRestrictedPages(data.data.user_info[0].restricted_pages);
+              setRestrictedFeatures(data.data.user_info[0].restricted_features);
+            });
+        })
+        .catch((error) =>
+          console.error("Error in create-or-assign-client-id", error)
+        );
     }
   }, []);
 
@@ -84,7 +101,10 @@ const Profile = ({ user }: any) => {
               <span className="max-sm:hidden max-lg:hidden">{itemName}</span>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="hidden max-sm:block max-lg:block" side="right">
+          <TooltipContent
+            className="hidden max-sm:block max-lg:block"
+            side="right"
+          >
             <p>{itemName}</p>
           </TooltipContent>
         </Tooltip>
@@ -120,28 +140,28 @@ const Profile = ({ user }: any) => {
               id="ainfo"
               icon={<UserCircle className="text-gray-500 h-5 w-5" />}
             />
-            {!restrictedFeatures?.includes("My Connections") && (
+            {!restrictedFeatures?.includes("My-connections") && (
               <NavItem
                 id="mcon"
                 itemName={"My Connections"}
                 icon={<UserCog2 className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Action Plan & session notes") && (
+            {!restrictedFeatures?.includes("Action-session-notes") && (
               <NavItem
                 id="apsn"
-                itemName={"Action Plan & Session notes"}
+                itemName={"Action Plans & Session Notes"}
                 icon={<StickyNote className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Bot Conversations") && (
+            {!restrictedFeatures?.includes("Bot-conversations") && (
               <NavItem
                 id="bcon"
                 itemName={"Bot Conversations"}
                 icon={<MessagesSquareIcon className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("My Rewards") && (
+            {!restrictedFeatures?.includes("My-rewards") && (
               <NavItem
                 id="mrew"
                 itemName={"My Rewards"}
@@ -162,14 +182,14 @@ const Profile = ({ user }: any) => {
                 icon={<GanttChartSquare className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Email Signature") && (
+            {!restrictedFeatures?.includes("Email-signature") && (
               <NavItem
                 id="esign"
                 itemName={"Email Signature"}
                 icon={<MailCheck className="text-gray-500 h-5 w-5" />}
               />
             )}
-            {!restrictedFeatures?.includes("Platform-Admin") && (
+            {!restrictedFeatures?.includes("Super-admin") && (
               <>
                 {userRole === "super_admin" ? (
                   <NavItem
@@ -180,7 +200,7 @@ const Profile = ({ user }: any) => {
                 ) : null}
               </>
             )}
-            {!restrictedFeatures?.includes("Client - Admin Reports") && (
+            {!restrictedFeatures?.includes("Client-admin-reports") && (
               <>
                 {userRole === "super_admin" || userRole === "client_admin" ? (
                   <NavItem
@@ -196,11 +216,15 @@ const Profile = ({ user }: any) => {
         <div className="w-[80%] max-sm:w-[90%] max-lg:w-[90%]">
           {selectedItem === "Account Information" && (
             <div className="mb-8">
-              <UserProfile user={user} userRole={userRole} />
+              <UserProfile
+                user={user}
+                userRole={userRole}
+                helpModeText={helpModeText}
+              />
               <MyPages user={user} />
             </div>
           )}
-          {selectedItem === "Action Plan & Session notes" && (
+          {selectedItem === "Action Plans & Session Notes" && (
             <SessionNotes user={user} />
           )}
           {selectedItem === "Bot Conversations" && (
@@ -208,10 +232,14 @@ const Profile = ({ user }: any) => {
           )}
           {selectedItem === "My Rewards" && <ActionPoints user={user} />}
           {selectedItem === "Competencies" && <Competencies user={user} />}
-          {selectedItem === "Admin" && <AdminProfile user={user} />}
+          {selectedItem === "Admin" && (
+            <AdminProfile userId={userId} user={user} clientName={clientName} />
+          )}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
-          {selectedItem === "Admin Reports" && <AdminReports user={user} />}
+          {selectedItem === "Admin Reports" && (
+            <AdminReports user={user} clientName={clientName} />
+          )}
           {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>

@@ -4,7 +4,6 @@ import FilterDropDown from "@/components/FilterDropDown";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 import {
   baseURL,
@@ -29,8 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  GlobeIcon,
-  List,
+  Info,
   Loader,
   Search,
   Star,
@@ -47,23 +45,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { UserClientInfoDataType, connectionType } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
-import { profile } from "console";
-import Coach from "./coach/Coach";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
-import HelpMode from "@/components/HelpMode";
 import Joyride from "react-joyride";
+import { Tooltip } from "antd";
 
-interface CoachesDataType {
+export interface CoachesDataType {
   id: number;
   name: string;
   profile_id: string;
   department: string;
   bot_type: string;
+  bot_tag: string | null;
   profile_pic_url: string;
   profile_type: string;
   description: string;
@@ -87,7 +83,12 @@ interface CoachesDataType {
   total_engagement_with_question_count: number | null;
   total_without_question_count: number | null;
   visual_tag: string;
+  user_id?: string;
+  email?: string;
   id_for_target_selection?: string;
+  bot_uid?: string;
+  custom_user_bot_id?: string;
+  is_recommended?: boolean;
 }
 
 interface FilterCategoriesType {
@@ -95,7 +96,11 @@ interface FilterCategoriesType {
   filterOptions: string[];
 }
 
-function addIdForTargetSelection(profiles: CoachesDataType[], HelpModeSteps : any[]) {
+function addIdForTargetSelection(
+  profiles: CoachesDataType[],
+  HelpModeSteps: any[],
+  dynamicHelpText: any
+) {
   // Initialize flags to track the first occurrence of each profile type
   let firstIconsByAiFound = false;
   let firstCoacheeFound = false;
@@ -120,29 +125,35 @@ function addIdForTargetSelection(profiles: CoachesDataType[], HelpModeSteps : an
       profile.id_for_target_selection = "first_coach_profile";
       firstCoachFound = true; // Update flag to indicate the first coach profile has been processed
 
-      HelpModeSteps.push({
-        target: "#first_coach_profile",
-        content:
-          "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
-        placement: "auto",
-      },
-      {
-        target: "#email",
-        content:
-          "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
-      },
-      {
-        target: "#reviews",
-        disableScrolling: true,
-        content:
-          "Coaches and Mentors can get review ratings from anyone in the network. ",
-      },
-      {
-        target: "#feedback",
-        disableScrolling: true,
-        content:
-          "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
-      })
+      HelpModeSteps.push(
+        {
+          target: "#first_coach_profile",
+          content: dynamicHelpText?.first_coach_profile
+            ? dynamicHelpText?.first_coach_profile
+            : "The avatar or bot representation of the coach or mentor which is used as a primary medium of coaching.",
+          placement: "auto",
+        },
+        {
+          target: "#email",
+          content: dynamicHelpText?.email
+            ? dynamicHelpText.email
+            : "The avatar of the email via which the conversation can happen without leaving the inbox! (The coach or mentor acceptance is mandatory) The actual coach is copied in the emails and may intervene anytime but the conversation is actually happening with their avatars. ",
+        },
+        {
+          target: "#reviews",
+          disableScrolling: true,
+          content: dynamicHelpText?.reviews
+            ? dynamicHelpText.reviews
+            : "Coaches and Mentors can get review ratings from anyone in the network. ",
+        },
+        {
+          target: "#feedback",
+          disableScrolling: true,
+          content: dynamicHelpText?.feedback
+            ? dynamicHelpText.feedback
+            : "Available for those participants who join a peer feedback network. The users can  showcase feedback from anyone and take action on private critical feedback for improvement. ",
+        }
+      );
     }
   });
 
@@ -171,11 +182,27 @@ const Coaches = ({
   coachesDataa,
   UserJoiningPreviledges,
   userConnections,
+  clientDepartments,
+  clientExpertise,
+  restrictedFeatures,
+  restrictedPages,
+  headings,
+  helpModeText,
 }: {
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
   UserJoiningPreviledges: any;
   userConnections: any;
+  clientDepartments: any;
+  clientExpertise: any;
+  restrictedPages: string | null;
+  restrictedFeatures: string | null;
+  headings: {
+    heading: string | null;
+    subHeading: string | null;
+    tagLine: string | null;
+  } | null;
+  helpModeText: any;
 }) => {
   const router = useRouter();
   const params = useSearchParams();
@@ -205,24 +232,11 @@ const Coaches = ({
   const [coachId, setCoachId] = useState("");
   const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
-  // const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const [buttonLoading, setButtonLoading] = useState(true);
 
-  //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
-
-  const [userClientInfoData, setUserClientInfoData] =
-    useState<UserClientInfoDataType>();
-
-  const [clientDepartments, setClientDepartments] = useState<string[] | null>(
-    null
-  );
-
-  const [clientExpertise, setClientExpertise] = useState<string[] | null>(null);
+  const [dynamicHelpText, setDynamicHelpText] = useState<any>();
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
   //pagination logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -242,68 +256,24 @@ const Coaches = ({
   const totalPages = Math.ceil(coachesData.length / itemsPerPage);
   const maxPaginationLinks = 5;
 
-  const getClientInfoForUser = (userEmail: string) => {
-    if (userEmail) {
-      fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setUserClientInfoData(data.data);
-          console.log(data, "client user info");
-          setClientDepartments(data.data.user_info[0].departments);
-          setClientExpertise(data.data.user_info[0].coach_expertise);
-
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        })
-        .catch((err) => console.error(err));
-    }
-  };
-
   const getCoachesData = async () => {
-    // setLoadingStates({
-    //   icon: <List className="h-4 w-4 mr-2" />,
-    //   text: "Loading Profile summaries",
-    // });
-    //GET COACHES
-    // await fetch(
-    //   `${baseURL}/accounts/get-directory-informations/?email=${user?.email!}`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: basicAuth,
-    //     },
-    //   }
-    // )
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    const data = coachesDataa;
-    console.log(data);
+    const data = coachesDataa.sort(
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+    );
 
+    console.log("data", data);
     const iconsByAiProfiles = data.filter(
       (profile: CoachesDataType) => profile.profile_type === "icons_by_ai"
     );
-    // console.log(iconsByAiProfiles, "iconsByAiProfiles");
 
-    const allOtherProfiles = data.filter(
+    const allOtherProfiles = data?.filter(
       (profile: CoachesDataType) =>
         profile.bot_type !== "coachbots" &&
         profile.profile_type !== "icons_by_ai"
     );
 
-    // console.log(allOtherProfiles, "allOtherProfiles");
-
     setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
     setCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
-
-    // setLoading(false);
 
     const profileTypeOptions: string[] = Array.from(
       new Set(data.map((profile: CoachesDataType) => profile.profile_type))
@@ -319,15 +289,23 @@ const Coaches = ({
       )
     );
 
+    console.log("HELLO DTA : ", clientDepartments, clientExpertise);
+
     const totalExpertise =
-      clientExpertise !== null
-        ? clientExpertise
+      clientExpertise !== null && clientExpertise !== ""
+        ? clientExpertise.split(",")
         : [
-            "Career Management",
-            "Work Life Balance",
-            "Project Management",
-            "Lateral Transfers",
+            "Leadership Development",
+            "Stress Management",
+            "Hiring & Recruitment",
+            "People Management",
+            "Diversity & Inclusion",
+            "Career Navigation",
+            "Culture Alignment",
+            "Workplace Skills",
           ];
+
+    console.log(totalExpertise);
 
     setCoachSkillsExpertise([...skillsOptions, ...totalExpertise]);
 
@@ -357,8 +335,8 @@ const Coaches = ({
       {
         filterName: "Department",
         filterOptions:
-          clientDepartments !== null
-            ? clientDepartments
+          clientDepartments !== null && clientDepartments !== ""
+            ? clientDepartments.split(",")
             : [
                 "Sales & Marketing",
                 "Production",
@@ -377,74 +355,20 @@ const Coaches = ({
       {
         filterName: "Expertise",
         filterOptions:
-          clientExpertise !== null
-            ? clientExpertise
+          clientExpertise !== null && clientExpertise !== ""
+            ? clientExpertise.split(",")
             : [
-                "Career Management",
-                "Work Life Balance",
-                "Project Management",
-                "Lateral Transfers",
+                "Leadership Development",
+                "Stress Management",
+                "Hiring & Recruitment",
+                "People Management",
+                "Diversity & Inclusion",
+                "Career Navigation",
+                "Culture Alignment",
+                "Workplace Skills",
               ],
       },
     ]);
-    // })
-    // .catch((error) => console.log("error", error));
-  };
-
-  const getFormattedCoachName = (name: string) => {
-    return name.replace(/([^a-zA-Z0-9])\1+/g, "$1");
-  };
-
-  const getConnectionsForCoachee = (coacheeId: string) => {
-    if (coacheeId) {
-      fetch(
-        `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setConnections(data.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  };
-
-  const getConnectionsForCoach = (coachId: string) => {
-    if (coachId) {
-      fetch(
-        `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setConnections(data.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-          console.log(err);
-        });
-    } else {
-      setLoading(false);
-    }
   };
 
   const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
@@ -463,8 +387,42 @@ const Coaches = ({
   useEffect(() => {
     hideBots();
     if (user) {
-      getClientInfoForUser(user?.email!);
+      // getClientInfoForUser(user?.email!);
+      console.log("COACHES DATA : ", coachesDataa);
       getCoachesData();
+
+      const dynamicHelpTextt = helpModeText?.network_directory;
+      setDynamicHelpText(helpModeText?.network_directory);
+      // const DynHelpText = ;
+      //helpmode text
+      setHelpModeSteps([
+        {
+          target: "#header-text",
+          content: dynamicHelpTextt?.header_text
+            ? dynamicHelpTextt.header_text
+            : "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
+        },
+        {
+          target: "#join-the-network",
+          content: dynamicHelpTextt?.join_the_network
+            ? dynamicHelpTextt.join_the_network
+            : "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
+        },
+        {
+          target: "#search-filter",
+          content: dynamicHelpTextt?.search_filter
+            ? dynamicHelpTextt.search_filter
+            : "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
+        },
+        {
+          target: "#participant-listing",
+          disableScrolling: true,
+          content: dynamicHelpTextt?.participant_listing
+            ? dynamicHelpTextt.participant_listing
+            : `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
+        },
+      ]);
+
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
@@ -490,14 +448,6 @@ const Coaches = ({
               const isApprovedData = data.data.filter(
                 (coachData: any) => coachData.is_approved === true
               );
-
-              // if (findCoacheeUID(isApprovedData)) {
-              //   getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              // } else if (findCoachUID(isApprovedData)) {
-              //   getConnectionsForCoach(findCoachUID(isApprovedData));
-              // } else {
-              //   setLoading(false);
-              // }
 
               if (isApprovedData.length > 0) {
                 setCoacheeId(findCoacheeUID(isApprovedData));
@@ -543,37 +493,71 @@ const Coaches = ({
       return inputArray;
     }
 
-    return inputArray.filter((obj) => {
-      return filterArray.every((filter) => {
-        for (const prop in obj) {
-          if (
-            obj.hasOwnProperty(prop) &&
-            obj[prop as keyof CoachesDataType] &&
-            prop !== "description" // Skip filtering for the "description" property
-          ) {
-            const propValue =
-              obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
-            if (propValue.includes(filter.toLowerCase())) {
-              return true;
+    if (filterArray.includes("recommended")) {
+      return inputArray
+        .filter((coach) => coach.is_recommended)
+        .filter((obj) => {
+          return filterArray
+            .filter((searchStr) => searchStr !== "recommended")
+            .every((filter) => {
+              for (const prop in obj) {
+                if (
+                  obj.hasOwnProperty(prop) &&
+                  obj[prop as keyof CoachesDataType] &&
+                  prop !== "description" // Skip filtering for the "description" property
+                ) {
+                  const propValue =
+                    obj[
+                      prop as keyof CoachesDataType
+                    ]!.toString().toLowerCase();
+                  if (propValue.includes(filter.toLowerCase())) {
+                    return true;
+                  }
+                }
+              }
+              return false;
+            });
+        });
+    } else {
+      return inputArray.filter((obj) => {
+        return filterArray.every((filter) => {
+          for (const prop in obj) {
+            if (
+              obj.hasOwnProperty(prop) &&
+              obj[prop as keyof CoachesDataType] &&
+              prop !== "description" // Skip filtering for the "description" property
+            ) {
+              const propValue =
+                obj[prop as keyof CoachesDataType]!.toString().toLowerCase();
+              if (propValue.includes(filter.toLowerCase())) {
+                return true;
+              }
             }
           }
-        }
-        return false;
+          return false;
+        });
       });
-    });
+    }
   }
 
   const [connectedCoaches, setConnectedCoaches] = useState<CoachesDataType[]>(
     []
   );
-  const handleUpdateCheckedValues = (newValues: string[]) => {
-    setCurrentPage(1);
+  const handleUpdateCheckedValues = (
+    newValuesId: string[],
+    silentUpdate?: string
+  ) => {
+    const newValues = newValuesId.map((ch) => ch.trim());
+    if (!silentUpdate) {
+      setCurrentPage(1);
+    }
     setParentCheckedValues(newValues);
     console.log(newValues);
     if (newValues.length > 0 && newValues[0].length === 0) {
       setParentCheckedValues([]);
     }
-
+    console.log("COACHES DATA IN FILTER : ", coachesData);
+    console.log("SAVEDCOACHES DATA IN FILTER : ", savedCoachesData);
     if (newValues.length === 0) {
       console.log("no values selected");
       setCoachesData(savedCoachesData);
@@ -667,6 +651,19 @@ const Coaches = ({
       );
       console.log(filteredData);
       setCoachesData(filteredData);
+    } else if (newValues.includes("recommended")) {
+      const filteredData = filterData(
+        newValues.includes("Connected")
+          ? coachesData.filter((coach) => coach.is_recommended)
+          : savedCoachesData.filter((coach) => coach.is_recommended),
+        newValues
+      );
+      // const filteredData =
+      newValues.includes("Connected")
+        ? coachesData.filter((coach) => coach.is_recommended)
+        : savedCoachesData.filter((coach) => coach.is_recommended);
+      console.log(filteredData);
+      setCoachesData(filteredData);
     } else {
       const filteredData = filterData(
         newValues.includes("Connected") ? coachesData : savedCoachesData,
@@ -692,7 +689,7 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections.data.find(
+          const connection = userConnections?.data?.find(
             (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
@@ -718,10 +715,18 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps,
+          dynamicHelpText
+        )
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps,
+          dynamicHelpText
+        )
       );
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
@@ -748,10 +753,18 @@ const Coaches = ({
 
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps,
+          dynamicHelpText
+        )
       );
       setSavedCoachesData(
-        addIdForTargetSelection([...connectedCoaches, ...unconnectedCoaches], HelpModeSteps)
+        addIdForTargetSelection(
+          [...connectedCoaches, ...unconnectedCoaches],
+          HelpModeSteps,
+          dynamicHelpText
+        )
       );
     }
 
@@ -774,21 +787,13 @@ const Coaches = ({
         }
       }
     }, 300);
-
-    //default filter for - icons by ai
-    //   handleUpdateCheckedValues(["icons_by_ai"]);
-    //   const filteredData = filterData(
-    //     ["icons_by_ai"].includes("Connected")
-    //       ? coachesData.filter(
-    //           (coachData) => coachData.profile_type === "icons_by_ai"
-    //         )
-    //       : savedCoachesData.filter(
-    //           (coachData) => coachData.profile_type === "icons_by_ai"
-    //         ),
-    //     ["icons_by_ai"]
-    //   );
-    //   setCoachesData(filteredData);
   }, [connections, coacheeId, coachId]);
+
+  //for state revalidation after profile actions
+  useEffect(() => {
+    setCoachesData(savedCoachesData);
+    handleUpdateCheckedValues(parentCheckedValues, "yes");
+  }, [savedCoachesData]);
 
   useEffect(() => {
     const scrollTimer = setTimeout(() => {
@@ -824,13 +829,17 @@ const Coaches = ({
     }
   };
 
-  const RequestionConnection = ({ coachId }: { coachId: string }) => {
+  const RequestionConnection = ({
+    coachId,
+    requestStatus,
+    stateCoachId,
+  }: {
+    coachId: string;
+    requestStatus: string;
+    stateCoachId: string;
+  }) => {
     const [requestLoading, setRequestLoading] = useState(false);
-    const [status, setStatus] = useState("");
-
-    useEffect(() => {
-      setStatus(findConnectionStatus(connections, coachId, coacheeId));
-    }, [connections]);
+    const [status, setStatus] = useState(requestStatus);
 
     const requestConnectHandler = () => {
       console.log(coacheeId, coachId);
@@ -860,7 +869,14 @@ const Coaches = ({
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
             } else {
-              getConnectionsForCoachee(coacheeId);
+              const updatedCoachesData = savedCoachesData.map((coach) =>
+                coach.profile_id === coachId
+                  ? { ...coach, status: "pending" }
+                  : coach
+              );
+              setStatus("pending");
+              console.log(updatedCoachesData);
+              setSavedCoachesData(updatedCoachesData);
             }
             setTimeout(() => {
               setRequestLoading(false);
@@ -880,7 +896,9 @@ const Coaches = ({
     return (
       <>
         <Button
-          disabled={requestLoading}
+          disabled={
+            requestLoading || status === "pending" || status === "Requested"
+          }
           variant={"outline"}
           className="max-sm:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
@@ -893,7 +911,11 @@ const Coaches = ({
               Requesting
             </>
           ) : (
-            "Request connection"
+            <>
+              <>{!status && "Request Connection"}</>
+              <>{status === "pending" && "Requested"}</>
+              <>{status === "accepted" && "Accepted"}</>
+            </>
           )}
         </Button>
       </>
@@ -948,6 +970,17 @@ const Coaches = ({
           setStarCount(data.average_rating);
           setTotalRating(data.total_ratings);
           setHoveredIndex(null);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === coachId
+              ? {
+                  ...coach,
+                  total_rating: data.total_ratings,
+                  rating: data.average_rating,
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
         });
     };
 
@@ -1051,6 +1084,13 @@ const Coaches = ({
           setIsLiked(true);
           setLikeCount((prevCount) => prevCount + 1);
 
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? { ...coach, admirer_ids: [...coach.admirer_ids, userId] }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
+
           setInitiated(false);
         })
         .catch((err) => {
@@ -1069,7 +1109,7 @@ const Coaches = ({
         body: JSON.stringify({
           profile_id: profile_id,
           user_id: userId,
-          is_reverted: true,
+          is_revert: "true",
         }),
       })
         .then((res) => res.json())
@@ -1077,6 +1117,16 @@ const Coaches = ({
           console.log(data);
           setIsLiked(false);
           setLikeCount((prevCount) => prevCount - 1);
+
+          const updatedCoachesData = savedCoachesData.map((coach) =>
+            coach.profile_id === profile_id
+              ? {
+                  ...coach,
+                  admirer_ids: coach.admirer_ids.filter((id) => id !== userId),
+                }
+              : coach
+          );
+          setSavedCoachesData(updatedCoachesData);
 
           setInitiated(false);
         })
@@ -1113,30 +1163,6 @@ const Coaches = ({
     );
   };
 
-  const HelpModeSteps = [
-    {
-      target: "#header-text",
-      content:
-        "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
-    },
-    {
-      target: "#join-the-network",
-      content:
-        "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
-    },
-    {
-      target: "#search-filter",
-      content:
-        "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up.  ",
-    },
-    {
-      target: "#participant-listing",
-      disableScrolling: true,
-      content: `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
-    },
-    
-  ];
-
   const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
@@ -1149,12 +1175,18 @@ const Coaches = ({
           scrollOffset={100}
           disableScrollParentFix
           callback={(callbackData) => {
-            console.log(callbackData);
             if (
               callbackData.action === "close" ||
               callbackData.action === "reset"
             ) {
               updateHelpModeState(false);
+            }
+
+            if (
+              callbackData.step.target === "#search-filter" &&
+              callbackData.action === "next"
+            ) {
+              window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
           //@ts-ignore
@@ -1172,15 +1204,19 @@ const Coaches = ({
       </h1>
       <h1
         id="header-text"
-        className="mt-0 text-5xl font-bold text-gray-600 max-sm:text-2xl  md:text-6xl lg:text-4xl "
+        className="mt-0 text-4xl font-bold text-gray-600 max-sm:text-2xl"
       >
-        Coaching & Performance Workbench
+        {headings?.heading
+          ? headings?.heading
+          : "Coaching & Performance Workbench"}
       </h1>
-      <p className="my-2 max-w-prose text-zinc-700 max-sm:px-8 sm:text-lg">
+      <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
         {" "}
-        Peer to Peer network of leaders for growth.
+        {headings?.subHeading
+          ? headings?.subHeading
+          : "Peer to Peer network of leaders for growth."}
       </p>
-      {!restrictedFeatures?.includes("Join the network") && (
+      {!restrictedFeatures?.includes("Join-the-network") && (
         <>
           <div
             id="join-the-network"
@@ -1199,151 +1235,183 @@ const Coaches = ({
                     variant={"outline"}
                     className="h-fit w-fit"
                   >
-                    Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                    {" "}
+                    <>
+                      {" "}
+                      Join the network <ChevronDown className="ml-2 h-4 w-4" />
+                    </>
                   </Button>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {/* {["coach", "mentor"].includes(canJoinAs) && ( */}
-                <DropdownMenuItem
-                  disabled={
-                    allCoaches.length > 0 ||
-                    (canJoinAs?.length !== 0 &&
-                      !["coach", "mentor"].includes(canJoinAs))
-                  }
-                  asChild
-                >
-                  <Link
-                    href={"/intake/?type=coach"}
-                    // onClick={() => {
-                    //   router.push("/intake/?type=coach");
-                    // }}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    Join as Coach or Mentor{" "}
-                    {allCoaches.length > 0 ? (
-                      <>
-                        {allCoaches[0]?.is_approved ? (
+                <DropdownMenuItem asChild>
+                  <div className="flex flex-row justify-center items-center">
+                    <Button
+                      variant={"link"}
+                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                      disabled={
+                        allCoaches.length > 0 ||
+                        (canJoinAs?.length !== 0 &&
+                          !["coach", "mentor"].includes(canJoinAs))
+                      }
+                    >
+                      <Link href={"/intake/?type=coach"}>
+                        Join as Coach or Mentor{" "}
+                        {allCoaches.length > 0 ? (
                           <>
-                            {coachId ? (
+                            {allCoaches[0]?.is_approved ? (
+                              <>
+                                {coachId ? (
+                                  <Badge className="ml-2">Already Joined</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {allCoaches[0]?.profile_type === "coach" ||
+                                allCoaches[0]?.profile_type === "mentor" ||
+                                allCoaches[0]?.profile_type ===
+                                  "coach-mentor" ? (
+                                  <Badge className="ml-2">Requested</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ) : canJoinAs?.length !== 0 &&
+                          !["coach", "mentor"].includes(canJoinAs) ? (
+                          <Badge
+                            variant={"secondary"}
+                            className="ml-2 border border-gray-400"
+                          >
+                            Not Allowed
+                          </Badge>
+                        ) : null}
+                      </Link>
+                    </Button>
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
+                    </Tooltip>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <div className="flex flex-row justify-center items-center">
+                    <Button
+                      variant={"link"}
+                      disabled={
+                        allCoaches.length > 0 ||
+                        (canJoinAs?.length !== 0 &&
+                          !["coachee", "mentee"].includes(canJoinAs))
+                      }
+                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                    >
+                      <Link href={"/intake/?type=coachee"}>
+                        Join as Coachee or Mentee
+                        {allCoaches.length > 0 ? (
+                          <>
+                            {allCoaches[0]?.is_approved ? (
+                              <>
+                                {coacheeId ? (
+                                  <Badge className="ml-2">Already Joined</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {allCoaches[0]?.profile_type === "coachee" ||
+                                allCoaches[0]?.profile_type === "mentee" ? (
+                                  <Badge className="ml-2">Requested</Badge>
+                                ) : (
+                                  <Badge
+                                    variant={"secondary"}
+                                    className="ml-2 border border-gray-400"
+                                  >
+                                    Not Allowed
+                                  </Badge>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ) : canJoinAs?.length !== 0 &&
+                          !["coachee", "mentee"].includes(canJoinAs) ? (
+                          <Badge
+                            variant={"secondary"}
+                            className="ml-2 border border-gray-400"
+                          >
+                            Not Allowed
+                          </Badge>
+                        ) : null}
+                      </Link>
+                    </Button>
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                    </Tooltip>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <div className="flex flex-row justify-center items-center">
+                    <Button
+                      variant={"link"}
+                      disabled={feedbackBots.length > 0}
+                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                    >
+                      <Link href={"/intake/?type=feedback"}>
+                        Join Feedback Network
+                        {feedbackBots.length > 0 && (
+                          <>
+                            {feedbackBots[0]?.signature_bot.is_approved ? (
                               <Badge className="ml-2">Already Joined</Badge>
                             ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {allCoaches[0]?.profile_type === "coach" ||
-                            allCoaches[0]?.profile_type === "mentor" ||
-                            allCoaches[0]?.profile_type === "coach-mentor" ? (
                               <Badge className="ml-2">Requested</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
                             )}
                           </>
                         )}
-                      </>
-                    ) : canJoinAs?.length !== 0 &&
-                      !["coach", "mentor"].includes(canJoinAs) ? (
-                      <Badge
-                        variant={"secondary"}
-                        className="ml-2 border border-gray-400"
-                      >
-                        Not Allowed
-                      </Badge>
-                    ) : null}
-                  </Link>
-                </DropdownMenuItem>
-                {/* )} */}
-                {/* {["coachee", "mentee"].includes(canJoinAs) && ( */}
-                <DropdownMenuItem
-                  disabled={
-                    allCoaches.length > 0 ||
-                    (canJoinAs?.length !== 0 &&
-                      !["coachee", "mentee"].includes(canJoinAs))
-                  }
-                  asChild
-                >
-                  <Link
-                    href={"/intake/?type=coachee"}
-                    // onClick={() => {
-                    //   router.push("/intake/?type=coachee");
-                    // }}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    Join as Coachee or Mentee
-                    {allCoaches.length > 0 ? (
-                      <>
-                        {allCoaches[0]?.is_approved ? (
-                          <>
-                            {coacheeId ? (
-                              <Badge className="ml-2">Already Joined</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {allCoaches[0]?.profile_type === "coachee" ||
-                            allCoaches[0]?.profile_type === "mentee" ? (
-                              <Badge className="ml-2">Requested</Badge>
-                            ) : (
-                              <Badge
-                                variant={"secondary"}
-                                className="ml-2 border border-gray-400"
-                              >
-                                Not Allowed
-                              </Badge>
-                            )}
-                          </>
-                        )}
-                      </>
-                    ) : canJoinAs?.length !== 0 &&
-                      !["coachee", "mentee"].includes(canJoinAs) ? (
-                      <Badge
-                        variant={"secondary"}
-                        className="ml-2 border border-gray-400"
-                      >
-                        Not Allowed
-                      </Badge>
-                    ) : null}
-                  </Link>
-                </DropdownMenuItem>
-                {/* )} */}
-                <DropdownMenuItem disabled={feedbackBots.length > 0} asChild>
-                  <Link
-                    href={"/intake/?type=feedback"}
-                    // onClick={() => {
-                    //   router.push("/intake/?type=feedback");
-                    // }}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    Join Feedback Network
-                    {feedbackBots.length > 0 && (
-                      <>
-                        {feedbackBots[0]?.signature_bot.is_approved ? (
-                          <Badge className="ml-2">Already Joined</Badge>
-                        ) : (
-                          <Badge className="ml-2">Requested</Badge>
-                        )}
-                      </>
-                    )}
-                  </Link>
+                      </Link>
+                    </Button>
+                    <Tooltip
+                      overlayInnerStyle={{
+                        backgroundColor: "white",
+                        color: "black",
+                        padding: "8px",
+                      }}
+                      title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
+                    >
+                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                    </Tooltip>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -1353,49 +1421,55 @@ const Coaches = ({
       <div id="list" className="min-h-screen w-full max-sm:px-2">
         <div className="my-4">
           <p className="font-semibold text-gray-500 max-sm:text-sm">
-            We enable deep and meaningful coaching conversations with AI
-            assistance even when life gets busy!
+            {headings?.tagLine
+              ? headings.tagLine
+              : "We enable deep and meaningful coaching conversations with AI assistance even when life gets busy!"}
           </p>
         </div>
-        <div id="search-filter">
-          <div className="my-4">
-            <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
-              <Search className="mr-1 inline h-4 w-4" />
-              <input
-                placeholder="What are you looking for?"
-                className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
-                type="text"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  handleUpdateCheckedValues([e.target.value]);
-                }}
-              />
+        {!restrictedFeatures?.includes("Search-filter") && (
+          <div id="search-filter">
+            <div className="my-4">
+              <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
+                <Search className="mr-1 inline h-4 w-4" />
+                <input
+                  placeholder="Search for Any Profile"
+                  className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+                  type="text"
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    handleUpdateCheckedValues([e.target.value]);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <div>
+                <FilterDropDown
+                  filtersCategory={filterCategroies}
+                  setParentCheckedValues={setParentCheckedValues}
+                  checkedValues={parentCheckedValues}
+                  onUpdateCheckedValues={handleUpdateCheckedValues}
+                />
+                <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
+                  This is a combination filter. It works when the result
+                  satisfies each selection criterion.
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mt-4">
-            <div>
-              <FilterDropDown
-                filtersCategory={filterCategroies}
-                setParentCheckedValues={setParentCheckedValues}
-                checkedValues={parentCheckedValues}
-                onUpdateCheckedValues={handleUpdateCheckedValues}
-              />
-              <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
-                This is a combination filter. It works when the result satisfies
-                each selection criterion.
-              </p>
-            </div>
-          </div>
-        </div>
+        )}
         <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />
-        <Badge
-          variant={"secondary"}
-          className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
-        >
-          Profiles with displayed coach/mentor emails use AI-generated
-          responses, with an average response time of 24 hours. The real user's
-          email is also kept in CC; they may choose to respond or not.
-        </Badge>
+        {!restrictedFeatures?.includes("DirProfile-msg") && (
+          <Badge
+            variant={"secondary"}
+            className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
+          >
+            Profiles that have listed emails indicate that those coaches have a
+            email avatar that can respond as well. (AI responses, with 24 hour
+            average response times)
+          </Badge>
+        )}
+
         <div className="mt-2 ">
           {loading && (
             <div className="flex w-full flex-row items-center justify-center pb-12">
@@ -1417,10 +1491,10 @@ const Coaches = ({
             {!loading &&
               coachesData.length > 0 &&
               currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20 ">
+                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20">
                   <div className="relative top-[26px] flex w-full flex-row justify-between">
                     <span
-                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs ${
+                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] ${
                         coach.profile_type !== "icons_by_ai"
                           ? "visible"
                           : "invisible"
@@ -1439,24 +1513,24 @@ const Coaches = ({
                             ? "email"
                             : undefined
                         }
-                        className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs"
+                        className="z-[1] ml-4 mr-4  rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] max-sm:mr-2 "
                       >
                         {coach.name.replace(/\s/g, "").toLowerCase() +
                           coach.id +
                           "@coachbots.com"}
                       </span>
                     )}
-                    {(coach.profile_type === "icons_by_ai" ||
+                    {/* {(coach.profile_type === "icons_by_ai" ||
                       coach.profile_type === "coachee" ||
                       coach.profile_type === "mentee") && (
                       <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs">
                         Not Applicable
                       </span>
-                    )}
+                    )} */}
                   </div>
                   <div
                     id={coach.id_for_target_selection}
-                    className={`my-3 flex w-full flex-row gap-6  rounded-lg border p-8 ${
+                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 ${
                       coach.profile_type === "icons_by_ai" &&
                       "border-gray-800 shadow-lg"
                     }`}
@@ -1464,14 +1538,20 @@ const Coaches = ({
                     <div className="">
                       <img
                         className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
-                        src={coach.profile_pic_url}
+                        src={
+                          coach.profile_pic_url
+                            ? coach.profile_pic_url
+                            : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
+                        }
                       />
-                      <div className="mt-4">
-                        <LikeComponent
-                          profile_id={coach.profile_id}
-                          likesInfo={coach.admirer_ids}
-                        />
-                      </div>
+                      {!restrictedFeatures?.includes("Likes") && (
+                        <div className="mt-4">
+                          <LikeComponent
+                            profile_id={coach.profile_id}
+                            likesInfo={coach.admirer_ids}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className=" flex flex-col items-start justify-start w-full">
                       <div className="mb-2 flex flex-row items-center gap-1">
@@ -1490,11 +1570,31 @@ const Coaches = ({
                                 {convertTextToCorrectFormat(tag)}
                               </Badge>
                             ))}
+                        {coach.is_recommended && (
+                          <Badge className="bg-blue-100 text-[12px] text-blue-700 hover:bg-emerald-200">
+                            AI Recommended
+                          </Badge>
+                        )}
                       </div>
-                      <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
-                        {convertTextToCorrectFormat(coach.name)}{" "}
-                      </p>{" "}
-                      <p className="my-1.5 font-medium text-gray-600 max-sm:my-1 max-sm:text-sm">
+                      {coach.profile_type === "icons_by_ai" ? (
+                        <>
+                          <div className="flex flex-col justify-start">
+                            {coach.bot_tag && (
+                              <p className="text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
+                                {coach.bot_tag}
+                              </p>
+                            )}
+                            <p className="flex items-center text-wrap justify-center gap-2 text-left text-lg font-normal text-gray-700 max-sm:text-sm">
+                              {convertTextToCorrectFormat(coach.name)}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
+                          {convertTextToCorrectFormat(coach.name)}
+                        </p>
+                      )}{" "}
+                      <p className="my-1.5 font-semibold text-gray-600 max-sm:my-1 max-sm:text-sm">
                         {coach.department}
                       </p>
                       <div className="flex flex-row items-center justify-start gap-2">
@@ -1530,7 +1630,8 @@ const Coaches = ({
                       </div>
                       <div className="flex flex-row max-sm:flex-col max-lg:flex-col items-center max-sm:items-start max-lg:items-start justify-start gap-2 max-sm:gap-1">
                         {coach.profile_type !== "coachee" &&
-                          coach.profile_type !== "mentee" && (
+                          coach.profile_type !== "mentee" &&
+                          !restrictedFeatures?.includes("Ratings") && (
                             <ReviewComponent
                               id={
                                 coach.id_for_target_selection ===
@@ -1585,7 +1686,7 @@ const Coaches = ({
                             )}
                         </div>
                       </div>
-                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs">
+                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
                         {coach.description}
                       </p>
                       <div className="mt-4 flex flex-row flex-wrap gap-2">
@@ -1607,7 +1708,7 @@ const Coaches = ({
                         )}
                       </div>
                       <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
-                        {coach.status === "accepted" && (
+                        {coach.status === "accepted" ? (
                           <Button
                             disabled
                             variant={"outline"}
@@ -1615,38 +1716,28 @@ const Coaches = ({
                           >
                             Connected
                           </Button>
-                        )}
-                        {(coach.profile_type === "coach" ||
-                          coach.profile_type === "mentor" ||
-                          coach.profile_type === "coach-mentor") && (
+                        ) : (
                           <>
-                            {coach.status === "pending" && (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className=" max-sm:text-sm max-sm:w-full border border-gray-300"
-                              >
-                                Requested
-                              </Button>
-                            )}
-                            <>
-                              {coacheeId.length > 0 && (
+                            {(coach.profile_type === "coach" ||
+                              coach.profile_type === "mentor" ||
+                              coach.profile_type === "coach-mentor") && (
+                              <>
                                 <>
-                                  {coach.status === "" && (
-                                    <RequestionConnection
-                                      coachId={coach.profile_id}
-                                    />
-                                  )}
-                                  {coach.status === "available" && (
-                                    <RequestionConnection
-                                      coachId={coach.profile_id}
-                                    />
+                                  {coacheeId.length > 0 && (
+                                    <>
+                                      <RequestionConnection
+                                        requestStatus={coach.status}
+                                        coachId={coach.profile_id}
+                                        stateCoachId={coachId}
+                                      />
+                                    </>
                                   )}
                                 </>
-                              )}
-                            </>
+                              </>
+                            )}
                           </>
                         )}
+
                         {coach.avatar_bot_url !== null &&
                           coach.avatar_bot_url !== "" && (
                             <div className="max-sm:w-full">
@@ -1654,10 +1745,10 @@ const Coaches = ({
                                 variant={"secondary"}
                                 className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
                                 disabled={
-                                  coach.profile_type !== "icons_by_ai" &&
-                                  coacheeId.length === 0
+                                  coacheeId.length === 0 &&
+                                  userId !== coach.user_id &&
+                                  coach.profile_type !== "icons_by_ai"
                                 }
-                                asChild={coacheeId.length !== 0}
                               >
                                 <Link
                                   href={handleLinks(coach.avatar_bot_url)}
@@ -1715,8 +1806,6 @@ const Coaches = ({
                       </PaginationItem>
                     );
                   } else if (
-                    // (index === maxPaginationLinks - 3 &&
-                    //   currentPage > maxPaginationLinks - 3) ||
                     (index === 1 && currentPage > 4 && totalPages > 5) ||
                     (index === totalPages - 2 &&
                       currentPage < totalPages - 3 &&
@@ -1742,27 +1831,37 @@ const Coaches = ({
           )}
           {!loading && coachesData.length === 0 && (
             <div className="flex w-full flex-row items-center justify-center">
-              <div className="mt-12 flex items-center">
-                {coachesData.length === 0 && (
-                  <>
-                    <span>
-                      The existing choices are too narrow. Please use lesser
-                      search parameters.
-                    </span>
-                  </>
-                )}
-                {parentCheckedValues.includes("External") ||
-                  (parentCheckedValues.includes("accepted") && (
-                    <div className="flex flex-col gap-2">
-                      {parentCheckedValues.includes("accepted") &&
-                        connectedCoaches.length === 0 && (
-                          <span>
-                            You do not have any connections yet. Keep exploring.
-                          </span>
-                        )}
-                    </div>
-                  ))}
-              </div>
+              {!restrictedFeatures?.includes("Search-filter") && (
+                <div className="mt-12 flex items-center">
+                  {coachesData.length === 0 && (
+                    <>
+                      {parentCheckedValues.includes("recommended") ? (
+                        <span>
+                          Currently no system recommendations available. You may
+                          check back next week.
+                        </span>
+                      ) : (
+                        <span>
+                          The existing choices are too narrow. Please use lesser
+                          search parameters.
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {parentCheckedValues.includes("External") ||
+                    (parentCheckedValues.includes("accepted") && (
+                      <div className="flex flex-col gap-2">
+                        {parentCheckedValues.includes("accepted") &&
+                          connectedCoaches.length === 0 && (
+                            <span>
+                              You do not have any connections yet. Keep
+                              exploring.
+                            </span>
+                          )}
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           )}
         </div>

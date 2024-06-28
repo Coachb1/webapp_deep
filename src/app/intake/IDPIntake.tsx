@@ -25,6 +25,31 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+const handleWordLimit = (
+  input_value: string,
+  minLimit: number,
+  maxLimit: number,
+  fieldName: string,
+  setError: Function
+) => {
+  const inputValue = input_value.trim();
+  const words = inputValue.split(/\s+/);
+  const wordCount = words.length;
+
+  console.log(`Input Value: "${inputValue}"`);
+  console.log(`Words: ${JSON.stringify(words)}`);
+  console.log(`Word Count: ${wordCount}`);
+
+  if (wordCount >= minLimit) {
+    setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
+  } else if (wordCount < minLimit) {
+    setError((prevErrors: any) => ({
+      ...prevErrors,
+      [fieldName]: `Minimum ${minLimit} words are required.`,
+    }));
+  }
+};
+
 const IDPIntake = ({ user }: any) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
@@ -43,12 +68,13 @@ const IDPIntake = ({ user }: any) => {
   const [learningNcertificates, setLearningNcertificates] = useState("");
   const [domainSpecialised, setDomainSpecialised] = useState("");
 
+  const [error, setError] = useState({});
+
   //success
   const [reportUrl, setReportUrl] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
 
   const resetAllStates = () => {
-    setName("");
     setProfessionalAcc("");
     setCriticalFeedback("");
     setAreasToImprove("");
@@ -134,6 +160,7 @@ const IDPIntake = ({ user }: any) => {
         console.error(err);
       });
   };
+
   return (
     <>
       {/* <Dialog open={openDialog}>
@@ -206,7 +233,8 @@ const IDPIntake = ({ user }: any) => {
           )}
         </DialogContent>
       </Dialog> */}
-      <div className="flex flex-col text-sm max-sm:text-xs justify-center items-center w-full">
+      <Badge variant={"outline"}>Private. For system use only</Badge>
+      <div className="flex flex-col text-sm max-sm:text-xs justify-center items-center w-full mt-2">
         <div className="bg-white w-full h-fit p-4  rounded-md mb-4">
           <h1 className="text-xl max-sm:text-sm text-left text-gray-600 font-bold">
             Individual Development Plan Intake
@@ -217,7 +245,16 @@ const IDPIntake = ({ user }: any) => {
           <form
             className="text-left"
             onSubmit={(e: FormEvent<HTMLFormElement>) => {
-              submitHandler(e);
+              e.preventDefault();
+              const errors = Object.values(error).filter(
+                //@ts-ignore
+                (err: string) => err.length > 0
+              );
+              if (errors.length > 0) {
+                toast.warning("Please enter the valid inputs.");
+              } else {
+                submitHandler(e);
+              }
             }}
           >
             <Badge
@@ -246,13 +283,28 @@ const IDPIntake = ({ user }: any) => {
                   value={professionalAcc}
                   required
                   onChange={(e) => {
-                    setProfessionalAcc(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setProfessionalAcc(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      50,
+                      100,
+                      "professionalAcc",
+                      setError
+                    );
                   }}
                   placeholder="List a few significant achievements in your career."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("professionalAcc") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["professionalAcc"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What areas of work do you often get critical feedback or you
@@ -262,13 +314,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={criticalFeedback}
                   onChange={(e) => {
-                    setCriticalFeedback(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setCriticalFeedback(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "criticalFeedback",
+                      setError
+                    );
                   }}
                   placeholder="Identify areas where improvement is needed or commonly criticized."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("criticalFeedback") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["criticalFeedback"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What are some areas you want to improve?
@@ -277,13 +344,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={areasToImprove}
                   onChange={(e) => {
-                    setAreasToImprove(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setAreasToImprove(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "areasToImprove",
+                      setError
+                    );
                   }}
                   placeholder="Specify aspects you aim to enhance in your work performance."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("areasToImprove") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["areasToImprove"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What would you believe may derail your plan?
@@ -292,13 +374,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={planDerialCause}
                   onChange={(e) => {
-                    setPlanDerialCause(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setPlanDerialCause(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "planDerialCause",
+                      setError
+                    );
                   }}
                   placeholder="Highlight factors that could obstruct your plans or progress."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("planDerialCause") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["planDerialCause"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What is the immediate 90 day focus?
@@ -307,13 +404,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={ninetyDayFocus}
                   onChange={(e) => {
-                    setNinetyDayFocus(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setNinetyDayFocus(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "ninetyDayFocus",
+                      setError
+                    );
                   }}
                   placeholder="Describe immediate goals and objectives for eg. Prioritizing project deadlines, and refining task delegation."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("ninetyDayFocus") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["ninetyDayFocus"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What are your long term (12-24 months) goals?
@@ -322,13 +434,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={longTermGoals}
                   onChange={(e) => {
-                    setLongTermGoals(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setLongTermGoals(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      50,
+                      100,
+                      "longTermGoals",
+                      setError
+                    );
                   }}
                   placeholder="Describe goal for the next 12-24 months for eg. Attain advanced certification in the field, contribute to impactful projects etc."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("longTermGoals") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["longTermGoals"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What do you believe should be your priorities?
@@ -337,13 +464,22 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={priorities}
                   onChange={(e) => {
-                    setPriorities(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setPriorities(inputValue);
+                    handleWordLimit(inputValue, 20, 50, "priorities", setError);
                   }}
                   placeholder="Determine what tasks or objectives hold the highest importance eg. Balancing project deadlines, fostering team collaboration etc."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("priorities") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["priorities"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What learning and certifications do you already have?
@@ -352,13 +488,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={learningNcertificates}
                   onChange={(e) => {
-                    setLearningNcertificates(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setLearningNcertificates(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "learningNcertificates",
+                      setError
+                    );
                   }}
                   placeholder="Detail relevant training and certifications you've attained eg. Hold certifications in A, B, C. Actively pursuing continuous learning opportunities in D and E."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("learningNcertificates") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["learningNcertificates"]}
+                  </p>
+                )}
               </div>
+
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What domain and subject areas do you specialize in?
@@ -367,13 +518,28 @@ const IDPIntake = ({ user }: any) => {
                   required
                   value={domainSpecialised}
                   onChange={(e) => {
-                    setDomainSpecialised(e.target.value);
+                    const inputValue = e.target.value;
+
+                    setDomainSpecialised(inputValue);
+                    handleWordLimit(
+                      inputValue,
+                      20,
+                      50,
+                      "domainSpecialised",
+                      setError
+                    );
                   }}
                   placeholder="Specify your expertise in domain and subject matter areas eg. Specializing in X domain with expertise in Y and Z subject areas."
                   rows={3}
                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
                 />
+                {Object.keys(error).includes("domainSpecialised") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["domainSpecialised"]}
+                  </p>
+                )}
               </div>
+
               <div>
                 {checkIfEdit ? (
                   <Button disabled={submitLoading} className="h-8">

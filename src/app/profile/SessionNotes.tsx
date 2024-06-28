@@ -415,7 +415,7 @@ const SessionNotes = ({ user }: any) => {
       id="session-notes"
       className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll no-scrollbar"
     >
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Plan & Session notes</div>{" "}
+      <div className="pl-4 max-sm:pl-2 pt-2">Action Plans & Session Notes</div>{" "}
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
@@ -745,13 +745,23 @@ const SessionNotes = ({ user }: any) => {
                     <p className="mr-2 my-1 mt-2">Comment</p>
                     <textarea
                       onChange={(event) => {
-                        if(event.target.value.split(" ").length >= 40){
+                        const inputValue = event.target.value;
+                        const words = inputValue.trim().split(/\s+/);
+                        if (words.length <= 80) {
                           setContextLengthError(false);
+                          commentRef.current.value = inputValue;
+                        } else {
+                          commentRef.current.value = words
+                            .slice(0, 80)
+                            .join(" ");
                         }
                       }}
                       onBlur={(e) => {
-                        if (e.target.value.split(" ").length < 40) {
+                        const words = e.target.value.trim().split(/\s+/);
+                        if (words.length < 30 || words.length > 80) {
                           setContextLengthError(true);
+                        } else {
+                          setContextLengthError(false);
                         }
                       }}
                       ref={commentRef}
@@ -760,10 +770,11 @@ const SessionNotes = ({ user }: any) => {
                     />
                     {contextLengthError && (
                       <p className="text-red-500 text-xs m-2">
-                        Comment should be atleast 40 words!
+                        Comment should be between 30 and 80 words!
                       </p>
                     )}
                   </div>
+
                   <div className="w-full  flex flex-row justify-end gap-2">
                     <Button
                       variant={"destructive"}

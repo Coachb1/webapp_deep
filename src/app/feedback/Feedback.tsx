@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { convertDate, getUserAccount, reportsLinksSelector } from "@/lib/utils";
+import {
+  convertDate,
+  getUserAccount,
+  parseData,
+  reportsLinksSelector,
+} from "@/lib/utils";
 import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -144,6 +149,12 @@ const Feedback = ({ user, renderType }: any) => {
   const [currentProjects, setCurrentProjects] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const [dynamicHowItWorks, setDynamicHowItWorks] =
+    useState<{ heading: string; description: string }[]>(howItWorks);
+
+  const [dynamicBenefits, setDynamicBenefits] =
+    useState<{ heading: string; description: string }[]>(benefitsData);
+
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
@@ -182,6 +193,11 @@ const Feedback = ({ user, renderType }: any) => {
         });
     }
 
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
+    coachScribe.setAttribute("style", "display: none;");
+
     fetch(
       `${baseURL}/accounts/get-bot-details/?bot_id=${
         renderType === "dynamic"
@@ -197,9 +213,6 @@ const Feedback = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
-        const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
-
         if (renderType === "dynamic") {
           console.log("DYNAMIC FEEDBACK DATA ", data);
           if (data.error) {
@@ -214,14 +227,37 @@ const Feedback = ({ user, renderType }: any) => {
             setCoachDescription(data.data.additional_data.short_profile_bio);
           }
         }
-        // if (data.data.bot_details.is_strict_login_required && !user) {
-        //   coachScribe.setAttribute("style", "display: none;");
-        // }
-        // if (data.data.bot_details.is_login_required) {
-        //   if (!user) {
-        //     coachScribe.setAttribute("style", "display: none;");
-        //   }
-        // }
+
+        if (data.data.page_information.how_it_works) {
+          const parsedData = parseData(data.data.page_information.how_it_works);
+          console.log(parsedData);
+          setDynamicHowItWorks(parsedData);
+        }
+
+        if (data.data.page_information.benefits) {
+          const parsedData = parseData(data.data.page_information.benefits);
+          console.log(parsedData);
+          setDynamicBenefits(parsedData);
+        }
+
+        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+        if (allowedIPS !== "") {
+          const coachScribeIcon = document.getElementById("chat-icon2");
+          fetch("https://ipinfo.io/json")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data.ip);
+              if (!allowedIPS.split(", ").includes(data.ip)) {
+                coachScribeIcon?.removeAttribute("onclick");
+                coachScribeIcon?.removeEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+                coachScribeIcon?.addEventListener("click", () => {
+                  toast.error("You are not allowed to access this bot.");
+                });
+              }
+            });
+        }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
         setProfileImage(data.data.owner_profile_image);
@@ -230,77 +266,7 @@ const Feedback = ({ user, renderType }: any) => {
           setCurrentProjects(data.data.additional_data?.current_projects);
         }
         setIsLoading(false);
-        // if (!data.data.is_sample_bot && !data.data.is_system_bot) {
-        //   fetch(`${baseURL}/accounts/`, {
-        //     method: "POST",
-        //     headers: {
-        //       Authorization: basicAuth,
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       user_context: {
-        //         name: user.given_name,
-        //         role: "member",
-        //         user_attributes: {
-        //           tag: "deepchat_profile",
-        //           attributes: {
-        //             username: "web_user",
-        //             email: user.email,
-        //           },
-        //         },
-        //       },
-        //       identity_context: {
-        //         identity_type: "deepchat_unique_id",
-        //         value: user.email,
-        //       },
-        //     }),
-        //   })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //       fetch(
-        //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-        //         {
-        //           method: "GET",
-        //           headers: {
-        //             Authorization: basicAuth,
-        //           },
-        //         }
-        //       )
-        //         .then((res) => res.json())
-        //         .then((data) => {
-        //           console.log("xyz-data", data);
-        //           if (data.data.length === 0) {
-        //             const coachScribe =
-        //               document.getElementsByClassName("deep-chat-poc2")[0];
-
-        //             console.log(coachScribe);
-        //             const botButton = document.getElementsByClassName(
-        //               "chat-icon-container2"
-        //             )[0];
-        //             botButton.removeAttribute("onclick");
-
-        //             const chatIcon =
-        //               document.getElementsByClassName("chat-icon2")[0];
-        //             const showEnrollmentToast = () => {
-        //               chatIcon.addEventListener("click", () => {
-        //                 toast.error(
-        //                   "You have not enrolled as a program participant. Please enroll and try again."
-        //                 );
-        //               });
-        //             };
-        //             if (!chatIcon.getAttribute("onclick")) {
-        //               chatIcon.setAttribute(
-        //                 "onclick",
-        //                 `${showEnrollmentToast()}`
-        //               );
-        //             }
-        //           }
-        //         })
-        //         .catch((err) => {
-        //           console.error(err);
-        //         });
-        //     });
-        // }
+        coachScribe.removeAttribute("style");
         fetch(
           `${baseURL}/accounts/get-user-feedback-data/?method=get&feedback_type=positive&bot_id=${
             renderType === "dynamic"
@@ -420,7 +386,7 @@ const Feedback = ({ user, renderType }: any) => {
               <div className="mt-4">
                 {renderType === "dynamic" ? (
                   <>
-                    <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-gray-200 bg-amber-50 p-2 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
+                    <div className="flex flex-row items-center justify-center gap-2 text-sm border-b-2 border-dashed p-2 pb-4 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
                       <div className="flex w-[20%] items-center justify-center max-sm:w-fit">
                         <img
                           className="h-[200px] w-[200px] rounded-md object-cover max-sm:h-[130px]"
@@ -434,7 +400,7 @@ const Feedback = ({ user, renderType }: any) => {
                     </div>
                   </>
                 ) : (
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                  <div className="flex flex-row items-center justify-center gap-2 text-sm border-b-2 border-dashed p-2 pb-4 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
                     <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                       <img
                         className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
@@ -462,15 +428,15 @@ const Feedback = ({ user, renderType }: any) => {
                 )}
               </div>
               {currentProjects && (
-                <div className="mt-4 rounded-lg border border-gray-200 bg-teal-50 p-2 max-sm:text-xs">
+                <div className="mt-4 text-sm  border-b-2 border-dashed p-2 max-sm:text-xs">
                   <p className="my-2">
                     <b>Current projects : </b> {currentProjects}
                   </p>
                 </div>
               )}
 
-              <div className="my-4 text-[#2f2323] max-sm:text-xs">
-                <p className="rounded-lg border border-gray-200 bg-blue-100 p-2">
+              <div className="my-4 text-[#2f2323] max-sm:text-xs border-b-2 border-dashed p-2 mt-4 ">
+                <p className="text-sm max-sm:text-xs">
                   {" "}
                   Thank you for taking the time! Your feedback is invaluable to
                   me. Please take a moment to share your experience by selecting
@@ -699,12 +665,12 @@ const Feedback = ({ user, renderType }: any) => {
                           collapsible
                           className="w-full text-gray-500 max-sm:p-4 "
                         >
-                          {howItWorks.map((test, i) => (
+                          {dynamicHowItWorks.map((test, i) => (
                             <AccordionItem
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === dynamicHowItWorks.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }
@@ -745,12 +711,12 @@ const Feedback = ({ user, renderType }: any) => {
                           collapsible
                           className="w-full text-gray-500 max-sm:p-4 "
                         >
-                          {benefitsData.map((test, i) => (
+                          {dynamicBenefits.map((test, i) => (
                             <AccordionItem
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === dynamicBenefits.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }

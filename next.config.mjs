@@ -6,7 +6,7 @@ import os from "os";
 
 dotenv.config();
 
-const hostname = os.hostname()
+const hostname = os.hostname();
 
 const nextConfig = {
   reactStrictMode: true,
@@ -22,9 +22,9 @@ const nextConfig = {
     ANTHROPIC_API_KEY: process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,
     GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
   },
-  compiler : {
-    removeConsole : hostname.includes("plat") ? { exclude: ["error", "warn"] } : false
-  }
+  // compiler: {
+  //   removeConsole: !hostname.includes("local") ? { exclude: ["error"] } : false,
+  // },
 };
 
 export default nextConfig;

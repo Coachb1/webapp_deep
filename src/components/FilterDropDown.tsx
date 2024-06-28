@@ -123,8 +123,24 @@ const FilterDropDown = ({
             )}
           </>
         ))}
+        <div className="h-[20px] w-[2px] bg-gray-500 mx-2"></div>
+        <div className="flex flex-row items-center gap-2 border rounded-md px-2 hover:cursor-pointer">
+          <Checkbox
+            checked={checkedValues.includes("recommended")}
+            onCheckedChange={(isChecked: boolean) => {
+              updateCheckedValues("recommended", isChecked);
+            }}
+            id={"recommended"}
+          />
+          <label
+            htmlFor={"recommended"}
+            className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+          >
+            {convertTextToCorrectFormat("AI Recommended")}
+          </label>
+        </div>
       </div>
-      <div className="mt-2 flex flex-row items-center gap-2">
+      <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
         {checkedValues.map((checkedItem) => (
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
             <p className="text-sm px-1">

@@ -7,7 +7,7 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import Coaches from "./Coaches";
+import Coaches, { CoachesDataType } from "./Coaches";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { connectionType } from "@/lib/types";
 
@@ -15,40 +15,102 @@ export const metadata = constructMetadata({
   title: "Network - Coachbots",
 });
 
-const getClientUserInfo = async (userEmail: string | null | undefined) => {
+const emptyData = {
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: null,
+  clientDepartments: null,
+  restrictedPages: null,
+  restrictedFeatures: null,
+  headings: null,
+  helpText: null,
+};
+
+const getClientUserInfo = async (
+  userEmail: string | null | undefined,
+  user: KindeUser | null
+) => {
   if (userEmail !== null && userEmail !== undefined) {
-    const response = await fetch(
-      `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
+    const userCreateResponse = await getUserAccount(user);
+    const userCreateResults = await userCreateResponse.json();
+
+    console.log("getUserAccount : ", userCreateResults);
+    if (userCreateResponse.ok) {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", basicAuth);
+      myHeaders.append("Content-Type", "application/json");
+      const raw = JSON.stringify({
+        email: userEmail,
+      });
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      const response = await fetch(
+        `${baseURL}/accounts/create-or-assign-client-id/`,
+        requestOptions
+      );
+
+      const data = await response.json();
+      console.log("create-or-assign-client-id", data);
+      if (response.ok) {
+        const response = await fetch(
+          `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          return {
+            isDemoUser: data.data.user_info[0].is_demo_user,
+            isRestricted: data.data.user_info[0].is_restricted,
+            clientExpertise: data.data.user_info[0].coach_expertise.replace(
+              /\s/g,
+              ""
+            ),
+            clientDepartments: data.data.user_info[0].departments.replace(
+              /\s/g,
+              ""
+            ),
+            restrictedPages: data.data.user_info[0].restricted_pages,
+            restrictedFeatures: data.data.user_info[0].restricted_features,
+            headings: {
+              heading: data.data.user_info[0].heading,
+              subHeading: data.data.user_info[0].sub_heading,
+              tagLine: data.data.user_info[0].tag_line,
+            },
+            helpText: data.data.user_info[0].help_text,
+          };
+        } else {
+          return emptyData;
+        }
+      } else {
+        console.error(`Failed to run CreateOrAssignClientId`);
+        return emptyData;
       }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      return {
-        isDemoUser: data.data.user_info[0].is_demo_user,
-        isRestricted: data.data.user_info[0].is_restricted,
-      };
     } else {
-      return {
-        isDemoUser: false,
-        isRestricted: true,
-      };
+      return emptyData;
     }
   } else {
-    return {
-      isDemoUser: false,
-      isRestricted: true,
-    };
+    return emptyData;
   }
 };
 
-const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
+const getDirectoryProfiles = async (
+  userEmail: string | null | undefined,
+  user: KindeUser | null
+) => {
+  const accountResponse = await getUserAccount(user);
+  const userAccount = await accountResponse.json();
+
+  const recommendationProfileIDs: string[] = userAccount.coach_recommendation;
   if (userEmail) {
     const response = await fetch(
       `${baseURL}/accounts/get-directory-informations/?email=${userEmail}`,
@@ -59,8 +121,45 @@ const getDirectoryProfiles = async (userEmail: string | null | undefined) => {
         },
       }
     );
+    if (response.ok) {
+      let responseData = await response.json();
+      console.log("recommendationProfileIDs", recommendationProfileIDs);
 
-    return response.json();
+      let updatedResponseData: CoachesDataType[] = [];
+
+      recommendationProfileIDs?.forEach((rec) => {
+        const reccCoach = responseData.find(
+          (coach: CoachesDataType) => coach.profile_id === rec
+        );
+        if (reccCoach) {
+          updatedResponseData.push(reccCoach);
+        }
+      });
+
+      responseData.forEach((coach: CoachesDataType) => {
+        if (!updatedResponseData.includes(coach)) {
+          updatedResponseData.push(coach);
+        }
+      });
+
+      updatedResponseData = updatedResponseData.map(
+        (coachData: CoachesDataType) => {
+          if (
+            recommendationProfileIDs &&
+            recommendationProfileIDs.includes(coachData.profile_id)
+          ) {
+            return { ...coachData, is_recommended: true };
+          } else {
+            return coachData;
+          }
+        }
+      );
+
+      return updatedResponseData;
+    } else {
+      console.log("Error fetching Directory info : ", response.statusText);
+      return [];
+    }
   }
 };
 
@@ -139,11 +238,20 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { isDemoUser, isRestricted } = await getClientUserInfo(user?.email);
+  const {
+    isDemoUser,
+    isRestricted,
+    clientDepartments,
+    clientExpertise,
+    restrictedFeatures,
+    restrictedPages,
+    headings,
+    helpText,
+  } = await getClientUserInfo(user?.email, user);
 
   let directoryProfilesData;
   if (!isRestricted || isDemoUser) {
-    directoryProfilesData = await getDirectoryProfiles(user?.email);
+    directoryProfilesData = await getDirectoryProfiles(user?.email, user);
   }
 
   let userConnections: connectionType[] = [];
@@ -157,9 +265,15 @@ const Page = async () => {
     <div suppressHydrationWarning>
       <Coaches
         user={user}
-        coachesDataa={directoryProfilesData}
+        coachesDataa={directoryProfilesData || []}
         UserJoiningPreviledges={UserJoiningPreviledges}
         userConnections={userConnections}
+        clientDepartments={clientDepartments}
+        clientExpertise={clientExpertise}
+        restrictedFeatures={restrictedFeatures}
+        restrictedPages={restrictedPages}
+        headings={headings}
+        helpModeText={helpText}
       />
     </div>
   );

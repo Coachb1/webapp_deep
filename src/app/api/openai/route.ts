@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const { userInput } = await req.json();
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4-turbo",
     max_tokens: 1000,
     messages: [{ role: "user", content: userInput }],
     stream: true,

@@ -2,7 +2,7 @@ const key = "";
 const secret = "";
 const subdomain = window.location.hostname.split(".")[0];
 const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
-// const devUrl = "http://127.0.0.1:8001/api/v1"   / local baseurl
+// const devUrl = "http://127.0.0.1:8001/api/v1"   // local baseurl
 // const devUrl = "https://coach-api-gcp.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 const baseURL = subdomain === "platform" ? prodUrl : devUrl;
@@ -82,6 +82,7 @@ let isEmailType = false;
 let recommendations = "";
 let isTestSignedIn;
 let clientName;
+let widgetClientId;
 let audioFileSrcMap = {}; // maping response to resquestionNumber
 let audioFileMap = {};
 let audioDuration;
@@ -97,19 +98,153 @@ let emailNameformJson = {};
 let formFields = [];
 let userResponses = [];
 let DuplicateResponseCount = 0;
+let snnipetConfig;
+let askAccessBotCode = false;
+let clientAllowAudioInteraction;
+let userAllowAudioInteraction;
+let prioritiseUserAllowInteraction;
+let AttemptTestDirect = false;
+
+let allowPastingAtClientLevel;
+let clientBasedBotHeaderText2 = "";
+let clientBasedBotFooterText2 = "";
+let clientBasedReadHereText2 = "";
+
+
+function createBasicAuthToken(key = "", secret = "") {
+  const token =
+    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
+  // const token =
+  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
+  return token;
+}
+
+const basicAuthToken = createBasicAuthToken(key, secret);
+
+user = window.user;
+console.log(" User details ", user);
+console.log(user === undefined);
+
+
+  let user_name;
+  let user_email;
+
+  console.log(user)
+
+  if (user) {
+    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+    user_email = user.email;
+  } else {
+    user_name = "coachbots_anonyoususer";
+    user_email = getAnonymousEmail();
+  }
+
+  if (window.LogRocket) {
+    window.LogRocket.identify(user_email, {
+      name: user_name,
+      email: user_email,
+    });
+  }
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name,
+            username: user_name,
+            email: user_email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
+
+
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+      
+          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
+          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
+      
+      
+          const headerText2 = document.getElementById("header-text2");
+          const footerText2 = document.getElementById("footer-text2");
+          const instructionsPaneList2 = document.getElementById('instructions-list2')
+          console.log(headerText2);
+          console.log(footerText2);
+      
+          if (clientBasedBotHeaderText2) {
+            headerText2.innerText = clientBasedBotHeaderText2;
+          }
+      
+          if (clientBasedBotFooterText2) {
+            footerText2.innerText = clientBasedBotFooterText2;
+          }
+      
+          if (clientBasedReadHereText2) {
+            const list = clientBasedReadHereText2
+              .trim()
+              .split("\n")
+              .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+              });
+
+              instructionsPaneList2.innerHTML = list;
+          }
+        });
+
+    })
+    .catch((err) => console.log(err));
+
+
+
+
 
 // sample TEst codes
 const sampleTestCodes = {
   QEEG5VY: "AWS Cloud Training",
-  QMFMKQ4: "Team Building Post Training Check In",
-  QUPR9AO: "Education Sales Rep Selling A Diploma Course",
-  QLDQ2IY: "Coaching Assistant In Assertive Communication",
-  QKLX4V0: "Hotel Receptionist Handle Angry Guest",
+  QMFMKQ4: "Team Building Post-Training Check-In",
+  QUPR9AO: "Education Sales Rep Selling a Diploma Course",
+  QLDQ2IY: "Coaching Assistant in Assertive Communication",
+  QKLX4V0: "Hotel Receptionist: Handling an Angry Guest",
   QULNNNE: "Luxury Real Estate Sales Agent",
-  QZ4R9QW: "Cabin Crew Dealing With Angry Customer",
+  QZ4R9QW: "Cabin Crew Dealing with an Angry Customer",
   QJV5AEY: "Bank Branch Employee Service Call",
-  QEYTB3I: "First Time Manager Feedback In Corporate Office",
-  QYCZJDN: "Patient Care By Nurse",
+  QEYTB3I: "First-Time Manager Feedback in a Corporate Office",
+  QYCZJDN: "Patient Care by a Nurse",
   Q125Z1B: "Factory Shop Floor Leadership",
   Q9QW1HF: "Health Package Sales Rep Discussion",
   QHYRLGN: "Insurance Sales Rep Call",
@@ -121,96 +256,88 @@ let recommendationsData = [
   [
     {
       title:
-        "Pursuing career growth : Discussing the next steps in the career ladder",
+        "Pursuing Career Growth: Discussing the Next Steps in the Career Ladder",
       code: "QG8OTQR",
     },
     {
       title:
-        "Pursuing professional development : Aligning career Goals with company's vision",
+        "Pursuing Professional Development: Aligning Career Goals with Company's Vision",
       code: "QMWNNU5",
     },
   ], // batch one
   [
     {
       title:
-        "Handling change and uncertainty : Navigating uncertainty in a new role",
+        "Handling Change and Uncertainty: Navigating Uncertainty in a New Role",
       code: "QXA0FHL",
     },
     {
       title:
-        "Handling change and uncertainty : Seeking Guidance on Adapting to New Leadership",
+        "Handling Change and Uncertainty: Seeking Guidance on Adapting to New Leadership",
       code: "QTXLXON",
     },
   ], // batch two
   [
     {
-      title: "Team building & Leadership : Teams using Agile Strategies",
+      title: "Team Building & Leadership: Teams using Agile Strategies",
       code: "QQJPCFI",
     },
     {
       title:
-        "Leadership initiatives : Seeking Guidance on Leading Team Through Crisis",
+        "Leadership Initiatives: Seeking Guidance on Leading Team Through Crisis",
       code: "QO269IW",
     },
   ], // batch three
   [
     {
       title:
-        "Making ethical decisions : Evaluating Cost vs. Sustainability in Procurement",
+        "Making Ethical Decisions: Evaluating Cost vs. Sustainability in Procurement",
       code: "QHZPPK1",
     },
     {
       title:
-        "Resource allocation decisions : Securing Project Resources from other teams",
+        "Resource Allocation Decisions: Securing Project Resources from Other Teams",
       code: "QDL75HD",
     },
   ], // batch four
   [
     {
       title:
-        "Managing Work Life Balance: Balancing Workload and Setting Boundaries Discussion",
+        "Managing Work-Life Balance: Balancing Workload and Setting Boundaries Discussion",
       code: "QTTDTXG",
     },
     {
       title:
-        "Managing Team Conflicts : Addressing Team Conflicts Over Missed Deadline",
+        "Managing Team Conflicts: Addressing Team Conflicts Over Missed Deadline",
       code: "QWN8XTF",
     },
   ], // batch five
   [
     {
       title:
-        "Collaborating on resource allocation : Resource Allocation Tensions",
+        "Collaborating on Resource Allocation: Resource Allocation Tensions",
       code: "QSKUOD0",
     },
     {
-      title: "Navigating team dynamics: Aligning Team Direction",
+      title: "Navigating Team Dynamics: Aligning Team Direction",
       code: "QKN7VPO",
     },
   ], // batch six
   [
     {
       title:
-        "Strategizing cross functional projects: Navigating cross-project challenges",
+        "Strategizing Cross-Functional Projects: Navigating Cross-Project Challenges",
       code: "Q7E1DGY",
     },
     {
       title:
-        "Interdepartmental collaboration : Harmonizing Data Interpretations",
+        "Interdepartmental Collaboration: Harmonizing Data Interpretations",
       code: "QP22B9R",
     },
   ], // batch seven
 ];
 
-function createBasicAuthToken(key = "", secret = "") {
-  const token =
-    "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
-  // const token =
-  //   "MzdkMGVkNzgtOTI5Ni00MWQwLTk1NjgtYjdjZTBhYjA2OTY5Ojk1ZGIxNTNkLWEzZWMtNDM0Zi05YjIwLTc0M2M3M2Q5ZDZkYg=="; //local
-  return token;
-}
 
-const basicAuthToken = createBasicAuthToken(key, secret);
 
 function getCredentialsForm() {
   let credentialsForm;
@@ -393,16 +520,18 @@ function LoadingMessageWithText2(message, shadowRoot){
   console.log(shadowRoot)
    //loading message 
    const loadingElement = shadowRoot.querySelector(".loading-message-text")
-   console.log(loadingElement)
-   loadingElement.style.display = "flex"
-   loadingElement.style.flexDirection = "row"
-   loadingElement.style.alignItems = "center"
-   const messageElement = document.createElement("span")
-   messageElement.innerHTML = `<span style="color : #4b5563; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; ; min-width: 4rem; margin-left: 2rem;">${message}</span>`
-   messageElement.setAttribute("id", "loading-message")
-   
-   loadingElement.style.width = "fit-content"
-   loadingElement.appendChild(messageElement)
+   //  const dotsFlashingElement = shadowRoot.querySelector(".dots-flashing")
+   //  dotsFlashingElement.style.color = "#1f2937"
+    loadingElement.style.display = "flex"
+    loadingElement.style.flexDirection = "row"
+    loadingElement.style.alignItems = "center"
+    const messageElement = document.createElement("span")
+    messageElement.innerHTML = `<b style="color : white; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</b>`
+    messageElement.setAttribute("id", "loading-message")
+    
+    loadingElement.style.width = "fit-content"
+    loadingElement.appendChild(messageElement)
+    shadowRoot.getElementById("messages").scrollBy(0, 500);
 }
 
 //************** session management :start */
@@ -1015,21 +1144,24 @@ async function submitEmailAndName() {
       name: window.user.given_name,
     });
   }
-  // await fetch(
-  //   `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
-  //   {
-  //     method: "POST",
-  //     headers: {
-  //       Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // )
-  //   .then((response) => response.json())
-  //   .then((data) => {
-      // console.log("name email updated, sending email");
+  if (!window.user){
+    await fetch(
+      `${baseURL}/test-attempt-sessions/set-name-and-email/?${queryParams}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("name email updated, sending email",data);
+      });
+    }
       sendEmail(sessionId, globalReportUrl);
-      increaseActionPoint(userId, "interaction_attempted");
+      // increaseActionPoint(userId, "interaction_attempted");
 
       if (!window.user) {
         // append custom message to chat
@@ -1044,7 +1176,13 @@ async function submitEmailAndName() {
       if (recommDiv) {
         appendMessage(recommDiv);
       }
+      const page_name = questionData.results[0].page_name
+      console.log(page_name,'page_name')
+
       resetAllVariables();
+      if ( page_name !== 'explore'){
+        increaseActionPoint(userId, "interaction_attempted");
+      }
     // })
     // .catch((err) => {
     //   console.log(err);
@@ -1099,6 +1237,8 @@ function handleSurpriseMeButtonClick() {
 
   const randomIndex = Math.floor(Math.random() * challenges.length);
   const randomChallenge = challenges[randomIndex];
+  userAcessAvailability = true;
+  optedNo = true;
 
   //   console.log(randomChallenge);
   //   testCode = randomChallenge.test_code;
@@ -1109,12 +1249,12 @@ function handleSurpriseMeButtonClick() {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
   // gShadowRoot.getElementById("surprise-button").disabled = true;
   // removing button
-  const msg = gShadowRoot.getElementById("surprise-button");
-  // button.parentNode.removeChild(button)
-  const que_msg = document.createElement("div");
-  que_msg.innerHTML = "Please Wait..."; // You can customize the message here
-  // Replace the button with the "Thank you" message
-  msg.parentNode.replaceChild(que_msg, msg);
+  // const msg = gShadowRoot.getElementById("surprise-button");
+  // // button.parentNode.removeChild(button)
+  // const que_msg = document.createElement("div");
+  // que_msg.innerHTML = "Please Wait..."; // You can customize the message here
+  // // Replace the button with the "Thank you" message
+  // msg.parentNode.replaceChild(que_msg, msg);
 
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
@@ -1286,6 +1426,7 @@ let clearMultipleBodyData = false;
 // to reset all variables
 const resetAllVariables = async () => {
   //* reset all variables : start
+  AttemptTestDirect = false;
   responsesDone = false;
   questionIndex = 0;
   userResponses = [];
@@ -1456,16 +1597,89 @@ const handleEndCoachingClick = async (randomId) => {
   }
 };
 
+function generateRandomAlphanumeric(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
+const audioCanvasUiForQuestionsStt = (audio, canvas) => {
+
+  const shadowRoot = document.getElementById("chat-element").shadowRoot
+  const audioElements = shadowRoot.querySelectorAll("audio")
+  if (audioElements.length > 1) {
+    audioElements.forEach((element, i) => {
+      if (
+        element.id.includes("audio-player-") &&
+        i !== audioElements.length - 1
+      ) {
+        element.pause();
+      }
+    });
+  }
+
+  const canvasCtx = canvas.getContext("2d");
+  console.log(canvasCtx);
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  console.log(audioCtx);
+  const analyser = audioCtx.createAnalyser();
+  const source = audioCtx.createMediaElementSource(audio);
+
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize = 256;
+  const bufferLength = analyser.fftSize;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function draw() {
+    requestAnimationFrame(draw);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+
+      canvasCtx.fillStyle = "#2CC092";
+      canvasCtx.fillRect(
+        x,
+        canvas.height - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      );
+
+      x += barWidth + 1;
+    }
+  }
+
+  draw()
+}
+
 const handleProceedClick = async (choice) => {
   if (choice == "Yes") {
     isProceed = "true";
     const gshadowRoot = document.getElementById("chat-element").shadowRoot;
     const msg = gshadowRoot.getElementById("proceed-option");
     // button.parentNode.removeChild(button)
-    const que_msg = document.createElement("div");
-    que_msg.innerHTML = "Please Wait.."; // You can customize the message here
-    // Replace the button with the "Thank you" message
-    msg.parentNode.replaceChild(que_msg, msg);
+    if (msg){
+      const que_msg = document.createElement("div");
+      que_msg.innerHTML = "Please Wait.."; // You can customize the message here
+      // Replace the button with the "Thank you" message
+      msg.parentNode.replaceChild(que_msg, msg);
+    }
 
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
@@ -1582,16 +1796,28 @@ const handleProceedClick = async (choice) => {
 
             console.log(objectUrl, "url");
 
+            const randomIdForAudioElement = generateRandomAlphanumeric(5);
+            const shadowRoot = document.getElementById("chat-element").shadowRoot
+
             initialQuestionText =
               queDiv +
-              `<div ><audio style="${
+              `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
-              }" controls autoplay>
+              }" autoplay>
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
-              </audio></div>`;
+              </audio>
+              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+              </div>`;
+
+              setTimeout(() => {
+                const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
+                const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+                console.log(audioElement, canvasElement)
+                audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+              }, 100);
 
             console.log(initialQuestionText);
           }
@@ -1646,16 +1872,30 @@ const handleProceedClick = async (choice) => {
           const objectUrl = URL.createObjectURL(blob);
 
           console.log(objectUrl, "url");
+
+          const randomIdForAudioElement = generateRandomAlphanumeric(5);
+          const shadowRoot = document.getElementById("chat-element").shadowRoot
+          
           initialQuestionText =
             queDiv +
-            `<div ><audio style="${
+            `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
-            }" controls autoplay>
+            }" autoplay>
           <source src=${objectUrl} type="audio/mpeg" />
           Your browser does not support the audio element.
-          </audio></div>`;
+          </audio>
+          
+          <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+          </div>`;
+
+          setTimeout(() => {
+            const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
+            const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+            console.log(audioElement, canvasElement)
+            audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+          }, 100);
         }
         if (responderName) {
           initialQuestionText = responderName + initialQuestionText;
@@ -1814,41 +2054,406 @@ const handleProceedClick = async (choice) => {
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
-    appendMessage("<b>Your session is terminated. You can restart again!</b>");
+    if (Object.keys(snnipetConfig).length > 0){
+      appendMessage("<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>");
+      
+    } else{
+      appendMessage("<b>Your session is terminated. You can restart again!</b>");
+    }
 
      //enable Copy Paste
      const textInputElement = gshadowRoot.getElementById("text-input")
      textInputElement.removeAttribute("onpaste")
   }
 };
-//* Function to handle button click for no-code flow : start
-async function handleOptionButtonClick(labelText, area, information) {
-  console.log("button clicked", labelText, area, information);
+
+const handleAttemptScenaios = async (title, test_code) =>{
+  console.log('Attempting Scenaios', test_code, title)
+  testCode = test_code;
+  userAcessAvailability = true;
   optedNo = true;
+  AttemptTestDirect = true;
 
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
+  const createScenraiobtn = gShadowRoot.querySelectorAll("#create-scenario-section button")
+  if (createScenraiobtn){
+    createScenraiobtn.forEach((btn) => {
+      btn.disabled = true;
+      btn.style.cursor = "not-allowed";
+      btn.removeAttribute("onclick");
+      btn.removeAttribute('onmouseover');
+      btn.removeAttribute('onmouseout');
+    })
+  }
+  // gShadowRoot.getElementById("text-input").focus();
+  // setTimeout(() => {
+  //   gShadowRoot.getElementById("text-input").textContent = title;
+  //   setTimeout(() => {
+  //     gShadowRoot.querySelector(".input-button").click();
+  //   }, 100);
+  // }, 100);
+
   gShadowRoot.getElementById("text-input").focus();
   setTimeout(() => {
-    gShadowRoot.getElementById("text-input").textContent = labelText;
+    gShadowRoot.getElementById("text-input").textContent = title;
+    gShadowRoot.querySelector(".input-button").click();
+
+    
     setTimeout(() => {
-      gShadowRoot.querySelector(".input-button").click();
+
+      var chatElement = document.getElementById("chat-element");
+    const shdwroot = chatElement.shadowRoot;
+    const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+    messageContainers.forEach((container) => {
+      const messageText = container.querySelector(".user-message-text p");
+      if (
+        messageText &&
+        messageText.textContent.trim() === title.trim()
+      ) {
+        container.remove();
+      }
+    });
     }, 100);
   }, 100);
+}
+
+async function handleScenarioRegenerationCT(signals) {
+  const gShadowRoot2 = document.getElementById("chat-element").shadowRoot;
+  console.log(signals)
+
+
+  const regenerateButton = gShadowRoot2.getElementById(
+    "scenario-regenerate-button"
+  );
+  if (regenerateButton) {
+    regenerateButton.disabled = true;
+    regenerateButton.style.cursor = "wait";
+    regenerateButton.removeAttribute("onclick");
+
+    regenerateButton.innerText = "Regenerating..."
+  }
+
+  const errRegenerateButton = gShadowRoot2.getElementById(
+    "scenario-err-regenerate-button"
+  );
+
+  if(errRegenerateButton) {
+    errRegenerateButton.disabled = true;
+    errRegenerateButton.style.cursor = "wait";
+    errRegenerateButton.removeAttribute("onclick");
+
+    errRegenerateButton.innerText = "Regenerating..."
+  }
+ if(false){
+  gShadowRoot2.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot2.getElementById("text-input").textContent = "No";
+    gShadowRoot2.querySelectorAll(".input-button")[1].click();
+
+    setTimeout(() => {
+      var chatElement = document.getElementById("chat-element2");
+      const shdwroot = chatElement.shadowRoot;
+      let cont = [];
+      const messageContainers = shdwroot.querySelectorAll(
+        ".outer-message-container"
+      );
+      messageContainers.forEach((container, i) => {
+        const messageText = container.querySelector(".user-message-text p");
+        if (messageText && messageText.textContent.trim() === "No") {
+          cont.push(container);
+        }
+      });
+      cont.forEach((element, i) => {
+        if (i === cont.length - 1) {
+          element.remove();
+        }
+      });
+    }, 100);
+  }, 100);
+ }
+
+
+  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
+
+  const url = new URL(
+    `${baseURL}/tests/get_or_create_test_scenarios_by_site/`
+  );
+  const params = new URLSearchParams();
+  params.set("mode", "A");
+  params.set(
+    "url",
+    currentURL
+  );
+  params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
+  console.log('is_micro', snnipetConfigSTT.isMicro)
+  if (snnipetConfigSTT.isMicro !== undefined){
+    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  }
+
+  params.set("regeneration", true);
+
+  url.search = params;
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Dynamically created Test result stt", data);
+
+      if(regenerateButton){
+        regenerateButton.style.cursor = "not-allowed";
+      }
+      // allMessages.forEach((indvMessage) => {
+      //   if (
+      //     indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+      //     indvMessage.remove();
+      //   }
+      // });
+      const challenges = data;
+      // const randomIndex = Math.floor(Math.random() * challenges.length);
+      // const randomChallenge = challenges[randomIndex];
+
+      let scenarios = [];
+      try {
+        if (challenges.length > 2) {
+          const element1 = challenges[challenges.length - 1];
+
+          if (element1.title) {
+            if (element1.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element1);
+            }
+          }
+
+          const element2 = challenges[challenges.length - 2];
+
+          if (element2.title) {
+            if (element2.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element2);
+            }
+          }
+        } else {
+          challenges.forEach((element) => {
+            if (element.title) {
+              if (element.test_type !== "dynamic_discussion_thread") {
+                scenarios.push(element);
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error(`go error ${e}`);
+      }
+
+      console.log('sucessfully crated scenarios: ', scenarios)
+      if (scenarios.length == 0){
+        console.log('failed to generate')
+        
+        const ErrorDiv =  `
+        <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+
+        <button 
+        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+        style="
+          background-color: #bfdbfe; 
+          border-radius : 6px; 
+          font-size: 14px; 
+          font-weight : 600; 
+          border: 1px solid #1d4ed8; 
+          color : #1d4ed8; 
+          width : 100%; 
+          padding: 4px; 
+          margin : 8px 0 0 0;
+        "
+        onmouseout="this.style.backgroundColor = '#bfdbfe'"
+        id="scenario-err-regenerate-button"
+        >
+          Regenerate
+        </button>
+        </div>
+        </div>
+        `
+
+        setTimeout(() => {
+          setTimeout(() => {
+            const regenerateButton = shadowRoot.getElementById(
+              "scenario-err-regenerate-button"
+            );
+            regenerateButton.onclick = () => {
+              handleScenarioRegenerationCT(signals);
+            };
+          }, 50);
+        }, 100);
+       
+        if (false){
+          signals.onResponse({
+            html: ErrorDiv
+          })
+        } else{
+          appendMessage(ErrorDiv)
+        }
+        return;
+      }
+
+      const prevScenarioComponent = gShadowRoot2.getElementById(
+        "create-scenario-section"
+      );
+
+      if(prevScenarioComponent){
+        prevScenarioComponent.parentNode.remove()
+      }
+
+      const prevErrorSection = gShadowRoot2.getElementById(
+        "error-section"
+      );
+
+      if(prevErrorSection){
+        prevErrorSection.parentNode.remove()
+      }
+
+      const shadowRoot = document.getElementById("chat-element2").shadowRoot
+      let divCont = '';
+      scenarios.forEach((element, i) => {
+        divCont += `
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test' ? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            style="
+              margin-top: 8px;
+              padding: 6px 10px;
+              border: none;
+              border-radius: 4px;
+              background-color: #16a34a;
+              color: white;
+              font-size: 12px;
+              font-weight: 600;
+              transition: background-color 0.3s ease;
+            " 
+            id="attempt-btn-regen-${i}"
+            onmouseout="this.style.backgroundColor = '#16a34a'">
+            Attempt
+          </button>
+        </div>
+        </div>
+        `
+
+        setTimeout(() => {
+          const btn = gShadowRoot.getElementById(`attempt-btn-regen-${i}`)
+          btn.onclick = () => {
+            handleAttemptScenaios(element.title, element.test_code)
+          }
+        }, 100);
+
+      }); 
+
+
+      if (false) {
+        signals.onResponse({
+          html: `<div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
+            ${divCont}
+            </div>`,
+        });
+      } else {
+        appendMessage(`
+            <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px; padding: 8px;">
+            ${divCont}
+            </div>
+            `);
+      }
+    })
+    .catch((err) => console.log(err));
+}
+
+//* Function to handle button click for no-code flow : start
+async function handleOptionButtonClick(labelText, signals, is_regenerate=false) {
+  console.log("button clicked", labelText, is_regenerate);
+  const gShadowRoot = document.getElementById("chat-element").shadowRoot;
+
+  if(is_regenerate){
+    gShadowRoot.getElementById("text-input").focus();
+  setTimeout(() => {
+    gShadowRoot.getElementById("text-input").textContent = "No";
+    gShadowRoot.querySelector(".input-button").click();
+
+    
+    setTimeout(() => {
+
+      var chatElement = document.getElementById("chat-element");
+      const shdwroot = chatElement.shadowRoot;
+      let cont = []
+      const messageContainers = shdwroot.querySelectorAll(".outer-message-container")
+      messageContainers.forEach((container,i) => {
+        console.log(i,messageContainers.length - 1)
+        const messageText = container.querySelector(".user-message-text p");
+        if (
+          messageText &&
+          messageText.textContent.trim() === "No"
+           
+        ) {
+          cont.push(container)
+        }
+
+      });
+      cont.forEach((element,i) => {
+        if ( i === (cont.length-1)){
+          element.remove();
+        }
+      });
+
+      }, 100);
+    }, 100);
+    
+    return;
+  }
+      
+  const button = gShadowRoot.getElementById("create-new-scenario");
+  if (button) {
+    button.disabled = true;
+  }
+
+  if (gShadowRoot.querySelector("#create-scenario-section")){
+    console.log(`already existed`,gShadowRoot.querySelector("#create-scenario-section") )
+    return
+  }
+  optedNo = true;
+  var currentURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "") + window.location.pathname + window.location.search + window.location.hash;
+  // var currentURL = "https://coachbots-rajan.blogspot.com/2024/05/project-management.html"
+  console.log('currenturl',currentURL);
+
+  // const generationLoader = `<div id="scenario-generation-loader" styte="font-size: 12px; color: lightgray; padding: 10px 0;">Please wait, we are generating your scenarios...</div>`
+  // appendMessage(generationLoader)
+
+  const allMessages = gShadowRoot.getElementById("messages").childNodes;
 
   const url = new URL(`${baseURL}/tests/get_or_create_test_scenarios_by_site/`);
   const params = new URLSearchParams();
   params.set("mode", "A");
-  params.set("area", area);
-  params.set(
-    "information",
-    JSON.stringify({ data: optionDetail[labelText], title: labelText })
-  );
   params.set(
     "url",
-    "https://www.tutorialspoint.com/learn-python-full-course-for-beginners-from-basics-to-advance-urdu-hindi/index.asp?gclid=Cj0KCQjwtJKqBhCaARIsAN_yS_m76CYKUpB-cgwWY07Db3Z_l9UC1jE9a4h0Fg9AMOQ4BcvyHD6hVu0aAurTEALw_wcB"
+    currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken(key, secret)}`);
+  console.log('is_micro', snnipetConfig.isMicro)
+  if (snnipetConfig.isMicro !== undefined){
+    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
+  }
+  if (snnipetConfig.flavour !== undefined){
+    params.set("flavour", snnipetConfig.flavour);
+  }
   url.search = params;
+
+  const shadowRoot = document.getElementById("chat-element").shadowRoot
 
   await fetch(url, {
     method: "POST",
@@ -1860,13 +2465,181 @@ async function handleOptionButtonClick(labelText, area, information) {
     .then((response) => response.json())
     .then((data) => {
       console.log("Dynamically created Test result", data);
+      allMessages.forEach((indvMessage) => {
+        if (
+          indvMessage.innerText === "Please wait, we are generating your scenarios...") {
+          indvMessage.remove();
+        }
+      });
       const challenges = data;
-      const randomIndex = Math.floor(Math.random() * challenges.length);
-      const randomChallenge = challenges[randomIndex];
+      // const randomIndex = Math.floor(Math.random() * challenges.length);
+      // const randomChallenge = challenges[randomIndex];
 
-      console.log(randomChallenge);
-      testCode = randomChallenge.test_code;
-      codeAvailabilityUserChoice = true;
+      let scenarios = [];
+      try {
+        if (challenges.length > 2) {
+          const element1 = challenges[challenges.length - 1];
+
+          if (element1.title) {
+            if (element1.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element1);
+            }
+          }
+
+          const element2 = challenges[challenges.length - 2];
+
+          if (element2.title) {
+            if (element2.test_type !== "dynamic_discussion_thread") {
+              scenarios.push(element2);
+            }
+          }
+        } else {
+          challenges.forEach((element) => {
+            if (element.title) {
+              if (element.test_type !== "dynamic_discussion_thread") {
+                scenarios.push(element);
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error(`go error ${e}`);
+      }
+
+      if (scenarios.length == 0){
+        console.log('failed to generate')
+        
+        const ErrorDiv =  `
+        <div id='error-section' style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0;">
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">Scenario generation failed because of failure of page extraction</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+        <button 
+        onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+        style="
+          background-color: #bfdbfe; 
+          border-radius : 6px; 
+          font-size: 14px; 
+          font-weight : 600; 
+          border: 1px solid #1d4ed8; 
+          color : #1d4ed8; 
+          width : 100%; 
+          padding: 4px; 
+          margin : 8px 0 0 0;
+        "
+        onmouseout="this.style.backgroundColor = '#bfdbfe'"
+        id="scenario-err-regenerate-button"
+        >
+          Regenerate
+        </button>
+        </div>
+        </div>
+        `
+
+        setTimeout(() => {
+          const regenerateButton = shadowRoot.getElementById(
+            "scenario-err-regenerate-button"
+          );
+          regenerateButton.onclick = () => {
+            handleScenarioRegenerationCT(signals);
+          };
+        }, 100);
+        if (signals){
+          signals.onResponse({
+            html: ErrorDiv
+          })
+        } else{
+          appendMessage(ErrorDiv)
+        }
+        return;
+      }
+
+      console.log('sucessfully crated scenarios: ', scenarios)
+      // console.log(randomChallenge);
+      // testCode = randomChallenge.test_code;
+      // codeAvailabilityUserChoice = true;
+
+      
+      let divCont = '';
+      scenarios.forEach((element,i) => {
+        console.log('element', element);
+        divCont += `
+        <div style="display: flex; flex-direction: column; align-items: start; justify-content: start; border: 1px solid darkgray; border-radius: 6px; padding: 6px; margin: 0; ${i === 1 && "margin-top : 10px"}">
+        <div style="background-color: #34d399; border-radius: 4px; color: white; font-weight: 600; padding: 3px 6px; font-size: 12px; border-bottom: 4px;">${element.test_type === 'test'? "Simulation" : "Roleplay" }</div>
+        <p style="font-size: 14px; color: #333; margin: 0; font-weight : 600; margin-top: 10px;">${element.title}</p>
+        <p style="font-size: 12px; color: #333; margin: 0; font-weight : 300; margin-top: 10px;">${element.description}</p>
+        <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+          <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#22c55e'" 
+            style="
+              margin-top: 8px;
+              padding: 6px 10px;
+              border: none;
+              border-radius: 4px;
+              background-color: #16a34a;
+              color: white;
+              font-size: 12px;
+              font-weight: 600;
+              transition: background-color 0.3s ease;
+            " 
+            id="attempt-btn-${i}"
+            onmouseout="this.style.backgroundColor = '#16a34a'">
+            Attempt
+          </button>
+        </div>
+        </div>
+        `
+        setTimeout(() => {
+          const btn = gShadowRoot.getElementById(`attempt-btn-${i}`)
+          btn.onclick = () => {
+            handleAttemptScenaios(element.title, element.test_code)
+          }
+        }, 100);
+      }); 
+
+
+      if (signals){
+        signals.onResponse(
+          {
+            html: `
+            <div id='create-scenario-section' style="padding: 15px 8px; max-width: 500px;">
+            ${divCont}
+            <div style="width: 100%; display:flex; flex-direction: row; justify-content: end;">
+            <button 
+            onmouseover="this.style.cursor ='pointer',this.style.backgroundColor = '#dbeafe'" 
+            style="
+              background-color: #bfdbfe; 
+              border-radius : 6px; 
+              font-size: 14px; 
+              font-weight : 600; 
+              border: 1px solid #1d4ed8; 
+              color : #1d4ed8; 
+              width : fit-content; 
+              padding: 4px; 
+              margin : 8px 0 0 0;
+            "
+            onmouseout="this.style.backgroundColor = '#bfdbfe'"
+            id="scenario-regenerate-button"
+            >
+              Regenerate
+            </button>
+            </div>
+            </div>
+            `
+          }
+        )
+        setTimeout(() => {
+          const regenerateButton = shadowRoot.getElementById("scenario-regenerate-button")
+          regenerateButton.onclick = () => {
+            handleScenarioRegenerationCT(signals)
+          }
+      }, 50);
+      } else{
+      appendMessage(`
+      <div id='create-scenario-section' style="max-width: 500px;display: flex; flex-direction: column; gap: 4px;">
+      ${divCont}
+      </div>
+      `);
+      }
     })
     .catch((err) => console.log(err));
 }
@@ -1886,7 +2659,7 @@ async function loadExternalModule() {
 
 // Call the function to load and use the external module
 loadExternalModule().then(() => {
-  deepChatPocElement = document.getElementsByClassName("deep-chat-poc")?.[0];
+  deepChatPocElement = document.getElementsByClassName("coachbots-coachtalk")?.[0];
   deepChatPocElement.innerHTML = `
   <div class="chat-wrapper">
       <div
@@ -1954,6 +2727,16 @@ loadExternalModule().then(() => {
       hiegth: 75vh;
     "
   >
+  <div 
+  style="
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+  background-color: #f3f4f6;
+  border-radius: 1rem 1rem 0 0;
+">
     <div 
     style="
       display: flex;
@@ -1962,7 +2745,6 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
-      margin-bottom: 0.4rem;
     ">
    
     <h1 style="
@@ -1986,6 +2768,12 @@ loadExternalModule().then(() => {
     </span>
     BOTS
   </h1>
+  </div>
+  <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
+  <p id="header-text2" style="font-size: ${
+    window.innerWidth < 768 ? "10px" : "12px"
+  };">Accessibility features may not work inside the bot.</p>
+</div>
     <div 
       id="close-top" 
       onmouseover="this.style.cursor ='pointer'"
@@ -2004,7 +2792,7 @@ loadExternalModule().then(() => {
     </div>
     <deep-chat 
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 70vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}
@@ -2016,7 +2804,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "paddingLeft": "2rem"}
+          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#7fdbbe"}
         }
       }'
       textInput='{
@@ -2058,24 +2846,21 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> Usage direction for Coachbots. Follow the instructions for optimum performance. 
-      <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
           Read here
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
-          <ul>
-            <li>1 . For Coaches/mentors in the Directory, Click on "End Session" to keep a record of sessions. Your coach/mentor is informed and a transcript is shared after the same. For Icons by AI, it will just keep the record of the conversation. </li>
-            <li>2 .  For any type of avatar or simulation bots, Unrelated questions, answers, or comments and very fast responses may cause system errors. The usage is meant to mimic how it works in the real world.  </li>
-            <li>3 . Keep responses within 10 to 400 words for optimum results. You can either type or speak out your responses. If it's a simulation/roleplay, the "Coach Talk", NLP will also provide you speech analysis in reports.</li>
-            <li>4 . Guide bots are based on specific framework-based responses while user-generated bots are representations of the user's knowledge base on any topic. </li>
-            <li>5 . Simulations and roleplays are meant to practice how real-life scenarios play out. You can check the Explore page to review the scenarios covered. Both CoachTalk and Coachscribe can be used to handle them.</li>
-            <li>6 . In rare cases, there may be delays in responses and reports because of system availability issues.</li>
-            <li>7 . For AI frames/avatars, the model is a point of view of the coach on a particular topic, for best results stick to the area highlighted in the coach/mentor's page.</li>
-            <li>8 . Cochbot sessions should be assumed to have no prior memory, always restate your context for the current session.</li>
-            <li>9 . For user-created knowledge bots, always ask the questions related to skill area defined, for best results.</li>
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list2">
+            <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+              <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+              <li><strong>3. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+              <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
         <span id="close-intructions-pane2" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -2107,24 +2892,58 @@ loadExternalModule().then(() => {
   const chatIcon = document.getElementById("chat-icon");
   const chatbotHeading = document.getElementById("chatbot-heading");
   const closeFromTopp = document.getElementById("close-top");
+  widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
+  snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
+  console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
 
+
+  if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
+    const list = 
+    `<li>1 . The simulations generated by our skills engine and AI pipeline are designed for real-world comprehension and practice based on the learning content presented on the page. The simulation may not be generated if the page's content is restricted or unreadable. </li>
+     <li>2 . You should avoid responding with unrelated questions, answers, or comments, and extremely rapid responses, as they may cause system errors. The usage aims to mimic real-world interactions.</li>
+     <li>3 . Keep responses between 10 to 400 words for optimal results. You can either type or speak your responses. For audio responses, a speech analysis in reports will be provided.</li>
+     <li>4 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
+     <li>5 . The feedback reports may not instantaneously capture all the data. Simply try refreshing the page if anything appears missing. Thanks!</li>
+    `
+    instructionsPane.innerHTML = list
+  }
+
+
+  console.log("widget cliennt Id :",widgetClientId)
   //responsive styles for phones
+  // if (window.innerWidth < 600) {
+  //   chatContainer.style.width = "80vw";
+  //   chatContainer.style.left = "10vw";
+  //   chatContainer.style.height = "70vh";
+  //   chatContainer.style.bottom = "12vh";
+  //   chatElementRef.style.height = "60vh";
+  //   chatElementRef.style.width = "80vw";
+  //   chatContainer.style.position = "fixed";
+  //   chatIcon.style.width = "3rem";
+  //   chatIcon.style.height = "3rem";
+  //   chatIcon.style.position = "fixed";
+  //   closeFromTopp.style.width = "30px";
+  //   closeFromTopp.style.left = "0.3rem";
+  //   closeFromTopp.style.top = "0.2rem";
+  // }
+
   if (window.innerWidth < 600) {
-    chatContainer.style.width = "80vw";
-    chatContainer.style.left = "10vw";
-    chatContainer.style.height = "70vh";
-    chatContainer.style.bottom = "12vh";
-    chatElementRef.style.height = "60vh";
-    chatElementRef.style.width = "80vw";
+    chatContainer.style.borderRadius = "0";
+    chatContainer.style.width = "100vw";
+    chatContainer.style.left = "0";
+    chatContainer.style.height = "100vh";
+    chatContainer.style.bottom = "0";
+    chatElementRef.style.height = "85vh";
+    chatElementRef.style.width = "100vw";
     chatContainer.style.position = "fixed";
     chatIcon.style.width = "3rem";
     chatIcon.style.height = "3rem";
     chatIcon.style.position = "fixed";
-    chatbotHeading.style.fontSize = "12px";
     closeFromTopp.style.width = "30px";
-    closeFromTopp.style.left = "0.3rem";
-    closeFromTopp.style.top = "0.2rem";
+    closeFromTopp.style.right = "0.3rem";
+    closeFromTopp.style.top = "1rem";
   }
+
 
   let credentialsForm;
   if (window.innerWidth > 868) {
@@ -2246,36 +3065,48 @@ loadExternalModule().then(() => {
       `;
   }
 
-  chatElementRef.initialMessages = [
-    {
-      html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
-      </p>`,
-      role: "ai",
-    },
-    {
-      html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
-        <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
-      role: "user",
-    },
-  ];
+  if (Object.keys(snnipetConfig).length > 0){
+    chatElementRef.initialMessages = [
+      {
+        html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+        role: "ai",
+      },
+    ];
+    askAccessBotCode = true;
+  } else{
 
-  chatElementRef.htmlClassUtilities = {
-    ["deep-chat-temporary-message"]: {
-      styles: {
-        default: {},
+    chatElementRef.initialMessages = [
+      {
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+        </p>`,
+        role: "ai",
       },
-    },
-    ["button"]: {
-      styles: {
-        default: {
-          backgroundColor: "transparent",
-        },
-        hover: {
-          backgroundColor: "white",
+      {
+        html: `<div class="deep-chat-temporary-message"><button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+          <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>`,
+        role: "user",
+      },
+    ];
+    chatElementRef.htmlClassUtilities = {
+      ["deep-chat-temporary-message"]: {
+        styles: {
+          default: {},
         },
       },
-    },
-  };
+      ["button"]: {
+        styles: {
+          default: {
+            backgroundColor: "transparent",
+          },
+          hover: {
+            backgroundColor: "white",
+          },
+        },
+      },
+    };
+  }
+
+  
 
   // set email and name
   //   const setNameEmail = async (inputEmail, inputName) => {
@@ -2328,8 +3159,23 @@ loadExternalModule().then(() => {
   //       .catch((err) => console.log(err));
   //   };
 
+  function excludeSpecialCharacters2(inputString) {
+    return  inputString.replace(/[*#]+/g, '');
+  }
+
+  function removeResponderTypeName(responderDisplayName, responseText) {
+    const responderType = responderDisplayName.trim().toLowerCase();
+    const regex = new RegExp(responderType, "i");
+    let updatedText = responseText.replace(regex, "").trim();
+    return updatedText;
+  }
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   // to check word limit
-  function isValidMessage(text, limit=15,is_greater=false) {
+  function isValidMessage(text, limit=10,is_greater=false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -2491,7 +3337,7 @@ loadExternalModule().then(() => {
   };
 
   const getClientInformation = async (use_case, user_id) => {
-    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+    const url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
     if (user_id && use_case === "user_info") {
       url += `&user_id=${user_id}`;
@@ -2549,16 +3395,30 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
 
     console.log(objectUrl, "url");
+
+    const randomIdForAudioElement = generateRandomAlphanumeric(5);
+    const shadowRoot = document.getElementById("chat-element").shadowRoot
+
     const audioCont =
       queDiv +
-      `<div ><audio style="${
+      `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
-      }" controls autoplay>
+      }" autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
-    </audio></div>`;
+    </audio>
+    
+    <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+    </div>`;
+
+    setTimeout(() => {
+      const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
+      const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+      console.log(audioElement, canvasElement)
+      audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+    }, 100);
 
     return audioCont;
   };
@@ -2790,7 +3650,7 @@ loadExternalModule().then(() => {
           if (isImmersive) {
             questionText = questionText.replace(`${responder_name}`, "");
             questionText = questionText.replace(`:`, "");
-            questionText = responder_name + " : " + questionText;
+            questionText = capitalizeFirstLetter(responder_name) + " : " + questionText;
           }
 
           console.log(testResponseText);
@@ -2824,6 +3684,7 @@ loadExternalModule().then(() => {
   chatElementRef.request = {
     handler: async (body, signals) => {
       try {
+        console.log("bodybody", body)
         if (body instanceof FormData) {
           const bodyLength = [...body.entries()].length;
           console.log(bodyLength);
@@ -2845,6 +3706,27 @@ loadExternalModule().then(() => {
                 lastAudioMessageBubble.length - 1
               ].remove();
           }
+
+          // const audioFileBodySize = body.get("files").size
+          // if (audioFileBodySize === 0) {
+          //   const shadowRoot =
+          //     document.getElementById("chat-element").shadowRoot;
+          //   const lastAudioMessageBubble = shadowRoot.querySelectorAll(
+          //     ".user-message-text.audio-message"
+          //   );
+          //   lastAudioMessageBubble.forEach((element) => {
+          //     console.log(element)
+          //   })
+          //   lastAudioMessageBubble[lastAudioMessageBubble.length - 1].remove()
+          //   const allMessages = shadowRoot.getElementById("messages").childNodes;
+          //   allMessages.forEach((indvMessage) => {
+          //     if (
+          //       indvMessage.innerText === "."
+          //     ) {
+          //       indvMessage.remove();
+          //     }
+          //   });
+          // }
         }
         if (body instanceof FormData) {
           //AUDIO RESPONSES
@@ -2914,7 +3796,7 @@ loadExternalModule().then(() => {
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
           let file = audioFile;
-          if (file.name.length === 0 || file.size === "") {
+          if (file === undefined || file?.name.length === 0 || file?.size === "") {
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'><b>Your audio could not be processed. Please submit again.</b></p>",
             });
@@ -2928,6 +3810,9 @@ loadExternalModule().then(() => {
             });
             return;
           }
+
+          body = undefined
+          audioFile = undefined
 
           const formdata = new FormData();
           formdata.append("owner_type", "user");
@@ -2952,7 +3837,7 @@ loadExternalModule().then(() => {
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`];
               }
               let responderName;
-              let strList = questionText.replaceAll("*", "").split(":");
+              let strList = questionText.replaceAll("*", "").split(":", 2);
               if (strList.length > 1) {
                 questionText = strList[1];
                 responderName = `<b>${strList[0]}:</b><br>`;
@@ -3154,7 +4039,7 @@ loadExternalModule().then(() => {
 
               if (testType === "coaching") {
                 let responderName;
-                const strList = questionText.split(":");
+                const strList = questionText.split(":", 2);
                 if (strList.length > 1) {
                   responderName = `<b>${strList[0]}:</b><br>`;
                   questionText = strList[1];
@@ -3180,12 +4065,12 @@ loadExternalModule().then(() => {
                   testType === "orchestrated_conversation" ||
                   testType === "dynamic_discussion_thread"
                 ) {
-                  const stringList = questionText.split(":", 2);
+                  const stringList = questionText.split(":");
                   console.log(stringList);
                   let responderName;
                   if (stringList.length > 1) {
-                    questionText = stringList[1];
                     responderName = `<b>${stringList[0]}:</b><br>`;
+                    questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                   }
                   if (isImmersive && questionIndex != 0) {
                     questionText = await TTSContainer(questionText);
@@ -3370,12 +4255,48 @@ loadExternalModule().then(() => {
           // const latestMessage = body.messages[body.messages.length - 1].text;
 
           let latestMessage = body.messages[body.messages.length - 1].text;
+          globalSignals = signals
           //slicing 400 words from user responses > 400 words
           if(latestMessage.split(" ").length >= 400){
             latestMessage = latestMessage.split(" ").slice(0, 400).join(" ")
 
             console.log("SLICED \n", latestMessage)
           } 
+
+          const shadowRoot =
+            document.getElementById("chat-element").shadowRoot;
+
+          if (askAccessBotCode){
+            const code = 'DEMO2024'
+            if (latestMessage === code){
+              console.log("Access Code Matched")
+              LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
+              askAccessBotCode = false
+              if (snnipetConfig.isDemo === 'true'){
+                handleOptionButtonClick("",signals)
+              } else{
+                signals.onResponse(
+                  {
+                    html: `<b>Do you have access code for your simulation?</b><br/><br/>
+                  <div class="deep-chat-temporary-message">
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid green">Yes</button>
+                  <button class="deep-chat-button deep-chat-suggestion-button" style="border: 1px solid #d80000">No</button> </div>
+                  `
+
+                  }
+                )
+                
+                
+              }
+              return;
+            } else {
+              LoadingMessageWithText2("Response loading...", shadowRoot)
+            }
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+            });
+            return;
+          }
 
           if (isEmailForm) {
             await proceedFormFlow(latestMessage);
@@ -3437,12 +4358,22 @@ loadExternalModule().then(() => {
             return;
           } else if (userAcessAvailability === "No" && !isSessionActive) {
             optedNo = true;
-            signals.onResponse({
-              html: `<div id="option-button-container" >
-                    <button id="surprise-button" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
-                    </div>
-                    `,
-            });
+            console.log(window.location.hostname,'domain')
+            if (!["playground.coachbots.com","platform.coachbots.com",'localhost'].includes(window.location.hostname)){
+
+              handleOptionButtonClick("",signals)
+            } else {
+              signals.onResponse({
+                html: "<b>Please ask your administrator for test codes.</b>",
+              });
+            }
+            // signals.onResponse({
+            //   html: `<div id="option-button-container" >
+            //         <button id="surprise-button" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleSurpriseMeButtonClick()">Initiate a surprise Interaction</button>
+            //         <button id="create-new-scenario" style="margin-top:5px; width:fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleOptionButtonClick()">Create Scenario</button>
+            //         </div>
+            //         `,
+            // });
             // signals.onResponse({
             //   text: "No problem , here are a few samples you can try out (Experimental):",
             //   html: `
@@ -3494,9 +4425,15 @@ loadExternalModule().then(() => {
             resetAllVariables().then(() => {
               console.log("Your session is terminated. You can restart again!");
 
-              signals.onResponse({
-                html: "<b>Your session is terminated. You can restart again!</b>",
-              });
+              if (Object.keys(snnipetConfig).length > 0){
+                signals.onResponse({
+                  html: "<b>Your session is terminated. You can either enter a simulation code or refresh the page for generating the a new simulation.</b>",
+                });
+              } else{
+                signals.onResponse({
+                  html: "<b>Your session is terminated. You can restart again!</b>",
+                });
+              }
 
               //Enable Copy Paste
               var chatElementRef2 = document.getElementById("chat-element");
@@ -3534,6 +4471,12 @@ loadExternalModule().then(() => {
               const buttonText = button.textContent.trim();
               buttonTextArray.push(buttonText);
             });
+
+            const opiton_scenarios = shadowRoot.querySelectorAll("#create-scenario-section p")
+            opiton_scenarios.forEach((b) =>{
+              const buttonText = b.textContent.trim();
+              buttonTextArray.push(buttonText);
+            })
             // adding sample test code title
             const sampleTestCodesValues = Object.values(sampleTestCodes);
             sampleTestCodesValues.forEach((value) => {
@@ -3541,6 +4484,14 @@ loadExternalModule().then(() => {
             });
 
             //end
+            if ( buttonTextArray.includes(latestMessage)){
+              if (responsesDone === false && questionIndex > 0) {
+                signals.onResponse({
+                  html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
+                });
+                return;
+              }
+            }
 
             if (!buttonTextArray.includes(latestMessage)) {
               if (sessionStatus != "in_progress") {
@@ -3567,7 +4518,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
                 });
                 return;
               }
@@ -3604,6 +4555,12 @@ loadExternalModule().then(() => {
             "QBEWUOM",
           ];
           if (questionIndex === 0 && userAcessAvailability.length !== 0) {
+            if (snnipetConfig.isDemo === 'true' && isTestCode(latestMessage)){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'><b>This feature blocked...</b></p>",
+              })
+              return;
+            }
             const shadowRoot = document.getElementById("chat-element").shadowRoot;
             if (optedNo === false) {
               testCode = latestMessage // body.messages[0].text;
@@ -3681,6 +4638,23 @@ loadExternalModule().then(() => {
                 orch_details =
                   questionData.results[0].orchestrated_conversation_details;
 
+                if (Object.keys(snnipetConfig).length > 0){
+                  isImmersive = snnipetConfig.allowAudioInteraction === 'true';
+                } else {
+                  console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
+                  console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
+                  console.log("prioritiseUserAllowInteraction" , prioritiseUserAllowInteraction)
+
+                  if(clientAllowAudioInteraction){
+                    isImmersive = userAllowAudioInteraction
+                  } else {
+                    isImmersive = false
+                  }
+
+                }
+                  console.log('isImmersive', isImmersive)
+                  
+
                 if (TestUIInfo) {
                   if (Object.keys(TestUIInfo).length > 0) {
                     senarioTitle = TestUIInfo["title"];
@@ -3704,13 +4678,17 @@ loadExternalModule().then(() => {
                 if (user) {
                   const group_list = ["Demo", "free", "Free"];
                   // const my_lib = await getTestCodesByRule("my_lib");
-                  const my_lib = await getClientInformation("my_lib");
-                  for (const item of my_lib) {
-                    if (item.emails.includes(user.email)) {
-                      group_list.push(item.group);
+                  console.log('widgetClientId',widgetClientId)
+                  if (widgetClientId != null){
+                    group_list.push(widgetClientId)
+                  } else {
+                    const my_lib = await getClientInformation("my_lib");
+                    for (const item of my_lib) {
+                      if (item.emails.includes(user.email)) {
+                        group_list.push(item.group);
+                      }
                     }
                   }
-
                   if (!group_list.includes(clientName)) {
                     // clientName Demo means Free type test
                     signals.onResponse({
@@ -3728,6 +4706,12 @@ loadExternalModule().then(() => {
                   }
 
                   const group_list = ["Demo", "free", "Free"];
+
+                  console.log('widgetClientId',widgetClientId)
+                  if (widgetClientId != null){
+                    group_list.push(widgetClientId)
+                  }
+                  
                   if (!group_list.includes(clientName)) {
                     signals.onResponse({
                       html: "<b>You are not allowed to attempt this interaction. Please check if you are logged in with the correct account and if your access code is correct. Contact the administrator if you face problems, via the help widget.</b>",
@@ -4090,8 +5074,17 @@ loadExternalModule().then(() => {
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('Yes')">Yes</button>
                         <button style="margin-top:5px; width: fit-content; padding:6px 12px; border: 1px solid lightgray; border-radius: 4px;" onclick="handleProceedClick('No')">No</button>
                     </div>`;
+                    if ( AttemptTestDirect){
+                      signals.onResponse({
+                        html: "Get ready! Your scenario starts now. Good luck!",
+                      })
+                      setTimeout(() => {
+                        handleProceedClick('Yes')
+                      }, 1000);
+                      
+                    }
 
-                    if (senarioMediaDescription) {
+                    if (senarioMediaDescription && !AttemptTestDirect) {
                       let embeddingUrl = "";
                       if (senarioMediaDescription.length > 0) {
                         if (senarioMediaDescription.includes("youtube.com")) {
@@ -4267,6 +5260,7 @@ loadExternalModule().then(() => {
                     } else if (
                       mediaProps &&
                       Object.keys(mediaProps).includes("test_image")
+                      && !AttemptTestDirect
                     ) {
                       console.log("Media props here", mediaProps);
                       console.log("SHOW MEDIA PROPS here", mediaProps);
@@ -4315,10 +5309,12 @@ loadExternalModule().then(() => {
                       );
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
-                      signals.onResponse({
-                        html: questionText,
-                        text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                      });
+                      if (!AttemptTestDirect){
+                        signals.onResponse({
+                          html: questionText,
+                          text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
+                        });
+                      }
                     }
                     // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
                   } else {
@@ -4326,9 +5322,10 @@ loadExternalModule().then(() => {
                       testType != "orchestrated_conversation" &&
                       testType != "dynamic_discussion_thread" &&
                       testType != "coaching"
+                      
                     ) {
                       let responderName;
-                      let strList = questionText.replaceAll("*", "").split(":");
+                      let strList = questionText.replaceAll("*", "").split(":", 2);
                       if (strList.length > 1) {
                         questionText = strList[1];
                         responderName = `<b>${strList[0]}:</b><br>`;
@@ -4559,7 +5556,7 @@ loadExternalModule().then(() => {
                     conversation_id = responseData["uid"];
                     console.log("coaching question Text: ", questionText);
                     let responderName;
-                    const strList = questionText.split(":");
+                    const strList = questionText.split(":", 2);
                     if (strList.length > 1) {
                       responderName = `<b>${strList[0]}:</b><br>`;
                       questionText = strList[1];
@@ -4648,7 +5645,7 @@ loadExternalModule().then(() => {
 
                       const qRespnse = await questionResponse.json();
                       questionText = qRespnse["response_text"];
-
+                      console.log('dynamic or orch response',qRespnse)
                       // checking if botname is present or not
                       const responder_name = qRespnse.responder_display_name;
                       if (!questionText.includes(responder_name)) {
@@ -4677,8 +5674,8 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      questionText = stringList[1];
                       responderName = `<b>${stringList[0]}:</b><br>`;
+                      questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                     }
                     if (isImmersive && questionIndex != 0) {
                       questionText = await TTSContainer(questionText);
@@ -4925,9 +5922,35 @@ loadExternalModule().then(() => {
 });
 
 let sendBtn;
+let InputField; 
 const openChatContainer = () => {
   let chatContainer = document.getElementsByClassName("chat-container")?.[0];
   let chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+
+  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
+  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
+  console.log(coachScribeChatIcon, coachScribeContainer)
+
+  if(window.innerWidth < 600){
+    coachScribeChatIcon.style.display = "none"
+    coachScribeContainer.style.display = "none"
+  }
+
+  const shadowR = document.getElementById("chat-element").shadowRoot
+
+  const container = shadowR.getElementById("container")
+  container.oncopy = () => {
+    alert("Copying is not allowed")
+    return false
+  }
+
+  const inputField = shadowR.getElementById("text-input")
+  if(allowPastingAtClientLevel){
+    inputField.onpaste = () => {
+      alert("Pasting is not allowed.")
+      return false
+    }
+  }
 
   let backdrop2 = document.getElementById("backdrop2")
   backdrop2.style.display = "block"
@@ -4936,13 +5959,12 @@ const openChatContainer = () => {
   const chatE = document.getElementById("chat-element");
   micButton = chatE.shadowRoot.getElementById("microphone-button");
   sendBtn = chatE.shadowRoot.querySelector(".input-button");
+  InputField = chatE.shadowRoot.getElementById("text-input")
   let isRecording = false;
   let audioChunks = [];
   let stream;
 
-  user = window.user;
-  console.log(" User details ", user);
-  console.log(user === undefined);
+
 
   async function startRecording() {
     try {
@@ -5013,12 +6035,12 @@ const openChatContainer = () => {
   }
 
   // Using the ipinfo.io API
-  fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-    .then((response) => response.json())
-    .then((data) => {
-      ipAddress = data.ip;
-    })
-    .catch((error) => console.error("Error fetching IP address:", error));
+  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     ipAddress = data.ip;
+  //   })
+  //   .catch((error) => console.error("Error fetching IP address:", error));
 
   //   const user_data = getUserData();
 
@@ -5031,55 +6053,59 @@ const openChatContainer = () => {
   //     user_email = `${user_name}-${sid}@gmail.com`;
   //   }
 
-  let user_name;
-  let user_email;
+  // let user_name;
+  // let user_email;
 
-  if (user) {
-    user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
-    user_email = user.email;
-  } else {
-    user_name = "coachbots_anonyoususer";
-    user_email = getAnonymousEmail();
-  }
+  // if (user) {
+  //   user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+  //   user_email = user.email;
+  // } else {
+  //   user_name = "coachbots_anonyoususer";
+  //   user_email = getAnonymousEmail();
+  // }
 
-  if (window.LogRocket) {
-    window.LogRocket.identify(user_email, {
-      name: user_name,
-      email: user_email,
-    });
-  }
-  fetch(`${baseURL}/accounts/`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuthToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user_context: {
-        name: user_name,
-        role: "member",
-        user_attributes: {
-          tag: "deepchat_profile",
-          attributes: {
-            name: user_name,
-            username: user_name,
-            email: user_email,
-          },
-        },
-      },
-      identity_context: {
-        identity_type: "deepchat_unique_id",
-        value: user_email,
-      },
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      participantId = data.uid;
-      userId = data.uid;
-      userRole = data.role;
-    })
-    .catch((err) => console.log(err));
+  // if (window.LogRocket) {
+  //   window.LogRocket.identify(user_email, {
+  //     name: user_name,
+  //     email: user_email,
+  //   });
+  // }
+  // fetch(`${baseURL}/accounts/`, {
+  //   method: "POST",
+  //   headers: {
+  //     Authorization: `Basic ${basicAuthToken}`,
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     user_context: {
+  //       name: user_name,
+  //       role: "member",
+  //       user_attributes: {
+  //         tag: "deepchat_profile",
+  //         attributes: {
+  //           name: user_name,
+  //           username: user_name,
+  //           email: user_email,
+  //         },
+  //       },
+  //     },
+  //     identity_context: {
+  //       identity_type: "deepchat_unique_id",
+  //       value: user_email,
+  //     },
+  //   }),
+  // })
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+  //     userAllowAudioInteraction = data.user_allow_audio_interactions;
+  //     prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
+  //     participantId = data.uid;
+  //     userId = data.uid;
+  //     userRole = data.role;
+  //   })
+  //   .catch((err) => console.log(err));
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
@@ -5123,6 +6149,15 @@ const closeFromTop = () => {
   chatContainer.style.scale = 0;
   chatContainer.style["transform-origin"] = "0% 100%";
 
+  const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
+  const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
+  console.log(coachScribeChatIcon, coachScribeContainer)
+
+  if (window.innerWidth < 600) {
+    coachScribeChatIcon.style.display = "block";
+    coachScribeContainer.style.display = "block";
+  }
+
   if (
     chatIcon.src ===
     "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
@@ -5135,7 +6170,7 @@ const closeFromTop = () => {
   }
 };
 
-//handling for enter key send while recording
+// handling for enter key send while recording
 document.addEventListener("keydown", (event) => {
   if (event.keyCode === 13 || event.which === 13) {
     if(isRecordingGlobal) {

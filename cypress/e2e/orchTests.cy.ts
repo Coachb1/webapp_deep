@@ -1,6 +1,6 @@
 import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
-const orchestratedTestCodes = ["Q7E1DGY" ];
+const orchestratedTestCodes = ["Q7E1DGY","QP22B9R" ];
 
 describe("Init", () => {
   beforeEach(() => {

@@ -10,11 +10,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile from "./NavProfile";
-import { HelpCircle, Info, Menu } from "lucide-react";
-import { TooltipWrapper } from "./TooltipWrapper";
-import { useEffect, useState } from "react";
-import { getClientUserInfo } from "@/lib/utils";
-import { Badge } from "./ui/badge";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Switch } from "./ui/switch";
 
@@ -29,32 +26,14 @@ interface CustomWindow extends Window {
 const windowDec: CustomWindow =
   typeof window !== "undefined" ? window : ({} as CustomWindow);
 
-const NetworkNav = ({ user }: any) => {
+const NetworkNav = ({ user, restrictedPages }: any) => {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
   const { updateHelpModeState, helpModeState } = UseHelpMode();
 
-  //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
-
   const [scrolled, setScrolled] = useState<number>(0);
-  useEffect(() => {
-    if (user) {
-      getClientUserInfo(user.email)
-        ?.then((res) => res.json())
-        .then((data) => {
-          console.log(data, "getClientUserInfo - NetworkNav");
-
-          setRestrictedPages(data.data.user_info[0].restricted_pages);
-          setRestrictedFeatures(data.data.user_info[0].restricted_features);
-        });
-    }
-  }, []);
 
   function handleScroll() {
     var scrolledUp = window.scrollY || window.pageYOffset;
@@ -76,8 +55,8 @@ const NetworkNav = ({ user }: any) => {
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
-      <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden ">
-        {!restrictedPages?.includes("Network Directory") && (
+      <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">
+        {!restrictedPages?.includes("Network-directory") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -88,7 +67,7 @@ const NetworkNav = ({ user }: any) => {
             <Link href={"/"}>Network Directory</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Demo") && (
+        {!restrictedPages?.includes("Explore") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -98,7 +77,7 @@ const NetworkNav = ({ user }: any) => {
             } `}
             asChild
           >
-            <Link href={"/content-library"}>Demo</Link>
+            <Link href={"/content-library"}>Explore</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Library") && (
@@ -114,7 +93,7 @@ const NetworkNav = ({ user }: any) => {
             <Link href={"/library"}>Library</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Creator Studio") && (
+        {!restrictedPages?.includes("Creator-studio") && (
           <Button
             variant={"outline"}
             className={` h-8 max-sm:text-sm ${
@@ -144,14 +123,14 @@ const NetworkNav = ({ user }: any) => {
                 <Link href={"/"}> Network directory</Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Demo") && (
+            {!restrictedPages?.includes("Explore") && (
               <DropdownMenuItem
                 className={`${
                   pathname === "/content-library" ? "bg-gray-200" : null
                 }`}
                 asChild
               >
-                <Link href={"/content-library"}>Demo</Link>
+                <Link href={"/content-library"}>Explore</Link>
               </DropdownMenuItem>
             )}
             {!restrictedPages?.includes("Library") && (
@@ -161,35 +140,10 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <Link
-                  href={"/library"}
-                  // onClick={() => {
-                  //   router.push("/library");
-                  // }}
-                >
-                  {" "}
-                  Library
-                </Link>
+                <Link href={"/library"}> Library</Link>
               </DropdownMenuItem>
             )}
-            {/* {!restrictedPages?.includes("Guides") && (
-              <DropdownMenuItem
-                className={`${
-                  pathname.includes("/guides") ? "bg-gray-200" : null
-                }`}
-                asChild
-              >
-                <Link
-                  href={"/guides"}
-                  // onClick={() => {
-                  //   router.push("/guides");
-                  // }}
-                >
-                  {" "}
-                  Guides
-                </Link>
-              </DropdownMenuItem>
-            )} */}
+
             {!restrictedPages?.includes("Creator Studio") && (
               <DropdownMenuItem
                 className={`${
@@ -197,23 +151,7 @@ const NetworkNav = ({ user }: any) => {
                 }`}
                 asChild
               >
-                <Link
-                  href={"/create-scenario"}
-                  // onClick={() => {
-                  //   router.push("/create-scenario");
-                  // }}
-                >
-                  {" "}
-                  Creator Studio{" "}
-                  {/* <span>
-                    <Badge
-                      variant={"default"}
-                      className="bg-cyan-400 w-fit text-[10px] p-[2px] ml-1  hover:bg-cyan-400 text-white "
-                    >
-                      Experimental
-                    </Badge>
-                  </span> */}
-                </Link>
+                <Link href={"/create-scenario"}> Creator Studio </Link>
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

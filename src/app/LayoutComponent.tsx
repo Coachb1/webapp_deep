@@ -3,12 +3,11 @@
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LoginWall, UnAuth } from "./UnAuthpage";
+import { DemoPage, LoginWall, UnAuth } from "./UnAuthpage";
 import {
-  baseURL,
-  basicAuth,
   getUserAccount,
   hideBots,
+  hideConsoleLogs,
   subdomain,
 } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
@@ -29,24 +28,25 @@ const LayoutComponent = ({
   children,
   isDemoUser,
   isRestricted,
+  restrictedPages,
 }: {
   user: KindeUser | null;
   children: React.ReactNode;
   isDemoUser: boolean;
   isRestricted: boolean;
+  restrictedPages: string;
 }) => {
   const pathname = usePathname();
   const [logSessionStarted, setLogSessionStarted] = useState<boolean>(false);
   const [botId, setBotId] = useState<string>("");
   const [showCoachBot, setShowCoachBot] = useState(false);
 
+  hideConsoleLogs();
   useEffect(() => {
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-
           window.userIdFromWebApp = data.uid;
         });
     }
@@ -59,12 +59,14 @@ const LayoutComponent = ({
             email: user?.email!,
           });
           console.log("USER SET");
-          window.user = user;
         }
         setupLogRocketReact(LogRocket);
         setLogSessionStarted(true);
         console.log("LOG SESSION STARTED");
       }
+    }
+    if (user) {
+      window.user = user;
     }
   }, []);
 
@@ -113,12 +115,23 @@ const LayoutComponent = ({
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
+    } else if (pathname.includes("/deep-dive")) {
+      setShowCoachBot(true);
+
+      if (pathname === "/deep-dive") {
+        setBotId("deep_dive-16843-guru-chaitanya");
+      } else {
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
+      }
     }
   }, [pathname]);
 
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     if (isDemoUser && !isRestricted && user) {
       if (pathname === "/profile") {
         coachtalk.setAttribute("style", "display: none;");
@@ -147,8 +160,10 @@ const LayoutComponent = ({
   }, [pathname, user, isDemoUser, isRestricted]);
 
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     if (pathname === "/library") {
       if (coachScribe) {
         coachScribe.removeAttribute("style");
@@ -200,25 +215,72 @@ const LayoutComponent = ({
           </>
         ) : (
           <>
-            {isRestricted ? (
+            {isRestricted && ( //Unauth page
+              <>
+                <UnAuth user={user} />
+              </>
+            )}
+            {isDemoUser && ( //demo page
+              <>
+                <DemoPage user={user} />
+              </>
+            )}
+            {!isDemoUser &&
+              !isRestricted && ( //proceed
+                <>
+                  {" "}
+                  {subdomain === "platform" ? (
+                    <div className="coachbots-coachtalk hidden"></div>
+                  ) : (
+                    <div className="coachbots-coachtalk"></div>
+                  )}
+                  {showCoachBot ? (
+                    <div
+                      data-bot-id={botId}
+                      className="coachbots-coachscribe"
+                    ></div>
+                  ) : (
+                    <div className="coachbots-coachscribe"></div>
+                  )}
+                  {!pathname.includes("/feedback") &&
+                  !pathname.includes("/coach") &&
+                  !pathname.includes("/subject-expert") &&
+                  !pathname.includes("/knowledge-bot") &&
+                  !pathname.includes("/deep-dive") ? (
+                    <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
+                      <div className="z-[999]">
+                        <NetworkNav
+                          restrictedPages={restrictedPages}
+                          user={user}
+                        />
+                      </div>
+                      {children}
+                    </div>
+                  ) : (
+                    <>{children}</>
+                  )}
+                </>
+              )}
+            {/* {isRestricted ? (
               <>
                 {isDemoUser ? (
                   <>
                     {" "}
                     {subdomain === "platform" ? (
-                      <div className="deep-chat-poc hidden"></div>
+                      <div className="coachbots-coachtalk hidden"></div>
                     ) : (
-                      <div className="deep-chat-poc"></div>
+                      <div className="coachbots-coachtalk"></div>
                     )}
                     {showCoachBot ? (
-                      <div data-bot-id={botId} className="deep-chat-poc2"></div>
+                      <div data-bot-id={botId} className="coachbots-coachscribe"></div>
                     ) : (
-                      <div className="deep-chat-poc2"></div>
+                      <div className="coachbots-coachscribe"></div>
                     )}
                     {!pathname.includes("/feedback") &&
                     !pathname.includes("/coach") &&
                     !pathname.includes("/subject-expert") &&
-                    !pathname.includes("/knowledge-bot") ? (
+                    !pathname.includes("/knowledge-bot") &&
+                    !pathname.includes("/deep-dive") ? (
                       <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
                         <div className="z-[999]">
                           <NetworkNav user={user} />
@@ -237,31 +299,40 @@ const LayoutComponent = ({
               </>
             ) : (
               <>
-                {subdomain === "platform" ? (
-                  <div className="deep-chat-poc hidden"></div>
+                {isDemoUser ? (
+                  <>
+                    {subdomain === "platform" ? (
+                      <div className="coachbots-coachtalk hidden"></div>
+                    ) : (
+                      <div className="coachbots-coachtalk"></div>
+                    )}
+                    {showCoachBot ? (
+                      <div data-bot-id={botId} className="coachbots-coachscribe"></div>
+                    ) : (
+                      <div className="coachbots-coachscribe"></div>
+                    )}
+                    {!pathname.includes("/feedback") &&
+                    !pathname.includes("/coach") &&
+                    !pathname.includes("/subject-expert") &&
+                    !pathname.includes("/knowledge-bot") &&
+                    !pathname.includes("/deep-dive") ? (
+                      <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
+                        <div className="z-[999]">
+                          <NetworkNav user={user} />
+                        </div>
+                        {children}
+                      </div>
+                    ) : (
+                      <>{children}</>
+                    )}
+                  </>
                 ) : (
-                  <div className="deep-chat-poc"></div>
-                )}
-                {showCoachBot ? (
-                  <div data-bot-id={botId} className="deep-chat-poc2"></div>
-                ) : (
-                  <div className="deep-chat-poc2"></div>
-                )}
-                {!pathname.includes("/feedback") &&
-                !pathname.includes("/coach") &&
-                !pathname.includes("/subject-expert") &&
-                !pathname.includes("/knowledge-bot") ? (
-                  <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
-                    <div className="z-[999]">
-                      <NetworkNav user={user} />
-                    </div>
-                    {children}
-                  </div>
-                ) : (
-                  <>{children}</>
+                  <>
+                    <UnAuth user={user} />
+                  </>
                 )}
               </>
-            )}
+            )} */}
           </>
         )}
       </>

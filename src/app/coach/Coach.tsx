@@ -1,7 +1,6 @@
 "use client";
 
 import NoLoginFlag from "@/components/NoLoginFlag";
-import WhereToUse from "@/components/WhereToUse";
 import {
   Accordion,
   AccordionContent,
@@ -15,11 +14,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, convertTextToCorrectFormat } from "@/lib/utils";
-import NetworkNav from "@/components/NetworkNav";
-import Image from "next/image";
+import {
+  baseURL,
+  basicAuth,
+  capitalizeText,
+  convertTextToCorrectFormat,
+  parseData,
+} from "@/lib/utils";
 import { toast } from "sonner";
-import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
+import { NavProfileWoProfile } from "@/components/NavProfile";
 
 const howItWorks = [
   {
@@ -57,15 +60,34 @@ const benefitsData = [
   },
 ];
 
+const dummyData = {
+  "Transcript Email":
+    "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
+  "Advice Anytime, Anywhere":
+    "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
+};
+
 const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
 
   const [coachName, setCoachName] = useState<string>("");
+  const [coachTagName, setCoachTagName] = useState<string>("");
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
   const [enrolled, SetEnrolled] = useState(true);
   const [feedbackBotId, setFeedbackBotId] = useState("");
+  const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
+    ""
+  );
+  const [discussiionTopics, setDiscussionTopics] = useState<string[]>([]);
+
+  const [dynamicHowItWorks, setDynamicHowItWorks] =
+    useState<{ heading: string; description: string }[]>(howItWorks);
+
+  const [dynamicBenefits, setDynamicBenefits] =
+    useState<{ heading: string; description: string }[]>(benefitsData);
+
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
@@ -96,13 +118,15 @@ const Coach = ({ user, renderType }: any) => {
       .then((data) => {
         console.log("BOT DETAILS : ", data);
         console.log();
-        const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
+        const coachScribe = document.getElementsByClassName(
+          "coachbots-coachscribe"
+        )[0];
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
           data.data.bot_details.is_strict_login_required
         );
+        setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
@@ -113,12 +137,26 @@ const Coach = ({ user, renderType }: any) => {
             setInValidCoach(true);
           }
           setCoachName(data.data.bot_details.coach_name);
+          setCoachTagName(data.data.tag);
           setCoachDescription(data.data.bot_details.info);
           setProfileImage(data.data.owner_profile_image);
         }
         if (data.data.bot_details.is_strict_login_required && !user) {
           coachScribe.setAttribute("style", "display: none;");
         }
+
+        if (data.data.page_information.how_it_works) {
+          const parsedData = parseData(data.data.page_information.how_it_works);
+          console.log(parsedData);
+          setDynamicHowItWorks(parsedData);
+        }
+
+        if (data.data.page_information.benefits) {
+          const parsedData = parseData(data.data.page_information.benefits);
+          console.log(parsedData);
+          setDynamicBenefits(parsedData);
+        }
+
         if (data.data.bot_details.is_login_required) {
           if (!user) {
             coachScribe.setAttribute("style", "display: none;");
@@ -181,8 +219,9 @@ const Coach = ({ user, renderType }: any) => {
                     renderType === "dynamic" &&
                     pathname !== "/coach/coach-d54cd-aravsharma"
                   ) {
-                    const coachScribe =
-                      document.getElementsByClassName("deep-chat-poc2")[0];
+                    const coachScribe = document.getElementsByClassName(
+                      "coachbots-coachscribe"
+                    )[0];
 
                     console.log(coachScribe);
                     const botButton = document.getElementsByClassName(
@@ -212,6 +251,15 @@ const Coach = ({ user, renderType }: any) => {
                 });
             });
         }
+
+        if (
+          data.data.profile_details.discussion_topic !== null &&
+          data.data.profile_details.discussion_topic !== ""
+        ) {
+          setDiscussionTopics(
+            data.data.profile_details.discussion_topic.split(",")
+          );
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -219,6 +267,39 @@ const Coach = ({ user, renderType }: any) => {
         setInValidCoach(true);
       });
   }, []);
+
+  const parseTextToJSX = (text: string) => {
+    const sections = text.trim().split("\n\n");
+
+    return (
+      <div className="space-y-2 max-sm:mt-0">
+        {sections.map((section, index) => {
+          const lines = section
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line !== "");
+          if (lines.length > 0) {
+            const title = lines[0];
+            const items = lines.slice(1);
+
+            return (
+              <section className="text-sm max-sm:text-xs text-wrap" key={index}>
+                <h2 className="">{title}</h2>
+                <ul className="list-none list-inside">
+                  {items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="my-1 text-wrap">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  };
 
   const CoachBotBody = () => {
     return (
@@ -259,13 +340,26 @@ const Coach = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-5xl mt-0 font-bold md:text-6xl lg:text-4xl  max-sm:text-2xl text-gray-600 ">
-                {renderType === "dynamic"
-                  ? `Welcome to ${convertTextToCorrectFormat(coachName)} 🚀`
-                  : "Welcome to the Aarav Sharma !🚀"}
-              </h1>
+              {botScenarioCase === "icons_by_ai" ? (
+                <>
+                  <h1 className="text-2xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
+                    {coachTagName}
+                  </h1>
+                  <p className="my-2 font-semibold text-lg max-sm:text-sm text-gray-600">
+                    {convertTextToCorrectFormat(coachName)}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
+                    {renderType === "dynamic"
+                      ? `${convertTextToCorrectFormat(coachName)}🚀`
+                      : "Aarav Sharma!🚀"}
+                  </h1>
+                </>
+              )}
               <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 border border-gray-200 bg-blue-100 rounded-lg">
+                <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -277,31 +371,45 @@ const Coach = ({ user, renderType }: any) => {
                   coaching experience.{" "}
                 </p>
               </div>
-              {/* {renderType !== "dynamic" && (
-                    <p className="my-4 max-sm:text-xs text-[#2f2323]">
-                      This is where you will see the summary information of the
-                      particular coach avatar. The bot on this page demonstrates
-                      a conversation based on this profile.
-                    </p>
-                  )} */}
+
               {renderType === "dynamic" ? (
-                // coachDescription
                 <>
-                  <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
-                      <img
-                        className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                        src={profileImage}
-                      />
-                    </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
-                      {" "}
-                      {coachDescription}
-                    </p>
-                  </div>
+                  {botScenarioCase === "icons_by_ai" ? (
+                    <div className="flex flex-row items-start justify-around max-sm:flex-col max-sm:justify-center max-sm:items-center overflow-x-scroll no-scrollbar border-b-2 border-dashed border-gray-300 pb-4">
+                      <div className="w-[20%] max-sm:w-fit max-sm:mb-4">
+                        <img
+                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                          src={
+                            profileImage
+                              ? profileImage
+                              : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                          }
+                        />
+                      </div>
+                      <p className="w-[80%] max-sm:w-full text-wrap text-left max-sm:text-justify">
+                        {parseTextToJSX(coachDescription)}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
+                      <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
+                        <img
+                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
+                          src={
+                            profileImage
+                              ? profileImage
+                              : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                          }
+                        />
+                      </div>
+                      <p className="w-[80%] text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center">
+                        {coachDescription}
+                      </p>
+                    </div>
+                  )}
                 </>
               ) : (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
+                <div className="text-sm max-sm:text-xs  text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
                   <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
                     <img
                       className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
@@ -325,6 +433,22 @@ const Coach = ({ user, renderType }: any) => {
                     for long-term, sustainable leadership development in the
                     dynamic corporate landscape.
                   </p>
+                </div>
+              )}
+              {discussiionTopics.length > 0 && (
+                <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg mt-4">
+                  <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
+                    Discussion Topics
+                  </h3>
+                  <div className="flex flex-row gap-2 justify-center flex-wrap">
+                    <>
+                      {discussiionTopics.map((topic) => (
+                        <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
+                          {capitalizeText(topic.trim())}
+                        </div>
+                      ))}
+                    </>
+                  </div>
                 </div>
               )}
             </div>
@@ -352,14 +476,16 @@ const Coach = ({ user, renderType }: any) => {
                   Where to use
                 </Button>
               </Link> */}
-              <Link href={"#howItWorks"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  How AI Frame works
-                </Button>
-              </Link>
+              {botScenarioCase !== "icons_by_ai" && (
+                <Link href={"#howItWorks"}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    How AI Frame works
+                  </Button>
+                </Link>
+              )}
 
               {/* {feedbackBotId && (
                 <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
@@ -371,14 +497,16 @@ const Coach = ({ user, renderType }: any) => {
                   </Button>
                 </Link>
               )} */}
-              <Link href={"#benefits"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Benefits
-                </Button>
-              </Link>
+              {botScenarioCase !== "icons_by_ai" && (
+                <Link href={"#benefits"}>
+                  <Button
+                    variant={"secondary"}
+                    className="border border-gray-200 h-8 hover:cursor-pointer"
+                  >
+                    Benefits
+                  </Button>
+                </Link>
+              )}
               {/* <Link target="_blank" href={coachBookLink}>
                     <div className="relative group cursor-pointer">
                       <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
@@ -398,52 +526,54 @@ const Coach = ({ user, renderType }: any) => {
             {/* <div id="wtu">
               <WhereToUse />
             </div> */}
-            <div className="w-full" id="howItWorks">
-              <div className={`w-full flex justify-center`}>
-                <Badge
-                  variant={"secondary"}
-                  className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
-                >
-                  How AI Frame works
-                </Badge>
-              </div>
-              <div className="w-full">
-                <div className="relative isolate mx-auto">
-                  <div>
-                    <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
-                        >
-                          {howItWorks.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === howItWorks.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
-                            >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+            {botScenarioCase !== "icons_by_ai" && (
+              <div className="w-full" id="howItWorks">
+                <div className={`w-full flex justify-center`}>
+                  <Badge
+                    variant={"secondary"}
+                    className="bg-[#2DC092] z-10 h-6 w-fit text-white text-lg py-3 hover:bg-[#2DC092] text-center mb-8 mt-12 max-sm:mt-8 max-sm:text-sm"
+                  >
+                    How AI Frame works
+                  </Badge>
+                </div>
+                <div className="w-full">
+                  <div className="relative isolate mx-auto">
+                    <div>
+                      <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
+                        <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full text-gray-500 max-sm:p-4 "
+                          >
+                            {dynamicHowItWorks.map((test, i) => (
+                              <AccordionItem
+                                key={i}
+                                value={`item-${i + 1}`}
+                                className={
+                                  i === dynamicHowItWorks.length - 1
+                                    ? "border-none"
+                                    : "border-b"
+                                }
+                              >
+                                <AccordionTrigger className="text-left max-sm:text-xs">
+                                  <div>
+                                    <b>{test.heading}</b>
+                                  </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="max-sm:text-xs text-left">
+                                  <p> {test.description}</p>
+                                </AccordionContent>
+                              </AccordionItem>
+                            ))}
+                          </Accordion>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
             <div className="w-full" id="benefits">
               <div className={`w-full flex justify-center`}>
                 <Badge
@@ -463,12 +593,12 @@ const Coach = ({ user, renderType }: any) => {
                           collapsible
                           className="w-full text-gray-500 max-sm:p-4 "
                         >
-                          {benefitsData.map((test, i) => (
+                          {dynamicBenefits.map((test, i) => (
                             <AccordionItem
                               key={i}
                               value={`item-${i + 1}`}
                               className={
-                                i === howItWorks.length - 1
+                                i === dynamicBenefits.length - 1
                                   ? "border-none"
                                   : "border-b"
                               }

@@ -27,12 +27,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { scrollToView } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { UseHelpMode } from "@/lib/helpmodeContext";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
 
-const VersionOne = ({ user }: any) => {
+const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
   if (user) {
     const userEmail = user?.email;
@@ -60,42 +59,53 @@ const VersionOne = ({ user }: any) => {
     }
   }
 
-  const HelpModeSteps = [
-    {
-      target: "#user-demos",
-      content:
-        "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
-    },
-    {
-      target: "#system-demos",
-      content:
-        "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
-    },
-    {
-      target: ".chat-icon",
-      content:
-        "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
-    },
-    {
-      target: ".chat-icon2",
-      content:
-        "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
-    },
-    {
-      target: "#manager-plus",
-      disableScrolling: false,
-      content:
-        "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
-    },
-  ];
+  const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
+
+  useEffect(() => {
+    const dynamicHelpText = helpModeText?.demo;
+    setHelpModeSteps([
+      {
+        target: "#user-demos",
+        content: dynamicHelpText?.user_demos
+          ? dynamicHelpText.user_demos
+          : "The platform created simulations and roleplays around various use cases. This is just a representative use case.",
+      },
+      {
+        target: "#system-demos",
+        content: dynamicHelpText?.system_demos
+          ? dynamicHelpText.system_demos
+          : "User or client-created assets, profiles, and avatar-bots in the platform. They are specific to each client setup.",
+      },
+      {
+        target: ".chat-icon",
+        content: dynamicHelpText?.coachTalk
+          ? dynamicHelpText.coachTalk
+          : "Users who want to get feedback about their speech parameters like confidence, etc. should use this widget. Users must give input by speech in this case. The processing speed may be lower. ",
+      },
+      {
+        target: ".chat-icon2",
+        content: dynamicHelpText?.coachScribe
+          ? dynamicHelpText.coachScribe
+          : "Users who use this widget will not get any speech related feedback in their simulation reports. Users can give input via text or speech - in either case it is converted into text. The processing speed is fast & efficient. ",
+      },
+      {
+        target: "#manager-plus",
+        disableScrolling: false,
+        content: dynamicHelpText?.manager_plus
+          ? dynamicHelpText.manager_plus
+          : "These sections are where the simulations actual simulations and roleplays curated. The title categorization is for easy access. In this case, the simulations are meant for Manager development. ",
+      },
+    ]);
+  }, []);
+
   return (
     <>
-      <HelpMode steps={HelpModeSteps} />
+      <HelpMode steps={HelpModeSteps} forPage="demo" />
       <MaxWidthWrapper className="flex pt-20 flex-col items-center justify-center text-center">
-        <h1 className="text-5xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
+        <h1 className="text-4xl mt-12 font-bold max-sm:text-2xl text-gray-600 ">
           Learning Simulations Playground
         </h1>
-        <p className="mt-5 max-w-prose text-zinc-700 text-base max-sm:px-8">
+        <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
           {" "}
           Toolkits and conversational coaching-learning for any scenario. The{" "}
           <b>User Demo</b> are the user-created avatars and bots, while the{" "}
@@ -200,14 +210,6 @@ const VersionOne = ({ user }: any) => {
             <Button
               variant={"secondary"}
               className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("discoveryPlus")}
-            >
-              Discovery+ | MCQ
-            </Button>
-
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
               onClick={() => scrollToView("one-to-one")}
             >
               1:1 Check-ins | Dynamic
@@ -227,14 +229,6 @@ const VersionOne = ({ user }: any) => {
               onClick={() => scrollToView("sales")}
             >
               Sales
-            </Button>
-
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("frontline-staff")}
-            >
-              Frontline Staff (Hindi)
             </Button>
 
             <Button
@@ -282,7 +276,7 @@ const VersionOne = ({ user }: any) => {
               className="border border-gray-200 h-8 hover:cursor-pointer"
               onClick={() => scrollToView("meetings")}
             >
-              Meetings | Dynamic
+              Meetings | Group Discussion
             </Button>
 
             <Button
@@ -292,24 +286,6 @@ const VersionOne = ({ user }: any) => {
             >
               English Support
             </Button>
-
-            {/* {shouldRenderDiv && (
-              <Link href={"/create-scenario"}>
-                <div className="relative group cursor-pointer">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                  <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                    <div className="space-y-2">
-                      <Button
-                        variant={"secondary"}
-                        className="border border-gray-200 h-8 hover:cursor-pointer"
-                      >
-                        Create your own scenario
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )} */}
           </div>
         </div>
       </MaxWidthWrapper>
@@ -358,25 +334,11 @@ const VersionOne = ({ user }: any) => {
               tests={pms}
             />
           </div>
-          {/* <div id="coachingplus">
-            <HeroAccordion
-              badgeText="Coaching+"
-              user={user ? true : false}
-              tests={coachingPlus}
-            />
-          </div> */}
           <div id="pitch">
             <HeroAccordion
               badgeText="Pitch+"
               user={user ? true : false}
               tests={pitch}
-            />
-          </div>
-          <div id="discoveryPlus">
-            <HeroAccordion
-              badgeText="Discovery+ | MCQ"
-              user={user ? true : false}
-              tests={DescoveryPlus}
             />
           </div>
           <div id="one-to-one">
@@ -400,13 +362,7 @@ const VersionOne = ({ user }: any) => {
               tests={Sales}
             />
           </div>
-          <div id="frontline-staff">
-            <HeroAccordion
-              badgeText="Frontline Staff(Hindi)"
-              user={user ? true : false}
-              tests={frontLineStaff}
-            />
-          </div>
+
           <div id="service-c">
             <HeroAccordion
               badgeText="Service/Consulting"
@@ -435,13 +391,6 @@ const VersionOne = ({ user }: any) => {
               tests={presentation}
             />
           </div>
-          {/* <div id="immersive">
-            <HeroAccordion
-              badgeText="Immersive "
-              user={user ? true : false}
-              tests={immersive}
-            />
-          </div> */}
           <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
@@ -451,7 +400,7 @@ const VersionOne = ({ user }: any) => {
           </div>
           <div id="meetings">
             <HeroAccordion
-              badgeText="Meetings | Dynamic"
+              badgeText=" Meetings | Group Discussion"
               user={user ? true : false}
               tests={meetings}
             />
@@ -463,48 +412,8 @@ const VersionOne = ({ user }: any) => {
               tests={englishSupport}
             />
           </div>
-          {/* {shouldRenderDiv && (
-            <div id="create-your-own">
-              <CreateYourOwn />
-            </div>
-          )} */}
         </div>
       </div>
-
-      {/* <hr className="my-4 mt-16  max-sm:mt-4 w-[80%] mx-auto" />
-      <div className="h-[10vh] max-sm:h-[8vh] text-sm text-gray-700 mx-16 mb-0 max-sm:mx-8 ">
-        <div className="flex flex-col items-center justify-between text-center">
-          <div>
-            <Link href={"https://www.coachbots.com/"}>
-              <Image
-                src={"/coachbots-logo-ts.svg"}
-                alt="coachbots-logo-lg"
-                height={80}
-                width={180}
-                className="max-sm:h-[40px] max-sm:w-[120px]"
-              />
-            </Link>
-          </div>
-          <div className="flex gap-4 max-sm:flex-col max-sm:gap-1 max-sm:text-xs mt-2">
-            <Link
-              href={"https://www.coachbots.com/interaction-report-analysis"}
-              target="_blank"
-            >
-              Interaction Analysis
-            </Link>
-            <Link
-              href={"https://www.coachbots.com/terms-privacy-policy"}
-              target="_blank"
-            >
-              Terms & Privacy Policy
-            </Link>
-          </div>
-        </div>
-        <div className="text-center mt-2 max-sm:text-xs">
-          <p>&copy; 2023 Coachbots™. All Rights Reserved.</p>
-        </div>
-      </div> */}
-      {/* <Widgets /> */}
     </>
   );
 };

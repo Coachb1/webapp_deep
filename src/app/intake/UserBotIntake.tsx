@@ -10,16 +10,28 @@ import {
   isValidLinks,
   isValidYoutubeLinks,
   subdomain,
+  transformExtractedData,
 } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { Button } from "@/components/ui/button";
-import { Info, Loader, PenLine, SendHorizonal } from "lucide-react";
+import {
+  File,
+  Info,
+  Loader,
+  PenLine,
+  SendHorizonal,
+  Trash2,
+  UndoDot,
+} from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, ReactNode, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MediaData } from "@/lib/types";
+import Link from "next/link";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const UserBotIntake = ({ user }: { user: KindeUser }) => {
@@ -28,6 +40,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const checkIfView = params.get("view");
   const botIdFromParams = params.get("bot_id");
   const botIUidFromParams = params.get("uid");
+
+  const adminEdit = params.get("admin_edit");
+  const userIdParams = params.get("user_id");
+  const userEmailParams = params.get("user_email");
+  const userNameParams = params.get("user_name");
 
   const [userId, setUserId] = useState("");
   //user input states
@@ -51,16 +68,45 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [releventDocument, setReleventDocuments] = useState<FileData[]>([]);
   const [releventLinks, setReleventLinks] = useState("");
 
+  //mediaData
+  const [mediaData, setMediaData] = useState<MediaData>();
+
+  const [dataModified, setDataModified] = useState(false);
+
   useEffect(() => {
-    if (user) {
+    if (user && !adminEdit) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
           setUserId(data.uid);
         });
+    } else if (adminEdit) {
+      setUserId(userIdParams!);
     }
   }, []);
+
+  const handleWordLimit = (
+    input_value: string,
+    minLimit: number,
+    maxLimit: number,
+    fieldName: string,
+    setError: Function
+  ) => {
+    const inputValue = input_value.trim();
+    const words = inputValue.split(/\s+/);
+    const wordCount = words.length;
+    setDataModified(true);
+
+    if (wordCount >= minLimit && wordCount <= maxLimit) {
+      setError((prevErrors: any) => ({ ...prevErrors, [fieldName]: "" }));
+    } else if (wordCount < minLimit) {
+      setError((prevErrors: any) => ({
+        ...prevErrors,
+        [fieldName]: `Minimum ${minLimit} words are required.`,
+      }));
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target?.files;
@@ -171,11 +217,15 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     setSubmitLoading(true);
     // if (!checkIfEdit) {
     var formdata = new FormData();
-    formdata.append("name", user.given_name!);
+    const user_name = adminEdit
+      ? userNameParams
+      : `${user.given_name} ${user.family_name ? user.family_name : ""}`;
+    formdata.append("name", user_name!);
     formdata.append("user_id", userId);
     formdata.append("bot_name", botName);
     formdata.append("participant_id", userId);
-    formdata.append("email", user.email!);
+    const user_email = adminEdit ? userEmailParams : user.email;
+    formdata.append("email", user_email!);
     formdata.append("bot_type", "user_bot");
     formdata.append(
       "profile_image",
@@ -185,7 +235,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
     formdata.append(
       "attributes",
       JSON.stringify({
-        heading: `welcome to ${user.given_name}'s user bot`,
+        heading: `welcome to ${user_name}'s user bot`,
       })
     );
 
@@ -214,6 +264,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
     if (checkIfEdit) {
       formdata.append("bot_id", botIUidFromParams!);
+      formdata.append("for_reapproval", "true");
     }
 
     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
@@ -255,10 +306,73 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             }
           });
 
+          let deletingDocs: string = "";
+          let deletingPdfs: string = "";
+          if (mediaData?.extracted_from_pdf) {
+            deletingDocs = mediaData?.extracted_from_pdf
+              .map((item) => {
+                if (item.isDeleted && item.fileName.includes(".docx")) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+
+            deletingPdfs = mediaData?.extracted_from_pdf
+              .map((item) => {
+                if (item.isDeleted && item.fileName.includes(".pdf")) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          let deletingArticleLinks: string = "";
+          if (mediaData?.extracted_from_article) {
+            deletingArticleLinks = mediaData?.extracted_from_article
+              .map((item) => {
+                if (item.isDeleted) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          let deletingYoutubeLinks: string = "";
+          if (mediaData?.extracted_from_youtube) {
+            deletingYoutubeLinks = mediaData?.extracted_from_youtube
+              .map((item) => {
+                if (item.isDeleted) {
+                  return item.fileName;
+                }
+              })
+              .filter((item) => item !== undefined)
+              .join(", ");
+          }
+
+          const deletedData = {
+            pdf_files: deletingPdfs,
+            youtube_links: deletingYoutubeLinks,
+            article_links: deletingArticleLinks,
+            doc_files: deletingDocs,
+          };
+
+          console.log(deletedData);
+          patchFormData.append("deleted_data", JSON.stringify(deletedData));
+
           patchFormData.append(
             "media_data",
             JSON.stringify({
-              youtube_links: releventLinks,
+              youtube_links: releventLinks
+                .split(",")
+                .filter((link) => link.includes("youtube"))
+                .join(","),
+              article_links: releventLinks
+                .split(",")
+                .filter((link) => !link.includes("youtube"))
+                .join(","),
             })
           );
 
@@ -275,7 +389,9 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              if (data.error) {
+
+              if (data.error && data.msg) {
+                toast.error("Error creating your user bot, Please try again.");
               } else {
                 resetAllStates();
                 if (checkIfEdit) {
@@ -297,8 +413,10 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   }, 4000);
                 }
               }
+              setSubmitLoading(false);
             })
             .catch((err) => {
+              setSubmitLoading(false);
               console.error(err);
               toast.error("Error creating your user bot, Please try again.");
             });
@@ -321,7 +439,8 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+          const user_id = adminEdit ? userIdParams : data.uid;
+          fetch(`${baseURL}/accounts/get-bots/?user_id=${user_id}`, {
             headers: {
               Authorization: basicAuth,
             },
@@ -332,33 +451,69 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 "Bot details for edit - User bot  [userBotIntake]",
                 data
               );
+              const testdata = data.data.filter(
+                (bot: any) => bot.signature_bot.bot_id === botIdFromParams
+              );
+              console.log(testdata);
               let resultingBot = getBotById(botIdFromParams!, data.data);
 
               console.log(resultingBot);
 
-              setBotName(resultingBot.bot_attributes.bot_name);
-              const parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
-              setCommanFaqs(
-                parsedFaqJson[
-                  "Provide a few common FAQs the bot should use for commonly asked questions?"
-                ]
-              );
-              setFunctionsNTasksOfBot(
-                parsedFaqJson["What tasks or functions should the bot perform?"]
-              );
-              setInfoAccessToBots(
-                parsedFaqJson[
-                  "Provide the information the bot should have access to generate responses?"
-                ]
-              );
-              setPrimaryPurpose(
-                parsedFaqJson["What is the primary purpose of the bot?"]
-              );
-              setReleventLinks(
-                parsedFaqJson[
-                  "Provide any relevant links and make sure the links are publicly accessible"
-                ]
-              );
+              if (resultingBot) {
+                setBotName(resultingBot.bot_attributes.bot_name);
+                console.log(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+                setMediaData(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+                let parsedFaqJson: any;
+                if (typeof resultingBot.signature_bot.faqs === "string") {
+                  parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
+                } else {
+                  parsedFaqJson = resultingBot.signature_bot.faqs;
+                }
+                setCommanFaqs(
+                  parsedFaqJson[
+                    "Provide a few common FAQs the bot should use for commonly asked questions?"
+                  ]
+                );
+                setFunctionsNTasksOfBot(
+                  parsedFaqJson[
+                    "What tasks or functions should the bot perform?"
+                  ]
+                );
+                setInfoAccessToBots(
+                  parsedFaqJson[
+                    "Provide the information the bot should have access to generate responses?"
+                  ]
+                );
+                setPrimaryPurpose(
+                  parsedFaqJson["What is the primary purpose of the bot?"]
+                );
+
+                const InitialKowledgeBotData = {
+                  name: resultingBot.bot_attributes.bot_name,
+                  primaryPurpose:
+                    parsedFaqJson["What is the primary purpose of the bot?"],
+                  commanFaqs:
+                    parsedFaqJson[
+                      "Provide a few common FAQs the bot should use for commonly asked questions?"
+                    ],
+                  functionsNTasksOfBot:
+                    parsedFaqJson[
+                      "What tasks or functions should the bot perform?"
+                    ],
+                  infoAccessToBot:
+                    parsedFaqJson[
+                      "Provide the information the bot should have access to generate responses?"
+                    ],
+                };
+              }
             });
         });
     }
@@ -367,6 +522,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [error, setError] = useState({});
 
   const handleInputLinks = (input_value: string, fieldName: string) => {
+    setDataModified(true);
     const inputValue = input_value;
 
     if (isValidLinks(inputValue)) {
@@ -377,6 +533,38 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
         [fieldName]: `Please enter the valid link(s).`,
       }));
     }
+  };
+
+  const deleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: true } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
+  };
+
+  const undoDeleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: false } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
   };
 
   return (
@@ -431,17 +619,27 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               </p>
               <input
                 required
-                disabled={checkIfEdit ? true : false}
+                disabled={
+                  (checkIfEdit ? true : false) || (checkIfView ? true : false)
+                }
                 onChange={(e) => {
-                  setBotName(e.target.value);
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  setBotName(inputValue);
+                  handleWordLimit(inputValue, 3, 10, "botName", setError);
                 }}
                 value={botName}
                 placeholder="Project X bot, POSH bot, Digital literacy bot etc."
                 type="text"
                 className={`w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ${
-                  checkIfEdit ? "hover:cursor-not-allowed" : ""
+                  checkIfEdit || checkIfView ? "hover:cursor-not-allowed" : ""
                 }`}
               />
+              {Object.keys(error).includes("botName") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["botName"]}
+                </p>
+              )}
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
@@ -452,62 +650,115 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 required
                 disabled={checkIfView === null ? false : true}
                 onChange={(e) => {
-                  setPrimaryPurpose(e.target.value);
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  setPrimaryPurpose(inputValue);
+                  handleWordLimit(
+                    inputValue,
+                    10,
+                    50,
+                    "primaryPurpose",
+                    setError
+                  );
                 }}
                 value={primaryPurpose}
                 placeholder="Briefly describe the bot's main goal, e.g., 'To provide customer support for product inquiries'"
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
+              {Object.keys(error).includes("primaryPurpose") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["primaryPurpose"]}
+                </p>
+              )}
             </div>
+
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 What tasks or functions should the bot perform?
               </p>
               <textarea
-                disabled={checkIfView === null ? false : true}
+                rows={4}
                 required
+                disabled={checkIfView === null ? false : true}
                 onChange={(e) => {
-                  setFunctionsNTasksOfBot(e.target.value);
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  setFunctionsNTasksOfBot(inputValue);
+                  handleWordLimit(
+                    inputValue,
+                    15,
+                    75,
+                    "functionsNTasksOfBot",
+                    setError
+                  );
                 }}
                 value={functionsNTasksOfBot}
-                placeholder="List tasks or functions, e.g., `Answer FAQs, process orders, provide account information.`"
-                rows={4}
-                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                placeholder="List tasks or functions, e.g., 'Answer FAQs, process orders, provide account information.'"
+                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
+              {Object.keys(error).includes("functionsNTasksOfBot") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["functionsNTasksOfBot"]}
+                </p>
+              )}
             </div>
+
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide the information the bot should have access to generate
                 responses?
               </p>
               <textarea
-                disabled={checkIfView === null ? false : true}
-                value={infoAccessToBot}
-                required
-                onChange={(e) => {
-                  setInfoAccessToBots(e.target.value);
-                }}
-                placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
                 rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  setInfoAccessToBots(inputValue);
+                  handleWordLimit(
+                    inputValue,
+                    20,
+                    100,
+                    "infoAccessToBot",
+                    setError
+                  );
+                }}
+                value={infoAccessToBot}
+                placeholder="Specify data sources for responses, e.g., 'Access FAQs, project information, and documentation.'"
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
+              {Object.keys(error).includes("infoAccessToBot") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["infoAccessToBot"]}
+                </p>
+              )}
             </div>
+
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide a few common FAQs the bot should use for commonly asked
                 questions?
               </p>
               <textarea
-                disabled={checkIfView === null ? false : true}
-                value={commanFaqs}
-                required
-                onChange={(e) => {
-                  setCommanFaqs(e.target.value);
-                }}
-                placeholder="list example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
                 rows={4}
+                required
+                disabled={checkIfView === null ? false : true}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  setCommanFaqs(inputValue);
+                  handleWordLimit(inputValue, 10, 50, "commanFaqs", setError);
+                }}
+                value={commanFaqs}
+                placeholder="List example FAQs, e.g., 'Q. How to reset password. A. Visit our website's login page and click 'Forgot Password' to reset.'"
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
               />
+              {Object.keys(error).includes("commanFaqs") && (
+                <p className="text-red-500 text-xs mt-1">
+                  {(error as any)["commanFaqs"]}
+                </p>
+              )}
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
@@ -522,6 +773,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   name="files"
                   accept=".pdf,.docx"
                   onChange={async (e) => {
+                    setDataModified(true);
                     handleFileChange(e);
                   }}
                 />
@@ -530,6 +782,65 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   to enhance bot knowledge.
                 </p>
               </div>
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_pdf.length > 0 && (
+                <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1 mt-2">
+                  {mediaData?.extracted_from_pdf.map((item) => (
+                    <div className="flex flex-row justify-between items-center">
+                      <div className="flex flex-row items-center gap-2">
+                        <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                        <span
+                          className={`text-xs text-blue-500 truncate ${
+                            item.isDeleted && "line-through"
+                          }`}
+                        >
+                          {item.fileName}
+                        </span>
+                      </div>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
@@ -539,12 +850,12 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <textarea
                 disabled={checkIfView === null ? false : true}
                 value={releventLinks}
-                required
+                required={!checkIfEdit}
                 onChange={(e) => {
                   setReleventLinks(e.target.value);
                   handleInputLinks(e.target.value, "releventLinks");
                 }}
-                placeholder="youtube links) - Provide accessible links, e.g. '[YouTube link].'"
+                placeholder="Provide accessible links, e.g. '[YouTube link], [Article link] '"
                 rows={4}
                 className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
               />
@@ -552,6 +863,122 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 <p className="text-red-500 text-xs mt-1">
                   {(error as any)["releventLinks"]}
                 </p>
+              )}
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_youtube.length > 0 && (
+                <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                  {mediaData?.extracted_from_youtube.map((item) => (
+                    <div className="flex flex-row justify-between items-center">
+                      <Link
+                        href={item.fileName}
+                        target="_target"
+                        className={`text-xs text-blue-500 truncate ${
+                          item.isDeleted && "line-through"
+                        }`}
+                      >
+                        {item.fileName}
+                      </Link>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* @ts-ignore */}
+              {mediaData?.extracted_from_article.length > 0 && (
+                <div className="w-full mt-1 bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                  {mediaData?.extracted_from_article.map((item) => (
+                    <div className="flex flex-row justify-between items-center">
+                      <Link
+                        href={item.fileName}
+                        target="_target"
+                        className={`text-xs text-blue-500 truncate ${
+                          item.isDeleted && "line-through"
+                        }`}
+                      >
+                        {item.fileName}
+                      </Link>
+                      {checkIfEdit && (
+                        <div className="flex flex-row gap-2 min-w-fit">
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={item.isDeleted}
+                            onClick={() => {
+                              deleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Delete"
+                              body={
+                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                          <Button
+                            variant={"outline"}
+                            className="h-6 text-xs w-fit"
+                            type="button"
+                            disabled={!item.isDeleted}
+                            onClick={() => {
+                              undoDeleteMediaDataHandler(item.fileName);
+                            }}
+                          >
+                            <span className="max-sm:hidden">Undo delete</span>
+                            <TooltipWrapper
+                              className="hidden max-sm:block text-xs"
+                              tooltipName="Undo delete"
+                              body={
+                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                              }
+                            />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
             {!checkIfView && (
@@ -575,7 +1002,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                 </div>
                 <div>
                   {checkIfEdit ? (
-                    <Button disabled={submitLoading} className="h-8">
+                    <Button
+                      id="save-changes-btn"
+                      disabled={submitLoading || !dataModified}
+                      className="h-8"
+                    >
                       {" "}
                       {submitLoading ? (
                         <>

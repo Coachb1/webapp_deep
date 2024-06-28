@@ -1,13 +1,33 @@
 "use client";
 
-import { Eraser, Loader } from "lucide-react";
+import {
+  AtSign,
+  ChevronLeft,
+  ChevronRight,
+  Eraser,
+  Info,
+  Loader,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import CopyToClipboard from "./CopyToClipboard";
-import { Ref, useEffect, useRef, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
+import {
+  baseURL,
+  basicAuth,
+  getUserAccount,
+  getUsersForClient,
+} from "@/lib/utils";
 import { toast } from "sonner";
+import Select, { MultiValue } from "react-select";
+import { ClientUserType } from "@/lib/types";
+import { Radio, Tooltip } from "antd";
 
-const CreateYourOwn = ({ user, generatedHandler }: any) => {
+interface OptionType {
+  value: string;
+  label: string;
+}
+
+const CreateYourOwn = ({ user, clientName }: any) => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<
     {
@@ -20,16 +40,60 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [loadingText, setLoadingText] = useState("Creating simulation.");
+  const [clientUser, setClientUsers] = useState<ClientUserType[]>([]);
+  const [assignedToUsers, setAssignedToUsers] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  const [industry, setIndustry] = useState("");
+  const [objective, setObjective] = useState("");
+  const [department, setDepartment] = useState("");
+  const [keyStakeholders, setKeyStakeholders] = useState("");
+
+  const [assignInit, setAssignInit] = useState(false);
+  const [simulationType, setSimulationType] = useState("short");
+  const [numOfTries, setNumOfTries] = useState<number>(0);
+
+  const incrementTries = () => {
+    if (numOfTries < 5) {
+      setNumOfTries((prevTries) => prevTries + 1);
+    } else {
+      setNumOfTries(0);
+    }
+    console.log("increased num of tries to- ", numOfTries);
+  };
+
+  const getClientUsers = async (clientName: string) => {
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+        {
+          method: "GET",
+          headers: { Authorization: basicAuth },
+        }
+      );
+      const data = await response.json();
+      setClientUsers(getUsersForClient(clientName, data));
+    } catch (err) {
+      toast.error("Error fetching client data.");
+      console.error(err);
+    } finally {
+    }
+  };
 
   useEffect(() => {
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setUserId(data.uid);
+          setUserName(data.name);
         });
+      getClientUsers(clientName);
     }
   }, []);
 
@@ -41,7 +105,7 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
     setInputError(false);
     setUserEnteredContext(userContextRef.current.value);
     if (wordCount < 20 || wordCount > 500) {
-      console.log("to small");
+      console.log("too small or too large");
       setInputError(true);
     } else {
       setIsloading(true);
@@ -53,17 +117,29 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       params.set(
         "information",
         JSON.stringify({
-          data: { information: userContextRef.current.value },
+          data: {
+            information: `${userContextRef.current.value}\nObjective : ${objective}\nIndustry : ${industry}\nDepartment : ${department}\nKey Stakeholders : ${keyStakeholders}`,
+          },
           title: "",
         })
       );
-      params.set("url", "");
       params.set("access_token", basicAuth);
       params.set("creator_user_id", userId);
+      const add_prompt_list = [
+        "role_play",
+        "normal",
+        "interview",
+        "checkin",
+        "case",
+      ];
+      console.log(add_prompt_list[numOfTries], numOfTries, "numoftries");
+      params.set("flavour", add_prompt_list[numOfTries]);
+      params.set("is_micro", `${simulationType === "short" ? true : false}`);
+
       url.search = params;
 
-      let awaitedData: NodeJS.Timeout;
-      let retryTimeout: NodeJS.Timeout;
+      let awaitedData: NodeJS.Timeout | undefined;
+      let retryTimeout: NodeJS.Timeout | undefined;
 
       setTimeout(() => {
         retryTimeout = setTimeout(() => {
@@ -72,17 +148,13 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       }, 200);
 
       setTimeout(() => {
-        console.log(generatedTestData.length);
         awaitedData = setTimeout(() => {
-          console.log(generatedTestData.length);
-          // if (generatedTestData.length === 0) {
           setGenerationError(true);
           toast.error(
-            "Due to server loads, the scenario can not be generated at this time. Please retry again after sometime."
+            "Due to server loads, the scenario cannot be generated at this time. Please retry again after some time."
           );
           setIsloading(false);
           setLoadingText("Retrying again due to server overload.");
-          // }
         }, 180000);
       }, 200);
 
@@ -100,32 +172,28 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
             setGeneratedTestData(data);
             setIsloading(false);
             setLoadingText("Creating simulation.");
-            console.log(data.length);
-            if (data[0].message) {
+            incrementTries();
+            if (data[0].message || data[0].error) {
               toast.error("Error generating the scenarios.");
               setGenerationError(true);
+              setNumOfTries(0);
             }
-            // if (data.length === 0) {
-            //   setGenerationError(true);
-            // }
-            clearTimeout(awaitedData);
-            clearTimeout(retryTimeout);
+            if (awaitedData) clearTimeout(awaitedData);
+            if (retryTimeout) clearTimeout(retryTimeout);
           })
           .catch((err) => {
-            clearTimeout(awaitedData);
-            clearTimeout(retryTimeout);
+            if (awaitedData) clearTimeout(awaitedData);
+            if (retryTimeout) clearTimeout(retryTimeout);
             console.error(err);
             setIsloading(false);
             setLoadingText("Creating simulation.");
             toast.error(
-              `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via a email.`
+              `Your request is under process and will be available under the "Requested Scenarios" tab. You will be notified via email.`
             );
           });
       } catch (error) {
-        //@ts-ignore
-        clearTimeout(awaitedData);
-        //@ts-ignore
-        clearTimeout(retryTimeout);
+        if (awaitedData) clearTimeout(awaitedData);
+        if (retryTimeout) clearTimeout(retryTimeout);
         console.error(error);
       }
     }
@@ -137,6 +205,43 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
     setGenerationError(false);
     setInputError(false);
     setWordCount(0);
+    setAssignedToUsers([]);
+    setIndustry("");
+    setDepartment("");
+  };
+
+  const [assignLoading, setAssignLoading] = useState(false);
+
+  const assignSimulationHandler = async (testCodes: string) => {
+    setAssignLoading(true);
+    try {
+      const response = await fetch(`${baseURL}/tests/assign_simulation/`, {
+        method: "POST",
+        headers: {
+          Authorization: basicAuth,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          test_codes: testCodes,
+          assigned_to: assignedToUsers
+            .map((user) => user.value.split("/")[1])
+            .join(","),
+          assigned_by: userName,
+        }),
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
+        toast.success("Succesfully assigned the simulations.");
+        setAssignedToUsers([]);
+      } else {
+        toast.error("Error assigning simulation");
+      }
+    } catch (error) {
+      toast.error("Error assigning simulation");
+    } finally {
+      setAssignLoading(false);
+    }
   };
 
   return (
@@ -144,89 +249,251 @@ const CreateYourOwn = ({ user, generatedHandler }: any) => {
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2 ">
-              Please enter the situation that you want to practice
+            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 my-2">
+              Select your simulation type
             </p>
-            <textarea
-              ref={userContextRef}
-              onKeyDown={() => {
-                setInputError(false);
-              }}
-              onChange={(e) => {
-                if (e.target.value.trim() === "") {
-                  setWordCount(0);
-                } else {
-                  setWordCount(e.target.value.trim().split(" ").length);
-                }
-              }}
-              placeholder="Create a situation where the user needs to... to accomplish..."
-              rows={8}
-              className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
-            />
-            <div className="flex flex-row justify-between w-full">
-              {/* {inputError && ( */}
-              <p
-                className={`text-red-500 text-xs mb-1.5 self-start ${
-                  !inputError && "invisible"
-                }`}
+            <div className="flex flex-row items-center">
+              <Radio.Group
+                value={simulationType}
+                options={[
+                  {
+                    label: "Short",
+                    value: "short",
+                  },
+                  {
+                    label: "Standard",
+                    value: "standard",
+                  },
+                ]}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setSimulationType(e.target.value);
+                }}
+                optionType="button"
+              />
+              <Tooltip
+                overlayInnerStyle={{
+                  backgroundColor: "white",
+                  color: "black",
+                  padding: "8px",
+                }}
+                title="Short scenarios are three questions long, while standard scenarios are in six questions conversational format."
               >
-                Please describe your situation in 20-500 words.
-              </p>
-              {/* )} */}
-              <p className="font-bold text-gray-500 text-xs">{wordCount}/500</p>
+                <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+              </Tooltip>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                disabled={isLoading}
-                onClick={handleGenerateSenario}
-                className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
-              >
-                {isLoading ? "Generating" : "Generate"}
-                {isLoading && (
-                  <Loader className="h-4 w-4 inline ml-2 animate-spin" />
-                )}
-              </Button>{" "}
-              {!isLoading && (
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row max-sm:flex-col w-full gap-2 mt-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Objective
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Define the primary goal"
+                    value={objective}
+                    onChange={(e) => {
+                      setObjective(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Industry
+                  </p>
+                  <input
+                    type="text"
+                    value={industry}
+                    placeholder="Specify the industry this plan pertains to"
+                    onChange={(e) => {
+                      setIndustry(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row max-sm:flex-col w-full gap-2">
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Department
+                  </p>
+                  <input
+                    type="text"
+                    value={department}
+                    placeholder="Identify the department (e.g., Marketing)"
+                    onChange={(e) => {
+                      setDepartment(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+                <div className="w-full">
+                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                    Key Stakeholders
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="List the key individual (e.g.,Marketing Team)"
+                    value={keyStakeholders}
+                    onChange={(e) => {
+                      setKeyStakeholders(e.target.value);
+                    }}
+                    className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 ">
+                  Please enter the situation that you want to practice
+                </p>
+                <textarea
+                  ref={userContextRef}
+                  onKeyDown={() => {
+                    setInputError(false);
+                  }}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const words = inputValue.trim().split(/\s+/);
+                    const count = words.length;
+
+                    if (count <= 500) {
+                      setWordCount(count);
+                      setInputError(count < 20 || count > 500);
+                    } else {
+                      setInputError(true);
+                    }
+                  }}
+                  placeholder="Provide a brief scenario involving a complex decision-making situation in a business or professional setting. For Eg: A marketing team must decide on the best strategy to increase brand awareness while working with a limited budget and tight deadlines."
+                  rows={8}
+                  className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+                />
+                <div className="flex flex-row justify-between w-full">
+                  <p
+                    className={`text-red-500 text-xs self-start ${
+                      !inputError && "invisible"
+                    }`}
+                  >
+                    Please describe your situation in 20-500 words.
+                  </p>
+                  <p className="font-bold text-gray-500 text-xs">
+                    {wordCount}/500
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
                 <Button
-                  onClick={clearHanlder}
-                  variant={"secondary"}
-                  className="max-sm:p-2 h-8 hover:brightness-105"
+                  disabled={isLoading}
+                  onClick={handleGenerateSenario}
+                  className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
                 >
-                  <Eraser className="mr-2 w-4 h-4" /> Clear
+                  {generatedTestData.length > 0
+                    ? isLoading
+                      ? "Regenerating"
+                      : "Regenerate"
+                    : isLoading
+                    ? "Generating"
+                    : "Generate"}
+                  {isLoading && (
+                    <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                  )}
                 </Button>
-              )}
-              {isLoading && (
-                <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
-                  {loadingText}
-                </span>
-              )}
+                {!isLoading && (
+                  <Button
+                    onClick={clearHanlder}
+                    variant={"secondary"}
+                    className="max-sm:p-2 h-8 hover:brightness-105"
+                  >
+                    <Eraser className="mr-2 w-4 h-4" /> Clear
+                  </Button>
+                )}
+                {isLoading && (
+                  <span className="text-xs max-sm:text-[11px] text-gray-500 ml-2 max-sm:ml-[1px] max-sm:leading-[12px]">
+                    {loadingText}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex flex-row gap-2 max-sm:flex-col">
             {!generationError &&
               generatedTestData.map((test, i) => (
-                <>
-                  <div className="w-[50%] max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                    <div>
-                      <b className="my-1 text-gray-400">
-                        {i === 0 ? "Simulation" : "Role play"}
-                      </b>
-                      <p className="text-sm mt-3 font-semibold">
-                        {test?.title}
-                      </p>
-                      <p className="text-[12px] mb-2">{test?.description}</p>
-                    </div>
-                    <div className="flex justify-end mt-2">
-                      <CopyToClipboard
-                        textToCopy={test?.test_code!}
-                        copyType="code"
-                      />
-                    </div>
+                <div
+                  key={i}
+                  className="w-full max-sm:w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
+                >
+                  <div>
+                    <b className="my-1 text-gray-400">
+                      {i === 0 ? "Simulation" : "Role play"}
+                    </b>
+                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
+                    <p className="text-[12px] mb-2">{test?.description}</p>
                   </div>
-                </>
+                  <div className="flex justify-end mt-2">
+                    <CopyToClipboard
+                      textToCopy={test?.test_code!}
+                      copyType="code"
+                    />
+                  </div>
+                </div>
               ))}
           </div>
+          {!generationError && generatedTestData.length > 0 && (
+            <div className="mb-4 flex flex-col max-sm:flex-col max-sm:items-start mt-2 border border-gray-200 p-2 rounded-md bg-gray-50 shadow-sm">
+              <p className="text-sm my-2">Assign the simulation</p>
+              <div className={`flex flex-row items-center gap-2`}>
+                <Select
+                  placeholder="Select the users"
+                  onChange={(selectedOptions: MultiValue<OptionType>) => {
+                    console.log(selectedOptions as OptionType[]);
+                    setAssignedToUsers(selectedOptions as OptionType[]);
+                  }}
+                  options={clientUser
+                    .map((user) => ({
+                      value: `${user.userName}/${user.userId}`,
+                      label: user.userName,
+                    }))
+                    .filter((user) => !user.value.includes(userId))}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      borderRadius: "8px",
+                    }),
+                    multiValueLabel: (styles, { data }) => ({
+                      ...styles,
+                      fontWeight: "bold",
+                      color: "#4b5563",
+                      borderRadius: "4px",
+                    }),
+                  }}
+                  isMulti
+                  value={assignedToUsers}
+                  className="w-full text-sm"
+                />
+                <Button
+                  className="text-sm h-fit"
+                  onClick={() => {
+                    const testcodes = generatedTestData
+                      .map((test) => test.test_code)
+                      .join(",");
+                    assignSimulationHandler(testcodes);
+                  }}
+                  disabled={assignLoading || assignedToUsers.length === 0}
+                >
+                  {assignLoading ? (
+                    <>
+                      Assigning{" "}
+                      <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+                    </>
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
           {generationError && !isLoading && (
             <>
               <hr className="my-2" />

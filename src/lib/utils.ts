@@ -2,7 +2,18 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 import { Metadata } from "next";
-import { Categories, CategoryData, DomainData, TestData } from "./types";
+import {
+  AllUserDataType,
+  Categories,
+  CategoryData,
+  ClientDataType,
+  DomainData,
+  ExtractedData,
+  ExtractedDataCochee,
+  MediaData,
+  OptionalMediaData,
+  TestData,
+} from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -124,15 +135,21 @@ export const basicAuth =
   "Basic Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
 
 export const hideBots = () => {
-  const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-  const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+  const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+  const coachScribe = document.getElementsByClassName(
+    "coachbots-coachscribe"
+  )[0];
 
   if (coachScribe && coachtalk) {
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
   }
+};
 
-  console.log("Hidden");
+export const hideConsoleLogs = () => {
+  if (baseURL.includes("prod")) {
+    return (console.log = function () {});
+  }
 };
 
 export const getUserAccount = (user: any) => {
@@ -296,6 +313,7 @@ export function configureTestsData(
             test_code: test.test_code,
             test_type: test.test_type,
             is_recommended: test.is_recommended,
+            is_micro: test.is_micro,
           }));
           domainFilterOptions.push({ label: domain, value: domain });
           return {
@@ -345,6 +363,7 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
         test_code: item.test_code,
         test_type: item.test_type,
         is_recommended: item.is_recommended,
+        is_micro: item.is_micro,
       };
     });
 
@@ -361,6 +380,23 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
 
   return outputData;
 }
+
+export const CreateOrAssignClientId = (
+  userEmail: string | null | undefined
+) => {
+  if (userEmail !== null && userEmail !== undefined) {
+    return fetch(`${baseURL}/accounts/create-or-assign-client-id/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: userEmail,
+      }),
+    });
+  }
+};
 
 export const getClientUserInfo = (userEmail: string | undefined) => {
   if (userEmail) {
@@ -418,3 +454,232 @@ export const applicationUrl = () => {
     return "https://playground.coachbots.com";
   }
 };
+
+export function parseClientData(data: any): ClientDataType[] {
+  const clients: ClientDataType[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName)) {
+      const clientData = data[clientName][0];
+
+      const client: ClientDataType = {
+        clientName,
+        clientId: clientData?.client_id,
+        allowAudioInteractions:
+          data[clientName].length > 0
+            ? data[clientName][0].allow_audio_interactions
+            : false,
+        Users: data[clientName][0].user_email
+          ? data[clientName].map((user: any) => ({
+              userEmail: user.user_email,
+              userName: user.name,
+              userId: user.user_id,
+            }))
+          : [],
+      };
+
+      clients.push(client);
+    }
+  }
+
+  return clients;
+}
+
+export function parseClientUsers(data: any) {
+  const clientUsers: {
+    userEmail: string;
+    userClientId: string;
+    isDemoUser: boolean;
+  }[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+      const clientData = data[clientName][0];
+
+      data[clientName].map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userClientId: clientData.client_id,
+          isDemoUser: user.is_demo_user,
+        });
+      });
+    }
+  }
+
+  return clientUsers;
+}
+
+export function getAllUsers(data: any) {
+  const clientUsers: AllUserDataType[] = [];
+
+  for (const clientName in data) {
+    if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+      const clientData = data[clientName][0];
+
+      data[clientName].map((user: any) => {
+        if (user.user_email) {
+          clientUsers.push({
+            userEmail: user.user_email,
+            userClientId: clientData.client_id,
+            isDemoUser: user.is_demo_user,
+            userId: user.user_id,
+            userRole: user.role,
+            userDeniedAccesses: user.access_denied,
+          });
+        }
+      });
+    }
+  }
+
+  return clientUsers;
+}
+
+export const getUsersForClient = (clientName: string, data: any) => {
+  const clientUsers: {
+    userEmail: string;
+    userName: string;
+    userId: string;
+  }[] = [];
+  if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+    data[clientName]
+      .filter((user: any) => user.user_email !== undefined)
+      .map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userName: user.name,
+          userId: user.user_id,
+        });
+      });
+  }
+
+  return clientUsers;
+};
+
+export const getUsersForClientForTeam = (clientName: string, data: any) => {
+  const clientUsers: {
+    userEmail: string;
+    userName: string;
+    userId: string;
+    profileType: string;
+  }[] = [];
+  if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
+    data[clientName]
+      .filter((user: any) => user.user_email !== undefined)
+      .map((user: any) => {
+        clientUsers.push({
+          userEmail: user.user_email,
+          userName: user.name,
+          userId: user.user_id,
+          profileType: user.profile_type || "",
+        });
+      });
+  }
+
+  return clientUsers;
+};
+
+export function transformExtractedData(data: ExtractedData): MediaData {
+  const mediaData: MediaData = {
+    extracted_from_article: [],
+    extracted_from_pdf: [],
+    extracted_from_youtube: [],
+  };
+
+  for (const source in data) {
+    if (data.hasOwnProperty(source)) {
+      const files = data[source];
+      for (const fileName in files) {
+        if (files.hasOwnProperty(fileName)) {
+          const fileContent = files[fileName];
+          const fileObject = {
+            fileName,
+            fileContent,
+            isDeleted: false,
+          };
+          // Push the object into the corresponding array in mediaData
+          if (source === "extracted_from_article") {
+            mediaData.extracted_from_article.push(fileObject);
+          } else if (source === "extracted_from_pdf") {
+            mediaData.extracted_from_pdf.push(fileObject);
+          } else if (source === "extracted_from_youtube") {
+            mediaData.extracted_from_youtube.push(fileObject);
+          }
+        }
+      }
+    }
+  }
+
+  return mediaData;
+}
+
+export function transformExtractedOptional(
+  data: ExtractedData
+): OptionalMediaData {
+  const mediaData: OptionalMediaData = {
+    extracted_from_optional_file: [],
+  };
+
+  for (const source in data) {
+    if (data.hasOwnProperty(source)) {
+      const files = data[source];
+      for (const fileName in files) {
+        if (files.hasOwnProperty(fileName)) {
+          const fileContent = files[fileName];
+          const fileObject = {
+            fileName,
+            fileContent,
+            isDeleted: false,
+          };
+          // Push the object into the corresponding array in mediaData
+          if (source === "extracted_from_optional_file") {
+            mediaData.extracted_from_optional_file.push(fileObject);
+          }
+        }
+      }
+    }
+  }
+
+  return mediaData;
+}
+
+export function transformExtractedOptionalCoachee(
+  data: ExtractedDataCochee
+): OptionalMediaData {
+  const mediaData: OptionalMediaData = {
+    extracted_from_optional_file: [],
+  };
+
+  const files = data;
+  for (const fileName in files) {
+    if (files.hasOwnProperty(fileName)) {
+      const fileContent = files[fileName];
+      const fileObject = {
+        fileName,
+        fileContent,
+        isDeleted: false,
+      };
+      // Push the object into the corresponding array in mediaData
+      mediaData.extracted_from_optional_file.push(fileObject);
+    }
+  }
+
+  return mediaData;
+}
+
+export function makeTaggableName(name: string) {
+  let taggableName = name.replace(/\s+/g, "").toLowerCase();
+  return taggableName;
+}
+
+export function parseData(data: any) {
+  return Object.keys(data).map((key: any) => ({
+    heading: key,
+    description: data[key],
+  }));
+}
+
+export function excludeSpecialCharacters(inputString: string) {
+  const regex = /[^a-zA-Z0-9!.,? ]/g;
+  const cleanedString = inputString.replace(regex, "");
+  return cleanedString;
+}

@@ -89,7 +89,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
               console.log("xyz-data", data);
               if (data.data.length === 0) {
                 const coachScribe =
-                  document.getElementsByClassName("deep-chat-poc2")[0];
+                  document.getElementsByClassName("coachbots-coachscribe")[0];
 
                 console.log(coachScribe);
                 const botButton = document.getElementsByClassName(
@@ -134,7 +134,7 @@ const SubjectExpert = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         const coachScribe =
-          document.getElementsByClassName("deep-chat-poc2")[0];
+          document.getElementsByClassName("coachbots-coachscribe")[0];
         if (renderType === "dynamic") {
           console.log("DYNAMIC FEEDBACK DATA ", data);
           if (data.error) {

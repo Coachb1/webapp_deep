@@ -8,7 +8,6 @@ import {
 } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
 import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
-import { Separator } from "@radix-ui/react-dropdown-menu";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -27,18 +26,20 @@ interface Bot {
   bot_id: string;
   bot_name: string;
   uid: string;
+  is_approved: boolean;
 }
 
 interface BotTypeEntry {
   bot_type: string;
   bots: Bot[];
 }
-const botTypeMap: Record<string, Bot[]> = {};
+// const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
 
   useEffect(() => {
     if (user) {
@@ -57,41 +58,50 @@ const MyPages = ({ user }: any) => {
           const profileJson = await profile.json();
           console.log("profile", profileJson.data[0]);
 
-          setUserProfile(
-            profileJson.data.filter(
-              (profile: any) => profile.is_approved === true
-            )[0]
-          );
+          setUserProfile(profileJson.data[0]);
 
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
+          fetch(
+            `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
+            {
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
             .then((res) => res.json())
             .then((data) => {
-              console.log("bot data : ", data);
-              data.data.forEach((entry: any) => {
-                const botType = entry.signature_bot.bot_type;
+              console.log(
+                "bot data : ",
+                data.data.filter(
+                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+                )
+              );
+              data.data
+                .filter(
+                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+                )
+                .forEach((entry: any) => {
+                  const botType = entry.signature_bot.bot_type;
 
-                if (!botTypeMap[botType]) {
-                  botTypeMap[botType] = [];
-                }
-                const existingEntry = botTypeMap[botType].find(
-                  (bot) => bot.bot_id === entry.signature_bot.bot_id
-                );
-                if (!existingEntry) {
-                  botTypeMap[botType].push({
-                    bot_id: entry.signature_bot.bot_id,
-                    uid: entry.signature_bot.uid,
-                    bot_name:
-                      entry.signature_bot.bot_id.includes("feedback") ||
-                      entry.signature_bot.bot_id.includes("knowledge")
-                        ? entry.bot_attributes.bot_name
-                        : entry.bot_attributes.coach_name,
-                  });
-                }
-              });
+                  if (!botTypeMap[botType]) {
+                    botTypeMap[botType] = [];
+                  }
+                  const existingEntry = botTypeMap[botType].find(
+                    (bot) => bot.bot_id === entry.signature_bot.bot_id
+                  );
+                  if (!existingEntry) {
+                    botTypeMap[botType].push({
+                      bot_id: entry.signature_bot.bot_id,
+                      uid: entry.signature_bot.uid,
+                      is_approved: entry.signature_bot.is_approved,
+                      bot_name:
+                        entry.signature_bot.bot_id.includes("feedback") ||
+                        entry.signature_bot.bot_id.includes("knowledge")
+                          ? entry.bot_attributes.bot_name
+                          : entry.bot_attributes.coach_name,
+                    });
+                  }
+                });
               const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
                 (botType) => ({
                   bot_type: botType,
@@ -137,7 +147,6 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    console.log(botType, bot_id, profile_id, profile_type);
     if (
       profile_type === "coach" ||
       profile_type === "mentor" ||
@@ -213,7 +222,7 @@ const MyPages = ({ user }: any) => {
   return (
     <div id="directory-profile" className="bg-accent p-2 mt-2 rounded-md">
       <div className="pl-4 max-sm:pl-2 pt-2">Directory Profile</div>
-      <div className="pl-4 max-sm:pl-2 ">
+      {/* <div className="pl-4 max-sm:pl-2 ">
         <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
           {" "}
           <Info className="h-3 w-3 mr-2 inline" />
@@ -226,7 +235,7 @@ const MyPages = ({ user }: any) => {
             info@coachbots.com
           </a>
         </p>
-      </div>
+      </div> */}
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -238,7 +247,8 @@ const MyPages = ({ user }: any) => {
       )}
       {!loading &&
         botTypes.length === 0 &&
-        (userProfile?.profile_type !== "coachee" && userProfile?.profile_type !== "mentee") && (
+        userProfile?.profile_type !== "coachee" &&
+        userProfile?.profile_type !== "mentee" && (
           <>
             <div className="text-xs w-full h-20 flex items-center justify-center">
               <div>You don't have any active Pages yet!</div>{" "}
@@ -290,7 +300,7 @@ const MyPages = ({ user }: any) => {
                               <p className="whitespace-pre max-sm:text-left max-sm:w-[70vw]">
                                 {`
 <div
-    class="deep-chat-poc2"
+    class="coachbots-coachscribe"
     data-bot-id="${bot.bot_id}"
 ></div>
 <script
@@ -306,7 +316,7 @@ const MyPages = ({ user }: any) => {
                           <CopyToClipboard
                             copyType="code"
                             textToCopy={`<div
-                                class="deep-chat-poc2"
+                                class="coachbots-coachscribe"
                                 data-bot-id="${bot.bot_id}"
                             ></div>
                             <script
@@ -358,33 +368,6 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    {/* FOR EDIT MODE */}
-                    {/* <Link
-                      href={
-                        intakeBotTypeLinks(
-                          botType.bot_type,
-                          bot.bot_id,
-                          userProfile?.uid,
-                          userProfile?.profile_type === "coach" &&
-                            userProfile?.is_mentor === true
-                            ? "coach-mentor"
-                            : userProfile?.profile_type
-                        )! + `&uid=${bot.uid}`
-                      }
-                    >
-                      <Button
-                        variant={"secondary"}
-                        className="h-6 text-xs w-fit bg-blue-200 "
-                      >
-                        <span className="max-sm:hidden">Edit</span>{" "}
-                        <TooltipWrapper
-                          className="hidden max-sm:block text-xs"
-                          tooltipName="Edit"
-                          body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                        />
-                      </Button>
-                    </Link> */}
-
                     {/* FOR VIEW MODE */}
                     <Link
                       href={
@@ -411,6 +394,35 @@ const MyPages = ({ user }: any) => {
                         />
                       </Button>
                     </Link>
+                    {/* FOR EDIT MODE */}
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit min-w-fit bg-blue-200 "
+                      disabled={!bot.is_approved}
+                    >
+                      <Link
+                        href={
+                          intakeBotTypeLinks(
+                            botType.bot_type,
+                            bot.bot_id,
+                            userProfile?.uid,
+                            userProfile?.profile_type === "coach" &&
+                              userProfile?.is_mentor === true
+                              ? "coach-mentor"
+                              : userProfile?.profile_type
+                          )! + `&uid=${bot.uid}`
+                        }
+                      >
+                        <span className="max-sm:hidden">Edit</span>{" "}
+                        <TooltipWrapper
+                          className="hidden max-sm:block text-xs"
+                          tooltipName="Edit"
+                          body={
+                            <Edit className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                          }
+                        />
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -434,31 +446,7 @@ const MyPages = ({ user }: any) => {
 
                     {/* - {userProfile.name} */}
                   </p>
-                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 inline-block" />
-                  {/* FOR EDIT MODE */}
-                  {/* <Link
-                    href={
-                      intakeBotTypeLinks(
-                        "coachee",
-                        "123",
-                        userProfile.uid,
-                        userProfile.profile_type
-                      )! + `&uid=`
-                    }
-                  >
-                    <Button
-                      variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
-                    >
-                      <span className="max-sm:hidden">Edit</span>{" "}
-                      <TooltipWrapper
-                        className="hidden max-sm:block text-xs"
-                        tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
-                      />
-                    </Button>
-                  </Link> */}
-
+                  <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 " />
                   {/* FOR VIEW MODE */}
                   <Link
                     href={
@@ -479,6 +467,30 @@ const MyPages = ({ user }: any) => {
                         className="hidden max-sm:block text-xs"
                         tooltipName="View"
                         body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                      />
+                    </Button>
+                  </Link>
+
+                  {/* FOR EDIT MODE */}
+                  <Link
+                    href={
+                      intakeBotTypeLinks(
+                        "coachee",
+                        "123",
+                        userProfile.uid,
+                        userProfile.profile_type
+                      )! + `&uid=`
+                    }
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
+                    >
+                      <span className="max-sm:hidden">Edit</span>{" "}
+                      <TooltipWrapper
+                        className="hidden max-sm:block text-xs"
+                        tooltipName="Edit"
+                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
                   </Link>

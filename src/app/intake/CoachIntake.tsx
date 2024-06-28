@@ -14,28 +14,36 @@ import {
   replaceSpecialCharacters,
   isValidLinks,
   isValidYoutubeLinks,
+  transformExtractedData,
+  transformExtractedOptional,
+  transformExtractedOptionalCoachee,
 } from "@/lib/utils";
 import {
+  File,
   Info,
   Loader,
   PenLine,
   SendHorizonal,
-  Trash,
   Trash2,
+  UndoDot,
 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import CharactericticsSelect from "./CharacteristicsSelect";
-import { Switch } from "@/components/ui/switch";
 import { useSearchParams, useRouter } from "next/navigation";
-import IDPIntake from "./IDPIntake";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import { UserClientInfoDataType } from "@/lib/types";
-import { Radio } from "antd";
+import {
+  MediaData,
+  OptionalMediaData,
+  UserClientInfoDataType,
+} from "@/lib/types";
+import { Radio, Select, Tooltip } from "antd";
 import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
+import Link from "next/link";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -50,11 +58,11 @@ const CoachIntake = ({ user }: any) => {
   const profileTypeFromParams = params.get("profile_type");
   let userProfileId = params.get("profile_id");
 
+  const adminEdit = params.get("admin_edit");
+  const userIdParams = params.get("user_id");
+  const userEmailParams = params.get("user_email");
+  const userNameParams = params.get("user_name");
   const router = useRouter();
-
-  // if (checkIfEdit) {
-  //   const [editLoading, setEditLoading] = useState(true);
-  // }
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
@@ -71,13 +79,20 @@ const CoachIntake = ({ user }: any) => {
     "Design",
     "Engineering",
     "HR & Training",
+    "External",
   ]);
 
   const [areaDomains, setAreaDomains] = useState<string[]>([
-    "Career Management",
-    "Work Life Balance",
-    "Project Management",
-    "Lateral Transfers",
+    "Leadership Development",
+    "Stress Management",
+    "Hiring & Recruitment",
+    "People Management",
+    "Diversity & Inclusion",
+    "Career Navigation",
+    "Culture Alignment",
+    "Workplace Skills",
+    "Fitness",
+    "Finance",
   ]);
 
   //intake fields state
@@ -86,6 +101,7 @@ const CoachIntake = ({ user }: any) => {
   const [userId, setUserId] = useState("");
   const [isMentor, setIsMentor] = useState<boolean>();
   const [profileImage, setProfileImage] = useState<File>();
+  const [profileImageUrl, setProfileImageUrl] = useState<string>("");
   const [department, setDepartment] = useState("");
   const [about, setAbout] = useState("");
   const [areaDomain, setAreaDomain] = useState("");
@@ -126,6 +142,8 @@ const CoachIntake = ({ user }: any) => {
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
     boolean | string
   >();
+
+  const [discussionTopics, setDiscussionTopics] = useState("");
 
   const [mentoringPreferences, setMentoringPreferences] = useState("");
   const [coachMentFrameworks, setCoachMentFrameworks] = useState("");
@@ -174,6 +192,7 @@ const CoachIntake = ({ user }: any) => {
     file: File;
     id: number;
     text: string;
+    name: string;
   }
   const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
@@ -184,6 +203,8 @@ const CoachIntake = ({ user }: any) => {
 
   const [characteristicsRateLows, setCharacteristicsRateLows] = useState("");
   const [characteristicsRateHigh, setCharacteristicsRateHigh] = useState("");
+
+  const [challengesToHelp, setChallengesToHelp] = useState("");
 
   const [characteristicsList, setCharacteristicsList] = useState<
     {
@@ -199,6 +220,14 @@ const CoachIntake = ({ user }: any) => {
   const [profileBio, setProfileBio] = useState("");
   const [currentProjects, setCurrentProjects] = useState("");
   const [suggestedProjects, setSuggestedProjects] = useState("");
+
+  //mediaData
+  const [mediaData, setMediaData] = useState<MediaData>();
+  const [optionalMediaData, setOptionalMediaData] =
+    useState<OptionalMediaData>();
+  const [updatedOptionalFile, setUpdatedOptionalFile] =
+    useState({});
+  const [dataModified, setDataModified] = useState(false);
 
   const resetAllStates = () => {
     setName("");
@@ -233,6 +262,7 @@ const CoachIntake = ({ user }: any) => {
     setPhrasesNExpressions("");
     setDiscussInCARformat("");
     setProvideAnswersUsingEmojis("");
+    setMentoringPreferencess([]);
 
     setFoundationalValues("");
     setDevelopmentFrameworks("");
@@ -246,6 +276,8 @@ const CoachIntake = ({ user }: any) => {
     setOpportunitiesOfGrowth("");
     setCommenChallengesOrObstacles("");
     setOpinionsAboutKeyQualities("");
+
+    setDiscussionTopics("");
   };
 
   const getClientInfoForUser = (userEmail: string) => {
@@ -269,7 +301,11 @@ const CoachIntake = ({ user }: any) => {
             data.data.user_info[0].departments !== ""
           ) {
             console.log(data.data.user_info[0].departments, "Departments");
-            setDepartments(data.data.user_info[0].departments.split(","));
+            setDepartments(
+              data.data.user_info[0].departments
+                .split(",")
+                .map((dep: string) => dep.trim())
+            );
           }
 
           if (
@@ -280,7 +316,11 @@ const CoachIntake = ({ user }: any) => {
               data.data.user_info[0].coach_expertise,
               "coach_expertise"
             );
-            setAreaDomains(data.data.user_info[0].coach_expertise.split(","));
+            setAreaDomains(
+              data.data.user_info[0].coach_expertise
+                .split(",")
+                .map((exp: string) => exp.trim())
+            );
           }
         })
         .catch((err) => console.error(err));
@@ -288,7 +328,9 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDataModified(true);
     const selectedFiles = e.target?.files;
+    const input_name = e.target?.name;
 
     if (selectedFiles) {
       const filesArray = await Promise.all(
@@ -310,6 +352,7 @@ const CoachIntake = ({ user }: any) => {
             file: file,
             id: Math.floor(Math.random() * 10000),
             text: textContent,
+            name: input_name,
           };
         })
       );
@@ -390,8 +433,8 @@ const CoachIntake = ({ user }: any) => {
     } else if (formType === "coachee") {
       setProfileType("coachee");
     }
-    if (user) {
-      getClientInfoForUser(user.email);
+    if (user && !adminEdit) {
+      // getClientInfoForUser(user.email);
       getUserAccount(user)
         .then((response) => response.json())
         .then((data) => {
@@ -401,37 +444,77 @@ const CoachIntake = ({ user }: any) => {
           setName(
             `${user.given_name} ${user.family_name ? user.family_name : ""}`
           );
+
+          fetch(
+            `${baseURL}/accounts/get_low_high_skills/?user_id=${data.uid}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              // onCharacteristicsSelectLow(data.low_skill);
+              // onCharacteristicsSelectHigh(data.high_skill);
+              setCharacteristicsRateLows(data.low_skill);
+              setCharacteristicsRateHigh(data.high_skill);
+            });
         })
         .catch((err) => {
           console.error(err);
         });
-    }
-    if (formType === "coachee") {
-      fetch(`${baseURL}/skills/get-characteristics-list/`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      })
+    } else if (adminEdit && userEmailParams && userIdParams && userNameParams) {
+      // getClientInfoForUser(userEmailParams);
+      setUserId(userIdParams);
+      setName(userNameParams);
+      userIdd = userIdParams;
+      fetch(
+        `${baseURL}/accounts/get_low_high_skills/?user_id=${userIdParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
         .then((res) => res.json())
         .then((data) => {
-          const createLabelValuePairs = Array.from(
-            new Set(data.characteristic_list.map((val: string) => val))
-          ).map((val) => ({
-            label: val,
-            value: val,
-          }));
-          //@ts-ignore
-          setCharacteristicsList(createLabelValuePairs);
+          console.log(data);
+          setCharacteristicsRateLows(data.low_skill);
+          setCharacteristicsRateHigh(data.high_skill);
         });
     }
+
+    // if (formType === "coachee") {
+    fetch(`${baseURL}/skills/get-characteristics-list/`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const createLabelValuePairs = Array.from(
+          new Set(data.characteristic_list.map((val: string) => val))
+        ).map((val) => ({
+          label: val,
+          value: val,
+        }));
+        //@ts-ignore
+        setCharacteristicsList(createLabelValuePairs);
+      });
+    // }
 
     if (user) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
+          let user_id = adminEdit ? userIdParams : data.uid;
           fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${user_id}`,
             {
               headers: {
                 Authorization: basicAuth,
@@ -447,6 +530,7 @@ const CoachIntake = ({ user }: any) => {
                 data.data.length > 0 &&
                 !checkIfEdit &&
                 !checkIfView &&
+                !adminEdit &&
                 formType !== "knowledge-bot" &&
                 formType !== "feedback"
               ) {
@@ -470,7 +554,12 @@ const CoachIntake = ({ user }: any) => {
               console.error(err);
             });
 
-          if (formType === "feedback" && !checkIfEdit && !checkIfView) {
+          if (
+            formType === "feedback" &&
+            !checkIfEdit &&
+            !checkIfView &&
+            !adminEdit
+          ) {
             fetch(`${baseURL}/accounts/get-bots/?user_id=${userIdd}`, {
               headers: {
                 Authorization: basicAuth,
@@ -482,7 +571,6 @@ const CoachIntake = ({ user }: any) => {
                 const FeedbackBot = data.data.filter(
                   (data: any) => data.signature_bot.bot_type === "feedback_bot"
                 );
-
                 if (FeedbackBot.length > 0) {
                   toast.loading(
                     "Your Feedback bot already exists. You cannot create another one. Redirecting you to the home page"
@@ -503,173 +591,20 @@ const CoachIntake = ({ user }: any) => {
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (user) {
-        setCreateLoading(true);
-        var myHeaders = new Headers();
-        myHeaders.append("Authorization", basicAuth);
-        var formdata = new FormData();
-        formdata.append("name", name);
-        formdata.append("user_id", userId);
-        formdata.append("email", user.email);
-        formdata.append("about", about);
-        formdata.append("experience", experience);
+      if (characteristicsRateHigh && characteristicsRateLows) {
+        if (user) {
+          setCreateLoading(true);
+          var myHeaders = new Headers();
+          myHeaders.append("Authorization", basicAuth);
+          var formdata = new FormData();
+          formdata.append("name", name);
+          formdata.append("user_id", userId);
+          formdata.append("email", adminEdit ? userEmailParams : user.email);
+          formdata.append("about", about);
+          formdata.append("experience", experience);
 
-        let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
+          let CoachMentorQnA = { coach_qna: {}, mentor_qna: {} };
 
-        if (!checkIfEdit) {
-          //@ts-ignore
-          formdata.append("profile_image", profileImage, "coachprofile.jpg");
-        }
-
-        formdata.append("department", department);
-
-        formdata.append("supported_outcome", outcomeSupported);
-        formdata.append("bot_type", "avatar_bot");
-
-        if (formType == "coach") {
-          formdata.append(
-            "profile_type",
-            profileType === "coach-mentor" || profileType === "coach"
-              ? "coach"
-              : "mentor"
-          );
-          formdata.append(
-            "is_mentor",
-            JSON.stringify(profileType === "coach-mentor" ? true : false)
-          );
-          formdata.append("area_domain", areaDomain);
-          formdata.append("mentoring_preferences", mentoringPreferences);
-          formdata.append(
-            "mentoring_frameworks",
-            JSON.stringify(mentoringPreferencess.join(", "))
-          ); //coachMentFrameworks);
-          formdata.append("dominant_point_of_view", povProgramParticipants);
-          formdata.append("problem_solving_approach", problemSolvingApproach);
-          formdata.append(
-            "provided_links",
-            JSON.stringify({
-              youtube_links: linksReflectingWVpersonal,
-              article_links: linksReflectyouWished,
-            })
-          );
-          formdata.append("admired_leaders", leaderNames);
-
-          formdata.append(
-            "voice_sample",
-            `${voiceSample === "yes" ? true : false}`
-          );
-          formdata.append("coaching_for_fitment", coachmentSelect);
-          formdata.append("coaching_level", participantLevel);
-          formdata.append(
-            "coach_same_department",
-            `${coachMentInSameDep === "yes" ? true : false}`
-          );
-          formdata.append(
-            "allow_coachee_to_create_session",
-            `${allowSessionNotes === "yes" ? true : false}`
-          );
-          formdata.append(
-            "significant_challenges_and_solutions",
-            significantChallenges
-          );
-          formdata.append(
-            "common_phrases_and_expressions",
-            phrasesNExpressions
-          );
-          formdata.append("mentorship_contribution", discussInCARformat);
-          formdata.append("journey_and_background", journeyAndBackground);
-
-          if (profileType === "coach") {
-            const coachQna = {
-              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                foundationalValues,
-              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                developmentFramewrok,
-              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                coachingProcessOverview,
-              "How do you handle situations where I feel stuck or unsure about my next steps?":
-                handlingSituations,
-              "How can I integrate the lessons from these sessions into my daily life?":
-                integratingLessons,
-              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                guidanceOnCoachingProcess,
-            };
-
-            CoachMentorQnA.coach_qna = coachQna;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                coach: coachQna,
-              })
-            );
-          } else if (profileType === "mentor") {
-            const QnaMentor = {
-              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                differentCareerPath,
-              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                problemSolvingApproachInDomain,
-              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                overviewofMentoring,
-              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                opportunitiesOfGrowth,
-              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                commonChallengesOrObstacles,
-              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                opinionsAboutKeyQualities,
-            };
-
-            CoachMentorQnA.mentor_qna = QnaMentor;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                mentor: QnaMentor,
-              })
-            );
-          } else if (profileType === "coach-mentor") {
-            const qnaCoach = {
-              "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                foundationalValues,
-              "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                developmentFramewrok,
-              "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                coachingProcessOverview,
-              "How do you handle situations where I feel stuck or unsure about my next steps?":
-                handlingSituations,
-              "How can I integrate the lessons from these sessions into my daily life?":
-                integratingLessons,
-              "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                guidanceOnCoachingProcess,
-            };
-            CoachMentorQnA.coach_qna = qnaCoach;
-
-            const qnaMentor = {
-              "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                differentCareerPath,
-              "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                problemSolvingApproachInDomain,
-              "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                overviewofMentoring,
-              "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                opportunitiesOfGrowth,
-              "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                commonChallengesOrObstacles,
-              "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                opinionsAboutKeyQualities,
-            };
-            CoachMentorQnA.mentor_qna = qnaMentor;
-
-            formdata.append(
-              "qna_for_coach_mentor",
-              JSON.stringify({
-                coach: qnaCoach,
-                mentor: qnaMentor,
-              })
-            );
-          }
-        } else if (formType === "coachee") {
-          formdata.append("profile_type", profileType);
           formdata.append(
             "low_rating_characteristics",
             characteristicsRateLows
@@ -678,206 +613,816 @@ const CoachIntake = ({ user }: any) => {
             "high_rating_characteristics",
             characteristicsRateHigh
           );
-          formdata.append("coaching_level", participantLevel);
-        }
 
-        if (!checkIfEdit) {
-          var myHeaders = new Headers();
-          myHeaders.append("Authorization", basicAuth);
+          formdata.append("discussion_topic", discussionTopics);
+          if (!checkIfEdit) {
+            //@ts-ignore
+            if (profileImage) {
+              formdata.append("profile_image", profileImage, profileImage.name);
+              console.log(formdata.get("profile_image"));
+            }
+          }
+          if (checkIfEdit) {
+            formdata.append("profile_image_url", profileImageUrl);
+          }
+          formdata.append("department", department);
 
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: formdata,
-          };
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
-            requestOptions
-          )
-            .then((response) => response.json())
-            .then((result) => {
-              console.log(result);
+          formdata.append("supported_outcome", outcomeSupported);
+          formdata.append("bot_type", "avatar_bot");
 
-              const queryparam = new URLSearchParams({
-                method: "post",
-                qna: JSON.stringify({
-                  "1": {
-                    coach:
-                      "What level of coach/mentor do you want to interact with ?",
-                    cochee: participantLevel,
-                  },
-                  "2": {
-                    coach:
-                      "I want a coach & mentor someone from the same department.",
-                    cochee: coachMentInSameDep === "Yes" ? true : false,
-                  },
-                  "3": {
-                    coach:
-                      "What kind of outcome do you want from these sessions the most?",
-                    cochee: outcomeSupported,
-                  },
-                }),
-                qna_type: "fitment",
-                user_id: userId,
-              });
+          if (formType == "coach") {
+            formdata.append(
+              "profile_type",
+              profileType === "coach-mentor" || profileType === "coach"
+                ? "coach"
+                : "mentor"
+            );
+            formdata.append(
+              "is_mentor",
+              JSON.stringify(profileType === "coach-mentor" ? true : false)
+            );
+            formdata.append("area_domain", areaDomain);
+            formdata.append("mentoring_preferences", mentoringPreferences);
+            formdata.append(
+              "mentoring_frameworks",
+              JSON.stringify(mentoringPreferencess.join(", "))
+            ); //coachMentFrameworks);
+            formdata.append("dominant_point_of_view", povProgramParticipants);
+            formdata.append("problem_solving_approach", problemSolvingApproach);
+            formdata.append(
+              "provided_links",
+              JSON.stringify({
+                youtube_links: linksReflectingWVpersonal,
+                article_links: linksReflectyouWished,
+              })
+            );
+            formdata.append("admired_leaders", leaderNames);
 
-              const resp = fetch(
-                `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+            formdata.append(
+              "voice_sample",
+              `${voiceSample === "yes" ? true : false}`
+            );
+            formdata.append("coaching_for_fitment", coachmentSelect);
+            formdata.append("coaching_level", participantLevel);
+            formdata.append(
+              "coach_same_department",
+              `${coachMentInSameDep === "Yes" ? true : false}`
+            );
+            formdata.append(
+              "allow_coachee_to_create_session",
+              `${allowSessionNotes === "yes" ? true : false}`
+            );
+            formdata.append(
+              "significant_challenges_and_solutions",
+              significantChallenges
+            );
+            formdata.append(
+              "common_phrases_and_expressions",
+              phrasesNExpressions
+            );
+            formdata.append("mentorship_contribution", discussInCARformat);
+            formdata.append("journey_and_background", journeyAndBackground);
 
-              setProfileId(result.data.uid);
-              userProfileId = result.data.uid;
+            if (profileType === "coach") {
+              const coachQna = {
+                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                  foundationalValues,
+                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                  developmentFramewrok,
+                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                  coachingProcessOverview,
+                "How do you handle situations where I feel stuck or unsure about my next steps?":
+                  handlingSituations,
+                "How can I integrate the lessons from these sessions into my daily life?":
+                  integratingLessons,
+                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                  guidanceOnCoachingProcess,
+              };
 
-              if (formType === "coach") {
-                myHeaders.append("Content-Type", "application/json");
-                const avatarBotCreationFormData = {
-                  bot_type: "avatar_bot",
-                  profile_id: result.data.uid,
-                  bot_name: name,
-                  email: user.email,
-                  bot_details: { info: about, coach_name: name },
-                  attributes: {
-                    heading: `welcome to ${name}'s avatar bot`,
-                  },
-                  participant_id: userId,
-                  bot_base_url: `${
-                    subdomain === "playground"
-                      ? "https://playground.coachbots.com"
-                      : "https://platform.coachbots.com"
-                  }`,
-                  fitment_answer: `${participantLevel},${
-                    coachMentInSameDep === "yes" ? true : false
-                  },${outcomeSupported}`,
-                  fitment_data: {
-                    options: {
-                      "1": ["Someone Senior", "Any level"],
-                      "2": ["Yes", "No"],
-                      "3": [
-                        "Career advancement",
-                        "Skill development",
-                        "Introspection & reflection",
-                        "Networking & leadership",
-                      ],
-                    },
-                    mentee_que: {
-                      "1": "What level of coach & mentor do you want?",
-                      "2": "I want a coach & mentor someone from the same department.",
-                      "3": "What kind of outcome do you want from these sessions the most?",
-                    },
-                    mentor_que: {
-                      "1": "What level of participant do you want to coach & mentor?",
-                      "2": "I want to coach & mentor someone in the same department.",
-                      "3": "What kind of outcome can you support in these sessions the most?",
-                    },
-                  },
-                  additional_data: {
-                    profile_type: "coach",
-                    area_domain: areaDomain,
-                    experience: experience,
-                    mentoring_preferences: mentoringPreferences,
-                    mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
-                    dominant_point_of_view: povProgramParticipants,
-                    problem_solving_approach: problemSolvingApproach,
-                    admired_leaders: leaderNames,
-                    profile_description: about,
-                    department: department,
-                    youtube_links: linksReflectingWVpersonal,
-                    article_links: linksReflectyouWished,
-                    voice_sample: voiceSample,
-                    discuss_how_you_helped_others_in_coachMentoring:
-                      discussInCARformat,
-                    journey_and_background: journeyAndBackground,
-                    provide_answers_using_emojis: `${
-                      provideAnswersUsingEmojis === "yes" ? true : false
-                    }`,
-                    common_phrases_and_expressions: phrasesNExpressions,
-                    significant_challenges_and_solutions: significantChallenges,
-                    allow_coachee_to_create_session: `${
-                      allowSessionNotes === "yes" ? true : false
-                    }`,
-                    fitment_answers: {
-                      coachmentSelect,
-                      participantLevel,
-                      coachMentInSameDep,
-                      outcomeSupported,
-                    },
-                    coach_qna: CoachMentorQnA.coach_qna,
-                    mentor_qna: CoachMentorQnA.mentor_qna,
-                  },
-                  media_data: {
-                    youtube_links: linksReflectingWVpersonal,
-                    article_links: linksReflectyouWished,
-                  },
-                };
+              CoachMentorQnA.coach_qna = coachQna;
 
-                fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                  method: checkIfEdit ? "PATCH" : "POST",
-                  headers: myHeaders,
-                  body: checkIfEdit
-                    ? JSON.stringify({
-                        bot_id: botIUidFromParams,
-                        updated_data: avatarBotCreationFormData,
-                      })
-                    : JSON.stringify(avatarBotCreationFormData),
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  coach: coachQna,
                 })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-                    if (!data.error && !data.detail && !data.msg) {
-                      //PATCH MEDIA DATA HERE
+              );
+            } else if (profileType === "mentor") {
+              const QnaMentor = {
+                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                  differentCareerPath,
+                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                  problemSolvingApproachInDomain,
+                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                  overviewofMentoring,
+                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                  opportunitiesOfGrowth,
+                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                  commonChallengesOrObstacles,
+                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                  opinionsAboutKeyQualities,
+              };
 
-                      const filesPatchFormData = new FormData();
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
+              CoachMentorQnA.mentor_qna = QnaMentor;
+
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  mentor: QnaMentor,
+                })
+              );
+            } else if (profileType === "coach-mentor") {
+              const qnaCoach = {
+                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                  foundationalValues,
+                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                  developmentFramewrok,
+                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                  coachingProcessOverview,
+                "How do you handle situations where I feel stuck or unsure about my next steps?":
+                  handlingSituations,
+                "How can I integrate the lessons from these sessions into my daily life?":
+                  integratingLessons,
+                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                  guidanceOnCoachingProcess,
+              };
+              CoachMentorQnA.coach_qna = qnaCoach;
+
+              const qnaMentor = {
+                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                  differentCareerPath,
+                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                  problemSolvingApproachInDomain,
+                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                  overviewofMentoring,
+                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                  opportunitiesOfGrowth,
+                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                  commonChallengesOrObstacles,
+                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                  opinionsAboutKeyQualities,
+              };
+              CoachMentorQnA.mentor_qna = qnaMentor;
+
+              formdata.append(
+                "qna_for_coach_mentor",
+                JSON.stringify({
+                  coach: qnaCoach,
+                  mentor: qnaMentor,
+                })
+              );
+            }
+          } else if (formType === "coachee") {
+            formdata.append("profile_type", profileType);
+            formdata.append("coaching_level", participantLevel);
+            formdata.append(
+              "coach_same_department",
+              `${coachMentInSameDep === "Yes" ? true : false}`
+            );
+            formdata.append("problem_statement", `${challengesToHelp}`);
+
+            referenceDocs.forEach(({ file, text, name }) => {
+              if (name === "optional_file") {
+                const fileName: any = file.name;
+                const fileData: any = {};
+                fileData[fileName] = text;
+
+                formdata.append("optional_file_data", JSON.stringify(fileData));
+                console.log(fileData);
+              }
+            });
+          }
+
+          // return;
+
+          if (!checkIfEdit) {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", basicAuth);
+
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: formdata,
+            };
+
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/`,
+              requestOptions
+            )
+              .then((response) => response.json())
+              .then((result) => {
+                console.log(result);
+
+                const queryparam = new URLSearchParams({
+                  method: "post",
+                  qna: JSON.stringify({
+                    "1": {
+                      coach:
+                        "What level of coach/mentor do you want to interact with ?",
+                      cochee: participantLevel,
+                    },
+                    "2": {
+                      coach:
+                        "I want a coach & mentor someone from the same department.",
+                      cochee: coachMentInSameDep === "Yes" ? true : false,
+                    },
+                    "3": {
+                      coach:
+                        "What kind of outcome do you want from these sessions the most?",
+                      cochee: outcomeSupported,
+                    },
+                  }),
+                  qna_type: "fitment",
+                  user_id: userId,
+                });
+
+                const resp = fetch(
+                  `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: basicAuth,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                setProfileId(result.data.uid);
+                userProfileId = result.data.uid;
+
+                if (formType === "coach") {
+                  myHeaders.append("Content-Type", "application/json");
+                  const avatarBotCreationFormData = {
+                    bot_type: "avatar_bot",
+                    profile_id: result.data.uid,
+                    bot_name: name,
+                    email: user.email,
+                    bot_details: { info: about, coach_name: name },
+                    attributes: {
+                      heading: `welcome to ${name}'s avatar bot`,
+                    },
+                    participant_id: userId,
+                    bot_base_url: `${
+                      subdomain === "playground"
+                        ? "https://playground.coachbots.com"
+                        : "https://platform.coachbots.com"
+                    }`,
+                    fitment_answer: `${participantLevel},${
+                      coachMentInSameDep === "Yes" ? true : false
+                    },${outcomeSupported}`,
+                    fitment_data: {
+                      options: {
+                        "1": ["Someone Senior", "Any level"],
+                        "2": ["Yes", "No"],
+                        "3": [
+                          "Career advancement",
+                          "Skill development",
+                          "Introspection & reflection",
+                          "Networking & leadership",
+                        ],
+                      },
+                      mentee_que: {
+                        "1": "What level of coach & mentor do you want?",
+                        "2": "I want a coach & mentor someone from the same department.",
+                        "3": "What kind of outcome do you want from these sessions the most?",
+                      },
+                      mentor_que: {
+                        "1": "What level of participant do you want to coach & mentor?",
+                        "2": "I want to coach & mentor someone in the same department.",
+                        "3": "What kind of outcome can you support in these sessions the most?",
+                      },
+                    },
+                    additional_data: {
+                      profile_type: "coach",
+                      area_domain: areaDomain,
+                      experience: experience,
+                      mentoring_preferences: mentoringPreferences,
+                      mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
+                      dominant_point_of_view: povProgramParticipants,
+                      problem_solving_approach: problemSolvingApproach,
+                      admired_leaders: leaderNames,
+                      profile_description: about,
+                      department: department,
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                      voice_sample: voiceSample,
+                      discuss_how_you_helped_others_in_coachMentoring:
+                        discussInCARformat,
+                      journey_and_background: journeyAndBackground,
+                      provide_answers_using_emojis: `${
+                        provideAnswersUsingEmojis === "yes" ? true : false
+                      }`,
+                      common_phrases_and_expressions: phrasesNExpressions,
+                      significant_challenges_and_solutions:
+                        significantChallenges,
+                      allow_coachee_to_create_session: `${
+                        allowSessionNotes === "yes" ? true : false
+                      }`,
+                      fitment_answers: {
+                        coachmentSelect,
+                        participantLevel,
+                        coachMentInSameDep,
+                        outcomeSupported,
+                      },
+                      coach_qna: CoachMentorQnA.coach_qna,
+                      mentor_qna: CoachMentorQnA.mentor_qna,
+                      discussion_topic: discussionTopics,
+                    },
+                    media_data: {
+                      youtube_links: linksReflectingWVpersonal,
+                      article_links: linksReflectyouWished,
+                    },
+                  };
+
+                  fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                    method: checkIfEdit ? "PATCH" : "POST",
+                    headers: myHeaders,
+                    body: checkIfEdit
+                      ? JSON.stringify({
+                          bot_id: botIUidFromParams,
+                          updated_data: avatarBotCreationFormData,
+                        })
+                      : JSON.stringify(avatarBotCreationFormData),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(data);
+                      if (!data.error && !data.detail && !data.msg) {
+                        //PATCH MEDIA DATA HERE
+
+                        const filesPatchFormData = new FormData();
+                        referenceDocs.forEach(({ file, text, name }) => {
+                          console.log("name", name);
+                          console.log("file", file.name);
+                          if (name === "optional_file") {
                             filesPatchFormData.append(
-                              "pdf_data",
+                              "optional_file",
                               `file_name:${file.name} text_file:${text}`
                             );
                             console.log(text);
                           } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
+                            if (file.name.includes(".pdf")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  "pdf_data",
+                                  `file_name:${file.name} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_pdfs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            } else if (file.name.includes(".docx")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  `doc_data`,
+                                  `file_name:${file.name} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_docs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            }
                           }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
+                        });
+
+                        filesPatchFormData.append("bot_id", data.bot_uid);
+
+                        const media_data = {
+                          youtube_links: linksReflectingWVpersonal,
+                          article_links: linksReflectyouWished,
+                        };
+                        filesPatchFormData.append(
+                          "media_data",
+                          JSON.stringify(media_data)
+                        );
+
+                        console.log(referenceDocs);
+                        fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                          method: "PATCH",
+                          headers: {
+                            Authorization: basicAuth,
+                          },
+                          body: filesPatchFormData,
+                        })
+                          .then((res) => res.json())
+                          .then((data) => {
+                            console.log(data);
+                            setCreateLoading(false);
+                            if (!data.error && !data.detail) {
+                              toast.success(
+                                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                                {
+                                  duration: 6000,
+                                }
+                              );
+                              resetAllStates();
+                              setTimeout(() => {
+                                router.push("/");
+                              }, 4000);
+                            } else {
+                              setCreateLoading(false);
+                              toast.error(
+                                "Error creating your coach profile. Please try again.",
+                                {
+                                  duration: 6000,
+                                }
+                              );
+                            }
+                          })
+                          .catch((err) => {
+                            toast.error(
+                              "Error creating your coach profile. Please try again.",
+                              {
+                                duration: 6000,
+                              }
+                            );
+                            console.error(err);
+                            setCreateLoading(false);
+                          });
+                      } else {
+                        setCreateLoading(false);
+                        if (data.error === "Bot already exists") {
+                          toast.error("Bot already exists");
+                        } else {
+                          setCreateLoading(false);
+                          toast.error(
+                            "Error creating your coach profile. Please try again.",
+                            {
+                              duration: 6000,
+                            }
+                          );
+                        }
+                      }
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      setCreateLoading(false);
+                      toast.error(
+                        "Error creating your coach profile. Please try again.",
+                        {
+                          duration: 6000,
+                        }
+                      );
+                    });
+                } else {
+                  resetAllStates();
+                  setCreateLoading(false);
+                  toast.success(
+                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 4000);
+                }
+              })
+              .catch((error) => {
+                console.log("error", error);
+                setCreateLoading(false);
+                toast.error(
+                  "Error creating your coach profile. Please try again."
+                );
+              });
+          } else {
+            console.log("edit", myHeaders);
+            // Create a plain JavaScript object
+            const formDataObject: { [key: string]: any } = {};
+            formdata.forEach((value, key) => {
+              formDataObject[key] = value;
+            });
+            if (formType === 'coachee'){
+              // deleting optional file
+              let deletingOptionalFiles: string = "";
+              if (optionalMediaData?.extracted_from_optional_file) {
+                deletingOptionalFiles =
+                  optionalMediaData?.extracted_from_optional_file
+                    .map((item) => {
+                      if (item.isDeleted) {
+                        return item.fileName;
+                      }
+                    })
+                    .filter((item) => item !== undefined)
+                    .join(",");
+              }
+              interface UpdatedOptionalFile {
+                [key: string]: any;
+              }
+              if(deletingOptionalFiles){
+                console.log('del',deletingOptionalFiles,updatedOptionalFile)
+                let updateOptionalFile: UpdatedOptionalFile = { ...updatedOptionalFile }; // Create a shallow copy to avoid mutating the original object
+
+                if (deletingOptionalFiles) {
+                  deletingOptionalFiles.split(",").forEach(fileName => {
+                    delete updateOptionalFile[fileName];
+                  });
+                }
+
+                console.log(updateOptionalFile,formdata)
+
+                formDataObject['optional_file_data'] = JSON.stringify(updateOptionalFile);
+              }
+            }
+
+
+            // Convert the object to JSON
+            var formDataJSON = JSON.stringify(formDataObject);
+            console.log(
+              formDataObject,
+              "===================profile to update ============================="
+            );
+            // if (formType === "coachee") {
+            myHeaders.append("Content-Type", "application/json");
+            // }
+
+            let reapproval = "true";
+            if (formType === "coachee") {
+              reapproval = "false";
+            }
+            console.log(reapproval);
+            fetch(
+              `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
+              {
+                method: "PATCH",
+                headers: myHeaders,
+                body: formDataJSON,
+              }
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+                if (!data.error) {
+                  console.log(data, "updated");
+                  // setCreateLoading(false);
+                  // if (!data.error && !data.detail) {
+                  //   toast.loading(
+                  //     "Your profile and Bot have been updated. Redirecting you to your profile.",
+                  //     {
+                  //       duration: 6000,
+                  //     }
+                  //   );
+                  // resetAllStates();
+                  // setTimeout(() => {
+                  //   router.push("/profile");
+                  // }, 6000);
+                  // }
+
+                  if (formType === "coach") {
+                    // myHeaders.append("Content-Type", "application/json");
+                    // const avatarBotCreationFormData = {
+                    //   bot_type: "avatar_bot",
+                    //   profile_id: userProfileId,
+                    //   bot_name: name,
+                    //   email: user.email,
+                    //   bot_details: { info: about, coach_name: name },
+                    //   attributes: {
+                    //     heading: `welcome to ${name}'s avatar bot`,
+                    //   },
+                    //   participant_id: userId,
+                    //   bot_base_url: `${
+                    //     subdomain === "playground"
+                    //       ? "https://playground.coachbots.com"
+                    //       : "https://platform.coachbots.com"
+                    //   }`,
+                    //   fitment_answer: `${participantLevel},${
+                    //     coachMentInSameDep === "yes" ? true : false
+                    //   },${outcomeSupported}`,
+                    //   fitment_data: {
+                    //     options: {
+                    //       "1": ["Someone Senior", "Any level"],
+                    //       "2": ["Yes", "No"],
+                    //       "3": [
+                    //         "Career advancement",
+                    //         "Skill development",
+                    //         "Introspection & reflection",
+                    //         "Networking & leadership",
+                    //       ],
+                    //     },
+                    //     mentee_que: {
+                    //       "1": "What level of coach & mentor do you want?",
+                    //       "2": "I want a coach & mentor someone from the same department.",
+                    //       "3": "What kind of outcome do you want from these sessions the most?",
+                    //     },
+                    //     mentor_que: {
+                    //       "1": "What level of participant do you want to coach & mentor?",
+                    //       "2": "I want to coach & mentor someone in the same department.",
+                    //       "3": "What kind of outcome can you support in these sessions the most?",
+                    //     },
+                    //   },
+                    //   additional_data: {
+                    //     profile_type: "coach",
+                    //     area_domain: areaDomain,
+                    //     experience: experience,
+                    //     mentoring_preferences: mentoringPreferences,
+                    //     mentoring_frameworks: mentoringPreferencess.join(", "),
+                    //     dominant_point_of_view: povProgramParticipants,
+                    //     problem_solving_approach: problemSolvingApproach,
+                    //     admired_leaders: leaderNames,
+                    //     profile_description: about,
+                    //     department: department,
+                    //     youtube_links: linksReflectingWVpersonal,
+                    //     article_links: linksReflectyouWished,
+                    //     voice_sample: voiceSample,
+                    //     discuss_how_you_helped_others_in_coachMentoring:
+                    //       discussInCARformat,
+                    //     journey_and_background: journeyAndBackground,
+                    //     provide_answers_using_emojis: `${
+                    //       provideAnswersUsingEmojis === "yes" ? true : false
+                    //     }`,
+                    //     allow_coachee_to_create_session: `${
+                    //       allowSessionNotes === "yes" ? true : false
+                    //     }`,
+                    //     fitment_answers: {
+                    //       coachmentSelect,
+                    //       participantLevel,
+                    //       coachMentInSameDep,
+                    //       outcomeSupported,
+                    //     },
+                    //     coach_qna: CoachMentorQnA.coach_qna,
+                    //     mentor_qna: CoachMentorQnA.mentor_qna,
+                    //   },
+                    //   media_data: {
+                    //     youtube_links: linksReflectingWVpersonal,
+                    //     article_links: linksReflectyouWished,
+                    //   },
+                    // };
+
+                    // fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+                    //   method: checkIfEdit ? "PATCH" : "POST",
+                    //   headers: myHeaders,
+                    //   body: checkIfEdit
+                    //     ? JSON.stringify({
+                    //         bot_id: botIUidFromParams,
+                    //         profile_id: userProfileId,
+                    //         updated_data: avatarBotCreationFormData,
+                    //         is_overwrite: deleteExistingFiles ? "true" : "false",
+                    //       })
+                    //     : JSON.stringify(avatarBotCreationFormData),
+                    // })
+                    //   .then((res) => res.json())
+                    //   .then((data) => {
+                    //     console.log(data);
+                    //     // setCreateLoading(false);
+                    //     if (!data.error && !data.detail) {
+                    console.log(referenceDocs.length, "length");
+                    if (
+                      referenceDocs.length > 0 ||
+                      linksReflectingWVpersonal !== "" ||
+                      linksReflectyouWished !== "" ||
+                      mediaData?.extracted_from_article ||
+                      mediaData?.extracted_from_youtube ||
+                      mediaData?.extracted_from_pdf
+                    ) {
+                      const filesPatchFormData = new FormData();
+                      if (referenceDocs.length > 0) {
+                        referenceDocs.forEach(({ file, text, name }) => {
+                          if (name === "optional_file") {
                             filesPatchFormData.append(
-                              `doc_data`,
+                              "optional_file",
                               `file_name:${file.name} text_file:${text}`
                             );
                             console.log(text);
                           } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
+                          if (file.name.includes(".pdf")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                "pdf_data",
+                                `file_name:${file.name.trim()} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_pdfs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
+                          } else if (file.name.includes(".docx")) {
+                            if (text) {
+                              filesPatchFormData.append(
+                                `doc_data`,
+                                `file_name:${file.name.trim()} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else {
+                              filesPatchFormData.append(
+                                `attached_docs`,
+                                file,
+                                file.name.trim()
+                              );
+                            }
                           }
                         }
-                      });
+                        });
+                      }
 
-                      filesPatchFormData.append("bot_id", data.bot_uid);
+                      let deletingDocs: string = "";
+                      let deletingPdfs: string = "";
+                      if (mediaData?.extracted_from_pdf) {
+                        deletingDocs = mediaData?.extracted_from_pdf
+                          .map((item) => {
+                            if (
+                              item.isDeleted &&
+                              item.fileName.includes(".docx")
+                            ) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
 
+                        deletingPdfs = mediaData?.extracted_from_pdf
+                          .map((item) => {
+                            if (
+                              item.isDeleted &&
+                              item.fileName.includes(".pdf")
+                            ) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingArticleLinks: string = "";
+                      if (mediaData?.extracted_from_article) {
+                        deletingArticleLinks = mediaData?.extracted_from_article
+                          .map((item) => {
+                            if (item.isDeleted) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingYoutubeLinks: string = "";
+                      if (mediaData?.extracted_from_youtube) {
+                        deletingYoutubeLinks = mediaData?.extracted_from_youtube
+                          .map((item) => {
+                            if (item.isDeleted) {
+                              return item.fileName;
+                            }
+                          })
+                          .filter((item) => item !== undefined)
+                          .join(",");
+                      }
+
+                      let deletingOptionalFiles: string = "";
+                      if (optionalMediaData?.extracted_from_optional_file) {
+                        deletingOptionalFiles =
+                          optionalMediaData?.extracted_from_optional_file
+                            .map((item) => {
+                              if (item.isDeleted) {
+                                return item.fileName;
+                              }
+                            })
+                            .filter((item) => item !== undefined)
+                            .join(",");
+                      }
+
+                      const deletedData = {
+                        pdf_files: deletingPdfs,
+                        youtube_links: deletingYoutubeLinks,
+                        article_links: deletingArticleLinks,
+                        doc_files: deletingDocs,
+                        optional_files: deletingOptionalFiles,
+                      };
+
+                      console.log(deletedData);
+                      filesPatchFormData.append(
+                        "deleted_data",
+                        JSON.stringify(deletedData)
+                      );
+
+                      filesPatchFormData.append("bot_id", botIUidFromParams!);
                       const media_data = {
                         youtube_links: linksReflectingWVpersonal,
                         article_links: linksReflectyouWished,
                       };
+
                       filesPatchFormData.append(
                         "media_data",
                         JSON.stringify(media_data)
                       );
-
-                      console.log(referenceDocs);
+                      filesPatchFormData.append(
+                        "is_overwrite",
+                        "false"
+                        // deleteExistingFiles ? "true" : "false"
+                      );
+                      filesPatchFormData.append(
+                        "profile_id",
+                        `${userProfileId}`
+                      );
                       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                         method: "PATCH",
                         headers: {
@@ -891,14 +1436,14 @@ const CoachIntake = ({ user }: any) => {
                           setCreateLoading(false);
                           if (!data.error && !data.detail) {
                             toast.success(
-                              "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                              "Successfully updated your profile. Redirecting you to your Profile page.",
                               {
                                 duration: 6000,
                               }
                             );
                             resetAllStates();
                             setTimeout(() => {
-                              router.push("/");
+                              router.push("/profile");
                             }, 4000);
                           } else {
                             setCreateLoading(false);
@@ -922,285 +1467,38 @@ const CoachIntake = ({ user }: any) => {
                         });
                     } else {
                       setCreateLoading(false);
-                      if (data.error === "Bot already exists") {
-                        toast.error("Bot already exists");
-                      } else {
-                        setCreateLoading(false);
-                        toast.error(
-                          "Error creating your coach profile. Please try again.",
-                          {
-                            duration: 6000,
-                          }
-                        );
-                      }
-                    }
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    setCreateLoading(false);
-                    toast.error(
-                      "Error creating your coach profile. Please try again.",
-                      {
-                        duration: 6000,
-                      }
-                    );
-                  });
-              } else {
-                resetAllStates();
-                setCreateLoading(false);
-                toast.success(
-                  "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                  {
-                    duration: 6000,
-                  }
-                );
-                setTimeout(() => {
-                  router.push("/");
-                }, 4000);
-              }
-            })
-            .catch((error) => {
-              console.log("error", error);
-              setCreateLoading(false);
-              toast.error(
-                "Error creating your coach profile. Please try again."
-              );
-            });
-        } else {
-          console.log("edit", myHeaders);
-          // Create a plain JavaScript object
-          const formDataObject: { [key: string]: any } = {};
-          formdata.forEach((value, key) => {
-            formDataObject[key] = value;
-          });
-
-          // Convert the object to JSON
-          var formDataJSON = JSON.stringify(formDataObject);
-          console.log(formDataObject);
-          if (formType === "coachee") {
-            myHeaders.append("Content-Type", "application/json");
-          }
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}`,
-            {
-              method: "PATCH",
-              headers: myHeaders,
-              body: formDataJSON,
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data, "updated");
-              // setCreateLoading(false);
-              // if (!data.error && !data.detail) {
-              //   toast.loading(
-              //     "Your profile and Bot have been updated. Redirecting you to your profile.",
-              //     {
-              //       duration: 6000,
-              //     }
-              //   );
-              // resetAllStates();
-              // setTimeout(() => {
-              //   router.push("/profile");
-              // }, 6000);
-              // }
-            });
-          if (formType === "coach") {
-            myHeaders.append("Content-Type", "application/json");
-            const avatarBotCreationFormData = {
-              bot_type: "avatar_bot",
-              profile_id: userProfileId,
-              bot_name: name,
-              email: user.email,
-              bot_details: { info: about, coach_name: name },
-              attributes: {
-                heading: `welcome to ${name}'s avatar bot`,
-              },
-              participant_id: userId,
-              bot_base_url: `${
-                subdomain === "playground"
-                  ? "https://playground.coachbots.com"
-                  : "https://platform.coachbots.com"
-              }`,
-              fitment_answer: `${participantLevel},${
-                coachMentInSameDep === "yes" ? true : false
-              },${outcomeSupported}`,
-              fitment_data: {
-                options: {
-                  "1": ["Someone Senior", "Any level"],
-                  "2": ["Yes", "No"],
-                  "3": [
-                    "Career advancement",
-                    "Skill development",
-                    "Introspection & reflection",
-                    "Networking & leadership",
-                  ],
-                },
-                mentee_que: {
-                  "1": "What level of coach & mentor do you want?",
-                  "2": "I want a coach & mentor someone from the same department.",
-                  "3": "What kind of outcome do you want from these sessions the most?",
-                },
-                mentor_que: {
-                  "1": "What level of participant do you want to coach & mentor?",
-                  "2": "I want to coach & mentor someone in the same department.",
-                  "3": "What kind of outcome can you support in these sessions the most?",
-                },
-              },
-              additional_data: {
-                profile_type: "coach",
-                area_domain: areaDomain,
-                experience: experience,
-                mentoring_preferences: mentoringPreferences,
-                mentoring_frameworks: mentoringPreferencess.join(", "),
-                dominant_point_of_view: povProgramParticipants,
-                problem_solving_approach: problemSolvingApproach,
-                admired_leaders: leaderNames,
-                profile_description: about,
-                department: department,
-                youtube_links: linksReflectingWVpersonal,
-                article_links: linksReflectyouWished,
-                voice_sample: voiceSample,
-                discuss_how_you_helped_others_in_coachMentoring:
-                  discussInCARformat,
-                journey_and_background: journeyAndBackground,
-                provide_answers_using_emojis: `${
-                  provideAnswersUsingEmojis === "yes" ? true : false
-                }`,
-                allow_coachee_to_create_session: `${
-                  allowSessionNotes === "yes" ? true : false
-                }`,
-                fitment_answers: {
-                  coachmentSelect,
-                  participantLevel,
-                  coachMentInSameDep,
-                  outcomeSupported,
-                },
-                coach_qna: CoachMentorQnA.coach_qna,
-                mentor_qna: CoachMentorQnA.mentor_qna,
-              },
-              media_data: {
-                youtube_links: linksReflectingWVpersonal,
-                article_links: linksReflectyouWished,
-              },
-            };
-
-            fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-              method: checkIfEdit ? "PATCH" : "POST",
-              headers: myHeaders,
-              body: checkIfEdit
-                ? JSON.stringify({
-                    bot_id: botIUidFromParams,
-                    profile_id: userProfileId,
-                    updated_data: avatarBotCreationFormData,
-                    is_overwrite: deleteExistingFiles ? "true" : "false",
-                  })
-                : JSON.stringify(avatarBotCreationFormData),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                console.log(data);
-                // setCreateLoading(false);
-                if (!data.error && !data.detail) {
-                  console.log(referenceDocs.length, "length");
-                  if (
-                    referenceDocs.length > 0 ||
-                    linksReflectingWVpersonal !== "" ||
-                    linksReflectyouWished !== ""
-                  ) {
-                    const filesPatchFormData = new FormData();
-                    if (referenceDocs.length > 0) {
-                      referenceDocs.forEach(({ file, text }) => {
-                        if (file.name.includes(".pdf")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              "pdf_data",
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_pdfs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
-                        } else if (file.name.includes(".docx")) {
-                          if (text) {
-                            filesPatchFormData.append(
-                              `doc_data`,
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            filesPatchFormData.append(
-                              `attached_docs`,
-                              file,
-                              file.name.trim()
-                            );
-                          }
+                      toast.success(
+                        "Successfully updated your profile. Redirecting you to your Profile page.",
+                        {
+                          duration: 6000,
                         }
-                      });
+                      );
+                      resetAllStates();
+                      setTimeout(() => {
+                        router.push("/profile");
+                      }, 4000);
                     }
-
-                    filesPatchFormData.append("bot_id", botIUidFromParams!);
-                    const media_data = {
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                    };
-                    filesPatchFormData.append(
-                      "media_data",
-                      JSON.stringify(media_data)
-                    );
-                    filesPatchFormData.append(
-                      "is_overwrite",
-                      deleteExistingFiles ? "true" : "false"
-                    );
-                    filesPatchFormData.append("profile_id", `${userProfileId}`);
-
-                    fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-                      method: "PATCH",
-                      headers: {
-                        Authorization: basicAuth,
-                      },
-                      body: filesPatchFormData,
-                    })
-                      .then((res) => res.json())
-                      .then((data) => {
-                        console.log(data);
-                        setCreateLoading(false);
-                        if (!data.error && !data.detail) {
-                          toast.success(
-                            "Successfully updated your profile. Redirecting you to your Profile page.",
-                            {
-                              duration: 6000,
-                            }
-                          );
-                          resetAllStates();
-                          setTimeout(() => {
-                            router.push("/profile");
-                          }, 4000);
-                        } else {
-                          setCreateLoading(false);
-                          toast.error(
-                            "Error creating your coach profile. Please try again.",
-                            {
-                              duration: 6000,
-                            }
-                          );
-                        }
-                      })
-                      .catch((err) => {
-                        toast.error(
-                          "Error creating your coach profile. Please try again.",
-                          {
-                            duration: 6000,
-                          }
-                        );
-                        console.error(err);
-                        setCreateLoading(false);
-                      });
+                    //   } else {
+                    //     setCreateLoading(false);
+                    //     if (data.error === "Bot already exists") {
+                    //       toast.error("Bot already exists");
+                    //     } else {
+                    //       setCreateLoading(false);
+                    //       toast.error(
+                    //         "Error creating your coach profile. Please try again.",
+                    //         {
+                    //           duration: 6000,
+                    //         }
+                    //       );
+                    //     }
+                    //   }
+                    // })
+                    // .catch((err) => {
+                    //   console.error(err);
+                    //   setCreateLoading(false);
+                    // });
                   } else {
+                    resetAllStates();
                     setCreateLoading(false);
                     toast.success(
                       "Successfully updated your profile. Redirecting you to your Profile page.",
@@ -1208,44 +1506,29 @@ const CoachIntake = ({ user }: any) => {
                         duration: 6000,
                       }
                     );
-                    resetAllStates();
                     setTimeout(() => {
                       router.push("/profile");
                     }, 4000);
                   }
                 } else {
+                  toast.error(
+                    "Error creating your coach profile. Please try again.",
+                    {
+                      duration: 6000,
+                    }
+                  );
                   setCreateLoading(false);
-                  if (data.error === "Bot already exists") {
-                    toast.error("Bot already exists");
-                  } else {
-                    setCreateLoading(false);
-                    toast.error(
-                      "Error creating your coach profile. Please try again.",
-                      {
-                        duration: 6000,
-                      }
-                    );
-                  }
                 }
               })
               .catch((err) => {
                 console.error(err);
+                toast.error("Error updating your profile. Please try again.");
                 setCreateLoading(false);
               });
-          } else {
-            resetAllStates();
-            setCreateLoading(false);
-            toast.success(
-              "Successfully updated your profile. Redirecting you to your Profile page.",
-              {
-                duration: 6000,
-              }
-            );
-            setTimeout(() => {
-              router.push("/profile");
-            }, 4000);
           }
         }
+      } else {
+        toast.warning("Please select the high and low skills");
       }
     } catch (error) {
       console.log(error);
@@ -1256,131 +1539,137 @@ const CoachIntake = ({ user }: any) => {
 
   const createFeedbackSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (user) {
-      console.log("user feedback", user);
-      setFeedbackCreateLoading(true);
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", basicAuth);
+    if (characteristicsRateHigh && characteristicsRateLows) {
+      if (user) {
+        console.log("user feedback", user);
+        setFeedbackCreateLoading(true);
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
 
-      var requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-      };
-      fetch(
-        `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          console.log("feedback bot profile data", result);
-          userProfileId = result.data.length > 0 ? result.data[0].uid : null;
-          console.log(userProfileId);
-          var feedbackFormdata = {
-            bot_type: "feedback_bot",
-            bot_name: name,
-            profile_id: userProfileId,
-            email: user.email,
-            attributes: {
-              heading: "welcome to feedback bot",
+        var requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+        };
+        fetch(
+          `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userId}`,
+          requestOptions
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            console.log("feedback bot profile data", result);
+            userProfileId = result.data.length > 0 ? result.data[0].uid : null;
+            console.log(userProfileId);
+            var feedbackFormdata = {
+              bot_type: "feedback_bot",
+              bot_name: name,
+              profile_id: userProfileId,
+              email: userEmailParams ? userEmailParams : user.email,
+              attributes: {
+                heading: "welcome to feedback bot",
+                feedback_questions: {
+                  "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
+                  "2": "Regarding workplace team management skills, how would you rate my skills?",
+                  "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
+                  "4": "How would like to see me implement the feedback you have provided so far?",
+                },
+              },
               feedback_questions: {
                 "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
                 "2": "Regarding workplace team management skills, how would you rate my skills?",
                 "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
                 "4": "How would like to see me implement the feedback you have provided so far?",
               },
-            },
-            feedback_questions: {
-              "1": "As witnessed by you what would be some of my strengths and/or weaknesses, that you have come across?",
-              "2": "Regarding workplace team management skills, how would you rate my skills?",
-              "3": "I am trying to improve my project management skills. In the past quarter have you seen any examples? Examples would be great.",
-              "4": "How would like to see me implement the feedback you have provided so far?",
-            },
-            participant_id: userId,
-            additional_data: {
-              short_profile_bio: profileBio,
-              current_projects: currentProjects,
-              suggested_projects: suggestedProjects,
-            },
-            bot_base_url: `${
-              subdomain === "playground"
-                ? "https://playground.coachbots.com"
-                : "https://platform.coachbots.com"
-            }`,
-          };
+              participant_id: userId,
+              additional_data: {
+                short_profile_bio: profileBio,
+                current_projects: currentProjects,
+                suggested_projects: suggestedProjects,
+              },
+              low_rating_characteristics: characteristicsRateLows,
+              high_rating_characteristics: characteristicsRateHigh,
+              bot_base_url: `${
+                subdomain === "playground"
+                  ? "https://playground.coachbots.com"
+                  : "https://platform.coachbots.com"
+              }`,
+            };
 
-          var myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-          myHeaders.append("Authorization", basicAuth);
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", basicAuth);
 
-          fetch(`${baseURL}/accounts/create-bot-by-details/`, {
-            method: checkIfEdit ? "PATCH" : "POST",
-            headers: myHeaders,
-            body: checkIfEdit
-              ? JSON.stringify({
-                  bot_id: botIUidFromParams,
-                  updated_data: feedbackFormdata,
-                })
-              : JSON.stringify(feedbackFormdata),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              setFeedbackCreateLoading(false);
+            fetch(`${baseURL}/accounts/create-bot-by-details/`, {
+              method: checkIfEdit ? "PATCH" : "POST",
+              headers: myHeaders,
+              body: checkIfEdit
+                ? JSON.stringify({
+                    bot_id: botIUidFromParams,
+                    updated_data: feedbackFormdata,
+                  })
+                : JSON.stringify(feedbackFormdata),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data);
+                setFeedbackCreateLoading(false);
 
-              if (!data.error && !data.detail) {
-                if (checkIfEdit) {
-                  toast.success("Successfully Updated your feedback bot.", {
-                    duration: 6000,
-                  });
-                  setTimeout(() => {
-                    router.push("/profile");
-                  }, 4000);
+                if (!data.error && !data.detail) {
+                  if (checkIfEdit) {
+                    toast.success("Successfully Updated your feedback bot.", {
+                      duration: 6000,
+                    });
+                    setTimeout(() => {
+                      router.push("/profile");
+                    }, 4000);
+                  } else {
+                    toast.success(
+                      "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                      {
+                        duration: 6000,
+                      }
+                    );
+                    setTimeout(() => {
+                      router.push("/");
+                    }, 4000);
+                  }
+                  resetAllStates();
                 } else {
-                  toast.success(
-                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                  toast.error(
+                    "Error creating your feedback bot. Please try again.",
                     {
                       duration: 6000,
                     }
                   );
-                  setTimeout(() => {
-                    router.push("/");
-                  }, 4000);
                 }
-                resetAllStates();
-              } else {
-                toast.error(
-                  "Error creating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              if (checkIfEdit) {
-                toast.error(
-                  "Error Updating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              } else {
-                toast.error(
-                  "Error creating your feedback bot. Please try again.",
-                  {
-                    duration: 6000,
-                  }
-                );
-              }
-            });
-        });
+              })
+              .catch((err) => {
+                console.error(err);
+                if (checkIfEdit) {
+                  toast.error(
+                    "Error Updating your feedback bot. Please try again.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                } else {
+                  toast.error(
+                    "Error creating your feedback bot. Please try again.",
+                    {
+                      duration: 6000,
+                    }
+                  );
+                }
+              });
+          });
+      }
+    } else {
+      toast.warning("Please select the high and low skills");
     }
   };
 
   const onCharacteristicsSelectLow = (val: string) => {
     setCharacteristicsRateLows(val);
-
+    setDataModified(true);
     const resetDisabledData = characteristicsList.map((option) => ({
       ...option,
       disabled: false,
@@ -1401,6 +1690,7 @@ const CoachIntake = ({ user }: any) => {
 
   const onCharacteristicsSelectHigh = (val: string) => {
     console.log(val);
+    setDataModified(true);
     setCharacteristicsRateHigh(val);
 
     const resetDisabledData = characteristicsList.map((option) => ({
@@ -1423,10 +1713,18 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
-    const coachtalk = document.getElementsByClassName("deep-chat-poc")[0];
-    const coachScribe = document.getElementsByClassName("deep-chat-poc2")[0];
+    const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
+    const coachScribe = document.getElementsByClassName(
+      "coachbots-coachscribe"
+    )[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
+
+    if (user && !adminEdit) {
+      getClientInfoForUser(user.email);
+    } else if (adminEdit && userEmailParams) {
+      getClientInfoForUser(userEmailParams);
+    }
 
     console.log("hello 1");
     if (checkIfEdit === "true" || checkIfView === "true") {
@@ -1443,7 +1741,8 @@ const CoachIntake = ({ user }: any) => {
         getUserAccount(user)
           .then((res) => res.json())
           .then((data) => {
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+            let user_id = userIdParams ? userIdParams : data.uid;
+            fetch(`${baseURL}/accounts/get-bots/?user_id=${user_id}`, {
               headers: {
                 Authorization: basicAuth,
               },
@@ -1453,11 +1752,13 @@ const CoachIntake = ({ user }: any) => {
                 let resultingBot = getBotById(botIdFromParams!, data.data);
 
                 console.log("Bot details for edit - Feedback", data);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 if (botIdFromParams?.includes("feedback")) {
                   setProfileBio(
                     resultingBot.signature_bot.data.additional_data.short_profile_bio?.trim()
@@ -1478,21 +1779,27 @@ const CoachIntake = ({ user }: any) => {
           .then((res) => res.json())
           .then((data) => {
             console.log(data);
-            fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-              headers: {
-                Authorization: basicAuth,
-              },
-            })
+            const user_id = userIdParams ? userIdParams : data.uid;
+            fetch(
+              `${baseURL}/accounts/get-bots/?user_id=${user_id}&approved_only=false`,
+              {
+                headers: {
+                  Authorization: basicAuth,
+                },
+              }
+            )
               .then((res) => res.json())
               .then((dataa) => {
                 const resultingBot = getBotById(botIdFromParams!, dataa.data);
 
                 console.log("Bot details for edit - Coach", resultingBot);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 setProfileType(profileTypeFromParams!);
                 setAbout(
                   resultingBot.signature_bot.data.additional_data.profile_description?.trim()
@@ -1505,6 +1812,11 @@ const CoachIntake = ({ user }: any) => {
                 );
                 setAreaDomain(
                   resultingBot.signature_bot.data.additional_data.area_domain.trim()
+                );
+
+                setDiscussionTopics(
+                  resultingBot.signature_bot.data.additional_data
+                    .discussion_topic
                 );
                 // setAreaDomain(
                 //   resultingBot.signature_bot.data.additional_data.area_domain
@@ -1555,16 +1867,34 @@ const CoachIntake = ({ user }: any) => {
                 setJourneyAndBackground(
                   resultingBot.signature_bot.data.additional_data.journey_and_background?.trim()
                 );
-                if (checkIfView) {
-                  setLinksReflectingWVpersonal(
-                    resultingBot.signature_bot.data.additional_data
-                      .youtube_links
-                  );
-                  setLinksReflectyouWished(
-                    resultingBot.signature_bot.data.additional_data
-                      .article_links
-                  );
-                }
+                // if (checkIfView) {
+                //   setLinksReflectingWVpersonal(
+                //     resultingBot.signature_bot.data.additional_data
+                //       .youtube_links
+                //   );
+                //   setLinksReflectyouWished(
+                //     resultingBot.signature_bot.data.additional_data
+                //       .article_links
+                //   );
+                // }
+                setMediaData(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+
+                console.log(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
+
+                setOptionalMediaData(
+                  transformExtractedOptional(
+                    resultingBot.bot_attributes.extracted_documents
+                  )
+                );
+
                 setLeaderNames(
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
@@ -1704,11 +2034,13 @@ const CoachIntake = ({ user }: any) => {
                 console.log(data);
                 const resultingBot = data.data;
                 console.log("Bot details for edit - coachee", resultingBot);
-                setName(
-                  `${user.given_name} ${
-                    user.family_name ? user.family_name : ""
-                  }`
-                );
+                if (!adminEdit) {
+                  setName(
+                    `${user.given_name} ${
+                      user.family_name ? user.family_name : ""
+                    }`
+                  );
+                }
                 setAbout(resultingBot.about?.trim());
                 setExperience(resultingBot.experience);
                 setProfileType(resultingBot.profile_type);
@@ -1724,6 +2056,8 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.high_rating_characteristics
                 );
 
+                setDiscussionTopics(resultingBot.discussion_topic);
+
                 setParticipantLevel(resultingBot.coaching_level);
                 setCochMentInSameDep(
                   resultingBot.coach_same_department ? "Yes" : "No"
@@ -1732,6 +2066,16 @@ const CoachIntake = ({ user }: any) => {
                 setOutcomeSupported(resultingBot.supported_outcome);
 
                 setDepartment(resultingBot.department);
+
+                setChallengesToHelp(resultingBot.problem_statement);
+                setOptionalMediaData(
+                  transformExtractedOptionalCoachee(
+                    resultingBot.optional_file_data
+                  )
+                );
+                if (resultingBot.optional_file_data){
+                  setUpdatedOptionalFile(resultingBot.optional_file_data);
+                }
               });
           });
       }
@@ -1746,14 +2090,17 @@ const CoachIntake = ({ user }: any) => {
     maxLimit: number,
     fieldName: string
   ) => {
-    const inputValue = input_value;
+    const inputValue = input_value.trim();
+    const words = inputValue.split(/\s+/);
+    const wordCount = words.length;
+    setDataModified(true);
 
-    if (inputValue.length > minLimit && inputValue.length < maxLimit) {
+    if (wordCount >= minLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
-    } else {
+    } else if (wordCount < minLimit) {
       setError((prevErrors) => ({
         ...prevErrors,
-        [fieldName]: `${fieldName} should be between ${minLimit} and ${maxLimit} characters.`,
+        [fieldName]: `Minimum ${minLimit} words are required.`,
       }));
     }
   };
@@ -1764,6 +2111,7 @@ const CoachIntake = ({ user }: any) => {
     fieldName: string
   ) => {
     const inputValue = input_value;
+    setDataModified(true);
 
     if (inputValue.trim().split(" ").length >= minLimit) {
       setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
@@ -1777,6 +2125,7 @@ const CoachIntake = ({ user }: any) => {
 
   const handleInputLinks = (input_value: string, fieldName: string) => {
     const inputValue = input_value;
+    setDataModified(true);
 
     if (fieldName === "linksReflectingWVpersonal") {
       if (isValidYoutubeLinks(inputValue)) {
@@ -1799,6 +2148,116 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
+  const handleDiscussionTopics = (input: string, fieldName: string) => {
+    const inputValuesArr = input.split(", ");
+    if (inputValuesArr.length > 5) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Maximum 5 topics could be added.`,
+      }));
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    }
+  };
+
+  const handleProblemStatement = (input: string, fieldName: string) => {
+    const inputValuesArr = input.split(", ");
+    if (inputValuesArr.length > 2) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `Maximum 2 challenges could be added.`,
+      }));
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+    }
+  };
+
+  const deleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+    setDataModified(true);
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: true } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
+  };
+
+  const undoDeleteMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...mediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: false } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setMediaData(updatedData);
+  };
+
+  const deleteOptionalMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...optionalMediaData };
+    setDataModified(true);
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: true } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setOptionalMediaData(updatedData);
+  };
+
+  const undoDeleteOptionalMediaDataHandler = (fileName: string) => {
+    const updatedData: any = { ...optionalMediaData };
+
+    for (const category in updatedData) {
+      if (Array.isArray(updatedData[category])) {
+        const categoryItems = updatedData[category];
+        const updatedCategoryItems = categoryItems.map((item: any) =>
+          item.fileName === fileName ? { ...item, isDeleted: false } : item
+        );
+        updatedData[category] = updatedCategoryItems;
+      }
+    }
+
+    setOptionalMediaData(updatedData);
+  };
+
+  const handleImageUpload = async (imageToUpload: File) => {
+    const formData = new FormData();
+    formData.append("image_file", imageToUpload, imageToUpload.name);
+
+    const response = await fetch(`${baseURL}/documents/upload-image/`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: basicAuth,
+      },
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      return responseData.image_url;
+    } else {
+      return "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png";
+    }
+  };
+
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
@@ -1808,10 +2267,11 @@ const CoachIntake = ({ user }: any) => {
           </span>
           BOTS
         </h1>
+        <Badge variant={"outline"}>Private. For system use only</Badge>
         {formType === "knowledge-bot" && <UserBotIntake user={user} />}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">
-            <div className="bg-white border w-[60%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
+            <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
                 Coach & Mentor Intake
               </h1>
@@ -1822,7 +2282,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createSubmitHandler(e);
+                  e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createSubmitHandler(e);
+                  }
                 }}
               >
                 <div className="flex flex-col gap-2">
@@ -1902,16 +2371,16 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <textarea
                       value={about}
-                      minLength={200}
-                      maxLength={1500}
                       required
                       disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
-                        setAbout(e.target.value);
+                        const inputValue = e.target.value;
+
+                        setAbout(inputValue);
                         handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
+                          inputValue,
+                          30,
+                          80,
                           "Profile Description"
                         );
                       }}
@@ -1925,6 +2394,7 @@ const CoachIntake = ({ user }: any) => {
                       </p>
                     )}
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Total number of years of experience.
@@ -1934,6 +2404,7 @@ const CoachIntake = ({ user }: any) => {
                         value={experience}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setExperience(value);
                         }}
                         disabled={checkIfView === null ? false : true}
@@ -1969,8 +2440,25 @@ const CoachIntake = ({ user }: any) => {
                         name="myImage"
                         accept="image/*"
                         onChange={(e) => {
+                          setDataModified(true);
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
+                          if (checkIfEdit) {
+                            const uploadedImage = handleImageUpload(
+                              //@ts-ignore
+                              e.target.files[0]
+                            );
+                            uploadedImage
+                              .then((data) => {
+                                setProfileImageUrl(data);
+                                console.log(data);
+                              })
+                              .catch((err) => {
+                                setProfileImageUrl(
+                                  "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+                              });
+                          }
                         }}
                         disabled={checkIfView === null ? false : true}
                         className="w-fit"
@@ -1986,16 +2474,17 @@ const CoachIntake = ({ user }: any) => {
                       highlighting experiences that have shaped your path to
                       where you are today?
                     </p>
-
                     <textarea
                       rows={4}
                       disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
-                        setJourneyAndBackground(e.target.value);
+                        const inputValue = e.target.value;
 
-                        handleWordLimitMin(
-                          e.target.value,
-                          20,
+                        setJourneyAndBackground(inputValue);
+                        handleWordLimit(
+                          inputValue,
+                          50,
+                          80,
                           "journeyAndBackground"
                         );
                       }}
@@ -2009,6 +2498,7 @@ const CoachIntake = ({ user }: any) => {
                       </p>
                     )}
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Which department/ business unit you belong to?
@@ -2018,6 +2508,7 @@ const CoachIntake = ({ user }: any) => {
                       required
                       disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
+                        setDataModified(true);
                         setDepartment(value);
                       }}
                     >
@@ -2038,7 +2529,17 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Select the area/domain that you are most passionate about
-                      coaching and mentoring.
+                      coaching and mentoring.{" "}
+                      <Tooltip
+                        overlayInnerStyle={{
+                          backgroundColor: "white",
+                          color: "black",
+                          padding: "8px",
+                        }}
+                        title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
+                      >
+                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
+                      </Tooltip>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2046,6 +2547,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={areaDomain}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setAreaDomain(value);
                         }}
                       >
@@ -2079,6 +2581,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={mentoringPreferences}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setMentoringPreferences(value);
                         }}
                       >
@@ -2180,6 +2683,30 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself near the lows.
+                    </p>
+                    <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
+                      value={characteristicsRateLows}
+                      onCharacteristicsSelect={onCharacteristicsSelectLow}
+                      options={characteristicsList}
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please rate the characteristics/skills on which you will
+                      rate yourself highly.
+                    </p>
+                    <CharactericticsSelect
+                      disabled={checkIfView === null ? false : true}
+                      value={characteristicsRateHigh}
+                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                      options={characteristicsList}
+                    />
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
                       Please articulate your dominant point of view which you
                       want to discuss with the program participants as a general
                       starting point.
@@ -2191,11 +2718,13 @@ const CoachIntake = ({ user }: any) => {
                         value={povProgramParticipants}
                         disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
-                          setPovProgramParticipants(e.target.value);
+                          const inputValue = e.target.value;
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            10,
+                          setPovProgramParticipants(inputValue);
+                          handleWordLimit(
+                            inputValue,
+                            30,
+                            80,
                             "povProgramParticipants"
                           );
                         }}
@@ -2211,6 +2740,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       What is your general approach towards problem solving?
@@ -2222,11 +2752,13 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={problemSolvingApproach}
                         onChange={(e) => {
-                          setProblemSolvingApproach(e.target.value);
+                          const inputValue = e.target.value;
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            10,
+                          setProblemSolvingApproach(inputValue);
+                          handleWordLimit(
+                            inputValue,
+                            30,
+                            80,
                             "problemSolvingApproach"
                           );
                         }}
@@ -2242,6 +2774,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       What were the 3 most significant challenges you
@@ -2253,16 +2786,18 @@ const CoachIntake = ({ user }: any) => {
                         rows={4}
                         disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
-                          setSignificantChallenges(e.target.value);
+                          const inputValue = e.target.value;
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
+                          setSignificantChallenges(inputValue);
+                          handleWordLimit(
+                            inputValue,
+                            50,
+                            80,
                             "significantChallenges"
                           );
                         }}
                         value={significantChallenges}
-                        placeholder="Explain your top challenges and how you overcame them for example - helped new joiners navigate team conflicts by fostering open communication"
+                        placeholder="Explain your top challenges and how you overcame them. For example - helped new joiners navigate team conflicts by fostering open communication."
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes("significantChallenges") && (
@@ -2272,6 +2807,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Are there any phrases or expressions you find yourself
@@ -2285,15 +2821,18 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         required={!checkIfEdit}
                         onChange={(e) => {
-                          setPhrasesNExpressions(e.target.value);
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
+                          const inputValue = e.target.value;
+
+                          setPhrasesNExpressions(inputValue);
+                          handleWordLimit(
+                            inputValue,
+                            50,
+                            80,
                             "phrasesNExpressions"
                           );
                         }}
                         value={phrasesNExpressions}
-                        placeholder="Provide a few of your favorite quotes or catch phrases like 'Progress over perfection."
+                        placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
                         className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes("phrasesNExpressions") && (
@@ -2303,6 +2842,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
@@ -2322,6 +2862,34 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add the discussion topics
+                    </p>
+                    <div>
+                      <textarea
+                        rows={2}
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        value={discussionTopics}
+                        onChange={(e) => {
+                          setDataModified(true);
+                          setDiscussionTopics(e.target.value);
+                          handleDiscussionTopics(
+                            e.target.value,
+                            "discussionTopics"
+                          );
+                        }}
+                        placeholder="You can enter 4-5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                      />
+                    </div>
+                    {Object.keys(error).includes("discussionTopics") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["discussionTopics"]}
+                      </p>
+                    )}
+                  </div>
                   <hr />
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -2336,6 +2904,7 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
+                          setDataModified(true);
                           setLinksReflectingWVpersonal(e.target.value);
                           handleInputLinks(
                             e.target.value,
@@ -2351,6 +2920,68 @@ const CoachIntake = ({ user }: any) => {
                         <p className="text-red-500 text-xs mt-1">
                           {(error as any)["linksReflectingWVpersonal"]}
                         </p>
+                      )}
+                      {/* @ts-ignore */}
+                      {mediaData?.extracted_from_youtube.length > 0 && (
+                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                          {mediaData?.extracted_from_youtube.map((item) => (
+                            <div className="flex flex-row justify-between items-center">
+                              <Link
+                                href={item.fileName}
+                                target="_target"
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
+                              >
+                                {item.fileName}
+                              </Link>
+                              {checkIfEdit && (
+                                <div className="flex flex-row gap-2 min-w-fit">
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    onClick={() => {
+                                      deleteMediaDataHandler(item.fileName);
+                                    }}
+                                    disabled={item.isDeleted}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Delete"
+                                      body={
+                                        <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    disabled={!item.isDeleted}
+                                    onClick={() => {
+                                      undoDeleteMediaDataHandler(item.fileName);
+                                    }}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Undo delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Undo delete"
+                                      body={
+                                        <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -2368,6 +2999,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
+                          setDataModified(true);
                           setLinksReflectyouWished(e.target.value);
                           handleInputLinks(
                             e.target.value,
@@ -2382,6 +3014,68 @@ const CoachIntake = ({ user }: any) => {
                           {(error as any)["linksReflectyouWished"]}
                         </p>
                       )}
+                      {/* @ts-ignore */}
+                      {mediaData?.extracted_from_article.length > 0 ? (
+                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                          {mediaData?.extracted_from_article.map((item) => (
+                            <div className="flex flex-row justify-between items-center">
+                              <Link
+                                href={item.fileName}
+                                target="_target"
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
+                              >
+                                {item.fileName}
+                              </Link>
+                              {checkIfEdit && (
+                                <div className="flex flex-row gap-2 min-w-fit">
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    disabled={item.isDeleted}
+                                    onClick={() => {
+                                      deleteMediaDataHandler(item.fileName);
+                                    }}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Delete"
+                                      body={
+                                        <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                  <Button
+                                    variant={"outline"}
+                                    className="h-6 text-xs w-fit"
+                                    type="button"
+                                    disabled={!item.isDeleted}
+                                    onClick={() => {
+                                      undoDeleteMediaDataHandler(item.fileName);
+                                    }}
+                                  >
+                                    <span className="max-sm:hidden">
+                                      Undo delete
+                                    </span>
+                                    <TooltipWrapper
+                                      className="hidden max-sm:block text-xs"
+                                      tooltipName="Undo delete"
+                                      body={
+                                        <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                      }
+                                    />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                   <div className="my-3 ">
@@ -2408,20 +3102,156 @@ const CoachIntake = ({ user }: any) => {
                       />
                     </div>
                   </div>
-                  {checkIfEdit && (
-                    <div className="flex items-start space-x-2 my-1.5  w-full border border-red-300 bg-red-100 p-2 rounded-md">
-                      <>
-                        <Checkbox
-                          checked={deleteExistingFiles}
-                          onCheckedChange={(checked) => {
-                            console.log(checked);
-                            setDeleteExistingFiles(Boolean(checked));
-                          }}
-                        />
-                        <label className="text-xs text-gray-700">
-                          Delete existing files?
-                        </label>
-                      </>
+                  {/* @ts-ignore */}
+                  {mediaData?.extracted_from_pdf.length > 0 && (
+                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {mediaData?.extracted_from_pdf.map((item) => (
+                        <div className="flex flex-row justify-between items-center">
+                          <div className="flex flex-row items-center gap-2">
+                            <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                            <span
+                              className={`text-xs text-blue-500 truncate ${
+                                item.isDeleted && "line-through"
+                              }`}
+                            >
+                              {item.fileName}
+                            </span>
+                          </div>
+                          {checkIfEdit && (
+                            <div className="flex flex-row gap-2 min-w-fit">
+                              <Button
+                                variant={"outline"}
+                                className="h-6 text-xs w-fit"
+                                type="button"
+                                disabled={item.isDeleted}
+                                onClick={() => {
+                                  deleteMediaDataHandler(item.fileName);
+                                }}
+                              >
+                                <span className="max-sm:hidden">Delete</span>
+                                <TooltipWrapper
+                                  className="hidden max-sm:block text-xs"
+                                  tooltipName="Delete"
+                                  body={
+                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                  }
+                                />
+                              </Button>
+                              <Button
+                                variant={"outline"}
+                                className="h-6 text-xs w-fit"
+                                type="button"
+                                disabled={!item.isDeleted}
+                                onClick={() => {
+                                  undoDeleteMediaDataHandler(item.fileName);
+                                }}
+                              >
+                                <span className="max-sm:hidden">
+                                  Undo delete
+                                </span>
+                                <TooltipWrapper
+                                  className="hidden max-sm:block text-xs"
+                                  tooltipName="Undo delete"
+                                  body={
+                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                  }
+                                />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <hr className="mt-2" />
+                  <div className="my-3 ">
+                    <p className="text-sm my-1">
+                      Please upload any personality assessment (e.g. DISC) or
+                      other profiles that you might have. It will be used for
+                      recommendation of the appropriate coaching style.
+                    </p>
+
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        disabled={checkIfView === null ? false : true}
+                        // required={!checkIfEdit}
+                        type="file"
+                        className="w-full text-xs my-2"
+                        multiple
+                        name="optional_file"
+                        accept=".pdf,.docx"
+                        onChange={async (e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* @ts-ignore */}
+                  {optionalMediaData?.extracted_from_optional_file.length >
+                    0 && (
+                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {optionalMediaData?.extracted_from_optional_file.map(
+                        (item) => (
+                          <div className="flex flex-row justify-between items-center">
+                            <div className="flex flex-row items-center gap-2">
+                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                              <span
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
+                              >
+                                {item.fileName}
+                              </span>
+                            </div>
+                            {checkIfEdit && (
+                              <div className="flex flex-row gap-2 min-w-fit">
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={item.isDeleted}
+                                  onClick={() => {
+                                    deleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">Delete</span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Delete"
+                                    body={
+                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={!item.isDeleted}
+                                  onClick={() => {
+                                    undoDeleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">
+                                    Undo delete
+                                  </span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Undo delete"
+                                    body={
+                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
                     </div>
                   )}
                   <hr className="mt-2" />
@@ -2437,6 +3267,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={voiceSample}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setVoiceSample(value);
                         }}
                       >
@@ -2465,6 +3296,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={allowSessionNotes}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setAllowSessionNotes(value);
                         }}
                       >
@@ -2495,16 +3327,18 @@ const CoachIntake = ({ user }: any) => {
                         required={!checkIfEdit}
                         value={discussInCARformat}
                         onChange={(e) => {
-                          setDiscussInCARformat(e.target.value);
+                          const inputValue = e.target.value;
 
-                          handleWordLimitMin(
-                            e.target.value,
-                            20,
+                          setDiscussInCARformat(inputValue);
+                          handleWordLimit(
+                            inputValue,
+                            50,
+                            80,
                             "discussInCARformat"
                           );
                         }}
-                        placeholder="Please mentions these personal transformation stories in CAR format - Context, Action and Result achieved."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                        placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                       />
                       {Object.keys(error).includes("discussInCARformat") && (
                         <p className="text-red-500 text-xs mt-1">
@@ -2513,6 +3347,7 @@ const CoachIntake = ({ user }: any) => {
                       )}
                     </div>
                   </div>
+
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Would you like your AI Avatar to provide expressive
@@ -2524,6 +3359,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={provideAnswersUsingEmojis}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setProvideAnswersUsingEmojis(value);
                         }}
                       >
@@ -2596,6 +3432,7 @@ const CoachIntake = ({ user }: any) => {
                             value={developmentFramewrok}
                             onChange={(e) => {
                               setDevelopmentFrameworks(e.target.value);
+                              setDataModified(true);
                               handleWordLimitMin(
                                 e.target.value,
                                 20,
@@ -2624,6 +3461,7 @@ const CoachIntake = ({ user }: any) => {
                           answering directly to your coachee.
                         </p>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           Can you provide an overview of your coaching process
@@ -2636,15 +3474,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={coachingProcessOverview}
                             onChange={(e) => {
-                              setCoachingProcessOverview(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              const inputValue = e.target.value;
+
+                              setCoachingProcessOverview(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "coachingProcessOverview"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "coachingProcessOverview"
@@ -2655,6 +3496,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           How do you handle situations where I feel stuck or
@@ -2667,16 +3509,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={handlingSituations}
                             onChange={(e) => {
-                              setHandlingSituations(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setHandlingSituations(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "handlingSituations"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "handlingSituations"
@@ -2687,6 +3531,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           How can I integrate the lessons from these sessions
@@ -2699,15 +3544,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={integratingLessons}
                             onChange={(e) => {
-                              setIntegratongLessons(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              const inputValue = e.target.value;
+
+                              setIntegratongLessons(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "integratingLessons"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "integratingLessons"
@@ -2718,6 +3566,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           Can you provide guidance on how to effectively balance
@@ -2731,10 +3580,13 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
-                              setGuidanceOnCoachingProcess(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              const inputValue = e.target.value;
+
+                              setGuidanceOnCoachingProcess(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "guidanceOnCoachingProcess"
                               );
                             }}
@@ -2770,15 +3622,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={differentCareerPath}
                             onChange={(e) => {
-                              setDifferentCareerPath(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              const inputValue = e.target.value;
+
+                              setDifferentCareerPath(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "differentCareerPath"
                               );
                             }}
                             placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "differentCareerPath"
@@ -2789,9 +3644,10 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
-                          What is the problem solving approach in your domain
+                          What is the problem-solving approach in your domain
                           and why do you think that is the right construct for
                           growing in this field?
                         </p>
@@ -2802,16 +3658,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
-                              setProblemSolvingApproachInDomain(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setProblemSolvingApproachInDomain(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "problemSolvingApproachInDomain"
                               );
                             }}
                             placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "problemSolvingApproachInDomain"
@@ -2822,6 +3680,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <hr />
                       <div className="my-2">
                         <h3 className="font-semibold text-base text-gray-600">
@@ -2832,6 +3691,7 @@ const CoachIntake = ({ user }: any) => {
                           answering directly to your mentee.
                         </p>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           Can you provide an overview of your mentoring approach
@@ -2844,16 +3704,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={overviewofMentoring}
                             onChange={(e) => {
-                              setOverviewOfMentoring(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setOverviewOfMentoring(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "overviewofMentoring"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "overviewofMentoring"
@@ -2864,6 +3726,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           What opportunities for growth or advancement do you
@@ -2877,16 +3740,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
-                              setOpportunitiesOfGrowth(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setOpportunitiesOfGrowth(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "opportunitiesOfGrowth"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "opportunitiesOfGrowth"
@@ -2897,6 +3762,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           What are some common challenges or obstacles that
@@ -2911,16 +3777,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
-                              setCommenChallengesOrObstacles(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setCommenChallengesOrObstacles(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "commenChallengesOrObstacles"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "commenChallengesOrObstacles"
@@ -2931,6 +3799,7 @@ const CoachIntake = ({ user }: any) => {
                           )}
                         </div>
                       </div>
+
                       <div className="my-3">
                         <p className="text-sm my-1">
                           In your opinion, what are the key qualities or skills
@@ -2944,16 +3813,18 @@ const CoachIntake = ({ user }: any) => {
                             required={!checkIfEdit}
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
-                              setOpinionsAboutKeyQualities(e.target.value);
+                              const inputValue = e.target.value;
 
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
+                              setOpinionsAboutKeyQualities(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                50,
+                                80,
                                 "opinionsAboutKeyQualities"
                               );
                             }}
                             placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                           />
                           {Object.keys(error).includes(
                             "opinionsAboutKeyQualities"
@@ -3013,6 +3884,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setParticipantLevel(value);
                         }}
                       >
@@ -3040,6 +3912,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setCochMentInSameDep(value);
                         }}
                       >
@@ -3068,14 +3941,15 @@ const CoachIntake = ({ user }: any) => {
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setOutcomeSupported(value);
                         }}
                       >
                         {[
-                          "Career advancement",
-                          "Skill development",
-                          "Introspection & reflection",
-                          "Networking & leadership",
+                          "Career Advancement",
+                          "Skill Development",
+                          "Introspection & Reflection",
+                          "Networking & Leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem
@@ -3118,7 +3992,10 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                       <div>
                         {checkIfEdit ? (
-                          <Button disabled={createLoading} className="h-8">
+                          <Button
+                            disabled={createLoading || !dataModified}
+                            className="h-8"
+                          >
                             {" "}
                             {createLoading ? (
                               <>
@@ -3181,7 +4058,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createSubmitHandler(e);
+                  e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createSubmitHandler(e);
+                  }
                 }}
               >
                 {checkIfView && (
@@ -3259,14 +4145,14 @@ const CoachIntake = ({ user }: any) => {
                       value={about}
                       disabled={checkIfView === null ? false : true}
                       required
-                      minLength={200}
-                      maxLength={1500}
                       onChange={(e) => {
-                        setAbout(e.target.value);
+                        const inputValue = e.target.value;
+
+                        setAbout(inputValue);
                         handleWordLimit(
-                          e.target.value,
-                          200,
-                          1500,
+                          inputValue,
+                          30,
+                          80,
                           "Profile Description"
                         );
                       }}
@@ -3290,6 +4176,7 @@ const CoachIntake = ({ user }: any) => {
                         value={experience}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setExperience(value);
                         }}
                       >
@@ -3327,6 +4214,23 @@ const CoachIntake = ({ user }: any) => {
                         onChange={(e) => {
                           //@ts-ignore
                           setProfileImage(e.target.files[0]);
+
+                          if (checkIfEdit) {
+                            const uploadedImage = handleImageUpload(
+                              //@ts-ignore
+                              e.target.files[0]
+                            );
+                            uploadedImage
+                              .then((data) => {
+                                setProfileImageUrl(data);
+                                console.log(data);
+                              })
+                              .catch((err) => {
+                                setProfileImageUrl(
+                                  "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+                              });
+                          }
                         }}
                         className="w-fit"
                       />{" "}
@@ -3359,6 +4263,98 @@ const CoachIntake = ({ user }: any) => {
                       options={characteristicsList}
                     />
                   </div>
+                  <hr className="mt-2" />
+                  <div className="my-3 ">
+                    <p className="text-sm my-1">
+                      Please upload any personality assessment (e.g. DISC) or
+                      other profiles that you might have. It will be used for
+                      recommendation of the appropriate coaching style.
+                    </p>
+
+                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                      <input
+                        disabled={checkIfView === null ? false : true}
+                        // required={!checkIfEdit}
+                        type="file"
+                        className="w-full text-xs my-2"
+                        multiple
+                        name="optional_file"
+                        accept=".pdf,.docx"
+                        onChange={async (e) => {
+                          handleFileChange(e);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {/* @ts-ignore */}
+                  {optionalMediaData?.extracted_from_optional_file.length >
+                    0 && (
+                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                      {optionalMediaData?.extracted_from_optional_file.map(
+                        (item) => (
+                          <div className="flex flex-row justify-between items-center">
+                            <div className="flex flex-row items-center gap-2">
+                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                              <span
+                                className={`text-xs text-blue-500 truncate ${
+                                  item.isDeleted && "line-through"
+                                }`}
+                              >
+                                {item.fileName}
+                              </span>
+                            </div>
+                            {checkIfEdit && (
+                              <div className="flex flex-row gap-2 min-w-fit">
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={item.isDeleted}
+                                  onClick={() => {
+                                    deleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">Delete</span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Delete"
+                                    body={
+                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"outline"}
+                                  className="h-6 text-xs w-fit"
+                                  type="button"
+                                  disabled={!item.isDeleted}
+                                  onClick={() => {
+                                    undoDeleteOptionalMediaDataHandler(
+                                      item.fileName
+                                    );
+                                  }}
+                                >
+                                  <span className="max-sm:hidden">
+                                    Undo delete
+                                  </span>
+                                  <TooltipWrapper
+                                    className="hidden max-sm:block text-xs"
+                                    tooltipName="Undo delete"
+                                    body={
+                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                    }
+                                  />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                  <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please list your department affiliation.
@@ -3367,6 +4363,7 @@ const CoachIntake = ({ user }: any) => {
                       required
                       disabled={checkIfView === null ? false : true}
                       onValueChange={(value) => {
+                        setDataModified(true);
                         setDepartment(value);
                       }}
                       value={department}
@@ -3383,6 +4380,34 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </RadioGroup>
+                  </div>
+                  <div className="my-3">
+                    <p className="text-sm my-1">
+                      Please add the discussion topics (Separated by comma)
+                    </p>
+                    <div>
+                      <textarea
+                        rows={2}
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        value={discussionTopics}
+                        onChange={(e) => {
+                          setDataModified(true);
+                          setDiscussionTopics(e.target.value);
+                          handleDiscussionTopics(
+                            e.target.value,
+                            "discussionTopics"
+                          );
+                        }}
+                        placeholder="You can enter 4- 5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                      />
+                    </div>
+                    {Object.keys(error).includes("discussionTopics") && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["discussionTopics"]}
+                      </p>
+                    )}
                   </div>
                   <hr className="my-2" />
                   <div className="my-2">
@@ -3404,6 +4429,7 @@ const CoachIntake = ({ user }: any) => {
                         disabled={checkIfView === null ? false : true}
                         value={participantLevel}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setParticipantLevel(value);
                         }}
                       >
@@ -3431,6 +4457,7 @@ const CoachIntake = ({ user }: any) => {
                         required
                         value={coachMentInSameDep}
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setCochMentInSameDep(value);
                         }}
                       >
@@ -3459,14 +4486,15 @@ const CoachIntake = ({ user }: any) => {
                         value={outcomeSupported}
                         required
                         onValueChange={(value) => {
+                          setDataModified(true);
                           setOutcomeSupported(value);
                         }}
                       >
                         {[
-                          "Career advancement",
-                          "Skill development",
-                          "Introspection & reflection",
-                          "Networking & leadership",
+                          "Career Advancement",
+                          "Skill Development",
+                          "Introspection & Reflection",
+                          "Networking & Leadership",
                         ].map((val, i) => (
                           <div key={i} className="flex items-center space-x-2 ">
                             <RadioGroupItem
@@ -3483,6 +4511,38 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                    </div>
+                  </div>
+
+                  <div className="my-2 mb-3">
+                    <p className="text-sm my-1">
+                      Please describe in detail the challenges you believe the
+                      coach or mentor can help with.
+                    </p>
+                    <div>
+                      <textarea
+                        rows={2}
+                        disabled={checkIfView === null ? false : true}
+                        required={!checkIfEdit}
+                        value={challengesToHelp}
+                        onChange={(e) => {
+                          setDataModified(true);
+                          const inputValue = e.target.value;
+
+                          setChallengesToHelp(inputValue);
+                          handleProblemStatement(
+                            inputValue,
+                            "challengesToHelp"
+                          );
+                        }}
+                        placeholder=""
+                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                      />
+                      {Object.keys(error).includes("challengesToHelp") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["challengesToHelp"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -3511,7 +4571,7 @@ const CoachIntake = ({ user }: any) => {
                       <div className="flex flec-col">
                         {checkIfEdit ? (
                           <Button
-                            disabled={feedbackCreateLoading}
+                            disabled={feedbackCreateLoading || !dataModified}
                             className="h-8"
                           >
                             {" "}
@@ -3549,7 +4609,7 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                     </>
                   )}
-                  {checkIfEdit && (
+                  {/* {checkIfEdit && (
                     <div className="flex flex-row mt-2">
                       <Info className="h-4 w-4 mr-1 inline text-red-400" />
                       <p className=" w-fit text-xs font-semibold text-red-400">
@@ -3557,7 +4617,7 @@ const CoachIntake = ({ user }: any) => {
                         unless approved.
                       </p>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </form>
             </div>
@@ -3576,7 +4636,16 @@ const CoachIntake = ({ user }: any) => {
               <form
                 className="text-left"
                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                  createFeedbackSubmitHandler(e);
+                  e.preventDefault();
+                  const errors = Object.values(error).filter(
+                    //@ts-ignore
+                    (err: string) => err.length > 0
+                  );
+                  if (errors.length > 0) {
+                    toast.warning("Please enter the valid inputs.");
+                  } else {
+                    createFeedbackSubmitHandler(e);
+                  }
                 }}
               >
                 <div className="flex flex-col gap-2">
@@ -3636,11 +4705,11 @@ const CoachIntake = ({ user }: any) => {
                     value={profileBio}
                     required
                     disabled={checkIfView === null ? false : true}
-                    minLength={200}
-                    maxLength={1500}
                     onChange={(e) => {
-                      setProfileBio(e.target.value);
-                      handleWordLimit(e.target.value, 200, 1500, "Profile Bio");
+                      const inputValue = e.target.value;
+
+                      setProfileBio(inputValue);
+                      handleWordLimit(inputValue, 20, 50, "Profile Bio");
                     }}
                     placeholder="Passionate about personal growth and seeking guidance to overcome challenges and achieve my goals. Excited to work with a coach who can support me on this transformative journey..."
                     rows={3}
@@ -3652,6 +4721,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                   )}
                 </div>
+
                 <div className="my-3">
                   <p className="text-sm my-1">
                     Please enter your Current Projects
@@ -3661,12 +4731,14 @@ const CoachIntake = ({ user }: any) => {
                     disabled={checkIfView === null ? false : true}
                     required
                     onChange={(e) => {
-                      setCurrentProjects(e.target.value);
-                      handleWordLimitMin(e.target.value, 20, "currentProjects");
+                      const inputValue = e.target.value;
+
+                      setCurrentProjects(inputValue);
+                      handleWordLimit(inputValue, 50, 80, "currentProjects");
                     }}
                     placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
                     rows={3}
-                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                    className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                   />
                   {Object.keys(error).includes("currentProjects") && (
                     <p className="text-red-500 text-xs mt-1">
@@ -3674,6 +4746,31 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                   )}
                 </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please rate the characteristics/skills on which you will
+                    rate yourself near the lows.
+                  </p>
+                  <CharactericticsSelect
+                    disabled={checkIfView === null ? false : true}
+                    value={characteristicsRateLows}
+                    onCharacteristicsSelect={onCharacteristicsSelectLow}
+                    options={characteristicsList}
+                  />
+                </div>
+                <div className="my-3">
+                  <p className="text-sm my-1">
+                    Please rate the characteristics/skills on which you will
+                    rate yourself highly.
+                  </p>
+                  <CharactericticsSelect
+                    disabled={checkIfView === null ? false : true}
+                    value={characteristicsRateHigh}
+                    onCharacteristicsSelect={onCharacteristicsSelectHigh}
+                    options={characteristicsList}
+                  />
+                </div>
+
                 {!checkIfView && (
                   <>
                     <hr className="my-2" />
@@ -3701,7 +4798,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       {checkIfEdit ? (
                         <Button
-                          disabled={feedbackCreateLoading}
+                          disabled={feedbackCreateLoading || !dataModified}
                           className="h-8"
                         >
                           {" "}
@@ -3739,7 +4836,7 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   </>
                 )}
-                {checkIfEdit && (
+                {/* {checkIfEdit && (
                   <div className="flex flex-row mt-2">
                     <Info className="h-4 w-4 mr-1 inline text-red-400" />
                     <p className=" w-fit text-xs font-semibold text-red-400">
@@ -3747,7 +4844,7 @@ const CoachIntake = ({ user }: any) => {
                       unless approved.
                     </p>
                   </div>
-                )}
+                )} */}
               </form>
             </div>
           </div>
