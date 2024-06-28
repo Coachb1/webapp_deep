@@ -115,6 +115,13 @@ const LibraryTestsAccordian = ({
                       ) : (
                         <>{test.title}</>
                       )}
+                      {type === "requested" && (
+                        <>
+                          {test.assigned_to && (
+                            <AtSign className="h-3 w-3 ml-1 inline font-bold text-blue-500" />
+                          )}
+                        </>
+                      )}
                       {test.is_recommended && (
                         <Badge
                           variant={"secondary"}
