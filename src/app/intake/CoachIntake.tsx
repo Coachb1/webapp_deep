@@ -660,17 +660,21 @@ const CoachIntake = ({ user }: any) => {
 
             formdata.append(
               "voice_sample",
-              `${voiceSample === "yes" ? true : false}`
+              `${voiceSample.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append("coaching_for_fitment", coachmentSelect);
             formdata.append("coaching_level", participantLevel);
             formdata.append(
               "coach_same_department",
-              `${coachMentInSameDep === "Yes" ? true : false}`
+              `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append(
               "allow_coachee_to_create_session",
-              `${allowSessionNotes === "yes" ? true : false}`
+              `${allowSessionNotes.toLowerCase() === "yes" ? true : false}`
+            );
+            formdata.append(
+              "provide_answers_using_emojis",
+              `${provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append(
               "significant_challenges_and_solutions",
@@ -777,7 +781,7 @@ const CoachIntake = ({ user }: any) => {
             formdata.append("coaching_level", participantLevel);
             formdata.append(
               "coach_same_department",
-              `${coachMentInSameDep === "Yes" ? true : false}`
+              `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append("problem_statement", `${challengesToHelp}`);
 
@@ -824,7 +828,7 @@ const CoachIntake = ({ user }: any) => {
                     "2": {
                       coach:
                         "I want a coach & mentor someone from the same department.",
-                      cochee: coachMentInSameDep === "Yes" ? true : false,
+                      cochee: coachMentInSameDep.toLowerCase() === "yes" ? true : false,
                     },
                     "3": {
                       coach:
@@ -868,7 +872,7 @@ const CoachIntake = ({ user }: any) => {
                         : "https://platform.coachbots.com"
                     }`,
                     fitment_answer: `${participantLevel},${
-                      coachMentInSameDep === "Yes" ? true : false
+                      coachMentInSameDep.toLowerCase() === "yes" ? true : false
                     },${outcomeSupported}`,
                     fitment_data: {
                       options: {
@@ -910,13 +914,13 @@ const CoachIntake = ({ user }: any) => {
                         discussInCARformat,
                       journey_and_background: journeyAndBackground,
                       provide_answers_using_emojis: `${
-                        provideAnswersUsingEmojis === "yes" ? true : false
+                        provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
                       }`,
                       common_phrases_and_expressions: phrasesNExpressions,
                       significant_challenges_and_solutions:
                         significantChallenges,
                       allow_coachee_to_create_session: `${
-                        allowSessionNotes === "yes" ? true : false
+                        allowSessionNotes.toLowerCase() === "yes" ? true : false
                       }`,
                       fitment_answers: {
                         coachmentSelect,
@@ -1899,20 +1903,20 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
                 setVoiceSample(
-                  resultingBot.signature_bot.data.additional_data.voice_sample
+                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data.voice_sample)
                     ? "Yes"
                     : "No"
                 );
 
                 setProvideAnswersUsingEmojis(
-                  resultingBot.signature_bot.data.additional_data
-                    .provide_answers_using_emojis === true
+                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
+                    .provide_answers_using_emojis)
                     ? "Yes"
                     : "No"
                 );
                 setAllowSessionNotes(
-                  resultingBot.signature_bot.data.additional_data
-                    .allow_coachee_to_create_session === true
+                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
+                    .allow_coachee_to_create_session)
                     ? "Yes"
                     : "No"
                 );
@@ -1927,8 +1931,8 @@ const CoachIntake = ({ user }: any) => {
                 );
 
                 setCochMentInSameDep(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers[1]
+                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
+                    .fitment_answers[1])
                     ? "Yes"
                     : "No"
                 );
@@ -2060,7 +2064,7 @@ const CoachIntake = ({ user }: any) => {
 
                 setParticipantLevel(resultingBot.coaching_level);
                 setCochMentInSameDep(
-                  resultingBot.coach_same_department ? "Yes" : "No"
+                  [true, 'true','True'].includes(resultingBot.coach_same_department) ? "Yes" : "No"
                 );
 
                 setOutcomeSupported(resultingBot.supported_outcome);
