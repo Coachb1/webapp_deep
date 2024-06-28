@@ -5,6 +5,7 @@ import {
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
+  parseStringList,
 } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Coaches, { CoachesDataType } from "./Coaches";
@@ -71,13 +72,11 @@ const getClientUserInfo = async (
           return {
             isDemoUser: data.data.user_info[0].is_demo_user,
             isRestricted: data.data.user_info[0].is_restricted,
-            clientExpertise: data.data.user_info[0].coach_expertise.replace(
-              /\s/g,
-              ""
+            clientExpertise: parseStringList(
+              data.data.user_info[0].coach_expertise
             ),
-            clientDepartments: data.data.user_info[0].departments.replace(
-              /\s/g,
-              ""
+            clientDepartments: parseStringList(
+              data.data.user_info[0].departments
             ),
             restrictedPages: data.data.user_info[0].restricted_pages,
             restrictedFeatures: data.data.user_info[0].restricted_features,
