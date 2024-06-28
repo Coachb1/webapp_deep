@@ -237,7 +237,9 @@ const Profile = ({ user, helpModeText }: any) => {
           )}
           {selectedItem === "Email Signature" && <EmailSign user={user} />}
           {selectedItem === "My Connections" && <MyComnnections user={user} />}
-          {selectedItem === "Admin Reports" && <AdminReports user={user} />}
+          {selectedItem === "Admin Reports" && (
+            <AdminReports user={user} clientName={clientName} />
+          )}
           {selectedItem === "IDP" && <IDP user={user} />}
         </div>
       </div>

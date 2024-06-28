@@ -4,8 +4,9 @@ import { Link2 } from "lucide-react";
 import HelpMode from "@/components/HelpMode";
 import { reportsLinksSelector } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import DataIntegration from "./client-admin/DataIntegration";
 
-const AdminReports = ({ user }: any) => {
+const AdminReports = ({ user, clientName }: any) => {
   const HelpModeSteps = [
     {
       target: "#kudosreport",
@@ -127,6 +128,13 @@ const AdminReports = ({ user }: any) => {
             </>
           </Button>
         </>
+      </div>
+      <div className="m-4 h-[2px] bg-gray-400 rounded-xl" />
+      <div className="m-4 my-6">
+        <p className="text-base max-sm:text-sm font-semibold">Actions</p>
+        <div className="flex flex-row items-start gap-4 flex-wrap my-2">
+          <DataIntegration clientName={clientName} />
+        </div>
       </div>
     </div>
   );
