@@ -683,3 +683,10 @@ export function excludeSpecialCharacters(inputString: string) {
   const cleanedString = inputString.replace(regex, "");
   return cleanedString;
 }
+
+export const parseStringList = (str: any) => {
+  return str
+    ?.split(",")
+    .map((str: string) => str.trim())
+    .join(",");
+};
