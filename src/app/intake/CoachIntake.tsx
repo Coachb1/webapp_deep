@@ -225,7 +225,8 @@ const CoachIntake = ({ user }: any) => {
   const [mediaData, setMediaData] = useState<MediaData>();
   const [optionalMediaData, setOptionalMediaData] =
     useState<OptionalMediaData>();
-
+  const [updatedOptionalFile, setUpdatedOptionalFile] =
+    useState({});
   const [dataModified, setDataModified] = useState(false);
 
   const resetAllStates = () => {
@@ -1099,6 +1100,39 @@ const CoachIntake = ({ user }: any) => {
             formdata.forEach((value, key) => {
               formDataObject[key] = value;
             });
+            if (formType === 'coachee'){
+              // deleting optional file
+              let deletingOptionalFiles: string = "";
+              if (optionalMediaData?.extracted_from_optional_file) {
+                deletingOptionalFiles =
+                  optionalMediaData?.extracted_from_optional_file
+                    .map((item) => {
+                      if (item.isDeleted) {
+                        return item.fileName;
+                      }
+                    })
+                    .filter((item) => item !== undefined)
+                    .join(",");
+              }
+              interface UpdatedOptionalFile {
+                [key: string]: any;
+              }
+              if(deletingOptionalFiles){
+                console.log('del',deletingOptionalFiles,updatedOptionalFile)
+                let updateOptionalFile: UpdatedOptionalFile = { ...updatedOptionalFile }; // Create a shallow copy to avoid mutating the original object
+
+                if (deletingOptionalFiles) {
+                  deletingOptionalFiles.split(",").forEach(fileName => {
+                    delete updateOptionalFile[fileName];
+                  });
+                }
+
+                console.log(updateOptionalFile,formdata)
+
+                formDataObject['optional_file_data'] = JSON.stringify(updateOptionalFile);
+              }
+            }
+
 
             // Convert the object to JSON
             var formDataJSON = JSON.stringify(formDataObject);
@@ -2039,6 +2073,9 @@ const CoachIntake = ({ user }: any) => {
                     resultingBot.optional_file_data
                   )
                 );
+                if (resultingBot.optional_file_data){
+                  setUpdatedOptionalFile(resultingBot.optional_file_data);
+                }
               });
           });
       }
