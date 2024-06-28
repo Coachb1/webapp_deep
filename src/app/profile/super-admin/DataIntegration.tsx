@@ -67,18 +67,19 @@ const DataIntegration = ({ clientName }: { clientName: string }) => {
           <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
             <div className="w-full flex flex-col gap-2 items-start">
               <p className="block text-sm font-medium">
-                User Interaction data Webhook{" "}
+                User Interaction Data Webhook{" "}
               </p>
               <div className="w-full flex flex-row gap-2 items-center justify-center">
                 <Input
                   className="w-full text-blue-500"
+                  placeholder="Enter your webhook URL"
                   style={{ color: "#3b82f6" }}
                   onChange={(e) => {
                     setWebhookUrl(e.target.value);
                   }}
                 />
                 <Button
-                  disabled={loading}
+                  disabled={loading || webhookUrl.length === 0}
                   onClick={() => {
                     submitHandler();
                   }}
