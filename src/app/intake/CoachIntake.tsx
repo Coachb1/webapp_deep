@@ -4227,9 +4227,11 @@ const CoachIntake = ({ user }: any) => {
                             uploadedImage
                               .then((data) => {
                                 setProfileImageUrl(data);
+                                setDataModified(true)
                                 console.log(data);
                               })
                               .catch((err) => {
+                                setDataModified(true)
                                 setProfileImageUrl(
                                   "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
                                 );
