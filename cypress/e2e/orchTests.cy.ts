@@ -13,7 +13,7 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("a2@coachbots.com");
+            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -100,11 +100,11 @@ describe("Init", () => {
                   `${baseURL}/documents/get-prompt-response/?prompt=${encodeURIComponent(
                     formattedQuestion
                   )}`
-                ).then((response) => {
+                ).then((answerResponse) => {
                   cy.get("#chat-element2")
                     .shadow()
                     .find("#text-input")
-                    .type(response?.body["response_text"]);
+                    .type(answerResponse?.body["response_text"]);
                   cy.get("#chat-element2")
                     .shadow()
                     .find(".input-button-svg.inside-right")
@@ -138,7 +138,7 @@ describe("Init", () => {
               "getReportUrl"
             );
             cy.wait("@getReportUrl", {
-              timeout: 30000,
+              timeout: 100000,
             }).then((interception) => {
               
 

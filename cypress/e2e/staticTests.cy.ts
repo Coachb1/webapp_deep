@@ -3,6 +3,7 @@ const staticTestCodes = ["Q877O08", "Q9SSEH3"];
 describe("Init", () => {
   beforeEach(() => {
     cy.session("loggedInUser", () => {
+
       cy.visit("http://localhost:3000/");
       cy.contains("Login").click();
 
@@ -11,7 +12,7 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("a2@coachbots.com");
+            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -49,7 +50,6 @@ describe("Init", () => {
         .find(".input-button-svg.inside-right")
         .click();
 
-      //proceed yes
 
       cy.wait("@testInfo", {
         timeout: 30000,
@@ -57,7 +57,6 @@ describe("Init", () => {
         const testTitle = interception.response?.body.results[0].title;
         const testDescription =
           interception.response?.body.results[0].description;
-        // const questionsData = interception.response?.body.results[0].questions;
         const questions: string[] = [];
         interception.response?.body.results[0].questions.forEach(
           (item: any) => {
@@ -74,11 +73,7 @@ describe("Init", () => {
 
         cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
         questions.forEach((question, i) => {
-          // if (i !== 0) {
-          //   cy.wait("@testResponse", {
-          //     timeout: 50000,
-          //   });
-          // }
+         
           const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 100 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
           cy.request(
             "GET",
