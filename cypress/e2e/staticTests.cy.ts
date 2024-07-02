@@ -1,9 +1,10 @@
 import { baseURL } from "../fixtures/utils";
+
 const staticTestCodes = ["Q877O08", "Q9SSEH3"];
+
 describe("Init", () => {
   beforeEach(() => {
     cy.session("loggedInUser", () => {
-
       cy.visit("http://localhost:3000/");
       cy.contains("Login").click();
 
@@ -12,7 +13,9 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbots")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
+            cy.get('[data-testid="auth-email-field"]').type(
+              "xivij12069@hutov.com"
+            );
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -25,20 +28,20 @@ describe("Init", () => {
     });
   });
 
-  it("static tests", () => {
-    cy.visit("http://localhost:3000/content-library");
+  staticTestCodes.forEach((testCode, i) => {
+    it(`1 Static - ${testCode}`, () => {
+      cy.visit("http://localhost:3000/content-library");
 
-    //open the bot
-    cy.get(".chat-icon2").click();
+      //open the bot
+      cy.get(".chat-icon2").click();
 
-    //yes / no
-    cy.get("#chat-element2")
-      .shadow()
-      .find(".deep-chat-suggestion-button")
-      .contains("Yes")
-      .click();
+      //yes / no
+      cy.get("#chat-element2")
+        .shadow()
+        .find(".deep-chat-suggestion-button")
+        .contains("Yes")
+        .click();
 
-    staticTestCodes.forEach((testCode) => {
       // type the test code
       cy.get("#chat-element2").shadow().find("#text-input").type(testCode);
       cy.intercept("GET", `/api/v1/tests/?test_code=${testCode}`).as(
@@ -49,7 +52,6 @@ describe("Init", () => {
         .shadow()
         .find(".input-button-svg.inside-right")
         .click();
-
 
       cy.wait("@testInfo", {
         timeout: 30000,
@@ -73,7 +75,6 @@ describe("Init", () => {
 
         cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
         questions.forEach((question, i) => {
-         
           const formattedQuestion = `Please read Title: ${testTitle} and description: ${testDescription} and generate a short min 20 words max 100 word response for this question/phrase: ${question}. NOTE: Only give response there must be not any introductory message or heading.`;
           cy.request(
             "GET",
