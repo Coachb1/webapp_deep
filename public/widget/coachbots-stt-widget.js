@@ -5963,6 +5963,32 @@ loadExternalModule().then(() => {
     instructionsPaneList.innerHTML = list
   }
 
+  if(!user2){
+    if(window.location.href.includes("deep-dive")){
+      instructionsPane.innerHTML = `
+        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+          <ul id="instructions-list">
+              <li><strong>1. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+          </ul>
+        </div>
+      `
+    }
+
+    if(window.location.href.includes("feedback")){
+      instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
+         <ul id="instructions-list">
+              <li><strong>1. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+             <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+         </ul>
+       </div>
+     `
+    }
+  }
+
   if (window.innerWidth < 600) {
     chatContainer2.style.borderRadius = "0"
     chatContainer2.style.width = "100vw";
