@@ -8399,6 +8399,13 @@ loadExternalModule().then(() => {
                   }
                 }
 
+                if (interactionMode2 == 'audio'){
+                  signals.onResponse({
+                    html: "<p style='font-size: 14px;color: #991b1b;'>Please use <b>CoachTalk</b> widget for this type of scenario - as it supports audio analysis.</p>",
+                  });
+                  return;
+                }
+
                 if (Object.keys(snnipetConfigSTT).length > 0 ){
                   isImmersiveStt = snnipetConfigSTT.allowAudioInteraction === 'true';
                 } else{
