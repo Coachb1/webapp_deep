@@ -680,9 +680,17 @@ const SessionNotes = ({ user }: any) => {
                       New Comment <Plus className="ml-2 h-4 w-4" />
                     </Button>
                     {connectionsOptions.length === 0 && (
+                      <>
+                      {coacheeId ?(
+                        <p className="text-red-600 text-xs mt-2">
+                          You don't have any connections or coach didn't allow you to create comment.
+                        </p>
+                      ): (
                       <p className="text-red-600 text-xs mt-2">
                         You don't have any connections yet.
                       </p>
+                      )}
+                      </>
                     )}
                   </div>
                 )}
