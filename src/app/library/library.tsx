@@ -633,7 +633,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                                 : undefined
                                             }
                                             variant={"default"}
-                                            className="bg-teal-100 h-6 w-fit text-sm py-3 text-gray-600 mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
+                                            className="bg-teal-100 hover:bg-teal-50 h-6 w-fit text-sm py-3 text-gray-600 mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                           >
                                             <> EQ Area : {domains.domain}</>
                                           </Badge>
