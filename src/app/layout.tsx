@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { HelpModeProvider } from "@/lib/helpmodeContext";
@@ -10,7 +10,7 @@ import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Raleway({ subsets: ["latin"] });
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
@@ -126,7 +126,7 @@ export default async function RootLayout({
 
       <HelpModeProvider>
         <>
-          <body className={inter.className} suppressHydrationWarning={true}>
+          <body className={font.className} suppressHydrationWarning={true}>
             <>
               <ThemeProvider
                 attribute="class"

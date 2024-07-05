@@ -207,7 +207,7 @@ const CreateYourDeepDive = ({ user }: any) => {
           <div className="">
             <div className="flex flex-col gap-2">
               <div>
-                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                   Please enter your deep dive objective
                 </p>
                 <textarea
@@ -246,7 +246,7 @@ const CreateYourDeepDive = ({ user }: any) => {
               </div>
               <div className="flex flex-row  max-sm:flex-col w-full gap-2">
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Industry
                   </p>
                   <input
@@ -260,7 +260,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   />
                 </div>
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Department
                   </p>
                   <input
@@ -276,7 +276,7 @@ const CreateYourDeepDive = ({ user }: any) => {
               </div>
               <div className="flex flex-row max-sm:flex-col w-full gap-2">
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Respondent Heirarcy
                   </p>
                   <input
@@ -290,7 +290,7 @@ const CreateYourDeepDive = ({ user }: any) => {
                   />
                 </div>
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Respondent skillset
                   </p>
                   <input
@@ -306,7 +306,7 @@ const CreateYourDeepDive = ({ user }: any) => {
               </div>
               <div className="mt-2">
                 <div className="flex flex-row gap-2 items-center w-full">
-                  <p className="text-[16px] min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
+                  <p className="text-sm min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
                     Expiry Date
                   </p>
                   <Popover>

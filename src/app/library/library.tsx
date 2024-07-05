@@ -440,12 +440,12 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
               className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0 bg-white z-[10]  w-full"
             >
               <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
-                <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600">
+                <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600 w-full">
                   {" "}
-                  <span>Simulations & Roleplays</span>
+                  Simulations & Roleplays
                 </p>
               </div>
-              <div className="w-[80%] max-sm:w-[95%] text-center text-gray-700 text-sm max-sm:text-xs max-sm:px-8">
+              <div className="w-[80%] text-lg max-sm:w-[95%] text-center text-gray-700 max-sm:text-xs max-sm:px-8">
                 <span>
                   {" "}
                   Simulations and roleplays replicate real-world situations and
@@ -463,7 +463,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                   {!restrictedFeatures?.includes("EQ-Areas") && (
                     <Button
                       variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
+                      className={`h-8 max-sm:text-sm border-gray-600`}
                       onClick={() => {
                         document.getElementById("eq-tests")?.scrollIntoView({
                           behavior: "smooth",
@@ -483,7 +483,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                           });
                       }}
                       variant={"outline"}
-                      className={`h-8 max-sm:text-sm`}
+                      className={`h-8 max-sm:text-sm border-gray-600`}
                     >
                       Competency Based Power Skills
                     </Button>
@@ -647,7 +647,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                                   <Accordion
                                                     type="single"
                                                     collapsible
-                                                    className="w-full text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                                    className="w-full text-sm text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
                                                   >
                                                     {domains.tests.map(
                                                       (

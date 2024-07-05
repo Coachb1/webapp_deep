@@ -107,7 +107,7 @@ const TeamConnect = ({
           <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
             {coachId || coacheeId ? (
               <div className="w-full">
-                <div className="max-sm:text-sm">
+                <div className="text-sm max-sm:text-sm">
                   {" "}
                   How can you interact with{" "}
                   <span className="mr-2">

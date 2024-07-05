@@ -63,7 +63,7 @@ const FilterDropDown = ({
 
   return (
     <>
-      <div className="w-full flex items-center flex-row gap-2 max-sm:flex-wrap">
+      <div className="w-full flex items-center text-lg flex-row gap-2 max-sm:flex-wrap">
         {filtersCategory.map((filter: any) => (
           <>
             {filter.filterOptions?.length > 0 && (
@@ -75,7 +75,7 @@ const FilterDropDown = ({
                   >
                     <Button
                       variant="outline"
-                      className="h-8 border-2 border-blue-400 w-fit p-1 px-2 shadow-lg shadow-blue-200"
+                      className="h-8 text-lg border-2 border-blue-400 w-fit p-1 px-2 shadow-lg shadow-blue-200"
                     >
                       Profile Type <ChevronDownIcon className="h-4 w-5 ml-2" />
                     </Button>
@@ -87,7 +87,7 @@ const FilterDropDown = ({
                   >
                     <Button
                       variant="outline"
-                      className="h-8 w-fit p-1 px-2 border border-gray-200"
+                      className="h-8 text-lg w-fit p-1 px-2 border border-gray-200"
                     >
                       {filter.filterName}{" "}
                       <ChevronDownIcon className="h-4 w-5 ml-2" />
@@ -134,7 +134,7 @@ const FilterDropDown = ({
           />
           <label
             htmlFor={"recommended"}
-            className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+            className="text-lg  text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
           >
             {convertTextToCorrectFormat("AI Recommended")}
           </label>

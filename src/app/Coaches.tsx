@@ -52,6 +52,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
+import ReadMore from "@/components/ReadMore";
 
 export interface CoachesDataType {
   id: number;
@@ -1204,13 +1205,13 @@ const Coaches = ({
       </h1>
       <h1
         id="header-text"
-        className="mt-0 text-4xl font-bold text-gray-600 max-sm:text-2xl"
+        className="mt-0 text-6xl font-bold text-gray-600 max-sm:text-2xl"
       >
         {headings?.heading
           ? headings?.heading
           : "Coaching & Performance Workbench"}
       </h1>
-      <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
+      <p className="my-2 max-w-prose text-gray-700 text-2xl max-sm:text-sm max-sm:px-8">
         {" "}
         {headings?.subHeading
           ? headings?.subHeading
@@ -1226,14 +1227,14 @@ const Coaches = ({
               <DropdownMenuTrigger
                 disabled={buttonLoading}
                 asChild
-                className="border-none outline-none"
+                className="border-none outline-none "
               >
                 <div>
                   {" "}
                   <Button
                     disabled={buttonLoading}
                     variant={"outline"}
-                    className="h-fit w-fit"
+                    className="h-fit w-fit text-xl"
                   >
                     {" "}
                     <>
@@ -1420,7 +1421,7 @@ const Coaches = ({
       )}
       <div id="list" className="min-h-screen w-full max-sm:px-2">
         <div className="my-4">
-          <p className="font-semibold text-gray-500 max-sm:text-sm">
+          <p className="font-semibold text-xl text-gray-500 max-sm:text-sm">
             {headings?.tagLine
               ? headings.tagLine
               : "We enable deep and meaningful coaching conversations with AI assistance even when life gets busy!"}
@@ -1433,7 +1434,7 @@ const Coaches = ({
                 <Search className="mr-1 inline h-4 w-4" />
                 <input
                   placeholder="Search for Any Profile"
-                  className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+                  className="w-full border-l pl-2 text-lg outline-none max-sm:ml-1 max-sm:text-xs"
                   type="text"
                   onChange={(e) => {
                     console.log(e.target.value);
@@ -1450,7 +1451,7 @@ const Coaches = ({
                   checkedValues={parentCheckedValues}
                   onUpdateCheckedValues={handleUpdateCheckedValues}
                 />
-                <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
+                <p className="text-left text-lg max-sm:text-xs text-gray-600 mt-2">
                   This is a combination filter. It works when the result
                   satisfies each selection criterion.
                 </p>
@@ -1462,7 +1463,7 @@ const Coaches = ({
         {!restrictedFeatures?.includes("DirProfile-msg") && (
           <Badge
             variant={"secondary"}
-            className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
+            className="rounded-sm text-center text-base max-sm:text-xs font-normal"
           >
             Profiles that have listed emails indicate that those coaches have a
             email avatar that can respond as well. (AI responses, with 24 hour
@@ -1520,20 +1521,10 @@ const Coaches = ({
                           "@coachbots.com"}
                       </span>
                     )}
-                    {/* {(coach.profile_type === "icons_by_ai" ||
-                      coach.profile_type === "coachee" ||
-                      coach.profile_type === "mentee") && (
-                      <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs">
-                        Not Applicable
-                      </span>
-                    )} */}
                   </div>
                   <div
                     id={coach.id_for_target_selection}
-                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 ${
-                      coach.profile_type === "icons_by_ai" &&
-                      "border-gray-800 shadow-lg"
-                    }`}
+                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 border-gray-800 shadow-lg`}
                   >
                     <div className="">
                       <img
@@ -1686,8 +1677,8 @@ const Coaches = ({
                             )}
                         </div>
                       </div>
-                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
-                        {coach.description}
+                      <p className="my-1.5 tracking-wider text-left w-full text-lg font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
+                        <ReadMore text={coach.description} />
                       </p>
                       <div className="mt-4 flex flex-row flex-wrap gap-2">
                         {coach.profile_type !== "skill_bot" && (

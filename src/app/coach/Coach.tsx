@@ -342,10 +342,10 @@ const Coach = ({ user, renderType }: any) => {
             <div>
               {botScenarioCase === "icons_by_ai" ? (
                 <>
-                  <h1 className="text-2xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
+                  <h1 className="text-4xl mt-0 font-bold max-sm:text-xl max-lg:text-2xl text-gray-600 ">
                     {coachTagName}
                   </h1>
-                  <p className="my-2 font-semibold text-lg max-sm:text-sm text-gray-600">
+                  <p className="my-2 font-semibold text-2xl max-sm:text-sm text-gray-600">
                     {convertTextToCorrectFormat(coachName)}
                   </p>
                 </>

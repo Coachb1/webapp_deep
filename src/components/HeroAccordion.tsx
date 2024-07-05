@@ -41,9 +41,9 @@ const HeroAccordion = ({ tests, badgeText, user, id }: testTypes) => {
                       <AccordionItem
                         key={i}
                         value={`item-${i + 1}`}
-                        className={
-                          i === tests.length - 1 ? "border-none" : "border-b"
-                        }
+                        className={`text-sm
+                          ${i === tests.length - 1 ? "border-none" : "border-b"}
+                        `}
                       >
                         <AccordionTrigger className="text-left max-sm:text-xs">
                           <div>
