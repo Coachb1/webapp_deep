@@ -98,6 +98,7 @@ const CreateOwn = ({
   const [youtubeSearchResults, setYoutubeSearchResults] = useState<
     YoutubeResultsType[]
   >([]);
+  const [excludedIds, setExcludedIds] = useState<string[]>([]);
 
   const [curatedLearningSearchResults, setCuratedLearningSearchResults] =
     useState<YoutubeResultsType[]>([]);
@@ -297,6 +298,23 @@ const CreateOwn = ({
       //   });
     };
 
+    function enableDisableResultButton(excluded_button: string, is_disable=true ) {
+      // Get the button to exclude by its ID
+      excludedIds.push(excluded_button)
+      const youtubeComponent = document.getElementById("learning-results")
+      // Get all buttons
+      const allButtons = youtubeComponent!.querySelectorAll('button');
+
+      // Loop through all buttons
+      allButtons.forEach(button => {
+          // Check if the current button is not the one to exclude
+          if (!excludedIds.includes(button.id)) {
+              // Toggle the disabled property
+              button.disabled = is_disable;
+          }
+      });
+    }
+
     const generateYoutubeSummary = (choice: string) => {
       if (choice === "short") {
         setSummaryGenerationLoading(true);
@@ -331,6 +349,7 @@ const CreateOwn = ({
             toast.error("Error generating your summary, Please try again");
           }
           setSummaryGenerationLoading(false);
+          enableDisableResultButton(`${video_id}`,false)
         })
         .catch((err) => {
           console.error(err);
@@ -370,7 +389,9 @@ const CreateOwn = ({
                   className="h-8 border border-gray-200 max-sm:w-full"
                   onClick={() => {
                     generateYoutubeSummary("short");
+                    enableDisableResultButton(`${video_id}`);
                   }}
+                  id={`${video_id}`}
                 >
                   {summaryGenerationLoading ? (
                     <>
@@ -981,7 +1002,7 @@ const CreateOwn = ({
                             </div>
                           </form>
                         </div>
-                        <div className="w-[80%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
+                        <div id='learning-results' className="w-[80%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
                           {searchMode === "youtube" && (
                             <>
                               {createLoading ? (
