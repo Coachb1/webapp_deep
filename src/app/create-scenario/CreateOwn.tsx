@@ -355,7 +355,7 @@ const CreateOwn = ({
           <div className="text-sm max-sm:text-xs text-left text-gray-600 ml-2 max-sm:ml-0 max-sm:my-2 flex flex-col justify-between w-full">
             <div>
               <b className="my-1">{video_title}</b>
-              <p className="text-xs my-1">{video_description}</p>
+              <p className="text-sm my-1">{video_description}</p>
             </div>
             <div className="self-end w-full  flex flex-col max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
               <div className="flex flex-row max-sm:flex-col max-sm:w-full gap-2 self-end w-fit">
@@ -826,6 +826,7 @@ const CreateOwn = ({
                           .getElementById("simulation-creator")
                           ?.scrollIntoView({
                             behavior: "smooth",
+                            block: "center",
                           });
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
@@ -840,6 +841,7 @@ const CreateOwn = ({
                           .getElementById("team-connect")
                           ?.scrollIntoView({
                             behavior: "smooth",
+                            block: "center",
                           });
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
@@ -855,6 +857,7 @@ const CreateOwn = ({
                           .getElementById("deepdive-creator")
                           ?.scrollIntoView({
                             behavior: "smooth",
+                            block: "center",
                           });
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
@@ -869,6 +872,7 @@ const CreateOwn = ({
                           .getElementById("knowledge-bots")
                           ?.scrollIntoView({
                             behavior: "smooth",
+                            block: "center",
                           });
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
@@ -907,7 +911,7 @@ const CreateOwn = ({
                             }}
                             className="flex flex-col justify-center items-center mt-3"
                           >
-                            <div className="w-[80%] max-lg:w-[80%] max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
+                            <div className="w-[85%] max-lg:w-[80%] max-sm:w-fit mb-1 text-xs flex flex-row gap-2">
                               <Tabs
                                 className="w-fit self-start"
                                 value={searchMode}
@@ -937,7 +941,7 @@ const CreateOwn = ({
                                 </TabsList>
                               </Tabs>
                             </div>
-                            <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[80%] max-lg:w-[80%] max-sm:w-full mt-1">
+                            <div className="bg-white flex flex-row items-center p-1.5 rounded-md ring-1 shadow-md w-[85%] max-lg:w-[80%] max-sm:w-full mt-1">
                               <input
                                 placeholder="Please enter the context to create the scenario"
                                 className="pl-2 outline-none text-sm max-sm:text-xs max-sm:ml-1 w-full py-2 max-sm:py-1 "
@@ -981,7 +985,7 @@ const CreateOwn = ({
                             </div>
                           </form>
                         </div>
-                        <div className="w-[80%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
+                        <div className="w-[85%] max-lg:w-[85%] max-sm:w-full flex flex-col gap-2 mt-4">
                           {searchMode === "youtube" && (
                             <>
                               {createLoading ? (
@@ -1075,7 +1079,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="simulation-creator"
-                  className="pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
+                  className="  w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1117,7 +1121,7 @@ const CreateOwn = ({
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="team-connect"
-                      className="pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center"
+                      className="  w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                     ></div>
                     <div className="h-fit ">
                       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1159,7 +1163,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="deepdive-creator"
-                  className={`pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]  w-full flex flex-col items-center justify-center`}
+                  className={`  w-full flex flex-col items-center justify-center`} //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1195,7 +1199,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="knowledge-bots"
-                  className="pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh] w-full flex flex-col items-center justify-center"
+                  className=" w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1263,7 +1267,7 @@ const CreateOwn = ({
                                                               "border-b-0"
                                                             }`}
                                                           >
-                                                            <AccordionTrigger className="text-left max-sm:text-xs">
+                                                            <AccordionTrigger className="text-left text-sm max-sm:text-xs">
                                                               <div className="flex flex-col items-start">
                                                                 <span>
                                                                   {bot.bot_name}
@@ -1280,7 +1284,6 @@ const CreateOwn = ({
                                                             </AccordionTrigger>
                                                             <AccordionContent className="max-sm:text-xs">
                                                               <p className="text-left">
-                                                                {/* <b>Purpose :</b>{" "} */}
                                                                 {
                                                                   bot.description
                                                                 }

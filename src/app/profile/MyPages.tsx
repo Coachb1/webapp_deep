@@ -284,7 +284,7 @@ const MyPages = ({ user }: any) => {
                           variant={"secondary"}
                           className="h-6 text-xs w-fit"
                         >
-                          <span className="max-sm:hidden"> Code snippet</span>{" "}
+                          <span className="max-sm:hidden">Code snippet</span>{" "}
                           <TooltipWrapper
                             className="hidden max-sm:block text-xs"
                             tooltipName="Code snippet"
@@ -292,7 +292,7 @@ const MyPages = ({ user }: any) => {
                           />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                      <DialogContent className="w-[60%] max-w-[60%] max-sm:w-[90%] max-sm:max-w-[90%] max-sm:rounded-md">
                         <DialogHeader>
                           <DialogTitle>Code snippet for your bot</DialogTitle>
                           <DialogDescription>
@@ -369,31 +369,33 @@ const MyPages = ({ user }: any) => {
                       </DialogContent>
                     </Dialog>
                     {/* FOR VIEW MODE */}
-                    <Link
-                      href={
-                        intakeBotTypeLinksForView(
-                          botType.bot_type,
-                          bot.bot_id,
-                          userProfile?.uid,
-                          userProfile?.profile_type === "coach" &&
-                            userProfile?.is_mentor === true
-                            ? "coach-mentor"
-                            : userProfile?.profile_type
-                        )! + `&uid=${bot.uid}`
-                      }
+                    <Button
+                      variant={"secondary"}
+                      className="h-6 text-xs w-fit min-w-fit bg-blue-200 "
                     >
-                      <Button
-                        variant={"secondary"}
-                        className="h-6 text-xs w-fit bg-blue-200 "
+                      <Link
+                        href={
+                          intakeBotTypeLinksForView(
+                            botType.bot_type,
+                            bot.bot_id,
+                            userProfile?.uid,
+                            userProfile?.profile_type === "coach" &&
+                              userProfile?.is_mentor === true
+                              ? "coach-mentor"
+                              : userProfile?.profile_type
+                          )! + `&uid=${bot.uid}`
+                        }
                       >
                         <span className="max-sm:hidden">View</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="View"
-                          body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                          body={
+                            <View className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                          }
                         />
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                     {/* FOR EDIT MODE */}
                     <Button
                       variant={"secondary"}

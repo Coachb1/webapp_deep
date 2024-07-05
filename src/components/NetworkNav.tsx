@@ -46,7 +46,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
 
   return (
     <div
-      className={`fixed right-0 top-0 z-40 flex h-6 w-full items-center justify-end p-4 py-8   ${
+      className={`fixed right-0 top-0 z-40 flex h-6 w-full items-center justify-end p-4 py-8 text-base ${
         scrolled > 0 &&
         pathname !== "/library" &&
         pathname !== "/skill-bots" &&
@@ -59,7 +59,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         {!restrictedPages?.includes("Network-directory") && (
           <Button
             variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
+            className={` h-8 ${
               pathname === "/" ? "border border-gray-500 shadow-md" : ""
             } `}
             asChild
@@ -70,7 +70,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         {!restrictedPages?.includes("Explore") && (
           <Button
             variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
+            className={` h-8 ${
               pathname.includes("/content-library")
                 ? "border border-gray-500 shadow-md"
                 : ""
@@ -83,7 +83,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         {!restrictedPages?.includes("Library") && (
           <Button
             variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
+            className={` h-8 ${
               pathname.includes("/library")
                 ? "border border-gray-500 shadow-md"
                 : ""
@@ -96,7 +96,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         {!restrictedPages?.includes("Creator-studio") && (
           <Button
             variant={"outline"}
-            className={` h-8 max-sm:text-sm ${
+            className={` h-8 ${
               pathname.includes("/create-scenario")
                 ? "border border-gray-500 shadow-md"
                 : ""
@@ -167,7 +167,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               }}
               id="help-mode"
             />
-            <p className="text-sm max-sm:text-xs">Help mode</p>
+            <p className="">Help mode</p>
           </div>
           <div className="h-[20px] w-[2px] bg-gray-500"></div>
           <NavProfile user={user} />

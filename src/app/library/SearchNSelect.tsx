@@ -20,7 +20,11 @@ const SearchNSelect = ({
   return (
     <>
       <Select
-        className="w-full text-left"
+        className="w-full text-left text-sm ring-1 rounded-md"
+        style={{
+          height: "3rem",
+          fontSize: "18px",
+        }}
         showSearch
         virtual={false}
         placeholder={placeholder}

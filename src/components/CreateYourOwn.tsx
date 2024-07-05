@@ -249,7 +249,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
       <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
-            <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 my-2">
+            <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 my-2">
               Select your simulation type
             </p>
             <div className="flex flex-row items-center">
@@ -285,7 +285,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
             <div className="flex flex-col gap-2">
               <div className="flex flex-row max-sm:flex-col w-full gap-2 mt-2">
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Objective
                   </p>
                   <input
@@ -299,7 +299,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   />
                 </div>
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Industry
                   </p>
                   <input
@@ -315,7 +315,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
               </div>
               <div className="flex flex-row max-sm:flex-col w-full gap-2">
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Department
                   </p>
                   <input
@@ -329,7 +329,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   />
                 </div>
                 <div className="w-full">
-                  <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                  <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
                     Key Stakeholders
                   </p>
                   <input
@@ -344,7 +344,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                 </div>
               </div>
               <div>
-                <p className="text-[16px] text-left font-semibold max-sm:text-xs text-gray-600 ">
+                <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 ">
                   Please enter the situation that you want to practice
                 </p>
                 <textarea
@@ -428,8 +428,8 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                     <b className="my-1 text-gray-400">
                       {i === 0 ? "Simulation" : "Role play"}
                     </b>
-                    <p className="text-sm mt-3 font-semibold">{test?.title}</p>
-                    <p className="text-[12px] mb-2">{test?.description}</p>
+                    <p className="text-xl mt-3 font-semibold">{test?.title}</p>
+                    <p className="text-sm mt-2 mb-2">{test?.description}</p>
                   </div>
                   <div className="flex justify-end mt-2">
                     <CopyToClipboard

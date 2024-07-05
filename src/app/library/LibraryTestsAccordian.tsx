@@ -61,7 +61,7 @@ const LibraryTestsAccordian = ({
             <AccordionItem
               key={i}
               value={`item-short-${i + 1}`}
-              className={`${
+              className={`text-sm ${
                 i + 1 === tests.length ? "border-none" : "border-b"
               } ${
                 attemptedTests.includes(test.test_code) ? "bg-gray-200" : ""
@@ -125,7 +125,7 @@ const LibraryTestsAccordian = ({
             <AccordionItem
               key={i}
               value={`item-standard-${i + 1}`}
-              className={`${
+              className={`text-sm ${
                 i + 1 === tests.length ? "border-none" : "border-b"
               } ${
                 attemptedTests.includes(test.test_code) ? "bg-gray-200" : ""
