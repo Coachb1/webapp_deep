@@ -53,6 +53,8 @@ import { UseHelpMode } from "@/lib/helpmodeContext";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
 import ReadMore from "@/components/ReadMore";
+import { GoogleGeminiEffectComponent } from "@/components/ui/GoogleGeminiEffect";
+import { Div } from "@/components/ui/moving-border";
 
 export interface CoachesDataType {
   id: number;
@@ -1167,7 +1169,7 @@ const Coaches = ({
   const { helpModeState, updateHelpModeState } = UseHelpMode();
 
   return (
-    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
+    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50">
       {helpModeState && (
         <Joyride
           spotlightClicks
@@ -1194,232 +1196,258 @@ const Coaches = ({
           steps={HelpModeSteps}
         />
       )}
-      <h1
+      {/* <h1
         id="heading"
-        className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]"
+        className=" mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092] z-10"
       >
         <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
           COACH
         </span>
         BOTS
-      </h1>
-      <h1
+      </h1> */}
+      <GoogleGeminiEffectComponent
+        title="Coaching & Performance Workbench"
+        description="Peer to Peer network of leaders for growth."
+        className="-pt-96"
+        cta={
+          <>
+            {!restrictedFeatures?.includes("Join-the-network") && (
+              <>
+                <div
+                  id="join-the-network"
+                  className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs z-10"
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      disabled={buttonLoading}
+                      asChild
+                      className="border-none outline-none "
+                    >
+                      <div>
+                        {" "}
+                        <Button
+                          disabled={buttonLoading}
+                          variant={"outline"}
+                          className="h-fit w-fit text-xl"
+                        >
+                          {" "}
+                          <>
+                            {" "}
+                            Join the network{" "}
+                            <ChevronDown className="ml-2 h-4 w-4" />
+                          </>
+                        </Button>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                            disabled={
+                              allCoaches.length > 0 ||
+                              (canJoinAs?.length !== 0 &&
+                                !["coach", "mentor"].includes(canJoinAs))
+                            }
+                          >
+                            <Link href={"/intake/?type=coach"}>
+                              Join as Coach or Mentor{" "}
+                              {allCoaches.length > 0 ? (
+                                <>
+                                  {allCoaches[0]?.is_approved ? (
+                                    <>
+                                      {coachId ? (
+                                        <Badge className="ml-2">
+                                          Already Joined
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {allCoaches[0]?.profile_type ===
+                                        "coach" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "mentor" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "coach-mentor" ? (
+                                        <Badge className="ml-2">
+                                          Requested
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              ) : canJoinAs?.length !== 0 &&
+                                !["coach", "mentor"].includes(canJoinAs) ? (
+                                <Badge
+                                  variant={"secondary"}
+                                  className="ml-2 border border-gray-400"
+                                >
+                                  Not Allowed
+                                </Badge>
+                              ) : null}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            disabled={
+                              allCoaches.length > 0 ||
+                              (canJoinAs?.length !== 0 &&
+                                !["coachee", "mentee"].includes(canJoinAs))
+                            }
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                          >
+                            <Link href={"/intake/?type=coachee"}>
+                              Join as Coachee or Mentee
+                              {allCoaches.length > 0 ? (
+                                <>
+                                  {allCoaches[0]?.is_approved ? (
+                                    <>
+                                      {coacheeId ? (
+                                        <Badge className="ml-2">
+                                          Already Joined
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {allCoaches[0]?.profile_type ===
+                                        "coachee" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "mentee" ? (
+                                        <Badge className="ml-2">
+                                          Requested
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              ) : canJoinAs?.length !== 0 &&
+                                !["coachee", "mentee"].includes(canJoinAs) ? (
+                                <Badge
+                                  variant={"secondary"}
+                                  className="ml-2 border border-gray-400"
+                                >
+                                  Not Allowed
+                                </Badge>
+                              ) : null}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            disabled={feedbackBots.length > 0}
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                          >
+                            <Link href={"/intake/?type=feedback"}>
+                              Join Feedback Network
+                              {feedbackBots.length > 0 && (
+                                <>
+                                  {feedbackBots[0]?.signature_bot
+                                    .is_approved ? (
+                                    <Badge className="ml-2">
+                                      Already Joined
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="ml-2">Requested</Badge>
+                                  )}
+                                </>
+                              )}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </>
+            )}
+          </>
+        }
+      />
+      {/* <h1
         id="header-text"
-        className="mt-0 text-6xl font-bold text-gray-600 max-sm:text-2xl"
+        className="mt-0 text-6xl font-bold text-gray-600 max-sm:text-2xl z-10"
       >
         {headings?.heading
           ? headings?.heading
           : "Coaching & Performance Workbench"}
       </h1>
-      <p className="my-2 max-w-prose text-gray-700 text-2xl max-sm:text-sm max-sm:px-8">
+      <p className="my-2 max-w-prose text-gray-700 text-2xl max-sm:text-sm max-sm:px-8 z-10">
         {" "}
         {headings?.subHeading
           ? headings?.subHeading
           : "Peer to Peer network of leaders for growth."}
-      </p>
-      {!restrictedFeatures?.includes("Join-the-network") && (
-        <>
-          <div
-            id="join-the-network"
-            className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs"
-          >
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                disabled={buttonLoading}
-                asChild
-                className="border-none outline-none "
-              >
-                <div>
-                  {" "}
-                  <Button
-                    disabled={buttonLoading}
-                    variant={"outline"}
-                    className="h-fit w-fit text-xl"
-                  >
-                    {" "}
-                    <>
-                      {" "}
-                      Join the network <ChevronDown className="ml-2 h-4 w-4" />
-                    </>
-                  </Button>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                      disabled={
-                        allCoaches.length > 0 ||
-                        (canJoinAs?.length !== 0 &&
-                          !["coach", "mentor"].includes(canJoinAs))
-                      }
-                    >
-                      <Link href={"/intake/?type=coach"}>
-                        Join as Coach or Mentor{" "}
-                        {allCoaches.length > 0 ? (
-                          <>
-                            {allCoaches[0]?.is_approved ? (
-                              <>
-                                {coachId ? (
-                                  <Badge className="ml-2">Already Joined</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {allCoaches[0]?.profile_type === "coach" ||
-                                allCoaches[0]?.profile_type === "mentor" ||
-                                allCoaches[0]?.profile_type ===
-                                  "coach-mentor" ? (
-                                  <Badge className="ml-2">Requested</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            )}
-                          </>
-                        ) : canJoinAs?.length !== 0 &&
-                          !["coach", "mentor"].includes(canJoinAs) ? (
-                          <Badge
-                            variant={"secondary"}
-                            className="ml-2 border border-gray-400"
-                          >
-                            Not Allowed
-                          </Badge>
-                        ) : null}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
+      </p> */}
 
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      disabled={
-                        allCoaches.length > 0 ||
-                        (canJoinAs?.length !== 0 &&
-                          !["coachee", "mentee"].includes(canJoinAs))
-                      }
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                    >
-                      <Link href={"/intake/?type=coachee"}>
-                        Join as Coachee or Mentee
-                        {allCoaches.length > 0 ? (
-                          <>
-                            {allCoaches[0]?.is_approved ? (
-                              <>
-                                {coacheeId ? (
-                                  <Badge className="ml-2">Already Joined</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {allCoaches[0]?.profile_type === "coachee" ||
-                                allCoaches[0]?.profile_type === "mentee" ? (
-                                  <Badge className="ml-2">Requested</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            )}
-                          </>
-                        ) : canJoinAs?.length !== 0 &&
-                          !["coachee", "mentee"].includes(canJoinAs) ? (
-                          <Badge
-                            variant={"secondary"}
-                            className="ml-2 border border-gray-400"
-                          >
-                            Not Allowed
-                          </Badge>
-                        ) : null}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      disabled={feedbackBots.length > 0}
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                    >
-                      <Link href={"/intake/?type=feedback"}>
-                        Join Feedback Network
-                        {feedbackBots.length > 0 && (
-                          <>
-                            {feedbackBots[0]?.signature_bot.is_approved ? (
-                              <Badge className="ml-2">Already Joined</Badge>
-                            ) : (
-                              <Badge className="ml-2">Requested</Badge>
-                            )}
-                          </>
-                        )}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </>
-      )}
-      <div id="list" className="min-h-screen w-full max-sm:px-2">
+      <div id="list" className="min-h-screen w-full max-sm:px-2 z-10">
         <div className="my-4">
           <p className="font-semibold text-xl text-gray-500 max-sm:text-sm">
             {headings?.tagLine
@@ -1524,7 +1552,7 @@ const Coaches = ({
                   </div>
                   <div
                     id={coach.id_for_target_selection}
-                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 border-gray-800 shadow-lg`}
+                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 border-gray-800 shadow-lg bg-white`}
                   >
                     <div className="">
                       <img

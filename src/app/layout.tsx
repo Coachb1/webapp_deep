@@ -9,6 +9,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { Boxes, BoxesCore } from "@/components/ui/background-boxes";
 
 const font = Raleway({ subsets: ["latin"] });
 

@@ -31,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import CopyToClipboard from "@/components/CopyToClipboard";
+import { Div } from "@/components/ui/moving-border";
 
 interface Test {
   title: string;
@@ -644,58 +645,62 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                                             <div>
                                               <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
                                                 <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                                  <Accordion
-                                                    type="single"
-                                                    collapsible
-                                                    className="w-full text-sm text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                                  >
-                                                    {domains.tests.map(
-                                                      (
-                                                        test: TestDataType,
-                                                        i: number
-                                                      ) => (
-                                                        <AccordionItem
-                                                          key={i}
-                                                          value={`item-${
-                                                            Number(i) + 1
-                                                          }`}
-                                                          className={`${
-                                                            i ===
-                                                            domains.tests
-                                                              .length -
-                                                              1
-                                                              ? "border-none"
-                                                              : "border-b"
-                                                          } ${
-                                                            attemptedTests.includes(
-                                                              test.test_code
-                                                            )
-                                                              ? "bg-gray-200"
-                                                              : ""
-                                                          } px-4`}
-                                                        >
-                                                          <AccordionTrigger className="text-left max-sm:text-xs">
-                                                            <div>
-                                                              {test.title}
-                                                            </div>
-                                                          </AccordionTrigger>
-                                                          <AccordionContent className="max-sm:text-xs">
-                                                            <p className="text-left">
-                                                              {test.description}
-                                                            </p>
-                                                            <div className="flex justify-end mt-2">
-                                                              <CopyToClipboard
-                                                                textToCopy={
-                                                                  test.test_code
+                                                  <Div>
+                                                    <Accordion
+                                                      type="single"
+                                                      collapsible
+                                                      className="w-full text-sm text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                                    >
+                                                      {domains.tests.map(
+                                                        (
+                                                          test: TestDataType,
+                                                          i: number
+                                                        ) => (
+                                                          <AccordionItem
+                                                            key={i}
+                                                            value={`item-${
+                                                              Number(i) + 1
+                                                            }`}
+                                                            className={`${
+                                                              i ===
+                                                              domains.tests
+                                                                .length -
+                                                                1
+                                                                ? "border-none"
+                                                                : "border-b"
+                                                            } ${
+                                                              attemptedTests.includes(
+                                                                test.test_code
+                                                              )
+                                                                ? "bg-gray-200"
+                                                                : ""
+                                                            } px-4`}
+                                                          >
+                                                            <AccordionTrigger className="text-left max-sm:text-xs">
+                                                              <div>
+                                                                {test.title}
+                                                              </div>
+                                                            </AccordionTrigger>
+                                                            <AccordionContent className="max-sm:text-xs">
+                                                              <p className="text-left">
+                                                                {
+                                                                  test.description
                                                                 }
-                                                                copyType="code"
-                                                              />
-                                                            </div>
-                                                          </AccordionContent>
-                                                        </AccordionItem>
-                                                      )
-                                                    )}
-                                                  </Accordion>
+                                                              </p>
+                                                              <div className="flex justify-end mt-2">
+                                                                <CopyToClipboard
+                                                                  textToCopy={
+                                                                    test.test_code
+                                                                  }
+                                                                  copyType="code"
+                                                                />
+                                                              </div>
+                                                            </AccordionContent>
+                                                          </AccordionItem>
+                                                        )
+                                                      )}
+                                                    </Accordion>
+                                                  </Div>
                                                 </div>
                                               </div>
                                             </div>
