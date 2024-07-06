@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import Select, { MultiValue } from "react-select";
 import { ClientUserType } from "@/lib/types";
 import { Radio, Tooltip } from "antd";
+import { Div } from "./ui/moving-border";
 
 interface OptionType {
   value: string;
@@ -245,8 +246,8 @@ const CreateYourOwn = ({ user, clientName }: any) => {
   };
 
   return (
-    <div className="w-full">
-      <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
+    <div className="rounded-xlbb">
+      <div className="w-full max-sm:w-[100%] mt-4 text-left">
         <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
           <div>
             <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 my-2">

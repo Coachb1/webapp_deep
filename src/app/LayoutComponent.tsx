@@ -13,6 +13,7 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
+import { Boxes } from "@/components/ui/background-boxes";
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
@@ -247,15 +248,18 @@ const LayoutComponent = ({
                   !pathname.includes("/subject-expert") &&
                   !pathname.includes("/knowledge-bot") &&
                   !pathname.includes("/deep-dive") ? (
-                    <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen !z-[800]">
-                      <div className="z-[999]">
-                        <NetworkNav
-                          restrictedPages={restrictedPages}
-                          user={user}
-                        />
+                    <>
+                      <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
+                        {/* <Boxes className="z-0" /> */}
+                        <div className="z-[999]">
+                          <NetworkNav
+                            restrictedPages={restrictedPages}
+                            user={user}
+                          />
+                        </div>
+                        <div className="z-[999]">{children}</div>
                       </div>
-                      {children}
-                    </div>
+                    </>
                   ) : (
                     <>{children}</>
                   )}

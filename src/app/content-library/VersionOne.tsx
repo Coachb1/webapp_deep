@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 
 import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
+import { Div } from "@/components/ui/moving-border";
 
 const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
@@ -146,147 +147,151 @@ const VersionOne = ({ user, helpModeText }: any) => {
         <Badge className="mt-2 -mb-6 px-4 z-10 rounded-md bg-gray-300 hover:bg-gray-300 text-gray-800">
           System Demo
         </Badge>
-        <div
-          id="system-demos"
-          className="text-lg w-[80%] max-sm:w-[90%] mt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
-        >
-          <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("managerplus")}
-            >
-              Manager+
-            </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("ijp")}
-            >
-              IJP/Succession
-            </Button>
+        <div className="bg-transparent h-4" />
+        <div className="w-[80%] max-sm:w-[90%]">
+          <Div
+            id="system-demos"
+            className="text-lg bg-white w-[full]  pt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+          >
+            <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("managerplus")}
+              >
+                Manager+
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("reflection")}
-            >
-              Reflection
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("ijp")}
+              >
+                IJP/Succession
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("diversityPlus")}
-            >
-              Diversity+
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("reflection")}
+              >
+                Reflection
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("qp")}
-            >
-              Questions Pro
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("diversityPlus")}
+              >
+                Diversity+
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("pms")}
-            >
-              PMS Enabled
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("qp")}
+              >
+                Questions Pro
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("pitch")}
-            >
-              Pitch+
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("pms")}
+              >
+                PMS Enabled
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("one-to-one")}
-            >
-              1:1 Check-ins | Dynamic
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("pitch")}
+              >
+                Pitch+
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("tech")}
-            >
-              Technology
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("one-to-one")}
+              >
+                1:1 Check-ins | Dynamic
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("sales")}
-            >
-              Sales
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("tech")}
+              >
+                Technology
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("service-c")}
-            >
-              Service/Consulting
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("sales")}
+              >
+                Sales
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("360-feedback")}
-            >
-              360 Feedback
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("service-c")}
+              >
+                Service/Consulting
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("case-study")}
-            >
-              Case study | Dynamic
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("360-feedback")}
+              >
+                360 Feedback
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("presentation")}
-            >
-              Presentation
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("case-study")}
+              >
+                Case study | Dynamic
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("onboarding")}
-            >
-              Onboarding
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("presentation")}
+              >
+                Presentation
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("meetings")}
-            >
-              Meetings | Group Discussion
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("onboarding")}
+              >
+                Onboarding
+              </Button>
 
-            <Button
-              variant={"secondary"}
-              className="border border-gray-200 h-8 hover:cursor-pointer"
-              onClick={() => scrollToView("english-support")}
-            >
-              English Support
-            </Button>
-          </div>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("meetings")}
+              >
+                Meetings | Group Discussion
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer"
+                onClick={() => scrollToView("english-support")}
+              >
+                English Support
+              </Button>
+            </div>
+          </Div>
         </div>
       </MaxWidthWrapper>
       <div className="flex flex-row max-sm:flex-col w-[80%] max-lg:w-[75%] max-sm:w-full mx-auto">

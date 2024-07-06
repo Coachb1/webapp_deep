@@ -364,6 +364,7 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
         test_type: item.test_type,
         is_recommended: item.is_recommended,
         is_micro: item.is_micro,
+        interaction_mode: item.interaction_mode,
       };
     });
 
