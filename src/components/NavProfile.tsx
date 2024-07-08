@@ -13,11 +13,11 @@ import {
   LogoutLink,
   RegisterLink,
 } from "@kinde-oss/kinde-auth-nextjs/components";
-import { LogOut, User, UserCircle2 } from "lucide-react";
+import { ExternalLink, Globe, LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-const NavProfile = ({ user }: any) => {
+const NavProfile = ({ user, restrictedPages }: any) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -50,14 +50,31 @@ const NavProfile = ({ user }: any) => {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              // onClick={() => {
-              //   router.push("/profile");
-              // }}
-              asChild
-            >
+            <DropdownMenuItem asChild>
               <Link href={"/profile"} className="w-full">
                 <User className="h-4 w-4 mr-2" /> My Account
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className={`${
+                pathname === "/content-library" ? "bg-gray-200" : null
+              }`}
+              asChild
+            >
+              <Link href={"/content-library"}>
+                <Globe className="h-4 w-4 mr-2 " /> Explore
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={"https://open.coachbots.com/"}
+                target="_blank"
+                className="w-full"
+              >
+                <ExternalLink className="h-4 w-4 mr-2 text-blue-500" /> Open
+                Learning
               </Link>
             </DropdownMenuItem>
 

@@ -67,7 +67,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <Link href={"/"}>Network Directory</Link>
           </Button>
         )}
-        {!restrictedPages?.includes("Explore") && (
+        {/* {!restrictedPages?.includes("Explore") && (
           <Button
             variant={"outline"}
             className={` h-8 ${
@@ -79,7 +79,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
           >
             <Link href={"/content-library"}>Explore</Link>
           </Button>
-        )}
+        )} */}
         {!restrictedPages?.includes("Library") && (
           <Button
             variant={"outline"}
@@ -123,7 +123,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                 <Link href={"/"}> Network directory</Link>
               </DropdownMenuItem>
             )}
-            {!restrictedPages?.includes("Explore") && (
+            {/* {!restrictedPages?.includes("Explore") && (
               <DropdownMenuItem
                 className={`${
                   pathname === "/content-library" ? "bg-gray-200" : null
@@ -132,7 +132,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               >
                 <Link href={"/content-library"}>Explore</Link>
               </DropdownMenuItem>
-            )}
+            )} */}
             {!restrictedPages?.includes("Library") && (
               <DropdownMenuItem
                 className={`${
@@ -170,7 +170,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             <p className="">Help mode</p>
           </div>
           <div className="h-[20px] w-[2px] bg-gray-500"></div>
-          <NavProfile user={user} />
+          <NavProfile restrictedPages={restrictedPages} user={user} />
         </div>
       )}
     </div>

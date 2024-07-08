@@ -24,7 +24,6 @@ import {
 import { toast } from "sonner";
 import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Meteors } from "@/components/ui/meteors";
-import { LampContainer } from "@/components/ui/lamp";
 
 const howItWorks = [
   {

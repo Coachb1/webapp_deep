@@ -22,6 +22,8 @@ import {
   pms,
   pitch,
   englishSupport,
+  DSA,
+  DataScience,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -152,12 +154,12 @@ const VersionOne = ({ user, helpModeText }: any) => {
         <div className="w-[80%] max-sm:w-[90%]">
           <Div
             id="system-demos"
-            className="text-lg bg-white w-[full]  pt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+            className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
           >
             <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("managerplus")}
               >
                 Manager+
@@ -165,7 +167,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("ijp")}
               >
                 IJP/Succession
@@ -173,7 +175,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("reflection")}
               >
                 Reflection
@@ -181,7 +183,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("diversityPlus")}
               >
                 Diversity+
@@ -189,7 +191,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("qp")}
               >
                 Questions Pro
@@ -197,7 +199,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("pms")}
               >
                 PMS Enabled
@@ -205,7 +207,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("pitch")}
               >
                 Pitch+
@@ -213,7 +215,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("one-to-one")}
               >
                 1:1 Check-ins | Dynamic
@@ -221,15 +223,29 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("tech")}
               >
                 Technology
               </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("dsa")}
+              >
+                DSA
+              </Button>
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("data-sc")}
+              >
+                Data Science
+              </Button>
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("sales")}
               >
                 Sales
@@ -237,7 +253,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("service-c")}
               >
                 Service/Consulting
@@ -245,7 +261,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("360-feedback")}
               >
                 360 Feedback
@@ -253,7 +269,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("case-study")}
               >
                 Case study | Dynamic
@@ -261,7 +277,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("presentation")}
               >
                 Presentation
@@ -269,7 +285,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("onboarding")}
               >
                 Onboarding
@@ -277,7 +293,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("meetings")}
               >
                 Meetings | Group Discussion
@@ -285,7 +301,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
 
               <Button
                 variant={"secondary"}
-                className="border border-gray-200 h-8 hover:cursor-pointer"
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("english-support")}
               >
                 English Support
@@ -358,6 +374,20 @@ const VersionOne = ({ user, helpModeText }: any) => {
               badgeText="Technology"
               user={user ? true : false}
               tests={Technology}
+            />
+          </div>
+          <div id="dsa">
+            <HeroAccordion
+              badgeText="DSA"
+              user={user ? true : false}
+              tests={DSA}
+            />
+          </div>
+          <div id="data-sc">
+            <HeroAccordion
+              badgeText="Data Science"
+              user={user ? true : false}
+              tests={DataScience}
             />
           </div>
           <div id="sales">
