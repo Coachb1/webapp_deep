@@ -23,6 +23,8 @@ import {
 } from "@/lib/utils";
 import { toast } from "sonner";
 import { NavProfileWoProfile } from "@/components/NavProfile";
+import { Meteors } from "@/components/ui/meteors";
+import { LampContainer } from "@/components/ui/lamp";
 
 const howItWorks = [
   {
@@ -304,6 +306,7 @@ const Coach = ({ user, renderType }: any) => {
   const CoachBotBody = () => {
     return (
       <div suppressHydrationWarning={true}>
+        <Meteors className="" number={50} />
         {/* {enrolled ? (
           <> */}
         {renderType === "static" && (
@@ -358,6 +361,7 @@ const Coach = ({ user, renderType }: any) => {
                   </h1>
                 </>
               )}
+
               <div className="my-4 max-sm:text-xs text-[#2f2323]">
                 <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs">
                   {" "}
@@ -526,6 +530,7 @@ const Coach = ({ user, renderType }: any) => {
             {/* <div id="wtu">
               <WhereToUse />
             </div> */}
+
             {botScenarioCase !== "icons_by_ai" && (
               <div className="w-full" id="howItWorks">
                 <div className={`w-full flex justify-center`}>

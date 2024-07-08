@@ -691,3 +691,13 @@ export const parseStringList = (str: any) => {
     .map((str: string) => str.trim())
     .join(",");
 };
+
+export const handleLinks = (link: string) => {
+  if (link.includes("playground")) {
+    return link.replace("https://playground.coachbots.com", "");
+  } else if (link.includes("platform")) {
+    return link.replace("https://platform.coachbots.com", "");
+  } else {
+    return link;
+  }
+};

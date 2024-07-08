@@ -8,6 +8,8 @@ import CopyToClipboard from "./CopyToClipboard";
 import { Badge } from "./ui/badge";
 import { Test } from "@/lib/test";
 import { Div } from "./ui/moving-border";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface testTypes {
   tests: Test[];

@@ -260,10 +260,16 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   {
                     label: "Short",
                     value: "short",
+                    style: {
+                      fontSize: "18px",
+                    },
                   },
                   {
                     label: "Standard",
                     value: "standard",
+                    style: {
+                      fontSize: "18px",
+                    },
                   },
                 ]}
                 onChange={(e) => {
@@ -277,6 +283,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
                   backgroundColor: "white",
                   color: "black",
                   padding: "8px",
+                  fontSize: "18px",
                 }}
                 title="Short scenarios are three questions long, while standard scenarios are in six questions conversational format."
               >
