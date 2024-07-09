@@ -55,7 +55,7 @@ import { UseHelpMode } from "@/lib/helpmodeContext";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
 import ReadMore from "@/components/ReadMore";
-import { GoogleGeminiEffectComponent } from "@/components/ui/GoogleGeminiEffect";
+import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, HoverEffect } from "@/components/ui/card-hover-effect";
@@ -1190,16 +1190,7 @@ const Coaches = ({
           steps={HelpModeSteps}
         />
       )}
-      {/* <h1
-        id="heading"
-        className=" mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092] z-10"
-      >
-        <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
-          COACH
-        </span>
-        BOTS
-      </h1> */}
-      <GoogleGeminiEffectComponent
+      <GoogleGeminiEffectND
         title="Coaching & Performance Workbench"
         description="Peer to Peer network of leaders for growth."
         className="-pt-96"

@@ -32,6 +32,17 @@ import {
 } from "@/components/ui/accordion";
 import CopyToClipboard from "@/components/CopyToClipboard";
 import { Div } from "@/components/ui/moving-border";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card } from "@/components/ui/card-hover-effect";
+import { GoogleGeminiEffectLibrary } from "@/components/ui/GoogleGeminiEffect";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Test {
   title: string;
@@ -426,6 +437,8 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
     // SetFilteredNewManagerTests(filtered);
   };
 
+  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   return (
     <div>
       {/* <div className="fixed w-full flex items-center top-0 right-0 justify-end p-4 h-6 py-8 !z-[800]">
@@ -433,81 +446,91 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
       </div> */}
 
       <HelpMode steps={HelpModeSteps} />
-      <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
-        <div>
-          <div>
-            <div
-              id="category-navbar"
-              className="flex  flex-col gap-2 mb-4 bg-red justify-center items-center sticky top-0 bg-white z-[10]  w-full"
-            >
-              <div className="pb-1 max-sm:pb-0 flex flex-row justify-center items-center text-center mt-[70px] ">
-                <p className="text-4xl font-bold max-sm:text-2xl flex text-gray-600 w-full">
-                  {" "}
-                  Simulations & Roleplays
-                </p>
-              </div>
-              <div className="w-[80%] text-lg max-sm:w-[95%] text-center text-gray-700 max-sm:text-xs max-sm:px-8">
-                <span>
-                  {" "}
-                  Simulations and roleplays replicate real-world situations and
+      <MaxWidthWrapper>
+        {" "}
+        <GoogleGeminiEffectLibrary
+          title="Simulations & Roleplays"
+          description="Simulations and roleplays replicate real-world situations and
                   interactions, evaluating our aptitude for success in the
                   workplace. By mimicking scenarios we may encounter, they
                   assess our interpersonal skills and provide detailed feedback
-                  on our performance and potential areas for improvement.
-                </span>
-              </div>
+                  on our performance and potential areas for improvement."
+          className="w-full"
+          cta={
+            <div
+              id="category-navbar"
+              className="flex  flex-col gap-2 mb-4 justify-center items-center sticky top-0 z-[10]  w-full mt-[-2rem]"
+            >
+              <div className="pb-1 h-20 max-sm:pb-0 flex flex-row justify-center items-center text-center"></div>
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div
                   id="nav1"
                   className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
                 >
-                  {!restrictedFeatures?.includes("EQ-Areas") && (
-                    <Button
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm border-gray-600`}
-                      onClick={() => {
-                        document.getElementById("eq-tests")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
-                      }}
-                    >
-                      Emotional Quotient Areas
-                    </Button>
-                  )}
-                  {!restrictedFeatures?.includes("Competency-library") && (
-                    <Button
-                      onClick={() => {
-                        document
-                          .getElementById("competency-tests")
-                          ?.scrollIntoView({
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={`h-8 border-gray-600`}
+                        onClick={() => {
+                          document.getElementById("eq-tests")?.scrollIntoView({
                             behavior: "smooth",
                           });
-                      }}
-                      variant={"outline"}
-                      className={`h-8 max-sm:text-sm border-gray-600`}
-                    >
-                      Competency Based Power Skills
-                    </Button>
-                  )}
-                  {!restrictedFeatures?.includes("Client-library") && (
-                    <>
-                      {categorisedTests.map((category) => (
-                        <Button
+                        }}
+                      >
+                        Simulations Modules
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="text-center">
+                      {!restrictedFeatures?.includes("EQ-Areas") && (
+                        <DropdownMenuItem
+                          className=""
                           onClick={() => {
                             document
-                              .getElementById(category.category_name)
+                              .getElementById("eq-tests")
                               ?.scrollIntoView({
                                 behavior: "smooth",
                               });
                           }}
-                          variant={"outline"}
-                          className={`h-8 max-sm:text-sm`}
                         >
-                          {convertTextToCorrectFormat(category.category_name)}
-                        </Button>
-                      ))}
-                    </>
-                  )}
+                          Emotional Quotient Areas
+                        </DropdownMenuItem>
+                      )}
+                      {!restrictedFeatures?.includes("Competency-library") && (
+                        <DropdownMenuItem
+                          className=""
+                          onClick={() => {
+                            document
+                              .getElementById("competency-tests")
+                              ?.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                          }}
+                        >
+                          Competency Based Power Skills
+                        </DropdownMenuItem>
+                      )}
+                      {!restrictedFeatures?.includes("Client-library") && (
+                        <>
+                          {categorisedTests.map((category) => (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                document
+                                  .getElementById(category.category_name)
+                                  ?.scrollIntoView({
+                                    behavior: "smooth",
+                                  });
+                              }}
+                            >
+                              {convertTextToCorrectFormat(
+                                category.category_name
+                              )}
+                            </DropdownMenuItem>
+                          ))}
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
 
                 <>
@@ -551,177 +574,214 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                   </div>
                 </>
               </div>
-
-              <hr className=" h-[3px] bg-gray-400 w-full" />
-              <div className="bg-white h-[10px] w-full" />
             </div>
-
+          }
+        />
+      </MaxWidthWrapper>
+      <main className="bg-white min-h-[100vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
+        <div>
+          <div>
             <div
               id="eq-tests"
-              className="pt-[42vh] mt-[-40vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh]  w-full flex flex-col items-center justify-center"
+              className="pt-[10vh] w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
               <MaxWidthWrapper className="flex pt-2 flex-col items-center justify-center text-center">
                 {!restrictedFeatures?.includes("EQ-Areas") && (
-                  <>
-                    <div
-                      id="eq-tests"
-                      className="flex flex-col max-sm:flex-col w-full mx-auto"
-                    >
-                      {EQTestsCategorised.length > 0 &&
-                        EQTestsCategorised.map((category, index) => (
-                          <>
-                            <div
-                              key={index}
-                              id={category.category_name}
-                              className="w-full flex flex-col items-center justify-center"
+                  <div
+                    id="eq-tests"
+                    className="flex flex-col max-sm:flex-col w-full mx-auto"
+                  >
+                    {EQTestsCategorised.length > 0 &&
+                      EQTestsCategorised.map((category, index) => (
+                        <>
+                          <div
+                            key={index}
+                            id={category.category_name}
+                            className="w-full flex flex-col items-center justify-center"
+                          >
+                            <h1
+                              id="eq-cat"
+                              className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
                             >
-                              <h1
-                                id="eq-cat"
-                                className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md"
-                              >
-                                {/* {convertTextToCorrectFormat(category.category_name)} */}
-                                Emotional Quotient Areas
-                              </h1>
-                              <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
-                                <Info
-                                  color="#9ca3af"
-                                  className="h-4 w-4 inline text-gray-600 mr-2"
-                                />{" "}
-                                <span>
-                                  {" "}
-                                  Grayed bars indicate already attempted
-                                  simulations
-                                </span>
-                              </div>
+                              Emotional Quotient Areas
+                            </h1>
+                            <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
+                              <Info
+                                color="#9ca3af"
+                                className="h-4 w-4 inline text-gray-600 mr-2"
+                              />{" "}
+                              <span>
+                                {" "}
+                                Grayed bars indicate already attempted
+                                simulations
+                              </span>
+                            </div>
 
-                              <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
-                                <SearchNSelect
-                                  placeholder="Select by Simulation domain"
-                                  onSearchHandler={(value) =>
-                                    onDomainSearchHandlerNewManager(
-                                      value,
-                                      category
-                                    )
-                                  }
-                                  onDomainSelectHandler={(value) =>
-                                    onDomainSelectHandlerNewManager(
-                                      value,
-                                      category
-                                    )
-                                  }
-                                  optionDomains={
-                                    category.domainOptionsForFilter
-                                  }
-                                />
-                              </div>
+                            <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
+                              <SearchNSelect
+                                placeholder="Select by Simulation domain"
+                                onSearchHandler={(value) =>
+                                  onDomainSearchHandlerNewManager(
+                                    value,
+                                    category
+                                  )
+                                }
+                                onDomainSelectHandler={(value) =>
+                                  onDomainSelectHandlerNewManager(
+                                    value,
+                                    category
+                                  )
+                                }
+                                optionDomains={category.domainOptionsForFilter}
+                              />
+                            </div>
 
-                              <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
-                                {(
-                                  filteredTestsData[category.category_name] ||
-                                  category.tests_data
-                                ).map((domains, domainIndex) => (
-                                  <div key={domainIndex}>
-                                    {domains.tests.length > 0 && (
-                                      <>
-                                        <div
-                                          className={`w-full flex justify-center`}
+                            <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
+                              {(
+                                filteredTestsData[category.category_name] ||
+                                category.tests_data
+                              ).map((domains, domainIndex) => (
+                                <div key={domainIndex}>
+                                  {domains.tests.length > 0 && (
+                                    <>
+                                      <div
+                                        className={`w-full flex justify-center`}
+                                      >
+                                        <Badge
+                                          id={
+                                            domainIndex === 0
+                                              ? "sl-aw"
+                                              : undefined
+                                          }
+                                          variant={"default"}
+                                          className="bg-teal-100 hover:bg-teal-50 h-6 w-fit text-sm py-3 text-gray-600 mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
                                         >
-                                          <Badge
-                                            id={
-                                              domainIndex === 0
-                                                ? "sl-aw"
-                                                : undefined
-                                            }
-                                            variant={"default"}
-                                            className="bg-teal-100 hover:bg-teal-50 h-6 w-fit text-sm py-3 text-gray-600 mb-8 mt-8 max-sm:mt-8 max-sm:text-xs truncate "
-                                          >
-                                            <> EQ Area : {domains.domain}</>
-                                          </Badge>
-                                        </div>
+                                          <> EQ Area : {domains.domain}</>
+                                        </Badge>
+                                      </div>
 
-                                        <div className="w-full">
-                                          <div className="relative isolate mx-auto">
-                                            <div>
-                                              <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
-                                                <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                                  <Div>
-                                                    <Accordion
-                                                      type="single"
-                                                      collapsible
-                                                      className="w-full text-sm text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
-                                                    >
-                                                      {domains.tests.map(
-                                                        (
-                                                          test: TestDataType,
-                                                          i: number
-                                                        ) => (
-                                                          <AccordionItem
-                                                            key={i}
-                                                            value={`item-${
-                                                              Number(i) + 1
-                                                            }`}
-                                                            className={`${
-                                                              i ===
-                                                              domains.tests
-                                                                .length -
-                                                                1
-                                                                ? "border-none"
-                                                                : "border-b"
-                                                            } ${
-                                                              attemptedTests.includes(
-                                                                test.test_code
-                                                              )
-                                                                ? "bg-gray-200"
-                                                                : ""
-                                                            } px-4`}
-                                                          >
-                                                            <AccordionTrigger className="text-left max-sm:text-xs">
-                                                              <div>
-                                                                {test.title}
-                                                              </div>
-                                                            </AccordionTrigger>
-                                                            <AccordionContent className="max-sm:text-xs">
-                                                              <p className="text-left">
-                                                                {
-                                                                  test.description
-                                                                }
-                                                              </p>
-                                                              <div className="flex justify-end mt-2">
-                                                                <CopyToClipboard
-                                                                  textToCopy={
-                                                                    test.test_code
-                                                                  }
-                                                                  copyType="code"
-                                                                />
-                                                              </div>
-                                                            </AccordionContent>
-                                                          </AccordionItem>
-                                                        )
+                                      <div className="w-full">
+                                        <div className="relative isolate mx-auto">
+                                          <div>
+                                            <div className="mx-auto w-full mt-[-1.5rem] max-sm:w-[100%] z-50">
+                                              <div className="rounded-2xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                                <Div>
+                                                  <div
+                                                    key={0}
+                                                    className="relative group block p-2 h-full w-full bg-white rounded-2xl"
+                                                    onMouseEnter={() =>
+                                                      setHoveredIndex(
+                                                        domainIndex
+                                                      )
+                                                    }
+                                                    onMouseLeave={() =>
+                                                      setHoveredIndex(null)
+                                                    }
+                                                  >
+                                                    <AnimatePresence>
+                                                      {hoveredIndex ===
+                                                        domainIndex && (
+                                                        <motion.span
+                                                          className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-2xl"
+                                                          layoutId="hoverBackground"
+                                                          initial={{
+                                                            opacity: 0,
+                                                          }}
+                                                          animate={{
+                                                            opacity: 1,
+                                                            transition: {
+                                                              duration: 0.15,
+                                                            },
+                                                          }}
+                                                          exit={{
+                                                            opacity: 0,
+                                                            transition: {
+                                                              duration: 0.15,
+                                                              delay: 0.2,
+                                                            },
+                                                          }}
+                                                        />
                                                       )}
-                                                    </Accordion>
-                                                  </Div>
-                                                </div>
+                                                    </AnimatePresence>
+                                                    <Card className="p-0 rounded-2xl border">
+                                                      <Accordion
+                                                        type="single"
+                                                        collapsible
+                                                        className="w-full text-sm text-gray-500 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                                      >
+                                                        {domains.tests.map(
+                                                          (
+                                                            test: TestDataType,
+                                                            i: number
+                                                          ) => (
+                                                            <AccordionItem
+                                                              key={i}
+                                                              value={`item-${
+                                                                Number(i) + 1
+                                                              }`}
+                                                              className={`${
+                                                                i ===
+                                                                domains.tests
+                                                                  .length -
+                                                                  1
+                                                                  ? "border-none"
+                                                                  : "border-b"
+                                                              } ${
+                                                                attemptedTests.includes(
+                                                                  test.test_code
+                                                                )
+                                                                  ? "bg-gray-200"
+                                                                  : ""
+                                                              } px-4`}
+                                                            >
+                                                              <AccordionTrigger className="text-left max-sm:text-xs">
+                                                                <div>
+                                                                  {test.title}
+                                                                </div>
+                                                              </AccordionTrigger>
+                                                              <AccordionContent className="max-sm:text-xs">
+                                                                <p className="text-left">
+                                                                  {
+                                                                    test.description
+                                                                  }
+                                                                </p>
+                                                                <div className="flex justify-end mt-2">
+                                                                  <CopyToClipboard
+                                                                    textToCopy={
+                                                                      test.test_code
+                                                                    }
+                                                                    copyType="code"
+                                                                  />
+                                                                </div>
+                                                              </AccordionContent>
+                                                            </AccordionItem>
+                                                          )
+                                                        )}
+                                                      </Accordion>
+                                                    </Card>
+                                                  </div>
+                                                </Div>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
-                                      </>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              ))}
                             </div>
-                          </>
-                        ))}
-                    </div>
-                  </>
+                          </div>
+                        </>
+                      ))}
+                  </div>
                 )}
                 {!restrictedFeatures?.includes("Competency-library") && (
                   <>
                     <div
                       id="competency-tests"
-                      className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh] w-full flex flex-col items-center justify-center"
+                      className="pt-[10vh] w-full flex flex-col items-center justify-center"
                     ></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
@@ -816,7 +876,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                       >
                         <div
                           id={category.category_name}
-                          className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                          className="pt-[10vh] w-full flex flex-col items-center justify-center"
                         ></div>
                         <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                           {convertTextToCorrectFormat(category.category_name)}
@@ -893,10 +953,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                 )}
                 {!restrictedFeatures?.includes("Assigned-scenarios") && (
                   <>
-                    <div
-                      id="assigned-tests"
-                      className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
-                    ></div>
+                    <div id="assigned-tests" className="pt-[10vh]"></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
                         Assigned Scenarios
@@ -952,7 +1009,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                   <>
                     <div
                       id="requested-tests"
-                      className="pt-[42vh]  max-sm:pt-[50vh] max-sm:mt-[-45vh] mt-[-32vh]  w-full flex flex-col items-center justify-center"
+                      className="pt-[10vh]  w-full flex flex-col items-center justify-center"
                     ></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
@@ -982,7 +1039,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                             <div className="relative isolate mx-auto">
                               <div>
                                 <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
-                                  <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
+                                  <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%] mb-20">
                                     {requestedScenarios.length > 0 ? (
                                       <LibraryTestsAccordian
                                         tests={requestedScenarios}

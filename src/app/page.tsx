@@ -143,10 +143,7 @@ const getDirectoryProfiles = async (
 
       updatedResponseData = updatedResponseData.map(
         (coachData: CoachesDataType) => {
-          if (
-            recommendationProfileIDs &&
-            recommendationProfileIDs.includes(coachData.profile_id)
-          ) {
+          if (recommendationProfileIDs?.includes(coachData?.profile_id)) {
             return { ...coachData, is_recommended: true };
           } else {
             return coachData;

@@ -128,26 +128,24 @@ export default async function RootLayout({
       <HelpModeProvider>
         <>
           <body className={font.className} suppressHydrationWarning={true}>
-            <>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <AntdRegistry>
-                  <Providers>
-                    <LayoutComponent
-                      restrictedPages={restrictedPages}
-                      user={user}
-                      children={children}
-                      isDemoUser={isDemoUser}
-                      isRestricted={isRestricted}
-                    />
-                  </Providers>
-                </AntdRegistry>
-              </ThemeProvider>
-            </>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AntdRegistry>
+                <Providers>
+                  <LayoutComponent
+                    restrictedPages={restrictedPages}
+                    user={user}
+                    children={children}
+                    isDemoUser={isDemoUser}
+                    isRestricted={isRestricted}
+                  />
+                </Providers>
+              </AntdRegistry>
+            </ThemeProvider>
             <Toaster
               theme="light"
               closeButton
