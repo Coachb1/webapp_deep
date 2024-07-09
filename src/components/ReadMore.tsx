@@ -11,9 +11,10 @@ const ReadMore: React.FC<ReadMoreProps> = ({ text, maxWords = 70 }) => {
 
   const words = text.split(" ");
   const shouldShowReadMore = words.length > maxWords;
+  const ellipsis = shouldShowReadMore ? "..." : "";
   const displayedText = isExpanded
     ? text
-    : words.slice(0, maxWords).join(" ") + (shouldShowReadMore ? "..." : "");
+    : words.slice(0, maxWords).join(" ") + ellipsis;
 
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
