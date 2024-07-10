@@ -28,6 +28,8 @@ import { baseURL, basicAuth } from "@/lib/utils";
 import NetworkNav from "@/components/NetworkNav";
 import { toast } from "sonner";
 import { LampContainer } from "@/components/ui/lamp";
+import { Div } from "@/components/ui/moving-border";
+import BorderShadow from "@/components/ui/border-shadow";
 
 interface Message {
   question: string;
@@ -665,33 +667,40 @@ const Feedback = ({ user, renderType }: any) => {
                 <div className="relative isolate mx-auto">
                   <div>
                     <div className="z-50 mx-auto mt-[-1.5rem] max-w-3xl px-6 max-sm:w-[100%] lg:px-8">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
+                      <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                        <Div
+                          className="bg-white text-gray-800"
+                          containerClassName="w-full"
                         >
-                          {dynamicHowItWorks.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === dynamicHowItWorks.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
+                          <BorderShadow>
+                            <Accordion
+                              type="single"
+                              collapsible
+                              className="w-full text-gray-500 max-sm:p-4 "
                             >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="text-left max-sm:text-xs">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+                              {dynamicHowItWorks.map((test, i) => (
+                                <AccordionItem
+                                  key={i}
+                                  value={`item-${i + 1}`}
+                                  className={`${
+                                    i === dynamicBenefits.length - 1
+                                      ? "border-none"
+                                      : "border-b"
+                                  } px-2`}
+                                >
+                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                    <div>
+                                      <b>{test.heading}</b>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent className="text-left max-sm:text-xs">
+                                    <p> {test.description}</p>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              ))}
+                            </Accordion>
+                          </BorderShadow>
+                        </Div>
                       </div>
                     </div>
                   </div>
@@ -711,33 +720,40 @@ const Feedback = ({ user, renderType }: any) => {
                 <div className="relative isolate mx-auto">
                   <div>
                     <div className="z-50 mx-auto mt-[-1.5rem] max-w-3xl px-6 max-sm:w-[100%] lg:px-8">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
+                      <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                        <Div
+                          className="bg-white text-gray-800"
+                          containerClassName="w-full"
                         >
-                          {dynamicBenefits.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === dynamicBenefits.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
+                          <BorderShadow>
+                            <Accordion
+                              type="single"
+                              collapsible
+                              className="w-full text-gray-500 max-sm:p-4 "
                             >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="text-left max-sm:text-xs">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+                              {dynamicBenefits.map((test, i) => (
+                                <AccordionItem
+                                  key={i}
+                                  value={`item-${i + 1}`}
+                                  className={`${
+                                    i === dynamicBenefits.length - 1
+                                      ? "border-none"
+                                      : "border-b"
+                                  } px-2`}
+                                >
+                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                    <div>
+                                      <b>{test.heading}</b>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent className="text-left max-sm:text-xs">
+                                    <p> {test.description}</p>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              ))}
+                            </Accordion>
+                          </BorderShadow>
+                        </Div>
                       </div>
                     </div>
                   </div>
