@@ -59,6 +59,7 @@ import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, HoverEffect } from "@/components/ui/card-hover-effect";
+import { ThreeDCard } from "@/components/ui/ThreeDCard";
 
 export interface CoachesDataType {
   id: number;
@@ -1191,8 +1192,16 @@ const Coaches = ({
         />
       )}
       <GoogleGeminiEffectND
-        title="Coaching & Performance Workbench"
-        description="Peer to Peer network of leaders for growth."
+        title={
+          headings?.heading
+            ? headings?.heading
+            : "Coaching & Performance Workbench"
+        }
+        description={
+          headings?.subHeading
+            ? headings?.subHeading
+            : "Peer to Peer network of leaders for growth."
+        }
         className="-pt-96"
         cta={
           <>
@@ -1417,20 +1426,6 @@ const Coaches = ({
           </>
         }
       />
-      {/* <h1
-        id="header-text"
-        className="mt-0 text-6xl font-bold text-gray-600 max-sm:text-2xl z-10"
-      >
-        {headings?.heading
-          ? headings?.heading
-          : "Coaching & Performance Workbench"}
-      </h1>
-      <p className="my-2 max-w-prose text-gray-700 text-2xl max-sm:text-sm max-sm:px-8 z-10">
-        {" "}
-        {headings?.subHeading
-          ? headings?.subHeading
-          : "Peer to Peer network of leaders for growth."}
-      </p> */}
 
       <div id="list" className="min-h-screen w-full max-sm:px-2 z-10">
         <div className="my-4">
@@ -1501,7 +1496,7 @@ const Coaches = ({
               </div>
             </div>
           )}
-          <div className={cn("grid grid-cols-1 py-10")}></div>
+          <div className="w-full"> </div>
           <div id="participant-listing">
             {!loading &&
               coachesData.length > 0 &&
@@ -1531,7 +1526,76 @@ const Coaches = ({
                       )}
                     </AnimatePresence>
                     <Card className="p-0">
-                      <div id={coach.profile_id} className="">
+                      <ThreeDCard
+                        coacheeId={coacheeId}
+                        coachId={coachId}
+                        coach={coach}
+                        likeComponent={
+                          <div className="mt-4">
+                            <LikeComponent
+                              profile_id={coach.profile_id}
+                              likesInfo={coach.admirer_ids}
+                            />
+                          </div>
+                        }
+                        reviewComponent={
+                          <>
+                            {" "}
+                            {coach.profile_type !== "coachee" &&
+                              coach.profile_type !== "mentee" &&
+                              !restrictedFeatures?.includes("Ratings") && (
+                                <ReviewComponent
+                                  id={
+                                    coach.id_for_target_selection ===
+                                      "first_coach_profile" &&
+                                    coach.feedback_wall !== null
+                                      ? "reviews"
+                                      : undefined
+                                  }
+                                  stars={coach.rating}
+                                  totalRatings={coach.total_rating}
+                                  coachId={coach.profile_id}
+                                />
+                              )}
+                          </>
+                        }
+                        userId={userId}
+                        restrictedFeatures={restrictedFeatures}
+                        requestConnectionComponent={
+                          <>
+                            {coach.status === "accepted" ? (
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                              >
+                                Connected
+                              </Button>
+                            ) : (
+                              <>
+                                {(coach.profile_type === "coach" ||
+                                  coach.profile_type === "mentor" ||
+                                  coach.profile_type === "coach-mentor") && (
+                                  <>
+                                    <>
+                                      {coacheeId.length > 0 && (
+                                        <>
+                                          <RequestionConnection
+                                            requestStatus={coach.status}
+                                            coachId={coach.profile_id}
+                                            stateCoachId={coachId}
+                                          />
+                                        </>
+                                      )}
+                                    </>
+                                  </>
+                                )}
+                              </>
+                            )}
+                          </>
+                        }
+                      />
+                      {/* <div id={coach.profile_id} className="">
                         <div className="relative top-[0px] z-[999] flex w-full flex-row justify-between">
                           <span
                             className={`z-[1] ml-4 mt-2 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] ${
@@ -1801,7 +1865,7 @@ const Coaches = ({
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </Card>
                   </div>
                 </>
