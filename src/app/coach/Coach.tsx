@@ -458,29 +458,6 @@ const Coach = ({ user, renderType }: any) => {
               )}
             </div>
             <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-              {/* <Link target="_blank" href={coachProfileLink}>
-                    <div className="relative group cursor-pointer">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                      <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                        <div className="space-y-2">
-                          <Button
-                            variant={"secondary"}
-                            className="border border-gray-200 h-8 hover:cursor-pointer w-fit"
-                          >
-                            Profile {renderType !== "dynamic" && "(sample)"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Link> */}
-              {/* <Link href={"#wtu"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Where to use
-                </Button>
-              </Link> */}
               {botScenarioCase !== "icons_by_ai" && (
                 <Link href={"#howItWorks"}>
                   <Button
@@ -492,16 +469,6 @@ const Coach = ({ user, renderType }: any) => {
                 </Link>
               )}
 
-              {/* {feedbackBotId && (
-                <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
-                  <Button
-                    variant={"secondary"}
-                    className="border border-gray-200 h-8 hover:cursor-pointer"
-                  >
-                    Feedback center
-                  </Button>
-                </Link>
-              )} */}
               {botScenarioCase !== "icons_by_ai" && (
                 <Link href={"#benefits"}>
                   <Button
@@ -512,25 +479,7 @@ const Coach = ({ user, renderType }: any) => {
                   </Button>
                 </Link>
               )}
-              {/* <Link target="_blank" href={coachBookLink}>
-                    <div className="relative group cursor-pointer">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                      <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                        <div className="space-y-2">
-                          <Button
-                            variant={"secondary"}
-                            className="border border-gray-200 h-8 hover:cursor-pointer"
-                          >
-                            Book me {renderType !== "dynamic" && "(sample)"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Link> */}
             </div>
-            {/* <div id="wtu">
-              <WhereToUse />
-            </div> */}
 
             {botScenarioCase !== "icons_by_ai" && (
               <div className="w-full" id="howItWorks">
@@ -659,22 +608,6 @@ const Coach = ({ user, renderType }: any) => {
           </div>
         </div>
       </div>
-      // ) : (
-      //   <>
-      //     <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
-      //       <NetworkNav user={user} />
-      //     </div>
-      //     <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-      //       <div className="flex flex-col items-center justify-center">
-      //         <p className="font-semibold text-sm">
-      //           You have not enrolled as a program participant. Please enroll
-      //           and try again.
-      //         </p>
-      //       </div>
-      //     </div>
-      //   </>
-      // )}
-      // </>
     );
   };
   return (

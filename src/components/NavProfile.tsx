@@ -73,7 +73,7 @@ const NavProfile = ({ user }: any) => {
                 className="w-full"
               >
                 <ExternalLink className="h-4 w-4 mr-2 text-blue-500" /> Open
-                Learning
+                Library
               </Link>
             </DropdownMenuItem>
 
