@@ -17,9 +17,8 @@ import { ExternalLink, Globe, LogOut, User, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-const NavProfile = ({ user, restrictedPages }: any) => {
+const NavProfile = ({ user }: any) => {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <>
@@ -75,6 +74,17 @@ const NavProfile = ({ user, restrictedPages }: any) => {
               >
                 <ExternalLink className="h-4 w-4 mr-2 text-blue-500" /> Open
                 Learning
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={"https://kbase.coachbots.com"}
+                target="_blank"
+                className="w-full"
+              >
+                <ExternalLink className="h-4 w-4 mr-2 text-blue-500" />{" "}
+                Knowledge Base
               </Link>
             </DropdownMenuItem>
 

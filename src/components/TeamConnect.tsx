@@ -101,123 +101,106 @@ const TeamConnect = ({
   };
 
   return (
-    <div>
-      <div className="w-full">
-        <div className="w-full max-sm:w-[100%] z-50 mt-4 text-left">
-          <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-            {coachId || coacheeId ? (
-              <div className="w-full">
-                <div className="text-sm max-sm:text-sm">
-                  {" "}
-                  How can you interact with{" "}
-                  <span className="mr-2">
-                    @{" "}
-                    <Select
-                      showSearch
-                      className="w-[20%] max-sm:w-[40%]  max-lg:w-[40%]  max-md:w-[40%]"
-                      placeholder="Select a person"
-                      optionFilterProp="children"
-                      virtual={false}
-                      onChange={(value: string) => {
-                        console.log(`selected ${value}`);
-                        setTaggedUserId(value);
-                      }}
-                      onSearch={(value: string) => {
-                        console.log(`searched ${value}`);
-                      }}
-                      filterOption={(
-                        input: string,
-                        option?: { label: string; value: string }
-                      ) =>
-                        (option?.label ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                      options={
-                        clientUsers &&
-                        clientUsers.map((user) => ({
-                          label: user.userName,
-                          value: user.userId,
-                        }))
-                      }
-                    />
-                  </span>
-                  on
-                  <div className="flex flex-row items-end">
-                    <textarea
-                      onChange={(e) => {
-                        setQuery(
-                          e.target.value.replace(/[\[\]]|\([^)]*\)/g, "")
-                        );
-                        setInputError(false);
-                      }}
-                      placeholder="Seeking insights from your team. For eg, I want to seek insight about @Amol as my new Project Manager in my new project"
-                      rows={2}
-                      className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm bg-accent"
-                    ></textarea>{" "}
-                  </div>
-                </div>
-
-                {inputError && (
-                  <div className="flex flex-row justify-between w-full">
-                    <p className={`text-red-500 text-xs mb-1.5 self-start`}>
-                      Minimum 10 words are required.
-                    </p>
-                    <p className="font-bold text-gray-500 text-xs self-end"></p>
-                  </div>
-                )}
-
-                <div className="flex items-end justify-end gap-2 w-full">
-                  <Button
-                    onClick={handleQuerySubmit}
-                    disabled={isLoading || !taggedUserId || !query}
-                    className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
-                  >
-                    {isLoading
-                      ? "Generating"
-                      : generatedData
-                      ? "Regenerate"
-                      : "Generate"}
-                    {isLoading && (
-                      <Loader className="h-4 w-4 inline ml-2 animate-spin" />
-                    )}
-                  </Button>
-                  {/* {!isLoading && (
-                    <Button
-                      onClick={clearHandler}
-                      variant={"secondary"}
-                      className="max-sm:p-2 h-8 hover:brightness-105"
-                    >
-                      <Eraser className="mr-2 w-4 h-4" /> Clear
-                    </Button>
-                  )} */}
-                </div>
-                {generatedData && (
-                  <>
-                    <div className="flex flex-row gap-2 max-sm:flex-col">
-                      <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                          <b className="my-1 text-gray-400">Response</b>
-                          <p className="my-2">{generatedData.response}</p>
-                        </div>
-                        {generatedData.message && (
-                          <div className="text-xs bg-blue-100 w-fit px-2 py-1 rounded-md">
-                            {generatedData.message}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-center py-10">
-                Please join the network to enable team insights feature.
-              </p>
-            )}
+    <div className="p-4 bg-white w-full border border-gray-200 rounded-2xl ">
+      {coachId || coacheeId ? (
+        <div className="w-full text-gray-800 flex flex-col items-start">
+          <div className="text-sm max-sm:text-sm w-full text-left">
+            {" "}
+            How can you interact with{" "}
+            <span className="mr-2">
+              @{" "}
+              <Select
+                showSearch
+                className="w-[20%] max-sm:w-[40%]  max-lg:w-[40%]  max-md:w-[40%]"
+                placeholder="Select a person"
+                optionFilterProp="children"
+                virtual={false}
+                onChange={(value: string) => {
+                  console.log(`selected ${value}`);
+                  setTaggedUserId(value);
+                }}
+                onSearch={(value: string) => {
+                  console.log(`searched ${value}`);
+                }}
+                filterOption={(
+                  input: string,
+                  option?: { label: string; value: string }
+                ) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={
+                  clientUsers &&
+                  clientUsers.map((user) => ({
+                    label: user.userName,
+                    value: user.userId,
+                  }))
+                }
+              />
+            </span>
+            on
+            <div className="flex flex-row items-end">
+              <textarea
+                onChange={(e) => {
+                  setQuery(e.target.value.replace(/[\[\]]|\([^)]*\)/g, ""));
+                  setInputError(false);
+                }}
+                placeholder="Seeking insights from your team. For eg, I want to seek insight about @Amol as my new Project Manager in my new project"
+                rows={2}
+                className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm bg-accent"
+              ></textarea>{" "}
+            </div>
           </div>
+
+          {inputError && (
+            <div className="flex flex-row justify-between w-full">
+              <p className={`text-red-500 text-xs mb-1.5 self-start`}>
+                Minimum 10 words are required.
+              </p>
+              <p className="font-bold text-gray-500 text-xs self-end"></p>
+            </div>
+          )}
+
+          <div className="flex items-end justify-end gap-2 w-full">
+            <Button
+              onClick={handleQuerySubmit}
+              disabled={isLoading || !taggedUserId || !query}
+              className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+            >
+              {isLoading
+                ? "Generating"
+                : generatedData
+                ? "Regenerate"
+                : "Generate"}
+              {isLoading && (
+                <Loader className="h-4 w-4 inline ml-2 animate-spin" />
+              )}
+            </Button>
+          </div>
+          {generatedData && (
+            <>
+              <div className="flex flex-row gap-2 max-sm:flex-col">
+                <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <b className="my-1 text-gray-400">Response</b>
+                    <p className="my-2">{generatedData.response}</p>
+                  </div>
+                  {generatedData.message && (
+                    <div className="text-xs bg-blue-100 w-fit px-2 py-1 rounded-md">
+                      {generatedData.message}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
-      </div>
+      ) : (
+        <p className="text-sm text-center py-10 text-gray-800">
+          Please join the network to enable team insights feature.
+        </p>
+      )}
     </div>
   );
 };
