@@ -554,7 +554,8 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                         }}
                         className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                       >
-                        Assigned Scenarios <History className="h-4 w-4 ml-2" />
+                        Assigned Simulations{" "}
+                        <History className="h-4 w-4 ml-2" />
                       </Button>
                     )}
                     {!restrictedFeatures?.includes("Requested-scenarios") && (
@@ -568,7 +569,8 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                         }}
                         className={`h-8 max-sm:text-sm bg-blue-400 text-white hover:bg-blue-300`}
                       >
-                        Requested Scenarios <History className="h-4 w-4 ml-2" />
+                        Requested Simulations{" "}
+                        <History className="h-4 w-4 ml-2" />
                       </Button>
                     )}
                   </div>
@@ -956,7 +958,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                     <div id="assigned-tests" className="pt-[10vh]"></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
-                        Assigned Scenarios
+                        Assigned Simulations
                       </h1>
                       <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
                         <Info
@@ -1013,7 +1015,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                     ></div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <h1 className="text-xl mt-2 max-sm:text-sm text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md">
-                        Requested Scenarios
+                        Requested Simulations
                       </h1>
                       <div className="my-0 mt-1 py-0 text-xs flex flex-row items-center">
                         <Info

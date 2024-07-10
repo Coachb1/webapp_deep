@@ -886,7 +886,7 @@ const CreateOwn = ({
                       }}
                       className={`h-8 max-sm:text-xs bg-blue-400 text-white hover:bg-blue-300`}
                     >
-                      Create Your Deep Dive
+                      Engagement Survey Bots
                     </Button>
                   )}
                   {!restrictedFeatures?.includes("Knowledge-bots") && (
@@ -1233,7 +1233,7 @@ const CreateOwn = ({
                             id="dd-id"
                             className="text-xl mt-2 mb-4 max-sm:text-xl text-gray-600 font-semibold border border-gray-400 py-1 px-4 bg-white rounded-md  flex flex-row items-center justify-center"
                           >
-                            Create Your Deep Dive{" "}
+                            Engagement Survey Bots{" "}
                             <Badge className="ml-2">Beta</Badge>
                           </h1>
                           <div className="w-full">

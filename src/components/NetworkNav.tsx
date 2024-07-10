@@ -90,7 +90,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             } `}
             asChild
           >
-            <Link href={"/library"}>Library</Link>
+            <Link href={"/library"}>Simulations</Link>
           </Button>
         )}
         {!restrictedPages?.includes("Creator-studio") && (
@@ -140,7 +140,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                 }`}
                 asChild
               >
-                <Link href={"/library"}> Library</Link>
+                <Link href={"/library"}>Simulations</Link>
               </DropdownMenuItem>
             )}
 

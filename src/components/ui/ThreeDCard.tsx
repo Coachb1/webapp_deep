@@ -238,7 +238,7 @@ export function ThreeDCard({
                 )}
               </div>
             </CardItem>
-            <div className="flex justify-end items-center mt-20 mb-4">
+            <div className="flex justify-end items-center mt-20 mb-4 gap-2">
               {requestConnectionComponent}
               {coach?.avatar_bot_id !== null &&
                 coach?.avatar_bot_url !== "" && (
