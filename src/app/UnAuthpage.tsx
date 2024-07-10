@@ -33,6 +33,8 @@ import Feedback from "./feedback/Feedback";
 import Widgets from "@/components/Widgets";
 import Script from "next/script";
 import DeepDive from "./deep-dive/DeepDive";
+import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+
 export const UnAuth = ({ user }: any) => {
   return (
     <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
@@ -188,6 +190,44 @@ export const LoginWall = () => {
     }
   }, []);
 
+  const items = [
+    {
+      title: "Join The Network",
+      description:
+        "Join the network as a coach or coachee. The coaches create their avatars for interim sessions or initial matches. Users can request their subject matter bots.",
+      header: <h3 className="text-xl font-bold text-gray-500">01</h3>,
+      icon: <UserIcon className=" text-3xl mb-4" />,
+    },
+    {
+      title: "Exchange Notes & Exercises",
+      description:
+        "Exchange notes based on your live sessions or just communicate. The notes are augmented with simulations for the users to practice in context to the notes.",
+      header: <h3 className="text-xl font-bold text-gray-500">02</h3>,
+      icon: <ClipboardListIcon className=" text-3xl mb-4" />,
+    },
+    {
+      title: "Develop Learning Plan",
+      description:
+        "Just want to get some feedback? Create your feedback page and collect valuable feedback from your extended network. Use the same to create your own development plan with recommendations.",
+      header: <h3 className="text-xl font-bold text-gray-500">03</h3>,
+      icon: <LightbulbIcon className=" text-3xl mb-4" />,
+    },
+    {
+      title: "Explore & Practice Simulations",
+      description:
+        "Explore simulations for any use case for your team, Use the library, create your own or use simulations based on existing learning resources.",
+      header: <h3 className="text-xl font-bold text-gray-500">04</h3>,
+      icon: <SearchIcon className=" text-3xl mb-4" />,
+    },
+    {
+      title: "Track Your Progress",
+      description:
+        "Track your skill scores based on simulations or interactions with coaches. Display your feedback wall and also improve based on critical feedback.",
+      header: <h3 className="text-xl  font-bold text-gray-500">05</h3>,
+      icon: <BarChartIcon className=" text-3xl mb-4" />,
+    },
+  ];
+
   return (
     <>
       {!pathname.includes("/feedback") &&
@@ -202,12 +242,24 @@ export const LoginWall = () => {
                 </span>
                 BOTS
               </h1>
-              <p className="mt-4">AI enabled Coaching & Mentoring</p>
+              <p className="mt-4 text-3xl">AI enabled Coaching & Mentoring</p>
               <div className="p-4 max-sm:px-6">
                 <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
                   How it works?
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-left">
+                <BentoGrid className="w-[100%] mx-auto">
+                  {items.map((item, i) => (
+                    <BentoGridItem
+                      key={i}
+                      title={item.title}
+                      description={item.description}
+                      header={item.header}
+                      icon={item.icon}
+                      className={`${i === 1 || i === 6 ? "md:col-span-2" : ""}`}
+                    />
+                  ))}
+                </BentoGrid>
+                {/* <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-left">
                   <div className="bg-[#3bb3c3] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
                     <UserIcon className="text-white text-3xl mb-4" />
                     <h3 className="text-xl font-bold text-white">01</h3>
@@ -269,7 +321,7 @@ export const LoginWall = () => {
                       also improve based on critical feedback.
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="my-4 max-sm:mb-12">
                 <RegisterLink postLoginRedirectURL={pathname}>

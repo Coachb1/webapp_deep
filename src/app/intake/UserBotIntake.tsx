@@ -53,6 +53,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [functionsNTasksOfBot, setFunctionsNTasksOfBot] = useState("");
   const [infoAccessToBot, setInfoAccessToBots] = useState("");
   const [commanFaqs, setCommanFaqs] = useState("");
+  const [makePrivate, setMakePrivate] = useState(false);
 
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
     boolean | string
@@ -266,6 +267,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
       formdata.append("bot_id", botIUidFromParams!);
       formdata.append("for_reapproval", "true");
     }
+    formdata.append('is_private', `${makePrivate? true : false}`)
 
     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
       method: checkIfEdit ? "PATCH" : "POST",
@@ -496,6 +498,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   parsedFaqJson["What is the primary purpose of the bot?"]
                 );
 
+                setMakePrivate(resultingBot.signature_bot.is_private);
                 const InitialKowledgeBotData = {
                   name: resultingBot.bot_attributes.bot_name,
                   primaryPurpose:
@@ -980,6 +983,19 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   ))}
                 </div>
               )}
+            </div>
+            <hr className="mb-2" />
+            <div className="flex items-start space-x-2 my-1.5 ">
+              <Checkbox
+                disabled={checkIfView === null ? false : true}
+                checked={makePrivate}
+                required={!checkIfEdit}
+                onCheckedChange={(checked) => {
+                  setMakePrivate(Boolean(checked));
+                  setDataModified(true);
+                }}
+              />
+              <label className="text-xs text-gray-700">Make Private</label>
             </div>
             {!checkIfView && (
               <>

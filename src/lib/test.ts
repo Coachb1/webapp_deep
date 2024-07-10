@@ -598,6 +598,48 @@ export const Technology: Test[] = [
   },
 ];
 
+export const DSA: Test[] = [
+  {
+    domain: "Warehouse Inventory Management",
+    test_code: "Q2V8XPN",
+    title:
+      "Optimizing Warehouse Inventory Management for a Thriving E-commerce Business",
+    description:
+      "Isha, the head of operations at a rapidly growing e-commerce company, is tasked with designing an efficient inventory management system for the company's warehouse. The warehouse currently stores thousands of unique products, each with its own SKU (Stock Keeping Unit). As the business expands, the warehouse receives new shipments daily and fulfills a high volume of orders continuously. Isha recognizes the need for a robust system that can handle the increasing complexity of inventory operations, including adding new products, removing products, updating quantities, and quickly identifying the product with the highest quantity in the warehouse. You are Isha, the head of operations, interacting with Raj, the lead software engineer. Raj will ask you questions related to designing an efficient inventory management system for the company's warehouse. Your intent is to provide Raj with a comprehensive solution that addresses the key requirements and challenges.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Social Media Feed",
+    test_code: "QUG7UXZ",
+    title:
+      "Optimizing Social Media Platform's Follower-Following Dynamics and News Feed Delivery",
+    description:
+      "The marketing team of a rapidly growing social media platform is facing challenges in efficiently managing the dynamic relationships between its millions of users and their news feed updates. As the user base expands, the platform is struggling to handle the increasing volume of follow/unfollow actions and the need to provide a real-time, personalized news feed experience for each user. The team must devise a robust system that can scale to handle the platform's growth while ensuring optimal performance for critical operations such as following/unfollowing users and fetching news feeds. You are Aditya, the lead data engineer at the social media platform. Priya, the product manager, will ask you questions related to the efficient management of the follower-following relationships and news feed delivery. Your intent is to propose a solution that addresses the platform's scalability and performance requirements.",
+    interaction_mode: "Audio",
+  },
+];
+
+export const DataScience: Test[] = [
+  {
+    domain: "Customer Churn Prediction for a Telecom Company",
+    test_code: "QDN6W9V",
+    title:
+      "Predicting Customer Churn for a Telecom Company: A Data Science Challenge",
+    description:
+      "The telecom industry is highly competitive, and customer retention is a critical factor for success. A leading telecom company is facing a significant challenge with customer churn, where a substantial number of customers are leaving the service. The company's management has tasked the data science team to develop a predictive model that can identify customers who are likely to churn in the next month. The team has access to historical data, including customer demographics, service usage patterns, billing information, and customer support interactions. The goal is to leverage this data to build an accurate predictive model and provide actionable insights to help the company reduce customer churn. You are Isha, a data scientist, interacting with Raj, the head of the customer retention department. Raj will ask you questions related to the data science challenge of predicting customer churn for the telecom company. Your intent is to demonstrate your expertise in data science and analytics to help the company address this critical business problem.",
+    interaction_mode: "Audio",
+  },
+  {
+    domain: "Sales Forecasting for a Retail Chain",
+    test_code: "QRT9985",
+    title:
+      "Optimizing Inventory Management and Sales Forecasting for a Retail Giant",
+    description:
+      "A retail giant, operates a vast network of stores across multiple regions, offering a diverse range of products to its customers. The company's management has identified the need to improve its inventory management and sales forecasting capabilities to enhance operational efficiency and profitability. As the data analyst, you have been tasked with developing a comprehensive sales forecasting model that can accurately predict weekly sales for each store and product category, taking into account various internal and external factors. You are Aadhya, the data analyst at the company. Rajesh, the regional manager, will ask you questions related to the development and implementation of the sales forecasting model. Your intent is to provide Rajesh with a detailed plan and demonstrate your expertise in data science and analytics to optimize the company's inventory management.",
+    interaction_mode: "Audio",
+  },
+];
+
 export const Sales: Test[] = [
   {
     domain: "Edtech sales",

@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { HelpModeProvider } from "@/lib/helpmodeContext";
@@ -9,8 +9,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { Boxes, BoxesCore } from "@/components/ui/background-boxes";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Raleway({ subsets: ["latin"] });
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
@@ -126,27 +127,25 @@ export default async function RootLayout({
 
       <HelpModeProvider>
         <>
-          <body className={inter.className} suppressHydrationWarning={true}>
-            <>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <AntdRegistry>
-                  <Providers>
-                    <LayoutComponent
-                      restrictedPages={restrictedPages}
-                      user={user}
-                      children={children}
-                      isDemoUser={isDemoUser}
-                      isRestricted={isRestricted}
-                    />
-                  </Providers>
-                </AntdRegistry>
-              </ThemeProvider>
-            </>
+          <body className={font.className} suppressHydrationWarning={true}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AntdRegistry>
+                <Providers>
+                  <LayoutComponent
+                    restrictedPages={restrictedPages}
+                    user={user}
+                    children={children}
+                    isDemoUser={isDemoUser}
+                    isRestricted={isRestricted}
+                  />
+                </Providers>
+              </AntdRegistry>
+            </ThemeProvider>
             <Toaster
               theme="light"
               closeButton

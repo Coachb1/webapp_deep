@@ -8,11 +8,9 @@ import { Button } from "@/components/ui/button";
 import {
   baseURL,
   basicAuth,
-  convertTextToCorrectFormat,
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
-  hasPassed5Days,
   hideBots,
 } from "@/lib/utils";
 import {
@@ -52,6 +50,12 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
+import ReadMore from "@/components/ReadMore";
+import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
+import { Div } from "@/components/ui/moving-border";
+import { AnimatePresence, motion } from "framer-motion";
+import { Card, HoverEffect } from "@/components/ui/card-hover-effect";
+import { ThreeDCard } from "@/components/ui/ThreeDCard";
 
 export interface CoachesDataType {
   id: number;
@@ -819,16 +823,6 @@ const Coaches = ({
     return () => clearTimeout(scrollTimer);
   }, [coachesData]);
 
-  const handleLinks = (link: string) => {
-    if (link.includes("playground")) {
-      return link.replace("https://playground.coachbots.com", "");
-    } else if (link.includes("platform")) {
-      return link.replace("https://platform.coachbots.com", "");
-    } else {
-      return link;
-    }
-  };
-
   const RequestionConnection = ({
     coachId,
     requestStatus,
@@ -1164,9 +1158,9 @@ const Coaches = ({
   };
 
   const { helpModeState, updateHelpModeState } = UseHelpMode();
-
+  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
-    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center">
+    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50">
       {helpModeState && (
         <Joyride
           spotlightClicks
@@ -1193,234 +1187,245 @@ const Coaches = ({
           steps={HelpModeSteps}
         />
       )}
-      <h1
-        id="heading"
-        className="mb-6 mt-10 border-2 border-[#2DC092] p-[3px] text-xl font-extrabold text-[#2DC092]"
-      >
-        <span className="mr-[4px] bg-[#2DC092] p-[4px] text-lg font-bold text-white">
-          COACH
-        </span>
-        BOTS
-      </h1>
-      <h1
-        id="header-text"
-        className="mt-0 text-4xl font-bold text-gray-600 max-sm:text-2xl"
-      >
-        {headings?.heading
-          ? headings?.heading
-          : "Coaching & Performance Workbench"}
-      </h1>
-      <p className="my-2 max-w-prose text-gray-700 text-base max-sm:text-sm max-sm:px-8">
-        {" "}
-        {headings?.subHeading
-          ? headings?.subHeading
-          : "Peer to Peer network of leaders for growth."}
-      </p>
-      {!restrictedFeatures?.includes("Join-the-network") && (
-        <>
-          <div
-            id="join-the-network"
-            className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs"
-          >
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                disabled={buttonLoading}
-                asChild
-                className="border-none outline-none"
-              >
-                <div>
-                  {" "}
-                  <Button
-                    disabled={buttonLoading}
-                    variant={"outline"}
-                    className="h-fit w-fit"
-                  >
-                    {" "}
-                    <>
-                      {" "}
-                      Join the network <ChevronDown className="ml-2 h-4 w-4" />
-                    </>
-                  </Button>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                      disabled={
-                        allCoaches.length > 0 ||
-                        (canJoinAs?.length !== 0 &&
-                          !["coach", "mentor"].includes(canJoinAs))
-                      }
+      <GoogleGeminiEffectND
+        title={
+          headings?.heading
+            ? headings?.heading
+            : "Coaching & Performance Workbench"
+        }
+        description={
+          headings?.subHeading
+            ? headings?.subHeading
+            : "Peer to Peer network of leaders for growth."
+        }
+        className="-pt-96"
+        cta={
+          <>
+            {!restrictedFeatures?.includes("Join-the-network") && (
+              <>
+                <div
+                  id="join-the-network"
+                  className="my-4 flex flex-row justify-center gap-2 max-sm:flex-wrap max-sm:text-xs z-10"
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      disabled={buttonLoading}
+                      asChild
+                      className="border-none outline-none "
                     >
-                      <Link href={"/intake/?type=coach"}>
-                        Join as Coach or Mentor{" "}
-                        {allCoaches.length > 0 ? (
+                      <div>
+                        {" "}
+                        <Button
+                          disabled={buttonLoading}
+                          variant={"outline"}
+                          className="h-fit w-fit text-xl"
+                        >
+                          {" "}
                           <>
-                            {allCoaches[0]?.is_approved ? (
-                              <>
-                                {coachId ? (
-                                  <Badge className="ml-2">Already Joined</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {allCoaches[0]?.profile_type === "coach" ||
-                                allCoaches[0]?.profile_type === "mentor" ||
-                                allCoaches[0]?.profile_type ===
-                                  "coach-mentor" ? (
-                                  <Badge className="ml-2">Requested</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            )}
+                            {" "}
+                            Join the network{" "}
+                            <ChevronDown className="ml-2 h-4 w-4" />
                           </>
-                        ) : canJoinAs?.length !== 0 &&
-                          !["coach", "mentor"].includes(canJoinAs) ? (
-                          <Badge
-                            variant={"secondary"}
-                            className="ml-2 border border-gray-400"
+                        </Button>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                            disabled={
+                              allCoaches.length > 0 ||
+                              (canJoinAs?.length !== 0 &&
+                                !["coach", "mentor"].includes(canJoinAs))
+                            }
                           >
-                            Not Allowed
-                          </Badge>
-                        ) : null}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
+                            <Link href={"/intake/?type=coach"}>
+                              Join as Coach or Mentor{" "}
+                              {allCoaches.length > 0 ? (
+                                <>
+                                  {allCoaches[0]?.is_approved ? (
+                                    <>
+                                      {coachId ? (
+                                        <Badge className="ml-2">
+                                          Already Joined
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {allCoaches[0]?.profile_type ===
+                                        "coach" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "mentor" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "coach-mentor" ? (
+                                        <Badge className="ml-2">
+                                          Requested
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              ) : canJoinAs?.length !== 0 &&
+                                !["coach", "mentor"].includes(canJoinAs) ? (
+                                <Badge
+                                  variant={"secondary"}
+                                  className="ml-2 border border-gray-400"
+                                >
+                                  Not Allowed
+                                </Badge>
+                              ) : null}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      disabled={
-                        allCoaches.length > 0 ||
-                        (canJoinAs?.length !== 0 &&
-                          !["coachee", "mentee"].includes(canJoinAs))
-                      }
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                    >
-                      <Link href={"/intake/?type=coachee"}>
-                        Join as Coachee or Mentee
-                        {allCoaches.length > 0 ? (
-                          <>
-                            {allCoaches[0]?.is_approved ? (
-                              <>
-                                {coacheeId ? (
-                                  <Badge className="ml-2">Already Joined</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                {allCoaches[0]?.profile_type === "coachee" ||
-                                allCoaches[0]?.profile_type === "mentee" ? (
-                                  <Badge className="ml-2">Requested</Badge>
-                                ) : (
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="ml-2 border border-gray-400"
-                                  >
-                                    Not Allowed
-                                  </Badge>
-                                )}
-                              </>
-                            )}
-                          </>
-                        ) : canJoinAs?.length !== 0 &&
-                          !["coachee", "mentee"].includes(canJoinAs) ? (
-                          <Badge
-                            variant={"secondary"}
-                            className="ml-2 border border-gray-400"
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            disabled={
+                              allCoaches.length > 0 ||
+                              (canJoinAs?.length !== 0 &&
+                                !["coachee", "mentee"].includes(canJoinAs))
+                            }
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
                           >
-                            Not Allowed
-                          </Badge>
-                        ) : null}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex flex-row justify-center items-center">
-                    <Button
-                      variant={"link"}
-                      disabled={feedbackBots.length > 0}
-                      className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
-                    >
-                      <Link href={"/intake/?type=feedback"}>
-                        Join Feedback Network
-                        {feedbackBots.length > 0 && (
-                          <>
-                            {feedbackBots[0]?.signature_bot.is_approved ? (
-                              <Badge className="ml-2">Already Joined</Badge>
-                            ) : (
-                              <Badge className="ml-2">Requested</Badge>
-                            )}
-                          </>
-                        )}
-                      </Link>
-                    </Button>
-                    <Tooltip
-                      overlayInnerStyle={{
-                        backgroundColor: "white",
-                        color: "black",
-                        padding: "8px",
-                      }}
-                      title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
-                    >
-                      <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
-                    </Tooltip>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </>
-      )}
-      <div id="list" className="min-h-screen w-full max-sm:px-2">
+                            <Link href={"/intake/?type=coachee"}>
+                              Join as Coachee or Mentee
+                              {allCoaches.length > 0 ? (
+                                <>
+                                  {allCoaches[0]?.is_approved ? (
+                                    <>
+                                      {coacheeId ? (
+                                        <Badge className="ml-2">
+                                          Already Joined
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {allCoaches[0]?.profile_type ===
+                                        "coachee" ||
+                                      allCoaches[0]?.profile_type ===
+                                        "mentee" ? (
+                                        <Badge className="ml-2">
+                                          Requested
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          variant={"secondary"}
+                                          className="ml-2 border border-gray-400"
+                                        >
+                                          Not Allowed
+                                        </Badge>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              ) : canJoinAs?.length !== 0 &&
+                                !["coachee", "mentee"].includes(canJoinAs) ? (
+                                <Badge
+                                  variant={"secondary"}
+                                  className="ml-2 border border-gray-400"
+                                >
+                                  Not Allowed
+                                </Badge>
+                              ) : null}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <div className="flex flex-row justify-center items-center">
+                          <Button
+                            variant={"link"}
+                            disabled={feedbackBots.length > 0}
+                            className="flex flex-row items-center justify-center h-fit p-0 hover:cursor-pointer hover:no-underline text-gray-700"
+                          >
+                            <Link href={"/intake/?type=feedback"}>
+                              Join Feedback Network
+                              {feedbackBots.length > 0 && (
+                                <>
+                                  {feedbackBots[0]?.signature_bot
+                                    .is_approved ? (
+                                    <Badge className="ml-2">
+                                      Already Joined
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="ml-2">Requested</Badge>
+                                  )}
+                                </>
+                              )}
+                            </Link>
+                          </Button>
+                          <Tooltip
+                            overlayInnerStyle={{
+                              backgroundColor: "white",
+                              color: "black",
+                              padding: "8px",
+                            }}
+                            title="You can join the Feedback Network, allowing others to send and recieve the feedback. Upon joining, users complete an intake form, sharing their name, profile description, and current projects. This feature facilitates comprehensive feedback exchange among users."
+                          >
+                            <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
+                          </Tooltip>
+                        </div>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </>
+            )}
+          </>
+        }
+      />
+
+      <div id="list" className="min-h-screen w-full max-sm:px-2 z-10">
         <div className="my-4">
-          <p className="font-semibold text-gray-500 max-sm:text-sm">
+          <p className="font-semibold text-xl text-gray-500 max-sm:text-sm">
             {headings?.tagLine
               ? headings.tagLine
               : "We enable deep and meaningful coaching conversations with AI assistance even when life gets busy!"}
@@ -1433,7 +1438,7 @@ const Coaches = ({
                 <Search className="mr-1 inline h-4 w-4" />
                 <input
                   placeholder="Search for Any Profile"
-                  className="w-full border-l pl-2 text-sm outline-none max-sm:ml-1 max-sm:text-xs"
+                  className="w-full border-l pl-2 text-lg outline-none max-sm:ml-1 max-sm:text-xs"
                   type="text"
                   onChange={(e) => {
                     console.log(e.target.value);
@@ -1450,7 +1455,7 @@ const Coaches = ({
                   checkedValues={parentCheckedValues}
                   onUpdateCheckedValues={handleUpdateCheckedValues}
                 />
-                <p className="text-left text-xs max-sm:text-xs text-gray-600 mt-2">
+                <p className="text-left text-lg max-sm:text-xs text-gray-600 mt-2">
                   This is a combination filter. It works when the result
                   satisfies each selection criterion.
                 </p>
@@ -1462,7 +1467,7 @@ const Coaches = ({
         {!restrictedFeatures?.includes("DirProfile-msg") && (
           <Badge
             variant={"secondary"}
-            className="rounded-sm text-center text-xs max-sm:text-xs font-normal"
+            className="rounded-sm text-center text-base max-sm:text-xs font-normal"
           >
             Profiles that have listed emails indicate that those coaches have a
             email avatar that can respond as well. (AI responses, with 24 hour
@@ -1487,285 +1492,108 @@ const Coaches = ({
               </div>
             </div>
           )}
+          <div className="w-full"> </div>
           <div id="participant-listing">
             {!loading &&
               coachesData.length > 0 &&
-              currentCoachesData.map((coach, i) => (
-                <div id={coach.profile_id} className="-z-10 mt-[-5rem] pt-20">
-                  <div className="relative top-[26px] flex w-full flex-row justify-between">
-                    <span
-                      className={`z-[1] ml-4 rounded-2xl self-start border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] ${
-                        coach.profile_type !== "icons_by_ai"
-                          ? "visible"
-                          : "invisible"
-                      }`}
-                    >
-                      User Created
-                    </span>
-                    {(coach.profile_type === "coach" ||
-                      coach.profile_type === "mentor" ||
-                      coach.profile_type === "coach-mentor") && (
-                      <span
-                        id={
-                          coach.id_for_target_selection ===
-                            "first_coach_profile" &&
-                          coach.feedback_wall !== null
-                            ? "email"
-                            : undefined
-                        }
-                        className="z-[1] ml-4 mr-4  rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] max-sm:mr-2 "
-                      >
-                        {coach.name.replace(/\s/g, "").toLowerCase() +
-                          coach.id +
-                          "@coachbots.com"}
-                      </span>
-                    )}
-                    {/* {(coach.profile_type === "icons_by_ai" ||
-                      coach.profile_type === "coachee" ||
-                      coach.profile_type === "mentee") && (
-                      <span className="z-[1] ml-4 mr-4 rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:text-xs">
-                        Not Applicable
-                      </span>
-                    )} */}
-                  </div>
+              currentCoachesData.map((coach, idx) => (
+                <>
                   <div
-                    id={coach.id_for_target_selection}
-                    className={`my-3 flex w-full flex-row gap-6 rounded-lg border p-8 max-sm:p-4 ${
-                      coach.profile_type === "icons_by_ai" &&
-                      "border-gray-800 shadow-lg"
-                    }`}
+                    key={coach?.profile_id}
+                    className="relative group  block p-2 h-full w-full"
+                    onMouseEnter={() => setHoveredIndex(idx)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                   >
-                    <div className="">
-                      <img
-                        className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
-                        src={
-                          coach.profile_pic_url
-                            ? coach.profile_pic_url
-                            : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
-                        }
-                      />
-                      {!restrictedFeatures?.includes("Likes") && (
-                        <div className="mt-4">
-                          <LikeComponent
-                            profile_id={coach.profile_id}
-                            likesInfo={coach.admirer_ids}
-                          />
-                        </div>
+                    <AnimatePresence>
+                      {hoveredIndex === idx && (
+                        <motion.span
+                          className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
+                          layoutId="hoverBackground"
+                          initial={{ opacity: 0 }}
+                          animate={{
+                            opacity: 1,
+                            transition: { duration: 0.15 },
+                          }}
+                          exit={{
+                            opacity: 0,
+                            transition: { duration: 0.15, delay: 0.2 },
+                          }}
+                        />
                       )}
-                    </div>
-                    <div className=" flex flex-col items-start justify-start w-full">
-                      <div className="mb-2 flex flex-row items-center gap-1">
-                        {" "}
-                        {hasPassed5Days(coach.created) ? null : (
-                          <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                            <Star color="#047857" className="mr-1 h-4 w-4 " />{" "}
-                            New
-                          </Badge>
-                        )}
-                        {coach.visual_tag !== null &&
-                          coach.visual_tag
-                            .split(", ")
-                            .map((tag) => (
-                              <Badge className="bg-emerald-100 text-[12px] text-emerald-700 hover:bg-emerald-200">
-                                {convertTextToCorrectFormat(tag)}
-                              </Badge>
-                            ))}
-                        {coach.is_recommended && (
-                          <Badge className="bg-blue-100 text-[12px] text-blue-700 hover:bg-emerald-200">
-                            AI Recommended
-                          </Badge>
-                        )}
-                      </div>
-                      {coach.profile_type === "icons_by_ai" ? (
-                        <>
-                          <div className="flex flex-col justify-start">
-                            {coach.bot_tag && (
-                              <p className="text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
-                                {coach.bot_tag}
-                              </p>
-                            )}
-                            <p className="flex items-center text-wrap justify-center gap-2 text-left text-lg font-normal text-gray-700 max-sm:text-sm">
-                              {convertTextToCorrectFormat(coach.name)}
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <p className="flex items-center text-wrap justify-center gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
-                          {convertTextToCorrectFormat(coach.name)}
-                        </p>
-                      )}{" "}
-                      <p className="my-1.5 font-semibold text-gray-600 max-sm:my-1 max-sm:text-sm">
-                        {coach.department}
-                      </p>
-                      <div className="flex flex-row items-center justify-start gap-2">
-                        {coach.profile_type === "coach-mentor" ? (
-                          <>
-                            <Badge
-                              variant={"secondary"}
-                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                            >
-                              {convertTextToCorrectFormat("coach")}
-                            </Badge>
-                            <Badge
-                              variant={"secondary"}
-                              className={`my-1.5 h-fit rounded-sm border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm`}
-                            >
-                              {convertTextToCorrectFormat("mentor")}
-                            </Badge>
-                          </>
-                        ) : (
-                          <Badge
-                            variant={"secondary"}
-                            className={`my-1.5 h-fit rounded-md border-gray-300 px-2 text-base  max-sm:my-1 max-sm:px-1.5 max-sm:text-sm ${
-                              (coach.profile_type === "skill_bot" ||
-                                coach.profile_type === "coachbots") &&
-                              "bg-green-500 hover:bg-green-400"
-                            }`}
-                          >
-                            {coach.profile_type === "icons_by_ai"
-                              ? "Icons by AI"
-                              : convertTextToCorrectFormat(coach.profile_type)}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex flex-row max-sm:flex-col max-lg:flex-col items-center max-sm:items-start max-lg:items-start justify-start gap-2 max-sm:gap-1">
-                        {coach.profile_type !== "coachee" &&
-                          coach.profile_type !== "mentee" &&
-                          !restrictedFeatures?.includes("Ratings") && (
-                            <ReviewComponent
-                              id={
-                                coach.id_for_target_selection ===
-                                  "first_coach_profile" &&
-                                coach.feedback_wall !== null
-                                  ? "reviews"
-                                  : undefined
-                              }
-                              stars={coach.rating}
-                              totalRatings={coach.total_rating}
-                              coachId={coach.profile_id}
+                    </AnimatePresence>
+                    <Card className="p-0">
+                      <ThreeDCard
+                        coacheeId={coacheeId}
+                        coachId={coachId}
+                        coach={coach}
+                        likeComponent={
+                          <div className="mt-4">
+                            <LikeComponent
+                              profile_id={coach.profile_id}
+                              likesInfo={coach.admirer_ids}
                             />
-                          )}
-                        {(coach.profile_type === "coach" ||
-                          coach.profile_type === "mentor") && (
-                          <div className="max-sm:mt-2 flex flex-row items-center">
-                            <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden  max-lg:hidden">
-                              ●
-                            </span>
-                            <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
-                              {coach.total_without_question_count} Engagements
-                            </p>
                           </div>
-                        )}
-                        <div>
-                          {coach.feedback_wall !== null &&
-                            coach.feedback_wall !== "" && (
-                              <>
-                                <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden max-lg:hidden">
-                                  ●
-                                </span>
-                                <Link
+                        }
+                        reviewComponent={
+                          <>
+                            {" "}
+                            {coach.profile_type !== "coachee" &&
+                              coach.profile_type !== "mentee" &&
+                              !restrictedFeatures?.includes("Ratings") && (
+                                <ReviewComponent
                                   id={
                                     coach.id_for_target_selection ===
                                       "first_coach_profile" &&
                                     coach.feedback_wall !== null
-                                      ? "feedback"
+                                      ? "reviews"
                                       : undefined
                                   }
-                                  target="_blank"
-                                  href={handleLinks(coach.feedback_wall)}
-                                >
-                                  <Button
-                                    variant={"link"}
-                                    className="h-fit ml-0 pl-0 w-fit max-sm:w-full max-sm:text-left max-sm:text-sm"
-                                  >
-                                    Feedback{" "}
-                                    <ExternalLink className="h-4 w-4 ml-1" />
-                                  </Button>
-                                </Link>
-                              </>
-                            )}
-                        </div>
-                      </div>
-                      <p className="my-1.5 text-left w-full text-sm font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
-                        {coach.description}
-                      </p>
-                      <div className="mt-4 flex flex-row flex-wrap gap-2">
-                        {coach.profile_type !== "skill_bot" && (
-                          <Badge
-                            variant={"secondary"}
-                            className=" my-1 text-sm max-sm:text-xs text-gray-600"
-                          >
-                            {coach.experience}
-                          </Badge>
-                        )}
-                        {coach.expertise && (
-                          <Badge
-                            variant={"secondary"}
-                            className="my-1 text-sm max-sm:text-xs text-gray-600"
-                          >
-                            {coach.expertise}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="mt-4 self-end flex w-full flex-row items-end justify-end gap-2 max-sm:flex-col">
-                        {coach.status === "accepted" ? (
-                          <Button
-                            disabled
-                            variant={"outline"}
-                            className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                          >
-                            Connected
-                          </Button>
-                        ) : (
+                                  stars={coach.rating}
+                                  totalRatings={coach.total_rating}
+                                  coachId={coach.profile_id}
+                                />
+                              )}
+                          </>
+                        }
+                        userId={userId}
+                        restrictedFeatures={restrictedFeatures}
+                        requestConnectionComponent={
                           <>
-                            {(coach.profile_type === "coach" ||
-                              coach.profile_type === "mentor" ||
-                              coach.profile_type === "coach-mentor") && (
+                            {coach.status === "accepted" ? (
+                              <Button
+                                disabled
+                                variant={"outline"}
+                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                              >
+                                Connected
+                              </Button>
+                            ) : (
                               <>
-                                <>
-                                  {coacheeId.length > 0 && (
+                                {(coach.profile_type === "coach" ||
+                                  coach.profile_type === "mentor" ||
+                                  coach.profile_type === "coach-mentor") && (
+                                  <>
                                     <>
-                                      <RequestionConnection
-                                        requestStatus={coach.status}
-                                        coachId={coach.profile_id}
-                                        stateCoachId={coachId}
-                                      />
+                                      {coacheeId.length > 0 && (
+                                        <>
+                                          <RequestionConnection
+                                            requestStatus={coach.status}
+                                            coachId={coach.profile_id}
+                                            stateCoachId={coachId}
+                                          />
+                                        </>
+                                      )}
                                     </>
-                                  )}
-                                </>
+                                  </>
+                                )}
                               </>
                             )}
                           </>
-                        )}
-
-                        {coach.avatar_bot_url !== null &&
-                          coach.avatar_bot_url !== "" && (
-                            <div className="max-sm:w-full">
-                              <Button
-                                variant={"secondary"}
-                                className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                                disabled={
-                                  coacheeId.length === 0 &&
-                                  userId !== coach.user_id &&
-                                  coach.profile_type !== "icons_by_ai"
-                                }
-                              >
-                                <Link
-                                  href={handleLinks(coach.avatar_bot_url)}
-                                  target="_blank"
-                                >
-                                  {coach.profile_type === "skill_bot" ||
-                                  coach.profile_type === "coachbots"
-                                    ? "Skill Chat"
-                                    : "AI Frame"}
-                                </Link>
-                              </Button>
-                            </div>
-                          )}
-                      </div>
-                    </div>
+                        }
+                      />
+                    </Card>
                   </div>
-                </div>
+                </>
               ))}
           </div>
           {coachesData.length > 10 && (

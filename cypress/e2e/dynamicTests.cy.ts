@@ -1,8 +1,5 @@
 import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
-//dynamic : "Q0HP80X", "QWGW7N3", "QE4334M", "QSKUOD0", "Q7E1DGY", "QQMTKIU"
-// GD : Q97STR8
-//userFirst : QJAZ7IE
 const dynamicTestCodes = ["QJAZ7IE", "Q97STR8", "QQMTKIU"];
 
 describe("Init", () => {
@@ -31,20 +28,20 @@ describe("Init", () => {
     });
   });
 
-  it("dynamic tests", () => {
-    cy.visit(`${visitingBaseUrl}/content-library`);
+  dynamicTestCodes.forEach((testCode, i) => {
+    it(`${i + 1} Dynamic-${testCode}`, () => {
+      cy.visit(`${visitingBaseUrl}/content-library`);
 
-    //open the bot
-    cy.get(".chat-icon2").click();
+      //open the bot
+      cy.get(".chat-icon2").click();
 
-    //yes / no
-    cy.get("#chat-element2")
-      .shadow()
-      .find(".deep-chat-suggestion-button")
-      .contains("Yes")
-      .click();
+      //yes / no
+      cy.get("#chat-element2")
+        .shadow()
+        .find(".deep-chat-suggestion-button")
+        .contains("Yes")
+        .click();
 
-    dynamicTestCodes.forEach((testCode) => {
       // type the test code
       cy.get("#chat-element2").shadow().find("#text-input").type(testCode);
       cy.intercept("GET", `/api/v1/tests/?test_code=${testCode}`).as(

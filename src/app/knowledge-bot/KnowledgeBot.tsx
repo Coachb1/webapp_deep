@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
+import { Div } from "@/components/ui/moving-border";
+import BorderShadow from "@/components/ui/border-shadow";
 
 const howItWorks = [
   {
@@ -100,8 +102,9 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         } else {
           parsedFaqJson = data.data.faqs;
         }
-        const coachScribe =
-          document.getElementsByClassName("coachbots-coachscribe")[0];
+        const coachScribe = document.getElementsByClassName(
+          "coachbots-coachscribe"
+        )[0];
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -288,33 +291,40 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 <div className="relative isolate mx-auto">
                   <div>
                     <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
+                      <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                        <Div
+                          className="bg-white text-gray-800"
+                          containerClassName="w-full"
                         >
-                          {howItWorks.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === howItWorks.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
+                          <BorderShadow>
+                            <Accordion
+                              type="single"
+                              collapsible
+                              className="w-full text-gray-500 max-sm:p-4 "
                             >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+                              {howItWorks.map((test, i) => (
+                                <AccordionItem
+                                  key={i}
+                                  value={`item-${i + 1}`}
+                                  className={`${
+                                    i === howItWorks.length - 1
+                                      ? "border-none"
+                                      : "border-b"
+                                  } px-2`}
+                                >
+                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                    <div>
+                                      <b>{test.heading}</b>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent className="text-left max-sm:text-xs">
+                                    <p> {test.description}</p>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              ))}
+                            </Accordion>
+                          </BorderShadow>
+                        </Div>
                       </div>
                     </div>
                   </div>
@@ -334,33 +344,40 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 <div className="relative isolate mx-auto">
                   <div>
                     <div className="mx-auto max-w-3xl px-6 lg:px-8 mt-[-1.5rem] max-sm:w-[100%] z-50">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4 max-sm:w-[100%]">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
+                      <div className="rounded-xl bg-white w-full lg:rounded-2xl">
+                        <Div
+                          className="bg-white text-gray-800"
+                          containerClassName="w-full"
                         >
-                          {benefitsData.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === howItWorks.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
+                          <BorderShadow>
+                            <Accordion
+                              type="single"
+                              collapsible
+                              className="w-full text-gray-500 max-sm:p-4 "
                             >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="max-sm:text-xs text-left">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
+                              {benefitsData.map((test, i) => (
+                                <AccordionItem
+                                  key={i}
+                                  value={`item-${i + 1}`}
+                                  className={`${
+                                    i === benefitsData.length - 1
+                                      ? "border-none"
+                                      : "border-b"
+                                  } px-2`}
+                                >
+                                  <AccordionTrigger className="text-left max-sm:text-xs">
+                                    <div>
+                                      <b>{test.heading}</b>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent className="text-left max-sm:text-xs">
+                                    <p> {test.description}</p>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              ))}
+                            </Accordion>
+                          </BorderShadow>
+                        </Div>
                       </div>
                     </div>
                   </div>

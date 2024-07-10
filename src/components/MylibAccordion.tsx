@@ -39,16 +39,16 @@ const MylibraryAccordion = ({ tests, badgeText, user }: testTypes) => {
                     <AccordionItem
                       key={i}
                       value={`item-${i + 1}`}
-                      className={
-                        i === tests.length - 1 ? "border-none" : "border-b"
-                      }
+                      className={`text-sm
+                        ${i === tests.length - 1 ? "border-none" : "border-b"}
+                      `}
                     >
-                      <AccordionTrigger className="text-left max-sm:text-xs">
+                      <AccordionTrigger className="text-left text-sm max-sm:text-xs">
                         <div>
                           <b>{test.domain}</b> - {test.title}
                         </div>
                       </AccordionTrigger>
-                      <AccordionContent className="max-sm:text-xs">
+                      <AccordionContent className="text-sm max-sm:text-xs">
                         <p> {test.description}</p>
                         <div className="flex justify-end mt-2">
                           <CopyToClipboard

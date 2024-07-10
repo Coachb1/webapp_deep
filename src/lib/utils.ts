@@ -364,6 +364,7 @@ export function convertTestsData(inputData: Record<string, TestData[]>) {
         test_type: item.test_type,
         is_recommended: item.is_recommended,
         is_micro: item.is_micro,
+        interaction_mode: item.interaction_mode,
       };
     });
 
@@ -683,3 +684,20 @@ export function excludeSpecialCharacters(inputString: string) {
   const cleanedString = inputString.replace(regex, "");
   return cleanedString;
 }
+
+export const parseStringList = (str: any) => {
+  return str
+    ?.split(",")
+    .map((str: string) => str.trim())
+    .join(",");
+};
+
+export const handleLinks = (link: string) => {
+  if (link.includes("playground")) {
+    return link.replace("https://playground.coachbots.com", "");
+  } else if (link.includes("platform")) {
+    return link.replace("https://platform.coachbots.com", "");
+  } else {
+    return link;
+  }
+};
