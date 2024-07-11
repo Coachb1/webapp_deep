@@ -25,7 +25,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Info,
   Loader,
   Search,
@@ -44,17 +43,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { UserClientInfoDataType, connectionType } from "@/lib/types";
+import { connectionType } from "@/lib/types";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import Joyride from "react-joyride";
 import { Tooltip } from "antd";
-import ReadMore from "@/components/ReadMore";
 import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
-import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
-import { Card, HoverEffect } from "@/components/ui/card-hover-effect";
+import { Card } from "@/components/ui/card-hover-effect";
 import { ParticipantListItemCard } from "@/components/ui/ParticipantListItemCard";
 
 export interface CoachesDataType {
@@ -105,20 +102,17 @@ function addIdForTargetSelection(
   HelpModeSteps: any[],
   dynamicHelpText: any
 ) {
-  // Initialize flags to track the first occurrence of each profile type
   let firstIconsByAiFound = false;
   let firstCoacheeFound = false;
   let firstCoachFound = false;
 
-  // Iterate through the profiles array
   profiles.forEach((profile) => {
-    // Check the profile_type and update the id_for_target_selection field accordingly
     if (profile.profile_type === "icons_by_ai" && !firstIconsByAiFound) {
       profile.id_for_target_selection = "first_icons_by_ai";
-      firstIconsByAiFound = true; // Update flag to indicate the first icons_by_ai profile has been processed
+      firstIconsByAiFound = true;
     } else if (profile.profile_type === "coachee" && !firstCoacheeFound) {
       profile.id_for_target_selection = "first_coachee_profile";
-      firstCoacheeFound = true; // Update flag to indicate the first coachee profile has been processed
+      firstCoacheeFound = true;
     } else if (
       (profile.profile_type === "coach" ||
         profile.profile_type === "mentor" ||
@@ -127,7 +121,7 @@ function addIdForTargetSelection(
       !firstCoachFound
     ) {
       profile.id_for_target_selection = "first_coach_profile";
-      firstCoachFound = true; // Update flag to indicate the first coach profile has been processed
+      firstCoachFound = true;
 
       HelpModeSteps.push(
         {
@@ -161,7 +155,7 @@ function addIdForTargetSelection(
     }
   });
 
-  return profiles; // Return the updated profiles array
+  return profiles;
 }
 
 function findConnectionStatus(
@@ -274,6 +268,14 @@ const Coaches = ({
       (profile: CoachesDataType) =>
         profile.bot_type !== "coachbots" &&
         profile.profile_type !== "icons_by_ai"
+    );
+
+    const ownProfile = [...iconsByAiProfiles, ...allOtherProfiles].filter(
+      (coach: CoachesDataType) => coach.email === user?.email
+    );
+    toast.success(JSON.stringify(ownProfile));
+    const restProfiles = [...iconsByAiProfiles, ...allOtherProfiles].filter(
+      (coach: CoachesDataType) => coach.email !== user?.email
     );
 
     setSavedCoachesData([...iconsByAiProfiles, ...allOtherProfiles]);
@@ -717,17 +719,25 @@ const Coaches = ({
 
       console.log("Connected Coaches", connectedCoaches);
 
+      //Own profile on top
+      const ownProfile = [...connectedCoaches, ...unconnectedCoaches].filter(
+        (coach: CoachesDataType) => coach.email === user?.email
+      );
+      const restProfiles = [...connectedCoaches, ...unconnectedCoaches].filter(
+        (coach: CoachesDataType) => coach.email !== user?.email
+      );
+
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
         addIdForTargetSelection(
-          [...connectedCoaches, ...unconnectedCoaches],
+          [...ownProfile, ...restProfiles],
           HelpModeSteps,
           dynamicHelpText
         )
       );
       setSavedCoachesData(
         addIdForTargetSelection(
-          [...connectedCoaches, ...unconnectedCoaches],
+          [...ownProfile, ...restProfiles],
           HelpModeSteps,
           dynamicHelpText
         )
@@ -755,17 +765,25 @@ const Coaches = ({
 
       console.log("Connected Coaches", connectedCoaches);
 
+      //Own profile on top
+      const ownProfile = [...connectedCoaches, ...unconnectedCoaches].filter(
+        (coach: CoachesDataType) => coach.email === user?.email
+      );
+      const restProfiles = [...connectedCoaches, ...unconnectedCoaches].filter(
+        (coach: CoachesDataType) => coach.email !== user?.email
+      );
+
       setConnectedCoaches(connectedCoaches);
       setCoachesData(
         addIdForTargetSelection(
-          [...connectedCoaches, ...unconnectedCoaches],
+          [...ownProfile, ...restProfiles],
           HelpModeSteps,
           dynamicHelpText
         )
       );
       setSavedCoachesData(
         addIdForTargetSelection(
-          [...connectedCoaches, ...unconnectedCoaches],
+          [...ownProfile, ...restProfiles],
           HelpModeSteps,
           dynamicHelpText
         )
