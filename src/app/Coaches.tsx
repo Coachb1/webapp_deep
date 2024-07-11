@@ -273,7 +273,6 @@ const Coaches = ({
     const ownProfile = [...iconsByAiProfiles, ...allOtherProfiles].filter(
       (coach: CoachesDataType) => coach.email === user?.email
     );
-    toast.success(JSON.stringify(ownProfile));
     const restProfiles = [...iconsByAiProfiles, ...allOtherProfiles].filter(
       (coach: CoachesDataType) => coach.email !== user?.email
     );
