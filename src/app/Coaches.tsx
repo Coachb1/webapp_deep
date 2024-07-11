@@ -421,7 +421,6 @@ const Coaches = ({
         },
         {
           target: "#participant-listing",
-          disableScrolling: true,
           content: dynamicHelpTextt?.participant_listing
             ? dynamicHelpTextt.participant_listing
             : `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
@@ -1192,12 +1191,28 @@ const Coaches = ({
               updateHelpModeState(false);
             }
 
+            console.log(callbackData);
             if (
-              callbackData.step.target === "#search-filter" &&
-              callbackData.action === "next"
+              callbackData.step.target === "#join-the-network" &&
+              callbackData.status === "running" &&
+              callbackData.action === "prev"
             ) {
+              const joinTheNetwork =
+                document.getElementById("join-the-network");
+
+              toast.success(joinTheNetwork?.innerText || "hello");
               window.scrollTo({ top: 0, behavior: "smooth" });
+              joinTheNetwork?.scrollIntoView({
+                behavior: "smooth",
+              });
             }
+
+            // if (
+            //   callbackData.step.target === "#search-filter" &&
+            //   callbackData.action === "next"
+            // ) {
+            //   window.scrollTo({ top: 0, behavior: "smooth" });
+            // }
           }}
           //@ts-ignore
           steps={HelpModeSteps}

@@ -168,7 +168,7 @@ export function ParticipantListItemCard({
             </CardItem>
             <CardItem
               translateZ="50"
-              className="text-sm w-full font-semibold text-neutral-600 dark:text-white"
+              className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row gap-2 items-center"
             >
               {reviewComponent}
               {(coach.profile_type === "coach" ||
