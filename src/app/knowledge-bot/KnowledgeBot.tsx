@@ -19,6 +19,11 @@ import { toast } from "sonner";
 import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import {
+  CardBody,
+  CardContainer,
+  CardItem,
+} from "@/components/ui/3d-card-effect";
 
 const howItWorks = [
   {
@@ -156,14 +161,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           </div>
         )}
 
-        {/* {invalidId && renderType === "dynamic" && (
-          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
-            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
-              <AlertTriangle className="h-4 w-4 mr-2 inline" />
-              We have encountered an error. Please try again.{" "}
-            </div>
-          </div>
-        )} */}
         <div className="bg-white min-h-screen h-full max-sm:h-full max-sm:min-h-screen pb-16">
           <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
             {/* <NetworkNav user={user} /> */}
@@ -184,56 +181,47 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   ? `Welcome to ${botName} 🚀`
                   : "Welcome to Flyover Project Tracker 🚀"}
               </h1>
-
-              {renderType === "dynamic" ? (
-                <>
-                  <div className="max-sm:text-xs mt-4 my-2 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                    <p className="w-full p-2 text-center   max-sm:text-xs">
-                      {" "}
-                      {primaryPurpose.length > 0 ? (
-                        <>
-                          <b>Purpose : </b> {primaryPurpose}
-                        </>
-                      ) : (
-                        <>{botDescription}</>
-                      )}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <div className="max-sm:text-xs mt-4 text-[#2f2323] flex flex-row max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-amber-50 rounded-lg">
-                  <p className="w-full text-center p-2  max-sm:text-xs">
-                    {" "}
-                    <b> Purpose : </b> To answer any project related questions
-                    and give project related updates
-                  </p>
-                </div>
-              )}
+              <div className="w-full flex flex-row justify-center mt-8">
+                <Div
+                  className="text-gray-800"
+                  containerClassName="w-[85%] max-sm:w-full"
+                >
+                  <BorderShadow>
+                    <CardContainer
+                      containerClassName="py-0 p-4 max-sm:p-0"
+                      className="inter-var w-full max-sm:px-0"
+                    >
+                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <CardItem
+                          translateZ="100"
+                          className="w-fit rounded-2xl text-sm max-sm:text-xs"
+                        >
+                          {renderType === "dynamic" ? (
+                            <>
+                              {" "}
+                              {primaryPurpose.length > 0 ? (
+                                <>
+                                  <b>Purpose : </b> {primaryPurpose}
+                                </>
+                              ) : (
+                                <>{botDescription}</>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {" "}
+                              <b> Purpose : </b> To answer any project related
+                              questions and give project related updates
+                            </>
+                          )}
+                        </CardItem>
+                      </CardBody>
+                    </CardContainer>
+                  </BorderShadow>
+                </Div>
+              </div>
             </div>
             <div className="flex flex-row gap-2 flex-wrap mt-8 max-sm:items-center max-sm:justify-center">
-              {/* <Link target="_blank" href={coachProfileLink}>
-                    <div className="relative group cursor-pointer">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                      <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                        <div className="space-y-2">
-                          <Button
-                            variant={"secondary"}
-                            className="border border-gray-200 h-8 hover:cursor-pointer w-fit"
-                          >
-                            Profile {renderType !== "dynamic" && "(sample)"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Link> */}
-              {/* <Link href={"#wtu"}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Where to use
-                </Button>
-              </Link> */}
               <Link href={"#howItWorks"}>
                 <Button
                   variant={"secondary"}
@@ -243,14 +231,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 </Button>
               </Link>
 
-              {/* <Link target="_blank" href={`/feedback/${feedbackBotId}`}>
-                <Button
-                  variant={"secondary"}
-                  className="border border-gray-200 h-8 hover:cursor-pointer"
-                >
-                  Feedback center
-                </Button>
-              </Link> */}
               <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
@@ -259,25 +239,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   Benefits
                 </Button>
               </Link>
-              {/* <Link target="_blank" href={coachBookLink}>
-                    <div className="relative group cursor-pointer">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                      <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                        <div className="space-y-2">
-                          <Button
-                            variant={"secondary"}
-                            className="border border-gray-200 h-8 hover:cursor-pointer"
-                          >
-                            Book me {renderType !== "dynamic" && "(sample)"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Link> */}
             </div>
-            {/* <div id="wtu">
-              <WhereToUse />
-            </div> */}
+
             <div className="w-full" id="howItWorks">
               <div className={`w-full flex justify-center`}>
                 <Badge

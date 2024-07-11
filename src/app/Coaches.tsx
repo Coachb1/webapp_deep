@@ -55,7 +55,7 @@ import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card, HoverEffect } from "@/components/ui/card-hover-effect";
-import { ThreeDCard } from "@/components/ui/ThreeDCard";
+import { ParticipantListItemCard } from "@/components/ui/ParticipantListItemCard";
 
 export interface CoachesDataType {
   id: number;
@@ -1052,7 +1052,6 @@ const Coaches = ({
     const [initaited, setInitiated] = useState(false);
 
     useEffect(() => {
-      // Set initial like status and count based on likesInfo
       const userLiked = likesInfo.includes(userId);
       setIsLiked(userLiked);
       setLikeCount(likesInfo.length);
@@ -1522,7 +1521,7 @@ const Coaches = ({
                       )}
                     </AnimatePresence>
                     <Card className="p-0">
-                      <ThreeDCard
+                      <ParticipantListItemCard
                         coacheeId={coacheeId}
                         coachId={coachId}
                         coach={coach}
