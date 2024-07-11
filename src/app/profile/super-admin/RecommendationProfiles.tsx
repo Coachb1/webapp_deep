@@ -39,7 +39,7 @@ const RecommendationProfiles = () => {
       let options: OptionType[] = [];
       const users: OptionType[] = [];
       data.forEach((coach) => {
-        if (coach.email) {
+        if (coach.email && coach.profile_type !== 'knowledge_bot') {
           options.push({
             value: `${coach.profile_id}/${coach.email}/${coach.name.replace(
               /\s/g,
