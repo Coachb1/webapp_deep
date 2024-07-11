@@ -2109,6 +2109,86 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
+  const handleRequiredSelections = async(profile_type='coach') => {
+    console.log(experience,'experience')
+    
+    const coachFields = [
+      {"SupportOutcome": outcomeSupported},
+      {"coachSameDepartment": coachMentInSameDep}, 
+      {"ParticipantLevel": participantLevel},
+      {"UseEmoji": provideAnswersUsingEmojis}, 
+      {"MentoringFramework": mentoringPreferencess}, 
+      {"UserMentoringPre": mentoringPreferences}, 
+      {"UserDepartment": department}, 
+      {"UserAreaDomain": areaDomain},
+      {"UserExperience": experience},
+      {"VoiceSample": voiceSample},
+      {"AllowActionPlan": allowSessionNotes}
+    ]
+
+    const coacheeFields = [
+      {"SupportOutcome": outcomeSupported},
+      {"coachSameDepartment": coachMentInSameDep}, 
+      {"ParticipantLevel": participantLevel},
+      {"UserExperience": experience},
+      {"UserDepartment": department}, 
+
+    ]
+
+    let errors = [];
+    
+
+    const listOfFields = profile_type === 'coach'? coachFields : coacheeFields
+
+    listOfFields.forEach(field => {
+      Object.entries(field).forEach(([key, value]) => {
+        if (value.length == 0){
+          errors.push("field required")
+        }
+        handleRequiredSelection(value, key)
+      });
+    });
+
+    if (errors.length > 0){
+      return false
+    }else{
+      return true
+    }
+
+
+    // if (experience.trim().length == 0){
+    //   handleRequiredSelection(experience,'UserExperience')
+    //   return false
+    // } else if (
+    //   mentoringPreferences.trim().length  == 0
+    // ){
+    //   return false
+    // } else {
+    //   return true
+    // }
+  }
+
+  const handleRequiredSelection = (
+    input_value:string,
+    fieldName:string,
+    errorMessage = "This field is required."
+  ) => {
+    console.log('input_value',input_value)
+    if (input_value.length > 0) {
+      setDataModified(true);
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: "",
+      }));
+    } else {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: `This field is required.`,
+      }));
+    }
+  };
+
+  
   const handleWordLimitMin = (
     input_value: string,
     minLimit: number,
@@ -2285,13 +2365,15 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
+                  const is_proceed = await handleRequiredSelections();
+                  console.log('error', error)
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
                   );
-                  if (errors.length > 0) {
+                  if (errors.length > 0 || !is_proceed) {
                     toast.warning("Please enter the valid inputs.");
                   } else {
                     createSubmitHandler(e);
@@ -2430,6 +2512,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("UserExperience") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserExperience"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-4">
@@ -2439,7 +2526,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         type="file"
                         name="myImage"
                         accept="image/*"
@@ -2480,6 +2567,7 @@ const CoachIntake = ({ user }: any) => {
                     </p>
                     <textarea
                       rows={4}
+                      required
                       disabled={checkIfView === null ? false : true}
                       onChange={(e) => {
                         const inputValue = e.target.value;
@@ -2528,6 +2616,11 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </RadioGroup>
+                    {Object.keys(error).includes("UserDepartment") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserDepartment"]}
+                        </p>
+                      )}
                   </div>
 
                   <div className="my-3">
@@ -2571,6 +2664,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("UserAreaDomain") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserAreaDomain"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -2605,6 +2703,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("UserMentoringPre") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserMentoringPre"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -2684,6 +2787,11 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </div>
+                    {Object.keys(error).includes("MentoringFramework") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["MentoringFramework"]}
+                        </p>
+                      )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -2788,6 +2896,7 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
+                        required
                         disabled={checkIfView === null ? false : true}
                         onChange={(e) => {
                           const inputValue = e.target.value;
@@ -2874,7 +2983,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         value={discussionTopics}
                         onChange={(e) => {
                           setDataModified(true);
@@ -3287,6 +3396,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("VoiceSample") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["VoiceSample"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -3316,6 +3430,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("AllowActionPlan") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["AllowActionPlan"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -3382,6 +3501,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("UseEmoji") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UseEmoji"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -3904,6 +4028,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("ParticipantLevel") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["ParticipantLevel"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -3932,6 +4061,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("coachSameDepartment") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["coachSameDepartment"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -3970,6 +4104,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("SupportOutcome") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["SupportOutcome"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {!checkIfView && (
@@ -4061,13 +4200,15 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
+                  const is_proceed = await handleRequiredSelections('coachee');
+                  console.log('error', error)
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
                   );
-                  if (errors.length > 0) {
+                  if (errors.length > 0 || !is_proceed) {
                     toast.warning("Please enter the valid inputs.");
                   } else {
                     createSubmitHandler(e);
@@ -4202,6 +4343,11 @@ const CoachIntake = ({ user }: any) => {
                         ))}
                         <br />
                       </RadioGroup>
+                      {Object.keys(error).includes("UserExperience") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserExperience"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-4">
@@ -4211,7 +4357,7 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         type="file"
                         name="myImage"
                         accept="image/*"
@@ -4386,6 +4532,11 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       ))}
                     </RadioGroup>
+                    {Object.keys(error).includes("UserDepartment") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["UserDepartment"]}
+                        </p>
+                      )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -4395,7 +4546,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        // required={!checkIfEdit}
                         value={discussionTopics}
                         onChange={(e) => {
                           setDataModified(true);
@@ -4451,6 +4602,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("ParticipantLevel") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["ParticipantLevel"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -4479,6 +4635,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("coachSameDepartment") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["coachSameDepartment"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="my-3">
@@ -4517,6 +4678,11 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         ))}
                       </RadioGroup>
+                      {Object.keys(error).includes("SupportOutcome") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["SupportOutcome"]}
+                        </p>
+                      )}
                     </div>
                   </div>
 

@@ -30,6 +30,11 @@ import { toast } from "sonner";
 import { LampContainer } from "@/components/ui/lamp";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import {
+  CardBody,
+  CardContainer,
+  CardItem,
+} from "@/components/ui/3d-card-effect";
 
 interface Message {
   question: string;
@@ -386,38 +391,35 @@ const Feedback = ({ user, renderType }: any) => {
                 hear your feedback!
               </h1>
 
-              <div className="mt-4">
-                {renderType === "dynamic" ? (
-                  <>
-                    <div className="flex flex-row items-center justify-center gap-2 text-sm border-b-2 border-dashed p-2 pb-4 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
-                      <div className="flex w-[20%] items-center justify-center max-sm:w-fit">
-                        <img
-                          className="h-[200px] w-[200px] rounded-md object-cover max-sm:h-[130px]"
-                          src={
-                            profileImage ||
-                            "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                          }
-                        />
-                      </div>{" "}
-                      <p className="w-[80%] text-left max-sm:w-full  max-sm:text-center">
-                        {" "}
-                        {coachDescription}
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-row items-center justify-center gap-2 text-sm border-b-2 border-dashed p-2 pb-4 text-[#2f2323] max-sm:flex-col max-sm:text-xs">
-                    <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
-                      <img
-                        className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                        src={
-                          "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                        }
-                      />
-                    </div>{" "}
-                    <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
-                      {" "}
-                      I'm Aarav Sharma, a seasoned corporate coach with 15+
+              <div className="w-full flex flex-row justify-center mt-4">
+                <Div
+                  className="text-gray-800"
+                  containerClassName="w-[85%] max-sm:w-full"
+                >
+                  <BorderShadow>
+                    <CardContainer
+                      containerClassName="py-0 mt-4 p-4 max-sm:p-2"
+                      className="inter-var w-full"
+                    >
+                      <CardBody className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start py-0">
+                        <CardItem
+                          translateZ="100"
+                          className="w-fit rounded-2xl"
+                        >
+                          <img
+                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
+                            src={
+                              profileImage ||
+                              "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                            }
+                          />
+                        </CardItem>
+                        <CardItem
+                          translateZ="100"
+                          className="w-fit rounded-2xl px-4 text-left text-sm max-sm:text-xs"
+                        >
+                          {coachDescription ||
+                            `I'm Aarav Sharma, a seasoned corporate coach with 15+
                       years' experience in leadership development. Holding a
                       master's in organizational psychology and certifications
                       in executive coaching, I've collaborated with top-tier
@@ -428,30 +430,34 @@ const Feedback = ({ user, renderType }: any) => {
                       incorporating mindfulness for self-awareness and
                       resilience. Tailoring strategies to individual needs, I
                       aim to be a trusted guide for long-term, sustainable
-                      leadership development in the dynamic corporate landscape.
+                      leadership development in the dynamic corporate landscape.`}
+                        </CardItem>
+                      </CardBody>
+                    </CardContainer>
+                  </BorderShadow>
+                </Div>
+              </div>
+              <div className="w-full flex flex-col items-center">
+                {currentProjects && (
+                  <div className="mt-4 text-sm  border-b-2 border-dashed p-2 max-sm:text-xs w-[85%] max-sm:w-full">
+                    <p className="my-2">
+                      <b>Current projects : </b> {currentProjects}
                     </p>
                   </div>
                 )}
-              </div>
 
-              {currentProjects && (
-                <div className="mt-4 text-sm  border-b-2 border-dashed p-2 max-sm:text-xs">
-                  <p className="my-2">
-                    <b>Current projects : </b> {currentProjects}
+                <div className="py-4 text-[#2f2323] max-sm:text-xs border-b-2 border-dashed p-2 w-[85%] max-sm:w-full">
+                  <p className="text-sm max-sm:text-xs">
+                    {" "}
+                    Thank you for taking the time! Your feedback is invaluable
+                    to me. Please take a moment to share your experience by
+                    selecting either a thumbs up or thumbs down. I have a few
+                    additional questions to gather more details about your
+                    experience. Please share your honest answers to the
+                    questions. Your input helps me improve, and I genuinely
+                    appreciate your time and insights.
                   </p>
                 </div>
-              )}
-
-              <div className="my-4 text-[#2f2323] max-sm:text-xs border-b-2 border-dashed p-2 mt-4 ">
-                <p className="text-sm max-sm:text-xs">
-                  {" "}
-                  Thank you for taking the time! Your feedback is invaluable to
-                  me. Please take a moment to share your experience by selecting
-                  either a thumbs up or thumbs down. I have a few additional
-                  questions to gather more details about your experience. Please
-                  share your honest answers to the questions. Your input helps
-                  me improve, and I genuinely appreciate your time and insights.
-                </p>
               </div>
             </div>
 
@@ -505,8 +511,8 @@ const Feedback = ({ user, renderType }: any) => {
               <div className="w-full">
                 <div className="relative isolate mx-auto">
                   <div>
-                    <div className="z-50 mx-auto mt-[-1.5rem] max-sm:w-[100%] lg:px-8">
-                      <div className="no-scrollbar flex  max-h-[450px] bg-white flex-col gap-2 overflow-scroll rounded-xl p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
+                    <div className="z-50 mx-auto mt-[-1.5rem] max-sm:w-[100%] lg:px-8 flex flex-row justify-center w-full">
+                      <div className="no-scrollbar flex w-[85%]  max-h-[450px] bg-white flex-col gap-2 overflow-scroll rounded-xl p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
                         {renderType === "dynamic" ? (
                           <>
                             {positiveFeedbacks.length > 0 ? (
