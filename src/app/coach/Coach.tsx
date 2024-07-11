@@ -26,6 +26,11 @@ import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Meteors } from "@/components/ui/meteors";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import {
+  CardBody,
+  CardContainer,
+  CardItem,
+} from "@/components/ui/3d-card-effect";
 
 const howItWorks = [
   {
@@ -363,8 +368,8 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               )}
 
-              <div className="my-4 max-sm:text-xs text-[#2f2323]">
-                <p className="p-2 pb-4 border-b-2 border-dashed border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs">
+              <div className="my-4 max-sm:text-xs text-[#2f2323] w-full flex flex-row justify-center">
+                <p className="p-2 pb-4 border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
                   {" "}
                   This is your coach/mentor’s personalized bot. Here, you would
                   typically find a detailed description of your
@@ -377,82 +382,70 @@ const Coach = ({ user, renderType }: any) => {
                 </p>
               </div>
 
-              {renderType === "dynamic" ? (
-                <>
-                  {botScenarioCase === "icons_by_ai" ? (
-                    <div className="flex flex-row items-start justify-around max-sm:flex-col max-sm:justify-center max-sm:items-center overflow-x-scroll no-scrollbar border-b-2 border-dashed border-gray-300 pb-4">
-                      <div className="w-[20%] max-sm:w-fit max-sm:mb-4">
-                        <img
-                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                          src={
-                            profileImage
-                              ? profileImage
-                              : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                          }
-                        />
-                      </div>
-                      <p className="w-[80%] max-sm:w-full text-wrap text-left max-sm:text-justify">
-                        {parseTextToJSX(coachDescription)}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="max-sm:text-xs text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
-                      <div className="w-[20%] max-sm:w-fit flex justify-center items-start">
-                        <img
-                          className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                          src={
-                            profileImage
-                              ? profileImage
-                              : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                          }
-                        />
-                      </div>
-                      <p className="w-[80%] text-left text-sm max-sm:text-xs max-sm:w-full max-sm:text-center">
-                        {coachDescription}
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-sm max-sm:text-xs  text-[#2f2323] flex flex-row max-sm:flex-col items-center max-sm:items-center gap-2 justify-center p-2 pb-4 border-b-2 border-dashed border-gray-300">
-                  <div className="w-[20%] max-sm:w-fit flex justify-center items-center">
-                    <img
-                      className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-md"
-                      src={
-                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
-                      }
-                    />
-                  </div>{" "}
-                  <p className="w-[80%] max-sm:w-full text-left  max-sm:text-center">
-                    {" "}
-                    I'm Aarav Sharma, a seasoned corporate coach with 15+ years'
-                    experience in leadership development. Holding a master's in
-                    organizational psychology and certifications in executive
-                    coaching, I've collaborated with top-tier companies. My
-                    coaching style, a unique blend of empathy and strategic
-                    thinking, fosters a growth mindset and aligns personal
-                    values with professional goals. Known for approachability, I
-                    create a safe space for executives, incorporating
-                    mindfulness for self-awareness and resilience. Tailoring
-                    strategies to individual needs, I aim to be a trusted guide
-                    for long-term, sustainable leadership development in the
-                    dynamic corporate landscape.
-                  </p>
-                </div>
-              )}
+              <div className="w-full flex flex-row justify-center">
+                <Div
+                  className="text-gray-800"
+                  containerClassName="w-[85%] max-sm:w-full"
+                >
+                  <BorderShadow>
+                    <CardContainer
+                      containerClassName="py-0 mt-4 p-4 max-sm:p-0"
+                      className="inter-var w-full max-sm:px-0"
+                    >
+                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <CardItem
+                          translateZ="100"
+                          className="w-fit rounded-2xl"
+                        >
+                          <img
+                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
+                            src={
+                              profileImage ||
+                              "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
+                            }
+                          />
+                        </CardItem>
+                        <CardItem
+                          translateZ="100"
+                          className="w-full rounded-2xl px-4 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2"
+                        >
+                          {renderType === "dynamic"
+                            ? parseTextToJSX(coachDescription)
+                            : `I'm Aarav Sharma, a seasoned corporate coach with 15+
+                          years' experience in leadership development. Holding a
+                          master's in organizational psychology and
+                          certifications in executive coaching, I've
+                          collaborated with top-tier companies. My coaching
+                          style, a unique blend of empathy and strategic
+                          thinking, fosters a growth mindset and aligns personal
+                          values with professional goals. Known for
+                          approachability, I create a safe space for executives,
+                          incorporating mindfulness for self-awareness and
+                          resilience. Tailoring strategies to individual needs,
+                          I aim to be a trusted guide for long-term, sustainable
+                          leadership development in the dynamic corporate
+                          landscape.`}
+                        </CardItem>
+                      </CardBody>
+                    </CardContainer>
+                  </BorderShadow>
+                </Div>
+              </div>
               {discussiionTopics.length > 0 && (
-                <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-200 bg-white rounded-lg mt-4">
-                  <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
-                    Discussion Topics
-                  </h3>
-                  <div className="flex flex-row gap-2 justify-center flex-wrap">
-                    <>
-                      {discussiionTopics.map((topic) => (
-                        <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
-                          {capitalizeText(topic.trim())}
-                        </div>
-                      ))}
-                    </>
+                <div className="w-full flex flex-row justify-center">
+                  <div className="max-sm:text-xs text-[#2f2323] flex flex-col max-sm:flex-col items-center gap-2 justify-center p-2 border border-gray-400 bg-white rounded-2xl mt-4 w-[85%] max-sm:w-full">
+                    <h3 className="max-sm:text-sm text-base font-bold text-gray-600">
+                      Discussion Topics
+                    </h3>
+                    <div className="flex flex-row gap-2 justify-center flex-wrap">
+                      <>
+                        {discussiionTopics.map((topic) => (
+                          <div className="border border-blue-300 bg-blue-50 p-1 rounded-md text-sm max-sm:text-xs px-2.5 max-sm:p-1">
+                            {capitalizeText(topic.trim())}
+                          </div>
+                        ))}
+                      </>
+                    </div>
                   </div>
                 </div>
               )}

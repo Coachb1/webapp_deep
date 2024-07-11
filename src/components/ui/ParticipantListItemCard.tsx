@@ -15,7 +15,7 @@ import { Button } from "./button";
 import { Badge } from "./badge";
 import { ExternalLink, Star } from "lucide-react";
 
-export function ThreeDCard({
+export function ParticipantListItemCard({
   coach,
   coacheeId,
   coachId,
