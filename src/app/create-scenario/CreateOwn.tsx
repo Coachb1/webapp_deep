@@ -1019,7 +1019,7 @@ const CreateOwn = ({
                                   </Button>
                                 </div>
                               </form>
-                              <div className="flex flex-col gap-2 mt-4">
+                              <div id="learning-results" className="flex flex-col gap-2 mt-4">
                                 {searchMode === "youtube" && (
                                   <>
                                     {createLoading ? (

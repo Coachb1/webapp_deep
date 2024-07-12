@@ -2932,7 +2932,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         onChange={(e) => {
                           const inputValue = e.target.value;
 
@@ -3447,7 +3447,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         value={discussInCARformat}
                         onChange={(e) => {
                           const inputValue = e.target.value;
@@ -3523,7 +3523,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             disabled={checkIfView === null ? false : true}
                             rows={4}
-                            required={!checkIfEdit}
+                            required
                             value={foundationalValues}
                             onChange={(e) => {
                               setFoundationalValues(e.target.value);
@@ -3556,7 +3556,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={developmentFramewrok}
                             onChange={(e) => {
                               setDevelopmentFrameworks(e.target.value);
@@ -3599,7 +3599,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={coachingProcessOverview}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3634,7 +3634,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={handlingSituations}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3669,7 +3669,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={integratingLessons}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3705,7 +3705,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3747,7 +3747,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={differentCareerPath}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3783,7 +3783,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3829,7 +3829,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={overviewofMentoring}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3865,7 +3865,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3902,7 +3902,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3938,7 +3938,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -4695,7 +4695,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         value={challengesToHelp}
                         onChange={(e) => {
                           setDataModified(true);
