@@ -53,6 +53,7 @@ import { GoogleGeminiEffectND } from "@/components/ui/GoogleGeminiEffect";
 import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@/components/ui/card-hover-effect";
 import { ParticipantListItemCard } from "@/components/ui/ParticipantListItemCard";
+import { useUser } from "@/context/UserContext";
 
 export interface CoachesDataType {
   id: number;
@@ -177,16 +178,16 @@ function findConnectionStatus(
 
 const Coaches = ({
   user,
-  coachesDataa,
-  UserJoiningPreviledges,
-  userConnections,
-  clientDepartments,
-  clientExpertise,
-  restrictedFeatures,
-  restrictedPages,
-  headings,
-  helpModeText,
-}: {
+}: // coachesDataa,
+// UserJoiningPreviledges,
+// userConnections,
+// clientDepartments,
+// clientExpertise,
+// restrictedFeatures,
+// restrictedPages,
+// headings,
+// helpModeText,
+{
   user: KindeUser | null;
   coachesDataa: CoachesDataType[];
   UserJoiningPreviledges: any;
@@ -219,19 +220,19 @@ const Coaches = ({
   );
 
   const [userId, setUserId] = useState("");
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
-  const [loadingStates, setLoadingStates] = useState({
-    icon: <UserCogIcon className="h-4 w-4 mr-2" />,
-    text: "Refreshing Profile Avatars",
-  });
+  // const [loadingStates, setLoadingStates] = useState({
+  //   icon: <UserCogIcon className="h-4 w-4 mr-2" />,
+  //   text: "Refreshing Profile Avatars",
+  // });
 
   const [coacheeId, setCoacheeId] = useState("");
   const [coachId, setCoachId] = useState("");
-  const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
+  // const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
   const [connections, setConnections] = useState<connectionType[]>([]);
 
-  const [buttonLoading, setButtonLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const [dynamicHelpText, setDynamicHelpText] = useState<any>();
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
@@ -254,8 +255,26 @@ const Coaches = ({
   const totalPages = Math.ceil(coachesData.length / itemsPerPage);
   const maxPaginationLinks = 5;
 
-  const getCoachesData = async () => {
-    const data = coachesDataa.sort(
+  const {
+    directoryProfiles,
+    userInfo: {
+      restrictedFeatures,
+      restrictedPages,
+      headings,
+      helpText: helpModeText,
+      clientDepartments,
+      clientExpertise,
+    },
+    coachId: coachID,
+    coacheeId: coacheeID,
+    joiningPrevileges: UserJoiningPreviledges,
+    userConnections,
+    allCoaches,
+    feedbackBots,
+  } = useUser();
+
+  const getCoachesData = async (profiles: CoachesDataType[]) => {
+    const data = profiles.sort(
       (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
     );
 
@@ -376,7 +395,7 @@ const Coaches = ({
     ]);
   };
 
-  const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
+  // const [allCoaches, setAllCoaches] = useState<CoachesDataType[]>([]);
   const [canJoinAs, setCanJoinAs] = useState("");
 
   async function getCanJoinAs(email: string) {
@@ -393,8 +412,8 @@ const Coaches = ({
     hideBots();
     if (user) {
       // getClientInfoForUser(user?.email!);
-      console.log("COACHES DATA : ", coachesDataa);
-      getCoachesData();
+      // console.log("COACHES DATA : ", coachesDataa);
+      getCoachesData(directoryProfiles);
 
       const dynamicHelpTextt = helpModeText?.network_directory;
       setDynamicHelpText(helpModeText?.network_directory);
@@ -427,65 +446,67 @@ const Coaches = ({
         },
       ]);
 
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserId(data.uid);
-          getCanJoinAs(user?.email!);
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
+      setCoachId(coachID);
+      setCoacheeId(coacheeID);
+      // getUserAccount(user)
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //     setUserId(data.uid);
+      //     getCanJoinAs(user?.email!);
+      //     fetch(
+      //       `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           Authorization: basicAuth,
+      //         },
+      //       }
+      //     )
+      //       .then((res) => res.json())
+      //       .then((data) => {
+      //         console.log(data);
 
-              setAllCoaches(data.data);
-              setButtonLoading(false);
+      //         setAllCoaches(data.data);
+      //         setButtonLoading(false);
 
-              const isApprovedData = data.data.filter(
-                (coachData: any) => coachData.is_approved === true
-              );
+      //         const isApprovedData = data.data.filter(
+      //           (coachData: any) => coachData.is_approved === true
+      //         );
 
-              if (isApprovedData.length > 0) {
-                setCoacheeId(findCoacheeUID(isApprovedData));
-                setCoachId(findCoachUID(isApprovedData));
-              } else {
-                setCoacheeId("");
-                setCoachId("");
-              }
-              setLoading(false);
-            })
-            .then((err) => {
-              setButtonLoading(false);
-              console.error(err);
-              setLoading(false);
-            });
+      //         if (isApprovedData.length > 0) {
+      //           setCoacheeId(findCoacheeUID(isApprovedData));
+      //           setCoachId(findCoachUID(isApprovedData));
+      //         } else {
+      //           setCoacheeId("");
+      //           setCoachId("");
+      //         }
+      //         setLoading(false);
+      //       })
+      //       .then((err) => {
+      //         setButtonLoading(false);
+      //         console.error(err);
+      //         setLoading(false);
+      //       });
 
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(`/get-bots/?user_id=${data.uid}`, data);
+      //     fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+      //       headers: {
+      //         Authorization: basicAuth,
+      //       },
+      //     })
+      //       .then((res) => res.json())
+      //       .then((data) => {
+      //         console.log(`/get-bots/?user_id=${data.uid}`, data);
 
-              const FeedbackBot = data.data.filter(
-                (data: any) => data.signature_bot.bot_type === "feedback_bot"
-              );
-              setFeedbackBots(FeedbackBot);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        });
+      //         const FeedbackBot = data.data.filter(
+      //           (data: any) => data.signature_bot.bot_type === "feedback_bot"
+      //         );
+      //         setFeedbackBots(FeedbackBot);
+      //       })
+      //       .catch((err) => {
+      //         console.error(err);
+      //       });
+      //   });
     }
   }, []);
 
@@ -693,7 +714,7 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections?.data?.find(
+          const connection = userConnections?.find(
             (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
@@ -743,7 +764,7 @@ const Coaches = ({
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections.data.find(
+          const connection = userConnections?.find(
             (connection: any) => connection.coachee_id === coach.profile_id
           );
           return {
@@ -1240,7 +1261,7 @@ const Coaches = ({
                 >
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      disabled={buttonLoading}
+                      // disabled={buttonLoading}
                       asChild
                       className="border-none outline-none "
                     >
@@ -1507,7 +1528,7 @@ const Coaches = ({
         )}
 
         <div className="mt-2 ">
-          {loading && (
+          {/* {loading && (
             <div className="flex w-full flex-row items-center justify-center pb-12">
               <div className="mt-12 flex items-center">
                 {loadingStates.icon}
@@ -1522,11 +1543,10 @@ const Coaches = ({
                 </span>
               </div>
             </div>
-          )}
+          )} */}
           <div className="w-full"> </div>
           <div id="participant-listing">
-            {!loading &&
-              coachesData.length > 0 &&
+            {coachesData.length > 0 &&
               currentCoachesData.map((coach, idx) => (
                 <>
                   <div
@@ -1688,7 +1708,7 @@ const Coaches = ({
               </PaginationContent>
             </Pagination>
           )}
-          {!loading && coachesData.length === 0 && (
+          {coachesData.length === 0 && (
             <div className="flex w-full flex-row items-center justify-center">
               {!restrictedFeatures?.includes("Search-filter") && (
                 <div className="mt-12 flex items-center">

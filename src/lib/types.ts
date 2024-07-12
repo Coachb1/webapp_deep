@@ -317,3 +317,18 @@ export interface AllUserDataType {
   userDeniedAccesses: string;
   userProfileId?: string;
 }
+
+export interface UserInfoType {
+  isDemoUser: boolean;
+  isRestricted: boolean;
+  clientExpertise: string;
+  clientDepartments: string;
+  restrictedPages: string | null;
+  restrictedFeatures: string | null;
+  headings: {
+    heading: string | null;
+    subHeading: string | null;
+    tagLine: string | null;
+  } | null;
+  helpText: any;
+}

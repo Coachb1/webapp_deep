@@ -13,6 +13,7 @@ import {
   MediaData,
   OptionalMediaData,
   TestData,
+  UserInfoType,
 } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -151,7 +152,6 @@ export const hideConsoleLogs = () => {
     return (console.log = function () {});
   }
 };
-
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",
@@ -700,4 +700,15 @@ export const handleLinks = (link: string) => {
   } else {
     return link;
   }
+};
+
+export const emptyData: UserInfoType = {
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: "",
+  clientDepartments: "",
+  restrictedPages: null,
+  restrictedFeatures: null,
+  headings: null,
+  helpText: null,
 };
