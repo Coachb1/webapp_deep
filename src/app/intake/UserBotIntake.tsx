@@ -770,6 +770,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                 <input
                   disabled={checkIfView === null ? false : true}
+                  required={!checkIfEdit}
                   type="file"
                   className="w-full text-xs my-2"
                   multiple
@@ -989,7 +990,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <Checkbox
                 disabled={checkIfView === null ? false : true}
                 checked={makePrivate}
-                required={!checkIfEdit}
+                // required={!checkIfEdit}
                 onCheckedChange={(checked) => {
                   setMakePrivate(Boolean(checked));
                   setDataModified(true);
