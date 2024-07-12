@@ -9,14 +9,13 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
+import { CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
-import { toast } from "sonner";
-import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
+import { baseURL, basicAuth } from "@/lib/utils";
+import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
 import {
@@ -27,37 +26,27 @@ import {
 
 const howItWorks = [
   {
-    heading: "Quick Match",
+    heading: "Creation of the Bot",
     description:
-      "The quick match demonstrates fitment between participants based on pre-decided criteria. These can be set up during the user onboarding.",
+      "A knowledge bot can be created by simply an intake form and attaching documents to the same. The knowledge bot can be for individual use or it can be made available to everyone in the enterprise.",
   },
   {
-    heading: "Session Notes",
+    heading: "Usage of the Bot",
     description:
-      "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
-  },
-  {
-    heading: "Recommendations",
-    description:
-      "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
+      "The users can access public bots via the Knowledge Library as well as bots that might have been created for individual usage.",
   },
 ];
 
 const benefitsData = [
   {
-    heading: "Transcript Email",
+    heading: "Conversational Analysis",
     description:
-      "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
+      "The knowledge bots can synthesize information from one or multiple documents. It saves time by presenting a unified simple response.",
   },
   {
-    heading: "Advice Anytime, Anywhere",
+    heading: "Multiple Use Cases",
     description:
-      "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
-  },
-  {
-    heading: "Skill scenario library",
-    description:
-      "Explore our extensive library of skill scenarios. This collection provides practical, real-life situations for skill development. Enhance your skills by tackling scenarios that resonate with the needs identified during the session.",
+      "The bots can be related to a project and its relation information and status. It can also be about a particular department's knowledge repository. It can unlock knowledge locked in any documents.",
   },
 ];
 
@@ -176,11 +165,13 @@ const KnowledgeBot = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 ">
-                {renderType === "dynamic"
-                  ? `Welcome to ${botName} 🚀`
-                  : "Welcome to Flyover Project Tracker 🚀"}
-              </h1>
+              <div className="w-full flex flex-row justify-center items-center">
+                <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 w-[80%]">
+                  {renderType === "dynamic"
+                    ? `${botName}`
+                    : "Flyover Project Tracker."}
+                </h1>
+              </div>
               <div className="w-full flex flex-row justify-center mt-8">
                 <Div
                   className="text-gray-800"
