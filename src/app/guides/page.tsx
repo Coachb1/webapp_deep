@@ -64,13 +64,28 @@ const getknowledgeBotss = async (userEmail: string) => {
         const description = JSON.parse(botJson.faqs)[
           "What is the primary purpose of the bot?"
         ];
-        knowledgeBotss.push({
-          bot_id: botJson.bot_id,
-          bot_name: item.bot_attributes.bot_name,
-          bot_type: botJson.bot_type,
-          description: description,
-          scenario_case: botJson.bot_scenario_case,
-        });
+        console.log(botJson.is_private, botJson.user_id, responseData.data.user_info[0].user_id)
+        if (!botJson.is_private ){
+
+          knowledgeBotss.push({
+            bot_id: botJson.bot_id,
+            bot_name: item.bot_attributes.bot_name,
+            bot_type: botJson.bot_type,
+            description: description,
+            scenario_case: botJson.bot_scenario_case,
+          });
+        } else {
+          if (botJson.user_id === responseData.data.user_info[0].user_id){
+            knowledgeBotss.push({
+              bot_id: botJson.bot_id,
+              bot_name: item.bot_attributes.bot_name,
+              bot_type: botJson.bot_type,
+              description: description,
+              scenario_case: botJson.bot_scenario_case,
+            });
+            
+          }
+        }
       });
 
       return knowledgeBotss;

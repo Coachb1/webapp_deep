@@ -436,7 +436,7 @@ export function isValidLinks(linksString: string): boolean {
 
 export function isValidYoutubeLinks(linksString: string): boolean {
   const links = linksString.split(",");
-  const urlRegex = /^https?:\/\/(?:www\.)?youtube\.com\/.+/;
+  const urlRegex = /^https?:\/\/(?:www\.)?(youtube\.com\/.+|youtu\.be\/.+)$/;
 
   for (const link of links) {
     const trimmedLink = link.trim();

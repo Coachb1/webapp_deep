@@ -39,24 +39,27 @@ const RecommendationProfiles = () => {
       let options: OptionType[] = [];
       const users: OptionType[] = [];
       data.forEach((coach) => {
-        if (coach.email && !['coachee','mentee','knowledge_bot'].includes(coach.profile_type)) {
-          options.push({
-            value: `${coach.profile_id}/${coach.email}/${coach.name.replace(
-              /\s/g,
-              ""
-            )}`,
-            label: (
-              <div>
-                <p className="font-semibold">{coach.name}</p>
-                <p>{coach.email}</p>
-              </div>
-            ),
-          });
-
-          users.push({
-            value: coach.profile_id,
-            label: coach.email,
-          });
+        if (coach.email) {
+          if (!['coachee','mentee','knowledge_bot'].includes(coach.profile_type)){
+            options.push({
+              value: `${coach.profile_id}/${coach.email}/${coach.name.replace(
+                /\s/g,
+                ""
+              )}`,
+              label: (
+                <div>
+                  <p className="font-semibold">{coach.name}</p>
+                  <p>{coach.email}</p>
+                </div>
+              ),
+            });
+          }
+          if (!['knowledge_bot'].includes(coach.profile_type)){
+            users.push({
+              value: coach.profile_id,
+              label: coach.email,
+            });
+          }
         }
       });
 

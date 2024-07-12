@@ -135,6 +135,7 @@ const getknowledgeBotss = async (userEmail: string) => {
               botJson.faqs["What is the primary purpose of the bot?"];
           }
           if (item.signature_bot.is_approved) {
+            if (!item.signature_bot.is_private){
             knowledgeBotss.push({
               bot_id: botJson.bot_id,
               bot_name: item.bot_attributes.bot_name,
@@ -143,7 +144,21 @@ const getknowledgeBotss = async (userEmail: string) => {
               scenario_case: botJson.bot_scenario_case,
               creator_name: botJson.creator_name,
             });
-          }
+            } else {
+              if (item.signature_bot.user_id === responseData.data.user_info[0].user_id){
+                knowledgeBotss.push({
+                  bot_id: botJson.bot_id,
+                  bot_name: item.bot_attributes.bot_name,
+                  bot_type: botJson.bot_type,
+                  description: description,
+                  scenario_case: botJson.bot_scenario_case,
+                  creator_name: botJson.creator_name,
+                });
+              }
+
+            } 
+            
+          } 
         });
         return { knowledgeBotss, restrictedFeatures, clientName };
       } catch (error) {

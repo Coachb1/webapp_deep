@@ -169,6 +169,8 @@ export interface knowledgeBotJson {
     bot_scenario_case: string;
     creator_name: string;
     is_approved: boolean;
+    is_private : string;
+    user_id: string;
   };
   bot_attributes: {
     bot_name: string;
