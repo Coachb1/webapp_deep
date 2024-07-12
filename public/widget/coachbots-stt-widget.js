@@ -1248,7 +1248,7 @@ const getBotDetails2 = async (botId) => {
     
 
     if (botType === "user_bot") {
-      botWelcomeMessage = "Welcome to my custom bot.";
+      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
     } else if (botType === "deep_dive") {
       botWelcomeMessage = " Welcome to the deep dive survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this on this page. The response to the survey can be totally anonymous - so repond frankly and give voice to critical topics important to the team. Click  begin 'session' to get started and respond in detail.";
     } else if (botType === "avatar_bot") {
