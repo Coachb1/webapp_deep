@@ -146,6 +146,8 @@ const CreateYourDeepDive = ({ user }: any) => {
         add_prompt_list[numOfTries]
       );
 
+      console.log(JSON.stringify(formdata));
+
       fetch(`${baseURL}/accounts/create-bot-by-details/`, {
         method: "POST",
         headers: myHeaders,
@@ -199,6 +201,8 @@ const CreateYourDeepDive = ({ user }: any) => {
     const today = new Date();
     return today;
   };
+
+  const [datePoppoverOpen, setDatePopoverOpen] = useState(false);
 
   return (
     <div className="w-full">
@@ -307,7 +311,12 @@ const CreateYourDeepDive = ({ user }: any) => {
               <p className="text-sm min-w-fit text-left font-semibold max-sm:text-xs text-gray-600">
                 Expiry Date
               </p>
-              <Popover>
+              <Popover
+                open={datePoppoverOpen}
+                onOpenChange={(open) => {
+                  setDatePopoverOpen(open);
+                }}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -335,8 +344,10 @@ const CreateYourDeepDive = ({ user }: any) => {
                     selected={expiryDate}
                     onSelect={(val) => {
                       setExpiryDate(val);
-
-                      // console.log(val?.toISOString()! + 24 * 60 * 60 * 1000)
+                      if (val !== undefined) {
+                        setDatePopoverOpen(false);
+                      }
+                      console.log(val);
                     }}
                     initialFocus
                   />

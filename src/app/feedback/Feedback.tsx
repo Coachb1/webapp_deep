@@ -399,7 +399,7 @@ const Feedback = ({ user, renderType }: any) => {
                   <BorderShadow>
                     <CardContainer
                       containerClassName="py-0 mt-4 p-4 max-sm:p-2"
-                      className="inter-var w-full"
+                      className="inter-var w-full flex flex-col "
                     >
                       <CardBody className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start py-0">
                         <CardItem
@@ -407,7 +407,7 @@ const Feedback = ({ user, renderType }: any) => {
                           className="w-fit rounded-2xl"
                         >
                           <img
-                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
+                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl "
                             src={
                               profileImage ||
                               "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
@@ -433,19 +433,20 @@ const Feedback = ({ user, renderType }: any) => {
                       leadership development in the dynamic corporate landscape.`}
                         </CardItem>
                       </CardBody>
+                      <CardBody className="w-full h-fit">
+                        {currentProjects && (
+                          <div className="mt-4 text-sm  border-t-2 border-dashed p-2 max-sm:text-xs w-full">
+                            <p className="my-2">
+                              <b>Current projects : </b> {currentProjects}
+                            </p>
+                          </div>
+                        )}
+                      </CardBody>
                     </CardContainer>
                   </BorderShadow>
                 </Div>
               </div>
               <div className="w-full flex flex-col items-center">
-                {currentProjects && (
-                  <div className="mt-4 text-sm  border-b-2 border-dashed p-2 max-sm:text-xs w-[85%] max-sm:w-full">
-                    <p className="my-2">
-                      <b>Current projects : </b> {currentProjects}
-                    </p>
-                  </div>
-                )}
-
                 <div className="py-4 text-[#2f2323] max-sm:text-xs border-b-2 border-dashed p-2 w-[85%] max-sm:w-full">
                   <p className="text-sm max-sm:text-xs">
                     {" "}
