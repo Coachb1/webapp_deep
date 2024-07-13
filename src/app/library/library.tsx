@@ -297,13 +297,13 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
         target: "#nav1",
         content: dynamicHelpText?.nav_one
           ? dynamicHelpText.nav_one
-          : "Subject matter categories of simulations and roleplay available are listed here. Popular categories are manager development, Emotional Quotient areas and client specific competency skill specific areas.",
+          : `"Emotional Quotient Areas" contains real world like situational simulations. "Competency Based Power Skills" contains set of  competencies like change management, decision making, communication, etc, But among 13 only 4 competencies are visible. You can customize and practice other skills from "My Account" section`,
       },
       {
         target: "#nav2",
         content: dynamicHelpText?.nav_two
           ? dynamicHelpText.nav_two
-          : "Users are able to create their own scenarios (via the Creator studio)",
+          : `The "Assigned Scenarios" contains the simulations that have been asigned other users from "Simulation Creator" under "Creator studio" tab. The "Requested Scenarios" contains user which have created using "Simulation Creator" under "Creator studio" tab.`,
       },
       {
         target: "#eq-cat",
