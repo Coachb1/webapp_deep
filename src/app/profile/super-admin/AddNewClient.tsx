@@ -7,6 +7,7 @@ import { baseURL, basicAuth } from "@/lib/utils";
 import { Loader, PenBox, PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "antd";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface OptionType {
   value: string;
@@ -20,16 +21,63 @@ interface AddNewClientProps {
 const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   const [newClientInit, setNewClientInit] = useState(false);
   const [changeLoading, setChangeLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [newClientName, setNewClientName] = useState("");
   const [newDomainName, setNewDomainName] = useState("");
   const [newMemberEmails, setNewMemberEmails] = useState("");
   const [newAllowedIps, setNewAllowedIps] = useState("");
+  const [clinetHheading, setClientHeading] = useState("");
+  const [clientDepartments, setClientDepartments ] = useState("");
+  const [CoachExpertise, setCoachExpertise] = useState("");
+  const [subHeading, setSubHeading] = useState("");
+  const [tagLine, setTagLine] = useState("");
+  const [makeNewUserTrial, setMakeNewUserTrial] = useState(true);
+  const [useSkillFromBank, setUseSkillFromBank] = useState(false);
+  const [allowePasteAnswer, setAllowePaseAnswer] = useState(true);
+  const [alloweAudioInteraction, setAllowAudioInteraction] = useState(false);
+  const [accessBotIds, setAccessedBotIds] = useState("");
+  const [excludedUsers, setExcludedUsers] = useState("");
+
+  // webhook
+  const [webhookUrl, SetWebhookUrl] = useState("");
+  const [webhookToken, SetWebhookToken] = useState("");
+  const [webhookSecret, SetWebhookSecret] = useState("");
+  const [webhookEnabled, SetWebhookEnabled] = useState(false);
+
+  // to get ui information:
+  // const [headerText, setHeaderText] = useState("");
+  const [clientUiInfo, setClientUIInfo] = useState({
+    bottom_text: '',
+    header: '',
+    read_text: '',
+  });
+
+
   const [newRestrictedPages, setNewRestrictedPages] = useState<OptionType[]>(
     []
   );
   const [newRestrictedFeatures, setNewRestrictedFeatures] = useState<
     OptionType[]
   >([]);
+
+  const handleUIInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setClientUIInfo((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  function emptyToNull(dataObj: Record<string, any>): Record<string, any> {
+    let updatedData: Record<string, any> = {};
+    for (let key in dataObj) {
+        if (Object.prototype.hasOwnProperty.call(dataObj, key)) {
+            updatedData[key] = dataObj[key] !== "" ? dataObj[key] : null;
+        }
+    }
+    return updatedData;
+}
+
 
   const restrictedPageOptions: OptionType[] = [
     { value: "Network Directory", label: "Network Directory" },
@@ -70,6 +118,8 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       myHeaders.append("Authorization", basicAuth);
       myHeaders.append("Content-Type", "application/json");
 
+      console.log('newMemberEmails',newMemberEmails)
+
       const raw = JSON.stringify({
         client_name: newClientName,
         restricted_pages: newRestrictedPages
@@ -81,6 +131,22 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
         allowed_ips: newAllowedIps,
         domain_name: newDomainName,
         member_emails: newMemberEmails,
+        heading: clinetHheading.length>0? clinetHheading : null,
+        allow_audio_interactions: alloweAudioInteraction,
+        make_new_user_in_trail: makeNewUserTrial,
+        sub_heading: subHeading.length>0? subHeading : null,
+        tag_line: tagLine.length>0? tagLine : null,
+        ui_information: emptyToNull(clientUiInfo),
+        allow_paste_answer: allowePasteAnswer,
+        webhook_url: webhookUrl.length>0? webhookUrl : null,
+        webhook_secret: webhookSecret.length>0? webhookSecret : null,
+        webhook_token: webhookToken.length>0? webhookToken : null,
+        webhook_enabled: webhookEnabled,
+        excluded_users: excludedUsers,
+        use_skills_from_skill_bank: useSkillFromBank,
+        departments: clientDepartments.length>0? clientDepartments: null,
+        coach_expertise: CoachExpertise.length>0 ? CoachExpertise : null
+
       });
 
       const requestOptions: RequestInit = {
@@ -90,7 +156,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       };
 
       const response = await fetch(
-        `${baseURL}/accounts/get-create-or-update-client-id/`,
+        `http://localhost:8001/api/v1/accounts/get-create-or-update-client-id/`,
         requestOptions
       );
 
@@ -130,6 +196,28 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     setNewMemberEmails("");
     setNewAllowedIps("");
     setNewRestrictedPages([]);
+    setNewRestrictedFeatures([]);
+    setClientHeading("");
+    setSubHeading("");
+    setTagLine("");
+    setAccessedBotIds("");
+    setMakeNewUserTrial(true);
+    setAllowePaseAnswer(true);
+    setClientUIInfo({
+      bottom_text: '',
+      header: '',
+      read_text: '',
+    })
+    setExcludedUsers("");
+    SetWebhookUrl("");
+    SetWebhookToken("");
+    SetWebhookSecret("");
+    SetWebhookEnabled(false);
+    setUseSkillFromBank(false);
+    setAllowAudioInteraction(false);
+    setClientDepartments("");
+    setCoachExpertise("");
+    
   };
 
   return (
@@ -185,6 +273,30 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
               />
             </div>
             <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Departments</p>
+              <textarea
+                value={clientDepartments}
+                onChange={(e) => setClientDepartments(e.target.value)}
+                className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+              />
+            </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Expertise</p>
+              <textarea
+                value={CoachExpertise}
+                onChange={(e) => setCoachExpertise(e.target.value)}
+                className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+              />
+            </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Allowed Bot Ids</p>
+              <textarea
+                value={accessBotIds}
+                onChange={(e) => setAccessedBotIds(e.target.value)}
+                className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+              />
+            </div>
+            <div className="w-full flex flex-col gap-2 items-start">
               <p className="block text-sm font-medium">Allowed IPs</p>
               <textarea
                 value={newAllowedIps}
@@ -216,6 +328,168 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                 className="w-full text-sm"
               />
             </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-sm font-medium text-blue-500"
+              >
+                Additional {isExpanded ? '▲' : '▼'}
+              </button>
+              {isExpanded && (
+                <div className="w-full flex flex-col gap-2 items-start">
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Heading</p>
+                    <textarea
+                      value={clinetHheading}
+                      onChange={(e) => setClientHeading(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Sub Heading</p>
+                    <textarea
+                      value={subHeading}
+                      onChange={(e) => setSubHeading(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Tag Line</p>
+                    <textarea
+                      value={tagLine}
+                      onChange={(e) => setTagLine(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Excluded Users</p>
+                    <textarea
+                      value={excludedUsers}
+                      onChange={(e) => setExcludedUsers(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+
+                  <hr />
+                  <p className="block text-sm  text-gray-700">Bot UI Information</p>
+                  <hr />
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Bottom Text</p>
+                    <input
+                      type="text"
+                      name="bottom_text"
+                      value={clientUiInfo.bottom_text}
+                      onChange={handleUIInfoChange}
+                      className="w-full p-2 text-sm rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Header</p>
+                    <input
+                      type="text"
+                      name="header"
+                      value={clientUiInfo.header}
+                      onChange={handleUIInfoChange}
+                      className="w-full p-2 text-sm rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Read Text</p>
+                    <textarea
+                      name="read_text"
+                      value={clientUiInfo.read_text}
+                      onChange={handleUIInfoChange}
+                      className="w-full p-2 text-sm rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+
+
+                  <hr />
+                  <p className="block text-sm  text-gray-700">WebHook</p>
+                  <hr />
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Webhook URL</p>
+                    <textarea
+                      value={webhookUrl}
+                      onChange={(e) => SetWebhookUrl(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Webhook Token</p>
+                    <textarea
+                      value={webhookToken}
+                      onChange={(e) => SetWebhookToken(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col gap-2 items-start">
+                    <p className="block text-sm font-medium">Webhook Secret</p>
+                    <textarea
+                      value={webhookSecret}
+                      onChange={(e) => SetWebhookSecret(e.target.value)}
+                      className="w-full p-2 text-sm max-sm:w-full max-lg:w-full rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
+                    />
+                  </div>
+
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={webhookEnabled}
+                      // required={!checkIfEdit}
+                      onCheckedChange={(checked) => {
+                        SetWebhookEnabled(Boolean(checked));
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">Webhook Enabled</label>
+                  </div>
+
+
+
+
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={makeNewUserTrial}
+                      // required={!checkIfEdit}
+                      onCheckedChange={(checked) => {
+                        setMakeNewUserTrial(Boolean(checked));
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">Make New User in Trail</label>
+                  </div>
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={useSkillFromBank}
+                      // required={!checkIfEdit}
+                      onCheckedChange={(checked) => {
+                        setUseSkillFromBank(Boolean(checked));
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">Use Skill from Bank</label>
+                  </div>
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={allowePasteAnswer}
+                      // required={!checkIfEdit}
+                      onCheckedChange={(checked) => {
+                        setAllowePaseAnswer(Boolean(checked));
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">Allow Paste Answer</label>
+                  </div>
+                  <div className="flex items-start space-x-2 my-1.5 ">
+                    <Checkbox
+                      checked={alloweAudioInteraction}
+                      // required={!checkIfEdit}
+                      onCheckedChange={(checked) => {
+                        setAllowAudioInteraction(Boolean(checked));
+                      }}
+                    />
+                    <label className="text-xs text-gray-700">Allow Audio Interaction</label>
+                  </div>
+                </div>
+              )}
+            </div>
+            
           </div>
           <div className="self-end">
             <Button
