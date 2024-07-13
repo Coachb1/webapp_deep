@@ -409,7 +409,7 @@ const CreateYourDeepDive = ({ user }: any) => {
             {generatedDeepdiveData.map((dd, i) => (
               <div
                 key={i}
-                className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
+                className="w-full text-sm max-sm:text-xs text-left text-slate-900 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <b className="my-1 text-gray-400">Deep Dive</b>

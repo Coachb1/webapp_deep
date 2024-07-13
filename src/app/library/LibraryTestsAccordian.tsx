@@ -101,7 +101,7 @@ const LibraryTestsAccordian = ({
                       attemptedTests.includes(test.test_code)
                         ? "bg-gray-200"
                         : ""
-                    } px-4`}
+                    } px-4 text-slate-900`}
                   >
                     <AccordionTrigger className="text-left max-sm:text-xs">
                       <div>
@@ -128,7 +128,7 @@ const LibraryTestsAccordian = ({
                         )}
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="max-sm:text-xs">
+                    <AccordionContent className="max-sm:text-xs ">
                       <p className="text-left">{test.description}</p>
                       {type === "assigned" && (
                         <p className="my-2 text-sm max-sm:text-xs text-left bg-gray-200 w-fit rounded-sm py-1 px-2">
@@ -172,7 +172,7 @@ const LibraryTestsAccordian = ({
                       attemptedTests.includes(test.test_code)
                         ? "bg-gray-200"
                         : ""
-                    } px-4`}
+                    } px-4 text-slate-900`}
                   >
                     <AccordionTrigger className="text-left max-sm:text-xs">
                       <div>
