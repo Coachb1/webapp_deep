@@ -11,7 +11,9 @@ import React, {
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { emptyData, getUserAccount } from "@/lib/utils";
 import {
+  getAttemptedTestsList,
   getBots,
+  getCategorisedTests,
   getClientUserInfo,
   getDirectoryProfiles,
   getRequestedTests,
@@ -20,7 +22,7 @@ import {
   getUserJoiningPreviledges,
 } from "@/lib/api";
 import { CoachesDataType } from "@/app/Coaches";
-import { TestsType, UserInfoType } from "@/lib/types";
+import { CategoryData, TestsType, UserInfoType } from "@/lib/types";
 import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 
@@ -28,6 +30,11 @@ const font = Raleway({ subsets: ["latin"] });
 
 interface UserContextType {
   userId: string;
+  userRole: string;
+  userAccess: {
+    accessDenied: string | null;
+    accessAllowed: string | null;
+  };
   userInfo: UserInfoType;
   directoryProfiles: CoachesDataType[];
   joiningPrevileges: any;
@@ -46,6 +53,8 @@ interface UserContextType {
     assignedscenarios: TestsType[];
     requestedscenarios: TestsType[];
   };
+  attemptedTests: string[];
+  categorisedTests: CategoryData[];
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -58,6 +67,14 @@ export const UserProvider = ({
   kindeUser: KindeUserType | null;
 }) => {
   const [userId, setUserId] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const [userAccess, setUserAccess] = useState<{
+    accessDenied: string | null;
+    accessAllowed: string | null;
+  }>({
+    accessDenied: "",
+    accessAllowed: "",
+  });
   const [userInfo, setUserInfo] = useState<UserInfoType>(emptyData);
   const [directoryProfiles, setDirectoryProfiles] = useState<CoachesDataType[]>(
     []
@@ -80,6 +97,9 @@ export const UserProvider = ({
     requestedscenarios: [],
   });
 
+  const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
+  const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
+
   const fetchUserData = async (
     userEmail: string | null,
     user: KindeUserType | null
@@ -95,25 +115,36 @@ export const UserProvider = ({
       const userAccount = await getUserAccount(user);
       const data = await userAccount.json();
       setUserId(data.uid);
+      setUserRole(data.role);
+      setUserAccess({
+        accessAllowed: data.access_allowed,
+        accessDenied: data.access_denied,
+      });
+
+      const userInfo = await getClientUserInfo(userEmail, user);
 
       const [
-        userInfo,
         profiles,
         previleges,
         connectionsData,
-        competencyBasedTests,
         botsData,
+        attemptedTests,
+        competencyBasedTests,
         requestedTestData,
+        categorisedTestsData,
       ] = await Promise.all([
-        getClientUserInfo(userEmail, user),
         getDirectoryProfiles(userEmail, data.coach_recommendation),
         getUserJoiningPreviledges(userEmail),
         getUserConnections(data.uid),
-        getTestsByCompetencies(data.uid),
         getBots(data.uid),
+        getAttemptedTestsList(data.uid),
+        getTestsByCompetencies(data.uid),
         getRequestedTests(data.uid),
+        getCategorisedTests(userInfo.clientName),
       ]);
       setLoadingState(false);
+
+      console.log(attemptedTests);
 
       const { connections, coachId, coacheeId, userProfiles } = connectionsData;
       setCoachId(coachId);
@@ -124,7 +155,10 @@ export const UserProvider = ({
       setDirectoryProfiles(profiles);
       setJoiningPrevileges(previleges);
       setUserConnections(connections?.data);
+      setAttemptedTests(attemptedTests);
+      setCategorisedTests(categorisedTestsData);
 
+      //library
       setCompetencyBasedPowerSkillsTests(competencyBasedTests);
       setFeedbackBots(
         botsData.data.filter(
@@ -153,6 +187,8 @@ export const UserProvider = ({
   const contextValue = useMemo(
     () => ({
       userId,
+      userRole,
+      userAccess,
       userInfo,
       directoryProfiles,
       joiningPrevileges,
@@ -165,9 +201,13 @@ export const UserProvider = ({
       feedbackBots,
       allCoaches,
       requestedTestsData,
+      attemptedTests,
+      categorisedTests,
     }),
     [
       userId,
+      userRole,
+      userAccess,
       userInfo,
       directoryProfiles,
       joiningPrevileges,
@@ -179,6 +219,8 @@ export const UserProvider = ({
       feedbackBots,
       allCoaches,
       requestedTestsData,
+      attemptedTests,
+      categorisedTests,
     ]
   );
 

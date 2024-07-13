@@ -2,6 +2,7 @@ import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import {
   baseURL,
   basicAuth,
+  configureTestsData,
   convertTestsData,
   emptyData,
   findCoachUID,
@@ -49,6 +50,7 @@ export const getClientUserInfo = async (
       if (response.ok) {
         const data = await response.json();
         return {
+          clientName: data.data.user_info[0].client_name,
           isDemoUser: data.data.user_info[0].is_demo_user,
           isRestricted: data.data.user_info[0].is_restricted,
           clientExpertise: parseStringList(
@@ -221,6 +223,23 @@ export const getUserConnections = async (userId: string) => {
   };
 };
 
+export const getAttemptedTestsList = async (userId: string) => {
+  const response = await fetch(
+    `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  const responseData = await response.json();
+  console.log("API TS", responseData);
+
+  return responseData.data.codes;
+};
+
 export const getTestsByCompetencies = async (userId: string) => {
   try {
     const competencyResponse = await fetch(
@@ -292,4 +311,21 @@ export const getRequestedTests = async (userId: string) => {
       requestedscenarios: [],
     };
   }
+};
+
+export const getCategorisedTests = async (clientName: string) => {
+  const testsResponse = await fetch(
+    `${baseURL}/tests/get-tests-by-tab-category/?client_name=${clientName}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (!testsResponse.ok) return [];
+  const testsResponseData = await testsResponse.json();
+  const categorisedTestsData = configureTestsData(testsResponseData);
+  return categorisedTestsData;
 };

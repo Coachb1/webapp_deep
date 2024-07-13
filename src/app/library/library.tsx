@@ -109,8 +109,13 @@ const MyLibrary = ({ user }: any) => {
   );
   const [helpModeText, setHelpModeText] = useState<any>();
 
-  const { userInfo, competencyBasedPowerSkillsTests, requestedTestsData } =
-    useUser();
+  const {
+    userInfo,
+    competencyBasedPowerSkillsTests,
+    requestedTestsData,
+    attemptedTests,
+    categorisedTests,
+  } = useUser();
 
   useEffect(() => {
     setRestrictedFeatures(userInfo.restrictedFeatures);
@@ -133,9 +138,9 @@ const MyLibrary = ({ user }: any) => {
     { label: string; value: string }[]
   >([]);
 
-  const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
+  // const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
 
-  const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
+  // const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
 
   // const getTestsByCompetencies = () => {
   //   if (user) {
@@ -228,74 +233,74 @@ const MyLibrary = ({ user }: any) => {
   //   }
   // };
 
-  const getAttemptedTestsList = () => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data, "getAttemptedTestsList");
-              setAttemptedTests(data.data.codes);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  };
+  // const getAttemptedTestsList = () => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         fetch(
+  //           `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${data.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((response) => response.json())
+  //           .then((data) => {
+  //             console.log(data, "getAttemptedTestsList");
+  //             setAttemptedTests(data.data.codes);
+  //           })
+  //           .catch((err) => {
+  //             console.error(err);
+  //           });
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // };
 
-  const getNewManagerTests = () => {
-    fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        const group_list: string[] = [];
-        for (const item of data.data.my_lib) {
-          if (item.emails.includes(user?.email)) {
-            group_list.push(item.group);
-          }
-        }
-        setGroupList(group_list);
+  // const getNewManagerTests = () => {
+  //   fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: basicAuth,
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then(async (data) => {
+  //       const group_list: string[] = [];
+  //       for (const item of data.data.my_lib) {
+  //         if (item.emails.includes(user?.email)) {
+  //           group_list.push(item.group);
+  //         }
+  //       }
+  //       setGroupList(group_list);
 
-        console.log("group_list", group_list);
+  //       console.log("group_list", group_list);
 
-        fetch(
-          `${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            console.log("ConfiguredTestData", configureTestsData(data));
+  //       fetch(
+  //         `${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: basicAuth,
+  //           },
+  //         }
+  //       )
+  //         .then((res) => res.json())
+  //         .then((data) => {
+  //           console.log(data);
+  //           console.log("ConfiguredTestData", configureTestsData(data));
 
-            setCategorisedTests(configureTestsData(data));
-          })
-          .catch((err) => console.error("Cannot retrive tests", err));
-      });
-  };
+  //           setCategorisedTests(configureTestsData(data));
+  //         })
+  //         .catch((err) => console.error("Cannot retrive tests", err));
+  //     });
+  // };
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
   useEffect(() => {
     const dynamicHelpText = helpModeText?.library;
@@ -340,8 +345,8 @@ const MyLibrary = ({ user }: any) => {
     if (user) {
       // getTestsByCompetencies();
       // getRequestedTests();
-      getNewManagerTests();
-      getAttemptedTestsList();
+      // getNewManagerTests();
+      // getAttemptedTestsList();
 
       fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
         method: "GET",

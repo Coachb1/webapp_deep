@@ -703,6 +703,7 @@ export const handleLinks = (link: string) => {
 };
 
 export const emptyData: UserInfoType = {
+  clientName: "",
   isDemoUser: false,
   isRestricted: true,
   clientExpertise: "",

@@ -319,6 +319,7 @@ export interface AllUserDataType {
 }
 
 export interface UserInfoType {
+  clientName: string;
   isDemoUser: boolean;
   isRestricted: boolean;
   clientExpertise: string;
