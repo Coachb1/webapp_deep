@@ -191,7 +191,7 @@ export function ParticipantListItemCard({
                 )}
               </div>
             </div>
-            <div className="my-1.5 tracking-wider text-left w-full text-lg font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
+            <div className="my-1.5 tracking-wider text-slate-900 text-left w-full text-lg max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
               <ReadMore text={coach.description} />
             </div>
             <div className="text-neutral-500 w-full text-sm mt-2 dark:text-neutral-300 text-left">

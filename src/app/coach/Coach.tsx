@@ -407,7 +407,7 @@ const Coach = ({ user, renderType }: any) => {
                         </CardItem>
                         <CardItem
                           translateZ="100"
-                          className="w-full rounded-2xl px-4 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2"
+                          className="w-full rounded-2xl px-4 text-slate-900 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2"
                         >
                           {renderType === "dynamic"
                             ? parseTextToJSX(coachDescription)

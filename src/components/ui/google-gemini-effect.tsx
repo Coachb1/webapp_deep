@@ -50,7 +50,7 @@ export const GoogleGeminiEffect = ({
         </div>
         <p
           className={cn(
-            "text-sm md:text-2xl  font-normal text-center text-neutral-400 -mt-10 max-w-12xl mx-auto",
+            "text-sm md:text-2xl  font-normal text-center text-slate-900 -mt-10 max-w-12xl mx-auto",
             descriptionClassNames
           )}
         >
