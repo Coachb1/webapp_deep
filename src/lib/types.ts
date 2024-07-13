@@ -181,6 +181,7 @@ export interface knowledgeBotType {
   description: string;
   bot_type: string;
   scenario_case: string;
+  creator_name?: string;
 }
 
 export interface BotDetailsType {
@@ -275,7 +276,7 @@ export interface ClientUserTeamType {
   userEmail: string;
   userName: string;
   userId: string;
-  profileType: string;
+  profileType?: string;
 }
 
 export interface ClientDataType {

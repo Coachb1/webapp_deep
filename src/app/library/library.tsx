@@ -347,57 +347,55 @@ const MyLibrary = ({ user }: any) => {
       // getRequestedTests();
       // getNewManagerTests();
       // getAttemptedTestsList();
-
-      fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then(async (data) => {
-          console.log(data);
-          // setRestrictedFeatures(data.data)
-          const group_list: string[] = [];
-          for (const item of data.data.my_lib) {
-            if (item.emails.includes(user?.email)) {
-              group_list.push(item.group);
-            }
-          }
-          setGroupList(group_list);
-          await fetch(
-            `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-                "Content-Type": "application/json",
-              },
-            }
-          )
-            .then((response) => response.json())
-            .then(async (data) => {
-              setCurrentActiveGroup(group_list[0]);
-              setIsLoading(false);
-              console.log(data);
-              const convertedTests = convertToJsonArray(data.data);
-              console.log(convertedTests);
-              const tempConversion = convertedTests.map((test) => {
-                return {
-                  label: test.category,
-                  value: test.category,
-                };
-              });
-              setDomainOptions(tempConversion);
-              setTests(convertedTests);
-              setFilteredTests(convertedTests);
-              setIsPageLoading(false);
-            })
-            .catch((err) => console.error("Cannot retrive tests", err));
-        })
-
-        .catch((err) => console.error("Cannot retrive test codes", err));
+      // fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
+      //   method: "GET",
+      //   headers: {
+      //     Authorization: basicAuth,
+      //     "Content-Type": "application/json",
+      //   },
+      // })
+      //   .then((response) => response.json())
+      //   .then(async (data) => {
+      //     console.log(data);
+      //     // setRestrictedFeatures(data.data)
+      //     const group_list: string[] = [];
+      //     for (const item of data.data.my_lib) {
+      //       if (item.emails.includes(user?.email)) {
+      //         group_list.push(item.group);
+      //       }
+      //     }
+      //     setGroupList(group_list);
+      //     await fetch(
+      //       `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           Authorization: basicAuth,
+      //           "Content-Type": "application/json",
+      //         },
+      //       }
+      //     )
+      //       .then((response) => response.json())
+      //       .then(async (data) => {
+      //         setCurrentActiveGroup(group_list[0]);
+      //         setIsLoading(false);
+      //         console.log(data);
+      //         const convertedTests = convertToJsonArray(data.data);
+      //         console.log(convertedTests);
+      //         const tempConversion = convertedTests.map((test) => {
+      //           return {
+      //             label: test.category,
+      //             value: test.category,
+      //           };
+      //         });
+      //         setDomainOptions(tempConversion);
+      //         setTests(convertedTests);
+      //         setFilteredTests(convertedTests);
+      //         setIsPageLoading(false);
+      //       })
+      //       .catch((err) => console.error("Cannot retrive tests", err));
+      //   })
+      //   .catch((err) => console.error("Cannot retrive test codes", err));
     }
   }, []);
 

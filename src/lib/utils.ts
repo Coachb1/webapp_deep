@@ -7,6 +7,7 @@ import {
   Categories,
   CategoryData,
   ClientDataType,
+  ClientUserTeamType,
   DomainData,
   ExtractedData,
   ExtractedDataCochee,
@@ -557,12 +558,7 @@ export const getUsersForClient = (clientName: string, data: any) => {
 };
 
 export const getUsersForClientForTeam = (clientName: string, data: any) => {
-  const clientUsers: {
-    userEmail: string;
-    userName: string;
-    userId: string;
-    profileType: string;
-  }[] = [];
+  const clientUsers: ClientUserTeamType[] = [];
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)

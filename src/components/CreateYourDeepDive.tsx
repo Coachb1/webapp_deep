@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 interface DeepDiveType {
   title: string;
@@ -33,13 +34,19 @@ function getLink() {
   }
 }
 
-const CreateYourDeepDive = ({ user }: any) => {
+const CreateYourDeepDive = ({
+  user,
+  userId,
+}: {
+  user: KindeUser | null;
+  userId: string;
+}) => {
   const userContextRef = useRef<any>();
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   const [expiryDate, setExpiryDate] = useState<Date | undefined>();
 
   const [isLoading, setIsloading] = useState(false);
@@ -54,16 +61,16 @@ const CreateYourDeepDive = ({ user }: any) => {
   const [respondentHierarchy, setRespondentHierarchy] = useState("");
   const [respondedentSkillSet, setRespondentSkillSet] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserId(data.uid);
-        });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         console.log(data);
+  //         setUserId(data.uid);
+  //       });
+  //   }
+  // }, [user]);
 
   const incrementTries = () => {
     if (numOfTries < 5) {
@@ -94,15 +101,15 @@ const CreateYourDeepDive = ({ user }: any) => {
       var formdata = new FormData();
       formdata.append(
         "p",
-        `${user.given_name} ${user.family_name ? user.family_name : ""}`
+        `${user?.given_name} ${user?.family_name ? user?.family_name : ""}`
       );
       formdata.append(
         "bot_name",
-        `${user.given_name} ${user.family_name ? user.family_name : ""}`
+        `${user?.given_name} ${user?.family_name ? user?.family_name : ""}`
       );
       formdata.append("user_id", userId);
       formdata.append("participant_id", userId);
-      formdata.append("email", user.email!);
+      formdata.append("email", user?.email!);
       formdata.append("bot_type", "deep_dive");
       formdata.append(
         "context",
@@ -120,7 +127,7 @@ const CreateYourDeepDive = ({ user }: any) => {
       formdata.append(
         "attributes",
         JSON.stringify({
-          heading: `welcome to ${user.given_name}'s user bot`,
+          heading: `welcome to ${user?.given_name}'s user bot`,
         })
       );
 

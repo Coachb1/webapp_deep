@@ -15,14 +15,24 @@ import {
   getBots,
   getCategorisedTests,
   getClientUserInfo,
+  getClientUsers,
   getDirectoryProfiles,
+  getKnowledgeBots,
   getRequestedTests,
   getTestsByCompetencies,
   getUserConnections,
   getUserJoiningPreviledges,
 } from "@/lib/api";
 import { CoachesDataType } from "@/app/Coaches";
-import { CategoryData, TestsType, UserInfoType } from "@/lib/types";
+import {
+  CategoryData,
+  ClientUserTeamType,
+  ClientUserType,
+  TestsType,
+  UserInfoType,
+  knowledgeBotJson,
+  knowledgeBotType,
+} from "@/lib/types";
 import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 
@@ -35,6 +45,7 @@ interface UserContextType {
     accessDenied: string | null;
     accessAllowed: string | null;
   };
+  userName: string;
   userInfo: UserInfoType;
   directoryProfiles: CoachesDataType[];
   joiningPrevileges: any;
@@ -55,6 +66,8 @@ interface UserContextType {
   };
   attemptedTests: string[];
   categorisedTests: CategoryData[];
+  knowledgeBots: knowledgeBotType[];
+  clientUsers: ClientUserTeamType[];
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -68,6 +81,7 @@ export const UserProvider = ({
 }) => {
   const [userId, setUserId] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState("");
   const [userAccess, setUserAccess] = useState<{
     accessDenied: string | null;
     accessAllowed: string | null;
@@ -100,6 +114,9 @@ export const UserProvider = ({
   const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
   const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
 
+  const [knowledgeBots, setknowledgeBots] = useState<knowledgeBotType[]>([]);
+  const [clientUsers, setClientUsers] = useState<ClientUserTeamType[]>([]);
+
   const fetchUserData = async (
     userEmail: string | null,
     user: KindeUserType | null
@@ -116,6 +133,7 @@ export const UserProvider = ({
       const data = await userAccount.json();
       setUserId(data.uid);
       setUserRole(data.role);
+      setUserName(data.name);
       setUserAccess({
         accessAllowed: data.access_allowed,
         accessDenied: data.access_denied,
@@ -132,6 +150,8 @@ export const UserProvider = ({
         competencyBasedTests,
         requestedTestData,
         categorisedTestsData,
+        knowledgeBots,
+        clientUsers,
       ] = await Promise.all([
         getDirectoryProfiles(userEmail, data.coach_recommendation),
         getUserJoiningPreviledges(userEmail),
@@ -141,6 +161,8 @@ export const UserProvider = ({
         getTestsByCompetencies(data.uid),
         getRequestedTests(data.uid),
         getCategorisedTests(userInfo.clientName),
+        getKnowledgeBots(userInfo.clientName),
+        getClientUsers(userInfo.clientName),
       ]);
       setLoadingState(false);
 
@@ -156,17 +178,20 @@ export const UserProvider = ({
       setJoiningPrevileges(previleges);
       setUserConnections(connections?.data);
       setAttemptedTests(attemptedTests);
-      setCategorisedTests(categorisedTestsData);
 
       //library
+      setCategorisedTests(categorisedTestsData);
       setCompetencyBasedPowerSkillsTests(competencyBasedTests);
       setFeedbackBots(
         botsData.data.filter(
           (data: any) => data.signature_bot.bot_type === "feedback_bot"
         )
       );
-
       setRequestedTestsData(requestedTestData);
+
+      //creator-studio
+      setknowledgeBots(knowledgeBots);
+      setClientUsers(clientUsers);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -178,6 +203,8 @@ export const UserProvider = ({
     if (!["/coach", "/feedback"].includes(pathname)) {
       if (kindeUser) {
         fetchUserData(kindeUser.email, kindeUser);
+      } else {
+        setLoadingState(false);
       }
     } else {
       setLoadingState(false);
@@ -188,6 +215,7 @@ export const UserProvider = ({
     () => ({
       userId,
       userRole,
+      userName,
       userAccess,
       userInfo,
       directoryProfiles,
@@ -203,10 +231,13 @@ export const UserProvider = ({
       requestedTestsData,
       attemptedTests,
       categorisedTests,
+      knowledgeBots,
+      clientUsers,
     }),
     [
       userId,
       userRole,
+      userName,
       userAccess,
       userInfo,
       directoryProfiles,
@@ -221,6 +252,8 @@ export const UserProvider = ({
       requestedTestsData,
       attemptedTests,
       categorisedTests,
+      knowledgeBots,
+      clientUsers,
     ]
   );
 

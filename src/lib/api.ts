@@ -8,10 +8,17 @@ import {
   findCoachUID,
   findCoacheeUID,
   getUserAccount,
+  getUsersForClientForTeam,
   parseStringList,
 } from "./utils";
 import { CoachesDataType } from "@/app/Coaches";
-import { CategoryData, TestsType, UserInfoType } from "./types";
+import {
+  CategoryData,
+  ClientUserType,
+  TestsType,
+  UserInfoType,
+  knowledgeBotJson,
+} from "./types";
 
 export const getClientUserInfo = async (
   userEmail: string | null | undefined,
@@ -327,5 +334,70 @@ export const getCategorisedTests = async (clientName: string) => {
   if (!testsResponse.ok) return [];
   const testsResponseData = await testsResponse.json();
   const categorisedTestsData = configureTestsData(testsResponseData);
+  console.log(categorisedTestsData);
   return categorisedTestsData;
+};
+
+export const getKnowledgeBots = async (clientName: string) => {
+  const response = await fetch(
+    `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${clientName}`,
+    {
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  const getBotsDataResponseData = await response.json();
+
+  let knowledgeBots: {
+    bot_id: string;
+    bot_name: string;
+    description: string;
+    bot_type: string;
+    scenario_case: string;
+    creator_name: string;
+  }[] = [];
+
+  getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
+    const botJson = item.signature_bot;
+    let description: string = "";
+    if (typeof botJson.faqs === "string") {
+      description = JSON.parse(
+        //@ts-ignore
+        botJson.faqs["What is the primary purpose of the bot?"]
+      );
+    } else {
+      description = botJson.faqs["What is the primary purpose of the bot?"];
+    }
+    if (item.signature_bot.is_approved) {
+      knowledgeBots.push({
+        bot_id: botJson.bot_id,
+        bot_name: item.bot_attributes.bot_name,
+        bot_type: botJson.bot_type,
+        description: description,
+        scenario_case: botJson.bot_scenario_case,
+        creator_name: botJson.creator_name,
+      });
+    }
+  });
+
+  return knowledgeBots;
+};
+
+export const getClientUsers = async (clientName: string) => {
+  const response = await fetch(
+    `${baseURL}/accounts/client_id_user_modification`,
+    {
+      method: "GET",
+      headers: { Authorization: basicAuth },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    return getUsersForClientForTeam(clientName, data);
+  } else {
+    return [];
+  }
 };
