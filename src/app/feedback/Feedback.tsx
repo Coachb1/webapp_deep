@@ -355,9 +355,9 @@ const Feedback = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed bottom-12 right-[100px] z-50 max-sm:hidden">
-            <span className="mr-6 text-sm font-bold">Try Now</span>
-            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          <div className="fixed bottom-14 right-[60px] z-50 max-sm:hidden">
+            <span className="mr-6 text-sm font-bold">Feedback now</span>
+            <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" />
           </div>
         )}
 

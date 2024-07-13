@@ -420,6 +420,12 @@ const Coaches = ({
             : "The directory can be sorted by experience level, expertise and department of the participants. These are customizable and configured during the set up. Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
         },
         {
+          target: "#ai-recc",
+          content: dynamicHelpTextt?.ai_reccomentation
+            ? dynamicHelpTextt.ai_reccomentation
+            : "Our AI Recommendation feature suggests the best coach or Icons by AI Avatars which are tailored to you profile.",
+        },
+        {
           target: "#participant-listing",
           content: dynamicHelpTextt?.participant_listing
             ? dynamicHelpTextt.participant_listing
