@@ -156,7 +156,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       };
 
       const response = await fetch(
-        `http://localhost:8001/api/v1/accounts/get-create-or-update-client-id/`,
+        `${baseURL}/accounts/get-create-or-update-client-id/`,
         requestOptions
       );
 
@@ -217,6 +217,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     setAllowAudioInteraction(false);
     setClientDepartments("");
     setCoachExpertise("");
+    setIsExpanded(false);
     
   };
 
