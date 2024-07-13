@@ -217,6 +217,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     setAllowAudioInteraction(false);
     setClientDepartments("");
     setCoachExpertise("");
+    setIsExpanded(false);
     
   };
 
