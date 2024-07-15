@@ -231,11 +231,15 @@ export function ParticipantListItemCard({
                       <Link
                         href={handleLinks(coach.avatar_bot_url)}
                         target="_blank"
+                        className="flex flex-row items-center"
                       >
-                        {coach.profile_type === "skill_bot" ||
-                        coach.profile_type === "coachbots"
-                          ? "Skill Chat"
-                          : "AI Frame"}
+                        <p>
+                          {coach.profile_type === "skill_bot" ||
+                          coach.profile_type === "coachbots"
+                            ? "Skill Chat"
+                            : "AI Frame"}{" "}
+                        </p>
+                        <ExternalLink className="ml-1 h-4 w-4 inline" />
                       </Link>
                     </Button>
                   </div>

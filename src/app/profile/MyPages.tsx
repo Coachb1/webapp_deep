@@ -7,7 +7,16 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
+import {
+  Code,
+  Copy,
+  Edit,
+  ExternalLink,
+  Info,
+  LinkIcon,
+  Loader,
+  View,
+} from "lucide-react";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -385,13 +394,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
+                        target="_blank"
                       >
                         <span className="max-sm:hidden">View</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="View"
                           body={
-                            <View className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
@@ -414,13 +424,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
+                        target="_blank"
                       >
                         <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="Edit"
                           body={
-                            <Edit className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
