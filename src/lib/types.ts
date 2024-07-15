@@ -334,3 +334,20 @@ export interface UserInfoType {
   } | null;
   helpText: any;
 }
+
+export interface PositionedUserTypes {
+  name: string;
+  user_id: string;
+  total_count: number;
+  rating: number;
+}
+
+export interface KudosDetailsType {
+  bot_name: string;
+  owner_name: string;
+  positive_feedback_count: number;
+  negative_feedback_count: number;
+  rating: number;
+  user_id: string;
+  total_users: number;
+}

@@ -84,8 +84,8 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { helpText } = await getClientUserInfo(user?.email, user);
-  return <Profile user={user} helpModeText={helpText} />;
+  // const { helpText } = await getClientUserInfo(user?.email, user);
+  return <Profile user={user} />;
 };
 
 export default Page;

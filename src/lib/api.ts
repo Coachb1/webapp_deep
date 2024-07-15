@@ -1,5 +1,6 @@
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import {
+  ParticipantsforLeaderBoardTypes,
   baseURL,
   basicAuth,
   configureTestsData,
@@ -15,6 +16,8 @@ import { CoachesDataType } from "@/app/Coaches";
 import {
   CategoryData,
   ClientUserType,
+  KudosDetailsType,
+  PositionedUserTypes,
   TestsType,
   UserInfoType,
   knowledgeBotJson,
@@ -399,5 +402,108 @@ export const getClientUsers = async (clientName: string) => {
     return getUsersForClientForTeam(clientName, data);
   } else {
     return [];
+  }
+};
+
+export const getLeaderboardPosition = async (
+  userEmail: string,
+  profileType: string,
+  userId: string
+) => {
+  const response = await fetch(
+    `${baseURL}/accounts/participant-leader-board-report/?email=${userEmail}&by_category=true`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    let responseData = await response.json();
+
+    if (profileType === "coach" || profileType === "mentor") {
+      responseData = responseData.coach_mentor;
+    } else if (profileType === "coachee" || profileType === "mentee") {
+      responseData = responseData.coachee_mentee;
+    } else {
+      responseData = responseData.full_data;
+    }
+
+    const userDetails = responseData.map(
+      (data: ParticipantsforLeaderBoardTypes, i: number) => {
+        return {
+          name: data.name,
+          user_id: data.user_id,
+          total_count: responseData.length,
+          rating: data.total_score === 0 ? responseData.length : data.rating,
+        };
+      }
+    );
+
+    const positionedUser: PositionedUserTypes[] = userDetails.filter(
+      (userr: PositionedUserTypes) => userr.user_id === userId
+    );
+    return positionedUser;
+  } else {
+    return [];
+  }
+};
+
+export const getCandidateReport = async (userId: string) => {
+  const response = await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+    method: "POST",
+    headers: {
+      Authorization: basicAuth,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      report_type: "participantReport",
+      candidate_id: userId,
+    }),
+  });
+
+  if (response.ok) {
+    const responseData = await response.json();
+    return responseData.url;
+  } else {
+    return "";
+  }
+};
+
+export const getKudosData = async (userId: string, userEmail: string) => {
+  const response = await fetch(
+    `${baseURL}/accounts/feedback-leaderboard-report/?email=${userEmail}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    const responseData = await response.json();
+    const FilteredUserDataForKudos = responseData.group.filter(
+      (data: KudosDetailsType) => {
+        if (data.user_id === userId) {
+          return {
+            ...data,
+            total_users: responseData.group.length,
+          };
+        }
+      }
+    );
+    return {
+      totalUsersForFeedback: responseData.group.length,
+      userKudosData: FilteredUserDataForKudos,
+    };
+  } else {
+    return {
+      totalUsersForFeedback: 0,
+      userKudosData: [],
+    };
   }
 };

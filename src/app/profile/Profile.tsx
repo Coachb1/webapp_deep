@@ -40,48 +40,55 @@ import EmailSign from "./EmailSign";
 import MyComnnections from "./MyConnections";
 import AdminReports from "./AdminReports";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 
-const Profile = ({ user, helpModeText }: any) => {
+const Profile = ({ user }: any) => {
   const [selectedItem, setSelectedItem] = useState("Account Information");
-  const [userRole, setUserRole] = useState("");
-  const [userId, setUserId] = useState("");
-  const [clientName, setClientName] = useState("");
+  // const [userRole, setUserRole] = useState("");
+  // const [userId, setUserId] = useState("");
+  // const [clientName, setClientName] = useState("");
 
   //client based restrictions
-  const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
-  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
-    null
-  );
+  // const [restrictedPages, setRestrictedPages] = useState<string | null>(null);
+  // const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+  //   null
+  // );
 
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserRole(data.role);
-          setUserId(data.uid);
-        });
+  // useEffect(() => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         console.log(data);
+  //         setUserRole(data.role);
+  //         setUserId(data.uid);
+  //       });
 
-      CreateOrAssignClientId(user?.email)
-        ?.then((resp) => resp.text())
-        .then((result) => {
-          console.log(`Success : data:`, result);
-          getClientUserInfo(user?.email)
-            ?.then((res) => res.json())
-            .then((data) => {
-              console.log(data, "getClientUserInfo - userProfile");
-              setClientName(data.data.user_info[0].client_name);
+  //     CreateOrAssignClientId(user?.email)
+  //       ?.then((resp) => resp.text())
+  //       .then((result) => {
+  //         console.log(`Success : data:`, result);
+  //         getClientUserInfo(user?.email)
+  //           ?.then((res) => res.json())
+  //           .then((data) => {
+  //             console.log(data, "getClientUserInfo - userProfile");
+  //             setClientName(data.data.user_info[0].client_name);
 
-              setRestrictedPages(data.data.user_info[0].restricted_pages);
-              setRestrictedFeatures(data.data.user_info[0].restricted_features);
-            });
-        })
-        .catch((error) =>
-          console.error("Error in create-or-assign-client-id", error)
-        );
-    }
-  }, []);
+  //             setRestrictedPages(data.data.user_info[0].restricted_pages);
+  //             setRestrictedFeatures(data.data.user_info[0].restricted_features);
+  //           });
+  //       })
+  //       .catch((error) =>
+  //         console.error("Error in create-or-assign-client-id", error)
+  //       );
+  //   }
+  // }, []);
+
+  const {
+    userId,
+    userRole,
+    userInfo: { clientName, restrictedFeatures, helpText: helpModeText },
+  } = useUser();
 
   const NavItem = ({ itemName, icon, id }: any) => {
     return (

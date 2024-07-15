@@ -286,7 +286,7 @@ export interface CoachesDataType {
   avatar_bot_url: string;
 }
 
-export interface PartifipantsforLeaderBoardTypes {
+export interface ParticipantsforLeaderBoardTypes {
   name: string;
   avatar_bot_count: number;
   subject_matter_count: number;

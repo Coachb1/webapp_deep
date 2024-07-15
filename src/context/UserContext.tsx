@@ -13,11 +13,14 @@ import { emptyData, getUserAccount } from "@/lib/utils";
 import {
   getAttemptedTestsList,
   getBots,
+  getCandidateReport,
   getCategorisedTests,
   getClientUserInfo,
   getClientUsers,
   getDirectoryProfiles,
   getKnowledgeBots,
+  getKudosData,
+  getLeaderboardPosition,
   getRequestedTests,
   getTestsByCompetencies,
   getUserConnections,
@@ -28,6 +31,8 @@ import {
   CategoryData,
   ClientUserTeamType,
   ClientUserType,
+  KudosDetailsType,
+  PositionedUserTypes,
   TestsType,
   UserInfoType,
   knowledgeBotJson,
@@ -35,6 +40,7 @@ import {
 } from "@/lib/types";
 import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -44,6 +50,10 @@ interface UserContextType {
   userAccess: {
     accessDenied: string | null;
     accessAllowed: string | null;
+  };
+  allowAudioInteraction: {
+    client: boolean;
+    user: boolean;
   };
   userName: string;
   userInfo: UserInfoType;
@@ -68,6 +78,12 @@ interface UserContextType {
   categorisedTests: CategoryData[];
   knowledgeBots: knowledgeBotType[];
   clientUsers: ClientUserTeamType[];
+  userPositionDetails: PositionedUserTypes[];
+  candidateReport: string;
+  kudosData: {
+    totalUsersForFeedback: number;
+    userKudosData: KudosDetailsType[];
+  };
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -89,6 +105,15 @@ export const UserProvider = ({
     accessDenied: "",
     accessAllowed: "",
   });
+
+  const [allowAudioInteraction, setAllowAudioInteraction] = useState<{
+    client: boolean;
+    user: boolean;
+  }>({
+    client: false,
+    user: false,
+  });
+
   const [userInfo, setUserInfo] = useState<UserInfoType>(emptyData);
   const [directoryProfiles, setDirectoryProfiles] = useState<CoachesDataType[]>(
     []
@@ -117,6 +142,19 @@ export const UserProvider = ({
   const [knowledgeBots, setknowledgeBots] = useState<knowledgeBotType[]>([]);
   const [clientUsers, setClientUsers] = useState<ClientUserTeamType[]>([]);
 
+  //profile
+  const [candidateReport, setCandidateReport] = useState<string>("");
+  const [userPositionDetails, setUserPositionDetails] = useState<
+    PositionedUserTypes[]
+  >([]);
+  const [kudosData, setKudosData] = useState<{
+    totalUsersForFeedback: number;
+    userKudosData: KudosDetailsType[];
+  }>({
+    totalUsersForFeedback: 0,
+    userKudosData: [],
+  });
+
   const fetchUserData = async (
     userEmail: string | null,
     user: KindeUserType | null
@@ -138,6 +176,10 @@ export const UserProvider = ({
         accessAllowed: data.access_allowed,
         accessDenied: data.access_denied,
       });
+      setAllowAudioInteraction({
+        client: data.client_allow_audio_interactions,
+        user: data.user_allow_audio_interactions,
+      });
 
       const userInfo = await getClientUserInfo(userEmail, user);
 
@@ -152,6 +194,9 @@ export const UserProvider = ({
         categorisedTestsData,
         knowledgeBots,
         clientUsers,
+        userPositionDetails,
+        candidateReport,
+        kudosData,
       ] = await Promise.all([
         getDirectoryProfiles(userEmail, data.coach_recommendation),
         getUserJoiningPreviledges(userEmail),
@@ -163,6 +208,9 @@ export const UserProvider = ({
         getCategorisedTests(userInfo.clientName),
         getKnowledgeBots(userInfo.clientName),
         getClientUsers(userInfo.clientName),
+        getLeaderboardPosition(userEmail, data.profile_type, data.uid),
+        getCandidateReport(data.uid),
+        getKudosData(data.uid, userEmail),
       ]);
       setLoadingState(false);
 
@@ -192,6 +240,11 @@ export const UserProvider = ({
       //creator-studio
       setknowledgeBots(knowledgeBots);
       setClientUsers(clientUsers);
+
+      //profile
+      setUserPositionDetails(userPositionDetails);
+      setCandidateReport(candidateReport);
+      setKudosData(kudosData);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -200,16 +253,18 @@ export const UserProvider = ({
   };
 
   useEffect(() => {
-    if (!["/coach", "/feedback"].includes(pathname)) {
-      if (kindeUser) {
-        fetchUserData(kindeUser.email, kindeUser);
-      } else {
-        setLoadingState(false);
-      }
+    if (kindeUser) {
+      fetchUserData(kindeUser.email, kindeUser);
     } else {
       setLoadingState(false);
     }
   }, [kindeUser]);
+
+  useEffect(() => {
+    if (pathname === "/profile") {
+      toast.success("hello bro , Call api's for anything here");
+    }
+  }, [pathname]);
 
   const contextValue = useMemo(
     () => ({
@@ -233,6 +288,10 @@ export const UserProvider = ({
       categorisedTests,
       knowledgeBots,
       clientUsers,
+      allowAudioInteraction,
+      userPositionDetails,
+      candidateReport,
+      kudosData,
     }),
     [
       userId,
@@ -254,6 +313,10 @@ export const UserProvider = ({
       categorisedTests,
       knowledgeBots,
       clientUsers,
+      allowAudioInteraction,
+      userPositionDetails,
+      candidateReport,
+      kudosData,
     ]
   );
 
