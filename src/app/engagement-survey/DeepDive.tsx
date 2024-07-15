@@ -169,9 +169,9 @@ const DeepDive = ({ user, renderType }: any) => {
           <Script src="../widget/coachbots-stt-widget.js" />
         )}
 
-        <div className="fixed max-sm:hidden right-[100px] bottom-12">
-          <span className="mr-6 text-sm font-bold">Try Now</span>
-          <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+        <div className="fixed bottom-14 right-[75px] z-50 max-sm:hidden">
+          <span className="mr-6 text-sm font-bold">Engage now</span>
+          <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" />
         </div>
 
         {invalidId && renderType === "dynamic" && (
@@ -261,52 +261,6 @@ const DeepDive = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
-            {/* <div className="w-full  pt-20 -mt-20 " id="benefits">
-              <div className={`flex w-full justify-center`}>
-                <Badge
-                  variant={"secondary"}
-                  className="z-10 mb-8 mt-12 h-6 w-fit bg-[#2DC092] py-3 text-center text-lg text-white hover:bg-[#2DC092] max-sm:mt-8 max-sm:text-sm"
-                >
-                  Benefits
-                </Badge>
-              </div>
-              <div className="w-full">
-                <div className="relative isolate mx-auto">
-                  <div>
-                    <div className="z-50 mx-auto mt-[-1.5rem] max-w-3xl px-6 max-sm:w-[100%] lg:px-8">
-                      <div className="rounded-xl bg-white p-2 ring-1 ring-inset ring-gray-900/10 max-sm:w-[100%] lg:-m-4 lg:rounded-2xl lg:p-4">
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="w-full text-gray-500 max-sm:p-4 "
-                        >
-                          {benefitsData.map((test, i) => (
-                            <AccordionItem
-                              key={i}
-                              value={`item-${i + 1}`}
-                              className={
-                                i === benefitsData.length - 1
-                                  ? "border-none"
-                                  : "border-b"
-                              }
-                            >
-                              <AccordionTrigger className="text-left max-sm:text-xs">
-                                <div>
-                                  <b>{test.heading}</b>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="text-left max-sm:text-xs">
-                                <p> {test.description}</p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </div>
         </div>
       </>

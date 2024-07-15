@@ -146,9 +146,9 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed max-sm:hidden right-[100px] bottom-12">
-            <span className="mr-6 text-sm font-bold">Try Now</span>
-            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          <div className="fixed bottom-14 right-[75px] z-50 max-sm:hidden">
+            <span className="mr-6 text-sm font-bold">Connect now</span>
+            <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" />
           </div>
         )}
 
