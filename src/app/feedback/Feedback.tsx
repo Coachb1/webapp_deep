@@ -361,7 +361,7 @@ const Feedback = ({ user, renderType }: any) => {
           </div>
         )}
 
-        {invalidId && renderType === "dynamic" && (
+        {invalidId && (
           <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
             <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
               <AlertTriangle className="mr-2 inline h-4 w-4" />

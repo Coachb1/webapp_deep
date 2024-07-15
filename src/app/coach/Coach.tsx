@@ -320,13 +320,13 @@ const Coach = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed bottom-14 right-[60px] z-50 max-sm:hidden">
+          <div className="fixed bottom-14 right-[75px] z-50 max-sm:hidden">
             <span className="mr-6 text-sm font-bold">Connect now</span>
             <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" />
           </div>
         )}
 
-        {invalidId && renderType === "dynamic" && (
+        {invalidId && (
           <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />

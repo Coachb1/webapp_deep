@@ -73,7 +73,7 @@ const LayoutComponent = ({
 
   useEffect(() => {
     //hide bots from intake
-    if (pathname.includes("intake")) {
+    if (pathname.includes("/intake")) {
       hideBots();
     }
     //ADD LOCALSTORAGE ITEM after user
