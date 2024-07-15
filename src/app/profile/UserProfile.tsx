@@ -18,7 +18,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
 
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   // const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
   // const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
 
@@ -116,6 +116,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
   const {
+    userId,
     allowAudioInteraction: {
       client: clientAllowAudioInteractions,
       user: user_allow_audio_interactions,
@@ -123,6 +124,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     candidateReport,
     userPositionDetails,
     kudosData: { totalUsersForFeedback, userKudosData },
+    fetchUserData,
   } = useUser();
 
   useEffect(() => {
@@ -291,6 +293,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         } else {
           toast.error("Error, try again.");
         }
+        fetchUserData(user?.email, user, true);
       })
       .catch((err) => {
         toast.error("Error, try again.");

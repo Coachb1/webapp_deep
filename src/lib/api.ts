@@ -4,6 +4,7 @@ import {
   baseURL,
   basicAuth,
   configureTestsData,
+  convertJsonToExpectedFormat,
   convertTestsData,
   emptyData,
   findCoachUID,
@@ -16,12 +17,16 @@ import { CoachesDataType } from "@/app/Coaches";
 import {
   CategoryData,
   ClientUserType,
+  ConvertedConversation,
+  FeedbackConversationType,
   KudosDetailsType,
   PositionedUserTypes,
   TestsType,
   UserInfoType,
   knowledgeBotJson,
 } from "./types";
+
+let feedbackBotId = "";
 
 export const getClientUserInfo = async (
   userEmail: string | null | undefined,
@@ -166,7 +171,7 @@ export const getUserJoiningPreviledges = async (
 
 export const getBots = async (userId: string) => {
   const response = await fetch(
-    `${baseURL}/accounts/get-bots/?user_id=${userId}`,
+    `${baseURL}/accounts/get-bots/?user_id=${userId}&approved_only=false`,
     {
       headers: {
         Authorization: basicAuth,
@@ -174,7 +179,16 @@ export const getBots = async (userId: string) => {
     }
   );
 
-  return response.json();
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log("responseData", responseData);
+    feedbackBotId = responseData.data.filter(
+      (data: any) => data.signature_bot.bot_type === "feedback_bot"
+    )[0]?.data.signature_bot.bot_id;
+    return responseData;
+  } else {
+    return [];
+  }
 };
 
 export const getUserConnections = async (userId: string) => {
@@ -506,4 +520,92 @@ export const getKudosData = async (userId: string, userEmail: string) => {
       userKudosData: [],
     };
   }
+};
+
+export const getConversations = async (
+  userId: string
+  // feedbackBotId: string | null
+) => {
+  let convertsationDataAdmin: ConvertedConversation[] = [];
+  let conversationDataUser: ConvertedConversation[] = [];
+  let feedbackConversations: FeedbackConversationType[] = [];
+
+  const responseAdmin = await fetch(
+    `${baseURL}/coaching-conversations/bot-conversation-data/?for=admin&user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (responseAdmin.ok) {
+    const responseData = await responseAdmin.json();
+    if (responseData[0] != "Bot not Found") {
+      const convertedData: ConvertedConversation[] =
+        convertJsonToExpectedFormat(responseData);
+      convertsationDataAdmin = convertedData.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    }
+  }
+
+  const responseUser = await fetch(
+    `${baseURL}/coaching-conversations/bot-conversation-data/?for=user&user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (responseUser.ok) {
+    const responseData = await responseUser.json();
+    if (responseData[0] != "Bot not Found") {
+      const convertedData: ConvertedConversation[] =
+        convertJsonToExpectedFormat(responseData);
+      conversationDataUser = convertedData.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    }
+  }
+
+  if (feedbackBotId) {
+    const responseFeedback = await fetch(
+      `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${feedbackBotId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    if (responseFeedback.ok) {
+      const responseData = await responseFeedback.json();
+      const FeedbackConvo: FeedbackConversationType[] =
+        responseData.message.map((entry: any) => ({
+          participant_name: entry.is_anonymous
+            ? "Anonymous User"
+            : entry.participant_name,
+          date: entry.date,
+          msg: {
+            question: Object.keys(entry.msg)[0],
+            answer: Object.values(entry.msg)[0],
+          },
+        }));
+      console.log(FeedbackConvo, "FeedbackConvo");
+      feedbackConversations = FeedbackConvo.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    }
+  }
+
+  return {
+    conversationDataUser,
+    convertsationDataAdmin,
+    feedbackConversations,
+  };
 };

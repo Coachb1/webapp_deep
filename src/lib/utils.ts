@@ -8,6 +8,9 @@ import {
   CategoryData,
   ClientDataType,
   ClientUserTeamType,
+  Conversation,
+  ConvertedConversation,
+  ConvertedResult,
   DomainData,
   ExtractedData,
   ExtractedDataCochee,
@@ -709,3 +712,34 @@ export const emptyData: UserInfoType = {
   headings: null,
   helpText: null,
 };
+
+export function convertJsonToExpectedFormat(
+  jsonData: Conversation[]
+): ConvertedConversation[] {
+  return jsonData.map((conversation) => {
+    const { participant_name, results, role, date, bot_name } = conversation;
+    const conversationArray: ConvertedResult[] = results.map((result) => {
+      const participantMessage = result.participant_message_text || "";
+      const coachMessage = result.coach_message_text || "";
+      const userRole =
+        result.status === "participant_message_saved" ? "participant" : "coach";
+      const conversationDate = result.created;
+
+      return {
+        participant_message: participantMessage,
+        coach_message: coachMessage,
+        user_role: userRole,
+        conversation_date: conversationDate,
+        bot_name: bot_name, // Include bot_name in ConvertedResult
+      };
+    });
+
+    return {
+      participant_name: participant_name,
+      conversation: conversationArray,
+      role: role,
+      date: date,
+      bot_name: bot_name, // Include bot_name in ConvertedConversation
+    };
+  });
+}

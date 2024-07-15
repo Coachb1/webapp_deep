@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import CopyToClipboard from "../../components/CopyToClipboard";
 import Link from "next/link";
+import { useUser } from "@/context/UserContext";
 interface Bot {
   bot_id: string;
   bot_name: string;
@@ -41,82 +42,117 @@ const MyPages = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
   const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
 
+  const { allCoaches, botsData } = useUser();
+
   useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then(async (data) => {
-          const profile = await fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          );
+    setUserProfile(allCoaches[0]);
 
-          const profileJson = await profile.json();
-          console.log("profile", profileJson.data[0]);
+    botsData
+      .filter((bot: any) => bot.signature_bot.bot_type !== "deep_dive")
+      .forEach((entry: any) => {
+        const botType = entry.signature_bot.bot_type;
 
-          setUserProfile(profileJson.data[0]);
+        if (!botTypeMap[botType]) {
+          botTypeMap[botType] = [];
+        }
+        const existingEntry = botTypeMap[botType].find(
+          (bot) => bot.bot_id === entry.signature_bot.bot_id
+        );
+        if (!existingEntry) {
+          botTypeMap[botType].push({
+            bot_id: entry.signature_bot.bot_id,
+            uid: entry.signature_bot.uid,
+            is_approved: entry.signature_bot.is_approved,
+            bot_name:
+              entry.signature_bot.bot_id.includes("feedback") ||
+              entry.signature_bot.bot_id.includes("knowledge")
+                ? entry.bot_attributes.bot_name
+                : entry.bot_attributes.coach_name,
+          });
+        }
+      });
+    const result: BotTypeEntry[] = Object.keys(botTypeMap).map((botType) => ({
+      bot_type: botType,
+      bots: botTypeMap[botType],
+    }));
+    setBotTypes(result);
+    setLoading(false);
+    // if (user) {
+    //   getUserAccount(user)
+    //     .then((response) => response.json())
+    //     .then(async (data) => {
+    //       const profile = await fetch(
+    //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+    //         {
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       );
 
-          fetch(
-            `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(
-                "bot data : ",
-                data.data.filter(
-                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-                )
-              );
-              data.data
-                .filter(
-                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-                )
-                .forEach((entry: any) => {
-                  const botType = entry.signature_bot.bot_type;
+    //       const profileJson = await profile.json();
+    //       console.log("profile", profileJson.data[0]);
+    //       console.log("profile1", allCoaches[0]);
 
-                  if (!botTypeMap[botType]) {
-                    botTypeMap[botType] = [];
-                  }
-                  const existingEntry = botTypeMap[botType].find(
-                    (bot) => bot.bot_id === entry.signature_bot.bot_id
-                  );
-                  if (!existingEntry) {
-                    botTypeMap[botType].push({
-                      bot_id: entry.signature_bot.bot_id,
-                      uid: entry.signature_bot.uid,
-                      is_approved: entry.signature_bot.is_approved,
-                      bot_name:
-                        entry.signature_bot.bot_id.includes("feedback") ||
-                        entry.signature_bot.bot_id.includes("knowledge")
-                          ? entry.bot_attributes.bot_name
-                          : entry.bot_attributes.coach_name,
-                    });
-                  }
-                });
-              const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
-                (botType) => ({
-                  bot_type: botType,
-                  bots: botTypeMap[botType],
-                })
-              );
-              setBotTypes(result);
-              setLoading(false);
-            })
-            .catch((error) => {
-              console.error(error);
-              setLoading(false);
-            });
-        });
-    }
+    //       setUserProfile(profileJson.data[0]);
+
+    //       fetch(
+    //         `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
+    //         {
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       )
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //           console.log(
+    //             "bot data : ",
+    //             data.data.filter(
+    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+    //             )
+    //           );
+    //           data.data
+    //             .filter(
+    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+    //             )
+    //             .forEach((entry: any) => {
+    //               const botType = entry.signature_bot.bot_type;
+
+    //               if (!botTypeMap[botType]) {
+    //                 botTypeMap[botType] = [];
+    //               }
+    //               const existingEntry = botTypeMap[botType].find(
+    //                 (bot) => bot.bot_id === entry.signature_bot.bot_id
+    //               );
+    //               if (!existingEntry) {
+    //                 botTypeMap[botType].push({
+    //                   bot_id: entry.signature_bot.bot_id,
+    //                   uid: entry.signature_bot.uid,
+    //                   is_approved: entry.signature_bot.is_approved,
+    //                   bot_name:
+    //                     entry.signature_bot.bot_id.includes("feedback") ||
+    //                     entry.signature_bot.bot_id.includes("knowledge")
+    //                       ? entry.bot_attributes.bot_name
+    //                       : entry.bot_attributes.coach_name,
+    //                 });
+    //               }
+    //             });
+    //           const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
+    //             (botType) => ({
+    //               bot_type: botType,
+    //               bots: botTypeMap[botType],
+    //             })
+    //           );
+    //           setBotTypes(result);
+    //           setLoading(false);
+    //         })
+    //         .catch((error) => {
+    //           console.error(error);
+    //           setLoading(false);
+    //         });
+    //     });
+    // }
   }, []);
 
   const BotTypesHeading = (botType: string) => {

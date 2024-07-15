@@ -17,6 +17,7 @@ import {
   getCategorisedTests,
   getClientUserInfo,
   getClientUsers,
+  getConversations,
   getDirectoryProfiles,
   getKnowledgeBots,
   getKudosData,
@@ -31,6 +32,8 @@ import {
   CategoryData,
   ClientUserTeamType,
   ClientUserType,
+  ConvertedConversation,
+  FeedbackConversationType,
   KudosDetailsType,
   PositionedUserTypes,
   TestsType,
@@ -61,13 +64,15 @@ interface UserContextType {
   joiningPrevileges: any;
   userConnections: any[];
   fetchUserData: (
-    userEmail: string | null,
-    user: KindeUserType | null
+    userEmail: string | null | undefined,
+    user: KindeUserType | null,
+    revalidate?: boolean
   ) => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
   competencyBasedPowerSkillsTests: any;
+  botsData: any[];
   feedbackBots: any[];
   allCoaches: CoachesDataType[];
   requestedTestsData: {
@@ -154,17 +159,30 @@ export const UserProvider = ({
     totalUsersForFeedback: 0,
     userKudosData: [],
   });
+  const [botsData, setBotsData] = useState<any[]>([]);
+  const [botConversations, setBotConversations] = useState<{
+    convertsationDataAdmin: ConvertedConversation[];
+    conversationDataUser: ConvertedConversation[];
+    feedbackConversations: FeedbackConversationType[];
+  }>({
+    convertsationDataAdmin: [],
+    conversationDataUser: [],
+    feedbackConversations: [],
+  });
 
   const fetchUserData = async (
-    userEmail: string | null,
-    user: KindeUserType | null
+    userEmail: string | null | undefined,
+    user: KindeUserType | null,
+    revalidate?: boolean
   ) => {
     if (!userEmail || !user) {
       setLoadingState(false);
       return;
     }
 
-    setLoadingState(true);
+    if (!revalidate) {
+      setLoadingState(true);
+    }
 
     try {
       const userAccount = await getUserAccount(user);
@@ -197,6 +215,7 @@ export const UserProvider = ({
         userPositionDetails,
         candidateReport,
         kudosData,
+        botConversations,
       ] = await Promise.all([
         getDirectoryProfiles(userEmail, data.coach_recommendation),
         getUserJoiningPreviledges(userEmail),
@@ -211,10 +230,9 @@ export const UserProvider = ({
         getLeaderboardPosition(userEmail, data.profile_type, data.uid),
         getCandidateReport(data.uid),
         getKudosData(data.uid, userEmail),
+        getConversations(data.uid),
       ]);
       setLoadingState(false);
-
-      console.log(attemptedTests);
 
       const { connections, coachId, coacheeId, userProfiles } = connectionsData;
       setCoachId(coachId);
@@ -230,6 +248,7 @@ export const UserProvider = ({
       //library
       setCategorisedTests(categorisedTestsData);
       setCompetencyBasedPowerSkillsTests(competencyBasedTests);
+      setBotsData(botsData.data);
       setFeedbackBots(
         botsData.data.filter(
           (data: any) => data.signature_bot.bot_type === "feedback_bot"
@@ -245,12 +264,29 @@ export const UserProvider = ({
       setUserPositionDetails(userPositionDetails);
       setCandidateReport(candidateReport);
       setKudosData(kudosData);
+
+      console.log(botConversations);
+      setBotConversations(botConversations);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setLoadingState(false);
     }
   };
+
+  // const fetchProfilePageData = async (
+  //   userEmail: string | null | undefined,
+  //   user: KindeUserType | null,
+  //   revalidate?: boolean
+  // ) => {
+  //   const [botConversations] = await Promise.all([
+  //     getConversations(userId, feedbackBots[0]?.signature_bot.bot_id),
+  //   ]);
+
+  //   console.log(botConversations);
+
+  //   setBotConversations(botConversations);
+  // };
 
   useEffect(() => {
     if (kindeUser) {
@@ -260,11 +296,11 @@ export const UserProvider = ({
     }
   }, [kindeUser]);
 
-  useEffect(() => {
-    if (pathname === "/profile") {
-      toast.success("hello bro , Call api's for anything here");
-    }
-  }, [pathname]);
+  // useEffect(() => {
+  //   if (kindeUser && pathname === "/profile") {
+  //     fetchProfilePageData(kindeUser.email, kindeUser);
+  //   }
+  // }, [pathname]);
 
   const contextValue = useMemo(
     () => ({
@@ -281,6 +317,7 @@ export const UserProvider = ({
       coachId,
       coacheeId,
       competencyBasedPowerSkillsTests,
+      botsData,
       feedbackBots,
       allCoaches,
       requestedTestsData,
@@ -306,6 +343,7 @@ export const UserProvider = ({
       coachId,
       coacheeId,
       competencyBasedPowerSkillsTests,
+      botsData,
       feedbackBots,
       allCoaches,
       requestedTestsData,

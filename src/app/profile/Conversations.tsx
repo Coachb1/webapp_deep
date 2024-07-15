@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { FeedbackConversationType } from "@/lib/types";
+import { useUser } from "@/context/UserContext";
 
 interface Result {
   uid: string;
@@ -102,129 +103,126 @@ const Conversations = ({ user }: any) => {
 
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
+
+  // const {} = useUser()
   useEffect(() => {
-    if (user) {
-      setLoading(true);
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then(async (data) => {
-          await fetch(
-            `${baseURL}/coaching-conversations/bot-conversation-data/?for=admin&user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("FOR ADMIN : ", data);
-              if (data[0] != "Bot not Found") {
-                const convertedData: ConvertedConversation[] =
-                  convertJsonToExpectedFormat(data);
-                setConvertsationDataAdmin(
-                  convertedData.sort(
-                    (a, b) =>
-                      new Date(b.date).getTime() - new Date(a.date).getTime()
-                  )
-                );
-              }
-              // setLoading(false);
-            })
-            .catch((err) => {
-              console.error(err);
-              setLoading(false);
-              setFetchError(true);
-            });
-
-          await fetch(
-            `${baseURL}/coaching-conversations/bot-conversation-data/?for=user&user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("FOR USER : ", data);
-              const convertedData: ConvertedConversation[] =
-                convertJsonToExpectedFormat(data);
-              setConvertsationData(
-                convertedData.sort(
-                  (a, b) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime()
-                )
-              );
-              // setLoading(false);
-            })
-            .catch((err) => {
-              console.error(err);
-              setLoading(false);
-              setFetchError(true);
-            });
-
-          fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("Bot details for feedback check", data);
-
-              const FeedbackBot = data.data.filter(
-                (data: any) => data.signature_bot.bot_type === "feedback_bot"
-              );
-
-              if (FeedbackBot.length > 0) {
-                fetch(
-                  `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${FeedbackBot[0].signature_bot.bot_id}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                    },
-                  }
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log("FOR Feedback bot data : ", data);
-
-                    const FeedbackConvo: FeedbackConversationType[] =
-                      data.message.map((entry: any) => ({
-                        participant_name: entry.is_anonymous
-                          ? "Anonymous User"
-                          : entry.participant_name,
-                        date: entry.date,
-                        msg: {
-                          question: Object.keys(entry.msg)[0],
-                          answer: Object.values(entry.msg)[0],
-                        },
-                      }));
-                    console.log(FeedbackConvo, "FeedbackConvo");
-                    setFeedbackConversations(
-                      FeedbackConvo.sort(
-                        (a, b) =>
-                          new Date(b.date).getTime() -
-                          new Date(a.date).getTime()
-                      )
-                    );
-                    setLoading(false);
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    setLoading(false);
-                    setFetchError(true);
-                  });
-              } else {
-                setLoading(false);
-              }
-            });
-        });
-    }
+    // if (user) {
+    //   setLoading(true);
+    //   getUserAccount(user)
+    //     .then((response) => response.json())
+    //     .then(async (data) => {
+    //       await fetch(
+    //         `${baseURL}/coaching-conversations/bot-conversation-data/?for=admin&user_id=${data.uid}`,
+    //         {
+    //           method: "GET",
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       )
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //           console.log("FOR ADMIN : ", data);
+    //           if (data[0] != "Bot not Found") {
+    //             const convertedData: ConvertedConversation[] =
+    //               convertJsonToExpectedFormat(data);
+    //             setConvertsationDataAdmin(
+    //               convertedData.sort(
+    //                 (a, b) =>
+    //                   new Date(b.date).getTime() - new Date(a.date).getTime()
+    //               )
+    //             );
+    //           }
+    //           // setLoading(false);
+    //         })
+    //         .catch((err) => {
+    //           console.error(err);
+    //           setLoading(false);
+    //           setFetchError(true);
+    //         });
+    //       await fetch(
+    //         `${baseURL}/coaching-conversations/bot-conversation-data/?for=user&user_id=${data.uid}`,
+    //         {
+    //           method: "GET",
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       )
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //           console.log("FOR USER : ", data);
+    //           const convertedData: ConvertedConversation[] =
+    //             convertJsonToExpectedFormat(data);
+    //           setConvertsationData(
+    //             convertedData.sort(
+    //               (a, b) =>
+    //                 new Date(b.date).getTime() - new Date(a.date).getTime()
+    //             )
+    //           );
+    //           // setLoading(false);
+    //         })
+    //         .catch((err) => {
+    //           console.error(err);
+    //           setLoading(false);
+    //           setFetchError(true);
+    //         });
+    //       fetch(`${baseURL}/accounts/get-bots/?user_id=${data.uid}`, {
+    //         headers: {
+    //           Authorization: basicAuth,
+    //         },
+    //       })
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //           console.log("Bot details for feedback check", data);
+    //           const FeedbackBot = data.data.filter(
+    //             (data: any) => data.signature_bot.bot_type === "feedback_bot"
+    //           );
+    //           if (FeedbackBot.length > 0) {
+    //             fetch(
+    //               `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${FeedbackBot[0].signature_bot.bot_id}`,
+    //               {
+    //                 method: "GET",
+    //                 headers: {
+    //                   Authorization: basicAuth,
+    //                 },
+    //               }
+    //             )
+    //               .then((res) => res.json())
+    //               .then((data) => {
+    //                 console.log("FOR Feedback bot data : ", data);
+    //                 const FeedbackConvo: FeedbackConversationType[] =
+    //                   data.message.map((entry: any) => ({
+    //                     participant_name: entry.is_anonymous
+    //                       ? "Anonymous User"
+    //                       : entry.participant_name,
+    //                     date: entry.date,
+    //                     msg: {
+    //                       question: Object.keys(entry.msg)[0],
+    //                       answer: Object.values(entry.msg)[0],
+    //                     },
+    //                   }));
+    //                 console.log(FeedbackConvo, "FeedbackConvo");
+    //                 setFeedbackConversations(
+    //                   FeedbackConvo.sort(
+    //                     (a, b) =>
+    //                       new Date(b.date).getTime() -
+    //                       new Date(a.date).getTime()
+    //                   )
+    //                 );
+    //                 setLoading(false);
+    //               })
+    //               .catch((err) => {
+    //                 console.error(err);
+    //                 setLoading(false);
+    //                 setFetchError(true);
+    //               });
+    //           } else {
+    //             setLoading(false);
+    //           }
+    //         });
+    //     });
+    // }
   }, []);
   return (
     <>
