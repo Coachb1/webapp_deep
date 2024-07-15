@@ -15,6 +15,8 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const howItWorks = [
   {
@@ -121,6 +123,7 @@ const DeepDive = ({ user, renderType }: any) => {
           coachScribe.setAttribute("style", "display: none;");
           setInValidCoach(true);
         }
+
         setTitle(data.data.deep_dive_data.bot_title);
         setBotObjective(data.data.deep_dive_data.bot_objective);
 
@@ -172,13 +175,17 @@ const DeepDive = ({ user, renderType }: any) => {
         </div>
 
         {invalidId && renderType === "dynamic" && (
-          <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
-            <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
-              <AlertTriangle className="mr-2 inline h-4 w-4" />
-              We have encountered an error. Please try again.{" "}
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button className="ml-0" variant={"link"} asChild>
+                <Link href={"/"}>Home</Link>
+              </Button>
             </div>
           </div>
         )}
+
         <div className="h-full min-h-screen bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
           <div className="fixed !z-[800] flex h-6 w-full items-center justify-end p-4 py-8">
             <div className="ml-4">

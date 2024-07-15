@@ -116,10 +116,10 @@ const LayoutComponent = ({
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
       }
-    } else if (pathname.includes("/deep-dive")) {
+    } else if (pathname.includes("/engagement-survey")) {
       setShowCoachBot(true);
 
-      if (pathname === "/deep-dive") {
+      if (pathname === "/engagement-survey") {
         setBotId("deep_dive-16843-guru-chaitanya");
       } else {
         const bot_id = pathname.split("/")[2];
@@ -245,7 +245,7 @@ const LayoutComponent = ({
                   !pathname.includes("/coach") &&
                   !pathname.includes("/subject-expert") &&
                   !pathname.includes("/knowledge-bot") &&
-                  !pathname.includes("/deep-dive") ? (
+                  !pathname.includes("/engagement-survey") ? (
                     <>
                       <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
                         {/* <Boxes className="z-0" /> */}
