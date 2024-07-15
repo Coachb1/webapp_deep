@@ -133,7 +133,7 @@ const DeepDive = ({ user, renderType }: any) => {
           setDynamicHowItWorks(parsedData);
         }
 
-        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+        const allowedIPS: string =  data.data.allowed_ips? data.data.allowed_ips!["feedback_deep-dive"]: "";
 
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");

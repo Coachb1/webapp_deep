@@ -248,8 +248,7 @@ const Feedback = ({ user, renderType }: any) => {
           setDynamicBenefits(parsedData);
         }
 
-        const allowedIPS: string =
-          data.data.allowed_ips["feedback_engagement-survey"];
+        const allowedIPS: string = data.data.allowed_ips? data.data.allowed_ips!["feedback_deep-dive"]: "";
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");
           fetch("https://ipinfo.io/json")

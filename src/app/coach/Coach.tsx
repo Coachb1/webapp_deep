@@ -257,8 +257,10 @@ const Coach = ({ user, renderType }: any) => {
         }
 
         if (
+          data.data.profile_details.discussion_topic &&
           data.data.profile_details.discussion_topic !== null &&
           data.data.profile_details.discussion_topic !== ""
+          
         ) {
           setDiscussionTopics(
             data.data.profile_details.discussion_topic.split(",")

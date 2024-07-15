@@ -3077,7 +3077,7 @@ loadExternalModule().then(() => {
 
     chatElementRef.initialMessages = [
       {
-        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation?
         </p>`,
         role: "ai",
       },
