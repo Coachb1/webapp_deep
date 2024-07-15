@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import Link from "next/link";
-import { Link2, Loader } from "lucide-react";
+import { ExternalLink, Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
 import {
@@ -367,7 +367,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
                     target="_blank"
                   >
                     <p className="w-fit">Participant Report</p>{" "}
-                    <Link2 className={`h-4 w-4 ml-2 inline`} />
+                    <ExternalLink className={`h-4 w-4 ml-2 inline`} />
                   </Link>
                 </>
               ) : (

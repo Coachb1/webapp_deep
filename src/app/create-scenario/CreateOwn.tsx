@@ -914,7 +914,7 @@ const CreateOwn = ({
           <div>
             <div
               id="learning-ideas"
-              className="pt-10 w-full flex flex-col items-center justify-center"
+              className="pt-[10vh] w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[20vh] ">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1128,7 +1128,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="simulation-creator"
-                  className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1173,7 +1173,7 @@ const CreateOwn = ({
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="team-connect"
-                      className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                      className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                     ></div>
                     <div className="h-fit ">
                       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1222,7 +1222,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="deepdive-creator"
-                  className={`pt-10 w-full flex flex-col items-center justify-center`} //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className={`pt-[10vh] w-full flex flex-col items-center justify-center`} //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1262,7 +1262,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="knowledge-bots"
-                  className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
