@@ -161,7 +161,7 @@ const CreateYourDeepDive = ({ user }: any) => {
             const generatedData: DeepDiveType = {
               objective: data.deep_dive_data.bot_objective,
               title: data.deep_dive_data.bot_title,
-              link: `${getLink()}deep-dive/${data.bot_id}`,
+              link: `${getLink()}engagement-survey/${data.bot_id}`,
               access_code: data.deep_dive_data.access_code,
             };
 
@@ -210,7 +210,7 @@ const CreateYourDeepDive = ({ user }: any) => {
         <div className="flex flex-col gap-2">
           <div>
             <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
-              Please enter your deep dive objective
+              Please enter your Engagement Survey objective
             </p>
             <textarea
               ref={userContextRef}
@@ -412,11 +412,11 @@ const CreateYourDeepDive = ({ user }: any) => {
                 className="w-full text-sm max-sm:text-xs text-left text-slate-900 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between"
               >
                 <div>
-                  <b className="my-1 text-gray-400">Deep Dive</b>
+                  <b className="my-1 text-gray-400">Engagement Survey</b>
                   <p className="text-sm max-sm:text-xs mt-3 font-semibold">
                     {dd.title}
                   </p>
-                  <p className="text-sm my-2 ">{dd.objective}</p>
+                  <p className="text-sm my-2 max-sm:text-xs">{dd.objective}</p>
                 </div>
                 <div className="flex flex-row max-sm:flex-col text-sm max-sm:text-xs justify-end max-sm:justify-center mt-6 gap-2">
                   <CopyToClipboard
@@ -438,7 +438,8 @@ const CreateYourDeepDive = ({ user }: any) => {
                       href={`/${dd.link.replace(getLink(), "")}`}
                       target="_blank"
                     >
-                      <ExternalLink className="mr-2 w-4 h-4" /> Visit Deep Dive
+                      <ExternalLink className="mr-2 w-4 h-4" /> Visit Engagement
+                      Survey
                     </Link>
                   </Button>
                 </div>

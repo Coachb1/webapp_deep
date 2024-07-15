@@ -32,7 +32,7 @@ import { ReactElement, useEffect, useState } from "react";
 import Feedback from "./feedback/Feedback";
 import Widgets from "@/components/Widgets";
 import Script from "next/script";
-import DeepDive from "./deep-dive/DeepDive";
+import DeepDive from "./engagement-survey/DeepDive";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 
 export const UnAuth = ({ user }: any) => {
@@ -177,11 +177,11 @@ export const LoginWall = () => {
         setBotId(bot_id);
       }
     } else if (
-      pathname.includes("/deep-dive") ||
-      pathname.includes("/deep-dive/")
+      pathname.includes("/engagement-survey") ||
+      pathname.includes("/engagement-survey/")
     ) {
       coachScribe.removeAttribute("style");
-      if (pathname === "/deep-dive") {
+      if (pathname === "/engagement-survey") {
         setBotId("<deepdive bot_id>");
       } else {
         const bot_id = pathname.split("/")[2];
@@ -232,8 +232,8 @@ export const LoginWall = () => {
     <>
       {!pathname.includes("/feedback") &&
         !pathname.includes("/feedback/") &&
-        !pathname.includes("/deep-dive") &&
-        !pathname.includes("/deep-dive/") && (
+        !pathname.includes("/engagement-survey") &&
+        !pathname.includes("/engagement-survey/") && (
           <div className="bg-white mt-4 max-sm:mt-16 min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
             <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
               <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
@@ -353,8 +353,8 @@ export const LoginWall = () => {
         </>
       )}
 
-      {(pathname.includes("/deep-dive") ||
-        pathname.includes("/deep-dive/")) && (
+      {(pathname.includes("/engagement-survey") ||
+        pathname.includes("/engagement-survey/")) && (
         <>
           <DeepDive renderType="dynamic" />
           <Widgets from="deepdiveDynamic" />

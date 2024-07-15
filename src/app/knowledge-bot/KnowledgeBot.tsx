@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CornerDownRight, Loader } from "lucide-react";
+import { AlertTriangle, CornerDownRight, Loader } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -90,15 +90,23 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       .then((data) => {
         console.log("KNOWLEDGE BOT DETAILS : ", data);
 
+        const coachScribe = document.getElementsByClassName(
+          "coachbots-coachscribe"
+        )[0];
+
+        if (data.error) {
+          console.log(coachScribe);
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
+
         let parsedFaqJson: any;
         if (typeof data.data.faqs === "string") {
           parsedFaqJson = JSON.parse(data.data.faqs);
         } else {
           parsedFaqJson = data.data.faqs;
         }
-        const coachScribe = document.getElementsByClassName(
-          "coachbots-coachscribe"
-        )[0];
+
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -106,12 +114,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         );
         setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
-          console.log(coachScribe);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
-
           setBotName(data.data.bot_name);
           setBotDescription(data.data.description);
           setPrimaryPurpose(
@@ -147,6 +149,18 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           <div className="fixed max-sm:hidden right-[100px] bottom-12">
             <span className="mr-6 text-sm font-bold">Try Now</span>
             <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          </div>
+        )}
+
+        {invalidId && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button className="ml-0" variant={"link"} asChild>
+                <Link href={"/"}>Home</Link>
+              </Button>
+            </div>
           </div>
         )}
 

@@ -125,25 +125,21 @@ const Coach = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("BOT DETAILS : ", data);
-        console.log();
         const coachScribe = document.getElementsByClassName(
           "coachbots-coachscribe"
         )[0];
-        console.log(
-          "LOGINS -norm : strict",
-          data.data.bot_details.is_login_required,
-          data.data.bot_details.is_strict_login_required
-        );
+        if (data.error) {
+          console.log(coachScribe);
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
+
         setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
+
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
 
-          console.log(coachScribe);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
           setCoachName(data.data.bot_details.coach_name);
           setCoachTagName(data.data.tag);
           setCoachDescription(data.data.bot_details.info);
@@ -330,7 +326,10 @@ const Coach = ({ user, renderType }: any) => {
           <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
-              We have encountered an error. Please try again.{" "}
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button variant={"link"} asChild>
+                <Link href={"/"}>Home</Link>
+              </Button>
             </div>
           </div>
         )}

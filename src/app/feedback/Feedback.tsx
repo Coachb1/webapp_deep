@@ -221,12 +221,12 @@ const Feedback = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log("DYNAMIC FEEDBACK DATA ", data);
+        if (data.error) {
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
         if (renderType === "dynamic") {
-          console.log("DYNAMIC FEEDBACK DATA ", data);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
           setCoachName(data.data.bot_name);
 
           if (data.data.bot_details.info) {
@@ -248,7 +248,8 @@ const Feedback = ({ user, renderType }: any) => {
           setDynamicBenefits(parsedData);
         }
 
-        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+        const allowedIPS: string =
+          data.data.allowed_ips["feedback_engagement-survey"];
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");
           fetch("https://ipinfo.io/json")
@@ -362,10 +363,13 @@ const Feedback = ({ user, renderType }: any) => {
         )}
 
         {invalidId && (
-          <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
-            <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
-              <AlertTriangle className="mr-2 inline h-4 w-4" />
-              We have encountered an error. Please try again.{" "}
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button className="ml-0" variant={"link"} asChild>
+                <Link href={"/"}>Home</Link>
+              </Button>
             </div>
           </div>
         )}
