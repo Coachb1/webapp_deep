@@ -274,6 +274,7 @@ const Coaches = ({
   } = useUser();
 
   const getCoachesData = async (profiles: CoachesDataType[]) => {
+    console.log("data", profiles);
     const data = profiles.sort(
       (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
     );

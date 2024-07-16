@@ -104,8 +104,11 @@ const Conversations = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
-  // const {} = useUser()
+  const { botConversations } = useUser();
   useEffect(() => {
+    setConvertsationDataAdmin(botConversations.convertsationDataAdmin);
+    setConvertsationData(botConversations.conversationDataUser);
+    setFeedbackConversations(botConversations.feedbackConversations);
     // if (user) {
     //   setLoading(true);
     //   getUserAccount(user)
@@ -223,6 +226,7 @@ const Conversations = ({ user }: any) => {
     //         });
     //     });
     // }
+    setLoading(false);
   }, []);
   return (
     <>

@@ -3,6 +3,7 @@ import {
   ParticipantsforLeaderBoardTypes,
   baseURL,
   basicAuth,
+  calculateTotalActionPoints,
   configureTestsData,
   convertJsonToExpectedFormat,
   convertTestsData,
@@ -12,6 +13,7 @@ import {
   getUserAccount,
   getUsersForClientForTeam,
   parseStringList,
+  sortByDateDescending,
 } from "./utils";
 import { CoachesDataType } from "@/app/Coaches";
 import {
@@ -25,8 +27,6 @@ import {
   UserInfoType,
   knowledgeBotJson,
 } from "./types";
-
-let feedbackBotId = "";
 
 export const getClientUserInfo = async (
   userEmail: string | null | undefined,
@@ -182,9 +182,6 @@ export const getBots = async (userId: string) => {
   if (response.ok) {
     const responseData = await response.json();
     console.log("responseData", responseData);
-    feedbackBotId = responseData.data.filter(
-      (data: any) => data.signature_bot.bot_type === "feedback_bot"
-    )[0]?.data.signature_bot.bot_id;
     return responseData;
   } else {
     return [];
@@ -203,7 +200,7 @@ export const getUserConnections = async (userId: string) => {
   );
 
   const userProfiles = await profileResponse.json();
-  const isApprovedData = userProfiles.data.filter(
+  const isApprovedData = userProfiles.data?.filter(
     (coachData: any) => coachData.is_approved === true
   );
 
@@ -265,43 +262,38 @@ export const getAttemptedTestsList = async (userId: string) => {
 };
 
 export const getTestsByCompetencies = async (userId: string) => {
-  try {
-    const competencyResponse = await fetch(
-      `${baseURL}/accounts/user-competency-details/?user_id=${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );
-    const competencyData = await competencyResponse.json();
-    console.log(competencyData[0]);
+  const competencyResponse = await fetch(
+    `${baseURL}/accounts/user-competency-details/?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+  const competencyData = await competencyResponse.json();
 
-    const userCompetencies = Object.values(competencyData[0]).join(", ");
-    console.log(userCompetencies);
+  const userCompetencies = Object.values(competencyData[0]).join(", ");
+  console.log(userCompetencies);
 
-    const testsResponse = await fetch(
-      `${baseURL}/tests/get-tests-by-competency/?competencies=${userCompetencies.replace(
-        /"/g,
-        ""
-      )}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    );
-    const testsData = await testsResponse.json();
-    console.log("GET TESTS BY COMPETENCIES : ", testsData);
+  const testsResponse = await fetch(
+    `${baseURL}/tests/get-tests-by-competency/?competencies=${userCompetencies.replace(
+      /"/g,
+      ""
+    )}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+  const testsData = await testsResponse.json();
+  console.log("GET TESTS BY COMPETENCIES : ", testsData);
 
-    const convertedCompetencyTests = convertTestsData(testsData);
-    console.log(convertedCompetencyTests);
-    return [convertedCompetencyTests];
-  } catch (err) {
-    console.error(err);
-  }
+  const convertedCompetencyTests = convertTestsData(testsData);
+  console.log(convertedCompetencyTests);
+  return { competencyTests: [convertedCompetencyTests], competencyData };
 };
 
 export const getRequestedTests = async (userId: string) => {
@@ -523,8 +515,8 @@ export const getKudosData = async (userId: string, userEmail: string) => {
 };
 
 export const getConversations = async (
-  userId: string
-  // feedbackBotId: string | null
+  userId: string,
+  feedbackBotId: string | null | undefined
 ) => {
   let convertsationDataAdmin: ConvertedConversation[] = [];
   let conversationDataUser: ConvertedConversation[] = [];
@@ -608,4 +600,42 @@ export const getConversations = async (
     convertsationDataAdmin,
     feedbackConversations,
   };
+};
+
+export const getActionPoints = async (userId: string) => {
+  const response = await fetch(
+    `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    const responseData = await response.json();
+    return calculateTotalActionPoints(responseData);
+  } else {
+    return 0;
+  }
+};
+
+export const getIDPs = async (userId: string) => {
+  const response = await fetch(
+    `${baseURL}/accounts/get_or_create_idp/?user_id=${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+
+  if (response.ok) {
+    const responseData = await response.json();
+    return sortByDateDescending(responseData);
+  } else {
+    return [];
+  }
 };

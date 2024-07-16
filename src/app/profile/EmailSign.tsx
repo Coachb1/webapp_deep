@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { BotDetailsType } from "@/lib/types";
 import {
   applicationUrl,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/utils";
 import { Copy, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const EmailSign = ({ user }: any) => {
   const [totalActionPoints, setTotalActionPoints] = useState(0);
@@ -22,15 +24,15 @@ const EmailSign = ({ user }: any) => {
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [coachId, setCoachId] = useState("");
-  const [coacheeId, setCoacheeId] = useState("");
+  // const [coachId, setCoachId] = useState("");
+  // const [coacheeId, setCoacheeId] = useState("");
   const [feedbackBots, setFeedbackBots] = useState<BotDetailsType[]>([]);
   const [avatarBots, setAvatarBots] = useState<BotDetailsType[]>([]);
 
   const [avatarBotId, setAvatarBotId] = useState("");
   const [feedbackBotId, setFeedbackBotId] = useState("");
 
-  const [slId, setSlId] = useState<number | undefined>();
+  const { actionPoints, coachId, coacheeId, allCoaches, botsData } = useUser();
 
   useEffect(() => {
     if (user) {
@@ -38,120 +40,154 @@ const EmailSign = ({ user }: any) => {
         `${user.given_name} ${user.family_name ? user.family_name : ""}`
       );
       setUserEmail(user.email);
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then((userdata) => {
-          console.log("USER FROM ACTIONS", userdata);
-          console.log(userdata.uid);
-          fetch(
-            `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${userdata.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              if (!data.msg) {
-                setTotalActionPoints(calculateTotalActionPoints(data));
-              }
-              // setLoading(false);
-            })
-            .catch((err) => {
-              console.log(err);
-              // setLoading(false);
-            });
+      setTotalActionPoints(actionPoints);
+      const isApprovedData = allCoaches.filter(
+        (coachData: any) => coachData.is_approved === true
+      );
 
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userdata.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
+      const bot_ids = findBotIds(isApprovedData);
 
-              const isApprovedData = data.data.filter(
-                (coachData: any) => coachData.is_approved === true
-              );
+      if (bot_ids.split(", ").length > 0) {
+        const avatarBot = bot_ids
+          .split(", ")
+          .filter((id: string) => id.includes("avatar"))
+          .join("");
+        setAvatarBotId(avatarBot);
 
-              if (isApprovedData.length > 0) {
-                setCoacheeId(findCoacheeUID(isApprovedData));
-                setCoachId(findCoachUID(isApprovedData));
+        const feedbackBot = bot_ids
+          .split(", ")
+          .filter((id: string) => id.includes("feedback"))
+          .join("");
 
-                const bot_ids = findBotIds(isApprovedData);
-                if (bot_ids.split(", ").length > 0) {
-                  const avatarBot = bot_ids
-                    .split(", ")
-                    .filter((id: string) => id.includes("avatar"))
-                    .join("");
-                  setAvatarBotId(avatarBot);
+        setFeedbackBotId(feedbackBot);
+      }
 
-                  const feedbackBot = bot_ids
-                    .split(", ")
-                    .filter((id: string) => id.includes("feedback"))
-                    .join("");
+      const coachAvatarBot = botsData.filter(
+        (data: any) => data.signature_bot.bot_type === "avatar_bot"
+      );
+      setAvatarBots(coachAvatarBot);
 
-                  setFeedbackBotId(feedbackBot);
-                  console.log(feedbackBot);
-                }
+      const FeedbackBot = botsData.filter(
+        (data: any) => data.signature_bot.bot_type === "feedback_bot"
+      );
+      setFeedbackBots(FeedbackBot);
 
-                fetch(`${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`, {
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log("Bot details", data);
-                    const coachAvatarBot = data.data.filter(
-                      (data: any) =>
-                        data.signature_bot.bot_type === "avatar_bot"
-                    );
-                    setAvatarBots(coachAvatarBot);
+      setLoading(false);
 
-                    // if (findCoacheeUID(isApprovedData)) {
-                    const FeedbackBot = data.data.filter(
-                      (data: any) =>
-                        data.signature_bot.bot_type === "feedback_bot"
-                    );
+      // getUserAccount(user)
+      //   .then((response) => response.json())
+      //   .then((userdata) => {
+      //     console.log("USER FROM ACTIONS", userdata);
+      //     console.log(userdata.uid);
+      //     fetch(
+      //       `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${userdata.uid}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           Authorization: basicAuth,
+      //         },
+      //       }
+      //     )
+      //       .then((res) => res.json())
+      //       .then((data) => {
+      //         console.log(data);
+      //         if (!data.msg) {
+      //           setTotalActionPoints(calculateTotalActionPoints(data));
+      //         }
+      //         // setLoading(false);
+      //       })
+      //       .catch((err) => {
+      //         console.log(err);
+      //         // setLoading(false);
+      //       });
 
-                    console.log(FeedbackBot, "FeedbackBot");
-                    setFeedbackBots(FeedbackBot);
-                    // }
-                    setTimeout(() => {
-                      setLoading(false);
-                    }, 1000);
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    setLoading(false);
-                  });
-                // } else {
-                //   setTimeout(() => {
-                //     setLoading(false);
-                //   }, 1000);
-                // }
-              } else {
-                setTimeout(() => {
-                  setLoading(false);
-                }, 1000);
-                setCoacheeId("");
-                setCoachId("");
-              }
-            })
-            .catch((err) => {
-              setLoading(false);
-              console.error(err);
-            });
-        });
+      //     fetch(
+      //       `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${userdata.uid}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           Authorization: basicAuth,
+      //         },
+      //       }
+      //     )
+      //       .then((res) => res.json())
+      //       .then((data) => {
+      //         console.log(data);
+
+      //         const isApprovedData = data.data.filter(
+      //           (coachData: any) => coachData.is_approved === true
+      //         );
+
+      //         if (isApprovedData.length > 0) {
+      //           setCoacheeId(findCoacheeUID(isApprovedData));
+      //           setCoachId(findCoachUID(isApprovedData));
+
+      //           const bot_ids = findBotIds(isApprovedData);
+      //           if (bot_ids.split(", ").length > 0) {
+      //             const avatarBot = bot_ids
+      //               .split(", ")
+      //               .filter((id: string) => id.includes("avatar"))
+      //               .join("");
+      //             setAvatarBotId(avatarBot);
+
+      //             const feedbackBot = bot_ids
+      //               .split(", ")
+      //               .filter((id: string) => id.includes("feedback"))
+      //               .join("");
+
+      //             setFeedbackBotId(feedbackBot);
+      //             console.log(feedbackBot);
+      //           }
+
+      //           fetch(`${baseURL}/accounts/get-bots/?user_id=${userdata.uid}`, {
+      //             headers: {
+      //               Authorization: basicAuth,
+      //             },
+      //           })
+      //             .then((res) => res.json())
+      //             .then((data) => {
+      //               console.log("Bot details", data);
+      //               const coachAvatarBot = data.data.filter(
+      //                 (data: any) =>
+      //                   data.signature_bot.bot_type === "avatar_bot"
+      //               );
+      //               setAvatarBots(coachAvatarBot);
+
+      //               // if (findCoacheeUID(isApprovedData)) {
+      //               const FeedbackBot = data.data.filter(
+      //                 (data: any) =>
+      //                   data.signature_bot.bot_type === "feedback_bot"
+      //               );
+
+      //               console.log(FeedbackBot, "FeedbackBot");
+      //               setFeedbackBots(FeedbackBot);
+      //               // }
+      //               setTimeout(() => {
+      //                 setLoading(false);
+      //               }, 1000);
+      //             })
+      //             .catch((err) => {
+      //               console.error(err);
+      //               setLoading(false);
+      //             });
+      //           // } else {
+      //           //   setTimeout(() => {
+      //           //     setLoading(false);
+      //           //   }, 1000);
+      //           // }
+      //         } else {
+      //           setTimeout(() => {
+      //             setLoading(false);
+      //           }, 1000);
+      //           setCoacheeId("");
+      //           setCoachId("");
+      //         }
+      //       })
+      //       .catch((err) => {
+      //         setLoading(false);
+      //         console.error(err);
+      //       });
+      //   });
     }
   }, []);
 

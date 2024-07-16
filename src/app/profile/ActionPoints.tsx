@@ -12,45 +12,46 @@ import {
   Newspaper,
   ShoppingBag,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { useState } from "react";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 
 const ActionPoints = ({ user }: any) => {
-  const [totalActionPoints, setTotalActionPoints] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("USER FROM ACTIONS", data);
-          console.log(data.uid);
-          fetch(
-            `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              if (!data.msg) {
-                setTotalActionPoints(calculateTotalActionPoints(data));
-              }
-              setLoading(false);
-            })
-            .catch((err) => {
-              console.log(err);
-              setLoading(false);
-            });
-        });
-    }
-  }, []);
+  const { actionPoints: totalActionPoints } = useUser();
+
+  // useEffect(() => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         console.log("USER FROM ACTIONS", data);
+  //         console.log(data.uid);
+  //         fetch(
+  //           `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${data.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((res) => res.json())
+  //           .then((data) => {
+  //             console.log(data);
+  //             if (!data.msg) {
+  //               setTotalActionPoints(calculateTotalActionPoints(data));
+  //             }
+  //             setLoading(false);
+  //           })
+  //           .catch((err) => {
+  //             console.log(err);
+  //             setLoading(false);
+  //           });
+  //       });
+  //   }
+  // }, []);
 
   const MileStone = ({ actionPoint, icon, name }: any) => {
     return (

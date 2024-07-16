@@ -11,6 +11,7 @@ import React, {
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { emptyData, getUserAccount } from "@/lib/utils";
 import {
+  getActionPoints,
   getAttemptedTestsList,
   getBots,
   getCandidateReport,
@@ -19,6 +20,7 @@ import {
   getClientUsers,
   getConversations,
   getDirectoryProfiles,
+  getIDPs,
   getKnowledgeBots,
   getKudosData,
   getLeaderboardPosition,
@@ -37,6 +39,7 @@ import {
   KudosDetailsType,
   PositionedUserTypes,
   TestsType,
+  UserIDPsType,
   UserInfoType,
   knowledgeBotJson,
   knowledgeBotType,
@@ -44,6 +47,7 @@ import {
 import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -72,6 +76,7 @@ interface UserContextType {
   coachId: string;
   coacheeId: string;
   competencyBasedPowerSkillsTests: any;
+  competencyData: any;
   botsData: any[];
   feedbackBots: any[];
   allCoaches: CoachesDataType[];
@@ -89,6 +94,13 @@ interface UserContextType {
     totalUsersForFeedback: number;
     userKudosData: KudosDetailsType[];
   };
+  botConversations: {
+    convertsationDataAdmin: ConvertedConversation[];
+    conversationDataUser: ConvertedConversation[];
+    feedbackConversations: FeedbackConversationType[];
+  };
+  actionPoints: number;
+  userIDPs: UserIDPsType[];
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -169,6 +181,9 @@ export const UserProvider = ({
     conversationDataUser: [],
     feedbackConversations: [],
   });
+  const [actionPoints, setActionPoints] = useState(0);
+  const [competencyData, setCompetencyData] = useState<any>();
+  const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
 
   const fetchUserData = async (
     userEmail: string | null | undefined,
@@ -200,73 +215,85 @@ export const UserProvider = ({
       });
 
       const userInfo = await getClientUserInfo(userEmail, user);
+      console.log("userInfo", userInfo);
+      setUserInfo(userInfo);
 
-      const [
-        profiles,
-        previleges,
-        connectionsData,
-        botsData,
-        attemptedTests,
-        competencyBasedTests,
-        requestedTestData,
-        categorisedTestsData,
-        knowledgeBots,
-        clientUsers,
-        userPositionDetails,
-        candidateReport,
-        kudosData,
-        botConversations,
-      ] = await Promise.all([
-        getDirectoryProfiles(userEmail, data.coach_recommendation),
-        getUserJoiningPreviledges(userEmail),
-        getUserConnections(data.uid),
-        getBots(data.uid),
-        getAttemptedTestsList(data.uid),
-        getTestsByCompetencies(data.uid),
-        getRequestedTests(data.uid),
-        getCategorisedTests(userInfo.clientName),
-        getKnowledgeBots(userInfo.clientName),
-        getClientUsers(userInfo.clientName),
-        getLeaderboardPosition(userEmail, data.profile_type, data.uid),
-        getCandidateReport(data.uid),
-        getKudosData(data.uid, userEmail),
-        getConversations(data.uid),
-      ]);
-      setLoadingState(false);
+      const profiles = await getDirectoryProfiles(
+        userEmail,
+        data.coach_recommendation
+      );
+      setDirectoryProfiles(profiles);
+      console.log(profiles);
 
+      const previleges = await getUserJoiningPreviledges(userEmail);
+      setJoiningPrevileges(previleges);
+      console.log(previleges);
+
+      const connectionsData = await getUserConnections(data.uid);
       const { connections, coachId, coacheeId, userProfiles } = connectionsData;
+      console.log(connectionsData);
       setCoachId(coachId);
       setCoacheeId(coacheeId);
       setAllCoaches(userProfiles);
-
-      setUserInfo(userInfo);
-      setDirectoryProfiles(profiles);
-      setJoiningPrevileges(previleges);
       setUserConnections(connections?.data);
+
+      const botsData = await getBots(data.uid);
+      console.log(botsData);
+      setBotsData(botsData?.data);
+      const feedbackBots = botsData.data?.filter(
+        (data: any) => data.signature_bot.bot_type === "feedback_bot"
+      );
+      console.log(feedbackBots[0]?.signature_bot.bot_id);
+      setFeedbackBots(feedbackBots);
+
+      const attemptedTests = await getAttemptedTestsList(data.uid);
+      console.log(attemptedTests);
       setAttemptedTests(attemptedTests);
 
-      //library
-      setCategorisedTests(categorisedTestsData);
-      setCompetencyBasedPowerSkillsTests(competencyBasedTests);
-      setBotsData(botsData.data);
-      setFeedbackBots(
-        botsData.data.filter(
-          (data: any) => data.signature_bot.bot_type === "feedback_bot"
-        )
-      );
+      const competencyBasedTests = await getTestsByCompetencies(data.uid);
+      console.log(competencyBasedTests);
+      setCompetencyBasedPowerSkillsTests(competencyBasedTests?.competencyTests);
+      setCompetencyData(competencyBasedTests?.competencyData);
+
+      const requestedTestData = await getRequestedTests(data.uid);
       setRequestedTestsData(requestedTestData);
 
-      //creator-studio
+      const categorisedTestsData = await getCategorisedTests(
+        userInfo.clientName
+      );
+      setCategorisedTests(categorisedTestsData);
+
+      const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
       setknowledgeBots(knowledgeBots);
+
+      const clientUsers = await getClientUsers(userInfo.clientName);
       setClientUsers(clientUsers);
 
-      //profile
+      const userPositionDetails = await getLeaderboardPosition(
+        userEmail,
+        data.profile_type,
+        data.uid
+      );
       setUserPositionDetails(userPositionDetails);
-      setCandidateReport(candidateReport);
-      setKudosData(kudosData);
 
-      console.log(botConversations);
+      const candidateReport = await getCandidateReport(data.uid);
+      setCandidateReport(candidateReport);
+
+      const kudosData = await getKudosData(data.uid, userEmail);
+      setKudosData(kudosData);
+      const botConversations = await getConversations(
+        data.uid,
+        feedbackBots[0].signature_bot.bot_id
+      );
       setBotConversations(botConversations);
+
+      const actionPoints = await getActionPoints(data.uid);
+      setActionPoints(actionPoints);
+
+      const idps = await getIDPs(data.uid);
+      setUserIDPs(idps);
+
+      setLoadingState(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -274,33 +301,19 @@ export const UserProvider = ({
     }
   };
 
-  // const fetchProfilePageData = async (
-  //   userEmail: string | null | undefined,
-  //   user: KindeUserType | null,
-  //   revalidate?: boolean
-  // ) => {
-  //   const [botConversations] = await Promise.all([
-  //     getConversations(userId, feedbackBots[0]?.signature_bot.bot_id),
-  //   ]);
-
-  //   console.log(botConversations);
-
-  //   setBotConversations(botConversations);
-  // };
+  let called = false;
 
   useEffect(() => {
-    if (kindeUser) {
-      fetchUserData(kindeUser.email, kindeUser);
-    } else {
-      setLoadingState(false);
+    if (called) {
+      if (kindeUser) {
+        console.log("TELL ME ");
+        fetchUserData(kindeUser.email, kindeUser);
+      } else {
+        setLoadingState(false);
+      }
     }
+    called = true;
   }, [kindeUser]);
-
-  // useEffect(() => {
-  //   if (kindeUser && pathname === "/profile") {
-  //     fetchProfilePageData(kindeUser.email, kindeUser);
-  //   }
-  // }, [pathname]);
 
   const contextValue = useMemo(
     () => ({
@@ -317,6 +330,7 @@ export const UserProvider = ({
       coachId,
       coacheeId,
       competencyBasedPowerSkillsTests,
+      competencyData,
       botsData,
       feedbackBots,
       allCoaches,
@@ -329,6 +343,9 @@ export const UserProvider = ({
       userPositionDetails,
       candidateReport,
       kudosData,
+      botConversations,
+      actionPoints,
+      userIDPs,
     }),
     [
       userId,
@@ -343,6 +360,7 @@ export const UserProvider = ({
       coachId,
       coacheeId,
       competencyBasedPowerSkillsTests,
+      competencyData,
       botsData,
       feedbackBots,
       allCoaches,
@@ -355,17 +373,39 @@ export const UserProvider = ({
       userPositionDetails,
       candidateReport,
       kudosData,
+      botConversations,
+      actionPoints,
+      userIDPs,
     ]
   );
 
-  return (
+  const excludedPages = [
+    "/coach",
+    "/feedback",
+    "/knowledge-bot",
+    "/engagement-survey",
+  ];
+  const isExcluded = excludedPages.some((page) => pathname.includes(page));
+
+  return isExcluded ? (
+    <html>
+      <body className={font.className}>{children}</body>
+    </html>
+  ) : (
     <UserContext.Provider value={contextValue}>
       {loadingState ? (
         <html>
           <body className={font.className}>
-            <div className="text-2xl text-center w-full h-screen flex items-center justify-center">
-              <div>loading...</div>
-            </div>
+            <MultiStepLoader
+              loadingStates={[
+                { text: "one" },
+                { text: "two" },
+                { text: "three" },
+                { text: "four" },
+              ]}
+              loading={loadingState}
+              duration={2000}
+            />
           </body>
         </html>
       ) : (

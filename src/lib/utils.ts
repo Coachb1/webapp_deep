@@ -17,6 +17,7 @@ import {
   MediaData,
   OptionalMediaData,
   TestData,
+  UserIDPsType,
   UserInfoType,
 } from "./types";
 
@@ -742,4 +743,16 @@ export function convertJsonToExpectedFormat(
       bot_name: bot_name, // Include bot_name in ConvertedConversation
     };
   });
+}
+
+export function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
+  const compareDates = (a: UserIDPsType, b: UserIDPsType) => {
+    const dateA = new Date(a.created);
+    const dateB = new Date(b.created);
+    return dateB.getTime() - dateA.getTime();
+  };
+
+  const sortedData = [...data].sort(compareDates);
+
+  return sortedData;
 }
