@@ -615,7 +615,7 @@ const UserBotIntake = ({
                   variant={"secondary"}
                   className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                 >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
                 </Badge>
                 {checkIfEdit && (
                   <Badge
@@ -632,7 +632,7 @@ const UserBotIntake = ({
           <div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Enter your bot name.
+                Enter your bot name. <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <input
                 required
@@ -660,7 +660,7 @@ const UserBotIntake = ({
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What is the primary purpose of the bot?
+                What is the primary purpose of the bot? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -691,7 +691,7 @@ const UserBotIntake = ({
 
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What tasks or functions should the bot perform?
+                What tasks or functions should the bot perform? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -723,7 +723,7 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide the information the bot should have access to generate
-                responses?
+                responses? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -755,7 +755,7 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide a few common FAQs the bot should use for commonly asked
-                questions?
+                questions? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -779,7 +779,7 @@ const UserBotIntake = ({
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Upload any relevant document or pdf to add to the bot
+                Upload any relevant document or pdf to add to the bot. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
               </p>
               <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                 <input
@@ -863,7 +863,7 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide any relevant links and make sure the links are publicly
-                accessible
+                accessible. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
               </p>
               <textarea
                 disabled={checkIfView === null ? false : true}

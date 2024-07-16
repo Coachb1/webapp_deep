@@ -113,8 +113,16 @@ const CreateYourDeepDive = ({ user }: any) => {
       formdata.append("title", title);
       formdata.append(
         "context",
-        `${userContextRef.current.value} \nIndustry : ${industry}\nDepartment : ${department}\nRespondent Heirarcy : ${respondentHierarchy}\nRespondent Skillset : ${respondedentSkillSet}`
+        `Industry : ${industry}\nDepartment : ${department}\nRespondent Heirarcy : ${respondentHierarchy}\nRespondent Skillset : ${respondedentSkillSet}`
       );
+      formdata.append(
+        "bot_title",
+        `${title}`
+      )
+      formdata.append(
+        "bot_objective",
+        `${userContextRef.current.value}`
+      )
       formdata.append(
         "profile_image",
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
