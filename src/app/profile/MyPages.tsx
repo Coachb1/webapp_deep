@@ -470,6 +470,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
+                    target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -479,7 +480,9 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="View"
-                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        body={
+                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
+                        }
                       />
                     </Button>
                   </Link>
@@ -494,6 +497,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
+                    target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -503,7 +507,9 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        body={
+                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
+                        }
                       />
                     </Button>
                   </Link>

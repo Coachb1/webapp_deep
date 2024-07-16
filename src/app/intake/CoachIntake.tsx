@@ -64,6 +64,10 @@ const CoachIntake = ({ user }: any) => {
   const userNameParams = params.get("user_name");
   const router = useRouter();
 
+  const [loading, setLoading] = useState<boolean>(
+    checkIfEdit === "true" || checkIfView === "true" || adminEdit === "true"
+  );
+
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
   const [profileType, setProfileType] = useState("");
@@ -225,8 +229,7 @@ const CoachIntake = ({ user }: any) => {
   const [mediaData, setMediaData] = useState<MediaData>();
   const [optionalMediaData, setOptionalMediaData] =
     useState<OptionalMediaData>();
-  const [updatedOptionalFile, setUpdatedOptionalFile] =
-    useState({});
+  const [updatedOptionalFile, setUpdatedOptionalFile] = useState({});
   const [dataModified, setDataModified] = useState(false);
 
   const resetAllStates = () => {
@@ -674,7 +677,9 @@ const CoachIntake = ({ user }: any) => {
             );
             formdata.append(
               "provide_answers_using_emojis",
-              `${provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false}`
+              `${
+                provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
+              }`
             );
             formdata.append(
               "significant_challenges_and_solutions",
@@ -828,7 +833,10 @@ const CoachIntake = ({ user }: any) => {
                     "2": {
                       coach:
                         "I want a coach & mentor someone from the same department.",
-                      cochee: coachMentInSameDep.toLowerCase() === "yes" ? true : false,
+                      cochee:
+                        coachMentInSameDep.toLowerCase() === "yes"
+                          ? true
+                          : false,
                     },
                     "3": {
                       coach:
@@ -914,7 +922,9 @@ const CoachIntake = ({ user }: any) => {
                         discussInCARformat,
                       journey_and_background: journeyAndBackground,
                       provide_answers_using_emojis: `${
-                        provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
+                        provideAnswersUsingEmojis.toLowerCase() === "yes"
+                          ? true
+                          : false
                       }`,
                       common_phrases_and_expressions: phrasesNExpressions,
                       significant_challenges_and_solutions:
@@ -1104,7 +1114,7 @@ const CoachIntake = ({ user }: any) => {
             formdata.forEach((value, key) => {
               formDataObject[key] = value;
             });
-            if (formType === 'coachee'){
+            if (formType === "coachee") {
               // deleting optional file
               let deletingOptionalFiles: string = "";
               if (optionalMediaData?.extracted_from_optional_file) {
@@ -1121,22 +1131,24 @@ const CoachIntake = ({ user }: any) => {
               interface UpdatedOptionalFile {
                 [key: string]: any;
               }
-              if(deletingOptionalFiles){
-                console.log('del',deletingOptionalFiles,updatedOptionalFile)
-                let updateOptionalFile: UpdatedOptionalFile = { ...updatedOptionalFile }; // Create a shallow copy to avoid mutating the original object
+              if (deletingOptionalFiles) {
+                console.log("del", deletingOptionalFiles, updatedOptionalFile);
+                let updateOptionalFile: UpdatedOptionalFile = {
+                  ...updatedOptionalFile,
+                }; // Create a shallow copy to avoid mutating the original object
 
                 if (deletingOptionalFiles) {
-                  deletingOptionalFiles.split(",").forEach(fileName => {
+                  deletingOptionalFiles.split(",").forEach((fileName) => {
                     delete updateOptionalFile[fileName];
                   });
                 }
 
-                console.log(updateOptionalFile,formdata)
+                console.log(updateOptionalFile, formdata);
 
-                formDataObject['optional_file_data'] = JSON.stringify(updateOptionalFile);
+                formDataObject["optional_file_data"] =
+                  JSON.stringify(updateOptionalFile);
               }
             }
-
 
             // Convert the object to JSON
             var formDataJSON = JSON.stringify(formDataObject);
@@ -1296,36 +1308,36 @@ const CoachIntake = ({ user }: any) => {
                             );
                             console.log(text);
                           } else {
-                          if (file.name.includes(".pdf")) {
-                            if (text) {
-                              filesPatchFormData.append(
-                                "pdf_data",
-                                `file_name:${file.name.trim()} text_file:${text}`
-                              );
-                              console.log(text);
-                            } else {
-                              filesPatchFormData.append(
-                                `attached_pdfs`,
-                                file,
-                                file.name.trim()
-                              );
-                            }
-                          } else if (file.name.includes(".docx")) {
-                            if (text) {
-                              filesPatchFormData.append(
-                                `doc_data`,
-                                `file_name:${file.name.trim()} text_file:${text}`
-                              );
-                              console.log(text);
-                            } else {
-                              filesPatchFormData.append(
-                                `attached_docs`,
-                                file,
-                                file.name.trim()
-                              );
+                            if (file.name.includes(".pdf")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  "pdf_data",
+                                  `file_name:${file.name.trim()} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_pdfs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            } else if (file.name.includes(".docx")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  `doc_data`,
+                                  `file_name:${file.name.trim()} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_docs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
                             }
                           }
-                        }
                         });
                       }
 
@@ -1723,6 +1735,7 @@ const CoachIntake = ({ user }: any) => {
     )[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
+    setLoading(true);
 
     if (user && !adminEdit) {
       getClientInfoForUser(user.email);
@@ -1774,6 +1787,7 @@ const CoachIntake = ({ user }: any) => {
                     resultingBot.signature_bot.data.additional_data.suggested_projects?.trim()
                   );
                 }
+                setLoading(false);
               });
           });
       } else if (formType === "coach") {
@@ -1903,20 +1917,26 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
                 setVoiceSample(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data.voice_sample)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data.voice_sample
+                  )
                     ? "Yes"
                     : "No"
                 );
 
                 setProvideAnswersUsingEmojis(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .provide_answers_using_emojis)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .provide_answers_using_emojis
+                  )
                     ? "Yes"
                     : "No"
                 );
                 setAllowSessionNotes(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .allow_coachee_to_create_session)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .allow_coachee_to_create_session
+                  )
                     ? "Yes"
                     : "No"
                 );
@@ -1931,8 +1951,10 @@ const CoachIntake = ({ user }: any) => {
                 );
 
                 setCochMentInSameDep(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .fitment_answers[1])
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .fitment_answers[1]
+                  )
                     ? "Yes"
                     : "No"
                 );
@@ -2019,6 +2041,7 @@ const CoachIntake = ({ user }: any) => {
                     ]
                   );
                 }
+                setLoading(false);
               });
           });
       } else if (formType === "coachee") {
@@ -2064,7 +2087,11 @@ const CoachIntake = ({ user }: any) => {
 
                 setParticipantLevel(resultingBot.coaching_level);
                 setCochMentInSameDep(
-                  [true, 'true','True'].includes(resultingBot.coach_same_department) ? "Yes" : "No"
+                  [true, "true", "True"].includes(
+                    resultingBot.coach_same_department
+                  )
+                    ? "Yes"
+                    : "No"
                 );
 
                 setOutcomeSupported(resultingBot.supported_outcome);
@@ -2077,9 +2104,10 @@ const CoachIntake = ({ user }: any) => {
                     resultingBot.optional_file_data
                   )
                 );
-                if (resultingBot.optional_file_data){
+                if (resultingBot.optional_file_data) {
                   setUpdatedOptionalFile(resultingBot.optional_file_data);
                 }
+                setLoading(false);
               });
           });
       }
@@ -2109,52 +2137,49 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  const handleRequiredSelections = async(profile_type='coach') => {
-    console.log(experience,'experience')
-    
+  const handleRequiredSelections = async (profile_type = "coach") => {
+    console.log(experience, "experience");
+
     const coachFields = [
-      {"SupportOutcome": outcomeSupported},
-      {"coachSameDepartment": coachMentInSameDep}, 
-      {"ParticipantLevel": participantLevel},
-      {"UseEmoji": provideAnswersUsingEmojis}, 
-      {"MentoringFramework": mentoringPreferencess}, 
-      {"UserMentoringPre": mentoringPreferences}, 
-      {"UserDepartment": department}, 
-      {"UserAreaDomain": areaDomain},
-      {"UserExperience": experience},
-      {"VoiceSample": voiceSample},
-      {"AllowActionPlan": allowSessionNotes}
-    ]
+      { SupportOutcome: outcomeSupported },
+      { coachSameDepartment: coachMentInSameDep },
+      { ParticipantLevel: participantLevel },
+      { UseEmoji: provideAnswersUsingEmojis },
+      { MentoringFramework: mentoringPreferencess },
+      { UserMentoringPre: mentoringPreferences },
+      { UserDepartment: department },
+      { UserAreaDomain: areaDomain },
+      { UserExperience: experience },
+      { VoiceSample: voiceSample },
+      { AllowActionPlan: allowSessionNotes },
+    ];
 
     const coacheeFields = [
-      {"SupportOutcome": outcomeSupported},
-      {"coachSameDepartment": coachMentInSameDep}, 
-      {"ParticipantLevel": participantLevel},
-      {"UserExperience": experience},
-      {"UserDepartment": department}, 
-
-    ]
+      { SupportOutcome: outcomeSupported },
+      { coachSameDepartment: coachMentInSameDep },
+      { ParticipantLevel: participantLevel },
+      { UserExperience: experience },
+      { UserDepartment: department },
+    ];
 
     let errors = [];
-    
 
-    const listOfFields = profile_type === 'coach'? coachFields : coacheeFields
+    const listOfFields = profile_type === "coach" ? coachFields : coacheeFields;
 
-    listOfFields.forEach(field => {
+    listOfFields.forEach((field) => {
       Object.entries(field).forEach(([key, value]) => {
-        if (value.length == 0){
-          errors.push("field required")
+        if (value.length == 0) {
+          errors.push("field required");
         }
-        handleRequiredSelection(value, key)
+        handleRequiredSelection(value, key);
       });
     });
 
-    if (errors.length > 0){
-      return false
-    }else{
-      return true
+    if (errors.length > 0) {
+      return false;
+    } else {
+      return true;
     }
-
 
     // if (experience.trim().length == 0){
     //   handleRequiredSelection(experience,'UserExperience')
@@ -2166,14 +2191,14 @@ const CoachIntake = ({ user }: any) => {
     // } else {
     //   return true
     // }
-  }
+  };
 
   const handleRequiredSelection = (
-    input_value:string,
-    fieldName:string,
+    input_value: string,
+    fieldName: string,
     errorMessage = "This field is required."
   ) => {
-    console.log('input_value',input_value)
+    console.log("input_value", input_value);
     if (input_value.length > 0) {
       setDataModified(true);
       setError((prevErrors) => ({
@@ -2188,7 +2213,6 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  
   const handleWordLimitMin = (
     input_value: string,
     minLimit: number,
@@ -2344,6 +2368,14 @@ const CoachIntake = ({ user }: any) => {
 
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
+      {loading && (
+        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-md z-50">
+          <div className="p-2 bg-gray-300 rounded-md text-sm">
+            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
+            Please wait. We are fetching your Data.
+          </div>
+        </div>
+      )}
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -2352,7 +2384,9 @@ const CoachIntake = ({ user }: any) => {
           BOTS
         </h1>
         <Badge variant={"outline"}>Private. For system use only</Badge>
-        {formType === "knowledge-bot" && <UserBotIntake user={user} />}
+        {formType === "knowledge-bot" && (
+          <UserBotIntake setLoading={setLoading} user={user} />
+        )}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
@@ -2365,10 +2399,10 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
                   const is_proceed = await handleRequiredSelections();
-                  console.log('error', error)
+                  console.log("error", error);
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
@@ -2617,10 +2651,10 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </RadioGroup>
                     {Object.keys(error).includes("UserDepartment") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserDepartment"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["UserDepartment"]}
+                      </p>
+                    )}
                   </div>
 
                   <div className="my-3">
@@ -2788,10 +2822,10 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </div>
                     {Object.keys(error).includes("MentoringFramework") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["MentoringFramework"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["MentoringFramework"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -4200,10 +4234,10 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
-                  const is_proceed = await handleRequiredSelections('coachee');
-                  console.log('error', error)
+                  const is_proceed = await handleRequiredSelections("coachee");
+                  console.log("error", error);
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
@@ -4373,11 +4407,11 @@ const CoachIntake = ({ user }: any) => {
                             uploadedImage
                               .then((data) => {
                                 setProfileImageUrl(data);
-                                setDataModified(true)
+                                setDataModified(true);
                                 console.log(data);
                               })
                               .catch((err) => {
-                                setDataModified(true)
+                                setDataModified(true);
                                 setProfileImageUrl(
                                   "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
                                 );
@@ -4533,10 +4567,10 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </RadioGroup>
                     {Object.keys(error).includes("UserDepartment") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserDepartment"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["UserDepartment"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">

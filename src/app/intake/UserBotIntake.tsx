@@ -25,7 +25,14 @@ import {
 } from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import React, { FormEvent, ReactNode, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -34,7 +41,13 @@ import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-const UserBotIntake = ({ user }: { user: KindeUser }) => {
+const UserBotIntake = ({
+  user,
+  setLoading,
+}: {
+  user: KindeUser;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+}) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
   const checkIfView = params.get("view");
@@ -267,7 +280,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
       formdata.append("bot_id", botIUidFromParams!);
       formdata.append("for_reapproval", "true");
     }
-    formdata.append('is_private', `${makePrivate? true : false}`)
+    formdata.append("is_private", `${makePrivate ? true : false}`);
 
     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
       method: checkIfEdit ? "PATCH" : "POST",
@@ -517,6 +530,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                     ],
                 };
               }
+              setLoading(false);
             });
         });
     }

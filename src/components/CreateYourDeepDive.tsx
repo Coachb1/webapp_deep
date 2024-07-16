@@ -35,7 +35,10 @@ function getLink() {
 
 const CreateYourDeepDive = ({ user }: any) => {
   const userContextRef = useRef<any>();
+  const [title, setTitle] = useState("");
+  const [titleWordCount, setTitleWordCount] = useState(0);
   const [generationError, setGenerationError] = useState(false);
+  const [titleError, setTitleError] = useState(false); // Add this line
   const [inputError, setInputError] = useState(false);
   const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
@@ -76,9 +79,10 @@ const CreateYourDeepDive = ({ user }: any) => {
 
   const handleGenerateSurvey = () => {
     setGenerationError(false);
+    setTitleError(false);
     setInputError(false);
     setDateError(false);
-    if (wordCount < 5 || wordCount > 500) {
+    if (wordCount < 5 || wordCount > 50) {
       console.log("too small or too large");
       setInputError(true);
     } else if (
@@ -87,6 +91,8 @@ const CreateYourDeepDive = ({ user }: any) => {
       expiryDate === null
     ) {
       setDateError(true);
+    } else if (titleWordCount > 10) {
+      setTitleError(true);
     } else {
       setIsloading(true);
       var myHeaders = new Headers();
@@ -104,6 +110,7 @@ const CreateYourDeepDive = ({ user }: any) => {
       formdata.append("participant_id", userId);
       formdata.append("email", user.email!);
       formdata.append("bot_type", "deep_dive");
+      formdata.append("title", title);
       formdata.append(
         "context",
         `${userContextRef.current.value} \nIndustry : ${industry}\nDepartment : ${department}\nRespondent Heirarcy : ${respondentHierarchy}\nRespondent Skillset : ${respondedentSkillSet}`
@@ -209,6 +216,42 @@ const CreateYourDeepDive = ({ user }: any) => {
       <div className="px-4 py-2">
         <div className="flex flex-col gap-2">
           <div>
+            <div className="w-full">
+              <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
+                Please enter the title
+              </p>
+              <input
+                type="text"
+                value={title}
+                placeholder="Specify the title."
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  const inputValue = e.target.value;
+                  const words = inputValue.trim().split(/\s+/);
+                  const count = words.length;
+                  setTitleWordCount(count);
+                  if (count <= 10) {
+                    setTitleError(false);
+                  } else {
+                    setTitleError(true);
+                  }
+                }}
+                className="p-2 mt-1 max-sm:p-2 max-sm:text-xs max-sm:my-1 bg-accent rounded-lg border border-gray-400 w-full text-sm text-gray-600"
+              />
+
+              <div className="flex flex-row justify-between w-full">
+                <p
+                  className={`text-red-500 text-xs mt-1 ${
+                    !titleError && "invisible"
+                  }`}
+                >
+                  Title should not exceed 10 words.
+                </p>
+                <p className="font-bold text-gray-500 text-xs self-end">
+                  {titleWordCount}/10
+                </p>
+              </div>
+            </div>
             <p className="text-sm text-left font-semibold max-sm:text-xs text-gray-600 mt-2">
               Please enter your Engagement Survey objective
             </p>
@@ -219,12 +262,11 @@ const CreateYourDeepDive = ({ user }: any) => {
               }}
               onChange={(e) => {
                 const inputValue = e.target.value;
-                const words = inputValue.trim().split(/\s+/);
+                const words = inputValue.trim().split(" ");
                 const count = words.length;
-
-                if (count <= 500) {
-                  setWordCount(count);
-                  setInputError(count < 5 || count > 500);
+                setWordCount(count);
+                if (count <= 50) {
+                  setInputError(count < 5 || count > 50);
                 } else {
                   setInputError(true);
                 }
@@ -239,10 +281,10 @@ const CreateYourDeepDive = ({ user }: any) => {
                   !inputError && "invisible"
                 }`}
               >
-                Please describe your deep dive in 5-500 words.
+                Please describe your Engagement Survey context in 5-50 words.
               </p>
               <p className="font-bold text-gray-500 text-xs self-end">
-                {wordCount}/500
+                {wordCount}/50
               </p>
             </div>
           </div>
