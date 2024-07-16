@@ -406,12 +406,13 @@ export const UserProvider = ({
           <body className={font.className}>
             <MultiStepLoader
               loadingStates={[
-                { text: "Fetching data" },
-                { text: "Finding connections" },
-                { text: "Populating data" },
+                { text: "Personalizing coaching with Avatars" },
+                { text: "Updating simulations" },
+                { text: "Updating AI models" },
+                { text: "Updating NLP pipelines" },
               ]}
               loading={loadingState}
-              duration={2000}
+              duration={1500}
             />
           </body>
         </html>
