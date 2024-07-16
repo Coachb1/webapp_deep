@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
 
 const Competencies = ({ user }: any) => {
   const [skillsArray, setSkillsArray] = useState<
@@ -54,6 +55,7 @@ const Competencies = ({ user }: any) => {
   const [fetchLoading, setFetchLoading] = useState(true);
 
   const [saveLoading, setSaveLoading] = useState(false);
+  const { competencyData, getAllCompetencyData } = useUser();
   const getCompetency = () => {
     setFetchLoading(true);
     getUserAccount(user)
@@ -98,7 +100,20 @@ const Competencies = ({ user }: any) => {
 
   useEffect(() => {
     if (user) {
-      getCompetency();
+      const parsedSkills: string[] = Object.values(competencyData[0]);
+      console.log(parsedSkills);
+      setSkillsArray((prevSkills) =>
+        prevSkills.map((skill) => ({
+          ...skill,
+          disabled: parsedSkills.includes(skill.value),
+        }))
+      );
+      setExistingSkills(parsedSkills);
+      setFetchLoading(false);
+      setSkillOne(parsedSkills[0].replace(/"/g, ""));
+      setSkillTwo(parsedSkills[1].replace(/"/g, ""));
+      setSkillThree(parsedSkills[2].replace(/"/g, ""));
+      setSkillFour(parsedSkills[3].replace(/"/g, ""));
     }
   }, []);
 
@@ -130,6 +145,7 @@ const Competencies = ({ user }: any) => {
           setSaveLoading(false);
           setRenderInputComponent(false);
           getCompetency();
+          getAllCompetencyData();
         })
         .catch((error) => {
           console.error(error);

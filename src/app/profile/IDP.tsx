@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IDPIntake from "../intake/IDPIntake";
+import { useUser } from "@/context/UserContext";
 
 function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
   const compareDates = (a: UserIDPsType, b: UserIDPsType) => {
@@ -40,6 +41,7 @@ const IDP = ({ user }: any) => {
   const [loading, setLoading] = useState(false);
   const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
 
+  const { userIDPs: idps } = useUser();
   const getIDPs = () => {
     if (user) {
       setLoading(true);
@@ -70,7 +72,7 @@ const IDP = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getIDPs();
+    setUserIDPs(idps);
   }, []);
 
   return (
@@ -89,7 +91,9 @@ const IDP = ({ user }: any) => {
               <div className="">
                 <div className="bg-gray-200 px-4 text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <div className="mx-4 flex flex-row mt-4  max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
-                    <div className="w-[40%] max-sm:w-[50%] text-center ">Created Date </div>
+                    <div className="w-[40%] max-sm:w-[50%] text-center ">
+                      Created Date{" "}
+                    </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1 max-lg:mx-1">
                     {userIDPs.map((idp, i) => (
@@ -103,7 +107,9 @@ const IDP = ({ user }: any) => {
                             variant={"outline"}
                             className="h-6 text-xs w-fit bg-gray-50 border-gray-300 "
                           >
-                            <span className="max-sm:hidden max-lg:hidden">View Report</span>{" "}
+                            <span className="max-sm:hidden max-lg:hidden">
+                              View Report
+                            </span>{" "}
                             <TooltipWrapper
                               className="hidden max-sm:block max-lg:block text-xs"
                               tooltipName="View Report"
@@ -136,11 +142,15 @@ const IDP = ({ user }: any) => {
                               });
                           }}
                         >
-                          <span className="max-sm:hidden max-lg:hidden">Copy link</span>{" "}
+                          <span className="max-sm:hidden max-lg:hidden">
+                            Copy link
+                          </span>{" "}
                           <TooltipWrapper
                             className="hidden max-sm:block max-lg:block text-xs"
                             tooltipName="Copy Link"
-                            body={<Copy className="h-3 w-3 ml-2 max-sm:ml-0 max-lg:ml-0" />}
+                            body={
+                              <Copy className="h-3 w-3 ml-2 max-sm:ml-0 max-lg:ml-0" />
+                            }
                           />
                         </Button>
                       </div>

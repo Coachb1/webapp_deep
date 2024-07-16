@@ -213,29 +213,29 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { knowledgeBotss, restrictedFeatures, clientName, helpText } =
-    await getknowledgeBotss(user?.email!);
+  // const { knowledgeBotss, restrictedFeatures, clientName, helpText } =
+  //   await getknowledgeBotss(user?.email!);
 
-  const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
-    await getUserAccountsData(user);
+  // const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
+  //   await getUserAccountsData(user);
 
-  console.log(clientName);
-  const { clientUsers } = await getClientUsers();
+  // console.log(clientName);
+  // const { clientUsers } = await getClientUsers();
 
   return (
     <div>
       <CreateOwn
         user={user}
-        accessAllowed={accessAllowed}
-        restrictedFeatures={restrictedFeatures}
-        knowledgeBots={knowledgeBotss}
-        clientName={clientName}
-        accessDenied={accessDenied}
-        coachId={coachId}
-        coacheeId={coacheeId}
-        clientUsers={clientUsers}
-        userRole={userRole}
-        helpModeText={helpText}
+        // accessAllowed={accessAllowed}
+        // restrictedFeatures={restrictedFeatures}
+        // knowledgeBots={knowledgeBotss}
+        // clientName={clientName}
+        // accessDenied={accessDenied}
+        // coachId={coachId}
+        // coacheeId={coacheeId}
+        // clientUsers={clientUsers}
+        // userRole={userRole}
+        // helpModeText={helpText}
       />
     </div>
   );

@@ -7,12 +7,18 @@ import {
   Categories,
   CategoryData,
   ClientDataType,
+  ClientUserTeamType,
+  Conversation,
+  ConvertedConversation,
+  ConvertedResult,
   DomainData,
   ExtractedData,
   ExtractedDataCochee,
   MediaData,
   OptionalMediaData,
   TestData,
+  UserIDPsType,
+  UserInfoType,
 } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -151,7 +157,6 @@ export const hideConsoleLogs = () => {
     return (console.log = function () {});
   }
 };
-
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",
@@ -285,7 +290,7 @@ export interface CoachesDataType {
   avatar_bot_url: string;
 }
 
-export interface PartifipantsforLeaderBoardTypes {
+export interface ParticipantsforLeaderBoardTypes {
   name: string;
   avatar_bot_count: number;
   subject_matter_count: number;
@@ -557,12 +562,7 @@ export const getUsersForClient = (clientName: string, data: any) => {
 };
 
 export const getUsersForClientForTeam = (clientName: string, data: any) => {
-  const clientUsers: {
-    userEmail: string;
-    userName: string;
-    userId: string;
-    profileType: string;
-  }[] = [];
+  const clientUsers: ClientUserTeamType[] = [];
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)
@@ -701,3 +701,58 @@ export const handleLinks = (link: string) => {
     return link;
   }
 };
+
+export const emptyData: UserInfoType = {
+  clientName: "",
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: "",
+  clientDepartments: "",
+  restrictedPages: null,
+  restrictedFeatures: null,
+  headings: null,
+  helpText: null,
+};
+
+export function convertJsonToExpectedFormat(
+  jsonData: Conversation[]
+): ConvertedConversation[] {
+  return jsonData.map((conversation) => {
+    const { participant_name, results, role, date, bot_name } = conversation;
+    const conversationArray: ConvertedResult[] = results.map((result) => {
+      const participantMessage = result.participant_message_text || "";
+      const coachMessage = result.coach_message_text || "";
+      const userRole =
+        result.status === "participant_message_saved" ? "participant" : "coach";
+      const conversationDate = result.created;
+
+      return {
+        participant_message: participantMessage,
+        coach_message: coachMessage,
+        user_role: userRole,
+        conversation_date: conversationDate,
+        bot_name: bot_name, // Include bot_name in ConvertedResult
+      };
+    });
+
+    return {
+      participant_name: participant_name,
+      conversation: conversationArray,
+      role: role,
+      date: date,
+      bot_name: bot_name, // Include bot_name in ConvertedConversation
+    };
+  });
+}
+
+export function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
+  const compareDates = (a: UserIDPsType, b: UserIDPsType) => {
+    const dateA = new Date(a.created);
+    const dateB = new Date(b.created);
+    return dateB.getTime() - dateA.getTime();
+  };
+
+  const sortedData = [...data].sort(compareDates);
+
+  return sortedData;
+}

@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 
 import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 import { Div } from "@/components/ui/moving-border";
 
 const VersionOne = ({ user, helpModeText }: any) => {
@@ -63,9 +64,9 @@ const VersionOne = ({ user, helpModeText }: any) => {
   }
 
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
-
+  const { userInfo } = useUser();
   useEffect(() => {
-    const dynamicHelpText = helpModeText?.demo;
+    const dynamicHelpText = userInfo.helpText?.demo;
     setHelpModeSteps([
       {
         target: "#user-demos",

@@ -43,6 +43,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUser } from "@/context/UserContext";
 
 interface Test {
   title: string;
@@ -95,7 +96,7 @@ const convertToJsonArray = (input: Category): StateType[] => {
   return resultArray;
 };
 
-const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
+const MyLibrary = ({ user }: any) => {
   const [tests, setTests] = useState<StateType[]>([]);
   const [filteredTests, setFilteredTests] = useState<StateType[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -103,192 +104,203 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
   const [groupList, setGroupList] = useState<string[]>([]);
   const [currentActiveGroup, setCurrentActiveGroup] = useState<string>("");
 
-  const [requestedScenariosLoading, setRequestedScenariosLoading] =
-    useState(true);
+  const [restrictedFeatures, setRestrictedFeatures] = useState<string | null>(
+    ""
+  );
+  const [helpModeText, setHelpModeText] = useState<any>();
 
-  const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
-    useState<CategoryData[]>([]);
+  const {
+    userInfo,
+    competencyBasedPowerSkillsTests,
+    requestedTestsData,
+    attemptedTests,
+    categorisedTests,
+  } = useUser();
+
+  useEffect(() => {
+    setRestrictedFeatures(userInfo.restrictedFeatures);
+    setHelpModeText(userInfo.helpText);
+  }, [userInfo]);
+
+  const [requestedScenariosLoading, setRequestedScenariosLoading] =
+    useState(false);
+
+  // const [competencyBasedPowerSkillsTests, setCompetencyBasedPowerSkillsTests] =
+  //   useState<CategoryData[]>([]);
   const [newManagerTests, setNewManagerTests] = useState<newManagerTestsType[]>(
     []
   );
-  const [domainsOptionsNewManager, setDomainOptionsNewManager] = useState<
-    { label: string; value: string }[]
-  >([]);
 
-  const [filteredNewManagerTests, SetFilteredNewManagerTests] = useState<
-    newManagerTestsType[]
-  >([]);
-  const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
-  const [assignedScenarios, setAssignedScenarios] = useState<TestsType[]>([]);
+  // const [requestedScenarios, setRequestedScenarios] = useState<TestsType[]>([]);
+  // const [assignedScenarios, setAssignedScenarios] = useState<TestsType[]>([]);
 
   const [domainOptions, setDomainOptions] = useState<
     { label: string; value: string }[]
   >([]);
 
-  const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
-  const [filteredCategorisedTests, setFilteredCategorisedTests] = useState({});
+  // const [categorisedTests, setCategorisedTests] = useState<CategoryData[]>([]);
 
-  const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
+  // const [attemptedTests, setAttemptedTests] = useState<string[]>([]);
 
-  const getTestsByCompetencies = () => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data[0]);
-              const user_competencies = Object.values(data[0]).join(", ");
-              console.log(user_competencies);
-              fetch(
-                `${baseURL}/tests/get-tests-by-competency/?competencies=${user_competencies.replace(
-                  /"/g,
-                  ""
-                )}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                }
-              )
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("GET TESTS BY COMPETENCIES : ", data);
+  // const getTestsByCompetencies = () => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         fetch(
+  //           `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((res) => res.json())
+  //           .then((data) => {
+  //             console.log(data[0]);
+  //             const user_competencies = Object.values(data[0]).join(", ");
+  //             console.log(user_competencies);
+  //             fetch(
+  //               `${baseURL}/tests/get-tests-by-competency/?competencies=${user_competencies.replace(
+  //                 /"/g,
+  //                 ""
+  //               )}`,
+  //               {
+  //                 method: "GET",
+  //                 headers: {
+  //                   Authorization: basicAuth,
+  //                 },
+  //               }
+  //             )
+  //               .then((response) => response.json())
+  //               .then((data) => {
+  //                 console.log("GET TESTS BY COMPETENCIES : ", data);
 
-                  const convertedCompetencyTests = convertTestsData(data);
-                  console.log(convertedCompetencyTests);
-                  setCompetencyBasedPowerSkillsTests([
-                    convertedCompetencyTests,
-                  ]);
-                })
-                .then((err) => {
-                  console.error(err);
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        });
-    }
-  };
+  //                 const convertedCompetencyTests = convertTestsData(data);
+  //                 console.log(convertedCompetencyTests);
+  //                 setCompetencyBasedPowerSkillsTests([
+  //                   convertedCompetencyTests,
+  //                 ]);
+  //               })
+  //               .then((err) => {
+  //                 console.error(err);
+  //               });
+  //           })
+  //           .catch((err) => {
+  //             console.error(err);
+  //           });
+  //       });
+  //   }
+  // };
 
-  const getRequestedTests = () => {
-    if (user) {
-      setRequestedScenariosLoading(true);
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((userAccountsData) => {
-          fetch(
-            `${baseURL}/tests/get-requested-tests/?user_id=${userAccountsData.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("/tests/get-requested-tests", data);
+  // const getRequestedTests = () => {
+  //   if (user) {
+  //     setRequestedScenariosLoading(true);
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((userAccountsData) => {
+  //         fetch(
+  //           `${baseURL}/tests/get-requested-tests/?user_id=${userAccountsData.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((res) => res.json())
+  //           .then((data) => {
+  //             console.log("/tests/get-requested-tests", data);
 
-              const assignedscenarios = data.filter((test: TestsType) =>
-                test.assigned_to?.includes(userAccountsData.uid)
-              );
+  //             const assignedscenarios = data.filter((test: TestsType) =>
+  //               test.assigned_to?.includes(userAccountsData.uid)
+  //             );
 
-              const requestedscenarios = data.filter((test: TestsType) =>
-                test.creator_user_id?.includes(userAccountsData.uid)
-              );
+  //             const requestedscenarios = data.filter((test: TestsType) =>
+  //               test.creator_user_id?.includes(userAccountsData.uid)
+  //             );
 
-              setRequestedScenarios(requestedscenarios);
-              setAssignedScenarios(assignedscenarios);
-              setRequestedScenariosLoading(false);
-            })
-            .catch((err) => {
-              console.error(err);
-              setRequestedScenariosLoading(false);
-            });
-        });
-    }
-  };
+  //             setRequestedScenarios(requestedscenarios);
+  //             setAssignedScenarios(assignedscenarios);
+  //             setRequestedScenariosLoading(false);
+  //           })
+  //           .catch((err) => {
+  //             console.error(err);
+  //             setRequestedScenariosLoading(false);
+  //           });
+  //       });
+  //   }
+  // };
 
-  const getAttemptedTestsList = () => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          fetch(
-            `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data, "getAttemptedTestsList");
-              setAttemptedTests(data.data.codes);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  };
+  // const getAttemptedTestsList = () => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         fetch(
+  //           `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${data.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((response) => response.json())
+  //           .then((data) => {
+  //             console.log(data, "getAttemptedTestsList");
+  //             setAttemptedTests(data.data.codes);
+  //           })
+  //           .catch((err) => {
+  //             console.error(err);
+  //           });
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // };
 
-  const getNewManagerTests = () => {
-    fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        const group_list: string[] = [];
-        for (const item of data.data.my_lib) {
-          if (item.emails.includes(user?.email)) {
-            group_list.push(item.group);
-          }
-        }
-        setGroupList(group_list);
+  // const getNewManagerTests = () => {
+  //   fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: basicAuth,
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then(async (data) => {
+  //       const group_list: string[] = [];
+  //       for (const item of data.data.my_lib) {
+  //         if (item.emails.includes(user?.email)) {
+  //           group_list.push(item.group);
+  //         }
+  //       }
+  //       setGroupList(group_list);
 
-        console.log("group_list", group_list);
+  //       console.log("group_list", group_list);
 
-        fetch(
-          `${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            console.log("ConfiguredTestData", configureTestsData(data));
+  //       fetch(
+  //         `${baseURL}/tests/get-tests-by-tab-category/?client_name=${group_list[0]}`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             Authorization: basicAuth,
+  //           },
+  //         }
+  //       )
+  //         .then((res) => res.json())
+  //         .then((data) => {
+  //           console.log(data);
+  //           console.log("ConfiguredTestData", configureTestsData(data));
 
-            setCategorisedTests(configureTestsData(data));
-          })
-          .catch((err) => console.error("Cannot retrive tests", err));
-      });
-  };
+  //           setCategorisedTests(configureTestsData(data));
+  //         })
+  //         .catch((err) => console.error("Cannot retrive tests", err));
+  //     });
+  // };
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
   useEffect(() => {
     const dynamicHelpText = helpModeText?.library;
@@ -331,61 +343,59 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
       },
     ]);
     if (user) {
-      getTestsByCompetencies();
-      getRequestedTests();
-      getNewManagerTests();
-      getAttemptedTestsList();
-
-      fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then(async (data) => {
-          console.log(data);
-          // setRestrictedFeatures(data.data)
-          const group_list: string[] = [];
-          for (const item of data.data.my_lib) {
-            if (item.emails.includes(user?.email)) {
-              group_list.push(item.group);
-            }
-          }
-          setGroupList(group_list);
-          await fetch(
-            `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-                "Content-Type": "application/json",
-              },
-            }
-          )
-            .then((response) => response.json())
-            .then(async (data) => {
-              setCurrentActiveGroup(group_list[0]);
-              setIsLoading(false);
-              console.log(data);
-              const convertedTests = convertToJsonArray(data.data);
-              console.log(convertedTests);
-              const tempConversion = convertedTests.map((test) => {
-                return {
-                  label: test.category,
-                  value: test.category,
-                };
-              });
-              setDomainOptions(tempConversion);
-              setTests(convertedTests);
-              setFilteredTests(convertedTests);
-              setIsPageLoading(false);
-            })
-            .catch((err) => console.error("Cannot retrive tests", err));
-        })
-
-        .catch((err) => console.error("Cannot retrive test codes", err));
+      // getTestsByCompetencies();
+      // getRequestedTests();
+      // getNewManagerTests();
+      // getAttemptedTestsList();
+      // fetch(`${baseURL}/accounts/get-client-information/?for=my_lib`, {
+      //   method: "GET",
+      //   headers: {
+      //     Authorization: basicAuth,
+      //     "Content-Type": "application/json",
+      //   },
+      // })
+      //   .then((response) => response.json())
+      //   .then(async (data) => {
+      //     console.log(data);
+      //     // setRestrictedFeatures(data.data)
+      //     const group_list: string[] = [];
+      //     for (const item of data.data.my_lib) {
+      //       if (item.emails.includes(user?.email)) {
+      //         group_list.push(item.group);
+      //       }
+      //     }
+      //     setGroupList(group_list);
+      //     await fetch(
+      //       `${baseURL}/accounts/get-my-lib-data/?group=${group_list[0]}`,
+      //       {
+      //         method: "GET",
+      //         headers: {
+      //           Authorization: basicAuth,
+      //           "Content-Type": "application/json",
+      //         },
+      //       }
+      //     )
+      //       .then((response) => response.json())
+      //       .then(async (data) => {
+      //         setCurrentActiveGroup(group_list[0]);
+      //         setIsLoading(false);
+      //         console.log(data);
+      //         const convertedTests = convertToJsonArray(data.data);
+      //         console.log(convertedTests);
+      //         const tempConversion = convertedTests.map((test) => {
+      //           return {
+      //             label: test.category,
+      //             value: test.category,
+      //           };
+      //         });
+      //         setDomainOptions(tempConversion);
+      //         setTests(convertedTests);
+      //         setFilteredTests(convertedTests);
+      //         setIsPageLoading(false);
+      //       })
+      //       .catch((err) => console.error("Cannot retrive tests", err));
+      //   })
+      //   .catch((err) => console.error("Cannot retrive test codes", err));
     }
   }, []);
 
@@ -800,7 +810,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                         </span>
                       </div>
                       <div className="w-[65%] max-sm:w-[85%] max-lg:w-[85%] flex justify-center items-center mt-4">
-                        {competencyBasedPowerSkillsTests.length > 0 && (
+                        {competencyBasedPowerSkillsTests?.length > 0 && (
                           <SearchNSelect
                             placeholder="Select by Simulation domain"
                             onSearchHandler={(value) =>
@@ -823,7 +833,7 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                         )}
                       </div>
                       <div className="flex flex-col max-sm:flex-col w-[64%] max-sm:w-[90%] max-lg:w-[85%] mx-auto">
-                        {competencyBasedPowerSkillsTests.length > 0 && (
+                        {competencyBasedPowerSkillsTests?.length > 0 && (
                           <>
                             {(
                               filteredTestsData[
@@ -985,10 +995,13 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                               <div>
                                 <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
                                   <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%]">
-                                    {assignedScenarios.length > 0 ? (
+                                    {requestedTestsData?.assignedscenarios
+                                      .length > 0 ? (
                                       <LibraryTestsAccordian
                                         attemptedTests={attemptedTests}
-                                        tests={assignedScenarios}
+                                        tests={
+                                          requestedTestsData?.assignedscenarios
+                                        }
                                         type={"assigned"}
                                       />
                                     ) : (
@@ -1042,9 +1055,12 @@ const MyLibrary = ({ user, restrictedFeatures, helpModeText }: any) => {
                               <div>
                                 <div className="mx-auto w-full mt-4 max-sm:w-[100%] z-50">
                                   <div className="rounded-xl bg-white ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl max-sm:w-[100%] mb-20">
-                                    {requestedScenarios.length > 0 ? (
+                                    {requestedTestsData?.requestedscenarios
+                                      .length > 0 ? (
                                       <LibraryTestsAccordian
-                                        tests={requestedScenarios}
+                                        tests={
+                                          requestedTestsData?.requestedscenarios
+                                        }
                                         attemptedTests={attemptedTests}
                                         type={"requested"}
                                       />

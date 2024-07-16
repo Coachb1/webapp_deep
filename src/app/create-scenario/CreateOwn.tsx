@@ -44,45 +44,45 @@ import { Badge } from "@/components/ui/badge";
 import { GoogleGeminiEffectLibrary } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import { useUser } from "@/context/UserContext";
 
 const CreateOwn = ({
   user,
-  knowledgeBots,
-  // deepdiveCreationAccess,
-  restrictedFeatures,
-  clientName,
-  accessDenied,
-  accessAllowed,
-  coachId,
-  coacheeId,
-  clientUsers,
-  userRole,
-  helpModeText,
-}: {
+}: // knowledgeBots,
+// // deepdiveCreationAccess,
+// restrictedFeatures,
+// clientName,
+// accessDenied,
+// accessAllowed,
+// coachId,
+// coacheeId,
+// clientUsers,
+// userRole,
+// helpModeText,
+{
   user: KindeUser | null;
-  knowledgeBots: {
-    bot_id: string;
-    bot_name: string;
-    description: string;
-    bot_type: string;
-    scenario_case: string;
-    creator_name: string;
-  }[];
-  restrictedFeatures: string;
-  clientName: string;
-  accessDenied: string;
-  accessAllowed: string;
-  coachId: string;
-  coacheeId: string;
-  clientUsers: ClientUserTeamType[];
-  userRole: string;
-  helpModeText: any;
+  // knowledgeBots: {
+  //   bot_id: string;
+  //   bot_name: string;
+  //   description: string;
+  //   bot_type: string;
+  //   scenario_case: string;
+  //   creator_name: string;
+  // }[];
+  // restrictedFeatures: string;
+  // clientName: string;
+  // accessDenied: string;
+  // accessAllowed: string;
+  // coachId: string;
+  // coacheeId: string;
+  // clientUsers: ClientUserTeamType[];
+  // userRole: string;
+  // helpModeText: any;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
   const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
-  const [userId, setUserId] = useState("");
 
   const [contextPrompt, setContextPrompt] = useState(
     "Please enter the context and search!"
@@ -121,16 +121,28 @@ const CreateOwn = ({
 
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
+  const {
+    userInfo: { clientName, helpText: helpModeText, restrictedFeatures },
+    clientUsers,
+    userId,
+    userName,
+    knowledgeBots,
+    userRole,
+    userAccess: { accessDenied },
+    coacheeId,
+    coachId,
+  } = useUser();
+
   useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          setUserId(data.uid);
-        });
-      console.log(clientName);
-      console.log(clientUsers);
-    }
+    // if (user) {
+    //   getUserAccount(user)
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       setUserId(data.uid);
+    //     });
+    //   console.log(clientName);
+    //   console.log(clientUsers);
+    // }
 
     if (
       ["admin", "super_admin", "client_admin", "deep_dive_creator"].includes(
@@ -139,7 +151,7 @@ const CreateOwn = ({
     ) {
       setDeepDiveCreatorAccess(true);
     } else {
-      if (!accessDenied.includes("Deepdive-creator")) {
+      if (!accessDenied?.includes("Deepdive-creator")) {
         setDeepDiveCreatorAccess(true);
       }
     }
@@ -147,7 +159,7 @@ const CreateOwn = ({
     if (["admin", "super_admin", "client_admin"].includes(userRole)) {
       setScenarioCreationAccess(true);
     } else {
-      if (!accessDenied.includes("Simulation-creator")) {
+      if (!accessDenied?.includes("Simulation-creator")) {
         setScenarioCreationAccess(true);
       }
     }
@@ -1152,6 +1164,9 @@ const CreateOwn = ({
                             >
                               <BorderShadow>
                                 <CreateYourOwn
+                                  clientUsers={clientUsers}
+                                  userId={userId}
+                                  userName={userName}
                                   user={user}
                                   clientName={clientName}
                                 />
@@ -1168,7 +1183,7 @@ const CreateOwn = ({
 
             {!restrictedFeatures?.includes("Team-connect") && (
               <>
-                {!accessDenied.includes("Team-connect") && (
+                {!accessDenied?.includes("Team-connect") && (
                   <>
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
@@ -1244,7 +1259,10 @@ const CreateOwn = ({
                               <div className="flex flex-col max-sm:flex-col w-[85%] max-sm:w-[90%] mx-auto">
                                 <Div className="" containerClassName="w-full">
                                   <BorderShadow>
-                                    <CreateYourDeepDive user={user} />
+                                    <CreateYourDeepDive
+                                      user={user}
+                                      userId={userId}
+                                    />
                                   </BorderShadow>
                                 </Div>
                               </div>

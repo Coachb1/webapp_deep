@@ -3,6 +3,7 @@
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { connectionType } from "@/lib/types";
 import {
   baseURL,
@@ -11,13 +12,14 @@ import {
   findCoacheeUID,
   getUserAccount,
 } from "@/lib/utils";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { Check, Loader, LucideExternalLink, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const MyComnnections = ({ user }: any) => {
+const MyComnnections = ({ user }: { user: KindeUser | null }) => {
   const router = useRouter();
   const [connectionsForCoach, setConnectionsForCoach] = useState<
     connectionType[]
@@ -26,7 +28,7 @@ const MyComnnections = ({ user }: any) => {
     connectionType[]
   >([]);
 
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
 
   const getConnectionsForCoach = (coachId: string) => {
@@ -73,90 +75,17 @@ const MyComnnections = ({ user }: any) => {
       });
   };
 
+  const { userId, coachId, coacheeId, userConnections, fetchUserData } =
+    useUser();
+
   useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserId(data.uid);
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-
-              const isApprovedData = data.data.filter(
-                (coachData: any) => coachData.is_approved === true
-              );
-
-              console.log(isApprovedData);
-              if (findCoacheeUID(isApprovedData).length > 0) {
-                console.log("for coachees");
-                fetch(
-                  `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${findCoacheeUID(
-                    isApprovedData
-                  )}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                    },
-                  }
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-                    setConnectionsForCoachee(data.data);
-                    setLoading(false);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    setLoading(false);
-                  });
-
-                // getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              } else if (findCoachUID(isApprovedData).length > 0) {
-                console.log("for coaches");
-                fetch(
-                  `${baseURL}/accounts/coach-coachee-connections/?coach_id=${findCoachUID(
-                    isApprovedData
-                  )}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                    },
-                  }
-                )
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-
-                    setConnectionsForCoach(data.data);
-                    setLoading(false);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    setLoading(false);
-                  });
-              } else {
-                setLoading(false);
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              setLoading(false);
-            });
-        });
+    console.log(userConnections);
+    if (coachId) {
+      setConnectionsForCoach(userConnections);
+    } else if (coacheeId) {
+      setConnectionsForCoachee(userConnections);
     }
+    setLoading(false);
   }, []);
 
   const AcceptRequestComponent = ({
@@ -187,6 +116,8 @@ const MyComnnections = ({ user }: any) => {
           console.log(data);
           toast.success("Accepted the request!");
           getConnectionsForCoach(coachId);
+
+          fetchUserData(user?.email, user, true);
           setAcceptLoading(false);
         })
         .catch((err) => {
@@ -205,7 +136,7 @@ const MyComnnections = ({ user }: any) => {
       >
         <span className="max-sm:hidden">
           {acceptLoading ? "Accepting..." : "Accept"}
-        </span>{" "}
+        </span>
         <TooltipWrapper
           className="hidden max-sm:block text-xs"
           tooltipName="Accept"

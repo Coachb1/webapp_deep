@@ -19,16 +19,28 @@ import {
 } from "@/lib/utils";
 import { toast } from "sonner";
 // import Select, { MultiValue } from "react-select";
-import { ClientUserType } from "@/lib/types";
+import { ClientUserTeamType, ClientUserType } from "@/lib/types";
 import { Radio, Select, Tooltip } from "antd";
 import { Div } from "./ui/moving-border";
+import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 interface OptionType {
   value: string;
   label: string;
 }
 
-const CreateYourOwn = ({ user, clientName }: any) => {
+const CreateYourOwn = ({
+  user,
+  clientUsers,
+  userId,
+  userName,
+}: {
+  user: KindeUser | null;
+  clientName: string;
+  clientUsers: ClientUserTeamType[];
+  userName: string;
+  userId: string;
+}) => {
   const [isLoading, setIsloading] = useState(false);
   const [generatedTestData, setGeneratedTestData] = useState<
     {
@@ -40,11 +52,11 @@ const CreateYourOwn = ({ user, clientName }: any) => {
   const [userEnteredContext, setUserEnteredContext] = useState("");
   const [generationError, setGenerationError] = useState(false);
   const [inputError, setInputError] = useState(false);
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
+  // const [userId, setUserId] = useState("");
+  // const [userName, setUserName] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [loadingText, setLoadingText] = useState("Creating simulation.");
-  const [clientUser, setClientUsers] = useState<ClientUserType[]>([]);
+  // const [clientUser, setClientUsers] = useState<ClientUserTeamType[]>([]);
   const [assignedToUsers, setAssignedToUsers] = useState<string[]>([]);
 
   const [industry, setIndustry] = useState("");
@@ -65,36 +77,36 @@ const CreateYourOwn = ({ user, clientName }: any) => {
     console.log("increased num of tries to- ", numOfTries);
   };
 
-  const getClientUsers = async (clientName: string) => {
-    try {
-      const response = await fetch(
-        `${baseURL}/accounts/client_id_user_modification?all_client=true`,
-        {
-          method: "GET",
-          headers: { Authorization: basicAuth },
-        }
-      );
-      const data = await response.json();
-      setClientUsers(getUsersForClient(clientName, data));
-    } catch (err) {
-      toast.error("Error fetching client data.");
-      console.error(err);
-    } finally {
-    }
-  };
+  // const getClientUsers = async (clientName: string) => {
+  //   try {
+  //     const response = await fetch(
+  //       `${baseURL}/accounts/client_id_user_modification?all_client=true`,
+  //       {
+  //         method: "GET",
+  //         headers: { Authorization: basicAuth },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //     // setClientUsers(getUsersForClient(clientName, data));
+  //   } catch (err) {
+  //     toast.error("Error fetching client data.");
+  //     console.error(err);
+  //   } finally {
+  //   }
+  // };
 
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserId(data.uid);
-          setUserName(data.name);
-        });
-      getClientUsers(clientName);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         console.log(data);
+  //         setUserId(data.uid);
+  //         setUserName(data.name);
+  //       });
+  //     getClientUsers(clientName);
+  //   }
+  // }, []);
 
   const userContextRef = useRef<any>();
 
@@ -458,7 +470,7 @@ const CreateYourOwn = ({ user, clientName }: any) => {
               }}
               value={assignedToUsers}
               size="large"
-              options={clientUser
+              options={clientUsers
                 .map((user) => ({
                   value: `${user.userName}/${user.userId}`,
                   label: user.userName,
