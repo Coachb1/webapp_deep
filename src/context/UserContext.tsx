@@ -72,6 +72,7 @@ interface UserContextType {
     user: KindeUserType | null,
     revalidate?: boolean
   ) => Promise<void>;
+  getAllCompetencyData: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -246,6 +247,7 @@ export const UserProvider = ({
       console.log(feedbackBots[0]?.signature_bot.bot_id);
       setFeedbackBots(feedbackBots);
 
+      setLoadingState(false);
       const attemptedTests = await getAttemptedTestsList(data.uid);
       console.log(attemptedTests);
       setAttemptedTests(attemptedTests);
@@ -292,13 +294,18 @@ export const UserProvider = ({
 
       const idps = await getIDPs(data.uid);
       setUserIDPs(idps);
-
-      setLoadingState(false);
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setLoadingState(false);
     }
+  };
+
+  const getAllCompetencyData = async () => {
+    const competencyBasedTests = await getTestsByCompetencies(userId);
+    console.log(competencyBasedTests);
+    setCompetencyBasedPowerSkillsTests(competencyBasedTests?.competencyTests);
+    setCompetencyData(competencyBasedTests?.competencyData);
   };
 
   let called = false;
@@ -326,6 +333,7 @@ export const UserProvider = ({
       joiningPrevileges,
       userConnections,
       fetchUserData,
+      getAllCompetencyData,
       loadingState,
       coachId,
       coacheeId,
@@ -398,10 +406,9 @@ export const UserProvider = ({
           <body className={font.className}>
             <MultiStepLoader
               loadingStates={[
-                { text: "one" },
-                { text: "two" },
-                { text: "three" },
-                { text: "four" },
+                { text: "Fetching data" },
+                { text: "Finding connections" },
+                { text: "Populating data" },
               ]}
               loading={loadingState}
               duration={2000}

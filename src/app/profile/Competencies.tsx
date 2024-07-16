@@ -55,7 +55,7 @@ const Competencies = ({ user }: any) => {
   const [fetchLoading, setFetchLoading] = useState(true);
 
   const [saveLoading, setSaveLoading] = useState(false);
-  const { competencyData } = useUser();
+  const { competencyData, getAllCompetencyData } = useUser();
   const getCompetency = () => {
     setFetchLoading(true);
     getUserAccount(user)
@@ -145,6 +145,7 @@ const Competencies = ({ user }: any) => {
           setSaveLoading(false);
           setRenderInputComponent(false);
           getCompetency();
+          getAllCompetencyData();
         })
         .catch((error) => {
           console.error(error);

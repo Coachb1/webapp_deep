@@ -327,7 +327,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     <div className="bg-accent p-2 mt-2 rounded-md w-full">
       <HelpMode steps={HelpModeSteps} />
       <div className="pl-4 text-xl max-sm:pl-2 pt-2 flex flex-row items-center ">
-        <p>Account Information </p> <Button onClick={() => {}}>hello</Button>
+        <p>Account Information </p>
       </div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
