@@ -245,7 +245,8 @@ const LayoutComponent = ({
                   !pathname.includes("/coach") &&
                   !pathname.includes("/subject-expert") &&
                   !pathname.includes("/knowledge-bot") &&
-                  !pathname.includes("/engagement-survey") ? (
+                  !pathname.includes("/engagement-survey") &&
+                  !pathname.includes("/intake") ? (
                     <>
                       <div className="h-full min-h-[120vh] bg-white pb-16 max-sm:h-full max-sm:min-h-screen">
                         {/* <Boxes className="z-0" /> */}
