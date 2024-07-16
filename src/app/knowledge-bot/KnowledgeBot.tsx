@@ -183,7 +183,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 w-[80%]">
                   {renderType === "dynamic"
                     ? `${botName}`
-                    : "Flyover Project Tracker."}
+                    : "Flyover Project Tracker"}
                 </h1>
               </div>
               <div className="w-full flex flex-row justify-center mt-8">

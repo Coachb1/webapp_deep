@@ -43,11 +43,11 @@ const howItWorks = [
     description:
       "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
   },
-  {
-    heading: "Recommendations",
-    description:
-      "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
-  },
+  // {
+  //   heading: "Recommendations",
+  //   description:
+  //     "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
+  // },
 ];
 
 const benefitsData = [

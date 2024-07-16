@@ -67,6 +67,7 @@ let optedNo2 = false;
 let questionIndex2 = 0;
 let audioRes
 let wordLimit = 15;
+let botWordLimit = 10;
 
 let clientAllowAudioInteraction2; 
 let userAllowAudioInteraction2;
@@ -6776,7 +6777,7 @@ loadExternalModule().then(() => {
               "this.style.backgroundColor = '#9ca3af'"
             );
             endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "white";
+            endSessionButton.style.color = "black";
             endSessionButton.style.cursor = "pointer";
             endSessionButton.setAttribute("onclick", `handleEndConversation()`);
             endSessionButton.disabled = false;
@@ -7036,7 +7037,7 @@ loadExternalModule().then(() => {
               "this.style.backgroundColor = '#9ca3af'"
             );
             endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "white";
+            endSessionButton.style.color = "black";
             endSessionButton.style.cursor = "pointer";
             endSessionButton.setAttribute("onclick", `handleEndConversation()`);
             endSessionButton.disabled = false;
@@ -7317,7 +7318,7 @@ loadExternalModule().then(() => {
               return;
             }
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Pass Code</b> to proceed.</p>",
             });
             return;
           }
@@ -7446,10 +7447,10 @@ loadExternalModule().then(() => {
             return;
           }
           if (botType === "feedback_bot" && isFeedbackConvInProcess) {
-            if (!isValidMessageStt(latestMessage)) {
+            if (!isValidMessageStt(latestMessage,botWordLimit)) {
               console.log('0')
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${botWordLimit} words.</b></p>`,
               });
               return;
             }
@@ -7817,10 +7818,10 @@ loadExternalModule().then(() => {
               }
             }
             // here checking word limits for signature bot responses
-            if (!isValidMessageStt(latestMessage) && botScenarioCase !== "icons_by_ai") {
+            if (!isValidMessageStt(latestMessage, botWordLimit) && botScenarioCase !== "icons_by_ai") {
               console.log('2)','latestmsg',latestMessage)
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${botWordLimit} words.</b></p>`,
               });
               return;
             }
