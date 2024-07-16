@@ -311,16 +311,16 @@ export const UserProvider = ({
   let called = false;
 
   useEffect(() => {
-    if (called) {
-      if (kindeUser) {
-        console.log("TELL ME ");
+    if (kindeUser) {
+      console.log("TELL ME ");
+      if (!called) {
         fetchUserData(kindeUser.email, kindeUser);
-      } else {
-        setLoadingState(false);
+        called = true;
       }
+    } else {
+      setLoadingState(false);
     }
-    called = true;
-  }, [kindeUser]);
+  }, []);
 
   const contextValue = useMemo(
     () => ({
