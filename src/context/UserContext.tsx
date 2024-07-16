@@ -392,6 +392,7 @@ export const UserProvider = ({
     "/feedback",
     "/knowledge-bot",
     "/engagement-survey",
+    "/intake",
   ];
   const isExcluded = excludedPages.some((page) => pathname.includes(page));
 

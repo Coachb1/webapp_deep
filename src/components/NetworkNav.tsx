@@ -129,7 +129,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               } `}
               asChild
             >
-              <Link href={"/create-scenario"}>Creator Studio </Link>
+              <Link href={"/create-scenario"}>Studio </Link>
             </Button>
           )}
         </div>
@@ -177,7 +177,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   }`}
                   asChild
                 >
-                  <Link href={"/create-scenario"}> Creator Studio </Link>
+                  <Link href={"/create-scenario"}>Studio</Link>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

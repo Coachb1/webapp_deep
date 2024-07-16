@@ -44,6 +44,8 @@ import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Link from "next/link";
+import { NavProfileWoProfile } from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -283,6 +285,8 @@ const CoachIntake = ({ user }: any) => {
     setDiscussionTopics("");
   };
 
+  const [restrictedFeatures, setRestrictedFeatures] = useState("");
+
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
       fetch(
@@ -298,6 +302,7 @@ const CoachIntake = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setClientinfoData(data.data);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
 
           if (
             data.data.user_info[0].departments !== null &&
@@ -2368,6 +2373,19 @@ const CoachIntake = ({ user }: any) => {
 
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+        <div className="ml-4">
+          {checkIfEdit === "true" ||
+          checkIfView === "true" ||
+          adminEdit === "true" ? (
+            <NavProfileWoProfile user={user} />
+          ) : (
+            <>
+              <NetworkNav restrictedPages={restrictedFeatures} user={user} />
+            </>
+          )}
+        </div>
+      </div>
       {loading && (
         <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-md z-50">
           <div className="p-2 bg-gray-300 rounded-md text-sm">
@@ -2420,7 +2438,9 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
+                      <Info className="h-4 w-4 mr-1" />{" "}
+                      <p className="text-sm">*</p> mark questions are mandatory
+                      in nature.
                     </Badge>
                   )}
                   {checkIfEdit && (
@@ -2464,7 +2484,10 @@ const CoachIntake = ({ user }: any) => {
                     />
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">Enter your name <span className="text-xl font-bold text-red-500">*</span></p>
+                    <p className="text-sm my-1">
+                      Enter your name{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
+                    </p>
                     <input
                       value={name}
                       required
@@ -2487,7 +2510,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please add a profile description. <span className="text-xl font-bold text-red-500">*</span>
+                      Please add a profile description.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       value={about}
@@ -2517,7 +2541,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Total number of years of experience. <span className="text-xl font-bold text-red-500">*</span>
+                      Total number of years of experience.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <RadioGroup
@@ -2597,7 +2622,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please share your journey and background story,
                       highlighting experiences that have shaped your path to
-                      where you are today? <span className="text-xl font-bold text-red-500">*</span>
+                      where you are today?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       rows={4}
@@ -2627,7 +2653,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Which department/ business unit you belong to? <span className="text-xl font-bold text-red-500">*</span>
+                      Which department/ business unit you belong to?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <RadioGroup
                       value={department}
@@ -2660,7 +2687,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Select the area/domain that you are most passionate about
-                      coaching and mentoring.{" "} <span className="text-xl font-bold text-red-500">*</span>
+                      coaching and mentoring.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                       <Tooltip
                         overlayInnerStyle={{
                           backgroundColor: "white",
@@ -2709,7 +2737,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Which way do you want to help the program participants the
-                      most? <span className="text-xl font-bold text-red-500">*</span>
+                      most?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2747,7 +2776,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please mention any coaching & mentoring frameworks or
-                      tools that you use in your approach. <span className="text-xl font-bold text-red-500">*</span>
+                      tools that you use in your approach.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-1">
                       {models.map((model) => (
@@ -2830,7 +2860,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself near the lows. <span className="text-xl font-bold text-red-500">*</span>
+                      rate yourself near the lows.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -2842,7 +2873,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself highly. <span className="text-xl font-bold text-red-500">*</span>
+                      rate yourself highly.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -2855,7 +2887,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please articulate your dominant point of view which you
                       want to discuss with the program participants as a general
-                      starting point. <span className="text-xl font-bold text-red-500">*</span>
+                      starting point.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2889,7 +2922,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      What is your general approach towards problem solving? <span className="text-xl font-bold text-red-500">*</span>
+                      What is your general approach towards problem solving?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2925,7 +2959,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       What were the 3 most significant challenges you
                       encountered in your journey, and how did you successfully
-                      navigate and overcome them? <span className="text-xl font-bold text-red-500">*</span>
+                      navigate and overcome them?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2960,7 +2995,8 @@ const CoachIntake = ({ user }: any) => {
                       Are there any phrases or expressions you find yourself
                       using often in conversations? These could be catchphrases,
                       favorite quotes, or unique sayings that reflect your
-                      personality. <span className="text-xl font-bold text-red-500">*</span>
+                      personality.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2993,7 +3029,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
-                      admire. <span className="text-xl font-bold text-red-500">*</span>
+                      admire.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <input
@@ -3042,7 +3079,12 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please enter 1-2 YouTube links that reflect your worldview
                       on personal & professional development. (Separate multiple
-                      links by comma) {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
+                      links by comma){" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
                     <div>
                       <textarea
@@ -3137,7 +3179,12 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please enter 1-2 article links that reflect what you
                       wished everyone would follow in their growth journey.
-                      (Separate multiple links by comma) {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
+                      (Separate multiple links by comma){" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
                     <div>
                       <textarea
@@ -3231,7 +3278,12 @@ const CoachIntake = ({ user }: any) => {
                       reference materials that may help your mentees and
                       participants. Feel free to upload relevant materials:
                       guides, templates, and resources that support your mentees
-                      and participants in their learning journey. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
+                      and participants in their learning journey.{" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
@@ -3406,7 +3458,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Do you want to provide a voice sample, if you want an
                       audio avatar? (We will separately contact you for the
-                      same) <span className="text-xl font-bold text-red-500">*</span>
+                      same){" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3440,7 +3493,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Allow Coachee and Mentee to update action plan and session
-                      notes? <span className="text-xl font-bold text-red-500">*</span>
+                      notes?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3475,7 +3529,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please discuss how you have helped others as a
-                      coach/mentor or in other professional capacity. <span className="text-xl font-bold text-red-500">*</span>
+                      coach/mentor or in other professional capacity.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -3508,7 +3563,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Would you like your AI Avatar to provide expressive
-                      answers using emojis? <span className="text-xl font-bold text-red-500">*</span>
+                      answers using emojis?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3551,7 +3607,10 @@ const CoachIntake = ({ user }: any) => {
                         <p className="text-sm my-1">
                           As a coach, what foundational values do you believe
                           individuals should prioritize and strive for in their
-                          personal and professional development journey? <span className="text-xl font-bold text-red-500">*</span>
+                          personal and professional development journey?{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </p>
                         <div>
                           <textarea
@@ -3584,7 +3643,10 @@ const CoachIntake = ({ user }: any) => {
                           In your role as a coach, what kind of developmental
                           framework do you employ, and why do you consider it to
                           be the optimal framework for facilitating personal
-                          growth ? <span className="text-xl font-bold text-red-500">*</span>
+                          growth ?{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </p>
                         <div>
                           <textarea
@@ -3616,7 +3678,10 @@ const CoachIntake = ({ user }: any) => {
                       <hr />
                       <div className="my-2">
                         <h3 className="font-semibold text-base text-gray-600">
-                          Coaching FAQs <span className="text-xl font-bold text-red-500">*</span>
+                          Coaching FAQs{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </h3>
                         <p className="text-sm text-gray-600">
                           Note: Answer these in first person as if you are
@@ -3846,7 +3911,10 @@ const CoachIntake = ({ user }: any) => {
                       <hr />
                       <div className="my-2">
                         <h3 className="font-semibold text-base text-gray-600">
-                          Mentoring FAQs <span className="text-xl font-bold text-red-500">*</span>
+                          Mentoring FAQs{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </h3>
                         <p className="text-sm text-gray-600">
                           Note: Answer these in first person as if you are
@@ -4002,7 +4070,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Quick Match Analysis <span className="text-xl font-bold text-red-500">*</span>
+                      Quick Match Analysis{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the participant,
@@ -4262,7 +4331,9 @@ const CoachIntake = ({ user }: any) => {
                     variant={"secondary"}
                     className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
                   >
-                    <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
+                    <Info className="h-4 w-4 mr-1" />{" "}
+                    <p className="text-sm">*</p> mark questions are mandatory in
+                    nature.
                   </Badge>
                 )}
                 <div>
@@ -4293,7 +4364,10 @@ const CoachIntake = ({ user }: any) => {
                     />
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">Enter your name <span className="text-xl font-bold text-red-500">*</span></p>
+                    <p className="text-sm my-1">
+                      Enter your name{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
+                    </p>
                     <input
                       required
                       value={name}
@@ -4318,7 +4392,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please add a profile description. <span className="text-xl font-bold text-red-500">*</span>
+                      Please add a profile description.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       value={about}
@@ -4347,7 +4422,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Total number of years of experience. <span className="text-xl font-bold text-red-500">*</span>
+                      Total number of years of experience.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <RadioGroup
@@ -4428,7 +4504,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself near the lows. <span className="text-xl font-bold text-red-500">*</span>
+                      rate yourself near the lows.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -4440,7 +4517,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself highly. <span className="text-xl font-bold text-red-500">*</span>
+                      rate yourself highly.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -4543,7 +4621,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please list your department affiliation. <span className="text-xl font-bold text-red-500">*</span>
+                      Please list your department affiliation.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <RadioGroup
                       required
@@ -4603,7 +4682,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="my-2" />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Quick Match Analysis <span className="text-xl font-bold text-red-500">*</span>
+                      Quick Match Analysis{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the coach &
@@ -4723,7 +4803,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-2 mb-3">
                     <p className="text-sm my-1">
                       Please describe in detail the challenges you believe the
-                      coach or mentor can help with. <span className="text-xl font-bold text-red-500">*</span>
+                      coach or mentor can help with.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -4860,7 +4941,9 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
+                      <Info className="h-4 w-4 mr-1" />{" "}
+                      <p className="text-sm">*</p> mark questions are mandatory
+                      in nature.
                     </Badge>
                   )}
                   {checkIfView && (
@@ -4882,7 +4965,10 @@ const CoachIntake = ({ user }: any) => {
                   )}
                 </div>
                 <div className="my-3">
-                  <p className="text-sm my-1">Enter your name <span className="text-xl font-bold text-red-500">*</span></p>
+                  <p className="text-sm my-1">
+                    Enter your name{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
+                  </p>
                   <input
                     value={name}
                     required
@@ -4905,7 +4991,8 @@ const CoachIntake = ({ user }: any) => {
                 </div>
                 <div className="my-3">
                   <p className="text-sm my-1">
-                    Please add a short profile bio. <span className="text-xl font-bold text-red-500">*</span>
+                    Please add a short profile bio.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <textarea
                     value={profileBio}
@@ -4930,7 +5017,8 @@ const CoachIntake = ({ user }: any) => {
 
                 <div className="my-3">
                   <p className="text-sm my-1">
-                    Please enter your Current Projects <span className="text-xl font-bold text-red-500">*</span>
+                    Please enter your Current Projects{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <textarea
                     value={currentProjects}
@@ -4955,7 +5043,8 @@ const CoachIntake = ({ user }: any) => {
                 <div className="my-3">
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
-                    rate yourself near the lows. <span className="text-xl font-bold text-red-500">*</span>
+                    rate yourself near the lows.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
@@ -4967,7 +5056,8 @@ const CoachIntake = ({ user }: any) => {
                 <div className="my-3">
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
-                    rate yourself highly. <span className="text-xl font-bold text-red-500">*</span>
+                    rate yourself highly.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
