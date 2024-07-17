@@ -5315,9 +5315,9 @@ loadExternalModule().then(() => {
                         );
                       }
                       //   if (testType != "coaching") {
-                      if (questionSnippetLink) {
-                        if (questionSnippetLink.length > 0){
-                          const linkList = questionSnippetLink.split(',');
+                      if (senarioSnippetURL) {
+                        if (senarioSnippetURL.length > 0){
+                          const linkList = senarioSnippetURL.split(',');
                           linkList.forEach(element => {
                             appendMessage(snippetDiv(element))
                           });
