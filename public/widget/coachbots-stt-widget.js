@@ -8816,7 +8816,7 @@ loadExternalModule().then(() => {
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    initialQuestionTextStt = questionText2;
+                    initialQuestionTextStt = questionText2.replace("}","");
                     initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
                     questionText2 = `

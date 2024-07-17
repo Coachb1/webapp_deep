@@ -242,7 +242,7 @@ export const LoginWall = () => {
                 </span>
                 BOTS
               </h1>
-              <p className="mt-4 text-3xl">AI enabled Coaching & Mentoring</p>
+              <p className="mt-4 text-3xl">AI First Coaching Based Engagement Platform</p>
               <div className="p-4 max-sm:px-6">
                 <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
                   How it works?

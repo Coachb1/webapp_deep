@@ -46,6 +46,7 @@ import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Link from "next/link";
 import { NavProfileWoProfile } from "@/components/NavProfile";
 import NetworkNav from "@/components/NetworkNav";
+import { useUser } from "@/context/UserContext";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -286,6 +287,8 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const [restrictedFeatures, setRestrictedFeatures] = useState("");
+
+  const {getAllDirectoryData} = useUser()
 
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
@@ -553,7 +556,8 @@ const CoachIntake = ({ user }: any) => {
                     "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/");
+                    router.push("/?joinredirect=1");
+                    getAllDirectoryData()
                   }, 4000);
                 }
               }
@@ -1043,6 +1047,7 @@ const CoachIntake = ({ user }: any) => {
                                 }
                               );
                               resetAllStates();
+                              getAllDirectoryData()
                               setTimeout(() => {
                                 router.push("/");
                               }, 4000);
@@ -1100,7 +1105,9 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
+                  getAllDirectoryData()
                   setTimeout(() => {
+                    getAllDirectoryData()
                     router.push("/");
                   }, 4000);
                 }
@@ -1649,7 +1656,9 @@ const CoachIntake = ({ user }: any) => {
                         duration: 6000,
                       }
                     );
+                    getAllDirectoryData()
                     setTimeout(() => {
+                      getAllDirectoryData()
                       router.push("/");
                     }, 4000);
                   }
