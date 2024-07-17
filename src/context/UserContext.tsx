@@ -411,6 +411,9 @@ export const UserProvider = ({
                 { text: "Updating simulations" },
                 { text: "Updating AI models" },
                 { text: "Updating NLP pipelines" },
+                { text: "Updating interaction history" },
+                { text: "Creating feedback loops" },
+                { text: "Refreshing training data" },
               ]}
               loading={loadingState}
               duration={1500}

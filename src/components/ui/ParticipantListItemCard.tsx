@@ -61,17 +61,17 @@ export function ParticipantListItemCard({
         )}
       </div>
       <div className="inter-var w-full py-0 mt-4">
-        <div className="bg-white relative group/card  h-auto rounded-xl p-6 w-full flex flex-row py-0">
+        <div className="bg-white relative group/card h-auto rounded-xl p-6 w-full flex flex-row max-sm:flex-col max-sm:justify-center max-sm:items-center py-0 ">
           <div className="w-fit">
             <img
-              className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
+              className="h-[250px] w-[200px] max-sm:w-full  min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:min-w-[150px]"
               src={
                 "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
               }
             />
             <div>{likeComponent}</div>
           </div>
-          <div className="w-full ml-4 text-left">
+          <div className="w-full ml-4 max-sm:ml-0 text-left">
             <div className="text-gray-800 w-full text-sm my-1 text-left">
               <div className="mb-2 flex flex-row items-center gap-1">
                 {" "}

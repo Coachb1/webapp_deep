@@ -260,7 +260,6 @@ const Coach = ({ user, renderType }: any) => {
           data.data.profile_details.discussion_topic &&
           data.data.profile_details.discussion_topic !== null &&
           data.data.profile_details.discussion_topic !== ""
-          
         ) {
           setDiscussionTopics(
             data.data.profile_details.discussion_topic.split(",")
@@ -389,15 +388,9 @@ const Coach = ({ user, renderType }: any) => {
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 mt-4 p-4 max-sm:p-0"
-                      className="inter-var w-full max-sm:px-0"
-                    >
-                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl"
-                        >
+                    <div className="inter-var w-full max-sm:px-0 mt-4 p-4 max-sm:p-0">
+                      <div className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <div className="w-fit rounded-2xl">
                           <img
                             className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
                             src={
@@ -405,11 +398,8 @@ const Coach = ({ user, renderType }: any) => {
                               "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                             }
                           />
-                        </CardItem>
-                        <CardItem
-                          translateZ="100"
-                          className="w-full rounded-2xl px-4 text-slate-900 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2"
-                        >
+                        </div>
+                        <div className="w-full rounded-2xl px-4 text-slate-900 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2">
                           {renderType === "dynamic"
                             ? parseTextToJSX(coachDescription)
                             : `I'm Aarav Sharma, a seasoned corporate coach with 15+
@@ -426,9 +416,9 @@ const Coach = ({ user, renderType }: any) => {
                           I aim to be a trusted guide for long-term, sustainable
                           leadership development in the dynamic corporate
                           landscape.`}
-                        </CardItem>
-                      </CardBody>
-                    </CardContainer>
+                        </div>
+                      </div>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>
