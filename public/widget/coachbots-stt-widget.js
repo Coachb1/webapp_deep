@@ -107,6 +107,7 @@ let senarioDescription2;
 let senarioTitle2;
 let senarioCase2;
 let senarioMediaDescription2;
+let senarioSnippetURLStt;
 let responsesDone2 = false;
 let userName2 = "";
 let userEmail2 = "";
@@ -126,6 +127,7 @@ let recommendationsStt = "";
 let isTestSignedInStt;
 let clientNameStt;
 let questionMediaLinkStt;
+let questionSnippetLinkStt;
 let isImmersiveStt = false;
 let mediaPropsStt;
 let questionImageDataStt;
@@ -3467,6 +3469,21 @@ function appendMessage2(message2) {
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 }
 
+function snippetDivSTT(url){
+  return `
+  <iframe
+    allow="autoplay; encrypted-media; fullscreen;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+    src=${url}
+    frameborder="0"
+    allowfullscreen
+    webkitallowfullscreen 
+    mozallowfullscreen 
+    allowtransparency
+  >
+  `
+}
+
 function deleteAndReplaceContainerStt(id, new_cont) {
   const gshadowRoot = document.getElementById("chat-element2").shadowRoot;
   const msg = gshadowRoot.getElementById(`${id}`);
@@ -3608,7 +3625,9 @@ const resetAllVariablesStt = async () => {
   senarioCase2 = "";
   senarioTitle2 = "";
   senarioMediaDescription2;
+  senarioSnippetURLStt;
   questionMediaLinkStt = null;
+  questionSnippetLinkStt = null;
   userName2 = "";
   userEmail2 = "";
   reportUrl2 = null;
@@ -3834,6 +3853,18 @@ const handleProceedClickStt = async (choice) => {
     que_msg.innerHTML = "Please Wait..."; // You can customize the message here
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
+    }
+    if(
+      questionSnippetLinkStt
+    ){                                          
+      console.log(questionSnippetLinkStt);
+      if (questionSnippetLinkStt.length > 0){
+        const linkList = questionSnippetLinkStt.split(',');
+        linkList.forEach(element => {
+          appendMessage2(snippetDivSTT(element))
+        });
+      }
+
     }
 
     //disable Copy Paste
@@ -8391,6 +8422,10 @@ loadExternalModule().then(() => {
                 console.log(mediaPropsStt, "props");
                 isTranscriptOnlyStt =
                   questionData2.results[0].is_transcript_only;
+                senarioSnippetURLStt = 
+                  questionData2.results[0].snippet_url;
+                console.log(senarioSnippetURLStt,'senarioSnippetURLStt');
+
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
                     signals.onResponse({
@@ -8636,6 +8671,9 @@ loadExternalModule().then(() => {
                       questionMediaLinkStt =
                         questionData2.results[0].questions[questionIndex2]
                           .media_link;
+                      questionSnippetLinkStt =
+                        questionData2.results[0].questions[questionIndex2]
+                          .snippet_url;
                       questionId2 =
                         questionData2.results[0].questions[questionIndex2].uid;
                       const mcqOptionsStt =
@@ -8759,6 +8797,14 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+                      if (questionSnippetLinkStt) {
+                        if (questionSnippetLinkStt.length > 0){
+                          const linkList = questionSnippetLinkStt.split(',');
+                          linkList.forEach(element => {
+                            appendMessage2(snippetDivSTT(element))
+                          });
+                        }
+                      }
                       if (isImmersiveStt && !questionMediaLinkStt) {
                         questionText2 = questionText2.replaceAll(":", "");
                         console.log("first", questionText2);
@@ -8811,6 +8857,9 @@ loadExternalModule().then(() => {
                         questionMediaLinkStt =
                           questionData2.results[0].questions[questionIndex2]
                             .media_link;
+                        questionSnippetLinkStt =
+                          questionData2.results[0].questions[questionIndex2]
+                            .snippet_url;
                       }
                     }
                   }
@@ -8979,6 +9028,14 @@ loadExternalModule().then(() => {
                             }
                           }
                         }
+                        if (senarioSnippetURLStt){
+                          if (senarioSnippetURLStt.length > 0){
+                            const linkList = senarioSnippetURLStt.split(',');
+                            linkList.forEach(element => {
+                              appendMessage2(snippetDivSTT(element))
+                            });
+                          }
+                        }
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
                         //      `▪ Title : ${senarioTitle2} <br><br>
@@ -8999,8 +9056,17 @@ loadExternalModule().then(() => {
                              ▪ Description : ${senarioDescription2} <br><br>
                              ▪ Instructions : Response should be at least 15 words.`
                         );
+                        if (senarioSnippetURLStt){
+                          if (senarioSnippetURLStt.length > 0){
+                            const linkList = senarioSnippetURLStt.split(',');
+                            linkList.forEach(element => {
+                              appendMessage2(snippetDivSTT(element))
+                            });
+                          }
+                        }
                       }
                       // proceed buttion will show
+                      console.log('2quetext')
                       signals.onResponse({
                         html: questionText2,
                       });
@@ -9060,6 +9126,8 @@ loadExternalModule().then(() => {
                         } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                              ▪ ${ttsNarration}`
                       );
+                      console.log('3quetext')
+
                       signals.onResponse({
                         html: questionText2,
                       });
@@ -9073,12 +9141,24 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       // proceed buttion will show
+                      console.log('4quetext')
+
                       if ( !AttemptTestDirectSTT){
                         signals.onResponse({
-                          html: questionText2,
                           text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
+                        }).then(() => {
+                          if (senarioSnippetURLStt) {
+                            if (senarioSnippetURLStt.length > 0) {
+                              const linkList = senarioSnippetURLStt.split(',');
+                              linkList.forEach(element => {
+                                appendMessage2(snippetDivSTT(element));
+                              });
+                            }
+                          }
+                          appendMessage2(questionText2);
                         });
                       }
+                      
                     }
                   } else {
                     if (
@@ -9189,6 +9269,14 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+                      if (questionSnippetLinkStt){
+                        if (questionSnippetLinkStt.length > 0){
+                          const linkList = questionSnippetLinkStt.split(',');
+                          linkList.forEach(element => {
+                            appendMessage2(snippetDivSTT(element))
+                          });
+                        }
+                      }
                       if (questionText2) {
                         console.log(`que_image ${questionIndex2 + 1}`);
                         if (
@@ -9237,6 +9325,9 @@ loadExternalModule().then(() => {
                           } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                                             ▪ Question : <br> ${questionText2}
                                           `;
+
+                          console.log('5quetext')
+
                           signals.onResponse({
                             html: questionText2,
                           });
@@ -9251,6 +9342,8 @@ loadExternalModule().then(() => {
                           });
                           // questionText2 = questionText2 + imageDiv
                         } else {
+                          console.log('6quetext')
+
                           signals.onResponse({
                             html: questionText2,
                           });
@@ -9449,6 +9542,7 @@ loadExternalModule().then(() => {
                     if (responderName) {
                       questionText2 = responderName + questionText2;
                     }
+                    console.log('1quetext')
                     signals.onResponse({
                       html: questionText2,
                     });
