@@ -230,7 +230,7 @@ const Coaches = ({
   const [coacheeId, setCoacheeId] = useState("");
   const [coachId, setCoachId] = useState("");
   // const [feedbackBots, setFeedbackBots] = useState<any[]>([]);
-  const [connections, setConnections] = useState<connectionType[]>([]);
+  // const [connections, setConnections] = useState<connectionType[]>([]);
 
   const [buttonLoading, setButtonLoading] = useState(false);
 
@@ -267,8 +267,9 @@ const Coaches = ({
     },
     coachId: coachID,
     coacheeId: coacheeID,
+    // coachId, coacheeId,
     joiningPrevileges: UserJoiningPreviledges,
-    userConnections,
+    userConnections : connections,
     allCoaches,
     feedbackBots,
   } = useUser();
@@ -515,7 +516,7 @@ const Coaches = ({
       //       });
       //   });
     }
-  }, []);
+  }, [coachID, coacheeID]);
 
   function filterData(
     inputArray: CoachesDataType[],
@@ -721,7 +722,7 @@ const Coaches = ({
     if (coacheeId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections?.find(
+          const connection = connections?.find(
             (connection: any) =>
               connection.coach_id === coach.profile_id &&
               connection.coachee_id === coacheeId
@@ -771,7 +772,7 @@ const Coaches = ({
     } else if (coachId.length > 0) {
       const coachesWithStatus = savedCoachesData.map(
         (coach: CoachesDataType) => {
-          const connection = userConnections?.find(
+          const connection = connections?.find(
             (connection: any) => connection.coachee_id === coach.profile_id
           );
           return {
@@ -1256,7 +1257,7 @@ const Coaches = ({
         title={
           headings?.heading
             ? headings?.heading
-            : "AI First Coaching Based Engagement Platform"
+            : "Coaching & Performance Workbench"
         }
         description={
           headings?.subHeading

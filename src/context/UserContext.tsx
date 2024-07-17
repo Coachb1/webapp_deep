@@ -73,6 +73,7 @@ interface UserContextType {
     revalidate?: boolean
   ) => Promise<void>;
   getAllCompetencyData: () => Promise<void>;
+  getAllDirectoryData: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -308,14 +309,51 @@ export const UserProvider = ({
     setCompetencyData(competencyBasedTests?.competencyData);
   };
 
+
+  const getAllDirectoryData = async () => {
+    const userAccount = await getUserAccount(kindeUser);
+    const data = await userAccount.json();
+    const profiles = await getDirectoryProfiles(
+      kindeUser?.email,
+      data.coach_recommendation
+    );
+    setDirectoryProfiles(profiles);
+    console.log(profiles);
+
+    const previleges = await getUserJoiningPreviledges(kindeUser?.email);
+    setJoiningPrevileges(previleges);
+    console.log(previleges);
+
+    const connectionsData = await getUserConnections(data.uid);
+    const { connections, coachId, coacheeId, userProfiles } = connectionsData;
+    console.log(connectionsData);
+    setCoachId(coachId);
+    setCoacheeId(coacheeId);
+    setAllCoaches(userProfiles);
+    setUserConnections(connections?.data);
+
+    const botsData = await getBots(data.uid);
+    console.log(botsData);
+    setBotsData(botsData?.data);
+    const feedbackBots = botsData.data?.filter(
+      (data: any) => data.signature_bot.bot_type === "feedback_bot"
+    );
+    console.log(feedbackBots[0]?.signature_bot.bot_id);
+    setFeedbackBots(feedbackBots);
+  }
+
   let called = false;
 
   useEffect(() => {
     if (kindeUser) {
-      console.log("TELL ME ");
+      if(!pathname.includes("/intake")){
+        console.log("TELL ME ");
       if (!called) {
         fetchUserData(kindeUser.email, kindeUser);
         called = true;
+      }
+      } else {
+        setLoadingState(false);
       }
     } else {
       setLoadingState(false);
@@ -334,6 +372,7 @@ export const UserProvider = ({
       userConnections,
       fetchUserData,
       getAllCompetencyData,
+      getAllDirectoryData,
       loadingState,
       coachId,
       coacheeId,
@@ -392,7 +431,7 @@ export const UserProvider = ({
     "/feedback",
     "/knowledge-bot",
     "/engagement-survey",
-    "/intake",
+    // "/intake",
   ];
   const isExcluded = excludedPages.some((page) => pathname.includes(page));
 

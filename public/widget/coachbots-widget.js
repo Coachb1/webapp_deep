@@ -5481,7 +5481,7 @@ loadExternalModule().then(() => {
                         } else {
                           console.log("resp", questionText);
                           signals.onResponse({
-                            html: questionText,
+                            html: questionText.replace("}",""),
                           });
                         }
                       }
