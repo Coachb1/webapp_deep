@@ -109,6 +109,8 @@ let allowPastingAtClientLevel;
 let clientBasedBotHeaderText2 = "";
 let clientBasedBotFooterText2 = "";
 let clientBasedReadHereText2 = "";
+let senarioSnippetURL;
+let questionSnippetLink;
 
 
 function createBasicAuthToken(key = "", secret = "") {
@@ -513,6 +515,21 @@ function appendMessage(message) {
   const messageNode = createMessageNode(message);
   gShadowRoot.getElementById("messages").appendChild(messageNode);
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
+}
+
+function snippetDiv(url){
+  return `
+  <iframe
+    allow="autoplay; encrypted-media; fullscreen;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+    src=${url}
+    frameborder="0"
+    allowfullscreen
+    webkitallowfullscreen 
+    mozallowfullscreen 
+    allowtransparency
+  >
+  `
 }
 
 //* loading element with message 
@@ -1480,6 +1497,8 @@ const resetAllVariables = async () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
+  senarioSnippetURL;
+  questionSnippetLink = null;
   console.log("resetting variables completed");
 };
 
@@ -1681,6 +1700,18 @@ const handleProceedClick = async (choice) => {
       msg.parentNode.replaceChild(que_msg, msg);
     }
 
+    if(
+      questionSnippetLink
+    ){                                          
+      console.log(questionSnippetLink);
+      if (questionSnippetLink.length > 0){
+        const linkList = questionSnippetLink.split(',');
+        linkList.forEach(element => {
+          appendMessage(snippetDiv(element))
+        });
+      }
+
+    }
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
     // textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
@@ -3833,6 +3864,8 @@ loadExternalModule().then(() => {
                 questionData.results[0].questions[questionIndex].question;
               questionMediaLink =
                 questionData.results[0].questions[questionIndex].media_link;
+              questionSnippetLink =
+                questionData.results[0].questions[questionIndex].snippet_url;
               if (isHindi) {
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`];
               }
@@ -3852,7 +3885,16 @@ loadExternalModule().then(() => {
 
               const linkPattern = /(http[s]?:\/\/[^\s]+)/;
               const is_link = linkPattern.test(questionText);
+              
 
+              if (questionSnippetLink) {
+                if (questionSnippetLink.length > 0){
+                  const linkList = questionSnippetLink.split(',');
+                  linkList.forEach(element => {
+                    appendMessage(snippetDiv(element))
+                  });
+                }
+              }
               if (questionMediaLink) {
                 console.log(questionText);
                 let embeddingUrl = "";
@@ -4638,6 +4680,11 @@ loadExternalModule().then(() => {
                 orch_details =
                   questionData.results[0].orchestrated_conversation_details;
 
+                senarioSnippetURL = 
+                questionData.results[0].snippet_url;
+              console.log(senarioSnippetURL,'senarioSnippetURL');
+
+
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
                 } else {
@@ -4870,6 +4917,9 @@ loadExternalModule().then(() => {
                       questionMediaLink =
                         questionData.results[0].questions[questionIndex]
                           .media_link;
+                      questionSnippetLink =
+                        questionData.results[0].questions[questionIndex]
+                          .snippet_url;
 
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
@@ -4882,6 +4932,15 @@ loadExternalModule().then(() => {
                       const option2Name = optionName[1];
                       const option1Text = mcqOptions[option1Name]["opt"];
                       const option2Text = mcqOptions[option2Name]["opt"];
+
+                      if (questionSnippetLink) {
+                        if (questionSnippetLink.length > 0){
+                          const linkList = questionSnippetLink.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
+                      }
                       if (questionMediaLink) {
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
@@ -5051,6 +5110,9 @@ loadExternalModule().then(() => {
                         questionMediaLink =
                           questionData.results[0].questions[questionIndex]
                             .media_link;
+                        questionSnippetLink =
+                          questionData.results[0].questions[questionIndex]
+                            .snippet_url;
                       }
 
                       if (isHindi) {
@@ -5253,6 +5315,14 @@ loadExternalModule().then(() => {
                         );
                       }
                       //   if (testType != "coaching") {
+                      if (questionSnippetLink) {
+                        if (questionSnippetLink.length > 0){
+                          const linkList = questionSnippetLink.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
+                      }
                       signals.onResponse({
                         html: questionText,
                       });
@@ -5311,9 +5381,18 @@ loadExternalModule().then(() => {
                     } else {
                       if (!AttemptTestDirect){
                         signals.onResponse({
-                          html: questionText,
                           text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                        });
+                        }).then(()=>{
+                          if (senarioSnippetURL) {
+                            if (senarioSnippetURL.length > 0){
+                              const linkList = senarioSnippetURL.split(',');
+                              linkList.forEach(element => {
+                                appendMessage(snippetDiv(element))
+                              });
+                            }
+                          }
+                          appendMessage(questionText)
+                        })
                       }
                     }
                     // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
@@ -5336,6 +5415,15 @@ loadExternalModule().then(() => {
 
                       if (responderName) {
                         questionText = responderName + questionText;
+                      }
+
+                      if (questionSnippetLink) {
+                        if (questionSnippetLink.length > 0){
+                          const linkList = questionSnippetLink.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
                       }
 
                       if (questionMediaLink) {
