@@ -372,6 +372,7 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
+
                     <Dialog>
                       {botType.bot_type !== "user_bot" && (
                         <DialogTrigger asChild>
@@ -390,17 +391,21 @@ const MyPages = ({ user }: any) => {
                           </Button>
                         </DialogTrigger>
                       )}
-                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                      <DialogContent className="w-[50%] max-w-[60%] max-sm:w-[90%] max-sm:max-w-[90%] max-sm:rounded-md">
                         <DialogHeader>
                           <DialogTitle>Page link</DialogTitle>
                           <DialogDescription>
-                            <Link
-                              target="_blank"
-                              href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
-                              className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
-                            >
-                              {BotTypeLinks(botType.bot_type, bot.bot_id)}
-                            </Link>
+                            <div className="bg-gray-100 rounded-sm my-2 p-2 overflow-scroll  no-scrollbar w-full max-sm:text-left">
+                              <Link
+                                target="_blank"
+                                href={
+                                  BotTypeLinks(botType.bot_type, bot.bot_id)!
+                                }
+                                className="py-3 text-blue-500 text-[16px] max-sm:text-xs "
+                              >
+                                {BotTypeLinks(botType.bot_type, bot.bot_id)}
+                              </Link>
+                            </div>
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter className="-mt-4">

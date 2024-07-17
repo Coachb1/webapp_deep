@@ -248,7 +248,9 @@ const Feedback = ({ user, renderType }: any) => {
           setDynamicBenefits(parsedData);
         }
 
-        const allowedIPS: string = data.data.allowed_ips? data.data.allowed_ips!["feedback_deep-dive"]: "";
+        const allowedIPS: string = data.data.allowed_ips
+          ? data.data.allowed_ips!["feedback_deep-dive"]
+          : "";
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");
           fetch("https://ipinfo.io/json")
@@ -400,15 +402,9 @@ const Feedback = ({ user, renderType }: any) => {
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 mt-4 p-4 max-sm:p-2"
-                      className="inter-var w-full flex flex-col "
-                    >
-                      <CardBody className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl"
-                        >
+                    <div className="inter-var w-full flex flex-col mt-4 p-4 max-sm:p-2 ">
+                      <div className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-center justify-start py-0">
+                        <div className="w-fit rounded-2xl">
                           <img
                             className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl "
                             src={
@@ -416,11 +412,8 @@ const Feedback = ({ user, renderType }: any) => {
                               "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                             }
                           />
-                        </CardItem>
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl px-4 text-left text-sm max-sm:text-xs"
-                        >
+                        </div>
+                        <div className="w-fit rounded-2xl px-4 text-left text-sm max-sm:text-xs">
                           {coachDescription ||
                             `I'm Aarav Sharma, a seasoned corporate coach with 15+
                       years' experience in leadership development. Holding a
@@ -434,8 +427,8 @@ const Feedback = ({ user, renderType }: any) => {
                       resilience. Tailoring strategies to individual needs, I
                       aim to be a trusted guide for long-term, sustainable
                       leadership development in the dynamic corporate landscape.`}
-                        </CardItem>
-                      </CardBody>
+                        </div>
+                      </div>
                       <CardBody className="w-full h-fit">
                         {currentProjects && (
                           <div className="mt-4 text-sm  border-t-2 border-dashed p-2 max-sm:text-xs w-full">
@@ -445,7 +438,7 @@ const Feedback = ({ user, renderType }: any) => {
                           </div>
                         )}
                       </CardBody>
-                    </CardContainer>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>

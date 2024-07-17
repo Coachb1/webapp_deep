@@ -192,15 +192,9 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 p-4 max-sm:p-0"
-                      className="inter-var w-full max-sm:px-0"
-                    >
-                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl text-sm max-sm:text-xs"
-                        >
+                    <div className="inter-var w-full max-sm:px-0 p-4 max-sm:p-0">
+                      <div className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <div className="w-fit rounded-2xl text-sm max-sm:text-xs">
                           {renderType === "dynamic" ? (
                             <>
                               {" "}
@@ -219,9 +213,9 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                               questions and give project related updates
                             </>
                           )}
-                        </CardItem>
-                      </CardBody>
-                    </CardContainer>
+                        </div>
+                      </div>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>

@@ -1228,11 +1228,17 @@ const Coaches = ({
               const joinTheNetwork =
                 document.getElementById("join-the-network");
 
-              toast.success(joinTheNetwork?.innerText || "hello");
               window.scrollTo({ top: 0, behavior: "smooth" });
               joinTheNetwork?.scrollIntoView({
                 behavior: "smooth",
               });
+            }
+
+            if (
+              callbackData.lifecycle === "complete" &&
+              callbackData.step.target === "#feedback"
+            ) {
+              updateHelpModeState(false);
             }
 
             // if (
@@ -1250,7 +1256,7 @@ const Coaches = ({
         title={
           headings?.heading
             ? headings?.heading
-            : "Coaching & Performance Workbench"
+            : "AI First Coaching Based Engagement Platform"
         }
         description={
           headings?.subHeading
