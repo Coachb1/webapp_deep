@@ -267,11 +267,11 @@ const Coaches = ({
     },
     coachId: coachID,
     coacheeId: coacheeID,
-    // coachId, coacheeId,
     joiningPrevileges: UserJoiningPreviledges,
-    userConnections : connections,
+    userConnections: connections,
     allCoaches,
     feedbackBots,
+    getAllConnectionsData,
   } = useUser();
 
   const getCoachesData = async (profiles: CoachesDataType[]) => {
@@ -846,7 +846,6 @@ const Coaches = ({
 
   useEffect(() => {
     const scrollTimer = setTimeout(() => {
-      console.log("NOWWWW");
       if (coacheeIdFromParams) {
         const indexOfCoacheeForScroll = coachesData.findIndex(
           (coach) => coach.profile_id === coacheeIdFromParams
@@ -915,7 +914,11 @@ const Coaches = ({
               );
               setStatus("pending");
               console.log(updatedCoachesData);
+
               setSavedCoachesData(updatedCoachesData);
+              setTimeout(() => {
+                getAllConnectionsData();
+              }, 5000);
             }
             setTimeout(() => {
               setRequestLoading(false);

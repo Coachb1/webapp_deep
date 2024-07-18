@@ -124,7 +124,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     candidateReport,
     userPositionDetails,
     kudosData: { totalUsersForFeedback, userKudosData },
-    fetchUserData,
+    getAllUserData,
   } = useUser();
 
   useEffect(() => {
@@ -290,10 +290,10 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             data.updated.user_allow_audio_interactions
           );
           toast.success("Saved your changes.");
+          getAllUserData();
         } else {
           toast.error("Error, try again.");
         }
-        fetchUserData(user?.email, user, true);
       })
       .catch((err) => {
         toast.error("Error, try again.");

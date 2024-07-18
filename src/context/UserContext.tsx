@@ -48,6 +48,7 @@ import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+import { DemoPage, UnAuth } from "@/app/UnAuthpage";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -74,6 +75,12 @@ interface UserContextType {
   ) => Promise<void>;
   getAllCompetencyData: () => Promise<void>;
   getAllDirectoryData: () => Promise<void>;
+  getAllBotConversationData: () => Promise<void>;
+  getAllKnowledgeBotData: () => Promise<void>;
+  getAllConnectionsData: () => Promise<void>;
+  getAllUserData: () => Promise<void>;
+  getAllClientData: () => Promise<void>;
+  getFeedbackBotsData: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -220,81 +227,89 @@ export const UserProvider = ({
       console.log("userInfo", userInfo);
       setUserInfo(userInfo);
 
-      const profiles = await getDirectoryProfiles(
-        userEmail,
-        data.coach_recommendation
-      );
-      setDirectoryProfiles(profiles);
-      console.log(profiles);
+      if (!userInfo.isDemoUser && !userInfo.isRestricted) {
+        const profiles = await getDirectoryProfiles(
+          userEmail,
+          data.coach_recommendation
+        );
+        setDirectoryProfiles(profiles);
+        console.log(profiles);
 
-      const previleges = await getUserJoiningPreviledges(userEmail);
-      setJoiningPrevileges(previleges);
-      console.log(previleges);
+        const previleges = await getUserJoiningPreviledges(userEmail);
+        setJoiningPrevileges(previleges);
+        console.log(previleges);
 
-      const connectionsData = await getUserConnections(data.uid);
-      const { connections, coachId, coacheeId, userProfiles } = connectionsData;
-      console.log(connectionsData);
-      setCoachId(coachId);
-      setCoacheeId(coacheeId);
-      setAllCoaches(userProfiles);
-      setUserConnections(connections?.data);
+        const connectionsData = await getUserConnections(data.uid);
+        const { connections, coachId, coacheeId, userProfiles } =
+          connectionsData;
+        console.log(connectionsData);
+        setCoachId(coachId);
+        setCoacheeId(coacheeId);
+        setAllCoaches(userProfiles);
+        setUserConnections(connections?.data);
 
-      const botsData = await getBots(data.uid);
-      console.log(botsData);
-      setBotsData(botsData?.data);
-      const feedbackBots = botsData.data?.filter(
-        (data: any) => data.signature_bot.bot_type === "feedback_bot"
-      );
-      console.log(feedbackBots[0]?.signature_bot.bot_id);
-      setFeedbackBots(feedbackBots);
+        const botsData = await getBots(data.uid);
+        console.log(botsData);
+        setBotsData(botsData?.data);
+        const feedbackBots = botsData.data?.filter(
+          (data: any) => data.signature_bot.bot_type === "feedback_bot"
+        );
+        console.log(feedbackBots[0]?.signature_bot.bot_id);
+        setFeedbackBots(feedbackBots);
 
-      setLoadingState(false);
-      const attemptedTests = await getAttemptedTestsList(data.uid);
-      console.log(attemptedTests);
-      setAttemptedTests(attemptedTests);
+        setLoadingState(false);
+        const attemptedTests = await getAttemptedTestsList(data.uid);
+        console.log(attemptedTests);
+        setAttemptedTests(attemptedTests);
 
-      const competencyBasedTests = await getTestsByCompetencies(data.uid);
-      console.log(competencyBasedTests);
-      setCompetencyBasedPowerSkillsTests(competencyBasedTests?.competencyTests);
-      setCompetencyData(competencyBasedTests?.competencyData);
+        const competencyBasedTests = await getTestsByCompetencies(data.uid);
+        console.log(competencyBasedTests);
+        setCompetencyBasedPowerSkillsTests(
+          competencyBasedTests?.competencyTests
+        );
+        setCompetencyData(competencyBasedTests?.competencyData);
 
-      const requestedTestData = await getRequestedTests(data.uid);
-      setRequestedTestsData(requestedTestData);
+        const requestedTestData = await getRequestedTests(data.uid);
+        setRequestedTestsData(requestedTestData);
 
-      const categorisedTestsData = await getCategorisedTests(
-        userInfo.clientName
-      );
-      setCategorisedTests(categorisedTestsData);
+        const categorisedTestsData = await getCategorisedTests(
+          userInfo.clientName
+        );
+        setCategorisedTests(categorisedTestsData);
 
-      const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
-      setknowledgeBots(knowledgeBots);
+        const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
+        setknowledgeBots(knowledgeBots);
 
-      const clientUsers = await getClientUsers(userInfo.clientName);
-      setClientUsers(clientUsers);
+        const clientUsers = await getClientUsers(userInfo.clientName);
+        setClientUsers(clientUsers);
 
-      const userPositionDetails = await getLeaderboardPosition(
-        userEmail,
-        data.profile_type,
-        data.uid
-      );
-      setUserPositionDetails(userPositionDetails);
+        const userPositionDetails = await getLeaderboardPosition(
+          userEmail,
+          data.profile_type,
+          data.uid
+        );
+        setUserPositionDetails(userPositionDetails);
 
-      const candidateReport = await getCandidateReport(data.uid);
-      setCandidateReport(candidateReport);
+        const candidateReport = await getCandidateReport(data.uid);
+        setCandidateReport(candidateReport);
 
-      const kudosData = await getKudosData(data.uid, userEmail);
-      setKudosData(kudosData);
-      const botConversations = await getConversations(
-        data.uid,
-        feedbackBots[0].signature_bot.bot_id
-      );
-      setBotConversations(botConversations);
+        const kudosData = await getKudosData(data.uid, userEmail);
+        setKudosData(kudosData);
+        const botConversations = await getConversations(
+          data.uid,
+          feedbackBots[0]?.signature_bot.bot_id
+        );
+        setBotConversations(botConversations);
 
-      const actionPoints = await getActionPoints(data.uid);
-      setActionPoints(actionPoints);
+        const actionPoints = await getActionPoints(data.uid);
+        setActionPoints(actionPoints);
 
-      const idps = await getIDPs(data.uid);
-      setUserIDPs(idps);
+        const idps = await getIDPs(data.uid);
+
+        setUserIDPs(idps);
+      } else {
+        setLoadingState(false);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
@@ -302,13 +317,42 @@ export const UserProvider = ({
     }
   };
 
+  const getAllUserData = async () => {
+    const userAccount = await getUserAccount(kindeUser);
+    const data = await userAccount.json();
+    setUserId(data.uid);
+    setUserRole(data.role);
+    setUserName(data.name);
+    setUserAccess({
+      accessAllowed: data.access_allowed,
+      accessDenied: data.access_denied,
+    });
+    setAllowAudioInteraction({
+      client: data.client_allow_audio_interactions,
+      user: data.user_allow_audio_interactions,
+    });
+  };
+
+  const getAllClientData = async () => {
+    const userInfo = await getClientUserInfo(kindeUser?.email, kindeUser);
+    console.log("userInfo", userInfo);
+    setUserInfo(userInfo);
+  };
+
   const getAllCompetencyData = async () => {
     const competencyBasedTests = await getTestsByCompetencies(userId);
-    console.log(competencyBasedTests);
+    console.log("Competency DATA", competencyBasedTests);
     setCompetencyBasedPowerSkillsTests(competencyBasedTests?.competencyTests);
     setCompetencyData(competencyBasedTests?.competencyData);
   };
 
+  const getAllBotConversationData = async () => {
+    const botConversations = await getConversations(
+      userId,
+      feedbackBots[0]?.signature_bot.bot_id
+    );
+    setBotConversations(botConversations);
+  };
 
   const getAllDirectoryData = async () => {
     const userAccount = await getUserAccount(kindeUser);
@@ -338,20 +382,64 @@ export const UserProvider = ({
     const feedbackBots = botsData.data?.filter(
       (data: any) => data.signature_bot.bot_type === "feedback_bot"
     );
-    console.log(feedbackBots[0]?.signature_bot.bot_id);
     setFeedbackBots(feedbackBots);
-  }
+  };
+
+  const getFeedbacks = async () => {
+    const botsData = await getBots(userId);
+    console.log(botsData);
+    setBotsData(botsData?.data);
+    const feedbackBots = botsData.data?.filter(
+      (data: any) => data.signature_bot.bot_type === "feedback_bot"
+    );
+    if (feedbackBots.length > 0) {
+      setFeedbackBots(feedbackBots);
+      return true; // Feedback bot found
+    }
+    return false; // Feedback bot not found
+  };
+
+  const getFeedbackBotsData = async () => {
+    const botsData = await getBots(userId);
+    console.log(botsData);
+    setBotsData(botsData?.data);
+    const feedbackBots = botsData.data?.filter(
+      (data: any) => data.signature_bot.bot_type === "feedback_bot"
+    );
+    setFeedbackBots(feedbackBots);
+
+    let attempts = 0;
+    const maxAttempts = 8;
+
+    const interval = setInterval(async () => {
+      attempts++;
+      const feedbackBotFound = await getFeedbacks();
+      if (feedbackBotFound || attempts >= maxAttempts) {
+        clearInterval(interval); // Clear interval if feedback bot is found or max attempts reached
+      }
+    }, 4000);
+  };
+
+  const getAllKnowledgeBotData = async () => {
+    const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
+    setknowledgeBots(knowledgeBots);
+  };
+
+  const getAllConnectionsData = async () => {
+    const connectionsData = await getUserConnections(userId);
+    const { connections } = connectionsData;
+    setUserConnections(connections?.data);
+  };
 
   let called = false;
 
   useEffect(() => {
     if (kindeUser) {
-      if(!pathname.includes("/intake")){
-        console.log("TELL ME ");
-      if (!called) {
-        fetchUserData(kindeUser.email, kindeUser);
-        called = true;
-      }
+      if (!pathname.includes("/intake")) {
+        if (!called) {
+          fetchUserData(kindeUser.email, kindeUser);
+          called = true;
+        }
       } else {
         setLoadingState(false);
       }
@@ -359,6 +447,12 @@ export const UserProvider = ({
       setLoadingState(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (pathname === "/profile") {
+      getAllBotConversationData();
+    }
+  }, [pathname]);
 
   const contextValue = useMemo(
     () => ({
@@ -373,6 +467,12 @@ export const UserProvider = ({
       fetchUserData,
       getAllCompetencyData,
       getAllDirectoryData,
+      getAllBotConversationData,
+      getAllKnowledgeBotData,
+      getAllConnectionsData,
+      getAllUserData,
+      getAllClientData,
+      getFeedbackBotsData,
       loadingState,
       coachId,
       coacheeId,
@@ -440,31 +540,33 @@ export const UserProvider = ({
       <body className={font.className}>{children}</body>
     </html>
   ) : (
-    <UserContext.Provider value={contextValue}>
-      {loadingState ? (
-        <html>
-          <body className={font.className}>
-            <MultiStepLoader
-              loadingStates={[
-                { text: "Personalizing coaching with Avatars" },
-                { text: "Updating simulations" },
-                { text: "Updating AI models" },
-                { text: "Updating NLP pipelines" },
-                { text: "Updating interaction history" },
-                { text: "Creating feedback loops" },
-                { text: "Refreshing training data" },
-              ]}
-              loading={loadingState}
-              duration={1500}
-            />
-          </body>
-        </html>
-      ) : (
-        <html>
-          <body className={font.className}>{children}</body>
-        </html>
-      )}
-    </UserContext.Provider>
+    <>
+      <UserContext.Provider value={contextValue}>
+        {loadingState ? (
+          <html>
+            <body className={font.className}>
+              <MultiStepLoader
+                loadingStates={[
+                  { text: "Personalizing coaching with Avatars" },
+                  { text: "Updating simulations" },
+                  { text: "Updating AI models" },
+                  { text: "Updating NLP pipelines" },
+                  { text: "Updating interaction history" },
+                  { text: "Creating feedback loops" },
+                  { text: "Refreshing training data" },
+                ]}
+                loading={loadingState}
+                duration={1500}
+              />
+            </body>
+          </html>
+        ) : (
+          <html>
+            <body className={font.className}>{children}</body>
+          </html>
+        )}
+      </UserContext.Provider>
+    </>
   );
 };
 
