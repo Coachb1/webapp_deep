@@ -216,6 +216,28 @@ const CreateOwn = ({
     }, 200);
   }, []);
 
+  useEffect(() => {
+    if (
+      ["admin", "super_admin", "client_admin", "deep_dive_creator"].includes(
+        userRole
+      )
+    ) {
+      setDeepDiveCreatorAccess(true);
+    } else {
+      if (!accessDenied?.includes("Deepdive-creator")) {
+        setDeepDiveCreatorAccess(true);
+      }
+    }
+
+    if (["admin", "super_admin", "client_admin"].includes(userRole)) {
+      setScenarioCreationAccess(true);
+    } else {
+      if (!accessDenied?.includes("Simulation-creator")) {
+        setScenarioCreationAccess(true);
+      }
+    }
+  }, [accessDenied]);
+
   const YoutubeResultComponent = ({
     video_id,
     video_link,

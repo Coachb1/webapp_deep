@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader, PenBox, X } from "lucide-react";
+import { Info, Loader, PenBox, X } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
+import { message } from "antd";
 
 const Competencies = ({ user }: any) => {
   const [skillsArray, setSkillsArray] = useState<
@@ -100,7 +101,9 @@ const Competencies = ({ user }: any) => {
 
   useEffect(() => {
     if (user && competencyData) {
-      const parsedSkills: string[] = competencyData ? Object.values(competencyData[0]) : [];
+      const parsedSkills: string[] = competencyData
+        ? Object.values(competencyData[0])
+        : [];
       console.log(parsedSkills);
       setSkillsArray((prevSkills) =>
         prevSkills.map((skill) => ({
@@ -109,14 +112,14 @@ const Competencies = ({ user }: any) => {
         }))
       );
       setExistingSkills(parsedSkills);
-     
+
       setSkillOne(parsedSkills[0].replace(/"/g, ""));
       setSkillTwo(parsedSkills[1].replace(/"/g, ""));
       setSkillThree(parsedSkills[2].replace(/"/g, ""));
       setSkillFour(parsedSkills[3].replace(/"/g, ""));
-      setFetchLoading(false)
+      setFetchLoading(false);
     } else {
-      setFetchLoading(true)
+      setFetchLoading(true);
     }
   }, [competencyData]);
 
@@ -143,12 +146,22 @@ const Competencies = ({ user }: any) => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          toast.success("Succesfully saved your competencies");
+          toast.success(
+            <p className="text-[16px]">
+              Succesfully saved your competencies, Your custom library will be
+              updated in a few minutes.
+            </p>,
+            {
+              duration: 6000,
+            }
+          );
           resetSkills();
           setSaveLoading(false);
           setRenderInputComponent(false);
           getCompetency();
-          getAllCompetencyData();
+          setTimeout(() => {
+            getAllCompetencyData();
+          }, 2000);
         })
         .catch((error) => {
           console.error(error);

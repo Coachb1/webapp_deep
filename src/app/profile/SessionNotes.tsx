@@ -319,7 +319,14 @@ const SessionNotes = ({ user }: any) => {
       id="session-notes"
       className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll no-scrollbar"
     >
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Plans & Session Notes</div>{" "}
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm">
+        Action Plans & Session Notes
+      </div>{" "}
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
+        {" "}
+        <Info className="h-3 w-3 mr-2 inline" />
+        Connection history is updated every 60 mins.
+      </p>
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
