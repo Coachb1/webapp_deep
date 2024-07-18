@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ConversationChat, { FeedbackConversationChat } from "./ConversationChat";
-import { Loader } from "lucide-react";
+import { Info, Loader } from "lucide-react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { FeedbackConversationType } from "@/lib/types";
@@ -234,7 +234,12 @@ const Conversations = ({ user }: any) => {
         id="bot-conversations"
         className="bg-accent p-2 mt-2 mb-6 rounded-md"
       >
-        <div className="pl-4 max-sm:pl-2 pt-2">Bot Conversations</div>
+        <div className="pl-4 max-sm:pl-2 pt-2 text-sm">Bot Conversations</div>
+        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
+          {" "}
+          <Info className="h-3 w-3 mr-2 inline" />
+          Bot Conversation history is updated every 60 mins.
+        </p>
         <div className="">
           {conversationDataAdmin.length > 0 || conversationData.length > 0 ? (
             <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs max-lg:text-xs max-xl:text-xs min-h-[109px]">

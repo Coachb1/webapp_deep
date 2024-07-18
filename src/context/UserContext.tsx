@@ -331,6 +331,8 @@ export const UserProvider = ({
       client: data.client_allow_audio_interactions,
       user: data.user_allow_audio_interactions,
     });
+
+    console.log("getAllUserData", data);
   };
 
   const getAllClientData = async () => {
