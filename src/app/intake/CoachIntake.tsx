@@ -288,7 +288,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [restrictedFeatures, setRestrictedFeatures] = useState("");
 
-  const {getAllDirectoryData} = useUser()
+  const { getAllDirectoryData, getFeedbackBotsData } = useUser();
 
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
@@ -557,7 +557,7 @@ const CoachIntake = ({ user }: any) => {
                   );
                   setTimeout(() => {
                     router.push("/?joinredirect=1");
-                    getAllDirectoryData()
+                    getAllDirectoryData();
                   }, 4000);
                 }
               }
@@ -1047,7 +1047,7 @@ const CoachIntake = ({ user }: any) => {
                                 }
                               );
                               resetAllStates();
-                              getAllDirectoryData()
+                              getAllDirectoryData();
                               setTimeout(() => {
                                 router.push("/");
                               }, 4000);
@@ -1105,9 +1105,9 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
-                  getAllDirectoryData()
+                  getAllDirectoryData();
                   setTimeout(() => {
-                    getAllDirectoryData()
+                    getAllDirectoryData();
                     router.push("/");
                   }, 4000);
                 }
@@ -1650,17 +1650,16 @@ const CoachIntake = ({ user }: any) => {
                       router.push("/profile");
                     }, 4000);
                   } else {
-                    toast.success(
+                    toast.loading(
                       "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
                       {
-                        duration: 6000,
+                        duration: 10000,
                       }
                     );
-                    getAllDirectoryData()
                     setTimeout(() => {
-                      getAllDirectoryData()
+                      getFeedbackBotsData();
                       router.push("/");
-                    }, 4000);
+                    }, 10000);
                   }
                   resetAllStates();
                 } else {

@@ -634,6 +634,7 @@ export const getIDPs = async (userId: string) => {
 
   if (response.ok) {
     const responseData = await response.json();
+    console.log(responseData)
     return sortByDateDescending(responseData);
   } else {
     return [];

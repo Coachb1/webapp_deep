@@ -20,6 +20,7 @@ import { CoachesDataType } from "@/app/Coaches";
 import { FilterDropdownProps } from "antd/es/table/interface";
 import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
+import { useUser } from "@/context/UserContext";
 
 interface DataType {
   key: string;
@@ -54,14 +55,17 @@ const ProfileActions = () => {
   const [directoryProfiles, setDirectoryProfiles] = useState<[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
 
+  const {getAllDirectoryData, getAllKnowledgeBotData} = useUser()
   const ApproveComponent = ({
     id,
     isApproved,
     isVisible,
+    botType,
   }: {
     id: number;
     isApproved: boolean;
     isVisible: boolean;
+    botType : string
   }) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [checked, setChecked] = useState<boolean>();
@@ -91,6 +95,11 @@ const ProfileActions = () => {
           const data = await response.json();
           setChecked(data.updated.is_approved);
           console.log(data);
+          if(botType.includes("user")){
+            getAllKnowledgeBotData()
+          } else {
+            getAllDirectoryData()
+          }
           toast.success("Succesfully saved the preferences.");
         }
       } catch (error) {
@@ -103,7 +112,7 @@ const ProfileActions = () => {
     return (
       <div>
         <Switch
-          className="flex flex-row items-center"
+          className="flex flex-row items-center bg-gray-300"
           checked={checked}
           loading={saveLoading}
           onChange={(val) => {
@@ -119,10 +128,12 @@ const ProfileActions = () => {
     id,
     isApproved,
     isVisible,
+    botType
   }: {
     id: number;
     isApproved: boolean;
     isVisible: boolean;
+    botType : string
   }) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [checked, setChecked] = useState<boolean>();
@@ -152,6 +163,11 @@ const ProfileActions = () => {
           const data = await response.json();
           setChecked(data.updated.is_visible);
           console.log(data);
+          if(botType.includes("user")){
+            getAllKnowledgeBotData()
+          } else {
+            getAllDirectoryData()
+          }
           toast.success("Succesfully saved the preferences.");
         }
       } catch (error) {
@@ -164,7 +180,7 @@ const ProfileActions = () => {
     return (
       <div>
         <Switch
-          className="flex flex-row items-center"
+          className="flex flex-row items-center bg-gray-300"
           checked={checked}
           loading={saveLoading}
           onChange={(val) => {
@@ -255,6 +271,7 @@ const ProfileActions = () => {
               id={profile.id}
               isApproved={profile.is_approved}
               isVisible={profile.is_visible}
+              botType={profile.bot_type || ""}
             />
           ),
           visibleHandler: (
@@ -262,6 +279,7 @@ const ProfileActions = () => {
               id={profile.id}
               isApproved={profile.is_approved}
               isVisible={profile.is_visible}
+              botType={profile.bot_type || ""}
             />
           ),
           editButton:
