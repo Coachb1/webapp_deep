@@ -86,14 +86,16 @@ const UserBotIntake = ({
   const [mediaData, setMediaData] = useState<MediaData>();
 
   const [dataModified, setDataModified] = useState(false);
+  const [forReapproval, setForReapproval] = useState(false);
 
   useEffect(() => {
     if (user && !adminEdit) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log(data,'userinfo');
           setUserId(data.uid);
+          setForReapproval(data.send_profile_for_reapproval)
         });
     } else if (adminEdit) {
       setUserId(userIdParams!);
@@ -278,7 +280,9 @@ const UserBotIntake = ({
 
     if (checkIfEdit) {
       formdata.append("bot_id", botIUidFromParams!);
-      formdata.append("for_reapproval", "true");
+      if (forReapproval){
+        formdata.append("for_reapproval", "true");
+      }
     }
     formdata.append("is_private", `${makePrivate ? true : false}`);
 

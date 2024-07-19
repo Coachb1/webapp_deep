@@ -3481,7 +3481,7 @@ function snippetDivSTT(url){
   return `
   <iframe
     allow="autoplay; encrypted-media; fullscreen;"
-    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 61vw;"
     src=${url}
     frameborder="0"
     allowfullscreen
@@ -7406,9 +7406,15 @@ loadExternalModule().then(() => {
 
           // handling deepdive intial question
           if (botType==='deep_dive' && askInitialQuestionDeepDive){
+            if (!isValidMessageStt(latestMessage, botWordLimit)){
+              signals.onResponse({
+                html: `<b style='font-size: 14px;color: #991b1b;'>Your input is too less. Please respond with minimum ${botWordLimit} words.</b>`,
+              });
+              return;
+            }
             botInitialQuestionsQnA[botInitialQuestions[`${deepDiveInitialQueIndex}`]] = latestMessage
             deepDiveInitialQueIndex += 1
-            console.log("botqna: ", botInitialQuestionsQnA,Object.keys(botInitialQuestions).length,deepDiveInitialQueIndex)
+            console.log("botqna-deep_dive: ", botInitialQuestionsQnA,Object.keys(botInitialQuestions).length,deepDiveInitialQueIndex)
 
             if (Object.keys(botInitialQuestions).length < deepDiveInitialQueIndex ){
               console.log('ending initial question session')

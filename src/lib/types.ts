@@ -136,6 +136,7 @@ export interface UserClientInfoType {
   coach_skills: null | any; // You might want to replace 'any' with a more specific type
   coach_expertise: null | any; // You might want to replace 'any' with a more specific type
   departments: null | any; // You might want to replace 'any' with a more specific type
+  send_profile_for_reapproval: boolean;
 }
 
 export interface UserClientInfoDataType {
