@@ -551,6 +551,7 @@ export const getConversations = async (
 
   if (responseAdmin.ok) {
     const responseData = await responseAdmin.json();
+    console.log("responseData ADMIN",responseData)
     if (responseData[0] != "Bot not Found") {
       const convertedData: ConvertedConversation[] =
         convertJsonToExpectedFormat(responseData);
@@ -572,6 +573,7 @@ export const getConversations = async (
 
   if (responseUser.ok) {
     const responseData = await responseUser.json();
+    console.log("responseData USER",responseData)
     if (responseData[0] != "Bot not Found") {
       const convertedData: ConvertedConversation[] =
         convertJsonToExpectedFormat(responseData);

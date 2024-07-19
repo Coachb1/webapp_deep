@@ -203,8 +203,10 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
 
   return (
     <div id="my-connections" className="bg-accent p-2 mt-2 mb-8 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2 text-sm">My Connections</div>
-      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        My Connections
+      </div>
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 max-sm:ml-2 my-2 flex flex-row items-center">
         {" "}
         <Info className="h-3 w-3 mr-2 inline" />
         Connection history is updated every 60 mins.

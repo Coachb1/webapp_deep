@@ -3400,7 +3400,7 @@ function createMessageNode2(message) {
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
-  messageBubble.style.maxWidth = "80%";
+  messageBubble.style.maxWidth =  window.innerWidth < 768 ? "80%" : "60%";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -5661,8 +5661,10 @@ async function handleOptionButtonClick2(
 }
 
 let chatInputFontSize = "14px";
+let messageBubbleMaxWidth = "60%";
 if(window.innerWidth < 768) {
   chatInputFontSize = "12px"
+  messageBubbleMaxWidth = "80%"
 }
 
 async function loadExternalModule() {
@@ -5812,7 +5814,7 @@ loadExternalModule().then(() => {
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },

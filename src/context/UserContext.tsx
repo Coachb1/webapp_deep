@@ -444,18 +444,42 @@ export const UserProvider = ({
   ];
   const isExcluded = excludedPages.some((page) => pathname.includes(page));
 
+  const basicUserConfigs = async (user : KindeUserType | null) => {
+    const userAccount = await getUserAccount(user);
+    const data = await userAccount.json();
+    setUserId(data.uid);
+    setUserRole(data.role);
+    setUserName(data.name);
+    setUserAccess({
+      accessAllowed: data.access_allowed,
+      accessDenied: data.access_denied,
+    });
+    setAllowAudioInteraction({
+      client: data.client_allow_audio_interactions,
+      user: data.user_allow_audio_interactions,
+    });
+  
+    console.log("getAllUserData", data);
+  }
+
   useEffect(() => {
-    if (kindeUser) {
-      if (!pathname.includes("/intake") && !isExcluded) {
-        if (!called) {
-          fetchUserData(kindeUser.email, kindeUser);
-          called = true;
+    // console.log(window.location.href)
+    if(window.location.href.includes("dev-bot")){
+      basicUserConfigs(kindeUser)
+      setLoadingState(false);
+    } else {
+      if (kindeUser) {
+        if (!pathname.includes("/intake") && !isExcluded) {
+          if (!called) {
+            fetchUserData(kindeUser.email, kindeUser);
+            called = true;
+          }
+        } else {
+          
         }
       } else {
         setLoadingState(false);
       }
-    } else {
-      setLoadingState(false);
     }
   }, []);
 
