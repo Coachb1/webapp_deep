@@ -527,8 +527,14 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
     isAnonymous = true;
     if (!window.user) {
       isEmailFormstt = true;
-      formFieldsstt = ["name","email"];
+      formFieldsstt = ["email"];
       console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+      appendMessage2(
+        `<div style='font-size: 14px;'>
+           Email is being collected only to share the transcript. It remains anonymous.
+         </div>`
+      )
+      
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
     else{
