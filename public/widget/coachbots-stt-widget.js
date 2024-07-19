@@ -3481,7 +3481,7 @@ function snippetDivSTT(url){
   return `
   <iframe
     allow="autoplay; encrypted-media; fullscreen;"
-    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 50vw;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 61vw;"
     src=${url}
     frameborder="0"
     allowfullscreen

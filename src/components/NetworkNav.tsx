@@ -119,7 +119,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               <Link href={"/library"}>Simulations</Link>
             </Button>
           )}
-          {!restrictedPages?.includes("Creator-studio") && (
+          {!restrictedPages?.includes("Creator Studio") && (
             <Button
               variant={"outline"}
               className={` h-8 ${
