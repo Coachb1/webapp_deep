@@ -674,8 +674,8 @@ const getUserOrAnonymousDetails = async (choice) => {
       console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     } else {
-      FeedbackUserEmail = user.email;
-      feedbackUserName = user.name;
+      FeedbackUserEmail = user_email2;
+      feedbackUserName = user_name2;
       console.log("jiks FeedbackUserEmail", FeedbackUserEmail);
       const thumbsupdiv = await feedbackBotInitialFlow("save_email");
       appendMessage2(thumbsupdiv);
@@ -700,6 +700,14 @@ const restartFeedbackProcess = async () => {
 };
 
 const handleFeedbackSubmit = async () => {
+  console.log({
+    conversation: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    type_of_email: "feedback_conv",
+    user_email: FeedbackUserEmail,
+    user_name: feedbackUserName,
+    is_positive: IsPositiveFeedback ? "True" : "False",
+  })
   if (isFeedbackConvInProcess) {
     return;
   }
@@ -5982,6 +5990,12 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
+  
+  if(botId === undefined){
+    const pathname = window.location.pathname
+    botId = pathname.split("/")[2]
+  }
+
   const _ = getBotDetails2(botId);
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
