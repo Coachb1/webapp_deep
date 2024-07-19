@@ -225,7 +225,9 @@ const EmailSign = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md  mb-6">
-      <div className="pl-4 max-sm:pl-2 pt-2">Email Signature</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        Email Signature
+      </div>
       <>
         {loading && (
           <>
@@ -239,222 +241,222 @@ const EmailSign = ({ user }: any) => {
         {!loading && (
           <>
             {/* {totalActionPoints >= 3 ? ( */}
-              <>
-                {coachId.length > 0 ? (
-                  <>
-                    <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
-                      <div>
-                        <p className="text-sm my-1 text-gray-600 font-semibold">
-                          Feedback
-                        </p>
-                        <div className="w-fit h-[150px]  bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
-                          <div
-                            id="email-sign-feedback"
-                            className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
-                          >
-                            <div>With best Regards,</div>
-                            <div>{userName}</div>
-                            <div>{"<<Add your designation>>"} </div>
-                            <div>
-                              Email:{" "}
-                              <a
-                                style={{
-                                  color: "#2563eb",
-                                  textDecoration: "underline",
-                                }}
-                                href={`mailto:${userEmail}`}
-                              >
-                                {userEmail}
-                              </a>{" "}
-                            </div>
-                            <div>Phone: {"<<+91-Add your own>>"} </div>
+            <>
+              {coachId.length > 0 ? (
+                <>
+                  <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
+                    <div>
+                      <p className="text-sm my-1 text-gray-600 font-semibold">
+                        Feedback
+                      </p>
+                      <div className="w-fit h-[150px]  bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
+                        <div
+                          id="email-sign-feedback"
+                          className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                        >
+                          <div>With best Regards,</div>
+                          <div>{userName}</div>
+                          <div>{"<<Add your designation>>"} </div>
+                          <div>
+                            Email:{" "}
                             <a
-                              href={`${applicationUrl()}/feedback/${feedbackBotId}`}
                               style={{
-                                fontWeight: 600,
-                                fontSize: "12px",
                                 color: "#2563eb",
-                                fontFamily: "serif",
+                                textDecoration: "underline",
                               }}
+                              href={`mailto:${userEmail}`}
                             >
-                              🤔 Open to your feedback - How am I doing? 📈{" "}
-                            </a>
+                              {userEmail}
+                            </a>{" "}
                           </div>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-700 mt-2">
-                          <CopySignComponent id="email-sign-feedback" />
+                          <div>Phone: {"<<+91-Add your own>>"} </div>
+                          <a
+                            href={`${applicationUrl()}/feedback/${feedbackBotId}`}
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "12px",
+                              color: "#2563eb",
+                              fontFamily: "serif",
+                            }}
+                          >
+                            🤔 Open to your feedback - How am I doing? 📈{" "}
+                          </a>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm my-1 text-gray-600 font-semibold">
-                          Coach Profile
-                        </p>
-                        <div className="w-fit  h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
-                          <div
-                            id="email-sign-avatar"
-                            className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
-                          >
-                            <div>With best Regards,</div>
-                            <div>{userName}</div>
-                            <div>{"<<Add your designation>>"}</div>
-                            <div>
-                              Email:{" "}
-                              <a
-                                style={{
-                                  color: "#2563eb",
-                                  textDecoration: "underline",
-                                }}
-                                href={`mailto:${userEmail}`}
-                              >
-                                {userEmail}
-                              </a>{" "}
-                            </div>
-                            <div>Phone: {"<<+91-Add your own>>"} </div>
-                            <a
-                              href={`${applicationUrl()}/coach/${avatarBotId}`}
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "12px",
-                                color: "#2563eb",
-                                fontFamily: "monospace",
-                              }}
-                            >
-                              👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
-                            </a>
-                          </div>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-700 mt-2">
-                          <CopySignComponent id="email-sign-avatar" />
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm my-1 text-gray-600 font-semibold">
-                          Feedback + Coach Profile
-                        </p>
-                        <div className="w-fit h-[150px]  bg-white border border-gray-100 shadow-sm rounded-md object-contain">
-                          <div
-                            id="email-sign-feedback"
-                            className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
-                          >
-                            <div>With best Regards,</div>
-                            <div>{userName}</div>
-                            <div>{"<<Add your designation>>"}</div>
-                            <div>
-                              Email:{" "}
-                              <a
-                                style={{
-                                  color: "#2563eb",
-                                  textDecoration: "underline",
-                                }}
-                                href={`mailto:${userEmail}`}
-                              >
-                                {userEmail}
-                              </a>{" "}
-                            </div>
-                            <div>Phone: {"<<+91-Add your own>>"} </div>
-
-                            <a
-                              href={`${applicationUrl()}/feedback/${feedbackBotId}`}
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "12px",
-                                color: "#2563eb",
-                                fontFamily: "serif",
-                              }}
-                            >
-                              🤔 Open to your feedback - How am I doing? 📈{" "}
-                            </a>
-                            <br />
-                            <a
-                              href={`${applicationUrl()}/coach/${avatarBotId}`}
-                              style={{
-                                fontWeight: 600,
-                                fontSize: "12px",
-                                color: "#2563eb",
-                                fontFamily: "monospace",
-                              }}
-                            >
-                              👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
-                            </a>
-                          </div>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-700 mt-2">
-                          <CopySignComponent id="email-sign-feedback" />
-                        </div>
+                      <div className="text-sm font-semibold text-gray-700 mt-2">
+                        <CopySignComponent id="email-sign-feedback" />
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    {coacheeId.length === 0 && (
-                      <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
-                        <div>
-                          Your custom email signature is currently not active.
-                        </div>{" "}
-                      </div>
-                    )}
-                  </>
-                )}
-                {coacheeId.length > 0 && (
-                  <>
-                    {feedbackBots.length > 0 ? (
-                      <>
-                        <div className="m-4 flex flex-row gap-2 max-sm:flex-col">
+                    <div>
+                      <p className="text-sm my-1 text-gray-600 font-semibold">
+                        Coach Profile
+                      </p>
+                      <div className="w-fit  h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
+                        <div
+                          id="email-sign-avatar"
+                          className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                        >
+                          <div>With best Regards,</div>
+                          <div>{userName}</div>
+                          <div>{"<<Add your designation>>"}</div>
                           <div>
-                            <p className="text-sm my-1 text-gray-600 font-semibold">
-                              Feedback
-                            </p>
-                            <div className="w-fit h-[150px]  bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
-                              <div
-                                id="email-sign-feedback"
-                                className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
-                              >
-                                <div>With best Regards,</div>
-                                <div>{userName}</div>
-                                <div>{"<<Add your designation>>"} </div>
-                                <div>
-                                  Email:{" "}
-                                  <a
-                                    style={{
-                                      color: "#2563eb",
-                                      textDecoration: "underline",
-                                    }}
-                                    href={`mailto:${userEmail}`}
-                                  >
-                                    {userEmail}
-                                  </a>{" "}
-                                </div>
-                                <div>Phone: {"<<+91-Add your own>>"} </div>
+                            Email:{" "}
+                            <a
+                              style={{
+                                color: "#2563eb",
+                                textDecoration: "underline",
+                              }}
+                              href={`mailto:${userEmail}`}
+                            >
+                              {userEmail}
+                            </a>{" "}
+                          </div>
+                          <div>Phone: {"<<+91-Add your own>>"} </div>
+                          <a
+                            href={`${applicationUrl()}/coach/${avatarBotId}`}
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "12px",
+                              color: "#2563eb",
+                              fontFamily: "monospace",
+                            }}
+                          >
+                            👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-700 mt-2">
+                        <CopySignComponent id="email-sign-avatar" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm my-1 text-gray-600 font-semibold">
+                        Feedback + Coach Profile
+                      </p>
+                      <div className="w-fit h-[150px]  bg-white border border-gray-100 shadow-sm rounded-md object-contain">
+                        <div
+                          id="email-sign-feedback"
+                          className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                        >
+                          <div>With best Regards,</div>
+                          <div>{userName}</div>
+                          <div>{"<<Add your designation>>"}</div>
+                          <div>
+                            Email:{" "}
+                            <a
+                              style={{
+                                color: "#2563eb",
+                                textDecoration: "underline",
+                              }}
+                              href={`mailto:${userEmail}`}
+                            >
+                              {userEmail}
+                            </a>{" "}
+                          </div>
+                          <div>Phone: {"<<+91-Add your own>>"} </div>
+
+                          <a
+                            href={`${applicationUrl()}/feedback/${feedbackBotId}`}
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "12px",
+                              color: "#2563eb",
+                              fontFamily: "serif",
+                            }}
+                          >
+                            🤔 Open to your feedback - How am I doing? 📈{" "}
+                          </a>
+                          <br />
+                          <a
+                            href={`${applicationUrl()}/coach/${avatarBotId}`}
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "12px",
+                              color: "#2563eb",
+                              fontFamily: "monospace",
+                            }}
+                          >
+                            👨‍🏫👩‍🏫 My AI Frame 🗣️{" "}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-700 mt-2">
+                        <CopySignComponent id="email-sign-feedback" />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {coacheeId.length === 0 && (
+                    <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
+                      <div>
+                        Your custom email signature is currently not active.
+                      </div>{" "}
+                    </div>
+                  )}
+                </>
+              )}
+              {coacheeId.length > 0 && (
+                <>
+                  {feedbackBots.length > 0 ? (
+                    <>
+                      <div className="m-4 flex flex-row gap-2 max-sm:flex-col">
+                        <div>
+                          <p className="text-sm my-1 text-gray-600 font-semibold">
+                            Feedback
+                          </p>
+                          <div className="w-fit h-[150px]  bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
+                            <div
+                              id="email-sign-feedback"
+                              className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
+                            >
+                              <div>With best Regards,</div>
+                              <div>{userName}</div>
+                              <div>{"<<Add your designation>>"} </div>
+                              <div>
+                                Email:{" "}
                                 <a
-                                  href={`${applicationUrl()}/feedback/${feedbackBotId}`}
                                   style={{
-                                    fontWeight: 600,
-                                    fontSize: "12px",
                                     color: "#2563eb",
-                                    fontFamily: "serif",
+                                    textDecoration: "underline",
                                   }}
+                                  href={`mailto:${userEmail}`}
                                 >
-                                  🤔 Open to your feedback - How am I doing? 📈{" "}
-                                </a>
+                                  {userEmail}
+                                </a>{" "}
                               </div>
-                            </div>
-                            <div className="text-sm font-semibold text-gray-700 mt-2">
-                              <CopySignComponent id="email-sign-feedback" />
+                              <div>Phone: {"<<+91-Add your own>>"} </div>
+                              <a
+                                href={`${applicationUrl()}/feedback/${feedbackBotId}`}
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: "12px",
+                                  color: "#2563eb",
+                                  fontFamily: "serif",
+                                }}
+                              >
+                                🤔 Open to your feedback - How am I doing? 📈{" "}
+                              </a>
                             </div>
                           </div>
+                          <div className="text-sm font-semibold text-gray-700 mt-2">
+                            <CopySignComponent id="email-sign-feedback" />
+                          </div>
                         </div>
-                      </>
-                    ) : (
-                      <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
-                        <div>
-                          Please create your feedback page to enable email
-                          signatures.
-                        </div>{" "}
                       </div>
-                    )}
-                  </>
-                )}
-              </>
+                    </>
+                  ) : (
+                    <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
+                      <div>
+                        Please create your feedback page to enable email
+                        signatures.
+                      </div>{" "}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
             {/* ) : (
               <>
                 {!loading && (

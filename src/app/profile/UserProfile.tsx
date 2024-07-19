@@ -326,20 +326,20 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md w-full">
       <HelpMode steps={HelpModeSteps} />
-      <div className="pl-4 text-xl max-sm:pl-2 pt-2 flex flex-row items-center ">
+      <div className="pl-4 text-xl max-sm:text-sm max-sm:pl-2 pt-2 flex flex-row items-center ">
         <p>Account Information </p>
       </div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
-          <div className="flex flex-row items-center">
-            <p className="text-md max-sm:text-xs">Name </p>
+          <div className="flex flex-row items-center text-sm max-sm:text-xs">
+            <p className="">Name </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
               {`${user.given_name} ${user.family_name ? user.family_name : ""}`}
             </p>
           </div>
-          <div className="flex flex-row items-center mt-4">
-            <p className="text-sm w-fit max-sm:text-xs ">Email </p>
-            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
+          <div className="flex flex-row items-center mt-4 text-sm max-sm:text-xs">
+            <p className="w-fit max-sm:text-xs ">Email </p>
+            <p className="p-3 bg-accent  bg-opacity-60 w-full rounded-lg ml-5 border">
               {user.email}
             </p>
           </div>
@@ -381,8 +381,10 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             <p className="text-sm max-sm:text-xs">
               Allow audio interaction in bots
             </p>
-            <div className="ml-8 flex flex-row items-center gap-2">
-              <span className="text-sm font-bold text-gray-600">No</span>
+            <div className="ml-8 flex flex-row items-center gap-2 text-sm max-sm:text-xs">
+              <span className="text-sm max-sm:text-xs font-bold text-gray-600">
+                No
+              </span>
               <Switch
                 disabled={interactionLoading || !isAllowToggle}
                 checked={userAllowAudioInteractions}
@@ -391,7 +393,9 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
                   allowAudioInteractionHandler(val);
                 }}
               />
-              <span className="text-sm font-bold text-gray-600">Yes</span>
+              <span className="text-sm max-sm:text-xs font-bold text-gray-600">
+                Yes
+              </span>
             </div>
           </div>
         </>
@@ -404,7 +408,10 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             <p className="text-sm max-sm:text-xs min-w-fit">
               Personal Leaderboard :{" "}
             </p>
-            <Badge variant={"outline"} className="ml-4 p-2">
+            <Badge
+              variant={"outline"}
+              className="ml-4 p-2 text-sm max-sm:text-xs"
+            >
               {" "}
               {plLoading ? (
                 <>
@@ -430,7 +437,9 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         {userKudosData[0] && (
           <div id="kudos-board" className="mt-4 mb-4">
             <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
-              <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
+              <p className="text-sm max-sm:text-xs text-left  max-sm:w-full">
+                Kudos :{" "}
+              </p>
               {false ? (
                 <>
                   <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
@@ -438,18 +447,27 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
               ) : (
                 <>
                   {userKudosData[0] ? (
-                    <div className="max-sm:flex max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                    <div className="max-sm:flex text-sm max-sm:text-xs max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Positive Feedback count :{" "}
                         {userKudosData[0].positive_feedback_count}{" "}
                       </Badge>
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Negetive Feedback count :{" "}
                         {userKudosData[0].negative_feedback_count}{" "}
                       </Badge>
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Position : Top {userKudosData[0].rating} out of{" "}
                         {totalUsersForFeedback}

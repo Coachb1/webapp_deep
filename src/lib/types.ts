@@ -371,6 +371,8 @@ export interface Conversation {
   role: string;
   date: string;
   bot_name?: string; // Add bot_name to the Conversation interface
+  bot_type? : string
+  scenario_case? : string
 }
 
 export interface ConvertedResult {

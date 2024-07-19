@@ -77,14 +77,25 @@ const IDP = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md mb-10 ">
-      <div className="pl-4 max-sm:pl-2 pt-2">Individual Development Plan</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        Individual Development Plan
+      </div>
       <div className="mx-4 mt-2 text-sm max-sm:mx-2 ">
         <Tabs defaultValue="view-idps" className="w-full">
-          <TabsList className="border border-gray-200 ">
-            <TabsTrigger onClick={() => getIDPs()} value="view-idps">
+          <TabsList className="border border-gray-200">
+            <TabsTrigger
+              className="text-sm max-sm:text-xs  w-full"
+              onClick={() => getIDPs()}
+              value="view-idps"
+            >
               Your IDPs
             </TabsTrigger>
-            <TabsTrigger value="create-new-idp">Create new IDP</TabsTrigger>
+            <TabsTrigger
+              className="text-sm max-sm:text-xs w-full"
+              value="create-new-idp"
+            >
+              Create new IDP
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="view-idps">
             {!loading && userIDPs.length > 0 && (

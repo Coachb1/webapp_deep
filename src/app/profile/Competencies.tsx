@@ -190,7 +190,9 @@ const Competencies = ({ user }: any) => {
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
-      <div className="pl-4 max-sm:pl-2 pt-2">Competencies</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        Competencies
+      </div>
       <div className="m-4 text-sm max-sm:m-2">
         {fetchLoading ? (
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -202,7 +204,7 @@ const Competencies = ({ user }: any) => {
           <>
             {existingSkills.length > 0 ? (
               <>
-                <div className="bg-gray-200 text-sm w-full m-2 ml-0 p-2 rounded-md">
+                <div className="bg-gray-200 text-sm max-sm:text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <p className="ml-2"> Current competency framework</p>
                   <div className="my-2 ml-2 flex flex-row flex-wrap max-sm:flex-col gap-2">
                     {existingSkills.map((skill, i) => (
@@ -237,10 +239,10 @@ const Competencies = ({ user }: any) => {
           </>
         )}
         {existingSkills.length > 0 && !rendeInputComponent && (
-          <div className="my-4 w-full">
+          <div className="my-4 w-full max-sm:text-sm">
             <div>
               <Button
-                className="pl-0"
+                className="pl-0 max-sm:text-sm"
                 onClick={() => {
                   newCompetenciesHandler("Customise your competencies");
                 }}
@@ -260,8 +262,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-fit flex flex-row items-center">
-                  <p className="w-32 block ">Skill Group 1 : </p>
+                <div className="w-fit max-sm:w-full flex flex-row items-center max-sm:justify-between">
+                  <p className="w-32 block  min-w-fit">Skill Group 1 : </p>
                   <Select
                     onValueChange={(value) => {
                       console.log(value);
@@ -293,8 +295,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-fit flex flex-row items-center">
-                  <p className="w-36 block ">Skill Group 2 : </p>
+                <div className="w-fit max-sm:w-full flex flex-row items-center max-sm:justify-between">
+                  <p className="w-36 block min-w-fit">Skill Group 2 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillTwo(value);
@@ -325,8 +327,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-fit flex flex-row items-center">
-                  <p className="w-36 block ">Skill Group 3 : </p>
+                <div className="w-fit max-sm:w-full flex flex-row items-center max-sm:justify-between">
+                  <p className="w-36 block  min-w-fit">Skill Group 3 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillThree(value);
@@ -356,8 +358,8 @@ const Competencies = ({ user }: any) => {
                 variant={"secondary"}
                 className=" p-2 w-fit rounded-sm max-sm:w-full"
               >
-                <div className="w-fit flex flex-row items-center">
-                  <p className="w-36 block">Skill Group 4 : </p>
+                <div className="w-fit max-sm:w-full flex flex-row items-center max-sm:justify-between">
+                  <p className="w-36 block  min-w-fit">Skill Group 4 : </p>
                   <Select
                     onValueChange={(value) => {
                       setSkillFour(value);

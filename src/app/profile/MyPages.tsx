@@ -281,6 +281,11 @@ const MyPages = ({ user }: any) => {
           </a>
         </p>
       </div> */}
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
+        {" "}
+        <Info className="h-3 w-3 mr-2 inline" />
+        Edit enabled after AI approval pipeline.
+      </p>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -307,7 +312,7 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   <p
-                    className={`text-sm inline ${
+                    className={`text-sm max-sm:text-xs inline ${
                       botType.bot_type === "user_bot"
                         ? "w-[45%] max-sm:w-[70%]"
                         : "w-[45%] max-sm:w-[70%]"
@@ -494,7 +499,7 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm inline w-[45%] max-sm:w-[50%]">
+                  <p className="text-sm max-sm:text-xs inline w-[45%] max-sm:w-[50%]">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
 
