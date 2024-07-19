@@ -277,7 +277,7 @@ export const UserProvider = ({
         );
         setCategorisedTests(categorisedTestsData);
 
-        const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
+        const knowledgeBots = await getKnowledgeBots(userInfo.clientName, data.uid);
         setknowledgeBots(knowledgeBots);
 
         const clientUsers = await getClientUsers(userInfo.clientName);
@@ -423,7 +423,7 @@ export const UserProvider = ({
   };
 
   const getAllKnowledgeBotData = async () => {
-    const knowledgeBots = await getKnowledgeBots(userInfo.clientName);
+    const knowledgeBots = await getKnowledgeBots(userInfo.clientName, userId);
     setknowledgeBots(knowledgeBots);
   };
 
