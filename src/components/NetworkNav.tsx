@@ -82,7 +82,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
       </Link>
       <div className="flex flex-row">
         <div className="flex flex-row gap-2 max-sm:hidden max-lg:hidden">
-          {!restrictedPages?.includes("Network-directory") && (
+          {!restrictedPages?.includes("Network Directory") && (
             <Button
               variant={"outline"}
               className={` h-8 ${
