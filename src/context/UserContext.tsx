@@ -435,9 +435,18 @@ export const UserProvider = ({
 
   let called = false;
 
+  const excludedPages = [
+    "/coach",
+    "/feedback",
+    "/knowledge-bot",
+    "/engagement-survey",
+    // "/intake",
+  ];
+  const isExcluded = excludedPages.some((page) => pathname.includes(page));
+
   useEffect(() => {
     if (kindeUser) {
-      if (!pathname.includes("/intake")) {
+      if (!pathname.includes("/intake") && !isExcluded) {
         if (!called) {
           fetchUserData(kindeUser.email, kindeUser);
           called = true;
@@ -527,15 +536,6 @@ export const UserProvider = ({
       userIDPs,
     ]
   );
-
-  const excludedPages = [
-    "/coach",
-    "/feedback",
-    "/knowledge-bot",
-    "/engagement-survey",
-    // "/intake",
-  ];
-  const isExcluded = excludedPages.some((page) => pathname.includes(page));
 
   return isExcluded ? (
     <html>
