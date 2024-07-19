@@ -1811,7 +1811,7 @@ const handleProceedClick = async (choice) => {
           if (isImmersive) {
             console.log(initialQuestionText);
             const queText = initialQuestionText;
-            const queDiv = `<p>${queText}</p><br>`;
+           
             const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
             const response = await fetch(urltts, {
               method: "GET",
@@ -1829,6 +1829,7 @@ const handleProceedClick = async (choice) => {
 
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element").shadowRoot
+            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
 
             initialQuestionText =
               queDiv +
@@ -1846,8 +1847,14 @@ const handleProceedClick = async (choice) => {
               setTimeout(() => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+                const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}}`)
                 console.log(audioElement, canvasElement)
                 audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+                audioElement.addEventListener("ended",() => {
+                  canvasElement.remove()
+                  breakElement.remove()
+                })
               }, 100);
 
             console.log(initialQuestionText);
@@ -1888,7 +1895,7 @@ const handleProceedClick = async (choice) => {
         }
         if (isImmersive) {
           const queText = initialQuestionText;
-          const queDiv = `<p>${queText}</p><br>`;
+         
           const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
           const response = await fetch(url, {
             method: "GET",
@@ -1907,6 +1914,7 @@ const handleProceedClick = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element").shadowRoot
           
+          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
           initialQuestionText =
             queDiv +
             `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -1924,8 +1932,15 @@ const handleProceedClick = async (choice) => {
           setTimeout(() => {
             const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
             const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
             console.log(audioElement, canvasElement)
             audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+            audioElement.addEventListener("ended", () => {
+              canvasElement.remove()
+              breakElement.remove()
+            })
+
           }, 100);
         }
         if (responderName) {
@@ -3411,7 +3426,6 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainer = async (text) => {
-    const queDiv = `<p>${text}</p><br>`;
     const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`;
     const response = await fetch(url, {
       method: "GET",
@@ -3429,7 +3443,7 @@ loadExternalModule().then(() => {
 
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element").shadowRoot
-
+    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
     const audioCont =
       queDiv +
       `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -3447,8 +3461,14 @@ loadExternalModule().then(() => {
     setTimeout(() => {
       const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
       const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+      const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement)
       audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+      audioElement.addEventListener("ended", () => {
+        canvasElement.remove()
+        breakElement.remove()
+      })
     }, 100);
 
     return audioCont;

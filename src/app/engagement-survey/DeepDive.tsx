@@ -133,7 +133,9 @@ const DeepDive = ({ user, renderType }: any) => {
           setDynamicHowItWorks(parsedData);
         }
 
-        const allowedIPS: string =  data.data.allowed_ips? data.data.allowed_ips!["feedback_deep-dive"]: "";
+        const allowedIPS: string = data.data.allowed_ips
+          ? data.data.allowed_ips!["feedback_deep-dive"]
+          : "";
 
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");
@@ -169,9 +171,9 @@ const DeepDive = ({ user, renderType }: any) => {
           <Script src="../widget/coachbots-stt-widget.js" />
         )}
 
-        <div className="fixed bottom-14 right-[75px] z-50 max-sm:hidden">
-          <span className="mr-6 text-sm font-bold">Engage now</span>
-          <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" />
+        <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
+          <span className="mr-6 text-sm font-bold">Connect now</span>
+          {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
         </div>
 
         {invalidId && renderType === "dynamic" && (

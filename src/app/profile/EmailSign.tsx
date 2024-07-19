@@ -238,7 +238,7 @@ const EmailSign = ({ user }: any) => {
         )}
         {!loading && (
           <>
-            {totalActionPoints >= 3 ? (
+            {/* {totalActionPoints >= 3 ? ( */}
               <>
                 {coachId.length > 0 ? (
                   <>
@@ -455,7 +455,7 @@ const EmailSign = ({ user }: any) => {
                   </>
                 )}
               </>
-            ) : (
+            {/* ) : (
               <>
                 {!loading && (
                   <>
@@ -467,7 +467,7 @@ const EmailSign = ({ user }: any) => {
                   </>
                 )}
               </>
-            )}
+            )} */}
           </>
         )}
       </>
