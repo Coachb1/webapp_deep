@@ -347,7 +347,7 @@ export const getCategorisedTests = async (clientName: string) => {
   return categorisedTestsData;
 };
 
-export const getKnowledgeBots = async (clientName: string) => {
+export const getKnowledgeBots = async (clientName: string, userId : string) => {
   const response = await fetch(
     `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${clientName}`,
     {
@@ -368,6 +368,8 @@ export const getKnowledgeBots = async (clientName: string) => {
     creator_name: string;
   }[] = [];
 
+  console.log("getBotsDataResponseData", getBotsDataResponseData)
+
   getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
     const botJson = item.signature_bot;
     let description: string = "";
@@ -380,6 +382,7 @@ export const getKnowledgeBots = async (clientName: string) => {
       description = botJson.faqs["What is the primary purpose of the bot?"];
     }
     if (item.signature_bot.is_approved) {
+      if (!item.signature_bot.is_private){
       knowledgeBots.push({
         bot_id: botJson.bot_id,
         bot_name: item.bot_attributes.bot_name,
@@ -388,8 +391,22 @@ export const getKnowledgeBots = async (clientName: string) => {
         scenario_case: botJson.bot_scenario_case,
         creator_name: botJson.creator_name,
       });
-    }
+      } else {
+        if (item.signature_bot.user_id === userId){
+          knowledgeBots.push({
+            bot_id: botJson.bot_id,
+            bot_name: item.bot_attributes.bot_name,
+            bot_type: botJson.bot_type,
+            description: description,
+            scenario_case: botJson.bot_scenario_case,
+            creator_name: botJson.creator_name,
+          });
+        }
+      }
+    } 
   });
+
+  console.log("Parsed knowledge Bots : ", knowledgeBots)
 
   return knowledgeBots;
 };
