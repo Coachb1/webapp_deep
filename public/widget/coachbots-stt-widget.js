@@ -9224,9 +9224,10 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       // proceed buttion will show
-                      console.log('4quetext')
+                      console.log('4quetext',questionText2)
 
                       if ( !AttemptTestDirectSTT){
+                        const temp_que_text = questionText2
                         signals.onResponse({
                           text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
                         }).then(() => {
@@ -9238,7 +9239,7 @@ loadExternalModule().then(() => {
                               });
                             }
                           }
-                          appendMessage2(questionText2);
+                          appendMessage2(temp_que_text);
                         });
                       }
                       
