@@ -518,19 +518,35 @@ function appendMessage(message) {
 }
 
 function snippetDiv(url){
-  return `
-  <iframe
-    allow="autoplay; encrypted-media; fullscreen;"
-    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
-    src=${url}
-    frameborder="0"
-    allowfullscreen
-    webkitallowfullscreen 
-    mozallowfullscreen 
-    allowtransparency
-    scrolling="no"
-  >
-  `
+  if(url.includes("pulse")){
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  } else {
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  }
 }
 
 //* loading element with message 
