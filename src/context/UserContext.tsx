@@ -49,6 +49,7 @@ import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 import { DemoPage, UnAuth } from "@/app/UnAuthpage";
+import { useRouter } from "next/navigation";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -121,6 +122,7 @@ export const UserProvider = ({
   children: ReactNode;
   kindeUser: KindeUserType | null;
 }) => {
+  const router = useRouter();
   const [userId, setUserId] = useState("");
   const [userRole, setUserRole] = useState("");
   const [userName, setUserName] = useState("");
@@ -228,85 +230,108 @@ export const UserProvider = ({
       setUserInfo(userInfo);
 
       if (!userInfo.isDemoUser && !userInfo.isRestricted) {
-        const profiles = await getDirectoryProfiles(
-          userEmail,
-          data.coach_recommendation
-        );
-        setDirectoryProfiles(profiles);
-        console.log(profiles);
+        if (userInfo.restrictedPages?.includes("Network Directory")) {
+          if (!userInfo.restrictedPages?.includes("Explore")) {
+            router.push("content-library");
+          } else if (!userInfo.restrictedPages?.includes("Library")) {
+            router.push("library");
+          } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
+            router.push("create-scenario");
+          }
+        }
+        if (!userInfo.restrictedPages?.includes("Network Directory")) {
+          const profiles = await getDirectoryProfiles(
+            userEmail,
+            data.coach_recommendation
+          );
+          setDirectoryProfiles(profiles);
+          console.log(profiles);
 
-        const previleges = await getUserJoiningPreviledges(userEmail);
-        setJoiningPrevileges(previleges);
-        console.log(previleges);
+          const previleges = await getUserJoiningPreviledges(userEmail);
+          setJoiningPrevileges(previleges);
+          console.log(previleges);
 
-        const connectionsData = await getUserConnections(data.uid);
-        const { connections, coachId, coacheeId, userProfiles } =
-          connectionsData;
-        console.log(connectionsData);
-        setCoachId(coachId);
-        setCoacheeId(coacheeId);
-        setAllCoaches(userProfiles);
-        setUserConnections(connections?.data);
+          if (!userInfo.restrictedPages?.includes("Profile")) {
+            const connectionsData = await getUserConnections(data.uid);
+            const { connections, coachId, coacheeId, userProfiles } =
+              connectionsData;
+            console.log(connectionsData);
+            setCoachId(coachId);
+            setCoacheeId(coacheeId);
+            setAllCoaches(userProfiles);
+            setUserConnections(connections?.data);
 
-        const botsData = await getBots(data.uid);
-        console.log(botsData);
-        setBotsData(botsData?.data);
-        const feedbackBots = botsData.data?.filter(
-          (data: any) => data.signature_bot.bot_type === "feedback_bot"
-        );
-        console.log(feedbackBots[0]?.signature_bot.bot_id);
-        setFeedbackBots(feedbackBots);
+            const botsData = await getBots(data.uid);
+            console.log(botsData);
+            setBotsData(botsData?.data);
+            const feedbackBots = botsData.data?.filter(
+              (data: any) => data.signature_bot.bot_type === "feedback_bot"
+            );
+            console.log(feedbackBots[0]?.signature_bot.bot_id);
+            setFeedbackBots(feedbackBots);
+          }
+        }
 
         setLoadingState(false);
-        const attemptedTests = await getAttemptedTestsList(data.uid);
-        console.log(attemptedTests);
-        setAttemptedTests(attemptedTests);
 
-        const competencyBasedTests = await getTestsByCompetencies(data.uid);
-        console.log(competencyBasedTests);
-        setCompetencyBasedPowerSkillsTests(
-          competencyBasedTests?.competencyTests
-        );
-        setCompetencyData(competencyBasedTests?.competencyData);
+        if (!userInfo.restrictedPages?.includes("Library")) {
+          const attemptedTests = await getAttemptedTestsList(data.uid);
+          console.log(attemptedTests);
+          setAttemptedTests(attemptedTests);
 
-        const requestedTestData = await getRequestedTests(data.uid);
-        setRequestedTestsData(requestedTestData);
+          const competencyBasedTests = await getTestsByCompetencies(data.uid);
+          console.log(competencyBasedTests);
+          setCompetencyBasedPowerSkillsTests(
+            competencyBasedTests?.competencyTests
+          );
+          setCompetencyData(competencyBasedTests?.competencyData);
 
-        const categorisedTestsData = await getCategorisedTests(
-          userInfo.clientName
-        );
-        setCategorisedTests(categorisedTestsData);
+          const requestedTestData = await getRequestedTests(data.uid);
+          setRequestedTestsData(requestedTestData);
 
-        const knowledgeBots = await getKnowledgeBots(userInfo.clientName, data.uid);
-        setknowledgeBots(knowledgeBots);
+          const categorisedTestsData = await getCategorisedTests(
+            userInfo.clientName
+          );
+          setCategorisedTests(categorisedTestsData);
+        }
 
-        const clientUsers = await getClientUsers(userInfo.clientName);
-        setClientUsers(clientUsers);
+        if (!userInfo.restrictedPages?.includes("Creator Studio")) {
+          const knowledgeBots = await getKnowledgeBots(
+            userInfo.clientName,
+            data.uid
+          );
+          setknowledgeBots(knowledgeBots);
 
-        const userPositionDetails = await getLeaderboardPosition(
-          userEmail,
-          data.profile_type,
-          data.uid
-        );
-        setUserPositionDetails(userPositionDetails);
+          const clientUsers = await getClientUsers(userInfo.clientName);
+          setClientUsers(clientUsers);
 
-        const candidateReport = await getCandidateReport(data.uid);
-        setCandidateReport(candidateReport);
+          const userPositionDetails = await getLeaderboardPosition(
+            userEmail,
+            data.profile_type,
+            data.uid
+          );
+          setUserPositionDetails(userPositionDetails);
+        }
 
-        const kudosData = await getKudosData(data.uid, userEmail);
-        setKudosData(kudosData);
-        const botConversations = await getConversations(
-          data.uid,
-          feedbackBots[0]?.signature_bot.bot_id
-        );
-        setBotConversations(botConversations);
+        if (!userInfo.restrictedPages?.includes("Profile")) {
+          const candidateReport = await getCandidateReport(data.uid);
+          setCandidateReport(candidateReport);
 
-        const actionPoints = await getActionPoints(data.uid);
-        setActionPoints(actionPoints);
+          const kudosData = await getKudosData(data.uid, userEmail);
+          setKudosData(kudosData);
+          const botConversations = await getConversations(
+            data.uid,
+            feedbackBots[0]?.signature_bot.bot_id
+          );
+          setBotConversations(botConversations);
 
-        const idps = await getIDPs(data.uid);
+          const actionPoints = await getActionPoints(data.uid);
+          setActionPoints(actionPoints);
 
-        setUserIDPs(idps);
+          const idps = await getIDPs(data.uid);
+
+          setUserIDPs(idps);
+        }
       } else {
         setLoadingState(false);
       }
@@ -444,7 +469,7 @@ export const UserProvider = ({
   ];
   const isExcluded = excludedPages.some((page) => pathname.includes(page));
 
-  const basicUserConfigs = async (user : KindeUserType | null) => {
+  const basicUserConfigs = async (user: KindeUserType | null) => {
     const userAccount = await getUserAccount(user);
     const data = await userAccount.json();
     setUserId(data.uid);
@@ -458,14 +483,14 @@ export const UserProvider = ({
       client: data.client_allow_audio_interactions,
       user: data.user_allow_audio_interactions,
     });
-  
+
     console.log("getAllUserData", data);
-  }
+  };
 
   useEffect(() => {
     // console.log(window.location.href)
-    if(window.location.href.includes("dev-bot")){
-      basicUserConfigs(kindeUser)
+    if (window.location.href.includes("dev-bot")) {
+      basicUserConfigs(kindeUser);
       setLoadingState(false);
     } else {
       if (kindeUser) {
@@ -475,7 +500,6 @@ export const UserProvider = ({
             called = true;
           }
         } else {
-          
         }
       } else {
         setLoadingState(false);

@@ -31,7 +31,7 @@ const Widgets = ({ from }: any) => {
           <>
             <Script src="../widget/coachbots-widget.js" />
             <Script src="../widget/coachbots-stt-widget.js" />
-            <div className="fixed max-sm:right-[1.6rem] right-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%]">
+            <div className="fixed max-sm:right-[1.6rem] right-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%] z-50">
               <p className="text-xs text-right">
                 <span className="font-bold max-sm:text-[10px] max-sm:relative max-sm:-bottom-20  max-sm:p-1 rounded-lg max-sm:bg-[#35DDB8] w-fit ">
                   CoachScribe{" "}
@@ -44,7 +44,7 @@ const Widgets = ({ from }: any) => {
               </p>
             </div>
             {subdomain === "temp-platform" || pathname === "/" ? null : (
-              <div className="fixed max-sm:left-[1.8rem] left-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%]">
+              <div className="fixed max-sm:left-[1.8rem] left-[2rem] bottom-28 hover:cursor-pointer max-sm:bottom-[5.5rem] w-[10%] max-sm:w-[30%] z-50">
                 <p className="text-xs text-left">
                   <span className="font-bold max-sm:text-[10px] max-sm:relative max-sm:-bottom-20 max-sm:p-1 rounded-lg max-sm:bg-[#35DDB8] w-fit">
                     CoachTalk{" "}

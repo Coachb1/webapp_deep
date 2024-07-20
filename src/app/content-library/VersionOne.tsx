@@ -155,7 +155,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
         <div className="w-[80%] max-sm:w-[90%]">
           <Div
             id="system-demos"
-            className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+            className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:pt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
           >
             <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
               <Button
