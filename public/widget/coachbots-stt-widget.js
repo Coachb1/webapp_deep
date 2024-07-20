@@ -3487,13 +3487,14 @@ function snippetDivSTT(url){
   return `
   <iframe
     allow="autoplay; encrypted-media; fullscreen;"
-    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 61vw;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
     src=${url}
     frameborder="0"
     allowfullscreen
     webkitallowfullscreen 
     mozallowfullscreen 
     allowtransparency
+    scrolling="no"
   >
   `
 }
@@ -5907,6 +5908,15 @@ loadExternalModule().then(() => {
           "default": "System Error. But please continue and/or retry."
         }
       }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
       >
 
     </deep-chat>
