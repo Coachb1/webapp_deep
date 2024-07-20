@@ -5435,6 +5435,7 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       if (!AttemptTestDirect){
+                        const temp_que_text = questionText
                         signals.onResponse({
                           text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
                         }).then(()=>{
@@ -5446,7 +5447,7 @@ loadExternalModule().then(() => {
                               });
                             }
                           }
-                          appendMessage(questionText)
+                          appendMessage(temp_que_text)
                         })
                       }
                     }
