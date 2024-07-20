@@ -1021,3 +1021,20 @@ export const frontLineStaff: Test[] = [
     interaction_mode: "Audio",
   },
 ];
+
+export const InteractiveVisualSimulation: Test[] = [
+  {
+    domain: "Empathetic Leadership in Times of Crisis",
+    title: "Navigating Team Dynamics After a Major Deal Loss ",
+    description: `A large consulting firm has recently lost a significant deal to a competitor, causing concern within the organization. Maya, the pursuit lead for this deal, must now discuss the outcome with her manager, Ravi. The loss of this deal has potential implications for team morale, client relationships, and the firm's competitive position in the market. The situation is particularly delicate as it may reflect on Maya's leadership and the team's performance. Ravi, aware of the sensitivity of the situation, has initiated the conversation by asking a question, setting the stage for a crucial discussion about the lost deal, its impact, and the path forward. You are Maya, the pursuit lead, interacting with Ravi, your manager. Ravi will ask you questions related to the lost consulting deal. Your intent is to provide a comprehensive overview of the situation, address any concerns, and discuss strategies for future improvements.`,
+    test_code: "Q42IQVJ",
+    interaction_mode: "",
+  },
+  {
+    domain: "Choosing the Right Team",
+    title: "Integrating Women into Construction Marketing Leadership",
+    description: `A large construction has asked its top marketing executive to answer some critical questions on their next campaign plan. The company has an "old boys club" mentality. You are that marketing executive who must answer the questions of Mahesh to convince him so that women are included a part of this campaign leadership. This situation reflects the company's need to adapt to changing industry standards while addressing internal resistance to diversity in leadership roles. You are the top marketing executive, interacting with Mahesh, a senior leader in the company. Mahesh will ask you questions related to including women in the campaign leadership team. Your intent is to convince Mahesh of the benefits and necessity of including women in the campaign leadership.`,
+    test_code: "Q7R47EZ",
+    interaction_mode: "",
+  },
+];

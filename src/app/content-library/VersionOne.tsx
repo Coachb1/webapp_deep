@@ -24,6 +24,7 @@ import {
   englishSupport,
   DSA,
   DataScience,
+  InteractiveVisualSimulation,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -209,6 +210,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
               <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("interactive-visual")}
+              >
+                Interactive visual simulation
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("pitch")}
               >
                 Pitch+
@@ -354,6 +363,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               badgeText="PMS Enabled"
               user={user ? true : false}
               tests={pms}
+            />
+          </div>
+          <div id="interactive-visual">
+            <HeroAccordion
+              badgeText="Interactive visual simulation"
+              user={user ? true : false}
+              tests={InteractiveVisualSimulation}
             />
           </div>
           <div id="pitch">
