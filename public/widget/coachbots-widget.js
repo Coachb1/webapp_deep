@@ -521,13 +521,14 @@ function snippetDiv(url){
   return `
   <iframe
     allow="autoplay; encrypted-media; fullscreen;"
-    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: 61vw;"
+    style="width: 100%; border-radius: 8px; min-height: 50vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
     src=${url}
     frameborder="0"
     allowfullscreen
     webkitallowfullscreen 
     mozallowfullscreen 
     allowtransparency
+    scrolling="no"
   >
   `
 }
@@ -2690,6 +2691,13 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
     .catch((err) => console.log(err));
 }
 
+let chatInputFontSize2 = "14px";
+let messageBubbleMaxWidth2 = "60%";
+if(window.innerWidth < 768) {
+  chatInputFontSize2 = "12px"
+  messageBubbleMaxWidth2 = "80%"
+}
+
 //* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
@@ -2845,7 +2853,7 @@ loadExternalModule().then(() => {
       }'
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth2)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
@@ -2855,7 +2863,9 @@ loadExternalModule().then(() => {
       }'
       textInput='{
         "styles": {
-          "text": {"color": "black", "fontSize" : "14px"},
+          "text": {"color": "black", "fontSize" :${JSON.stringify(
+            chatInputFontSize2
+          )}},
           "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #d1d5db", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
@@ -2879,6 +2889,15 @@ loadExternalModule().then(() => {
         "alwaysEnabled": true,
         "position": "inside-right"
       }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
       demo="true"
       style="border: none"
       displayLoadingBubble="true"
