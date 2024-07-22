@@ -35,6 +35,7 @@ import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
 import { useUser } from "@/context/UserContext";
 import { Div } from "@/components/ui/moving-border";
+import { ExternalLink } from "lucide-react";
 
 const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
@@ -129,7 +130,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              AI-Frame
+              AI-Frame <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
           <Link href="/feedback" target="_blank">
@@ -137,6 +138,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Feedback Page
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
           <Link href="/knowledge-bot" target="_blank">
@@ -144,6 +146,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Knowledge Bot
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
         </div>
