@@ -1163,6 +1163,7 @@ async function populateBotConversation(participant_id) {
       //   appendMessageForUser2(participant_message_text);
       // }
     });
+    appendMessage2("<b>Previous completed or terminated conversations. New sessions from here on.</b>");
     isBotConversationPopulated = true;
   } else {
     if (botType === "user_bot") {
@@ -1271,6 +1272,14 @@ const getBotDetails2 = async (botId) => {
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
         "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
+
+        const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+        console.log(shadowRoot.getElementById("text-input"));
+  
+        shadowRoot.getElementById(
+          "text-input"
+        ).innerText = `Please follow provided instructions and select "Begin session"`;
+
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -1594,70 +1603,70 @@ const getBotDetails2 = async (botId) => {
     console.log("buttons : ", buttons);
 
 
-    if (!["user_bot",'deep_dive'].includes(botType)) {
-       //canned button one
-      const cannedButtonOne = document.createElement("button");
-      cannedButtonOne.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
-      );
+    // if (!["user_bot",'deep_dive'].includes(botType)) {
+    //    //canned button one
+    //   const cannedButtonOne = document.createElement("button");
+    //   cannedButtonOne.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+    //   );
 
-      cannedButtonOne.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
-      );
-      cannedButtonOne.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
+    //   cannedButtonOne.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+    //   );
+    //   cannedButtonOne.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = 'white'"
+    //   );
       
-      cannedButtonOne.addEventListener(
-        "click",
-        () => {
-          sendMessage("Not exactly...")
-        }
-      );
-      cannedButtonOne.setAttribute(
-        "disabled",
-        true
-      )
+    //   cannedButtonOne.addEventListener(
+    //     "click",
+    //     () => {
+    //       sendMessage("Not exactly...")
+    //     }
+    //   );
+    //   cannedButtonOne.setAttribute(
+    //     "disabled",
+    //     true
+    //   )
 
-      cannedButtonOne.setAttribute("id", `canned-btn-1`);
-      cannedButtonOne.innerText = "Not exactly...";
-      buttonsWrapper.appendChild(cannedButtonOne);
+    //   cannedButtonOne.setAttribute("id", `canned-btn-1`);
+    //   cannedButtonOne.innerText = "Not exactly...";
+    //   buttonsWrapper.appendChild(cannedButtonOne);
 
-      //canned button two
+    //   //canned button two
 
-      const cannedButtonTwo = document.createElement("button");
-      cannedButtonTwo.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
-      );
+    //   const cannedButtonTwo = document.createElement("button");
+    //   cannedButtonTwo.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+    //   );
 
-      cannedButtonTwo.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb', this.style.cursor = 'not-allowed' "
-      );
-      cannedButtonTwo.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
+    //   cannedButtonTwo.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f9fafb', this.style.cursor = 'not-allowed' "
+    //   );
+    //   cannedButtonTwo.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = 'white'"
+    //   );
 
-      cannedButtonTwo.addEventListener(
-        "click",
-        () => {
-          sendMessage("Yes I agree...")
-        }
-      );
+    //   cannedButtonTwo.addEventListener(
+    //     "click",
+    //     () => {
+    //       sendMessage("Yes I agree...")
+    //     }
+    //   );
 
-      cannedButtonTwo.setAttribute(
-        "disabled",
-        true
-      )
-      cannedButtonTwo.setAttribute("id", `canned-btn-2`);
-      cannedButtonTwo.innerText = "Yes I agree..";
-      buttonsWrapper.appendChild(cannedButtonTwo);
-    }
+    //   cannedButtonTwo.setAttribute(
+    //     "disabled",
+    //     true
+    //   )
+    //   cannedButtonTwo.setAttribute("id", `canned-btn-2`);
+    //   cannedButtonTwo.innerText = "Yes I agree..";
+    //   buttonsWrapper.appendChild(cannedButtonTwo);
+    // }
 
     faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
