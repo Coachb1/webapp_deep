@@ -470,10 +470,25 @@ const CreateYourOwn = ({
               }}
               value={assignedToUsers}
               size="large"
+              optionFilterProp="children"
+              filterOption={(
+                input: string,
+                option?: { label: string; value: string }
+              ) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
               options={clientUsers
                 .map((user) => ({
                   value: `${user.userName}/${user.userId}`,
-                  label: user.userName,
+                  label: `${user.userName} (${user.userEmail})`,
+                  // (
+                  //   <p>
+                  //     {user.userName} (
+                  //     <span className="text-blue-500">{user.userEmail}</span>)
+                  //   </p>
+                  // ),
                 }))
                 .filter((user) => !user.value.includes(userId))}
               onChange={(selectedOptions) => {

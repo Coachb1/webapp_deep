@@ -26,11 +26,6 @@ import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Meteors } from "@/components/ui/meteors";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
-import {
-  CardBody,
-  CardContainer,
-  CardItem,
-} from "@/components/ui/3d-card-effect";
 
 const howItWorks = [
   {
@@ -43,11 +38,6 @@ const howItWorks = [
     description:
       "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
   },
-  // {
-  //   heading: "Recommendations",
-  //   description:
-  //     "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
-  // },
 ];
 
 const benefitsData = [
@@ -62,18 +52,11 @@ const benefitsData = [
       "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
   },
   {
-    heading: "Skill scenario library",
+    heading: "Learning reinforcement",
     description:
-      "Explore our extensive library of skill scenarios. This collection provides practical, real-life situations for skill development. Enhance your skills by tackling scenarios that resonate with the needs identified during the session.",
+      "Depending upon the improvement plans discussed, create simulated scenario-based conversations - if relevant to your situation via our studio.",
   },
 ];
-
-const dummyData = {
-  "Transcript Email":
-    "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
-  "Advice Anytime, Anywhere":
-    "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
-};
 
 const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
@@ -328,8 +311,14 @@ const Coach = ({ user, renderType }: any) => {
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
               Sorry, this is not a valid URL. Please review or visit{" "}
-              <Button variant={"link"} asChild>
-                <Link href={"/"}>Home</Link>
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
               </Button>
             </div>
           </div>

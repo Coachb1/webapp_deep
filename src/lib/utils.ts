@@ -546,15 +546,20 @@ export const getUsersForClient = (clientName: string, data: any) => {
     userName: string;
     userId: string;
   }[] = [];
+  const uniqueUserIds = new Set<string>();
+
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)
-      .map((user: any) => {
-        clientUsers.push({
-          userEmail: user.user_email,
-          userName: user.name,
-          userId: user.user_id,
-        });
+      .forEach((user: any) => {
+        if (!uniqueUserIds.has(user.user_id)) {
+          uniqueUserIds.add(user.user_id);
+          clientUsers.push({
+            userEmail: user.user_email,
+            userName: user.name,
+            userId: user.user_id,
+          });
+        }
       });
   }
 
@@ -563,16 +568,21 @@ export const getUsersForClient = (clientName: string, data: any) => {
 
 export const getUsersForClientForTeam = (clientName: string, data: any) => {
   const clientUsers: ClientUserTeamType[] = [];
+  const uniqueUserIds = new Set<string>();
+
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)
-      .map((user: any) => {
-        clientUsers.push({
-          userEmail: user.user_email,
-          userName: user.name,
-          userId: user.user_id,
-          profileType: user.profile_type || "",
-        });
+      .forEach((user: any) => {
+        if (!uniqueUserIds.has(user.user_id)) {
+          uniqueUserIds.add(user.user_id);
+          clientUsers.push({
+            userEmail: user.user_email,
+            userName: user.name,
+            userId: user.user_id,
+            profileType: user.profile_type || "",
+          });
+        }
       });
   }
 
