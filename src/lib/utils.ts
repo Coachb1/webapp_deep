@@ -728,7 +728,8 @@ export function convertJsonToExpectedFormat(
   jsonData: Conversation[]
 ): ConvertedConversation[] {
   return jsonData.map((conversation) => {
-    const { participant_name, results, role, date, bot_name } = conversation;
+    const { participant_name, results, role, date, bot_name, bot_type } =
+      conversation;
     const conversationArray: ConvertedResult[] = results.map((result) => {
       const participantMessage = result.participant_message_text || "";
       const coachMessage = result.coach_message_text || "";
@@ -751,6 +752,7 @@ export function convertJsonToExpectedFormat(
       role: role,
       date: date,
       bot_name: bot_name, // Include bot_name in ConvertedConversation
+      bot_type: bot_type,
     };
   });
 }

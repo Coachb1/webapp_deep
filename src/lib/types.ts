@@ -170,7 +170,7 @@ export interface knowledgeBotJson {
     bot_scenario_case: string;
     creator_name: string;
     is_approved: boolean;
-    is_private : string;
+    is_private: string;
     user_id: string;
   };
   bot_attributes: {
@@ -371,8 +371,8 @@ export interface Conversation {
   role: string;
   date: string;
   bot_name?: string; // Add bot_name to the Conversation interface
-  bot_type? : string
-  scenario_case? : string
+  bot_type?: string;
+  scenario_case?: string;
 }
 
 export interface ConvertedResult {
@@ -389,4 +389,5 @@ export interface ConvertedConversation {
   role: string;
   date: string;
   bot_name?: string; // Add bot_name to the ConvertedConversation interface
+  bot_type?: string;
 }

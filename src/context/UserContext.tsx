@@ -238,6 +238,7 @@ export const UserProvider = ({
           } else if (!userInfo.restrictedPages?.includes("Creator Studio")) {
             router.push("create-scenario");
           }
+          setLoadingState(false);
         }
         if (!userInfo.restrictedPages?.includes("Network Directory")) {
           const profiles = await getDirectoryProfiles(
@@ -270,9 +271,10 @@ export const UserProvider = ({
             console.log(feedbackBots[0]?.signature_bot.bot_id);
             setFeedbackBots(feedbackBots);
           }
+          setLoadingState(false);
+        } else {
+          setLoadingState(false);
         }
-
-        setLoadingState(false);
 
         if (!userInfo.restrictedPages?.includes("Library")) {
           const attemptedTests = await getAttemptedTestsList(data.uid);
