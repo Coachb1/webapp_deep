@@ -219,7 +219,7 @@ const Coaches = ({
     []
   );
 
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   // const [loading, setLoading] = useState(true);
 
   // const [loadingStates, setLoadingStates] = useState({
@@ -265,6 +265,7 @@ const Coaches = ({
       clientDepartments,
       clientExpertise,
     },
+    userId,
     coachId: coachID,
     coacheeId: coacheeID,
     joiningPrevileges: UserJoiningPreviledges,
