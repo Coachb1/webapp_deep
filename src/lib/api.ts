@@ -347,7 +347,7 @@ export const getCategorisedTests = async (clientName: string) => {
   return categorisedTestsData;
 };
 
-export const getKnowledgeBots = async (clientName: string, userId : string) => {
+export const getKnowledgeBots = async (clientName: string, userId: string) => {
   const response = await fetch(
     `${baseURL}/accounts/get-bots/?bot_type=user_bot&client_name=${clientName}`,
     {
@@ -368,7 +368,7 @@ export const getKnowledgeBots = async (clientName: string, userId : string) => {
     creator_name: string;
   }[] = [];
 
-  console.log("getBotsDataResponseData", getBotsDataResponseData)
+  console.log("getBotsDataResponseData", getBotsDataResponseData);
 
   getBotsDataResponseData.data.forEach((item: knowledgeBotJson) => {
     const botJson = item.signature_bot;
@@ -382,17 +382,17 @@ export const getKnowledgeBots = async (clientName: string, userId : string) => {
       description = botJson.faqs["What is the primary purpose of the bot?"];
     }
     if (item.signature_bot.is_approved) {
-      if (!item.signature_bot.is_private){
-      knowledgeBots.push({
-        bot_id: botJson.bot_id,
-        bot_name: item.bot_attributes.bot_name,
-        bot_type: botJson.bot_type,
-        description: description,
-        scenario_case: botJson.bot_scenario_case,
-        creator_name: botJson.creator_name,
-      });
+      if (!item.signature_bot.is_private) {
+        knowledgeBots.push({
+          bot_id: botJson.bot_id,
+          bot_name: item.bot_attributes.bot_name,
+          bot_type: botJson.bot_type,
+          description: description,
+          scenario_case: botJson.bot_scenario_case,
+          creator_name: botJson.creator_name,
+        });
       } else {
-        if (item.signature_bot.user_id === userId){
+        if (item.signature_bot.user_id === userId) {
           knowledgeBots.push({
             bot_id: botJson.bot_id,
             bot_name: item.bot_attributes.bot_name,
@@ -403,10 +403,10 @@ export const getKnowledgeBots = async (clientName: string, userId : string) => {
           });
         }
       }
-    } 
+    }
   });
 
-  console.log("Parsed knowledge Bots : ", knowledgeBots)
+  console.log("Parsed knowledge Bots : ", knowledgeBots);
 
   return knowledgeBots;
 };
@@ -551,13 +551,14 @@ export const getConversations = async (
 
   if (responseAdmin.ok) {
     const responseData = await responseAdmin.json();
-    console.log("responseData ADMIN",responseData)
+    console.log("responseData ADMIN", responseData);
     if (responseData[0] != "Bot not Found") {
       const convertedData: ConvertedConversation[] =
         convertJsonToExpectedFormat(responseData);
       convertsationDataAdmin = convertedData.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
+      console.log("convertedData ADMIN : ", convertedData);
     }
   }
 
@@ -573,13 +574,14 @@ export const getConversations = async (
 
   if (responseUser.ok) {
     const responseData = await responseUser.json();
-    console.log("responseData USER",responseData)
+    console.log("responseData USER", responseData);
     if (responseData[0] != "Bot not Found") {
       const convertedData: ConvertedConversation[] =
         convertJsonToExpectedFormat(responseData);
       conversationDataUser = convertedData.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
+      console.log("convertedData USER : ", convertedData);
     }
   }
 
@@ -612,6 +614,7 @@ export const getConversations = async (
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
     }
+    console.log("convertedData USER : ", feedbackConversations);
   }
 
   return {
@@ -653,7 +656,7 @@ export const getIDPs = async (userId: string) => {
 
   if (response.ok) {
     const responseData = await response.json();
-    console.log(responseData)
+    console.log(responseData);
     return sortByDateDescending(responseData);
   } else {
     return [];

@@ -121,19 +121,9 @@ const Profile = ({ user }: any) => {
 
   return (
     <>
-      {/* <NetworkNav user={user} /> */}
       <div className="w-full flex flex-row justify-end">
         <div className="pb-6 pt-28 w-[80%] flex flex-row items-center">
-          {" "}
-          <div
-            onClick={() => {
-              history.back();
-            }}
-            className="hover:cursor-pointer"
-          >
-            <ChevronLeft className="h-6 w-6 mr-2 max-sm:h-4 max-sm:w-4" />
-          </div>
-          <h3 className="text-2xl font-mono font-semibold max-sm:text-lg">
+          <h3 className="text-2xl font-mono font-semibold max-sm:text-lg ml-6">
             My Account
           </h3>
         </div>

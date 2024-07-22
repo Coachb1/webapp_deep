@@ -81,9 +81,17 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
   useEffect(() => {
     console.log(userConnections);
     if (coachId) {
-      setConnectionsForCoach(userConnections);
+      setConnectionsForCoach(
+        userConnections.filter(
+          (coach) => coach.coach_name !== null || coach.coachee_name !== null
+        )
+      );
     } else if (coacheeId) {
-      setConnectionsForCoachee(userConnections);
+      setConnectionsForCoachee(
+        userConnections.filter(
+          (coach) => coach.coach_name !== null || coach.coachee_name !== null
+        )
+      );
     }
     setLoading(false);
   }, []);

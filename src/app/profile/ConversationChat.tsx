@@ -13,7 +13,7 @@ const ConversationChat = ({
   type,
 }: any) => {
   return (
-    <div className="w-full border bg-gray-200 my-2 px-2 rounded-sm">
+    <div className="w-full border-gray-400 border bg-gray-200 my-2 px-2 rounded-xl">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
@@ -42,7 +42,7 @@ const ConversationChat = ({
             </p>
           </AccordionTrigger>
           <AccordionContent>
-            <div>
+            <div className="max-h-[40vh] overflow-y-scroll">
               {conversation.map((convo: any, i: any) => (
                 <>
                   {i !== 0 && (
@@ -87,7 +87,7 @@ export const FeedbackConversationChat = ({
   date: string;
 }) => {
   return (
-    <div className="w-full border bg-gray-200 my-2 px-2 rounded-sm">
+    <div className="w-full border border-gray-400  bg-gray-200 my-2 px-2 rounded-xl">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
@@ -103,7 +103,7 @@ export const FeedbackConversationChat = ({
             </p>
           </AccordionTrigger>
           <AccordionContent>
-            <div>
+            <div className="max-h-[40vh] overflow-y-scroll">
               <div className="flex justify-start ">
                 <div className="flex flex-col items-start justify-start p-2 w-[80%]">
                   <div className="bg-blue-100 text-sm max-sm:text-xs p-2 rounded-md max-sm:full">

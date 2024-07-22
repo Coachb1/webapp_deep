@@ -5,73 +5,74 @@ import ConversationChat, { FeedbackConversationChat } from "./ConversationChat";
 import { Info, Loader } from "lucide-react";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { FeedbackConversationType } from "@/lib/types";
+import { ConvertedConversation, FeedbackConversationType } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
 
-interface Result {
-  uid: string;
-  coach_message_text?: string;
-  participant_message_text?: string | null;
-  status: string;
-  created: string;
-  updated?: string;
-}
+// interface Result {
+//   uid: string;
+//   coach_message_text?: string;
+//   participant_message_text?: string | null;
+//   status: string;
+//   created: string;
+//   updated?: string;
+// }
 
-interface Conversation {
-  results: Result[];
-  participant_name: string;
-  participant_uid: string;
-  role: string;
-  date: string;
-  bot_name?: string; // Add bot_name to the Conversation interface
-}
+// interface Conversation {
+//   results: Result[];
+//   participant_name: string;
+//   participant_uid: string;
+//   role: string;
+//   date: string;
+//   bot_name?: string; // Add bot_name to the Conversation interface
+// }
 
-interface ConvertedResult {
-  participant_message: string;
-  coach_message: string;
-  user_role: string;
-  conversation_date: string;
-  bot_name?: string; // Add bot_name to the ConvertedResult interface
-}
+// interface ConvertedResult {
+//   participant_message: string;
+//   coach_message: string;
+//   user_role: string;
+//   conversation_date: string;
+//   bot_name?: string; // Add bot_name to the ConvertedResult interface
+// }
 
-interface ConvertedConversation {
-  participant_name: string;
-  conversation: ConvertedResult[];
-  role: string;
-  date: string;
-  bot_name?: string; // Add bot_name to the ConvertedConversation interface
-}
+// interface ConvertedConversation {
+//   participant_name: string;
+//   conversation: ConvertedResult[];
+//   role: string;
+//   date: string;
+//   bot_name?: string; // Add bot_name to the ConvertedConversation interface
+//   bot_type?: string;
+// }
 
-function convertJsonToExpectedFormat(
-  jsonData: Conversation[]
-): ConvertedConversation[] {
-  return jsonData.map((conversation) => {
-    const { participant_name, results, role, date, bot_name } = conversation;
-    const conversationArray: ConvertedResult[] = results.map((result) => {
-      const participantMessage = result.participant_message_text || "";
-      const coachMessage = result.coach_message_text || "";
-      const userRole =
-        result.status === "participant_message_saved" ? "participant" : "coach";
-      const conversationDate = result.created;
+// function convertJsonToExpectedFormat(
+//   jsonData: Conversation[]
+// ): ConvertedConversation[] {
+//   return jsonData.map((conversation) => {
+//     const { participant_name, results, role, date, bot_name } = conversation;
+//     const conversationArray: ConvertedResult[] = results.map((result) => {
+//       const participantMessage = result.participant_message_text || "";
+//       const coachMessage = result.coach_message_text || "";
+//       const userRole =
+//         result.status === "participant_message_saved" ? "participant" : "coach";
+//       const conversationDate = result.created;
 
-      return {
-        participant_message: participantMessage,
-        coach_message: coachMessage,
-        user_role: userRole,
-        conversation_date: conversationDate,
-        bot_name: bot_name, // Include bot_name in ConvertedResult
-      };
-    });
+//       return {
+//         participant_message: participantMessage,
+//         coach_message: coachMessage,
+//         user_role: userRole,
+//         conversation_date: conversationDate,
+//         bot_name: bot_name, // Include bot_name in ConvertedResult
+//       };
+//     });
 
-    return {
-      participant_name: participant_name,
-      conversation: conversationArray,
-      role: role,
-      date: date,
-      bot_name: bot_name, // Include bot_name in ConvertedConversation
-    };
-  });
-}
+//     return {
+//       participant_name: participant_name,
+//       conversation: conversationArray,
+//       role: role,
+//       date: date,
+//       bot_name: bot_name, // Include bot_name in ConvertedConversation
+//     };
+//   });
+// }
 
 function formatDate(inputDateString: string): string {
   const originalDate = new Date(inputDateString);
@@ -250,19 +251,75 @@ const Conversations = ({ user }: any) => {
                   <>
                     <Badge>Coachee & Mentee Interactions</Badge>
                     <div className="flex flex-col w-full">
-                      {conversationDataAdmin.map((conversation) => (
-                        <ConversationChat
-                          type="coachee-interactions"
-                          participant={conversation.participant_name}
-                          conversation={conversation.conversation}
-                          botName={conversation.bot_name}
-                          date={
-                            conversation.date !== "" &&
-                            formatDate(conversation.date)
-                          }
-                          role={conversation.role}
-                        />
-                      ))}
+                      {/* AVATAR BOT */}
+                      {conversationDataAdmin.filter(
+                        (convo) => convo.bot_type === "avatar_bot"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">
+                          Avatar Bots / Icons by AI
+                        </p>
+                      )}
+                      {conversationDataAdmin
+                        .filter((convo) => convo.bot_type === "avatar_bot")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
+                      {/* DEEP DIVE */}
+                      {conversationDataAdmin.filter(
+                        (convo) => convo.bot_type === "deep_dive"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">
+                          Engagement Survey Bots
+                        </p>
+                      )}
+                      {conversationDataAdmin
+                        .filter((convo) => convo.bot_type === "deep_dive")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
+                      {/* KNOWLEDGE BOT */}
+                      {conversationDataAdmin.filter(
+                        (convo) => convo.bot_type === "user_bot"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">Knowledge Bots</p>
+                      )}
+                      {conversationDataAdmin
+                        .filter((convo) => convo.bot_type === "user_bot")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
                     </div>
                   </>
                 )}
@@ -274,19 +331,75 @@ const Conversations = ({ user }: any) => {
                   <>
                     <Badge>My Interactions</Badge>
                     <div className="flex flex-col w-full">
-                      {conversationData.map((conversation) => (
-                        <ConversationChat
-                          type="coach-interactions"
-                          participant={conversation.participant_name}
-                          conversation={conversation.conversation}
-                          date={
-                            conversation.date !== "" &&
-                            formatDate(conversation.date)
-                          }
-                          role={conversation.role}
-                          botName={conversation.bot_name}
-                        />
-                      ))}
+                      {/* AVATAR BOT */}
+                      {conversationData.filter(
+                        (convo) => convo.bot_type === "avatar_bot"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">
+                          Avatar Bots / Icons by AI
+                        </p>
+                      )}
+                      {conversationData
+                        .filter((convo) => convo.bot_type === "avatar_bot")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
+                      {/* DEEP DIVE */}
+                      {conversationData.filter(
+                        (convo) => convo.bot_type === "deep_dive"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">
+                          Engagement Survey Bots
+                        </p>
+                      )}
+                      {conversationData
+                        .filter((convo) => convo.bot_type === "deep_dive")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
+
+                      {/* KNOWLEDGE BOT */}
+                      {conversationData.filter(
+                        (convo) => convo.bot_type === "user_bot"
+                      ).length > 0 && (
+                        <p className="mt-4 font-semibold">Knowledge Bots</p>
+                      )}
+                      {conversationData
+                        .filter((convo) => convo.bot_type === "user_bot")
+                        .map((conversation) => (
+                          <ConversationChat
+                            type="coach-interactions"
+                            participant={conversation.participant_name}
+                            conversation={conversation.conversation}
+                            date={
+                              conversation.date !== "" &&
+                              formatDate(conversation.date)
+                            }
+                            role={conversation.role}
+                            botName={conversation.bot_name}
+                          />
+                        ))}
                     </div>
                   </>
                 )}
