@@ -6,7 +6,7 @@ First, run the development server:
 
 ```bash
 1:
-npm install
+npm install updated
 2:
 npm run dev
 # or
