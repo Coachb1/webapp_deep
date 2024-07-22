@@ -46,6 +46,7 @@ const CreateYourDeepDive = ({
   const [titleWordCount, setTitleWordCount] = useState(0);
   const [generationError, setGenerationError] = useState(false);
   const [titleError, setTitleError] = useState(false); // Add this line
+  const [emptyTitleError, setEmptyTitleError] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [dateError, setDateError] = useState(false);
   const [wordCount, setWordCount] = useState(0);
@@ -89,7 +90,10 @@ const CreateYourDeepDive = ({
     setTitleError(false);
     setInputError(false);
     setDateError(false);
-    if (wordCount < 5 || wordCount > 50) {
+    setEmptyTitleError(false);
+    if (title.length === 0) {
+      setEmptyTitleError(true);
+    } else if (wordCount < 5 || wordCount > 50) {
       console.log("too small or too large");
       setInputError(true);
     } else if (
@@ -122,14 +126,8 @@ const CreateYourDeepDive = ({
         "context",
         `Industry : ${industry}\nDepartment : ${department}\nRespondent Heirarcy : ${respondentHierarchy}\nRespondent Skillset : ${respondedentSkillSet}`
       );
-      formdata.append(
-        "bot_title",
-        `${title}`
-      )
-      formdata.append(
-        "bot_objective",
-        `${userContextRef.current.value}`
-      )
+      formdata.append("bot_title", `${title}`);
+      formdata.append("bot_objective", `${userContextRef.current.value}`);
       formdata.append(
         "profile_image",
         "https://res.cloudinary.com/dtbl4jg02/image/upload/v1709553181/WhatsApp_Image_2024-03-04_at_5.12.07_PM_gorlzg.jpg"
@@ -257,11 +255,13 @@ const CreateYourDeepDive = ({
               <div className="flex flex-row justify-between w-full">
                 <p
                   className={`text-red-500 text-xs mt-1 ${
-                    !titleError && "invisible"
+                    !titleError && !emptyTitleError && "invisible"
                   }`}
                 >
-                  Title should not exceed 10 words.
+                  {titleError && "Title should not exceed 10 words."}
+                  {emptyTitleError && "Title is required"}
                 </p>
+
                 <p className="font-bold text-gray-500 text-xs self-end">
                   {titleWordCount}/10
                 </p>
