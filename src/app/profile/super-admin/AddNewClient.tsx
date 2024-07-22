@@ -34,7 +34,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   const [makeNewUserTrial, setMakeNewUserTrial] = useState(true);
   const [useSkillFromBank, setUseSkillFromBank] = useState(false);
   const [allowePasteAnswer, setAllowePaseAnswer] = useState(true);
-  const [alloweAudioInteraction, setAllowAudioInteraction] = useState(false);
+  const [alloweAudioInteraction, setAllowAudioInteraction] = useState(true);
   const [accessBotIds, setAccessedBotIds] = useState("");
   const [excludedUsers, setExcludedUsers] = useState("");
 

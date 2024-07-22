@@ -1429,7 +1429,7 @@ const getBotDetails2 = async (botId) => {
       dropdown.classList.add("hiddenn");
 
       const options = [
-        "crusader",
+        "basic",
         "cheerleader",
         "change_manager",
         "calculator",
@@ -1490,6 +1490,16 @@ const getBotDetails2 = async (botId) => {
           dropdown.style.display = "none";
         });
         dropdown.appendChild(item);
+
+        console.log('selectedResponseType', selectedResponseType)
+        if (!selectedResponseType){
+          const basicOption = Array.from(dropdown.children).find(
+            (item) => item.textContent.toLowerCase() === "basic"
+          );
+          if (basicOption) {
+            basicOption.click();
+          }
+        }
       });
 
       dropdownButton.addEventListener("click", () => {
@@ -7932,7 +7942,7 @@ loadExternalModule().then(() => {
               }
             }
             // here checking word limits for signature bot responses
-            if (!isValidMessageStt(latestMessage, botWordLimit) && botScenarioCase !== "icons_by_ai") {
+            if (!isValidMessageStt(latestMessage, botWordLimit) && botScenarioCase !== "icons_by_ai" && botType !== "user_bot") {
               console.log('2)','latestmsg',latestMessage)
               signals.onResponse({
                 html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${botWordLimit} words.</b></p>`,
