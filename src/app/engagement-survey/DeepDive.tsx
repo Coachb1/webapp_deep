@@ -181,8 +181,14 @@ const DeepDive = ({ user, renderType }: any) => {
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
               Sorry, this is not a valid URL. Please review or visit{" "}
-              <Button className="ml-0" variant={"link"} asChild>
-                <Link href={"/"}>Home</Link>
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
               </Button>
             </div>
           </div>

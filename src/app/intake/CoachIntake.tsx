@@ -556,7 +556,7 @@ const CoachIntake = ({ user }: any) => {
                     "Your profile as a Coach/Coachee already exists. You cannot create another one. Redirecting you to the home page"
                   );
                   setTimeout(() => {
-                    router.push("/?joinredirect=1");
+                    router.push("/");
                     getAllDirectoryData();
                   }, 4000);
                 }
@@ -1173,10 +1173,13 @@ const CoachIntake = ({ user }: any) => {
             // }
 
             let reapproval = "false";
-            if (formType === "coach" && clientInfoData?.user_info[0].send_profile_for_reapproval) {
+            if (
+              formType === "coach" &&
+              clientInfoData?.user_info[0].send_profile_for_reapproval
+            ) {
               reapproval = "true";
             }
-            console.log(reapproval,clientInfoData,'clientInfoData');
+            console.log(reapproval, clientInfoData, "clientInfoData");
             fetch(
               `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
               {
@@ -4285,15 +4288,17 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                     </>
                   )}
-                  {checkIfEdit && clientInfoData?.user_info[0].send_profile_for_reapproval &&(
-                    <div className="flex flex-row mt-2">
-                      <Info className="h-4 w-4 mr-1 inline text-red-400" />
-                      <p className=" w-fit text-xs font-semibold text-red-400">
-                        Upon Save, the bot will be temporarily not available
-                        unless approved.
-                      </p>
-                    </div>
-                  )}
+                  {checkIfEdit &&
+                    clientInfoData?.user_info[0]
+                      .send_profile_for_reapproval && (
+                      <div className="flex flex-row mt-2">
+                        <Info className="h-4 w-4 mr-1 inline text-red-400" />
+                        <p className=" w-fit text-xs font-semibold text-red-400">
+                          Upon Save, the bot will be temporarily not available
+                          unless approved.
+                        </p>
+                      </div>
+                    )}
                 </div>
               </form>
             </div>

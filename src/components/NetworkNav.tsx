@@ -58,10 +58,8 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
     <div
       className={`fixed right-0 top-0 z-40 flex h-6 w-full items-center justify-between p-4 py-8 text-base ${
         scrolled > 0 &&
-        // pathname !== "/library" &&
         pathname !== "/skill-bots" &&
         pathname !== "/guides" &&
-        // pathname !== "/create-scenario" &&
         "border-b border-gray-400 backdrop-blur-lg"
       } `}
     >
@@ -96,19 +94,6 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
               <Link href={"/"}>Network Directory</Link>
             </Button>
           )}
-          {/* {!restrictedPages?.includes("Explore") && (
-          <Button
-            variant={"outline"}
-            className={` h-8 ${
-              pathname.includes("/content-library")
-                ? "border border-gray-500 shadow-md"
-                : ""
-            } `}
-            asChild
-          >
-            <Link href={"/content-library"}>Explore</Link>
-          </Button>
-        )} */}
           {!restrictedPages?.includes("Library") && (
             <Button
               variant={"outline"}
@@ -136,9 +121,9 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
             </Button>
           )}
         </div>
-        {!restrictedPages?.includes("Network Directory") ||
-          !restrictedPages?.includes("Library") ||
-          (!restrictedPages?.includes("Creator Studio") && (
+        {!restrictedPages?.includes("Network Directory") &&
+          !restrictedPages?.includes("Library") &&
+          !restrictedPages?.includes("Creator Studio") && (
             <div className="hidden max-sm:block max-lg:block">
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -158,16 +143,6 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                       <Link href={"/"}> Network directory</Link>
                     </DropdownMenuItem>
                   )}
-                  {/* {!restrictedPages?.includes("Explore") && (
-              <DropdownMenuItem
-                className={`${
-                  pathname === "/content-library" ? "bg-gray-200" : null
-                }`}
-                asChild
-              >
-                <Link href={"/content-library"}>Explore</Link>
-              </DropdownMenuItem>
-            )} */}
                   {!restrictedPages?.includes("Library") && (
                     <DropdownMenuItem
                       className={`${
@@ -194,7 +169,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          ))}
+          )}
         {!restrictedPages?.includes("Profile") ? (
           <div className="ml-4 h-full flex flex-row items-center gap-2">
             <div className="flex flex-row gap-2 items-center">

@@ -500,6 +500,7 @@ export const UserProvider = ({
             called = true;
           }
         } else {
+          setLoadingState(false);
         }
       } else {
         setLoadingState(false);

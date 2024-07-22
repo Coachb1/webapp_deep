@@ -111,10 +111,14 @@ const TeamConnect = ({
               @{" "}
               <Select
                 showSearch
-                className="w-[20%] max-sm:w-[40%]  max-lg:w-[40%]  max-md:w-[40%]"
+                className="w-fit min-w-[20%]"
                 placeholder="Select a person"
                 optionFilterProp="children"
                 virtual={false}
+                dropdownStyle={{
+                  width: "fit-content",
+                }}
+                value={taggedUserId}
                 onChange={(value: string) => {
                   console.log(`selected ${value}`);
                   setTaggedUserId(value);
@@ -130,10 +134,11 @@ const TeamConnect = ({
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
+                //@ts-ignore
                 options={
                   clientUsers &&
                   clientUsers.map((user) => ({
-                    label: user.userName,
+                    label: `${user.userName} (${user.userEmail})`,
                     value: user.userId,
                   }))
                 }

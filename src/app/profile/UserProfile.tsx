@@ -378,9 +378,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             id="audio-interaction"
             className="my-4 w-fit flex flex-row items-center"
           >
-            <p className="text-sm max-sm:text-xs">
-              Allow audio interaction in bots
-            </p>
+            <p className="text-sm max-sm:text-xs">Bot responses in Audio</p>
             <div className="ml-8 flex flex-row items-center gap-2 text-sm max-sm:text-xs">
               <span className="text-sm max-sm:text-xs font-bold text-gray-600">
                 No

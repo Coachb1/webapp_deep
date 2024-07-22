@@ -847,8 +847,8 @@ const CreateOwn = ({
       <MaxWidthWrapper>
         {" "}
         <GoogleGeminiEffectLibrary
-          title="Creator Studio"
-          description="Welcome to the Creator Studio, your hub for collaborative
+          title="Studio"
+          description="Welcome to the Studio, your hub for collaborative
                 innovation. Here, you'll find a suite of tools designed to
                 empower your team's performance. Generate simulations, resolve
                 team queries, assign simulations, craft knowledge bots, and

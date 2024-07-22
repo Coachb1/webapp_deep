@@ -67,22 +67,17 @@ const howItWorks = [
   {
     heading: "Thumbs Up or Thumbs Down",
     description:
-      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback. Thumbs Down maintains privacy, with no email notification to allow internal resolution.",
+      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback to the user. The system also published the positive feedback comment on the feedback page. Thumbs Down maintains privacy and any developmental feedback is only communicated via the email.",
   },
   {
     heading: "Follow-up Questions",
     description:
-      "Users who thumbs up can answer additional customized questions, providing more detailed, meaningful feedback to drive insights.",
+      "The feedack providers can  also answer additional detailed questions in relation to the initial thumps up or down. This provides actionable feedback for the feedbac receiver.",
   },
   {
     heading: "Optional Anonymity",
     description:
-      "After completing the feedback process, clients can choose to submit their feedback along with their email address or remain anonymous.",
-  },
-  {
-    heading: "Email Summaries",
-    description:
-      "At the end of the feedback process both parties receive an email with a feedback summary, promoting transparency and accountability.",
+      "At the very start of the feedback process, we need the feedback provider has the option to be anonymous if desired.",
   },
 ];
 
@@ -90,7 +85,7 @@ const benefitsData = [
   {
     heading: "Real-time Recognition",
     description:
-      "The bot owner and the user receive instant email notifications the moment a user selects thumbs-up, to celebrate positive feedback right away. This enables a culture of recognition and motivation.",
+      "The feedback page owner receives instant email notifications the moment a positive feedback is recorded, to celebrate positive feedback right away. It is also showcased in the Kudos wall of the feedback page. This enables a culture of recognition and motivation.",
   },
   {
     heading: "Enhanced Team Relations",
@@ -100,7 +95,7 @@ const benefitsData = [
   {
     heading: "Improved Accountability",
     description:
-      "Email summaries create transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
+      "The transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
   },
   {
     heading: "PMS Integration",
@@ -368,8 +363,14 @@ const Feedback = ({ user, renderType }: any) => {
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
               Sorry, this is not a valid URL. Please review or visit{" "}
-              <Button className="ml-0" variant={"link"} asChild>
-                <Link href={"/"}>Home</Link>
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
               </Button>
             </div>
           </div>
