@@ -27,7 +27,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   const [newMemberEmails, setNewMemberEmails] = useState("");
   const [newAllowedIps, setNewAllowedIps] = useState("");
   const [clinetHheading, setClientHeading] = useState("");
-  const [clientDepartments, setClientDepartments ] = useState("");
+  const [clientDepartments, setClientDepartments] = useState("");
   const [CoachExpertise, setCoachExpertise] = useState("");
   const [subHeading, setSubHeading] = useState("");
   const [tagLine, setTagLine] = useState("");
@@ -47,11 +47,10 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   // to get ui information:
   // const [headerText, setHeaderText] = useState("");
   const [clientUiInfo, setClientUIInfo] = useState({
-    bottom_text: '',
-    header: '',
-    read_text: '',
+    bottom_text: "",
+    header: "",
+    read_text: "",
   });
-
 
   const [newRestrictedPages, setNewRestrictedPages] = useState<OptionType[]>(
     []
@@ -60,7 +59,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     OptionType[]
   >([]);
 
-  const handleUIInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleUIInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setClientUIInfo((prevData) => ({
       ...prevData,
@@ -71,13 +72,12 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
   function emptyToNull(dataObj: Record<string, any>): Record<string, any> {
     let updatedData: Record<string, any> = {};
     for (let key in dataObj) {
-        if (Object.prototype.hasOwnProperty.call(dataObj, key)) {
-            updatedData[key] = dataObj[key] !== "" ? dataObj[key] : null;
-        }
+      if (Object.prototype.hasOwnProperty.call(dataObj, key)) {
+        updatedData[key] = dataObj[key] !== "" ? dataObj[key] : null;
+      }
     }
     return updatedData;
-}
-
+  }
 
   const restrictedPageOptions: OptionType[] = [
     { value: "Network Directory", label: "Network Directory" },
@@ -118,7 +118,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
       myHeaders.append("Authorization", basicAuth);
       myHeaders.append("Content-Type", "application/json");
 
-      console.log('newMemberEmails',newMemberEmails)
+      console.log("newMemberEmails", newMemberEmails);
 
       const raw = JSON.stringify({
         client_name: newClientName,
@@ -131,22 +131,21 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
         allowed_ips: newAllowedIps,
         domain_name: newDomainName,
         member_emails: newMemberEmails,
-        heading: clinetHheading.length>0? clinetHheading : null,
+        heading: clinetHheading.length > 0 ? clinetHheading : null,
         allow_audio_interactions: alloweAudioInteraction,
         make_new_user_in_trail: makeNewUserTrial,
-        sub_heading: subHeading.length>0? subHeading : null,
-        tag_line: tagLine.length>0? tagLine : null,
+        sub_heading: subHeading.length > 0 ? subHeading : null,
+        tag_line: tagLine.length > 0 ? tagLine : null,
         ui_information: emptyToNull(clientUiInfo),
         allow_paste_answer: allowePasteAnswer,
-        webhook_url: webhookUrl.length>0? webhookUrl : null,
-        webhook_secret: webhookSecret.length>0? webhookSecret : null,
-        webhook_token: webhookToken.length>0? webhookToken : null,
+        webhook_url: webhookUrl.length > 0 ? webhookUrl : null,
+        webhook_secret: webhookSecret.length > 0 ? webhookSecret : null,
+        webhook_token: webhookToken.length > 0 ? webhookToken : null,
         webhook_enabled: webhookEnabled,
         excluded_users: excludedUsers,
         use_skills_from_skill_bank: useSkillFromBank,
-        departments: clientDepartments.length>0? clientDepartments: null,
-        coach_expertise: CoachExpertise.length>0 ? CoachExpertise : null
-
+        departments: clientDepartments.length > 0 ? clientDepartments : null,
+        coach_expertise: CoachExpertise.length > 0 ? CoachExpertise : null,
       });
 
       const requestOptions: RequestInit = {
@@ -204,10 +203,10 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     setMakeNewUserTrial(true);
     setAllowePaseAnswer(true);
     setClientUIInfo({
-      bottom_text: '',
-      header: '',
-      read_text: '',
-    })
+      bottom_text: "",
+      header: "",
+      read_text: "",
+    });
     setExcludedUsers("");
     SetWebhookUrl("");
     SetWebhookToken("");
@@ -218,7 +217,6 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
     setClientDepartments("");
     setCoachExpertise("");
     setIsExpanded(false);
-    
   };
 
   return (
@@ -241,7 +239,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
         onCancel={() => setNewClientInit(false)}
       >
         <div className="flex flex-col gap-4 w-full justify-end">
-          <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+          <div className="mt-3 flex flex-col gap-2 self-start w-full max-sm:flex-col max-md:flex-col max-h-[60vh] overflow-y-scroll">
             <div className="w-full flex flex-row max-sm:flex-col gap-4 max-sm:gap-2 items-start">
               <div className="w-1/2 max-sm:w-full flex flex-col gap-2 items-start">
                 <p className="block text-sm font-medium">
@@ -334,7 +332,7 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="text-sm font-medium text-blue-500"
               >
-                Additional {isExpanded ? '▲' : '▼'}
+                Additional {isExpanded ? "▲" : "▼"}
               </button>
               {isExpanded && (
                 <div className="w-full flex flex-col gap-2 items-start">
@@ -372,7 +370,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                   </div>
 
                   <hr />
-                  <p className="block text-sm  text-gray-700">Bot UI Information</p>
+                  <p className="block text-sm  text-gray-700">
+                    Bot UI Information
+                  </p>
                   <hr />
                   <div className="w-full flex flex-col gap-2 items-start">
                     <p className="block text-sm font-medium">Bottom Text</p>
@@ -403,7 +403,6 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                       className="w-full p-2 text-sm rounded-sm ring-transparent outline-none border border-gray-300 focus:ring-0"
                     />
                   </div>
-
 
                   <hr />
                   <p className="block text-sm  text-gray-700">WebHook</p>
@@ -441,11 +440,10 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                         SetWebhookEnabled(Boolean(checked));
                       }}
                     />
-                    <label className="text-xs text-gray-700">Webhook Enabled</label>
+                    <label className="text-xs text-gray-700">
+                      Webhook Enabled
+                    </label>
                   </div>
-
-
-
 
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox
@@ -455,7 +453,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                         setMakeNewUserTrial(Boolean(checked));
                       }}
                     />
-                    <label className="text-xs text-gray-700">Make New User in Trail</label>
+                    <label className="text-xs text-gray-700">
+                      Make New User in Trail
+                    </label>
                   </div>
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox
@@ -465,7 +465,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                         setUseSkillFromBank(Boolean(checked));
                       }}
                     />
-                    <label className="text-xs text-gray-700">Use Skill from Bank</label>
+                    <label className="text-xs text-gray-700">
+                      Use Skill from Bank
+                    </label>
                   </div>
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox
@@ -475,7 +477,9 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                         setAllowePaseAnswer(Boolean(checked));
                       }}
                     />
-                    <label className="text-xs text-gray-700">Allow Paste Answer</label>
+                    <label className="text-xs text-gray-700">
+                      Allow Paste Answer
+                    </label>
                   </div>
                   <div className="flex items-start space-x-2 my-1.5 ">
                     <Checkbox
@@ -485,12 +489,13 @@ const AddNewClient: React.FC<AddNewClientProps> = ({ getAllClientsData }) => {
                         setAllowAudioInteraction(Boolean(checked));
                       }}
                     />
-                    <label className="text-xs text-gray-700">Allow Audio Interaction</label>
+                    <label className="text-xs text-gray-700">
+                      Allow Audio Interaction
+                    </label>
                   </div>
                 </div>
               )}
             </div>
-            
           </div>
           <div className="self-end">
             <Button

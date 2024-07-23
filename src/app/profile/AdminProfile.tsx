@@ -21,6 +21,7 @@ import ProfileActions from "./super-admin/ProfilesActions";
 import UserRestrictions from "./super-admin/UserRestrictions";
 import SystemInfo from "./super-admin/SystemInfo";
 import RecommendationProfiles from "./super-admin/RecommendationProfiles";
+import AddNewUser from "./super-admin/AddNewUser";
 
 const AdminProfile = ({
   user,
@@ -113,6 +114,12 @@ const AdminProfile = ({
         </p>
 
         <div className="flex flex-row items-start gap-4 flex-wrap my-2">
+          <AddNewUser
+            clientsData={clientsData}
+            componentLoading={loading}
+            getAllClientsData={getAllClientsData}
+          />
+
           <ClientActions
             clientsData={clientsData}
             allUsers={allUsers}
