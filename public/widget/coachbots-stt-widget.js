@@ -6668,44 +6668,63 @@ loadExternalModule().then(() => {
               chunks = []
               index++;
             }
-
-            if (botPreviousConversationHistory.includes(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                  messageBubble,
-                  index,
-                  randomTextForId
-                );
-              }
-            } else if (messageText.innerText === "") {
-              messageText.innerText +=
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            }
-
           });
 
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+            }
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+            }
+          }
+
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          }
+          
           botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
           sessionQnAdata.push({
@@ -7105,6 +7124,26 @@ loadExternalModule().then(() => {
             }
           });
 
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          }
+
           if (botPreviousConversationHistory.includes(messageText.innerText)) {
             messageText.innerText +=
               " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
@@ -7356,10 +7395,30 @@ loadExternalModule().then(() => {
                 );
               }
             }
+
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "Please explain your question or comment in different words which I may be able to understand better.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            }
           });
 
           botPreviousConversationHistory.push(messageText.innerText)
-          
+
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
             headers: {
