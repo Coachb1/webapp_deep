@@ -909,7 +909,7 @@ const CreateOwn = ({
                     </Button>
                   )}
 
-                  {deepDiveCreatorAcess && (
+                  {/* {deepDiveCreatorAcess && (
                     <Button
                       onClick={() => {
                         document
@@ -922,7 +922,7 @@ const CreateOwn = ({
                     >
                       Engagement Survey Bots
                     </Button>
-                  )}
+                  )} */}
                   {!restrictedFeatures?.includes("Knowledge-bots") && (
                     <Button
                       onClick={() => {
@@ -1254,7 +1254,7 @@ const CreateOwn = ({
                 )}
               </>
             )}
-            {deepDiveCreatorAcess && (
+            {/* {deepDiveCreatorAcess && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
@@ -1296,7 +1296,7 @@ const CreateOwn = ({
                   </MaxWidthWrapper>
                 </div>
               </>
-            )}
+            )} */}
             {!restrictedFeatures?.includes("Knowledge-bots") && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
