@@ -204,6 +204,7 @@ let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
+let botPreviousConversationHistory = []
 
 let allowPastingAtClientLevelStt;
 
@@ -1136,6 +1137,7 @@ async function populateBotConversation(participant_id) {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
       
+      botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
       if (coach_message_text && coach_message_text !== "" && index !== 0) {
         appendMessage2(coach_message_text);
       }
@@ -6667,7 +6669,18 @@ loadExternalModule().then(() => {
               index++;
             }
 
-            if (messageText.innerText === "") {
+            if (botPreviousConversationHistory.includes(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            } else if (messageText.innerText === "") {
               messageText.innerText +=
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
               if (streamWithAudio) {
@@ -6693,6 +6706,7 @@ loadExternalModule().then(() => {
 
           });
 
+          botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
           sessionQnAdata.push({
             user: latestMessage,
@@ -7063,6 +7077,8 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
+    console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
+
     const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
@@ -7088,7 +7104,19 @@ loadExternalModule().then(() => {
               indvMessage.remove();
             }
           });
-          if (messageText.innerText === "") {
+
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -7111,6 +7139,8 @@ loadExternalModule().then(() => {
               );
             }
           }
+
+          botPreviousConversationHistory.push(messageText.innerText)
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
@@ -7292,7 +7322,18 @@ loadExternalModule().then(() => {
               index++;
             }
 
-            if (messageText.innerText === "") {
+            if (botPreviousConversationHistory.includes(messageText.innerText)) {
+              messageText.innerText +=
+                " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            } else if (messageText.innerText === "") {
               messageText.innerText +=
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
               if (streamWithAudio) {
@@ -7317,6 +7358,8 @@ loadExternalModule().then(() => {
             }
           });
 
+          botPreviousConversationHistory.push(messageText.innerText)
+          
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
             headers: {
