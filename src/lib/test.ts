@@ -492,7 +492,7 @@ export const ijp: Test[] = [
     test_code: "QA61J85",
     title: "Leadership Aptitude Interview for Project Lead Promotion",
     description:
-      "A proactive team member in an Indian IT firm seeks internal promotion to a project lead role. The HR Manager, Mr. Rao, conducts an interview to assess the candidate's leadership potential. Despite strong technical proficiency, Mr. Rao focuses on evaluating the candidate's leadership style and communication skills, recognizing their significance in the prospective role. The context underscores the critical need for effective stakeholder communication and leadership skills. The interview aims to gauge the candidate's aptitude for managing projects and fostering collaboration in a culturally specific professional environment. Respond to this situation as the team member. ",
+      "A proactive team member in an Indian IT firm seeks internal promotion to a project lead role. The HR Manager, Mr. Rao, conducts an interview to assess the candidate's leadership potential. Despite strong technical proficiency, Mr. Rao focuses on evaluating the candidate's leadership style and communication skills, recognizing their significance in the prospective role. The context underscores the critical need for effective stakeholder communication and leadership skills. The interview aims to gauge the candidate's aptitude for managing projects and fostering collaboration in a culturally specific professional environment. Respond to this situation as a team member.",
     interaction_mode: "Audio",
   },
   {
@@ -500,7 +500,7 @@ export const ijp: Test[] = [
     test_code: "QMP4OXU",
     title: "Team Lead's Managerial Potential Assessment",
     description:
-      "A skilled Team Lead expressed interest in a managerial role through the Internal Job Posting (IJP). Aarav, the HR manager, conducted an interview to assess her leadership capabilities. The company, a prominent player in the Indian IT sector, had recently expanded its project portfolio. The need for effective team management and inspiration became crucial to meet heightened client expectations. Aarav aimed to gauge the Team Lead's potential to navigate this growth, ensuring seamless collaboration among team members and fostering a motivational work environment. Respond to this situation as the Team Lead.",
+      "A skilled Team Lead expressed interest in a managerial role through the Internal Job Posting IJP. Aarav, the HR manager, conducted an interview to assess her leadership capabilities. The company, a prominent player in the Indian IT sector, had recently expanded its project portfolio. The need for effective team management and inspiration became crucial to meeting heightened client expectations. Aarav aimed to gauge the team's potential to navigate this growth, ensuring seamless collaboration among team members and fostering a motivational work environment. Respond to this situation as the Team Lead.",
     interaction_mode: "Audio",
   },
 ];
@@ -511,7 +511,7 @@ export const DiversityPlus: Test[] = [
     test_code: "QU0BI9G",
     title: "Gender Pay Gap Investigation",
     description:
-      "In a prominent corporation, a diligent female employee in a mid-level management position discovers a stark gender pay gap within their organization. Through extensive research and data analysis, they notice that female colleagues in equivalent roles are consistently paid less than their male counterparts. Troubled by this inequity, the female employee decides to voice her concerns by formally submitting a written inquiry to the organization's HR department. So in response the HR manager has lined up a meeting to understand her concerns. In this case act as a manager to answer her questions.",
+      "In a prominent corporation, a diligent female employee in a mid-level management position discovers a stark gender pay gap within their organization. Through extensive research and data analysis, they have noticed that female colleagues in equivalent roles are consistently paid less than their male counterparts. Troubled by this inequity, the female employee decides to voice her concerns by formally submitting a written inquiry to the organization's HR department. So in response, the HR manager has lined up a meeting to understand her concerns. In this case, act as a manager to answer her questions.",
     interaction_mode: "Audio",
   },
   {
@@ -743,7 +743,7 @@ export const pitch: Test[] = [
     test_code: "Q7FLWU4",
     title: "Tech-Driven Food Waste Solution",
     description:
-      "A entrepreneur stands before a diverse group of potential investors. She pitches her innovative startup idea for a sustainable, tech-driven solution to reduce food waste. She aims to convey the unique value proposition of her tech-based solution, emphasizing its market relevance, scalability, and revenue potential. The investors, known for their discerning scrutiny, expect a concise yet compelling presentation that addresses key aspects: market research, competitive analysis, monetization strategy, and a clear roadmap. Present the pitch as the entrepreneur in this situation.",
+      "An entrepreneur stands before a diverse group of potential investors. She pitches her innovative startup idea for a sustainable, tech-driven solution to reduce food waste. She aims to convey the unique value proposition of her tech-based solution, emphasizing its market relevance, scalability, and revenue potential. The investors, known for their discerning scrutiny, expect a concise yet compelling presentation that addresses key aspects: market research, competitive analysis, monetization strategy, and a clear roadmap. Present the pitch as the entrepreneur in this situation.",
     interaction_mode: "Audio",
   },
   {
@@ -885,7 +885,7 @@ export const presentation: Test[] = [
     test_code: "QXG4FYR",
     title: "Presenting a Risk Assessment for a High-Stakes Business Deal",
     description:
-      "In a boardroom meeting, Raj, the project manager, is tasked with presenting a comprehensive risk assessment for an 80-million-dollar merger with a competitor. He must outline potential financial, legal, and operational risks and mitigation strategies. The board expects a structured walkthrough in under 15 minutes and understand the asks or recommendation. The manager is anxious to make a positive mark as he addresses the room and starts to run with his slides. Please respond to the structured prompts to continue.",
+      "In a boardroom meeting, Raj, the project manager, is tasked with presenting a comprehensive risk assessment for an 80-million-dollar merger with a competitor. He must outline potential financial, legal, and operational risks and mitigation strategies. The board expects a structured walkthrough in under 15 minutes and understands the questions or recommendations. The manager is anxious to make a positive mark as he addresses the room and starts to run with his slides. Please respond to the structured prompts to continue.",
     interaction_mode: "Audio",
   },
   {
@@ -893,7 +893,7 @@ export const presentation: Test[] = [
     test_code: "Q48S46Y",
     title: "Presenting a project closing report",
     description:
-      "Rahul the Project manager is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes to conclude it successfully.",
+      "Rahul, the project manager, is delivering a comprehensive presentation on a recently completed project. This presentation will focus on the critical phase of project closure, providing an in-depth analysis of the project's performance, achievements, challenges, and lessons learned. His goal is to ensure that all stakeholders have a clear understanding of the project's outcomes and can conclude it successfully.",
     interaction_mode: "Audio",
   },
 ];
@@ -904,7 +904,7 @@ export const caseStudy: Test[] = [
     test_code: "QWGW7N3",
     title: "Marketing Optimism vs. Fiscal Prudence Clash",
     description:
-      "A technology firm aiming to launch a groundbreaking product, the leadership team grapples with divergent perspectives on the viability of their market strategy. The Chief Marketing Officer, relying on optimistic customer feedback, champions an aggressive approach. Simultaneously, the Chief Financial Officer, scrutinizing financial projections, advocates for a more conservative stance. The team faces a critical decision point: whether to invest heavily in marketing and innovation or adopt a restrained fiscal strategy. The challenge arises from the team's predisposition to favor information confirming their preconceptions, leading to potential conflict and suboptimal decisions. Reflect on the situation and answer the questions as the Chief Marketing Officer based on the article you just read. ",
+      "As a technology firm aiming to launch a groundbreaking product, the leadership team grapples with divergent perspectives on the viability of their market strategy. The Chief Marketing Officer, relying on optimistic customer feedback, champions an aggressive approach. Simultaneously, the Chief Financial Officer, scrutinizing financial projections, advocates for a more conservative stance. The team faces a critical decision point: whether to invest heavily in marketing and innovation or adopt a restrained fiscal strategy. The challenge arises from the team's predisposition to favor information confirming their preconceptions, leading to potential conflict and suboptimal decisions. Reflect on the situation and answer the questions as the Chief Marketing Officer based on the article you just read.",
     interaction_mode: "Audio",
   },
   {
@@ -912,7 +912,7 @@ export const caseStudy: Test[] = [
     test_code: "QE4334M",
     title: "Balancing Creativity and Accountability in Office Dynamics",
     description:
-      "In a dynamic marketing agency, the team is facing a productivity challenge. Traditional management practices, emphasizing strict office hours, clash with the team's diverse work styles and the nature of creative tasks. Despite having a highly skilled and motivated team, morale is plummeting due to a rigid adherence to a 9 to 5 schedule. The disconnect between management's expectations and the team's need for flexibility is hindering creativity and collaboration. The manager, caught in the tension between traditional management practices and the team's desire for autonomy, must find a way to foster a more conducive work environment without compromising productivity and accountability. Reflect on the situation and answer the questions as the manager based on the ted talk you just watched.",
+      "In a dynamic marketing agency, the team is facing a productivity challenge. Traditional management practices, emphasizing strict office hours, clash with the team's diverse work styles and the nature of creative tasks. Despite having a highly skilled and motivated team, morale is plummeting due to rigid adherence to a 9 to 5 schedule. The disconnect between management expectations and the team's need for flexibility is hindering creativity and collaboration. The manager, caught in the tension between traditional management practices and the team's desire for autonomy, must find a way to foster a more conducive work environment without compromising productivity and accountability. Reflect on the situation and answer the questions as the manager based on the Ted talk you just watched.",
     interaction_mode: "Audio",
   },
 ];
@@ -956,7 +956,7 @@ export const englishSupport: Test[] = [
     test_code: "Q8C4WBS",
     title: "Resolving Customer Concern Over Damaged Merchandise	",
     description:
-      "Meena, a customer at a clothing store in Bangalore, approaches the cashier with a pair of jeans she wishes to purchase. However, upon reaching the counter, she notices a small tear in the fabric. She expresses her concern to the cashier, explaining that she had selected the jeans for a special occasion. The cashier listens attentively, assuring Meena that they will promptly exchange the damaged item for a new one. The cashier apologizes for the inconvenience and ensures Meena that her satisfaction is a top priority for the store. Respond to this situation as the cashier. Demonstrate suitable English communication skills as you respond to this business context.",
+      "Meena, a customer at a clothing store in Bangalore, approaches the cashier with a pair of jeans she wishes to purchase. However, upon reaching the counter, she notices a small tear in the fabric. She expresses her concern to the cashier, explaining that she had selected the jeans for a special occasion. The cashier listens attentively, assuring Meena that they will promptly exchange the damaged item for a new one. The cashier apologizes for the inconvenience and assures Meena that her satisfaction is a top priority for the store. Respond to this situation as the cashier. Demonstrate suitable English communication skills as you respond to this business context.",
     interaction_mode: "Audio",
   },
 ];
@@ -966,7 +966,7 @@ export const questionPro: Test[] = [
     test_code: "QO0WRWA",
     title: "Assessing Impact of Cost-Cutting Measures in Manufacturing",
     description:
-      "Diya, the operations executive, is dealing with a mandate to cut costs in a manufacturing company. The company recently faced a substantial increase in raw material prices due to global supply chain disruptions. To offset these rising costs, Diya implemented a cost-cutting strategy affecting various departments, including procurement, maintenance, and manpower. The ground-level teams are now experiencing challenges, particularly in meeting production targets due to delayed procurement processes and reduced maintenance schedules. The team lead wants to understand how these strategic decisions are translating into operational hurdles, impacting workforce efficiency and day-to-day functions on the shop floor. Respond as the team lead and ask questions to understand the situation.",
+      "Diya, the operations executive, is dealing with a mandate to cut costs at a manufacturing company. The company recently faced a substantial increase in raw material prices due to global supply chain disruptions. To offset these rising costs, Diya implemented a cost-cutting strategy affecting various departments, including procurement, maintenance, and manpower. The ground-level teams are now experiencing challenges, particularly in meeting production targets due to delayed procurement processes and reduced maintenance schedules. The team lead wants to understand how these strategic decisions are translating into operational hurdles, impacting workforce efficiency and day-to-day functions on the shop floor. Respond as the team lead and ask questions to understand the situation.",
     interaction_mode: "Audio",
   },
   {
