@@ -244,6 +244,38 @@ export const getUserConnections = async (userId: string) => {
   };
 };
 
+
+export const getConnections = async (coachId: string, coacheeId: string) => {
+  let connections = [];
+  if (coacheeId) {
+    const connectionResponse = await fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    connections = await connectionResponse.json();
+  } else if (coachId) {
+    const connectionResponse = await fetch(
+      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    connections = await connectionResponse.json();
+  }
+
+  return connections;
+};
+
 export const getAttemptedTestsList = async (userId: string) => {
   const response = await fetch(
     `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,

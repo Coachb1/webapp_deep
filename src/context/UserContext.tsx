@@ -18,6 +18,7 @@ import {
   getCategorisedTests,
   getClientUserInfo,
   getClientUsers,
+  getConnections,
   getConversations,
   getDirectoryProfiles,
   getIDPs,
@@ -510,9 +511,16 @@ export const UserProvider = ({
     }
   }, []);
 
+  const getConnectionsFn = async () => {
+    const connections = await getConnections(coachId, coacheeId);
+    console.log(connections)
+    setUserConnections(connections.data)
+  }
+
   useEffect(() => {
     if (pathname === "/profile") {
       getAllBotConversationData();
+      getConnectionsFn()
     }
   }, [pathname]);
 
