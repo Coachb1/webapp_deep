@@ -24,6 +24,7 @@ import {
   englishSupport,
   DSA,
   DataScience,
+  InteractiveVisualSimulation,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -32,7 +33,9 @@ import { Badge } from "@/components/ui/badge";
 
 import React, { useEffect, useState } from "react";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 import { Div } from "@/components/ui/moving-border";
+import { ExternalLink } from "lucide-react";
 
 const VersionOne = ({ user, helpModeText }: any) => {
   let shouldRenderDiv;
@@ -63,9 +66,9 @@ const VersionOne = ({ user, helpModeText }: any) => {
   }
 
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
-
+  const { userInfo } = useUser();
   useEffect(() => {
-    const dynamicHelpText = helpModeText?.demo;
+    const dynamicHelpText = userInfo.helpText?.demo;
     setHelpModeSteps([
       {
         target: "#user-demos",
@@ -127,7 +130,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
             <Button
               className={`h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              AI-Frame
+              AI-Frame <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
           <Link href="/feedback" target="_blank">
@@ -135,6 +138,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Feedback Page
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
           <Link href="/knowledge-bot" target="_blank">
@@ -142,6 +146,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Knowledge Bot
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
         </div>
@@ -154,7 +159,7 @@ const VersionOne = ({ user, helpModeText }: any) => {
         <div className="w-[80%] max-sm:w-[90%]">
           <Div
             id="system-demos"
-            className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:mt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
+            className="text-lg max-sm:text-xs bg-white w-[full]  pt-4 max-sm:pt-0 z-[2] border-2 border-gray-300 py-4 rounded-md"
           >
             <div className="flex justify-center flex-row gap-2 flex-wrap max-sm:mt-8">
               <Button
@@ -203,6 +208,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 onClick={() => scrollToView("pms")}
               >
                 PMS Enabled
+              </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("interactive-visual")}
+              >
+                Interactive visual simulation
               </Button>
 
               <Button
@@ -283,13 +296,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 Presentation
               </Button>
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("onboarding")}
               >
                 Onboarding
-              </Button>
+              </Button> */}
 
               <Button
                 variant={"secondary"}
@@ -353,6 +366,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               badgeText="PMS Enabled"
               user={user ? true : false}
               tests={pms}
+            />
+          </div>
+          <div id="interactive-visual">
+            <HeroAccordion
+              badgeText="Interactive visual simulation"
+              user={user ? true : false}
+              tests={InteractiveVisualSimulation}
             />
           </div>
           <div id="pitch">
@@ -426,13 +446,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               tests={presentation}
             />
           </div>
-          <div id="onboarding">
+          {/* <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
               user={user ? true : false}
               tests={onBoarding}
             />
-          </div>
+          </div> */}
           <div id="meetings">
             <HeroAccordion
               badgeText=" Meetings | Group Discussion"

@@ -10,7 +10,7 @@ import Widgets from "@/components/Widgets";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
-  title: "Demo - Coachbots",
+  title: "Explore - Coachbots",
 });
 
 const getClientUserInfo = async (
@@ -29,15 +29,15 @@ const getClientUserInfo = async (
       const raw = JSON.stringify({
         email: userEmail,
       });
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      };
 
       const response = await fetch(
         `${baseURL}/accounts/create-or-assign-client-id/`,
-        requestOptions
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          cache: "force-cache",
+        }
       );
 
       const data = await response.json();
@@ -50,6 +50,7 @@ const getClientUserInfo = async (
             headers: {
               Authorization: basicAuth,
             },
+            cache: "force-cache",
           }
         );
 
@@ -85,11 +86,11 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { helpText } = await getClientUserInfo(user?.email, user);
+  // const { helpText } = await getClientUserInfo(user?.email, user);
 
   return (
     <div>
-      <VersionOne user={user} helpModeText={helpText} />
+      <VersionOne user={user} />
       <Widgets from="content-library" />
     </div>
   );

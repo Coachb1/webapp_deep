@@ -67,6 +67,7 @@ let optedNo2 = false;
 let questionIndex2 = 0;
 let audioRes
 let wordLimit = 15;
+let botWordLimit = 10;
 
 let clientAllowAudioInteraction2; 
 let userAllowAudioInteraction2;
@@ -106,6 +107,7 @@ let senarioDescription2;
 let senarioTitle2;
 let senarioCase2;
 let senarioMediaDescription2;
+let senarioSnippetURLStt;
 let responsesDone2 = false;
 let userName2 = "";
 let userEmail2 = "";
@@ -125,6 +127,7 @@ let recommendationsStt = "";
 let isTestSignedInStt;
 let clientNameStt;
 let questionMediaLinkStt;
+let questionSnippetLinkStt;
 let isImmersiveStt = false;
 let mediaPropsStt;
 let questionImageDataStt;
@@ -150,6 +153,7 @@ let botId;
 let sttWidgetClientId;
 let botType;
 let botScenarioCase;
+let botSelectedLLM;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 let fitmentAnalysisOptions;
@@ -201,6 +205,7 @@ let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
+let botPreviousConversationHistory = []
 
 let allowPastingAtClientLevelStt;
 
@@ -524,8 +529,14 @@ const getUserOrAnonymousDetailsDeepDive = async (choice) => {
     isAnonymous = true;
     if (!window.user) {
       isEmailFormstt = true;
-      formFieldsstt = ["name","email"];
+      formFieldsstt = ["email"];
       console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+      appendMessage2(
+        `<div style='font-size: 14px;'>
+           Email is being collected only to share the transcript. It remains anonymous.
+         </div>`
+      )
+      
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     }
     else{
@@ -671,8 +682,8 @@ const getUserOrAnonymousDetails = async (choice) => {
       console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
       appendMessage2(`<b>Please enter your ${formFieldsstt[0]}</b>`);
     } else {
-      FeedbackUserEmail = user.email;
-      feedbackUserName = user.name;
+      FeedbackUserEmail = user_email2;
+      feedbackUserName = user_name2;
       console.log("jiks FeedbackUserEmail", FeedbackUserEmail);
       const thumbsupdiv = await feedbackBotInitialFlow("save_email");
       appendMessage2(thumbsupdiv);
@@ -697,6 +708,14 @@ const restartFeedbackProcess = async () => {
 };
 
 const handleFeedbackSubmit = async () => {
+  console.log({
+    conversation: JSON.stringify(feedbackBotQnA),
+    bot_id: botId,
+    type_of_email: "feedback_conv",
+    user_email: FeedbackUserEmail,
+    user_name: feedbackUserName,
+    is_positive: IsPositiveFeedback ? "True" : "False",
+  })
   if (isFeedbackConvInProcess) {
     return;
   }
@@ -1119,6 +1138,7 @@ async function populateBotConversation(participant_id) {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
       
+      botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
       if (coach_message_text && coach_message_text !== "" && index !== 0) {
         appendMessage2(coach_message_text);
       }
@@ -1146,6 +1166,7 @@ async function populateBotConversation(participant_id) {
       //   appendMessageForUser2(participant_message_text);
       // }
     });
+    appendMessage2("<b>Previous completed or terminated conversations. New sessions from here on.</b>");
     isBotConversationPopulated = true;
   } else {
     if (botType === "user_bot") {
@@ -1245,15 +1266,23 @@ const getBotDetails2 = async (botId) => {
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
     botScenarioCase = botDetails.data.scenario_case;
-    
+    botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
-      botWelcomeMessage = "Welcome to my custom bot.";
+      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
     } else if (botType === "deep_dive") {
-      botWelcomeMessage = " Welcome to the deep dive survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this on this page. The response to the survey can be totally anonymous - so repond frankly and give voice to critical topics important to the team. Click  begin 'session' to get started and respond in detail.";
+      botWelcomeMessage = " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
     } else if (botType === "avatar_bot") {
       botWelcomeMessage =
-        "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Additionally I am trained to answer other questions that you may have. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
+        "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
+
+        const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+        console.log(shadowRoot.getElementById("text-input"));
+  
+        shadowRoot.getElementById(
+          "text-input"
+        ).innerText = `Please follow provided instructions and select "Begin session"`;
+
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(
         "Welcome",
@@ -1412,7 +1441,7 @@ const getBotDetails2 = async (botId) => {
       dropdown.classList.add("hiddenn");
 
       const options = [
-        "crusader",
+        "basic",
         "cheerleader",
         "change_manager",
         "calculator",
@@ -1473,6 +1502,16 @@ const getBotDetails2 = async (botId) => {
           dropdown.style.display = "none";
         });
         dropdown.appendChild(item);
+
+        console.log('selectedResponseType', selectedResponseType)
+        if (!selectedResponseType){
+          const basicOption = Array.from(dropdown.children).find(
+            (item) => item.textContent.toLowerCase() === "basic"
+          );
+          if (basicOption) {
+            basicOption.click();
+          }
+        }
       });
 
       dropdownButton.addEventListener("click", () => {
@@ -1567,70 +1606,70 @@ const getBotDetails2 = async (botId) => {
     console.log("buttons : ", buttons);
 
 
-    if (!["user_bot",'deep_dive'].includes(botType)) {
-       //canned button one
-      const cannedButtonOne = document.createElement("button");
-      cannedButtonOne.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
-      );
+    // if (!["user_bot",'deep_dive'].includes(botType)) {
+    //    //canned button one
+    //   const cannedButtonOne = document.createElement("button");
+    //   cannedButtonOne.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+    //   );
 
-      cannedButtonOne.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
-      );
-      cannedButtonOne.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
+    //   cannedButtonOne.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f9fafb'; this.style.cursor = 'not-allowed'"
+    //   );
+    //   cannedButtonOne.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = 'white'"
+    //   );
       
-      cannedButtonOne.addEventListener(
-        "click",
-        () => {
-          sendMessage("Not exactly...")
-        }
-      );
-      cannedButtonOne.setAttribute(
-        "disabled",
-        true
-      )
+    //   cannedButtonOne.addEventListener(
+    //     "click",
+    //     () => {
+    //       sendMessage("Not exactly...")
+    //     }
+    //   );
+    //   cannedButtonOne.setAttribute(
+    //     "disabled",
+    //     true
+    //   )
 
-      cannedButtonOne.setAttribute("id", `canned-btn-1`);
-      cannedButtonOne.innerText = "Not exactly...";
-      buttonsWrapper.appendChild(cannedButtonOne);
+    //   cannedButtonOne.setAttribute("id", `canned-btn-1`);
+    //   cannedButtonOne.innerText = "Not exactly...";
+    //   buttonsWrapper.appendChild(cannedButtonOne);
 
-      //canned button two
+    //   //canned button two
 
-      const cannedButtonTwo = document.createElement("button");
-      cannedButtonTwo.setAttribute(
-        "style",
-        `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
-      );
+    //   const cannedButtonTwo = document.createElement("button");
+    //   cannedButtonTwo.setAttribute(
+    //     "style",
+    //     `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px dashed lightgray; border-radius: 4px; min-width: fit-content; background-color: white; color : #374151;`
+    //   );
 
-      cannedButtonTwo.setAttribute(
-        "onmouseover",
-        "this.style.backgroundColor = '#f9fafb', this.style.cursor = 'not-allowed' "
-      );
-      cannedButtonTwo.setAttribute(
-        "onmouseleave",
-        "this.style.backgroundColor = 'white'"
-      );
+    //   cannedButtonTwo.setAttribute(
+    //     "onmouseover",
+    //     "this.style.backgroundColor = '#f9fafb', this.style.cursor = 'not-allowed' "
+    //   );
+    //   cannedButtonTwo.setAttribute(
+    //     "onmouseleave",
+    //     "this.style.backgroundColor = 'white'"
+    //   );
 
-      cannedButtonTwo.addEventListener(
-        "click",
-        () => {
-          sendMessage("Yes I agree...")
-        }
-      );
+    //   cannedButtonTwo.addEventListener(
+    //     "click",
+    //     () => {
+    //       sendMessage("Yes I agree...")
+    //     }
+    //   );
 
-      cannedButtonTwo.setAttribute(
-        "disabled",
-        true
-      )
-      cannedButtonTwo.setAttribute("id", `canned-btn-2`);
-      cannedButtonTwo.innerText = "Yes I agree..";
-      buttonsWrapper.appendChild(cannedButtonTwo);
-    }
+    //   cannedButtonTwo.setAttribute(
+    //     "disabled",
+    //     true
+    //   )
+    //   cannedButtonTwo.setAttribute("id", `canned-btn-2`);
+    //   cannedButtonTwo.innerText = "Yes I agree..";
+    //   buttonsWrapper.appendChild(cannedButtonTwo);
+    // }
 
     faqHtmlData = `<div id="option-button-container" >
                       ${buttons}
@@ -3389,7 +3428,7 @@ function createMessageNode2(message) {
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
-  messageBubble.style.maxWidth = "80%";
+  messageBubble.style.maxWidth =  window.innerWidth < 768 ? "80%" : "60%";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -3464,6 +3503,38 @@ function appendMessage2(message2) {
   const messageNode = createMessageNode2(message2);
   gShadowRoot2.getElementById("messages").appendChild(messageNode);
   gShadowRoot2.getElementById("messages").scrollBy(0, 500);
+}
+
+function snippetDivSTT(url){
+  if(url.includes("pulse")){
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  } else {
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  }
 }
 
 function deleteAndReplaceContainerStt(id, new_cont) {
@@ -3607,7 +3678,9 @@ const resetAllVariablesStt = async () => {
   senarioCase2 = "";
   senarioTitle2 = "";
   senarioMediaDescription2;
+  senarioSnippetURLStt;
   questionMediaLinkStt = null;
+  questionSnippetLinkStt = null;
   userName2 = "";
   userEmail2 = "";
   reportUrl2 = null;
@@ -3834,6 +3907,18 @@ const handleProceedClickStt = async (choice) => {
     // Replace the button with the "Thank you" message
     msg.parentNode.replaceChild(que_msg, msg);
     }
+    if(
+      questionSnippetLinkStt
+    ){                                          
+      console.log(questionSnippetLinkStt);
+      if (questionSnippetLinkStt.length > 0){
+        const linkList = questionSnippetLinkStt.split(',');
+        linkList.forEach(element => {
+          appendMessage2(snippetDivSTT(element))
+        });
+      }
+
+    }
 
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
@@ -3939,7 +4024,7 @@ const handleProceedClickStt = async (choice) => {
           if (isImmersiveStt) {
             console.log(initialQuestionTextStt);
             let queText = initialQuestionTextStt;
-            const queDiv = `<p>${queText}</p><br>`;
+            
             const urltts = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`;
             const response = await fetch(urltts, {
               method: "GET",
@@ -3957,6 +4042,7 @@ const handleProceedClickStt = async (choice) => {
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
+            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
               `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -3974,9 +4060,18 @@ const handleProceedClickStt = async (choice) => {
               setTimeout(() => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+                const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
                 console.log(audioElement, canvasElement)
                 audioCanvasUiForQuestions(audioElement, canvasElement)
+                audioElement.addEventListener("ended", () => {
+                  console.log("ENDED playing")
+                  canvasElement.remove()
+                  breakElement.remove()
+                })
               }, 100);
+            
+
+
 
             console.log(initialQuestionTextStt);
           }
@@ -4022,7 +4117,7 @@ const handleProceedClickStt = async (choice) => {
         }
         if (isImmersiveStt) {
           const queText = initialQuestionTextStt;
-          const queDiv = `<p>${queText}</p><br>`;
+         
           console.log("dyna", initialQuestionTextStt);
           const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${initialQuestionTextStt}`;
           const response = await fetch(url, {
@@ -4039,6 +4134,7 @@ const handleProceedClickStt = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
+          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
@@ -4057,8 +4153,15 @@ const handleProceedClickStt = async (choice) => {
             setTimeout(() => {
               const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
               const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+              const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
               console.log(audioElement, canvasElement)
               audioCanvasUiForQuestions(audioElement, canvasElement)
+
+              audioElement.addEventListener("ended", () => {
+                canvasElement.remove()
+                breakElement.remove()
+              })
+
             }, 100);
         }
 
@@ -5603,8 +5706,10 @@ async function handleOptionButtonClick2(
 }
 
 let chatInputFontSize = "14px";
+let messageBubbleMaxWidth = "60%";
 if(window.innerWidth < 768) {
   chatInputFontSize = "12px"
+  messageBubbleMaxWidth = "80%"
 }
 
 async function loadExternalModule() {
@@ -5754,7 +5859,7 @@ loadExternalModule().then(() => {
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
@@ -5841,6 +5946,15 @@ loadExternalModule().then(() => {
           "default": "System Error. But please continue and/or retry."
         }
       }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
       >
 
     </deep-chat>
@@ -5880,10 +5994,10 @@ loadExternalModule().then(() => {
           <ul id="instructions-list">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
@@ -5950,6 +6064,23 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
+  
+  if (botId === undefined) {
+    const pathname = window.location.pathname;
+    botId = pathname.split("/")[2];
+  }
+
+  if (botId) {
+    const list = ` <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+    <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
+    <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+    <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
+    <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
+    <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+`;
+    instructionsPaneList.innerHTML = list;
+  }
+
   const _ = getBotDetails2(botId);
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
@@ -5964,12 +6095,12 @@ loadExternalModule().then(() => {
   }
 
   if(!user2){
-    if(window.location.href.includes("deep-dive")){
+    if(window.location.href.includes("engagement-survey")){
       instructionsPane.innerHTML = `
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
           <ul id="instructions-list">
-              <li><strong>1. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>1. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
               <li><strong>2. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
@@ -6411,7 +6542,7 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainerSTT = async (text) => {
-    const queDiv = `<p>${text}</p><br>`;
+    
     const url = `${baseURL2}/test-responses/get-text-to-speech/?text=${text}`;
     const response = await fetch(url, {
       method: "GET",
@@ -6426,11 +6557,12 @@ loadExternalModule().then(() => {
     const objectUrl = URL.createObjectURL(blob);
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element2").shadowRoot
-    
+
+    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
@@ -6448,8 +6580,14 @@ loadExternalModule().then(() => {
       const canvasElement = shadowRoot.getElementById(
         `canvas-audio-${randomIdForAudioElement}`
       );
+      const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement);
       audioCanvasUiForQuestions(audioElement, canvasElement);
+
+      audioElement.addEventListener("ended", () => {
+        canvasElement.remove()
+        breakElement.remove()
+      })
     }, 100);
     return audioCont;
   };
@@ -6459,7 +6597,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     console.log('anthropic', userInputMessage)
     const messageNode = document.createElement("div");
@@ -6531,33 +6671,64 @@ loadExternalModule().then(() => {
               chunks = []
               index++;
             }
-
-            if (messageText.innerText === "") {
-              messageText.innerText +=
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            }
-
           });
 
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+            }
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+            }
+          }
+
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          }
+          
+          botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
           sessionQnAdata.push({
             user: latestMessage,
@@ -6624,14 +6795,25 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      console.log("trying OpenAiResponse")
-      OpenAiResponse(
-        userInputMessage,
-        signals,
-        conversationId,
-        latestMessage,
-        streamWithAudio
-      );
+      if(nextLLM?.toLowerCase().includes("gemini")){
+        GeminiAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio, 
+          fallbackLLM
+        );
+      } else {
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -6776,7 +6958,7 @@ loadExternalModule().then(() => {
               "this.style.backgroundColor = '#9ca3af'"
             );
             endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "white";
+            endSessionButton.style.color = "black";
             endSessionButton.style.cursor = "pointer";
             endSessionButton.setAttribute("onclick", `handleEndConversation()`);
             endSessionButton.disabled = false;
@@ -6813,6 +6995,10 @@ loadExternalModule().then(() => {
     canvasElement.height = 40;
 
     audioCanvasUI(audioElement, canvasElement);
+
+    audioElement.addEventListener("ended", () => {
+      canvasElement.remove()
+    })
 
     const mediaSource = new MediaSource();
     audioElement.src = URL.createObjectURL(mediaSource);
@@ -6894,7 +7080,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
@@ -6924,6 +7112,8 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
+    console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
+
     const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
       method: "POST",
       body: JSON.stringify({
@@ -6949,7 +7139,39 @@ loadExternalModule().then(() => {
               indvMessage.remove();
             }
           });
-          if (messageText.innerText === "") {
+
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          }
+
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -6972,6 +7194,8 @@ loadExternalModule().then(() => {
               );
             }
           }
+
+          botPreviousConversationHistory.push(messageText.innerText)
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
@@ -7026,7 +7250,7 @@ loadExternalModule().then(() => {
             });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
-          if(responseSavedCount >= 2) {
+          if(responseSavedCount >= 2 && endSessionButton) {
             endSessionButton.setAttribute(
               "onmouseover",
               "this.style.backgroundColor = '#e5e7eb'"
@@ -7036,7 +7260,7 @@ loadExternalModule().then(() => {
               "this.style.backgroundColor = '#9ca3af'"
             );
             endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "white";
+            endSessionButton.style.color = "black";
             endSessionButton.style.cursor = "pointer";
             endSessionButton.setAttribute("onclick", `handleEndConversation()`);
             endSessionButton.disabled = false;
@@ -7064,13 +7288,25 @@ loadExternalModule().then(() => {
       }
     } else {
       console.log("trying anthropicAiResponse")
-      anthropicAiResponse(
-        userInputMessage,
-        signals,
-        conversationId,
-        latestMessage,
-        streamWithAudio
-      );
+      if(nextLLM?.toLowerCase().includes("gpt")){
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      } else {
+        anthropicAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -7079,7 +7315,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
@@ -7135,48 +7373,81 @@ loadExternalModule().then(() => {
             if (
               indvMessage.innerText === "." ||
               indvMessage.innerText === "..." ||
-               indvMessage.innerText === "" ||
-              indvMessage.innerText === " " ||  !indvMessage.innerText?.length > 0 
+              indvMessage.innerText === "" ||
+              indvMessage.innerText === " "
             ) {
               indvMessage.remove();
             }
+          });
 
-            if(chunks.length > 0){
+          if (chunks.length > 0) {
+            audioSourceOpen(
+              chunks.join(" "),
+              messageBubble,
+              index,
+              randomIdForAudioElement
+            );
+            console.log(chunks.join(" "));
+            chunks = [];
+            index++;
+          }
+
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
               audioSourceOpen(
-                chunks.join(" "),
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 messageBubble,
                 index,
                 randomIdForAudioElement
               );
-              console.log(chunks.join(" "))
-              chunks = []
-              index++;
             }
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
+            }
+          }
 
-            if (messageText.innerText === "") {
-              messageText.innerText +=
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
             }
-          });
+          }
+
+          botPreviousConversationHistory.push(messageText.innerText);
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
@@ -7216,15 +7487,15 @@ loadExternalModule().then(() => {
         }
 
         const decodedText = textDecoder.decode(value);
-        if(chunks.length > 0){
+        if (chunks.length > 0) {
           audioSourceOpen(
             chunks.join(" "),
             messageBubble,
             index,
             randomIdForAudioElement
           );
-          console.log(chunks.join(" "))
-          chunks = []
+          console.log(chunks.join(" "));
+          chunks = [];
           index++;
         }
 
@@ -7232,9 +7503,25 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      signals.onResponse({
-        html : "<b>Error while generating your response.</b>"
-      })
+      if(nextLLM?.toLowerCase().includes("gpt")){
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      } else {
+        GeminiAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -7317,7 +7604,7 @@ loadExternalModule().then(() => {
               return;
             }
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Pass Code</b> to proceed.</p>",
             });
             return;
           }
@@ -7331,9 +7618,15 @@ loadExternalModule().then(() => {
 
           // handling deepdive intial question
           if (botType==='deep_dive' && askInitialQuestionDeepDive){
+            if (!isValidMessageStt(latestMessage, botWordLimit)){
+              signals.onResponse({
+                html: `<b style='font-size: 14px;color: #991b1b;'>Your input is too less. Please respond with minimum ${botWordLimit} words.</b>`,
+              });
+              return;
+            }
             botInitialQuestionsQnA[botInitialQuestions[`${deepDiveInitialQueIndex}`]] = latestMessage
             deepDiveInitialQueIndex += 1
-            console.log("botqna: ", botInitialQuestionsQnA,Object.keys(botInitialQuestions).length,deepDiveInitialQueIndex)
+            console.log("botqna-deep_dive: ", botInitialQuestionsQnA,Object.keys(botInitialQuestions).length,deepDiveInitialQueIndex)
 
             if (Object.keys(botInitialQuestions).length < deepDiveInitialQueIndex ){
               console.log('ending initial question session')
@@ -7446,10 +7739,10 @@ loadExternalModule().then(() => {
             return;
           }
           if (botType === "feedback_bot" && isFeedbackConvInProcess) {
-            if (!isValidMessageStt(latestMessage)) {
+            if (!isValidMessageStt(latestMessage,botWordLimit)) {
               console.log('0')
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${botWordLimit} words.</b></p>`,
               });
               return;
             }
@@ -7817,10 +8110,10 @@ loadExternalModule().then(() => {
               }
             }
             // here checking word limits for signature bot responses
-            if (!isValidMessageStt(latestMessage) && botScenarioCase !== "icons_by_ai") {
+            if (!isValidMessageStt(latestMessage, botWordLimit) && botScenarioCase !== "icons_by_ai" && botType !== "user_bot") {
               console.log('2)','latestmsg',latestMessage)
               signals.onResponse({
-                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${wordLimit} words.</b></p>`,
+                html: `<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum ${botWordLimit} words.</b></p>`,
               });
               return;
             }
@@ -7992,13 +8285,37 @@ loadExternalModule().then(() => {
                   allowAudioInteraction
                 );
               } else {
-                GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage,
-                  allowAudioInteraction
-                );
+                if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
+                  anthropicAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                } else if (botSelectedLLM?.llm1?.toLowerCase().includes("gpt")) {
+                  OpenAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                } else {
+                  GeminiAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                }
               }
 
               // conversation_id2 = responseData["uid"];
@@ -8390,6 +8707,10 @@ loadExternalModule().then(() => {
                 console.log(mediaPropsStt, "props");
                 isTranscriptOnlyStt =
                   questionData2.results[0].is_transcript_only;
+                senarioSnippetURLStt = 
+                  questionData2.results[0].snippet_url;
+                console.log(senarioSnippetURLStt,'senarioSnippetURLStt');
+
                 if (testUIInfoStt) {
                   if (Object.keys(testUIInfoStt).length > 0) {
                     signals.onResponse({
@@ -8635,6 +8956,9 @@ loadExternalModule().then(() => {
                       questionMediaLinkStt =
                         questionData2.results[0].questions[questionIndex2]
                           .media_link;
+                      questionSnippetLinkStt =
+                        questionData2.results[0].questions[questionIndex2]
+                          .snippet_url;
                       questionId2 =
                         questionData2.results[0].questions[questionIndex2].uid;
                       const mcqOptionsStt =
@@ -8758,6 +9082,14 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+                      if (questionSnippetLinkStt) {
+                        if (questionSnippetLinkStt.length > 0){
+                          const linkList = questionSnippetLinkStt.split(',');
+                          linkList.forEach(element => {
+                            appendMessage2(snippetDivSTT(element))
+                          });
+                        }
+                      }
                       if (isImmersiveStt && !questionMediaLinkStt) {
                         questionText2 = questionText2.replaceAll(":", "");
                         console.log("first", questionText2);
@@ -8810,12 +9142,15 @@ loadExternalModule().then(() => {
                         questionMediaLinkStt =
                           questionData2.results[0].questions[questionIndex2]
                             .media_link;
+                        questionSnippetLinkStt =
+                          questionData2.results[0].questions[questionIndex2]
+                            .snippet_url;
                       }
                     }
                   }
                   console.log(questionText2);
                   if (questionIndex2 === 0) {
-                    initialQuestionTextStt = questionText2;
+                    initialQuestionTextStt = questionText2.replace("}","");
                     initialIndexStt = questionIndex2 + 1;
                     isProceedStt = "false";
                     questionText2 = `
@@ -8978,6 +9313,14 @@ loadExternalModule().then(() => {
                             }
                           }
                         }
+                        if (senarioSnippetURLStt){
+                          if (senarioSnippetURLStt.length > 0){
+                            const linkList = senarioSnippetURLStt.split(',');
+                            linkList.forEach(element => {
+                              appendMessage2(snippetDivSTT(element))
+                            });
+                          }
+                        }
                         // if (!senarioMediaDescription2.includes("twitter.com")) {
                         //    appendMessage2(
                         //      `▪ Title : ${senarioTitle2} <br><br>
@@ -8998,8 +9341,17 @@ loadExternalModule().then(() => {
                              ▪ Description : ${senarioDescription2} <br><br>
                              ▪ Instructions : Response should be at least 15 words.`
                         );
+                        if (senarioSnippetURLStt){
+                          if (senarioSnippetURLStt.length > 0){
+                            const linkList = senarioSnippetURLStt.split(',');
+                            linkList.forEach(element => {
+                              appendMessage2(snippetDivSTT(element))
+                            });
+                          }
+                        }
                       }
                       // proceed buttion will show
+                      console.log('2quetext')
                       signals.onResponse({
                         html: questionText2,
                       });
@@ -9059,6 +9411,8 @@ loadExternalModule().then(() => {
                         } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                              ▪ ${ttsNarration}`
                       );
+                      console.log('3quetext')
+
                       signals.onResponse({
                         html: questionText2,
                       });
@@ -9072,12 +9426,25 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       // proceed buttion will show
+                      console.log('4quetext',questionText2)
+
                       if ( !AttemptTestDirectSTT){
+                        const temp_que_text = questionText2
                         signals.onResponse({
-                          html: questionText2,
                           text: ` ▪ Title : ${senarioTitle2} \n\n  ▪ Description : ${senarioDescription2} \n\n ▪ Instructions : Response should be at least 15 words.`,
+                        }).then(() => {
+                          if (senarioSnippetURLStt) {
+                            if (senarioSnippetURLStt.length > 0) {
+                              const linkList = senarioSnippetURLStt.split(',');
+                              linkList.forEach(element => {
+                                appendMessage2(snippetDivSTT(element));
+                              });
+                            }
+                          }
+                          appendMessage2(temp_que_text);
                         });
                       }
+                      
                     }
                   } else {
                     if (
@@ -9188,6 +9555,14 @@ loadExternalModule().then(() => {
                           }
                         }
                       }
+                      if (questionSnippetLinkStt){
+                        if (questionSnippetLinkStt.length > 0){
+                          const linkList = questionSnippetLinkStt.split(',');
+                          linkList.forEach(element => {
+                            appendMessage2(snippetDivSTT(element))
+                          });
+                        }
+                      }
                       if (questionText2) {
                         console.log(`que_image ${questionIndex2 + 1}`);
                         if (
@@ -9236,6 +9611,9 @@ loadExternalModule().then(() => {
                           } usemap="#${imageMapNameStt}" id=${imageIdStt} style="border-radius: 8px; margin-top: 4px;" /> <br><br>
                                             ▪ Question : <br> ${questionText2}
                                           `;
+
+                          console.log('5quetext')
+
                           signals.onResponse({
                             html: questionText2,
                           });
@@ -9250,6 +9628,8 @@ loadExternalModule().then(() => {
                           });
                           // questionText2 = questionText2 + imageDiv
                         } else {
+                          console.log('6quetext')
+
                           signals.onResponse({
                             html: questionText2,
                           });
@@ -9448,6 +9828,7 @@ loadExternalModule().then(() => {
                     if (responderName) {
                       questionText2 = responderName + questionText2;
                     }
+                    console.log('1quetext')
                     signals.onResponse({
                       html: questionText2,
                     });

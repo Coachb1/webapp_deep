@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IDPIntake from "../intake/IDPIntake";
+import { useUser } from "@/context/UserContext";
 
 function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
   const compareDates = (a: UserIDPsType, b: UserIDPsType) => {
@@ -40,6 +41,7 @@ const IDP = ({ user }: any) => {
   const [loading, setLoading] = useState(false);
   const [userIDPs, setUserIDPs] = useState<UserIDPsType[]>([]);
 
+  const { userIDPs: idps } = useUser();
   const getIDPs = () => {
     if (user) {
       setLoading(true);
@@ -70,26 +72,39 @@ const IDP = ({ user }: any) => {
   };
 
   useEffect(() => {
-    getIDPs();
+    setUserIDPs(idps);
   }, []);
 
   return (
     <div className="bg-accent p-2 mt-2 rounded-md mb-10 ">
-      <div className="pl-4 max-sm:pl-2 pt-2">Individual Development Plan</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        Individual Development Plan
+      </div>
       <div className="mx-4 mt-2 text-sm max-sm:mx-2 ">
         <Tabs defaultValue="view-idps" className="w-full">
-          <TabsList className="border border-gray-200 ">
-            <TabsTrigger onClick={() => getIDPs()} value="view-idps">
+          <TabsList className="border border-gray-200">
+            <TabsTrigger
+              className="text-sm max-sm:text-xs  w-full"
+              onClick={() => getIDPs()}
+              value="view-idps"
+            >
               Your IDPs
             </TabsTrigger>
-            <TabsTrigger value="create-new-idp">Create new IDP</TabsTrigger>
+            <TabsTrigger
+              className="text-sm max-sm:text-xs w-full"
+              value="create-new-idp"
+            >
+              Create new IDP
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="view-idps">
             {!loading && userIDPs.length > 0 && (
               <div className="">
                 <div className="bg-gray-200 px-4 text-sm w-full m-2 ml-0 p-2 rounded-md">
                   <div className="mx-4 flex flex-row mt-4  max-sm:text-xs text-gray-600 font-semibold  max-sm:mx-1">
-                    <div className="w-[40%] max-sm:w-[50%] text-center ">Created Date </div>
+                    <div className="w-[40%] max-sm:w-[50%] text-center ">
+                      Created Date{" "}
+                    </div>
                   </div>
                   <div className="mx-4 max-sm:mx-1 max-lg:mx-1">
                     {userIDPs.map((idp, i) => (
@@ -103,7 +118,9 @@ const IDP = ({ user }: any) => {
                             variant={"outline"}
                             className="h-6 text-xs w-fit bg-gray-50 border-gray-300 "
                           >
-                            <span className="max-sm:hidden max-lg:hidden">View Report</span>{" "}
+                            <span className="max-sm:hidden max-lg:hidden">
+                              View Report
+                            </span>{" "}
                             <TooltipWrapper
                               className="hidden max-sm:block max-lg:block text-xs"
                               tooltipName="View Report"
@@ -136,11 +153,15 @@ const IDP = ({ user }: any) => {
                               });
                           }}
                         >
-                          <span className="max-sm:hidden max-lg:hidden">Copy link</span>{" "}
+                          <span className="max-sm:hidden max-lg:hidden">
+                            Copy link
+                          </span>{" "}
                           <TooltipWrapper
                             className="hidden max-sm:block max-lg:block text-xs"
                             tooltipName="Copy Link"
-                            body={<Copy className="h-3 w-3 ml-2 max-sm:ml-0 max-lg:ml-0" />}
+                            body={
+                              <Copy className="h-3 w-3 ml-2 max-sm:ml-0 max-lg:ml-0" />
+                            }
                           />
                         </Button>
                       </div>

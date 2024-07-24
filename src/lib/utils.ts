@@ -7,12 +7,18 @@ import {
   Categories,
   CategoryData,
   ClientDataType,
+  ClientUserTeamType,
+  Conversation,
+  ConvertedConversation,
+  ConvertedResult,
   DomainData,
   ExtractedData,
   ExtractedDataCochee,
   MediaData,
   OptionalMediaData,
   TestData,
+  UserIDPsType,
+  UserInfoType,
 } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -151,7 +157,6 @@ export const hideConsoleLogs = () => {
     return (console.log = function () {});
   }
 };
-
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",
@@ -285,7 +290,7 @@ export interface CoachesDataType {
   avatar_bot_url: string;
 }
 
-export interface PartifipantsforLeaderBoardTypes {
+export interface ParticipantsforLeaderBoardTypes {
   name: string;
   avatar_bot_count: number;
   subject_matter_count: number;
@@ -436,7 +441,7 @@ export function isValidLinks(linksString: string): boolean {
 
 export function isValidYoutubeLinks(linksString: string): boolean {
   const links = linksString.split(",");
-  const urlRegex = /^https?:\/\/(?:www\.)?youtube\.com\/.+/;
+  const urlRegex = /^https?:\/\/(?:www\.)?(youtube\.com\/.+|youtu\.be\/.+)$/;
 
   for (const link of links) {
     const trimmedLink = link.trim();
@@ -541,15 +546,20 @@ export const getUsersForClient = (clientName: string, data: any) => {
     userName: string;
     userId: string;
   }[] = [];
+  const uniqueUserIds = new Set<string>();
+
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)
-      .map((user: any) => {
-        clientUsers.push({
-          userEmail: user.user_email,
-          userName: user.name,
-          userId: user.user_id,
-        });
+      .forEach((user: any) => {
+        if (!uniqueUserIds.has(user.user_id)) {
+          uniqueUserIds.add(user.user_id);
+          clientUsers.push({
+            userEmail: user.user_email,
+            userName: user.name,
+            userId: user.user_id,
+          });
+        }
       });
   }
 
@@ -557,22 +567,22 @@ export const getUsersForClient = (clientName: string, data: any) => {
 };
 
 export const getUsersForClientForTeam = (clientName: string, data: any) => {
-  const clientUsers: {
-    userEmail: string;
-    userName: string;
-    userId: string;
-    profileType: string;
-  }[] = [];
+  const clientUsers: ClientUserTeamType[] = [];
+  const uniqueUserIds = new Set<string>();
+
   if (data.hasOwnProperty(clientName) && data[clientName].length > 0) {
     data[clientName]
       .filter((user: any) => user.user_email !== undefined)
-      .map((user: any) => {
-        clientUsers.push({
-          userEmail: user.user_email,
-          userName: user.name,
-          userId: user.user_id,
-          profileType: user.profile_type || "",
-        });
+      .forEach((user: any) => {
+        if (!uniqueUserIds.has(user.user_id)) {
+          uniqueUserIds.add(user.user_id);
+          clientUsers.push({
+            userEmail: user.user_email,
+            userName: user.name,
+            userId: user.user_id,
+            profileType: user.profile_type || "",
+          });
+        }
       });
   }
 
@@ -701,3 +711,60 @@ export const handleLinks = (link: string) => {
     return link;
   }
 };
+
+export const emptyData: UserInfoType = {
+  clientName: "",
+  isDemoUser: false,
+  isRestricted: true,
+  clientExpertise: "",
+  clientDepartments: "",
+  restrictedPages: null,
+  restrictedFeatures: null,
+  headings: null,
+  helpText: null,
+};
+
+export function convertJsonToExpectedFormat(
+  jsonData: Conversation[]
+): ConvertedConversation[] {
+  return jsonData.map((conversation) => {
+    const { participant_name, results, role, date, bot_name, bot_type } =
+      conversation;
+    const conversationArray: ConvertedResult[] = results.map((result) => {
+      const participantMessage = result.participant_message_text || "";
+      const coachMessage = result.coach_message_text || "";
+      const userRole =
+        result.status === "participant_message_saved" ? "participant" : "coach";
+      const conversationDate = result.created;
+
+      return {
+        participant_message: participantMessage,
+        coach_message: coachMessage,
+        user_role: userRole,
+        conversation_date: conversationDate,
+        bot_name: bot_name, // Include bot_name in ConvertedResult
+      };
+    });
+
+    return {
+      participant_name: participant_name,
+      conversation: conversationArray,
+      role: role,
+      date: date,
+      bot_name: bot_name, // Include bot_name in ConvertedConversation
+      bot_type: bot_type,
+    };
+  });
+}
+
+export function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
+  const compareDates = (a: UserIDPsType, b: UserIDPsType) => {
+    const dateA = new Date(a.created);
+    const dateB = new Date(b.created);
+    return dateB.getTime() - dateA.getTime();
+  };
+
+  const sortedData = [...data].sort(compareDates);
+
+  return sortedData;
+}

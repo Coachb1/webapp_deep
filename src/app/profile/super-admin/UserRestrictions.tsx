@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { AllUserDataType } from "@/lib/types";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Modal } from "antd";
@@ -30,6 +31,8 @@ const UserRestrictions = ({
 
   const [loading, setLoading] = useState(false);
 
+  const {getAllUserData} = useUser()
+
   const addRestrictionsHandler = async () => {
     setLoading(true);
     try {
@@ -55,6 +58,7 @@ const UserRestrictions = ({
         const data = await response.json();
         console.log(data);
         getAllClientsData();
+        getAllUserData()
       }
     } catch (error) {
       toast.error("Error saving user prefrences.");

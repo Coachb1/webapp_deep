@@ -7,10 +7,12 @@ import {
   getUserAccount,
   parseStringList,
 } from "@/lib/utils";
+
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Coaches, { CoachesDataType } from "./Coaches";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { connectionType } from "@/lib/types";
+import { useUser } from "@/context/UserContext";
 
 export const metadata = constructMetadata({
   title: "Network - Coachbots",
@@ -43,15 +45,14 @@ const getClientUserInfo = async (
       const raw = JSON.stringify({
         email: userEmail,
       });
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      };
 
       const response = await fetch(
         `${baseURL}/accounts/create-or-assign-client-id/`,
-        requestOptions
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        }
       );
 
       const data = await response.json();
@@ -234,28 +235,37 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const {
-    isDemoUser,
-    isRestricted,
-    clientDepartments,
-    clientExpertise,
-    restrictedFeatures,
-    restrictedPages,
-    headings,
-    helpText,
-  } = await getClientUserInfo(user?.email, user);
+  // const {
+  //   isDemoUser,
+  //   isRestricted,
+  //   clientDepartments,
+  //   clientExpertise,
+  //   restrictedFeatures,
+  //   restrictedPages,
+  //   headings,
+  //   helpText,
+  // } =  await getClientUserInfo(user?.email, user);
+  const restrictedFeatures = "";
+  const restrictedPages = "";
+  const clientDepartments = "";
+  const clientExpertise = "";
+  const helpText = "";
+  const headings = null;
 
   let directoryProfilesData;
-  if (!isRestricted || isDemoUser) {
-    directoryProfilesData = await getDirectoryProfiles(user?.email, user);
-  }
+  // if (!isRestricted || isDemoUser) {
+  //   directoryProfilesData = await getDirectoryProfiles(user?.email, user);
+  // }
 
   let userConnections: connectionType[] = [];
-  if (user) {
-    userConnections = await getUserConnections(user);
-  }
+  // if (user) {
+  //   userConnections = await getUserConnections(user);
+  // }
 
-  const UserJoiningPreviledges = await getUserJoiningPreviledges(user?.email);
+  const UserJoiningPreviledges = ""; //await getUserJoiningPreviledges(user?.email);
+
+  // const { userInfo, userConnections, directoryProfiles, joiningPrevileges } =
+  //   useUser();
 
   return (
     <div suppressHydrationWarning>

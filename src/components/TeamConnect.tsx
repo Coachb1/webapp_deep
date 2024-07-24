@@ -103,7 +103,7 @@ const TeamConnect = ({
   return (
     <div className="p-4 bg-white w-full border border-gray-200 rounded-2xl ">
       {coachId || coacheeId ? (
-        <div className="w-full text-gray-800 flex flex-col items-start">
+        <div className="w-full text-slate-900 flex flex-col items-start">
           <div className="text-sm max-sm:text-sm w-full text-left">
             {" "}
             How can you interact with{" "}
@@ -111,10 +111,14 @@ const TeamConnect = ({
               @{" "}
               <Select
                 showSearch
-                className="w-[20%] max-sm:w-[40%]  max-lg:w-[40%]  max-md:w-[40%]"
+                className="w-fit min-w-[20%]"
                 placeholder="Select a person"
                 optionFilterProp="children"
                 virtual={false}
+                dropdownStyle={{
+                  width: "fit-content",
+                }}
+                value={taggedUserId}
                 onChange={(value: string) => {
                   console.log(`selected ${value}`);
                   setTaggedUserId(value);
@@ -130,10 +134,11 @@ const TeamConnect = ({
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
+                //@ts-ignore
                 options={
                   clientUsers &&
                   clientUsers.map((user) => ({
-                    label: user.userName,
+                    label: `${user.userName} (${user.userEmail})`,
                     value: user.userId,
                   }))
                 }
@@ -181,7 +186,7 @@ const TeamConnect = ({
           {generatedData && (
             <>
               <div className="flex flex-row gap-2 max-sm:flex-col">
-                <div className="w-full text-sm max-sm:text-xs text-left text-gray-600 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
+                <div className="w-full text-sm max-sm:text-xs text-left text-slate-900 p-3 bg-gray-50 mt-2 rounded-md border border-gray-200 shadow-sm flex flex-col justify-between">
                   <div>
                     <b className="my-1 text-gray-400">Response</b>
                     <p className="my-2">{generatedData.response}</p>

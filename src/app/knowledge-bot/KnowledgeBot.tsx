@@ -14,9 +14,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
-import { toast } from "sonner";
-import NavProfile, { NavProfileWoProfile } from "@/components/NavProfile";
+import { baseURL, basicAuth } from "@/lib/utils";
+import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
 import {
@@ -27,37 +26,27 @@ import {
 
 const howItWorks = [
   {
-    heading: "Quick Match",
+    heading: "Creation of the Bot",
     description:
-      "The quick match demonstrates fitment between participants based on pre-decided criteria. These can be set up during the user onboarding.",
+      "A knowledge bot can be created by simply an intake form and attaching documents to the same. The knowledge bot can be for individual use or it can be made available to everyone in the enterprise.",
   },
   {
-    heading: "Session Notes",
+    heading: "Usage of the Bot",
     description:
-      "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
-  },
-  {
-    heading: "Recommendations",
-    description:
-      "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
+      "The users can access public bots via the Knowledge Library as well as bots that might have been created for individual usage.",
   },
 ];
 
 const benefitsData = [
   {
-    heading: "Transcript Email",
+    heading: "Conversational Analysis",
     description:
-      "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
+      "The knowledge bots can synthesize information from one or multiple documents. It saves time by presenting a unified simple response.",
   },
   {
-    heading: "Advice Anytime, Anywhere",
+    heading: "Multiple Use Cases",
     description:
-      "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
-  },
-  {
-    heading: "Skill scenario library",
-    description:
-      "Explore our extensive library of skill scenarios. This collection provides practical, real-life situations for skill development. Enhance your skills by tackling scenarios that resonate with the needs identified during the session.",
+      "The bots can be related to a project and its relation information and status. It can also be about a particular department's knowledge repository. It can unlock knowledge locked in any documents.",
   },
 ];
 
@@ -101,15 +90,23 @@ const KnowledgeBot = ({ user, renderType }: any) => {
       .then((data) => {
         console.log("KNOWLEDGE BOT DETAILS : ", data);
 
+        const coachScribe = document.getElementsByClassName(
+          "coachbots-coachscribe"
+        )[0];
+
+        if (data.error) {
+          console.log(coachScribe);
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
+
         let parsedFaqJson: any;
         if (typeof data.data.faqs === "string") {
           parsedFaqJson = JSON.parse(data.data.faqs);
         } else {
           parsedFaqJson = data.data.faqs;
         }
-        const coachScribe = document.getElementsByClassName(
-          "coachbots-coachscribe"
-        )[0];
+
         console.log(
           "LOGINS -norm : strict",
           data.data.bot_details.is_login_required,
@@ -117,12 +114,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         );
         setFeedbackBotId(data.data.feedback_id);
         if (renderType === "dynamic") {
-          console.log(coachScribe);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
-
           setBotName(data.data.bot_name);
           setBotDescription(data.data.description);
           setPrimaryPurpose(
@@ -155,9 +146,27 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed max-sm:hidden right-[100px] bottom-12">
-            <span className="mr-6 text-sm font-bold">Try Now</span>
-            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
+            <span className="mr-6 text-sm font-bold">Connect now</span>
+            {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
+          </div>
+        )}
+
+        {invalidId && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
+              </Button>
+            </div>
           </div>
         )}
 
@@ -176,26 +185,22 @@ const KnowledgeBot = ({ user, renderType }: any) => {
               BOTS
             </h1>
             <div>
-              <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 ">
-                {renderType === "dynamic"
-                  ? `Welcome to ${botName} 🚀`
-                  : "Welcome to Flyover Project Tracker 🚀"}
-              </h1>
+              <div className="w-full flex flex-row justify-center items-center">
+                <h1 className="text-4xl mt-0 font-bold max-md:text-2xl max-lg:text-2xl  max-sm:text-2xl text-gray-600 w-[80%]">
+                  {renderType === "dynamic"
+                    ? `${botName}`
+                    : "Flyover Project Tracker"}
+                </h1>
+              </div>
               <div className="w-full flex flex-row justify-center mt-8">
                 <Div
                   className="text-gray-800"
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 p-4 max-sm:p-0"
-                      className="inter-var w-full max-sm:px-0"
-                    >
-                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl text-sm max-sm:text-xs"
-                        >
+                    <div className="inter-var w-full max-sm:px-0 p-4 max-sm:p-0">
+                      <div className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <div className="w-fit rounded-2xl text-sm max-sm:text-xs">
                           {renderType === "dynamic" ? (
                             <>
                               {" "}
@@ -214,9 +219,9 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                               questions and give project related updates
                             </>
                           )}
-                        </CardItem>
-                      </CardBody>
-                    </CardContainer>
+                        </div>
+                      </div>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>

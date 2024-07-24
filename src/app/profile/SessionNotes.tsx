@@ -25,6 +25,7 @@ import { convertDate } from "@/lib/utils";
 import { connectionType } from "@/lib/types";
 import { Select, Space } from "antd";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 
 // Pagination related variables
 
@@ -78,7 +79,6 @@ const SessionNotes = ({ user }: any) => {
   const commentRef = useRef<any>();
   const [emailError, setEmailError] = useState<boolean>(false);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-  const [userId, setUserId] = useState<string>("");
 
   const accessCodeRef = useRef<any>();
   const [accessCodeLengthError, setAccessCodeLengthError] = useState(false);
@@ -179,27 +179,46 @@ const SessionNotes = ({ user }: any) => {
       });
   };
 
+  const { userId, coachId, coacheeId, userConnections } = useUser();
+
   useEffect(() => {
     setCommentsLoading(true);
-    fetch(`${baseURL}/accounts/identities/deepchat_unique_id/${user.email}/`, {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setUserId(data.uid);
-        getCommentsGiven(data.uid);
-        getCommentsRecieved(data.uid);
-      });
+
+    getCommentsGiven(userId);
+    getCommentsRecieved(userId);
+    if (coachId) {
+      setConnectionsForCoach(userConnections);
+      const dataForOptions = userConnections
+        .filter((data: connectionType) => data.status === "accepted")
+        .map((data: connectionType) => {
+          return {
+            label: data.coachee_name,
+            value: `${data.coachee_name}/${data.coachee_user_id}`,
+          };
+        });
+
+      setConnectionsOptions(dataForOptions);
+    } else if (coacheeId) {
+      setConnectionsForCoachee(userConnections);
+      const dataForOptions = userConnections
+        .filter(
+          (data: connectionType) =>
+            data.status === "accepted" &&
+            data.allow_coachee_to_create_session === true
+        )
+        .map((data: connectionType) => {
+          return {
+            label: data.coach_name,
+            value: `${data.coach_name}/${data.coach_user_id}`,
+          };
+        });
+
+      console.log(dataForOptions);
+      setConnectionsOptions(dataForOptions);
+    }
   }, []);
 
   const [contextLengthError, setContextLengthError] = useState(false);
-
-  const [coachId, setCoachId] = useState("");
-  const [coacheeId, setCoacheeId] = useState("");
 
   const createCommentHandler = async () => {
     setSubmitLoading(true);
@@ -264,121 +283,6 @@ const SessionNotes = ({ user }: any) => {
   const [selectedUserForCommentUserId, setSelectedUserForCommentUserId] =
     useState("");
 
-  const getConnectionsForCoachee = (coacheeId: string) => {
-    fetch(
-      `${baseURL}/accounts/coach-coachee-connections/?coachee_id=${coacheeId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("CONNECTIONS for COACHEE", data);
-        setConnectionsForCoachee(data.data);
-
-        const dataForOptions = data.data
-          .filter(
-            (data: connectionType) =>
-              data.status === "accepted" &&
-              data.allow_coachee_to_create_session === true
-          )
-          .map((data: connectionType) => {
-            return {
-              label: data.coach_name,
-              value: `${data.coach_name}/${data.coach_user_id}`,
-            };
-          });
-
-        console.log(dataForOptions);
-        setConnectionsOptions(dataForOptions);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getConnectionsForCoach = (coachId: string) => {
-    fetch(
-      `${baseURL}/accounts/coach-coachee-connections/?coach_id=${coachId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("CONNECTIONS for COACH", data);
-
-        setConnectionsForCoach(data.data);
-        const dataForOptions = data.data
-          .filter((data: connectionType) => data.status === "accepted")
-          .map((data: connectionType) => {
-            return {
-              label: data.coachee_name,
-              value: `${data.coachee_name}/${data.coachee_user_id}`,
-            };
-          });
-
-        setConnectionsOptions(dataForOptions);
-        // setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        // setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUserId(data.uid);
-          fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-
-              const isApprovedData = data.data.filter(
-                (coachData: any) => coachData.is_approved === true
-              );
-
-              console.log(isApprovedData);
-              if (findCoacheeUID(isApprovedData).length > 0) {
-                console.log("for coachees");
-                setCoacheeId(findCoacheeUID(isApprovedData));
-                getConnectionsForCoachee(findCoacheeUID(isApprovedData));
-              }
-
-              if (findCoachUID(isApprovedData).length > 0) {
-                console.log("for coaches");
-                getConnectionsForCoach(findCoachUID(isApprovedData));
-                setCoachId(findCoachUID(isApprovedData));
-              }
-              // setLoading(false);
-            })
-            .then((err) => {
-              console.error(err);
-              // setLoading(false);
-            });
-        });
-    }
-  }, []);
-
   useEffect(() => {
     if (connectionsOptions.length > 0) {
       setTabValue("c-given");
@@ -415,7 +319,14 @@ const SessionNotes = ({ user }: any) => {
       id="session-notes"
       className="bg-accent p-2 mt-2 rounded-md mb-10 max-sm:max-h-[75vh] overflow-scroll no-scrollbar"
     >
-      <div className="pl-4 max-sm:pl-2 pt-2">Action Plans & Session Notes</div>{" "}
+      <div className="pl-4 max-sm:pl-2 max-sm:text-sm pt-2">
+        Action Plans & Session Notes
+      </div>{" "}
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 max-sm:ml-2 my-2 flex flex-row items-center">
+        {" "}
+        <Info className="h-3 w-3 mr-2 inline" />
+        Connection history is updated every 60 mins.
+      </p>
       <div className="m-4 max-sm:m-2">
         <Tabs
           defaultValue="c-recieved"
@@ -681,15 +592,16 @@ const SessionNotes = ({ user }: any) => {
                     </Button>
                     {connectionsOptions.length === 0 && (
                       <>
-                      {coacheeId ?(
-                        <p className="text-red-600 text-xs mt-2">
-                          You don't have any connections or coach didn't allow you to create comment.
-                        </p>
-                      ): (
-                      <p className="text-red-600 text-xs mt-2">
-                        You don't have any connections yet.
-                      </p>
-                      )}
+                        {coacheeId ? (
+                          <p className="text-red-600 text-xs mt-2">
+                            You don't have any connections or coach didn't allow
+                            you to create comment.
+                          </p>
+                        ) : (
+                          <p className="text-red-600 text-xs mt-2">
+                            You don't have any connections yet.
+                          </p>
+                        )}
                       </>
                     )}
                   </div>

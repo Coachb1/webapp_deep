@@ -136,6 +136,7 @@ export interface UserClientInfoType {
   coach_skills: null | any; // You might want to replace 'any' with a more specific type
   coach_expertise: null | any; // You might want to replace 'any' with a more specific type
   departments: null | any; // You might want to replace 'any' with a more specific type
+  send_profile_for_reapproval: boolean;
 }
 
 export interface UserClientInfoDataType {
@@ -169,6 +170,8 @@ export interface knowledgeBotJson {
     bot_scenario_case: string;
     creator_name: string;
     is_approved: boolean;
+    is_private: string;
+    user_id: string;
   };
   bot_attributes: {
     bot_name: string;
@@ -181,6 +184,7 @@ export interface knowledgeBotType {
   description: string;
   bot_type: string;
   scenario_case: string;
+  creator_name?: string;
 }
 
 export interface BotDetailsType {
@@ -275,7 +279,7 @@ export interface ClientUserTeamType {
   userEmail: string;
   userName: string;
   userId: string;
-  profileType: string;
+  profileType?: string;
 }
 
 export interface ClientDataType {
@@ -316,4 +320,74 @@ export interface AllUserDataType {
   userRole: string;
   userDeniedAccesses: string;
   userProfileId?: string;
+}
+
+export interface UserInfoType {
+  clientName: string;
+  isDemoUser: boolean;
+  isRestricted: boolean;
+  clientExpertise: string;
+  clientDepartments: string;
+  restrictedPages: string | null;
+  restrictedFeatures: string | null;
+  headings: {
+    heading: string | null;
+    subHeading: string | null;
+    tagLine: string | null;
+  } | null;
+  helpText: any;
+}
+
+export interface PositionedUserTypes {
+  name: string;
+  user_id: string;
+  total_count: number;
+  rating: number;
+}
+
+export interface KudosDetailsType {
+  bot_name: string;
+  owner_name: string;
+  positive_feedback_count: number;
+  negative_feedback_count: number;
+  rating: number;
+  user_id: string;
+  total_users: number;
+}
+
+export interface Result {
+  uid: string;
+  coach_message_text?: string;
+  participant_message_text?: string | null;
+  status: string;
+  created: string;
+  updated?: string;
+}
+
+export interface Conversation {
+  results: Result[];
+  participant_name: string;
+  participant_uid: string;
+  role: string;
+  date: string;
+  bot_name?: string; // Add bot_name to the Conversation interface
+  bot_type?: string;
+  scenario_case?: string;
+}
+
+export interface ConvertedResult {
+  participant_message: string;
+  coach_message: string;
+  user_role: string;
+  conversation_date: string;
+  bot_name?: string; // Add bot_name to the ConvertedResult interface
+}
+
+export interface ConvertedConversation {
+  participant_name: string;
+  conversation: ConvertedResult[];
+  role: string;
+  date: string;
+  bot_name?: string; // Add bot_name to the ConvertedConversation interface
+  bot_type?: string;
 }

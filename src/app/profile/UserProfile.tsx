@@ -3,141 +3,129 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import Link from "next/link";
-import { Link2, Loader } from "lucide-react";
+import { ExternalLink, Link2, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
-import {
-  PartifipantsforLeaderBoardTypes,
-  baseURL,
-  basicAuth,
-  getUserAccount,
-} from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import HelpMode from "@/components/HelpMode";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-
-interface PositionedUserTypes {
-  name: string;
-  user_id: string;
-  total_count: number;
-  rating: number;
-}
-
-interface KudosDetailsType {
-  bot_name: string;
-  owner_name: string;
-  positive_feedback_count: number;
-  negative_feedback_count: number;
-  rating: number;
-  user_id: string;
-  total_users: number;
-}
+import { useUser } from "@/context/UserContext";
+import { KudosDetailsType } from "@/lib/types";
 
 const UserProfile = ({ user, userRole, helpModeText }: any) => {
-  const [candidateReportUrl, setCandidateReportUrl] = useState("");
+  // const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
 
-  const [userPositionDetails, setUserPositionDetails] = useState<
-    PositionedUserTypes[]
-  >([]);
-
-  const [userId, setUserId] = useState("");
-  const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
-  const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
+  // const [userId, setUserId] = useState("");
+  // const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
+  // const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
 
   const [userAllowAudioInteractions, setUserAllowAudioInteractions] =
     useState(false);
-  const [clientAllowAudioInteractions, setClientAllowAudioInteractions] =
-    useState(false);
+  // const [clientAllowAudioInteractions, setClientAllowAudioInteractions] =
+  //   useState(false);
   const [interactionLoading, setInteractionLoading] = useState(false);
 
-  const [plLoading, setplLoading] = useState(true);
-  const getLeaderboardPosition = (userId: string, profileType: string) => {
-    fetch(
-      `${baseURL}/accounts/participant-leader-board-report/?email=${user.email}&by_category=true`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((dataa) => {
-        console.log(dataa);
+  const [plLoading, setplLoading] = useState(false);
+  // const getLeaderboardPosition = (userId: string, profileType: string) => {
+  //   fetch(
+  //     `${baseURL}/accounts/participant-leader-board-report/?email=${user.email}&by_category=true`,
+  //     {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: basicAuth,
+  //       },
+  //     }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((dataa) => {
+  //       console.log(dataa);
 
-        if (profileType === "coach" || profileType === "mentor") {
-          dataa = dataa.coach_mentor;
-        } else if (profileType === "coachee" || profileType === "mentee") {
-          dataa = dataa.coachee_mentee;
-        } else {
-          dataa = dataa.full_data;
-        }
+  //       if (profileType === "coach" || profileType === "mentor") {
+  //         dataa = dataa.coach_mentor;
+  //       } else if (profileType === "coachee" || profileType === "mentee") {
+  //         dataa = dataa.coachee_mentee;
+  //       } else {
+  //         dataa = dataa.full_data;
+  //       }
 
-        const userDetails = dataa.map(
-          (data: PartifipantsforLeaderBoardTypes, i: number) => {
-            return {
-              name: data.name,
-              user_id: data.user_id,
-              total_count: dataa.length,
-              rating: data.total_score === 0 ? dataa.length : data.rating,
-            };
-          }
-        );
+  //       const userDetails = dataa.map(
+  //         (data: PartifipantsforLeaderBoardTypes, i: number) => {
+  //           return {
+  //             name: data.name,
+  //             user_id: data.user_id,
+  //             total_count: dataa.length,
+  //             rating: data.total_score === 0 ? dataa.length : data.rating,
+  //           };
+  //         }
+  //       );
 
-        const positionedUser: PositionedUserTypes[] = userDetails.filter(
-          (userr: PositionedUserTypes) => userr.user_id === userId
-        );
+  //       const positionedUser: PositionedUserTypes[] = userDetails.filter(
+  //         (userr: PositionedUserTypes) => userr.user_id === userId
+  //       );
 
-        console.log(positionedUser);
-        setUserPositionDetails(positionedUser);
-        setplLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setplLoading(false);
-      });
-  };
+  //       console.log(positionedUser);
+  //       setUserPositionDetails(positionedUser);
+  //       setplLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       setplLoading(false);
+  //     });
+  // };
 
-  const [kudosLoading, setKudosLoading] = useState(true);
-  const getKudosCounts = (userId: string) => {
-    fetch(
-      `${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((dataa) => {
-        console.log("lead", dataa, user.email);
+  // const [kudosLoading, setKudosLoading] = useState(true);
+  // const getKudosCounts = (userId: string) => {
+  //   fetch(
+  //     `${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`,
+  //     {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: basicAuth,
+  //       },
+  //     }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((dataa) => {
+  //       console.log("lead", dataa, user.email);
 
-        const FilteredUserDataForKudos = dataa.group.filter(
-          (data: KudosDetailsType) => {
-            if (data.user_id === userId) {
-              return {
-                ...data,
-                total_users: dataa.group.length,
-              };
-            }
-          }
-        );
-        console.log(FilteredUserDataForKudos);
-        setTotalUsersForFeedback(dataa.group.length);
-        setUserKudosData(FilteredUserDataForKudos);
-        setKudosLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setKudosLoading(false);
-      });
-  };
+  //       const FilteredUserDataForKudos = dataa.group.filter(
+  //         (data: KudosDetailsType) => {
+  //           if (data.user_id === userId) {
+  //             return {
+  //               ...data,
+  //               total_users: dataa.group.length,
+  //             };
+  //           }
+  //         }
+  //       );
+  //       console.log(FilteredUserDataForKudos);
+  //       setTotalUsersForFeedback(dataa.group.length);
+  //       setUserKudosData(FilteredUserDataForKudos);
+  //       setKudosLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       setKudosLoading(false);
+  //     });
+  // };
 
   const [isAllowToggle, setIsAllowToggle] = useState(false);
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
+
+  const {
+    userId,
+    allowAudioInteraction: {
+      client: clientAllowAudioInteractions,
+      user: user_allow_audio_interactions,
+    },
+    candidateReport,
+    userPositionDetails,
+    kudosData: { totalUsersForFeedback, userKudosData },
+    getAllUserData,
+  } = useUser();
 
   useEffect(() => {
     if (!user) {
@@ -214,65 +202,71 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
       },
     ]);
 
-    try {
-      if (user) {
-        getUserAccount(user)
-          .then((response) => response.json())
-          .then(async (data) => {
-            console.log("user_profile", data);
-
-            if (data.client_allow_audio_interactions) {
-              setIsAllowToggle(true);
-              setUserAllowAudioInteractions(data.user_allow_audio_interactions);
-            } else {
-              setIsAllowToggle(false);
-            }
-
-            const userId = data.uid;
-            setUserId(userId);
-            await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
-              method: "POST",
-              headers: {
-                Authorization: basicAuth,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                user_id: data.uid,
-                report_type: "participantReport",
-                candidate_id: data.uid,
-              }),
-            })
-              .then((response) => response.json())
-              .then(async (data) => {
-                setCandidateReportUrl(data.url);
-                await fetch(
-                  `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                      "Content-Type": "application/json",
-                    },
-                  }
-                )
-                  .then((response) => response.json())
-                  .then((data) => {
-                    setTestAttemptedCount(data["data"]["total_session"]);
-                  })
-                  .catch((error) => {
-                    console.error(`Error in getAttemptedTestList: ${error}`);
-                  });
-              })
-              .catch((error) => {
-                console.error("Error getting report", error);
-              });
-            getLeaderboardPosition(data.uid, data.profile_type);
-            getKudosCounts(data.uid);
-          });
-      }
-    } catch (error) {
-      console.log(error);
+    if (clientAllowAudioInteractions) {
+      setIsAllowToggle(true);
+      setUserAllowAudioInteractions(user_allow_audio_interactions);
+    } else {
+      setIsAllowToggle(false);
     }
+
+    // try {
+    //   if (user) {
+    //     getUserAccount(user)
+    //       .then((response) => response.json())
+    //       .then(async (data) => {
+    //         console.log("user_profile", data);
+
+    //         if (data.client_allow_audio_interactions) {
+    //           setIsAllowToggle(true);
+    //         } else {
+    //           setIsAllowToggle(false);
+    //         }
+
+    //         const userId = data.uid;
+    //         setUserId(userId);
+    //         await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
+    //           method: "POST",
+    //           headers: {
+    //             Authorization: basicAuth,
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify({
+    //             user_id: data.uid,
+    //             report_type: "participantReport",
+    //             candidate_id: data.uid,
+    //           }),
+    //         })
+    //           .then((response) => response.json())
+    //           .then(async (data) => {
+    //             setCandidateReportUrl(data.url);
+    //             await fetch(
+    //               `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
+    //               {
+    //                 method: "GET",
+    //                 headers: {
+    //                   Authorization: basicAuth,
+    //                   "Content-Type": "application/json",
+    //                 },
+    //               }
+    //             )
+    //               .then((response) => response.json())
+    //               .then((data) => {
+    //                 setTestAttemptedCount(data["data"]["total_session"]);
+    //               })
+    //               .catch((error) => {
+    //                 console.error(`Error in getAttemptedTestList: ${error}`);
+    //               });
+    //           })
+    //           .catch((error) => {
+    //             console.error("Error getting report", error);
+    //           });
+    //         getLeaderboardPosition(data.uid, data.profile_type);
+    //         getKudosCounts(data.uid);
+    //       });
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }, []);
 
   const allowAudioInteractionHandler = (type: boolean) => {
@@ -296,6 +290,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             data.updated.user_allow_audio_interactions
           );
           toast.success("Saved your changes.");
+          getAllUserData();
         } else {
           toast.error("Error, try again.");
         }
@@ -331,20 +326,20 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md w-full">
       <HelpMode steps={HelpModeSteps} />
-      <div className="pl-4 text-xl max-sm:pl-2 pt-2 flex flex-row items-center ">
+      <div className="pl-4 text-xl max-sm:text-sm max-sm:pl-2 pt-2 flex flex-row items-center ">
         <p>Account Information </p>
       </div>
       <div className="text-sm px-4 max-sm:px-2">
         <div className="mt-4 mb-4">
-          <div className="flex flex-row items-center">
-            <p className="text-md max-sm:text-xs">Name </p>
+          <div className="flex flex-row items-center text-sm max-sm:text-xs">
+            <p className="">Name </p>
             <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-4 border">
               {`${user.given_name} ${user.family_name ? user.family_name : ""}`}
             </p>
           </div>
-          <div className="flex flex-row items-center mt-4">
-            <p className="text-sm w-fit max-sm:text-xs ">Email </p>
-            <p className="p-3 bg-accent bg-opacity-60 w-full rounded-lg ml-5 border">
+          <div className="flex flex-row items-center mt-4 text-sm max-sm:text-xs">
+            <p className="w-fit max-sm:text-xs ">Email </p>
+            <p className="p-3 bg-accent  bg-opacity-60 w-full rounded-lg ml-5 border">
               {user.email}
             </p>
           </div>
@@ -359,15 +354,15 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
               disabled={testAttempedCount === 0}
               className="ml-8 w-fit max-sm:p-1 max-sm:text-xs max-sm:h-8 max-sm:ml-4 max-sm:px-2"
             >
-              {candidateReportUrl && candidateReportUrl.length !== 0 ? (
+              {candidateReport && candidateReport.length !== 0 ? (
                 <>
                   <Link
                     className="flex flex-row items-center justify-center ml-2 max-sm:ml-1 "
-                    href={candidateReportUrl}
+                    href={candidateReport}
                     target="_blank"
                   >
                     <p className="w-fit">Participant Report</p>{" "}
-                    <Link2 className={`h-4 w-4 ml-2 inline`} />
+                    <ExternalLink className={`h-4 w-4 ml-2 inline`} />
                   </Link>
                 </>
               ) : (
@@ -383,11 +378,11 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             id="audio-interaction"
             className="my-4 w-fit flex flex-row items-center"
           >
-            <p className="text-sm max-sm:text-xs">
-              Allow audio interaction in bots
-            </p>
-            <div className="ml-8 flex flex-row items-center gap-2">
-              <span className="text-sm font-bold text-gray-600">No</span>
+            <p className="text-sm max-sm:text-xs">Bot responses in Audio</p>
+            <div className="ml-8 flex flex-row items-center gap-2 text-sm max-sm:text-xs">
+              <span className="text-sm max-sm:text-xs font-bold text-gray-600">
+                No
+              </span>
               <Switch
                 disabled={interactionLoading || !isAllowToggle}
                 checked={userAllowAudioInteractions}
@@ -396,7 +391,9 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
                   allowAudioInteractionHandler(val);
                 }}
               />
-              <span className="text-sm font-bold text-gray-600">Yes</span>
+              <span className="text-sm max-sm:text-xs font-bold text-gray-600">
+                Yes
+              </span>
             </div>
           </div>
         </>
@@ -409,7 +406,10 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             <p className="text-sm max-sm:text-xs min-w-fit">
               Personal Leaderboard :{" "}
             </p>
-            <Badge variant={"outline"} className="ml-4 p-2">
+            <Badge
+              variant={"outline"}
+              className="ml-4 p-2 text-sm max-sm:text-xs"
+            >
               {" "}
               {plLoading ? (
                 <>
@@ -435,26 +435,37 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
         {userKudosData[0] && (
           <div id="kudos-board" className="mt-4 mb-4">
             <div className="flex flex-row items-center max-sm:items-start mt-4 max-sm:flex-col">
-              <p className="text-sm text-left  max-sm:w-full">Kudos : </p>
-              {kudosLoading ? (
+              <p className="text-sm max-sm:text-xs text-left  max-sm:w-full">
+                Kudos :{" "}
+              </p>
+              {false ? (
                 <>
                   <Loader className="animate-spin ml-4 m-1 w-4 h-4" />
                 </>
               ) : (
                 <>
                   {userKudosData[0] ? (
-                    <div className="max-sm:flex max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                    <div className="max-sm:flex text-sm max-sm:text-xs max-sm:mt-2 max-sm:gap-2 max-sm:flex-col">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Positive Feedback count :{" "}
                         {userKudosData[0].positive_feedback_count}{" "}
                       </Badge>
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Negetive Feedback count :{" "}
                         {userKudosData[0].negative_feedback_count}{" "}
                       </Badge>
-                      <Badge variant={"outline"} className="ml-4 p-2">
+                      <Badge
+                        variant={"outline"}
+                        className="ml-4 p-2 text-sm max-sm:text-xs"
+                      >
                         {" "}
                         Position : Top {userKudosData[0].rating} out of{" "}
                         {totalUsersForFeedback}

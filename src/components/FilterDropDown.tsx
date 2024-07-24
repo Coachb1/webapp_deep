@@ -124,7 +124,10 @@ const FilterDropDown = ({
           </>
         ))}
         <div className="h-[20px] w-[2px] bg-gray-500 mx-2"></div>
-        <div className="flex flex-row items-center gap-2 border rounded-md px-2 hover:cursor-pointer">
+        <div
+          id="ai-recc"
+          className="flex flex-row items-center gap-2 border rounded-md px-2 hover:cursor-pointer"
+        >
           <Checkbox
             checked={checkedValues.includes("recommended")}
             onCheckedChange={(isChecked: boolean) => {

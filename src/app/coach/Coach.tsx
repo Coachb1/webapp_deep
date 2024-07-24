@@ -26,11 +26,6 @@ import { NavProfileWoProfile } from "@/components/NavProfile";
 import { Meteors } from "@/components/ui/meteors";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
-import {
-  CardBody,
-  CardContainer,
-  CardItem,
-} from "@/components/ui/3d-card-effect";
 
 const howItWorks = [
   {
@@ -42,11 +37,6 @@ const howItWorks = [
     heading: "Session Notes",
     description:
       "All users (coaches, mentors and coachees) are able to add session notes, action items to keep the journey on track.",
-  },
-  {
-    heading: "Recommendations",
-    description:
-      "The Avatar may also have the ability to recommend scenarios to practice based on the needs. The user may also rely directly search the library to search for relevant scenarios for practice.",
   },
 ];
 
@@ -62,18 +52,11 @@ const benefitsData = [
       "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
   },
   {
-    heading: "Skill scenario library",
+    heading: "Learning reinforcement",
     description:
-      "Explore our extensive library of skill scenarios. This collection provides practical, real-life situations for skill development. Enhance your skills by tackling scenarios that resonate with the needs identified during the session.",
+      "Depending upon the improvement plans discussed, create simulated scenario-based conversations - if relevant to your situation via our studio.",
   },
 ];
-
-const dummyData = {
-  "Transcript Email":
-    "Never miss a detail! Receive a transcription email after each session, capturing key insights and action points for easy reference.",
-  "Advice Anytime, Anywhere":
-    "Your coach is always with you! Receive coaching/mentoring advice from the bot anytime, anywhere—empowering you to excel in personal and professional endeavors.",
-};
 
 const Coach = ({ user, renderType }: any) => {
   const pathname = usePathname();
@@ -125,25 +108,21 @@ const Coach = ({ user, renderType }: any) => {
       .then((res) => res.json())
       .then((data) => {
         console.log("BOT DETAILS : ", data);
-        console.log();
         const coachScribe = document.getElementsByClassName(
           "coachbots-coachscribe"
         )[0];
-        console.log(
-          "LOGINS -norm : strict",
-          data.data.bot_details.is_login_required,
-          data.data.bot_details.is_strict_login_required
-        );
+        if (data.error) {
+          console.log(coachScribe);
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
+
         setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
+
         if (renderType === "dynamic") {
           console.log("DYNAMIC COACH DATA ", data);
 
-          console.log(coachScribe);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
           setCoachName(data.data.bot_details.coach_name);
           setCoachTagName(data.data.tag);
           setCoachDescription(data.data.bot_details.info);
@@ -261,6 +240,7 @@ const Coach = ({ user, renderType }: any) => {
         }
 
         if (
+          data.data.profile_details.discussion_topic &&
           data.data.profile_details.discussion_topic !== null &&
           data.data.profile_details.discussion_topic !== ""
         ) {
@@ -312,7 +292,7 @@ const Coach = ({ user, renderType }: any) => {
   const CoachBotBody = () => {
     return (
       <div suppressHydrationWarning={true}>
-        <Meteors className="" number={50} />
+        <Meteors className="max-sm:hidden" number={50} />
         {/* {enrolled ? (
           <> */}
         {renderType === "static" && (
@@ -320,17 +300,26 @@ const Coach = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed max-sm:hidden right-[100px] bottom-12">
-            <span className="mr-6 text-sm font-bold">Try Now</span>
-            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
+            <span className="mr-6 text-sm font-bold">Connect now</span>
+            {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
           </div>
         )}
 
-        {invalidId && renderType === "dynamic" && (
+        {invalidId && (
           <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
             <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
               <AlertTriangle className="h-4 w-4 mr-2 inline" />
-              We have encountered an error. Please try again.{" "}
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
+              </Button>
             </div>
           </div>
         )}
@@ -388,15 +377,9 @@ const Coach = ({ user, renderType }: any) => {
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 mt-4 p-4 max-sm:p-0"
-                      className="inter-var w-full max-sm:px-0"
-                    >
-                      <CardBody className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl"
-                        >
+                    <div className="inter-var w-full max-sm:px-0 mt-4 p-4 max-sm:p-0">
+                      <div className="bg-transparent relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start max-sm:justify-between py-0">
+                        <div className="w-fit rounded-2xl">
                           <img
                             className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
                             src={
@@ -404,11 +387,8 @@ const Coach = ({ user, renderType }: any) => {
                               "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                             }
                           />
-                        </CardItem>
-                        <CardItem
-                          translateZ="100"
-                          className="w-full rounded-2xl px-4 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2"
-                        >
+                        </div>
+                        <div className="w-full rounded-2xl px-4 text-slate-900 max-sm:px-1 text-left text-sm max-sm:text-xs max-sm:ml-2">
                           {renderType === "dynamic"
                             ? parseTextToJSX(coachDescription)
                             : `I'm Aarav Sharma, a seasoned corporate coach with 15+
@@ -425,9 +405,9 @@ const Coach = ({ user, renderType }: any) => {
                           I aim to be a trusted guide for long-term, sustainable
                           leadership development in the dynamic corporate
                           landscape.`}
-                        </CardItem>
-                      </CardBody>
-                    </CardContainer>
+                        </div>
+                      </div>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>

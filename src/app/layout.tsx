@@ -9,7 +9,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { Boxes, BoxesCore } from "@/components/ui/background-boxes";
+import { UserProvider } from "@/context/UserContext";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -38,7 +38,6 @@ const getClientUserInfo = async (
     const userCreateResponse = await getUserAccount(user);
     const userCreateResults = await userCreateResponse.json();
 
-    console.log("[layout] getUserAccount : ", userCreateResults);
     if (userCreateResponse.ok) {
       const myHeaders = new Headers();
 
@@ -49,15 +48,13 @@ const getClientUserInfo = async (
         email: userEmail,
       });
 
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      };
-
       const response = await fetch(
         `${baseURL}/accounts/create-or-assign-client-id/`,
-        requestOptions
+        {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        }
       );
 
       const data = await response.json();
@@ -128,30 +125,35 @@ export default async function RootLayout({
       <HelpModeProvider>
         <>
           <body className={font.className} suppressHydrationWarning={true}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <AntdRegistry>
-                <Providers>
-                  <LayoutComponent
-                    restrictedPages={restrictedPages}
-                    user={user}
-                    children={children}
-                    isDemoUser={isDemoUser}
-                    isRestricted={isRestricted}
-                  />
-                </Providers>
-              </AntdRegistry>
-            </ThemeProvider>
-            <Toaster
-              theme="light"
-              closeButton
-              richColors
-              position="top-right"
-            />
+            <UserProvider kindeUser={user}>
+              <>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="light"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <AntdRegistry>
+                    <Providers>
+                      <LayoutComponent
+                        restrictedPages={restrictedPages}
+                        user={user}
+                        children={children}
+                        isDemoUser={isDemoUser}
+                        isRestricted={isRestricted}
+                      />
+                    </Providers>
+                  </AntdRegistry>
+                </ThemeProvider>
+              </>
+
+              <Toaster
+                theme="light"
+                closeButton
+                richColors
+                position="top-right"
+              />
+            </UserProvider>
           </body>
         </>
       </HelpModeProvider>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "../../components/ui/button";
-import { Link2 } from "lucide-react";
+import { Info, Link2 } from "lucide-react";
 import {
   baseURL,
   basicAuth,
@@ -21,6 +21,7 @@ import ProfileActions from "./super-admin/ProfilesActions";
 import UserRestrictions from "./super-admin/UserRestrictions";
 import SystemInfo from "./super-admin/SystemInfo";
 import RecommendationProfiles from "./super-admin/RecommendationProfiles";
+import AddNewUser from "./super-admin/AddNewUser";
 
 const AdminProfile = ({
   user,
@@ -106,7 +107,19 @@ const AdminProfile = ({
 
       <div className="m-4 my-6">
         <p className="text-base max-sm:text-sm font-semibold">Actions</p>
+        <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md my-2 flex flex-row items-center">
+          {" "}
+          <Info className="h-3 w-3 mr-2 inline" />
+          Updates will be reflected in 10 mins.
+        </p>
+
         <div className="flex flex-row items-start gap-4 flex-wrap my-2">
+          <AddNewUser
+            clientsData={clientsData}
+            componentLoading={loading}
+            getAllClientsData={getAllClientsData}
+          />
+
           <ClientActions
             clientsData={clientsData}
             allUsers={allUsers}

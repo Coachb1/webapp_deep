@@ -44,6 +44,9 @@ import UserBotIntake from "./UserBotIntake";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 import Link from "next/link";
+import { NavProfileWoProfile } from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
+import { useUser } from "@/context/UserContext";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -63,6 +66,10 @@ const CoachIntake = ({ user }: any) => {
   const userEmailParams = params.get("user_email");
   const userNameParams = params.get("user_name");
   const router = useRouter();
+
+  const [loading, setLoading] = useState<boolean>(
+    checkIfEdit === "true" || checkIfView === "true" || adminEdit === "true"
+  );
 
   const [canCreateProfile, setCanCreateProfile] = useState(true);
 
@@ -225,8 +232,7 @@ const CoachIntake = ({ user }: any) => {
   const [mediaData, setMediaData] = useState<MediaData>();
   const [optionalMediaData, setOptionalMediaData] =
     useState<OptionalMediaData>();
-  const [updatedOptionalFile, setUpdatedOptionalFile] =
-    useState({});
+  const [updatedOptionalFile, setUpdatedOptionalFile] = useState({});
   const [dataModified, setDataModified] = useState(false);
 
   const resetAllStates = () => {
@@ -280,6 +286,10 @@ const CoachIntake = ({ user }: any) => {
     setDiscussionTopics("");
   };
 
+  const [restrictedFeatures, setRestrictedFeatures] = useState("");
+
+  const { getAllDirectoryData, getFeedbackBotsData } = useUser();
+
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
       fetch(
@@ -295,6 +305,7 @@ const CoachIntake = ({ user }: any) => {
         .then((data) => {
           console.log(data);
           setClientinfoData(data.data);
+          setRestrictedFeatures(data.data.user_info[0].restricted_features);
 
           if (
             data.data.user_info[0].departments !== null &&
@@ -546,6 +557,7 @@ const CoachIntake = ({ user }: any) => {
                   );
                   setTimeout(() => {
                     router.push("/");
+                    getAllDirectoryData();
                   }, 4000);
                 }
               }
@@ -674,7 +686,9 @@ const CoachIntake = ({ user }: any) => {
             );
             formdata.append(
               "provide_answers_using_emojis",
-              `${provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false}`
+              `${
+                provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
+              }`
             );
             formdata.append(
               "significant_challenges_and_solutions",
@@ -828,7 +842,10 @@ const CoachIntake = ({ user }: any) => {
                     "2": {
                       coach:
                         "I want a coach & mentor someone from the same department.",
-                      cochee: coachMentInSameDep.toLowerCase() === "yes" ? true : false,
+                      cochee:
+                        coachMentInSameDep.toLowerCase() === "yes"
+                          ? true
+                          : false,
                     },
                     "3": {
                       coach:
@@ -914,7 +931,9 @@ const CoachIntake = ({ user }: any) => {
                         discussInCARformat,
                       journey_and_background: journeyAndBackground,
                       provide_answers_using_emojis: `${
-                        provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
+                        provideAnswersUsingEmojis.toLowerCase() === "yes"
+                          ? true
+                          : false
                       }`,
                       common_phrases_and_expressions: phrasesNExpressions,
                       significant_challenges_and_solutions:
@@ -1028,6 +1047,7 @@ const CoachIntake = ({ user }: any) => {
                                 }
                               );
                               resetAllStates();
+                              getAllDirectoryData();
                               setTimeout(() => {
                                 router.push("/");
                               }, 4000);
@@ -1085,7 +1105,9 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
+                  getAllDirectoryData();
                   setTimeout(() => {
+                    getAllDirectoryData();
                     router.push("/");
                   }, 4000);
                 }
@@ -1104,7 +1126,7 @@ const CoachIntake = ({ user }: any) => {
             formdata.forEach((value, key) => {
               formDataObject[key] = value;
             });
-            if (formType === 'coachee'){
+            if (formType === "coachee") {
               // deleting optional file
               let deletingOptionalFiles: string = "";
               if (optionalMediaData?.extracted_from_optional_file) {
@@ -1121,22 +1143,24 @@ const CoachIntake = ({ user }: any) => {
               interface UpdatedOptionalFile {
                 [key: string]: any;
               }
-              if(deletingOptionalFiles){
-                console.log('del',deletingOptionalFiles,updatedOptionalFile)
-                let updateOptionalFile: UpdatedOptionalFile = { ...updatedOptionalFile }; // Create a shallow copy to avoid mutating the original object
+              if (deletingOptionalFiles) {
+                console.log("del", deletingOptionalFiles, updatedOptionalFile);
+                let updateOptionalFile: UpdatedOptionalFile = {
+                  ...updatedOptionalFile,
+                }; // Create a shallow copy to avoid mutating the original object
 
                 if (deletingOptionalFiles) {
-                  deletingOptionalFiles.split(",").forEach(fileName => {
+                  deletingOptionalFiles.split(",").forEach((fileName) => {
                     delete updateOptionalFile[fileName];
                   });
                 }
 
-                console.log(updateOptionalFile,formdata)
+                console.log(updateOptionalFile, formdata);
 
-                formDataObject['optional_file_data'] = JSON.stringify(updateOptionalFile);
+                formDataObject["optional_file_data"] =
+                  JSON.stringify(updateOptionalFile);
               }
             }
-
 
             // Convert the object to JSON
             var formDataJSON = JSON.stringify(formDataObject);
@@ -1148,11 +1172,14 @@ const CoachIntake = ({ user }: any) => {
             myHeaders.append("Content-Type", "application/json");
             // }
 
-            let reapproval = "true";
-            if (formType === "coachee") {
-              reapproval = "false";
+            let reapproval = "false";
+            if (
+              formType === "coach" &&
+              clientInfoData?.user_info[0].send_profile_for_reapproval
+            ) {
+              reapproval = "true";
             }
-            console.log(reapproval);
+            console.log(reapproval, clientInfoData, "clientInfoData");
             fetch(
               `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?profile_id=${userProfileId}&for_reapproval=${reapproval}`,
               {
@@ -1296,36 +1323,36 @@ const CoachIntake = ({ user }: any) => {
                             );
                             console.log(text);
                           } else {
-                          if (file.name.includes(".pdf")) {
-                            if (text) {
-                              filesPatchFormData.append(
-                                "pdf_data",
-                                `file_name:${file.name.trim()} text_file:${text}`
-                              );
-                              console.log(text);
-                            } else {
-                              filesPatchFormData.append(
-                                `attached_pdfs`,
-                                file,
-                                file.name.trim()
-                              );
-                            }
-                          } else if (file.name.includes(".docx")) {
-                            if (text) {
-                              filesPatchFormData.append(
-                                `doc_data`,
-                                `file_name:${file.name.trim()} text_file:${text}`
-                              );
-                              console.log(text);
-                            } else {
-                              filesPatchFormData.append(
-                                `attached_docs`,
-                                file,
-                                file.name.trim()
-                              );
+                            if (file.name.includes(".pdf")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  "pdf_data",
+                                  `file_name:${file.name.trim()} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_pdfs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
+                            } else if (file.name.includes(".docx")) {
+                              if (text) {
+                                filesPatchFormData.append(
+                                  `doc_data`,
+                                  `file_name:${file.name.trim()} text_file:${text}`
+                                );
+                                console.log(text);
+                              } else {
+                                filesPatchFormData.append(
+                                  `attached_docs`,
+                                  file,
+                                  file.name.trim()
+                                );
+                              }
                             }
                           }
-                        }
                         });
                       }
 
@@ -1626,15 +1653,16 @@ const CoachIntake = ({ user }: any) => {
                       router.push("/profile");
                     }, 4000);
                   } else {
-                    toast.success(
+                    toast.loading(
                       "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
                       {
-                        duration: 6000,
+                        duration: 10000,
                       }
                     );
                     setTimeout(() => {
+                      getFeedbackBotsData();
                       router.push("/");
-                    }, 4000);
+                    }, 10000);
                   }
                   resetAllStates();
                 } else {
@@ -1723,6 +1751,7 @@ const CoachIntake = ({ user }: any) => {
     )[0];
     coachtalk.setAttribute("style", "display: none;");
     coachScribe.setAttribute("style", "display: none;");
+    // setLoading(true);
 
     if (user && !adminEdit) {
       getClientInfoForUser(user.email);
@@ -1774,6 +1803,7 @@ const CoachIntake = ({ user }: any) => {
                     resultingBot.signature_bot.data.additional_data.suggested_projects?.trim()
                   );
                 }
+                setLoading(false);
               });
           });
       } else if (formType === "coach") {
@@ -1903,20 +1933,26 @@ const CoachIntake = ({ user }: any) => {
                   resultingBot.signature_bot.data.additional_data.admired_leaders?.trim()
                 );
                 setVoiceSample(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data.voice_sample)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data.voice_sample
+                  )
                     ? "Yes"
                     : "No"
                 );
 
                 setProvideAnswersUsingEmojis(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .provide_answers_using_emojis)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .provide_answers_using_emojis
+                  )
                     ? "Yes"
                     : "No"
                 );
                 setAllowSessionNotes(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .allow_coachee_to_create_session)
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .allow_coachee_to_create_session
+                  )
                     ? "Yes"
                     : "No"
                 );
@@ -1931,8 +1967,10 @@ const CoachIntake = ({ user }: any) => {
                 );
 
                 setCochMentInSameDep(
-                  [true, 'true','True'].includes(resultingBot.signature_bot.data.additional_data
-                    .fitment_answers[1])
+                  [true, "true", "True"].includes(
+                    resultingBot.signature_bot.data.additional_data
+                      .fitment_answers[1]
+                  )
                     ? "Yes"
                     : "No"
                 );
@@ -2019,6 +2057,7 @@ const CoachIntake = ({ user }: any) => {
                     ]
                   );
                 }
+                setLoading(false);
               });
           });
       } else if (formType === "coachee") {
@@ -2064,7 +2103,11 @@ const CoachIntake = ({ user }: any) => {
 
                 setParticipantLevel(resultingBot.coaching_level);
                 setCochMentInSameDep(
-                  [true, 'true','True'].includes(resultingBot.coach_same_department) ? "Yes" : "No"
+                  [true, "true", "True"].includes(
+                    resultingBot.coach_same_department
+                  )
+                    ? "Yes"
+                    : "No"
                 );
 
                 setOutcomeSupported(resultingBot.supported_outcome);
@@ -2077,9 +2120,10 @@ const CoachIntake = ({ user }: any) => {
                     resultingBot.optional_file_data
                   )
                 );
-                if (resultingBot.optional_file_data){
+                if (resultingBot.optional_file_data) {
                   setUpdatedOptionalFile(resultingBot.optional_file_data);
                 }
+                setLoading(false);
               });
           });
       }
@@ -2109,52 +2153,49 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  const handleRequiredSelections = async(profile_type='coach') => {
-    console.log(experience,'experience')
-    
+  const handleRequiredSelections = async (profile_type = "coach") => {
+    console.log(experience, "experience");
+
     const coachFields = [
-      {"SupportOutcome": outcomeSupported},
-      {"coachSameDepartment": coachMentInSameDep}, 
-      {"ParticipantLevel": participantLevel},
-      {"UseEmoji": provideAnswersUsingEmojis}, 
-      {"MentoringFramework": mentoringPreferencess}, 
-      {"UserMentoringPre": mentoringPreferences}, 
-      {"UserDepartment": department}, 
-      {"UserAreaDomain": areaDomain},
-      {"UserExperience": experience},
-      {"VoiceSample": voiceSample},
-      {"AllowActionPlan": allowSessionNotes}
-    ]
+      { SupportOutcome: outcomeSupported },
+      { coachSameDepartment: coachMentInSameDep },
+      { ParticipantLevel: participantLevel },
+      { UseEmoji: provideAnswersUsingEmojis },
+      { MentoringFramework: mentoringPreferencess },
+      { UserMentoringPre: mentoringPreferences },
+      { UserDepartment: department },
+      { UserAreaDomain: areaDomain },
+      { UserExperience: experience },
+      { VoiceSample: voiceSample },
+      { AllowActionPlan: allowSessionNotes },
+    ];
 
     const coacheeFields = [
-      {"SupportOutcome": outcomeSupported},
-      {"coachSameDepartment": coachMentInSameDep}, 
-      {"ParticipantLevel": participantLevel},
-      {"UserExperience": experience},
-      {"UserDepartment": department}, 
-
-    ]
+      { SupportOutcome: outcomeSupported },
+      { coachSameDepartment: coachMentInSameDep },
+      { ParticipantLevel: participantLevel },
+      { UserExperience: experience },
+      { UserDepartment: department },
+    ];
 
     let errors = [];
-    
 
-    const listOfFields = profile_type === 'coach'? coachFields : coacheeFields
+    const listOfFields = profile_type === "coach" ? coachFields : coacheeFields;
 
-    listOfFields.forEach(field => {
+    listOfFields.forEach((field) => {
       Object.entries(field).forEach(([key, value]) => {
-        if (value.length == 0){
-          errors.push("field required")
+        if (value.length == 0) {
+          errors.push("field required");
         }
-        handleRequiredSelection(value, key)
+        handleRequiredSelection(value, key);
       });
     });
 
-    if (errors.length > 0){
-      return false
-    }else{
-      return true
+    if (errors.length > 0) {
+      return false;
+    } else {
+      return true;
     }
-
 
     // if (experience.trim().length == 0){
     //   handleRequiredSelection(experience,'UserExperience')
@@ -2166,14 +2207,14 @@ const CoachIntake = ({ user }: any) => {
     // } else {
     //   return true
     // }
-  }
+  };
 
   const handleRequiredSelection = (
-    input_value:string,
-    fieldName:string,
+    input_value: string,
+    fieldName: string,
     errorMessage = "This field is required."
   ) => {
-    console.log('input_value',input_value)
+    console.log("input_value", input_value);
     if (input_value.length > 0) {
       setDataModified(true);
       setError((prevErrors) => ({
@@ -2188,7 +2229,6 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
-  
   const handleWordLimitMin = (
     input_value: string,
     minLimit: number,
@@ -2344,6 +2384,27 @@ const CoachIntake = ({ user }: any) => {
 
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
+      <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
+        <div className="ml-4">
+          {checkIfEdit === "true" ||
+          checkIfView === "true" ||
+          adminEdit === "true" ? (
+            <NavProfileWoProfile user={user} />
+          ) : (
+            <>
+              <NetworkNav restrictedPages={restrictedFeatures} user={user} />
+            </>
+          )}
+        </div>
+      </div>
+      {loading && (
+        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-md z-50">
+          <div className="p-2 bg-gray-300 rounded-md text-sm">
+            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
+            Please wait. We are fetching your Data.
+          </div>
+        </div>
+      )}
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -2352,7 +2413,9 @@ const CoachIntake = ({ user }: any) => {
           BOTS
         </h1>
         <Badge variant={"outline"}>Private. For system use only</Badge>
-        {formType === "knowledge-bot" && <UserBotIntake user={user} />}
+        {formType === "knowledge-bot" && (
+          <UserBotIntake setLoading={setLoading} user={user} />
+        )}
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
@@ -2365,10 +2428,10 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
                   const is_proceed = await handleRequiredSelections();
-                  console.log('error', error)
+                  console.log("error", error);
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
@@ -2386,7 +2449,9 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" /> All fields are required.
+                      <Info className="h-4 w-4 mr-1" />{" "}
+                      <p className="text-sm">*</p> mark questions are mandatory
+                      in nature.
                     </Badge>
                   )}
                   {checkIfEdit && (
@@ -2430,7 +2495,10 @@ const CoachIntake = ({ user }: any) => {
                     />
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">Enter your name</p>
+                    <p className="text-sm my-1">
+                      Enter your name{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
+                    </p>
                     <input
                       value={name}
                       required
@@ -2453,7 +2521,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please add a profile description.
+                      Please add a profile description.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       value={about}
@@ -2483,7 +2552,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Total number of years of experience.
+                      Total number of years of experience.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <RadioGroup
@@ -2563,7 +2633,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please share your journey and background story,
                       highlighting experiences that have shaped your path to
-                      where you are today?
+                      where you are today?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       rows={4}
@@ -2593,7 +2664,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Which department/ business unit you belong to?
+                      Which department/ business unit you belong to?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <RadioGroup
                       value={department}
@@ -2617,16 +2689,17 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </RadioGroup>
                     {Object.keys(error).includes("UserDepartment") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserDepartment"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["UserDepartment"]}
+                      </p>
+                    )}
                   </div>
 
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Select the area/domain that you are most passionate about
                       coaching and mentoring.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                       <Tooltip
                         overlayInnerStyle={{
                           backgroundColor: "white",
@@ -2675,7 +2748,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Which way do you want to help the program participants the
-                      most?
+                      most?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -2713,7 +2787,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please mention any coaching & mentoring frameworks or
-                      tools that you use in your approach.
+                      tools that you use in your approach.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-1">
                       {models.map((model) => (
@@ -2788,15 +2863,16 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </div>
                     {Object.keys(error).includes("MentoringFramework") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["MentoringFramework"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["MentoringFramework"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself near the lows.
+                      rate yourself near the lows.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -2808,7 +2884,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself highly.
+                      rate yourself highly.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -2821,7 +2898,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please articulate your dominant point of view which you
                       want to discuss with the program participants as a general
-                      starting point.
+                      starting point.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2855,7 +2933,8 @@ const CoachIntake = ({ user }: any) => {
 
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      What is your general approach towards problem solving?
+                      What is your general approach towards problem solving?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2891,7 +2970,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       What were the 3 most significant challenges you
                       encountered in your journey, and how did you successfully
-                      navigate and overcome them?
+                      navigate and overcome them?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
@@ -2926,13 +3006,14 @@ const CoachIntake = ({ user }: any) => {
                       Are there any phrases or expressions you find yourself
                       using often in conversations? These could be catchphrases,
                       favorite quotes, or unique sayings that reflect your
-                      personality.
+                      personality.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         onChange={(e) => {
                           const inputValue = e.target.value;
 
@@ -2959,7 +3040,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please add names of 1-2 well-known leaders that you
-                      admire.
+                      admire.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <input
@@ -3008,7 +3090,12 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please enter 1-2 YouTube links that reflect your worldview
                       on personal & professional development. (Separate multiple
-                      links by comma)
+                      links by comma){" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
                     <div>
                       <textarea
@@ -3103,7 +3190,12 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Please enter 1-2 article links that reflect what you
                       wished everyone would follow in their growth journey.
-                      (Separate multiple links by comma)
+                      (Separate multiple links by comma){" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
                     <div>
                       <textarea
@@ -3197,7 +3289,12 @@ const CoachIntake = ({ user }: any) => {
                       reference materials that may help your mentees and
                       participants. Feel free to upload relevant materials:
                       guides, templates, and resources that support your mentees
-                      and participants in their learning journey.
+                      and participants in their learning journey.{" "}
+                      {!checkIfEdit && (
+                        <span className="text-xl font-bold text-red-500">
+                          *
+                        </span>
+                      )}
                     </p>
 
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
@@ -3372,7 +3469,8 @@ const CoachIntake = ({ user }: any) => {
                     <p className="text-sm my-1">
                       Do you want to provide a voice sample, if you want an
                       audio avatar? (We will separately contact you for the
-                      same)
+                      same){" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3406,7 +3504,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Allow Coachee and Mentee to update action plan and session
-                      notes?
+                      notes?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3441,13 +3540,14 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please discuss how you have helped others as a
-                      coach/mentor or in other professional capacity.
+                      coach/mentor or in other professional capacity.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         value={discussInCARformat}
                         onChange={(e) => {
                           const inputValue = e.target.value;
@@ -3474,7 +3574,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Would you like your AI Avatar to provide expressive
-                      answers using emojis?
+                      answers using emojis?{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div className="my-2 mb-3">
                       <RadioGroup
@@ -3517,13 +3618,16 @@ const CoachIntake = ({ user }: any) => {
                         <p className="text-sm my-1">
                           As a coach, what foundational values do you believe
                           individuals should prioritize and strive for in their
-                          personal and professional development journey?
+                          personal and professional development journey?{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </p>
                         <div>
                           <textarea
                             disabled={checkIfView === null ? false : true}
                             rows={4}
-                            required={!checkIfEdit}
+                            required
                             value={foundationalValues}
                             onChange={(e) => {
                               setFoundationalValues(e.target.value);
@@ -3550,13 +3654,16 @@ const CoachIntake = ({ user }: any) => {
                           In your role as a coach, what kind of developmental
                           framework do you employ, and why do you consider it to
                           be the optimal framework for facilitating personal
-                          growth ?
+                          growth ?{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </p>
                         <div>
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={developmentFramewrok}
                             onChange={(e) => {
                               setDevelopmentFrameworks(e.target.value);
@@ -3582,7 +3689,10 @@ const CoachIntake = ({ user }: any) => {
                       <hr />
                       <div className="my-2">
                         <h3 className="font-semibold text-base text-gray-600">
-                          Coaching FAQs
+                          Coaching FAQs{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </h3>
                         <p className="text-sm text-gray-600">
                           Note: Answer these in first person as if you are
@@ -3599,7 +3709,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={coachingProcessOverview}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3634,7 +3744,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={handlingSituations}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3669,7 +3779,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={integratingLessons}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3705,7 +3815,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={guidanceOnCoachingProcess}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3747,7 +3857,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={differentCareerPath}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3783,7 +3893,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={problemSolvingApproachInDomain}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3812,7 +3922,10 @@ const CoachIntake = ({ user }: any) => {
                       <hr />
                       <div className="my-2">
                         <h3 className="font-semibold text-base text-gray-600">
-                          Mentoring FAQs
+                          Mentoring FAQs{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
                         </h3>
                         <p className="text-sm text-gray-600">
                           Note: Answer these in first person as if you are
@@ -3829,7 +3942,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={overviewofMentoring}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3865,7 +3978,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={opportunitiesOfGrowth}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3902,7 +4015,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={commonChallengesOrObstacles}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3938,7 +4051,7 @@ const CoachIntake = ({ user }: any) => {
                           <textarea
                             rows={4}
                             disabled={checkIfView === null ? false : true}
-                            required={!checkIfEdit}
+                            required
                             value={opinionsAboutKeyQualities}
                             onChange={(e) => {
                               const inputValue = e.target.value;
@@ -3968,7 +4081,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Quick Match Analysis
+                      Quick Match Analysis{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the participant,
@@ -4174,15 +4288,17 @@ const CoachIntake = ({ user }: any) => {
                       </div>
                     </>
                   )}
-                  {checkIfEdit && (
-                    <div className="flex flex-row mt-2">
-                      <Info className="h-4 w-4 mr-1 inline text-red-400" />
-                      <p className=" w-fit text-xs font-semibold text-red-400">
-                        Upon Save, the bot will be temporarily not available
-                        unless approved.
-                      </p>
-                    </div>
-                  )}
+                  {checkIfEdit &&
+                    clientInfoData?.user_info[0]
+                      .send_profile_for_reapproval && (
+                      <div className="flex flex-row mt-2">
+                        <Info className="h-4 w-4 mr-1 inline text-red-400" />
+                        <p className=" w-fit text-xs font-semibold text-red-400">
+                          Upon Save, the bot will be temporarily not available
+                          unless approved.
+                        </p>
+                      </div>
+                    )}
                 </div>
               </form>
             </div>
@@ -4200,10 +4316,10 @@ const CoachIntake = ({ user }: any) => {
               </p>
               <form
                 className="text-left"
-                onSubmit={async(e: FormEvent<HTMLFormElement>) => {
+                onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                   e.preventDefault();
-                  const is_proceed = await handleRequiredSelections('coachee');
-                  console.log('error', error)
+                  const is_proceed = await handleRequiredSelections("coachee");
+                  console.log("error", error);
                   const errors = Object.values(error).filter(
                     //@ts-ignore
                     (err: string) => err.length > 0
@@ -4228,7 +4344,9 @@ const CoachIntake = ({ user }: any) => {
                     variant={"secondary"}
                     className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
                   >
-                    <Info className="h-4 w-4 mr-1" /> All fields are required.
+                    <Info className="h-4 w-4 mr-1" />{" "}
+                    <p className="text-sm">*</p> mark questions are mandatory in
+                    nature.
                   </Badge>
                 )}
                 <div>
@@ -4259,7 +4377,10 @@ const CoachIntake = ({ user }: any) => {
                     />
                   </div>
                   <div className="my-3">
-                    <p className="text-sm my-1">Enter your name</p>
+                    <p className="text-sm my-1">
+                      Enter your name{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
+                    </p>
                     <input
                       required
                       value={name}
@@ -4284,7 +4405,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please add a profile description.
+                      Please add a profile description.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <textarea
                       value={about}
@@ -4313,7 +4435,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Total number of years of experience.
+                      Total number of years of experience.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <RadioGroup
@@ -4373,11 +4496,11 @@ const CoachIntake = ({ user }: any) => {
                             uploadedImage
                               .then((data) => {
                                 setProfileImageUrl(data);
-                                setDataModified(true)
+                                setDataModified(true);
                                 console.log(data);
                               })
                               .catch((err) => {
-                                setDataModified(true)
+                                setDataModified(true);
                                 setProfileImageUrl(
                                   "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
                                 );
@@ -4394,7 +4517,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself near the lows.
+                      rate yourself near the lows.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -4406,7 +4530,8 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Please rate the characteristics/skills on which you will
-                      rate yourself highly.
+                      rate yourself highly.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <CharactericticsSelect
                       disabled={checkIfView === null ? false : true}
@@ -4509,7 +4634,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="mt-2" />
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please list your department affiliation.
+                      Please list your department affiliation.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <RadioGroup
                       required
@@ -4533,10 +4659,10 @@ const CoachIntake = ({ user }: any) => {
                       ))}
                     </RadioGroup>
                     {Object.keys(error).includes("UserDepartment") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserDepartment"]}
-                        </p>
-                      )}
+                      <p className="text-red-500 text-xs mt-1">
+                        {(error as any)["UserDepartment"]}
+                      </p>
+                    )}
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
@@ -4569,7 +4695,8 @@ const CoachIntake = ({ user }: any) => {
                   <hr className="my-2" />
                   <div className="my-2">
                     <h3 className="font-semibold text-base text-gray-600">
-                      Quick Match Analysis
+                      Quick Match Analysis{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </h3>
                     <p className="text-sm text-gray-600">
                       This section analyzes your fitment with the coach &
@@ -4689,13 +4816,14 @@ const CoachIntake = ({ user }: any) => {
                   <div className="my-2 mb-3">
                     <p className="text-sm my-1">
                       Please describe in detail the challenges you believe the
-                      coach or mentor can help with.
+                      coach or mentor can help with.{" "}
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required
                         value={challengesToHelp}
                         onChange={(e) => {
                           setDataModified(true);
@@ -4826,7 +4954,9 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" /> All fields are required.
+                      <Info className="h-4 w-4 mr-1" />{" "}
+                      <p className="text-sm">*</p> mark questions are mandatory
+                      in nature.
                     </Badge>
                   )}
                   {checkIfView && (
@@ -4848,7 +4978,10 @@ const CoachIntake = ({ user }: any) => {
                   )}
                 </div>
                 <div className="my-3">
-                  <p className="text-sm my-1">Enter your name</p>
+                  <p className="text-sm my-1">
+                    Enter your name{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
+                  </p>
                   <input
                     value={name}
                     required
@@ -4871,7 +5004,8 @@ const CoachIntake = ({ user }: any) => {
                 </div>
                 <div className="my-3">
                   <p className="text-sm my-1">
-                    Please add a short profile bio.
+                    Please add a short profile bio.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <textarea
                     value={profileBio}
@@ -4896,7 +5030,8 @@ const CoachIntake = ({ user }: any) => {
 
                 <div className="my-3">
                   <p className="text-sm my-1">
-                    Please enter your Current Projects
+                    Please enter your Current Projects{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <textarea
                     value={currentProjects}
@@ -4921,7 +5056,8 @@ const CoachIntake = ({ user }: any) => {
                 <div className="my-3">
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
-                    rate yourself near the lows.
+                    rate yourself near the lows.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}
@@ -4933,7 +5069,8 @@ const CoachIntake = ({ user }: any) => {
                 <div className="my-3">
                   <p className="text-sm my-1">
                     Please rate the characteristics/skills on which you will
-                    rate yourself highly.
+                    rate yourself highly.{" "}
+                    <span className="text-xl font-bold text-red-500">*</span>
                   </p>
                   <CharactericticsSelect
                     disabled={checkIfView === null ? false : true}

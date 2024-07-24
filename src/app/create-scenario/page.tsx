@@ -13,7 +13,7 @@ import { knowledgeBotJson } from "@/lib/types";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 
 export const metadata = constructMetadata({
-  title: "Creator Studio - Coachbots",
+  title: "Studio - Coachbots",
 });
 
 const getUserAccountsData = async (user: KindeUser | null) => {
@@ -135,14 +135,30 @@ const getknowledgeBotss = async (userEmail: string) => {
               botJson.faqs["What is the primary purpose of the bot?"];
           }
           if (item.signature_bot.is_approved) {
-            knowledgeBotss.push({
-              bot_id: botJson.bot_id,
-              bot_name: item.bot_attributes.bot_name,
-              bot_type: botJson.bot_type,
-              description: description,
-              scenario_case: botJson.bot_scenario_case,
-              creator_name: botJson.creator_name,
-            });
+            if (!item.signature_bot.is_private) {
+              knowledgeBotss.push({
+                bot_id: botJson.bot_id,
+                bot_name: item.bot_attributes.bot_name,
+                bot_type: botJson.bot_type,
+                description: description,
+                scenario_case: botJson.bot_scenario_case,
+                creator_name: botJson.creator_name,
+              });
+            } else {
+              if (
+                item.signature_bot.user_id ===
+                responseData.data.user_info[0].user_id
+              ) {
+                knowledgeBotss.push({
+                  bot_id: botJson.bot_id,
+                  bot_name: item.bot_attributes.bot_name,
+                  bot_type: botJson.bot_type,
+                  description: description,
+                  scenario_case: botJson.bot_scenario_case,
+                  creator_name: botJson.creator_name,
+                });
+              }
+            }
           }
         });
         return { knowledgeBotss, restrictedFeatures, clientName };
@@ -198,29 +214,29 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const { knowledgeBotss, restrictedFeatures, clientName, helpText } =
-    await getknowledgeBotss(user?.email!);
+  // const { knowledgeBotss, restrictedFeatures, clientName, helpText } =
+  //   await getknowledgeBotss(user?.email!);
 
-  const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
-    await getUserAccountsData(user);
+  // const { accessDenied, accessAllowed, coachId, coacheeId, userRole } =
+  //   await getUserAccountsData(user);
 
-  console.log(clientName);
-  const { clientUsers } = await getClientUsers();
+  // console.log(clientName);
+  // const { clientUsers } = await getClientUsers();
 
   return (
     <div>
       <CreateOwn
         user={user}
-        accessAllowed={accessAllowed}
-        restrictedFeatures={restrictedFeatures}
-        knowledgeBots={knowledgeBotss}
-        clientName={clientName}
-        accessDenied={accessDenied}
-        coachId={coachId}
-        coacheeId={coacheeId}
-        clientUsers={clientUsers}
-        userRole={userRole}
-        helpModeText={helpText}
+        // accessAllowed={accessAllowed}
+        // restrictedFeatures={restrictedFeatures}
+        // knowledgeBots={knowledgeBotss}
+        // clientName={clientName}
+        // accessDenied={accessDenied}
+        // coachId={coachId}
+        // coacheeId={coacheeId}
+        // clientUsers={clientUsers}
+        // userRole={userRole}
+        // helpModeText={helpText}
       />
     </div>
   );

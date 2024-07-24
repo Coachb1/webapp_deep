@@ -44,45 +44,45 @@ import { Badge } from "@/components/ui/badge";
 import { GoogleGeminiEffectLibrary } from "@/components/ui/GoogleGeminiEffect";
 import { Div } from "@/components/ui/moving-border";
 import BorderShadow from "@/components/ui/border-shadow";
+import { useUser } from "@/context/UserContext";
 
 const CreateOwn = ({
   user,
-  knowledgeBots,
-  // deepdiveCreationAccess,
-  restrictedFeatures,
-  clientName,
-  accessDenied,
-  accessAllowed,
-  coachId,
-  coacheeId,
-  clientUsers,
-  userRole,
-  helpModeText,
-}: {
+}: // knowledgeBots,
+// // deepdiveCreationAccess,
+// restrictedFeatures,
+// clientName,
+// accessDenied,
+// accessAllowed,
+// coachId,
+// coacheeId,
+// clientUsers,
+// userRole,
+// helpModeText,
+{
   user: KindeUser | null;
-  knowledgeBots: {
-    bot_id: string;
-    bot_name: string;
-    description: string;
-    bot_type: string;
-    scenario_case: string;
-    creator_name: string;
-  }[];
-  restrictedFeatures: string;
-  clientName: string;
-  accessDenied: string;
-  accessAllowed: string;
-  coachId: string;
-  coacheeId: string;
-  clientUsers: ClientUserTeamType[];
-  userRole: string;
-  helpModeText: any;
+  // knowledgeBots: {
+  //   bot_id: string;
+  //   bot_name: string;
+  //   description: string;
+  //   bot_type: string;
+  //   scenario_case: string;
+  //   creator_name: string;
+  // }[];
+  // restrictedFeatures: string;
+  // clientName: string;
+  // accessDenied: string;
+  // accessAllowed: string;
+  // coachId: string;
+  // coacheeId: string;
+  // clientUsers: ClientUserTeamType[];
+  // userRole: string;
+  // helpModeText: any;
 }) => {
   const params = useSearchParams();
   const scrollViewFromParams = params.get("scrollView");
   const [searchMode, setSearchMode] = useState("youtube");
   const [glGenerateLoading, setGlGenerateLoading] = useState(false);
-  const [userId, setUserId] = useState("");
 
   const [contextPrompt, setContextPrompt] = useState(
     "Please enter the context and search!"
@@ -121,16 +121,28 @@ const CreateOwn = ({
 
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
 
+  const {
+    userInfo: { clientName, helpText: helpModeText, restrictedFeatures },
+    clientUsers,
+    userId,
+    userName,
+    knowledgeBots,
+    userRole,
+    userAccess: { accessDenied },
+    coacheeId,
+    coachId,
+  } = useUser();
+
   useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          setUserId(data.uid);
-        });
-      console.log(clientName);
-      console.log(clientUsers);
-    }
+    // if (user) {
+    //   getUserAccount(user)
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       setUserId(data.uid);
+    //     });
+    //   console.log(clientName);
+    //   console.log(clientUsers);
+    // }
 
     if (
       ["admin", "super_admin", "client_admin", "deep_dive_creator"].includes(
@@ -139,7 +151,7 @@ const CreateOwn = ({
     ) {
       setDeepDiveCreatorAccess(true);
     } else {
-      if (!accessDenied.includes("Deepdive-creator")) {
+      if (!accessDenied?.includes("Deepdive-creator")) {
         setDeepDiveCreatorAccess(true);
       }
     }
@@ -147,7 +159,7 @@ const CreateOwn = ({
     if (["admin", "super_admin", "client_admin"].includes(userRole)) {
       setScenarioCreationAccess(true);
     } else {
-      if (!accessDenied.includes("Simulation-creator")) {
+      if (!accessDenied?.includes("Simulation-creator")) {
         setScenarioCreationAccess(true);
       }
     }
@@ -203,6 +215,28 @@ const CreateOwn = ({
       }
     }, 200);
   }, []);
+
+  useEffect(() => {
+    if (
+      ["admin", "super_admin", "client_admin", "deep_dive_creator"].includes(
+        userRole
+      )
+    ) {
+      setDeepDiveCreatorAccess(true);
+    } else {
+      if (!accessDenied?.includes("Deepdive-creator")) {
+        setDeepDiveCreatorAccess(true);
+      }
+    }
+
+    if (["admin", "super_admin", "client_admin"].includes(userRole)) {
+      setScenarioCreationAccess(true);
+    } else {
+      if (!accessDenied?.includes("Simulation-creator")) {
+        setScenarioCreationAccess(true);
+      }
+    }
+  }, [accessDenied]);
 
   const YoutubeResultComponent = ({
     video_id,
@@ -813,8 +847,8 @@ const CreateOwn = ({
       <MaxWidthWrapper>
         {" "}
         <GoogleGeminiEffectLibrary
-          title="Creator Studio"
-          description="Welcome to the Creator Studio, your hub for collaborative
+          title="Studio"
+          description="Welcome to the Studio, your hub for collaborative
                 innovation. Here, you'll find a suite of tools designed to
                 empower your team's performance. Generate simulations, resolve
                 team queries, assign simulations, craft knowledge bots, and
@@ -875,7 +909,7 @@ const CreateOwn = ({
                     </Button>
                   )}
 
-                  {deepDiveCreatorAcess && (
+                  {/* {deepDiveCreatorAcess && (
                     <Button
                       onClick={() => {
                         document
@@ -888,7 +922,7 @@ const CreateOwn = ({
                     >
                       Engagement Survey Bots
                     </Button>
-                  )}
+                  )} */}
                   {!restrictedFeatures?.includes("Knowledge-bots") && (
                     <Button
                       onClick={() => {
@@ -914,7 +948,7 @@ const CreateOwn = ({
           <div>
             <div
               id="learning-ideas"
-              className="pt-10 w-full flex flex-col items-center justify-center"
+              className="pt-[10vh] w-full flex flex-col items-center justify-center"
             ></div>
             <div className="max-sm:pb-10 min-h-[20vh] ">
               <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1019,7 +1053,10 @@ const CreateOwn = ({
                                   </Button>
                                 </div>
                               </form>
-                              <div className="flex flex-col gap-2 mt-4">
+                              <div
+                                id="learning-results"
+                                className="flex flex-col gap-2 mt-4"
+                              >
                                 {searchMode === "youtube" && (
                                   <>
                                     {createLoading ? (
@@ -1125,7 +1162,7 @@ const CreateOwn = ({
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="simulation-creator"
-                  className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]   max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1149,6 +1186,9 @@ const CreateOwn = ({
                             >
                               <BorderShadow>
                                 <CreateYourOwn
+                                  clientUsers={clientUsers}
+                                  userId={userId}
+                                  userName={userName}
                                   user={user}
                                   clientName={clientName}
                                 />
@@ -1165,12 +1205,12 @@ const CreateOwn = ({
 
             {!restrictedFeatures?.includes("Team-connect") && (
               <>
-                {!accessDenied.includes("Team-connect") && (
+                {!accessDenied?.includes("Team-connect") && (
                   <>
                     <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                     <div
                       id="team-connect"
-                      className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                      className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                     ></div>
                     <div className="h-fit ">
                       <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1214,12 +1254,12 @@ const CreateOwn = ({
                 )}
               </>
             )}
-            {deepDiveCreatorAcess && (
+            {/* {deepDiveCreatorAcess && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="deepdive-creator"
-                  className={`pt-10 w-full flex flex-col items-center justify-center`} //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className={`pt-[10vh] w-full flex flex-col items-center justify-center`} //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="h-fit ">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1241,7 +1281,10 @@ const CreateOwn = ({
                               <div className="flex flex-col max-sm:flex-col w-[85%] max-sm:w-[90%] mx-auto">
                                 <Div className="" containerClassName="w-full">
                                   <BorderShadow>
-                                    <CreateYourDeepDive user={user} />
+                                    <CreateYourDeepDive
+                                      user={user}
+                                      userId={userId}
+                                    />
                                   </BorderShadow>
                                 </Div>
                               </div>
@@ -1253,13 +1296,13 @@ const CreateOwn = ({
                   </MaxWidthWrapper>
                 </div>
               </>
-            )}
+            )} */}
             {!restrictedFeatures?.includes("Knowledge-bots") && (
               <>
                 <div className="h-[2px] w-[68%] max-sm:w-full bg-gray-200 my-4 mb-8 mx-auto " />
                 <div
                   id="knowledge-bots"
-                  className="pt-10 w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
+                  className="pt-[10vh] w-full flex flex-col items-center justify-center" //pt-[34vh] mt-[-34vh]  max-sm:pt-[42vh] max-sm:mt-[-36vh]
                 ></div>
                 <div className="max-sm:pb-10 min-h-[70vh] max-sm:min-h-[60vh]">
                   <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
@@ -1311,7 +1354,7 @@ const CreateOwn = ({
                                                       <Accordion
                                                         type="single"
                                                         collapsible
-                                                        className="w-full  text-gray-500 max-sm:p-4 rounded-2xl bg-white overflow-clip border"
+                                                        className="w-full  text-slate-900 max-sm:p-4 rounded-2xl bg-white overflow-clip border"
                                                       >
                                                         {knowledgeBots.length ===
                                                         0 ? (

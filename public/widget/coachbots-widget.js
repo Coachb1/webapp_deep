@@ -109,6 +109,8 @@ let allowPastingAtClientLevel;
 let clientBasedBotHeaderText2 = "";
 let clientBasedBotFooterText2 = "";
 let clientBasedReadHereText2 = "";
+let senarioSnippetURL;
+let questionSnippetLink;
 
 
 function createBasicAuthToken(key = "", secret = "") {
@@ -513,6 +515,38 @@ function appendMessage(message) {
   const messageNode = createMessageNode(message);
   gShadowRoot.getElementById("messages").appendChild(messageNode);
   gShadowRoot.getElementById("messages").scrollBy(0, 100);
+}
+
+function snippetDiv(url){
+  if(url.includes("pulse")){
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 70vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  } else {
+    return `
+    <iframe
+      allow="autoplay; encrypted-media; fullscreen;"
+      style="width: 100%; border-radius: 8px; min-height: 45vh; min-width: ${window.innerWidth < 768 ? "100%" :"45vw"}; scrollbar-width: none;"
+      src=${url}
+      frameborder="0"
+      allowfullscreen
+      webkitallowfullscreen 
+      mozallowfullscreen 
+      allowtransparency
+      scrolling="no"
+    >
+    `
+  }
 }
 
 //* loading element with message 
@@ -1480,6 +1514,8 @@ const resetAllVariables = async () => {
   isTestSignedIn;
   clientName = "";
   isTranscriptOnly = false;
+  senarioSnippetURL;
+  questionSnippetLink = null;
   console.log("resetting variables completed");
 };
 
@@ -1681,6 +1717,18 @@ const handleProceedClick = async (choice) => {
       msg.parentNode.replaceChild(que_msg, msg);
     }
 
+    if(
+      questionSnippetLink
+    ){                                          
+      console.log(questionSnippetLink);
+      if (questionSnippetLink.length > 0){
+        const linkList = questionSnippetLink.split(',');
+        linkList.forEach(element => {
+          appendMessage(snippetDiv(element))
+        });
+      }
+
+    }
     //disable Copy Paste
     const textInputElement = gshadowRoot.getElementById("text-input")
     // textInputElement.setAttribute("onpaste", "alert('Pasting text is not allowed for answering the questions asked in the simulation.'); return false;")
@@ -1780,7 +1828,7 @@ const handleProceedClick = async (choice) => {
           if (isImmersive) {
             console.log(initialQuestionText);
             const queText = initialQuestionText;
-            const queDiv = `<p>${queText}</p><br>`;
+           
             const urltts = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
             const response = await fetch(urltts, {
               method: "GET",
@@ -1798,6 +1846,7 @@ const handleProceedClick = async (choice) => {
 
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element").shadowRoot
+            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
 
             initialQuestionText =
               queDiv +
@@ -1815,8 +1864,14 @@ const handleProceedClick = async (choice) => {
               setTimeout(() => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+                const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}}`)
                 console.log(audioElement, canvasElement)
                 audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+                audioElement.addEventListener("ended",() => {
+                  canvasElement.remove()
+                  breakElement.remove()
+                })
               }, 100);
 
             console.log(initialQuestionText);
@@ -1857,7 +1912,7 @@ const handleProceedClick = async (choice) => {
         }
         if (isImmersive) {
           const queText = initialQuestionText;
-          const queDiv = `<p>${queText}</p><br>`;
+         
           const url = `${baseURL}/test-responses/get-text-to-speech/?text=${initialQuestionText}`;
           const response = await fetch(url, {
             method: "GET",
@@ -1876,6 +1931,7 @@ const handleProceedClick = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element").shadowRoot
           
+          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
           initialQuestionText =
             queDiv +
             `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -1893,8 +1949,15 @@ const handleProceedClick = async (choice) => {
           setTimeout(() => {
             const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
             const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+            const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
             console.log(audioElement, canvasElement)
             audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+            audioElement.addEventListener("ended", () => {
+              canvasElement.remove()
+              breakElement.remove()
+            })
+
           }, 100);
         }
         if (responderName) {
@@ -2644,6 +2707,13 @@ async function handleOptionButtonClick(labelText, signals, is_regenerate=false) 
     .catch((err) => console.log(err));
 }
 
+let chatInputFontSize2 = "14px";
+let messageBubbleMaxWidth2 = "60%";
+if(window.innerWidth < 768) {
+  chatInputFontSize2 = "12px"
+  messageBubbleMaxWidth2 = "80%"
+}
+
 //* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
@@ -2799,7 +2869,7 @@ loadExternalModule().then(() => {
       }'
       messageStyles='{
         "default": {
-          "shared": {"bubble": {"maxWidth": "80%", "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
+          "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth2)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
           "ai" : {"bubble": {"backgroundColor": "#f3f4f6"}},
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
@@ -2809,7 +2879,9 @@ loadExternalModule().then(() => {
       }'
       textInput='{
         "styles": {
-          "text": {"color": "black", "fontSize" : "14px"},
+          "text": {"color": "black", "fontSize" :${JSON.stringify(
+            chatInputFontSize2
+          )}},
           "container": {"padding":"4px", "backgroundColor": "white", "border" : "1px solid #d1d5db", "zIndex" : "1"},
           "focus": {"border": "1px solid #9ca3af"}
         },
@@ -2833,6 +2905,15 @@ loadExternalModule().then(() => {
         "alwaysEnabled": true,
         "position": "inside-right"
       }'
+      auxiliaryStyle="
+        ::-webkit-scrollbar {
+          width: 6px;
+          height: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #9ca3af;
+          border-radius: 5px;
+        }"
       demo="true"
       style="border: none"
       displayLoadingBubble="true"
@@ -2857,10 +2938,10 @@ loadExternalModule().then(() => {
           <ul id="instructions-list2">
             <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. For Deep Dive Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
-              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
+              <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
         <span id="close-intructions-pane2" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
@@ -3077,7 +3158,7 @@ loadExternalModule().then(() => {
 
     chatElementRef.initialMessages = [
       {
-        html: `<p>Welcome to Coachbots. Do you have access code for your simulation? (Hint : Try samples on the page!)
+        html: `<p>Welcome to Coachbots. Do you have access code for your simulation?
         </p>`,
         role: "ai",
       },
@@ -3175,7 +3256,7 @@ loadExternalModule().then(() => {
   }
 
   // to check word limit
-  function isValidMessage(text, limit=10,is_greater=false) {
+  function isValidMessage(text, limit=15,is_greater=false) {
     const words = text.split(" ");
     let uppercaseArray = words.map((element) => element.toUpperCase());
     if (
@@ -3380,7 +3461,6 @@ loadExternalModule().then(() => {
   };
 
   const TTSContainer = async (text) => {
-    const queDiv = `<p>${text}</p><br>`;
     const url = `${baseURL}/test-responses/get-text-to-speech/?text=${text}`;
     const response = await fetch(url, {
       method: "GET",
@@ -3398,7 +3478,7 @@ loadExternalModule().then(() => {
 
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element").shadowRoot
-
+    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
     const audioCont =
       queDiv +
       `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -3416,8 +3496,14 @@ loadExternalModule().then(() => {
     setTimeout(() => {
       const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
       const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+      const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement)
       audioCanvasUiForQuestionsStt(audioElement, canvasElement)
+
+      audioElement.addEventListener("ended", () => {
+        canvasElement.remove()
+        breakElement.remove()
+      })
     }, 100);
 
     return audioCont;
@@ -3833,6 +3919,8 @@ loadExternalModule().then(() => {
                 questionData.results[0].questions[questionIndex].question;
               questionMediaLink =
                 questionData.results[0].questions[questionIndex].media_link;
+              questionSnippetLink =
+                questionData.results[0].questions[questionIndex].snippet_url;
               if (isHindi) {
                 questionText = TestUIInfo[`Question ${questionIndex + 1}`];
               }
@@ -3852,7 +3940,16 @@ loadExternalModule().then(() => {
 
               const linkPattern = /(http[s]?:\/\/[^\s]+)/;
               const is_link = linkPattern.test(questionText);
+              
 
+              if (questionSnippetLink) {
+                if (questionSnippetLink.length > 0){
+                  const linkList = questionSnippetLink.split(',');
+                  linkList.forEach(element => {
+                    appendMessage(snippetDiv(element))
+                  });
+                }
+              }
               if (questionMediaLink) {
                 console.log(questionText);
                 let embeddingUrl = "";
@@ -4518,7 +4615,7 @@ loadExternalModule().then(() => {
               //************* check if user message is atleast 15 words */
               if (!isValidMessage(latestMessage)) {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 10 words.</b></p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Your input is too less. Please respond with minimum 15 words.</b></p>",
                 });
                 return;
               }
@@ -4637,6 +4734,11 @@ loadExternalModule().then(() => {
                 testType = questionData.results[0].test_type;
                 orch_details =
                   questionData.results[0].orchestrated_conversation_details;
+
+                senarioSnippetURL = 
+                questionData.results[0].snippet_url;
+              console.log(senarioSnippetURL,'senarioSnippetURL');
+
 
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
@@ -4870,6 +4972,9 @@ loadExternalModule().then(() => {
                       questionMediaLink =
                         questionData.results[0].questions[questionIndex]
                           .media_link;
+                      questionSnippetLink =
+                        questionData.results[0].questions[questionIndex]
+                          .snippet_url;
 
                       questionId =
                         questionData.results[0].questions[questionIndex].uid;
@@ -4882,6 +4987,15 @@ loadExternalModule().then(() => {
                       const option2Name = optionName[1];
                       const option1Text = mcqOptions[option1Name]["opt"];
                       const option2Text = mcqOptions[option2Name]["opt"];
+
+                      if (questionSnippetLink) {
+                        if (questionSnippetLink.length > 0){
+                          const linkList = questionSnippetLink.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
+                      }
                       if (questionMediaLink) {
                         let embeddingUrl = "";
                         if (questionMediaLink.length > 0) {
@@ -5051,6 +5165,9 @@ loadExternalModule().then(() => {
                         questionMediaLink =
                           questionData.results[0].questions[questionIndex]
                             .media_link;
+                        questionSnippetLink =
+                          questionData.results[0].questions[questionIndex]
+                            .snippet_url;
                       }
 
                       if (isHindi) {
@@ -5253,6 +5370,14 @@ loadExternalModule().then(() => {
                         );
                       }
                       //   if (testType != "coaching") {
+                      if (senarioSnippetURL) {
+                        if (senarioSnippetURL.length > 0){
+                          const linkList = senarioSnippetURL.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
+                      }
                       signals.onResponse({
                         html: questionText,
                       });
@@ -5310,10 +5435,20 @@ loadExternalModule().then(() => {
                       console.log("IMAGE MAPPED WITH COORDS");
                     } else {
                       if (!AttemptTestDirect){
+                        const temp_que_text = questionText
                         signals.onResponse({
-                          html: questionText,
                           text: ` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`,
-                        });
+                        }).then(()=>{
+                          if (senarioSnippetURL) {
+                            if (senarioSnippetURL.length > 0){
+                              const linkList = senarioSnippetURL.split(',');
+                              linkList.forEach(element => {
+                                appendMessage(snippetDiv(element))
+                              });
+                            }
+                          }
+                          appendMessage(temp_que_text)
+                        })
                       }
                     }
                     // appendMessage(` ▪ Title : ${senarioTitle} \n\n  ▪ Description : ${senarioDescription} \n\n ▪ Instructions : Audio/Video Messages should be atleast 15 secs long.`)
@@ -5336,6 +5471,15 @@ loadExternalModule().then(() => {
 
                       if (responderName) {
                         questionText = responderName + questionText;
+                      }
+
+                      if (questionSnippetLink) {
+                        if (questionSnippetLink.length > 0){
+                          const linkList = questionSnippetLink.split(',');
+                          linkList.forEach(element => {
+                            appendMessage(snippetDiv(element))
+                          });
+                        }
                       }
 
                       if (questionMediaLink) {
@@ -5481,7 +5625,7 @@ loadExternalModule().then(() => {
                         } else {
                           console.log("resp", questionText);
                           signals.onResponse({
-                            html: questionText,
+                            html: questionText.replace("}",""),
                           });
                         }
                       }

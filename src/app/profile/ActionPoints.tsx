@@ -12,45 +12,46 @@ import {
   Newspaper,
   ShoppingBag,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { baseURL, basicAuth } from "@/lib/utils";
+import { useState } from "react";
 import HelpMode from "@/components/HelpMode";
+import { useUser } from "@/context/UserContext";
 
 const ActionPoints = ({ user }: any) => {
-  const [totalActionPoints, setTotalActionPoints] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("USER FROM ACTIONS", data);
-          console.log(data.uid);
-          fetch(
-            `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${data.uid}`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-              if (!data.msg) {
-                setTotalActionPoints(calculateTotalActionPoints(data));
-              }
-              setLoading(false);
-            })
-            .catch((err) => {
-              console.log(err);
-              setLoading(false);
-            });
-        });
-    }
-  }, []);
+  const { actionPoints: totalActionPoints } = useUser();
+
+  // useEffect(() => {
+  //   if (user) {
+  //     getUserAccount(user)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         console.log("USER FROM ACTIONS", data);
+  //         console.log(data.uid);
+  //         fetch(
+  //           `${baseURL}/test-attempt-sessions/get-or-save-action-point/?mode=get&user_id=${data.uid}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               Authorization: basicAuth,
+  //             },
+  //           }
+  //         )
+  //           .then((res) => res.json())
+  //           .then((data) => {
+  //             console.log(data);
+  //             if (!data.msg) {
+  //               setTotalActionPoints(calculateTotalActionPoints(data));
+  //             }
+  //             setLoading(false);
+  //           })
+  //           .catch((err) => {
+  //             console.log(err);
+  //             setLoading(false);
+  //           });
+  //       });
+  //   }
+  // }, []);
 
   const MileStone = ({ actionPoint, icon, name }: any) => {
     return (
@@ -104,7 +105,9 @@ const ActionPoints = ({ user }: any) => {
   return (
     <div className="bg-accent p-2 mt-2 rounded-md">
       <HelpMode steps={HelpModeSteps} />
-      <div className="pl-4 max-sm:pl-2 pt-2">My Rewards</div>
+      <div className="pl-4 max-sm:pl-2 pt-2 text-sm max-sm:text-sm">
+        My Rewards
+      </div>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -114,13 +117,13 @@ const ActionPoints = ({ user }: any) => {
           </div>
         </>
       )}
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md ml-4 max-sm:ml-2 flex flex-row items-center">
+        {" "}
+        <Info className="h-3 w-3 mr-2 inline" />
+        Please reach out to your admin for redemption of your award points.
+      </p>
       {!loading && (
         <div className="m-4 max-sm:m-2">
-          <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 my-1 w-fit rounded-md">
-            {" "}
-            <Info className="h-3 w-3 mr-2 inline" />
-            Please reach out to your admin for redemption of your award points.
-          </p>
           <div className="flex flex-row w-full gap-0 bg-gray-200 p-4 max-sm:p-1 rounded-md">
             <div className="flex flex-col justify-evenly items-center w-[16%]">
               <p className="max-sm:text-xs ">Points</p>

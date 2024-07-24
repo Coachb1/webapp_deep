@@ -67,22 +67,17 @@ const howItWorks = [
   {
     heading: "Thumbs Up or Thumbs Down",
     description:
-      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback. Thumbs Down maintains privacy, with no email notification to allow internal resolution.",
+      "Thumbs Up triggers an instant email notification to you, celebrating the positive feedback to the user. The system also published the positive feedback comment on the feedback page. Thumbs Down maintains privacy and any developmental feedback is only communicated via the email.",
   },
   {
     heading: "Follow-up Questions",
     description:
-      "Users who thumbs up can answer additional customized questions, providing more detailed, meaningful feedback to drive insights.",
+      "The feedack providers can  also answer additional detailed questions in relation to the initial thumps up or down. This provides actionable feedback for the feedbac receiver.",
   },
   {
     heading: "Optional Anonymity",
     description:
-      "After completing the feedback process, clients can choose to submit their feedback along with their email address or remain anonymous.",
-  },
-  {
-    heading: "Email Summaries",
-    description:
-      "At the end of the feedback process both parties receive an email with a feedback summary, promoting transparency and accountability.",
+      "At the very start of the feedback process, we need the feedback provider has the option to be anonymous if desired.",
   },
 ];
 
@@ -90,7 +85,7 @@ const benefitsData = [
   {
     heading: "Real-time Recognition",
     description:
-      "The bot owner and the user receive instant email notifications the moment a user selects thumbs-up, to celebrate positive feedback right away. This enables a culture of recognition and motivation.",
+      "The feedback page owner receives instant email notifications the moment a positive feedback is recorded, to celebrate positive feedback right away. It is also showcased in the Kudos wall of the feedback page. This enables a culture of recognition and motivation.",
   },
   {
     heading: "Enhanced Team Relations",
@@ -100,7 +95,7 @@ const benefitsData = [
   {
     heading: "Improved Accountability",
     description:
-      "Email summaries create transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
+      "The transparency around feedback, holding both parties accountable for addressing positives and negatives appropriately. This drives continuous improvement.",
   },
   {
     heading: "PMS Integration",
@@ -221,12 +216,12 @@ const Feedback = ({ user, renderType }: any) => {
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log("DYNAMIC FEEDBACK DATA ", data);
+        if (data.error) {
+          coachScribe.setAttribute("style", "display: none;");
+          setInValidCoach(true);
+        }
         if (renderType === "dynamic") {
-          console.log("DYNAMIC FEEDBACK DATA ", data);
-          if (data.error) {
-            coachScribe.setAttribute("style", "display: none;");
-            setInValidCoach(true);
-          }
           setCoachName(data.data.bot_name);
 
           if (data.data.bot_details.info) {
@@ -248,7 +243,9 @@ const Feedback = ({ user, renderType }: any) => {
           setDynamicBenefits(parsedData);
         }
 
-        const allowedIPS: string = data.data.allowed_ips["feedback_deep-dive"];
+        const allowedIPS: string = data.data.allowed_ips
+          ? data.data.allowed_ips!["feedback_deep-dive"]
+          : "";
         if (allowedIPS !== "") {
           const coachScribeIcon = document.getElementById("chat-icon2");
           fetch("https://ipinfo.io/json")
@@ -355,17 +352,26 @@ const Feedback = ({ user, renderType }: any) => {
         )}
 
         {!loginRequired && (
-          <div className="fixed bottom-12 right-[100px] z-50 max-sm:hidden">
-            <span className="mr-6 text-sm font-bold">Try Now</span>
-            <CornerDownRight className="ml-4 h-12 w-12 text-gray-600" />
+          <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
+            <span className="mr-6 text-sm font-bold">Feedback now</span>
+            {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
           </div>
         )}
 
-        {invalidId && renderType === "dynamic" && (
-          <div className="bg-foreground/30 fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center overflow-x-hidden backdrop-blur-sm">
-            <div className="rounded-md bg-red-100 p-2 text-sm text-red-800">
-              <AlertTriangle className="mr-2 inline h-4 w-4" />
-              We have encountered an error. Please try again.{" "}
+        {invalidId && (
+          <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-sm z-50">
+            <div className="p-2 bg-red-100 rounded-md text-sm text-red-800">
+              <AlertTriangle className="h-4 w-4 mr-2 inline" />
+              Sorry, this is not a valid URL. Please review or visit{" "}
+              <Button
+                variant={"link"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  window.location.href = "/";
+                }}
+              >
+                Home
+              </Button>
             </div>
           </div>
         )}
@@ -397,27 +403,18 @@ const Feedback = ({ user, renderType }: any) => {
                   containerClassName="w-[85%] max-sm:w-full"
                 >
                   <BorderShadow>
-                    <CardContainer
-                      containerClassName="py-0 mt-4 p-4 max-sm:p-2"
-                      className="inter-var w-full"
-                    >
-                      <CardBody className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-start justify-start py-0">
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl"
-                        >
+                    <div className="inter-var w-full flex flex-col mt-4 p-4 max-sm:p-2 ">
+                      <div className="bg-white relative group/card  h-auto rounded-2xl p-6 max-sm:p-2 w-full flex flex-row items-center justify-start py-0">
+                        <div className="w-fit rounded-2xl">
                           <img
-                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl mb-10"
+                            className="w-[200px] h-[200px] max-sm:h-[130px] object-cover rounded-2xl "
                             src={
                               profileImage ||
                               "https://res.cloudinary.com/dtbl4jg02/image/upload/v1708079292/y64qrkckvddolin49rhz.png"
                             }
                           />
-                        </CardItem>
-                        <CardItem
-                          translateZ="100"
-                          className="w-fit rounded-2xl px-4 text-left text-sm max-sm:text-xs"
-                        >
+                        </div>
+                        <div className="w-fit rounded-2xl px-4 text-left text-sm max-sm:text-xs">
                           {coachDescription ||
                             `I'm Aarav Sharma, a seasoned corporate coach with 15+
                       years' experience in leadership development. Holding a
@@ -431,21 +428,22 @@ const Feedback = ({ user, renderType }: any) => {
                       resilience. Tailoring strategies to individual needs, I
                       aim to be a trusted guide for long-term, sustainable
                       leadership development in the dynamic corporate landscape.`}
-                        </CardItem>
+                        </div>
+                      </div>
+                      <CardBody className="w-full h-fit">
+                        {currentProjects && (
+                          <div className="mt-4 text-sm  border-t-2 border-dashed p-2 max-sm:text-xs w-full">
+                            <p className="my-2">
+                              <b>Current projects : </b> {currentProjects}
+                            </p>
+                          </div>
+                        )}
                       </CardBody>
-                    </CardContainer>
+                    </div>
                   </BorderShadow>
                 </Div>
               </div>
               <div className="w-full flex flex-col items-center">
-                {currentProjects && (
-                  <div className="mt-4 text-sm  border-b-2 border-dashed p-2 max-sm:text-xs w-[85%] max-sm:w-full">
-                    <p className="my-2">
-                      <b>Current projects : </b> {currentProjects}
-                    </p>
-                  </div>
-                )}
-
                 <div className="py-4 text-[#2f2323] max-sm:text-xs border-b-2 border-dashed p-2 w-[85%] max-sm:w-full">
                   <p className="text-sm max-sm:text-xs">
                     {" "}

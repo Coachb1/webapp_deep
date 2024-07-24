@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import React, { ReactNode, useEffect } from "react";
-import { CardBody, CardContainer, CardItem } from "./3d-card-effect";
+import React, { ReactNode } from "react";
 import Link from "next/link";
 import ReadMore from "../ReadMore";
 import { CoachesDataType } from "@/app/Coaches";
@@ -62,26 +60,19 @@ export function ParticipantListItemCard({
           </span>
         )}
       </div>
-      <CardContainer
-        containerClassName="py-0 mt-4"
-        className="inter-var w-full"
-      >
-        <CardBody className="bg-white relative group/card  h-auto rounded-xl p-6 w-full flex flex-row py-0">
-          <CardItem translateZ="100" className="w-fit">
+      <div className="inter-var w-full py-0 mt-4">
+        <div className="bg-white relative group/card h-auto rounded-xl p-6 w-full flex flex-row max-sm:flex-col max-sm:justify-center max-sm:items-center py-0 ">
+          <div className="w-fit">
             <img
-              className="h-[250px] w-[200px] min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:w-[150px] max-sm:min-w-[150px]"
+              className="h-[250px] w-[200px] max-sm:w-full  min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:min-w-[150px]"
               src={
                 "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
               }
             />
             <div>{likeComponent}</div>
-          </CardItem>
-
-          <div className="w-full ml-4 text-left">
-            <CardItem
-              translateZ="60"
-              className="text-gray-800 w-full text-sm my-1 text-left"
-            >
+          </div>
+          <div className="w-full ml-4 max-sm:ml-0 text-left">
+            <div className="text-gray-800 w-full text-sm my-1 text-left">
               <div className="mb-2 flex flex-row items-center gap-1">
                 {" "}
                 {hasPassed5Days(coach.created) ? null : (
@@ -98,7 +89,7 @@ export function ParticipantListItemCard({
                       </Badge>
                     ))}
                 {coach.is_recommended && (
-                  <Badge className="bg-blue-100 text-[12px] text-blue-700 hover:bg-emerald-200">
+                  <Badge className="bg-blue-100 text-[12px] text-blue-700 hover:bg-blue-200">
                     AI Recommended
                   </Badge>
                 )}
@@ -123,17 +114,11 @@ export function ParticipantListItemCard({
                   </p>
                 )}{" "}
               </div>
-            </CardItem>
-            <CardItem
-              translateZ="50"
-              className="text-sm w-full font-semibold text-neutral-600 dark:text-white"
-            >
+            </div>
+            <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white">
               {coach.department}
-            </CardItem>
-            <CardItem
-              translateZ="50"
-              className="text-sm w-full font-semibold text-neutral-600 dark:text-white"
-            >
+            </div>
+            <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white">
               <div className="flex flex-row items-center justify-start gap-2">
                 {coach.profile_type === "coach-mentor" ? (
                   <>
@@ -165,11 +150,8 @@ export function ParticipantListItemCard({
                   </Badge>
                 )}
               </div>
-            </CardItem>
-            <CardItem
-              translateZ="50"
-              className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row gap-2 items-center"
-            >
+            </div>
+            <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row gap-2 items-center">
               {reviewComponent}
               {(coach.profile_type === "coach" ||
                 coach.profile_type === "mentor") && (
@@ -208,17 +190,11 @@ export function ParticipantListItemCard({
                   </>
                 )}
               </div>
-            </CardItem>
-            <CardItem
-              translateZ="60"
-              className="my-1.5 tracking-wider text-left w-full text-lg font-light max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar"
-            >
+            </div>
+            <div className="my-1.5 tracking-wider text-slate-900 text-left w-full text-lg max-sm:my-1 max-sm:text-xs overflow-clip no-scrollbar">
               <ReadMore text={coach.description} />
-            </CardItem>
-            <CardItem
-              translateZ="60"
-              className="text-neutral-500 w-full text-sm mt-2 dark:text-neutral-300 text-left"
-            >
+            </div>
+            <div className="text-neutral-500 w-full text-sm mt-2 dark:text-neutral-300 text-left">
               <div className="mt-4 flex flex-row flex-wrap gap-2">
                 {coach.profile_type !== "skill_bot" && (
                   <Badge
@@ -237,8 +213,8 @@ export function ParticipantListItemCard({
                   </Badge>
                 )}
               </div>
-            </CardItem>
-            <div className="flex justify-end items-center mt-20 mb-4 gap-2">
+            </div>
+            <div className="flex justify-end items-center mt-10 mb-4 gap-2">
               {requestConnectionComponent}
               {coach?.avatar_bot_id !== null &&
                 coach?.avatar_bot_url !== "" && (
@@ -255,19 +231,23 @@ export function ParticipantListItemCard({
                       <Link
                         href={handleLinks(coach.avatar_bot_url)}
                         target="_blank"
+                        className="flex flex-row items-center"
                       >
-                        {coach.profile_type === "skill_bot" ||
-                        coach.profile_type === "coachbots"
-                          ? "Skill Chat"
-                          : "AI Frame"}
+                        <p>
+                          {coach.profile_type === "skill_bot" ||
+                          coach.profile_type === "coachbots"
+                            ? "Skill Chat"
+                            : "AI Frame"}{" "}
+                        </p>
+                        <ExternalLink className="ml-1 h-4 w-4 inline" />
                       </Link>
                     </Button>
                   </div>
                 )}
             </div>
           </div>
-        </CardBody>
-      </CardContainer>
+        </div>
+      </div>
     </div>
   );
 }

@@ -25,7 +25,14 @@ import {
 } from "lucide-react";
 import mammoth from "mammoth";
 import { pdfjs } from "react-pdf";
-import React, { FormEvent, ReactNode, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -34,7 +41,13 @@ import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-const UserBotIntake = ({ user }: { user: KindeUser }) => {
+const UserBotIntake = ({
+  user,
+  setLoading,
+}: {
+  user: KindeUser;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+}) => {
   const params = useSearchParams();
   const checkIfEdit = params.get("edit");
   const checkIfView = params.get("view");
@@ -73,14 +86,16 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
   const [mediaData, setMediaData] = useState<MediaData>();
 
   const [dataModified, setDataModified] = useState(false);
+  const [forReapproval, setForReapproval] = useState(false);
 
   useEffect(() => {
     if (user && !adminEdit) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log(data,'userinfo');
           setUserId(data.uid);
+          setForReapproval(data.send_profile_for_reapproval)
         });
     } else if (adminEdit) {
       setUserId(userIdParams!);
@@ -265,9 +280,11 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
     if (checkIfEdit) {
       formdata.append("bot_id", botIUidFromParams!);
-      formdata.append("for_reapproval", "true");
+      if (forReapproval){
+        formdata.append("for_reapproval", "true");
+      }
     }
-    formdata.append('is_private', `${makePrivate? true : false}`)
+    formdata.append("is_private", `${makePrivate ? true : false}`);
 
     fetch(`${baseURL}/accounts/create-bot-by-details/`, {
       method: checkIfEdit ? "PATCH" : "POST",
@@ -517,6 +534,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                     ],
                 };
               }
+              setLoading(false);
             });
         });
     }
@@ -601,7 +619,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
                   variant={"secondary"}
                   className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                 >
-                  <Info className="h-4 w-4 mr-1" /> All fields are required.
+                  <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
                 </Badge>
                 {checkIfEdit && (
                   <Badge
@@ -618,7 +636,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
           <div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Enter your bot name.
+                Enter your bot name. <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <input
                 required
@@ -646,7 +664,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What is the primary purpose of the bot?
+                What is the primary purpose of the bot? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -677,7 +695,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
 
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What tasks or functions should the bot perform?
+                What tasks or functions should the bot perform? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -709,7 +727,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide the information the bot should have access to generate
-                responses?
+                responses? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -741,7 +759,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide a few common FAQs the bot should use for commonly asked
-                questions?
+                questions? <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -765,11 +783,12 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Upload any relevant document or pdf to add to the bot
+                Upload any relevant document or pdf to add to the bot. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
               </p>
               <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                 <input
                   disabled={checkIfView === null ? false : true}
+                  required={!checkIfEdit}
                   type="file"
                   className="w-full text-xs my-2"
                   multiple
@@ -848,7 +867,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide any relevant links and make sure the links are publicly
-                accessible
+                accessible. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
               </p>
               <textarea
                 disabled={checkIfView === null ? false : true}
@@ -989,7 +1008,7 @@ const UserBotIntake = ({ user }: { user: KindeUser }) => {
               <Checkbox
                 disabled={checkIfView === null ? false : true}
                 checked={makePrivate}
-                required={!checkIfEdit}
+                // required={!checkIfEdit}
                 onCheckedChange={(checked) => {
                   setMakePrivate(Boolean(checked));
                   setDataModified(true);

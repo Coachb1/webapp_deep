@@ -7,7 +7,16 @@ import {
   getUserAccount,
 } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import { Code, Copy, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
+import {
+  Code,
+  Copy,
+  Edit,
+  ExternalLink,
+  Info,
+  LinkIcon,
+  Loader,
+  View,
+} from "lucide-react";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -22,6 +31,7 @@ import {
 import { useEffect, useState } from "react";
 import CopyToClipboard from "../../components/CopyToClipboard";
 import Link from "next/link";
+import { useUser } from "@/context/UserContext";
 interface Bot {
   bot_id: string;
   bot_name: string;
@@ -41,82 +51,117 @@ const MyPages = ({ user }: any) => {
   const [loading, setLoading] = useState(true);
   const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
 
+  const { allCoaches, botsData } = useUser();
+
   useEffect(() => {
-    if (user) {
-      getUserAccount(user)
-        .then((response) => response.json())
-        .then(async (data) => {
-          const profile = await fetch(
-            `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          );
+    setUserProfile(allCoaches[0]);
 
-          const profileJson = await profile.json();
-          console.log("profile", profileJson.data[0]);
+    botsData
+      .filter((bot: any) => bot.signature_bot.bot_type !== "deep_dive")
+      .forEach((entry: any) => {
+        const botType = entry.signature_bot.bot_type;
 
-          setUserProfile(profileJson.data[0]);
+        if (!botTypeMap[botType]) {
+          botTypeMap[botType] = [];
+        }
+        const existingEntry = botTypeMap[botType].find(
+          (bot) => bot.bot_id === entry.signature_bot.bot_id
+        );
+        if (!existingEntry) {
+          botTypeMap[botType].push({
+            bot_id: entry.signature_bot.bot_id,
+            uid: entry.signature_bot.uid,
+            is_approved: entry.signature_bot.is_approved,
+            bot_name:
+              entry.signature_bot.bot_id.includes("feedback") ||
+              entry.signature_bot.bot_id.includes("knowledge")
+                ? entry.bot_attributes.bot_name
+                : entry.bot_attributes.coach_name,
+          });
+        }
+      });
+    const result: BotTypeEntry[] = Object.keys(botTypeMap).map((botType) => ({
+      bot_type: botType,
+      bots: botTypeMap[botType],
+    }));
+    setBotTypes(result);
+    setLoading(false);
+    // if (user) {
+    //   getUserAccount(user)
+    //     .then((response) => response.json())
+    //     .then(async (data) => {
+    //       const profile = await fetch(
+    //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
+    //         {
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       );
 
-          fetch(
-            `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
-            {
-              headers: {
-                Authorization: basicAuth,
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(
-                "bot data : ",
-                data.data.filter(
-                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-                )
-              );
-              data.data
-                .filter(
-                  (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-                )
-                .forEach((entry: any) => {
-                  const botType = entry.signature_bot.bot_type;
+    //       const profileJson = await profile.json();
+    //       console.log("profile", profileJson.data[0]);
+    //       console.log("profile1", allCoaches[0]);
 
-                  if (!botTypeMap[botType]) {
-                    botTypeMap[botType] = [];
-                  }
-                  const existingEntry = botTypeMap[botType].find(
-                    (bot) => bot.bot_id === entry.signature_bot.bot_id
-                  );
-                  if (!existingEntry) {
-                    botTypeMap[botType].push({
-                      bot_id: entry.signature_bot.bot_id,
-                      uid: entry.signature_bot.uid,
-                      is_approved: entry.signature_bot.is_approved,
-                      bot_name:
-                        entry.signature_bot.bot_id.includes("feedback") ||
-                        entry.signature_bot.bot_id.includes("knowledge")
-                          ? entry.bot_attributes.bot_name
-                          : entry.bot_attributes.coach_name,
-                    });
-                  }
-                });
-              const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
-                (botType) => ({
-                  bot_type: botType,
-                  bots: botTypeMap[botType],
-                })
-              );
-              setBotTypes(result);
-              setLoading(false);
-            })
-            .catch((error) => {
-              console.error(error);
-              setLoading(false);
-            });
-        });
-    }
+    //       setUserProfile(profileJson.data[0]);
+
+    //       fetch(
+    //         `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
+    //         {
+    //           headers: {
+    //             Authorization: basicAuth,
+    //           },
+    //         }
+    //       )
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //           console.log(
+    //             "bot data : ",
+    //             data.data.filter(
+    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+    //             )
+    //           );
+    //           data.data
+    //             .filter(
+    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
+    //             )
+    //             .forEach((entry: any) => {
+    //               const botType = entry.signature_bot.bot_type;
+
+    //               if (!botTypeMap[botType]) {
+    //                 botTypeMap[botType] = [];
+    //               }
+    //               const existingEntry = botTypeMap[botType].find(
+    //                 (bot) => bot.bot_id === entry.signature_bot.bot_id
+    //               );
+    //               if (!existingEntry) {
+    //                 botTypeMap[botType].push({
+    //                   bot_id: entry.signature_bot.bot_id,
+    //                   uid: entry.signature_bot.uid,
+    //                   is_approved: entry.signature_bot.is_approved,
+    //                   bot_name:
+    //                     entry.signature_bot.bot_id.includes("feedback") ||
+    //                     entry.signature_bot.bot_id.includes("knowledge")
+    //                       ? entry.bot_attributes.bot_name
+    //                       : entry.bot_attributes.coach_name,
+    //                 });
+    //               }
+    //             });
+    //           const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
+    //             (botType) => ({
+    //               bot_type: botType,
+    //               bots: botTypeMap[botType],
+    //             })
+    //           );
+    //           setBotTypes(result);
+    //           setLoading(false);
+    //         })
+    //         .catch((error) => {
+    //           console.error(error);
+    //           setLoading(false);
+    //         });
+    //     });
+    // }
   }, []);
 
   const BotTypesHeading = (botType: string) => {
@@ -236,6 +281,11 @@ const MyPages = ({ user }: any) => {
           </a>
         </p>
       </div> */}
+      <p className="bg-amber-100 text-xs font-semibold text-gray-500 p-1 w-fit rounded-md ml-4 my-2 flex flex-row items-center">
+        {" "}
+        <Info className="h-3 w-3 mr-2 inline" />
+        Edit enabled after AI approval pipeline.
+      </p>
       {loading && (
         <>
           <div className="text-xs w-full h-20 flex items-center justify-center">
@@ -262,7 +312,7 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   <p
-                    className={`text-sm inline ${
+                    className={`text-sm max-sm:text-xs inline ${
                       botType.bot_type === "user_bot"
                         ? "w-[45%] max-sm:w-[70%]"
                         : "w-[45%] max-sm:w-[70%]"
@@ -327,6 +377,7 @@ const MyPages = ({ user }: any) => {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
+
                     <Dialog>
                       {botType.bot_type !== "user_bot" && (
                         <DialogTrigger asChild>
@@ -345,17 +396,21 @@ const MyPages = ({ user }: any) => {
                           </Button>
                         </DialogTrigger>
                       )}
-                      <DialogContent className="max-sm:w-[90%] max-sm:rounded-md">
+                      <DialogContent className="w-[50%] max-w-[60%] max-sm:w-[90%] max-sm:max-w-[90%] max-sm:rounded-md">
                         <DialogHeader>
                           <DialogTitle>Page link</DialogTitle>
                           <DialogDescription>
-                            <Link
-                              target="_blank"
-                              href={BotTypeLinks(botType.bot_type, bot.bot_id)!}
-                              className="bg-gray-100 text-sm rounded-sm my-2 p-2  overflow-scroll  no-scrollbar text-blue-500 block"
-                            >
-                              {BotTypeLinks(botType.bot_type, bot.bot_id)}
-                            </Link>
+                            <div className="bg-gray-100 rounded-sm my-2 p-2 overflow-scroll  no-scrollbar w-full max-sm:text-left">
+                              <Link
+                                target="_blank"
+                                href={
+                                  BotTypeLinks(botType.bot_type, bot.bot_id)!
+                                }
+                                className="py-3 text-blue-500 text-[16px] max-sm:text-xs "
+                              >
+                                {BotTypeLinks(botType.bot_type, bot.bot_id)}
+                              </Link>
+                            </div>
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter className="-mt-4">
@@ -385,13 +440,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
+                        target="_blank"
                       >
                         <span className="max-sm:hidden">View</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="View"
                           body={
-                            <View className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
@@ -414,13 +470,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
+                        target="_blank"
                       >
                         <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="Edit"
                           body={
-                            <Edit className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
@@ -442,7 +499,7 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm inline w-[45%] max-sm:w-[50%]">
+                  <p className="text-sm max-sm:text-xs inline w-[45%] max-sm:w-[50%]">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
 
@@ -459,6 +516,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
+                    target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -468,7 +526,9 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="View"
-                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        body={
+                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
+                        }
                       />
                     </Button>
                   </Link>
@@ -483,6 +543,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
+                    target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -492,7 +553,9 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="Edit"
-                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
+                        body={
+                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
+                        }
                       />
                     </Button>
                   </Link>

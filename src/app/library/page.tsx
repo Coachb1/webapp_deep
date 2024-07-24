@@ -8,6 +8,7 @@ import {
 import MyLibrary from "./library";
 import Widgets from "@/components/Widgets";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { useUser } from "@/context/UserContext";
 
 export const metadata = constructMetadata({
   title: "Library - Coachbots",
@@ -91,18 +92,9 @@ const Page = async () => {
   const { getUser } = getKindeServerSession();
   const user: any = await getUser();
 
-  const { restrictedFeatures, helpText } = await getClientUserInfo(
-    user?.email,
-    user
-  );
-
   return (
     <div>
-      <MyLibrary
-        restrictedFeatures={restrictedFeatures}
-        user={user}
-        helpModeText={helpText}
-      />
+      <MyLibrary user={user} />
       <Widgets />
     </div>
   );
