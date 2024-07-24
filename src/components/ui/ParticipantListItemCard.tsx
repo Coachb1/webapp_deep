@@ -32,7 +32,7 @@ export function ParticipantListItemCard({
   likeComponent: ReactNode;
   restrictedFeatures: string | null;
   requestConnectionComponent: ReactNode;
-  profilePicUrl: string;
+  profilePicUrl: string | null;
 }) {
   return (
     <div id={coach.profile_id}>
