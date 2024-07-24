@@ -522,14 +522,14 @@ export const DiversityPlus: Test[] = [
       "Within a dynamic workplace, an employee experiences an unsettling cultural insensitivity incident. During a team meeting, a colleague makes derogatory comments about the employee's cultural background. This incident leaves the employee feeling uncomfortable and marginalized. In response, the employee decides to escalate the matter to the HR department, triggering discussions on how to rectify such DEI issues. The manager scheduled a meeting with her to understand the situation. In this case act as a manager to answer her questions.",
     interaction_mode: "Audio",
   },
-  {
-    domain: "Interview Dilemma",
-    test_code: "QICGX1I",
-    title: "Balancing Skills and Formal Education",
-    description:
-      "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
-    interaction_mode: "Audio",
-  },
+  // {
+  //   domain: "Interview Dilemma",
+  //   test_code: "QICGX1I",
+  //   title: "Balancing Skills and Formal Education",
+  //   description:
+  //     "Ananya, a candidate with a mechanical engineering diploma, impresses the interviewers with her hands-on skills in machinery operation, drawing from her experience as a machine operator in a textile factory. However, concerns arise due to her lack of formal education in the field. The job opening, seeking a skilled shop floor worker in a prominent manufacturing unit, requires formal education in mechanical engineering. The industry data indicates a preference for candidates with professional technical qualifications. Additionally, the factory has a notable gender imbalance on the shop floor, with very few female workers. This raises apprehensions about Ananya's seamless integration into the predominantly male workforce, prompting the HR manager to consider potential adaptation challenges for her in this specific work environment. Respond to this situation as the HR manager.",
+  //   interaction_mode: "Audio",
+  // },
 ];
 
 export const DescoveryPlus: Test[] = [
@@ -765,14 +765,14 @@ export const pitch: Test[] = [
 ];
 
 export const serviceslashConsulting: Test[] = [
-  {
-    domain: "Coaching Assistant",
-    test_code: "QIBY52O",
-    title: "Assertive Communication for Workplace ",
-    description:
-      "A junior manager, in a IT company specializing in e-commerce solutions, faces challenges articulating innovative ideas for a tight-deadline project involving a new payment gateway system. He seeks guidance on assertive communication strategies to facilitate clear articulation of ideas and enhance his contribution to project discussions. After the session, the trainer has given you an exercise to connect with the AI assistant to implement the strategies. Now, the AI assistant, taking the role of the senior manager, Rahul is asking specific questions about the project, encouraging the junior manager to apply assertive communication strategies for clearer expression of ideas and improved collaboration within the team. Respond as the junior manager.",
-    interaction_mode: "Audio",
-  },
+  // {
+  //   domain: "Coaching Assistant",
+  //   test_code: "QIBY52O",
+  //   title: "Assertive Communication for Workplace ",
+  //   description:
+  //     "A junior manager, in a IT company specializing in e-commerce solutions, faces challenges articulating innovative ideas for a tight-deadline project involving a new payment gateway system. He seeks guidance on assertive communication strategies to facilitate clear articulation of ideas and enhance his contribution to project discussions. After the session, the trainer has given you an exercise to connect with the AI assistant to implement the strategies. Now, the AI assistant, taking the role of the senior manager, Rahul is asking specific questions about the project, encouraging the junior manager to apply assertive communication strategies for clearer expression of ideas and improved collaboration within the team. Respond as the junior manager.",
+  //   interaction_mode: "Audio",
+  // },
   {
     domain: "Hotel customer service",
     test_code: "QCW8FWO",
@@ -813,14 +813,14 @@ export const serviceslashConsulting: Test[] = [
       "Ms. Nandini Kapoor, the quality control manager, identifies a batch of defective products during routine inspections. She raises concerns about potential production flaws that could harm the factory's reputation. The production floor manager, needs to collaborate with Nandini to isolate and rectify the root cause while maintaining production efficiency. Respond to this situation as the production floor manager. ",
     interaction_mode: "Audio",
   },
-  {
-    domain: "IT-Business Collaboration",
-    test_code: "QQZMF9B",
-    title: "Strategizing Retail Insights",
-    description:
-      "The Retail Manager, Swati met with the IT Dev Lead for optimizing the retail analytics dashboard. Swati highlights the imperative for real-time inventory tracking and customer behavior analytics. The challenge identified is the seamless integration of data from disparate sources such as point-of-sale (POS) systems and e-commerce platforms. The objective is to enhance the dashboard to provide comprehensive insights, crucial for strategic decision-making in a fiercely competitive Indian retail market. Respond to this situation as the IT Dev Lead.",
-    interaction_mode: "Audio",
-  },
+  // {
+  //   domain: "IT-Business Collaboration",
+  //   test_code: "QQZMF9B",
+  //   title: "Strategizing Retail Insights",
+  //   description:
+  //     "The Retail Manager, Swati met with the IT Dev Lead for optimizing the retail analytics dashboard. Swati highlights the imperative for real-time inventory tracking and customer behavior analytics. The challenge identified is the seamless integration of data from disparate sources such as point-of-sale (POS) systems and e-commerce platforms. The objective is to enhance the dashboard to provide comprehensive insights, crucial for strategic decision-making in a fiercely competitive Indian retail market. Respond to this situation as the IT Dev Lead.",
+  //   interaction_mode: "Audio",
+  // },
 ];
 
 export const roundFeedback: Test[] = [
