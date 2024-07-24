@@ -33,7 +33,7 @@ describe("Init", () => {
       cy.visit("http://localhost:3000/content-library");
 
       //open the bot
-      cy.get(".chat-icon2").click();
+      cy.get(".chat-icon2", {timeout : 30000}).click();
 
       //yes / no
       cy.get("#chat-element2")

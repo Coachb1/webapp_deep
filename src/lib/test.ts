@@ -673,14 +673,6 @@ export const Sales: Test[] = [
       "Akshita Singh, a marketing professional, is considering health insurance for herself and her parents. With a history of certain pre-existing conditions in the family, she is navigating the complexities of finding a policy that offers comprehensive coverage while managing premium costs. She has called the company number to gain more information about your insurance package. Your responsibility is to analyze her family's medical history, educate her on policy inclusions and exclusions, and recommend a health insurance plan that strikes the right balance between coverage and affordability. Respond to this situation as an Insurance Sales Rep.",
     interaction_mode: "Audio",
   },
-  {
-    domain: "Luxury real estate",
-    test_code: "QX1W8IG",
-    title: "Handling a High-Profile Client",
-    description:
-      "A successful entrepreneur, Mr. Jaideep, seeks a residence that seamlessly blends modern luxury with classic charm. His emphasis is on spacious interiors, a well-appointed kitchen, and a private garden for family gatherings. Your task is to showcase properties that meet his criteria, highlighting features that complement his sophisticated taste and desire for a comfortable yet elegant living space. Engage in a conversation that addresses his lifestyle aspirations and guides him towards a property that resonates with his vision. Respond to this situation as the real estate sales agent.",
-    interaction_mode: "Audio",
-  },
 ];
 
 export const coachingPlus: Test[] = [
