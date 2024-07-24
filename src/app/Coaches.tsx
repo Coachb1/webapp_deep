@@ -1603,6 +1603,7 @@ const Coaches = ({
                             />
                           </div>
                         }
+                        profilePicUrl={coach.profile_pic_url}
                         reviewComponent={
                           <>
                             {" "}
