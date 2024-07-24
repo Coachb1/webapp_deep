@@ -153,6 +153,7 @@ let botId;
 let sttWidgetClientId;
 let botType;
 let botScenarioCase;
+let botSelectedLLM;
 let recommendationClicked = false;
 let allowRecommendationTestCode = false;
 let fitmentAnalysisOptions;
@@ -1265,7 +1266,7 @@ const getBotDetails2 = async (botId) => {
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
     botScenarioCase = botDetails.data.scenario_case;
-    
+    botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
@@ -6596,7 +6597,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     console.log('anthropic', userInputMessage)
     const messageNode = document.createElement("div");
@@ -6792,14 +6795,25 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      console.log("trying OpenAiResponse")
-      OpenAiResponse(
-        userInputMessage,
-        signals,
-        conversationId,
-        latestMessage,
-        streamWithAudio
-      );
+      if(nextLLM?.toLowerCase().includes("gemini")){
+        GeminiAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio, 
+          fallbackLLM
+        );
+      } else {
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -7066,7 +7080,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
@@ -7272,13 +7288,25 @@ loadExternalModule().then(() => {
       }
     } else {
       console.log("trying anthropicAiResponse")
-      anthropicAiResponse(
-        userInputMessage,
-        signals,
-        conversationId,
-        latestMessage,
-        streamWithAudio
-      );
+      if(nextLLM?.toLowerCase().includes("gpt")){
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      } else {
+        anthropicAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -7287,7 +7315,9 @@ loadExternalModule().then(() => {
     signals,
     conversationId,
     latestMessage,
-    streamWithAudio
+    streamWithAudio,
+    nextLLM,
+    fallbackLLM
   ) => {
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
@@ -7343,81 +7373,81 @@ loadExternalModule().then(() => {
             if (
               indvMessage.innerText === "." ||
               indvMessage.innerText === "..." ||
-               indvMessage.innerText === "" ||
-              indvMessage.innerText === " " ||  !indvMessage.innerText?.length > 0 
+              indvMessage.innerText === "" ||
+              indvMessage.innerText === " "
             ) {
               indvMessage.remove();
             }
+          });
 
-            if(chunks.length > 0){
+          if (chunks.length > 0) {
+            audioSourceOpen(
+              chunks.join(" "),
+              messageBubble,
+              index,
+              randomIdForAudioElement
+            );
+            console.log(chunks.join(" "));
+            chunks = [];
+            index++;
+          }
+
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+            if (streamWithAudio) {
               audioSourceOpen(
-                chunks.join(" "),
+                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 messageBubble,
                 index,
                 randomIdForAudioElement
               );
-              console.log(chunks.join(" "))
-              chunks = []
-              index++;
             }
-
-            if (botPreviousConversationHistory.includes(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                  messageBubble,
-                  index,
-                  randomTextForId
-                );
-              }
-            } else if (messageText.innerText === "") {
-              messageText.innerText +=
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
-            } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-              messageText.innerText +=
-                " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                  messageBubble,
-                  index,
-                  randomIdForAudioElement
-                );
-              }
+          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
+            messageText.innerText +=
+              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
+              );
             }
+          }
 
-            if (
-              messageText.innerText.toLowerCase().includes("I am sorry but") ||
-              messageText.innerText
-                .toLowerCase()
-                .includes("not something that I am familiar") ||
-              messageText.innerText.toLowerCase().includes("i cannot answer") ||
-              messageText.innerText.toLowerCase().includes("not familiar")
-            ) {
-              messageText.innerText +=
-                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-              if (streamWithAudio) {
-                audioSourceOpen(
-                  "Please explain your question or comment in different words which I may be able to understand better.",
-                  messageBubble,
-                  index,
-                  randomTextForId
-                );
-              }
+          if (
+            messageText.innerText.toLowerCase().includes("I am sorry but") ||
+            messageText.innerText
+              .toLowerCase()
+              .includes("not something that I am familiar") ||
+            messageText.innerText.toLowerCase().includes("i cannot answer") ||
+            messageText.innerText.toLowerCase().includes("not familiar")
+          ) {
+            messageText.innerText +=
+              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "Please explain your question or comment in different words which I may be able to understand better.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
             }
-          });
+          }
 
-          botPreviousConversationHistory.push(messageText.innerText)
+          botPreviousConversationHistory.push(messageText.innerText);
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
@@ -7457,15 +7487,15 @@ loadExternalModule().then(() => {
         }
 
         const decodedText = textDecoder.decode(value);
-        if(chunks.length > 0){
+        if (chunks.length > 0) {
           audioSourceOpen(
             chunks.join(" "),
             messageBubble,
             index,
             randomIdForAudioElement
           );
-          console.log(chunks.join(" "))
-          chunks = []
+          console.log(chunks.join(" "));
+          chunks = [];
           index++;
         }
 
@@ -7473,9 +7503,25 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      signals.onResponse({
-        html : "<b>Error while generating your response.</b>"
-      })
+      if(nextLLM?.toLowerCase().includes("gpt")){
+        OpenAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      } else {
+        GeminiAiResponse(
+          userInputMessage,
+          signals,
+          conversationId,
+          latestMessage,
+          streamWithAudio,
+          fallbackLLM
+        );
+      }
     }
   };
 
@@ -8239,13 +8285,37 @@ loadExternalModule().then(() => {
                   allowAudioInteraction
                 );
               } else {
-                GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage,
-                  allowAudioInteraction
-                );
+                if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
+                  anthropicAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                } else if (botSelectedLLM?.llm1?.toLowerCase().includes("gpt")) {
+                  OpenAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                } else {
+                  GeminiAiResponse(
+                    responseData.coach_message_metadata.prompt,
+                    signals,
+                    conversation_id2,
+                    latestMessage,
+                    allowAudioInteraction,
+                    botSelectedLLM.llm2,
+                    botSelectedLLM.llm3
+                  );
+                }
               }
 
               // conversation_id2 = responseData["uid"];
