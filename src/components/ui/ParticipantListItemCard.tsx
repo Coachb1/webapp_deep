@@ -22,6 +22,7 @@ export function ParticipantListItemCard({
   likeComponent,
   restrictedFeatures,
   requestConnectionComponent,
+  profilePicUrl,
 }: {
   coach: CoachesDataType;
   coacheeId: string;
@@ -31,6 +32,7 @@ export function ParticipantListItemCard({
   likeComponent: ReactNode;
   restrictedFeatures: string | null;
   requestConnectionComponent: ReactNode;
+  profilePicUrl: string;
 }) {
   return (
     <div id={coach.profile_id}>
@@ -66,7 +68,9 @@ export function ParticipantListItemCard({
             <img
               className="h-[250px] w-[200px] max-sm:w-full  min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:min-w-[150px]"
               src={
-                "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
+                profilePicUrl?.includes("https://res.cloudinary.com")
+                  ? profilePicUrl
+                  : "https://res.cloudinary.com/dtbl4jg02/image/upload/v1716188919/ztvtyywtkzzh23jadm3n.png"
               }
             />
             <div>{likeComponent}</div>
