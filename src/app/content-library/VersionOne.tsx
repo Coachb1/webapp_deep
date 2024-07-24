@@ -296,13 +296,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
                 Presentation
               </Button>
 
-              <Button
+              {/* <Button
                 variant={"secondary"}
                 className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
                 onClick={() => scrollToView("onboarding")}
               >
                 Onboarding
-              </Button>
+              </Button> */}
 
               <Button
                 variant={"secondary"}
@@ -446,13 +446,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               tests={presentation}
             />
           </div>
-          <div id="onboarding">
+          {/* <div id="onboarding">
             <HeroAccordion
               badgeText="Onboarding"
               user={user ? true : false}
               tests={onBoarding}
             />
-          </div>
+          </div> */}
           <div id="meetings">
             <HeroAccordion
               badgeText=" Meetings | Group Discussion"
