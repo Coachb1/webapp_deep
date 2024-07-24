@@ -35,7 +35,7 @@ const Competencies = ({ user }: any) => {
     { value: "Resilience" },
   ]);
 
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   const [skillOne, setSkillOne] = useState("");
   const [skillTwo, setSkillTwo] = useState("");
   const [skillThree, setSkillThree] = useState("");
@@ -56,46 +56,37 @@ const Competencies = ({ user }: any) => {
   const [fetchLoading, setFetchLoading] = useState(true);
 
   const [saveLoading, setSaveLoading] = useState(false);
-  const { competencyData, getAllCompetencyData } = useUser();
+  const { competencyData, getAllCompetencyData, userId } = useUser();
   const getCompetency = () => {
     setFetchLoading(true);
-    getUserAccount(user)
-      .then((response) => response.json())
-      .then((data) => {
-        setUserId(data.uid);
-        console.log(data);
 
-        fetch(
-          `${baseURL}/accounts/user-competency-details/?user_id=${data.uid}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-            const parsedSkills: string[] = Object.values(data[0]);
-            console.log(parsedSkills);
-            setSkillsArray((prevSkills) =>
-              prevSkills.map((skill) => ({
-                ...skill,
-                disabled: parsedSkills.includes(skill.value),
-              }))
-            );
-            setExistingSkills(parsedSkills);
-            setFetchLoading(false);
-            setSkillOne(parsedSkills[0].replace(/"/g, ""));
-            setSkillTwo(parsedSkills[1].replace(/"/g, ""));
-            setSkillThree(parsedSkills[2].replace(/"/g, ""));
-            setSkillFour(parsedSkills[3].replace(/"/g, ""));
-          })
-          .catch((err) => {
-            console.error(err);
-            setFetchLoading(false);
-          });
+    fetch(`${baseURL}/accounts/user-competency-details/?user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        Authorization: basicAuth,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const parsedSkills: string[] = Object.values(data[0]);
+        console.log(parsedSkills);
+        setSkillsArray((prevSkills) =>
+          prevSkills.map((skill) => ({
+            ...skill,
+            disabled: parsedSkills.includes(skill.value),
+          }))
+        );
+        setExistingSkills(parsedSkills);
+        setFetchLoading(false);
+        setSkillOne(parsedSkills[0].replace(/"/g, ""));
+        setSkillTwo(parsedSkills[1].replace(/"/g, ""));
+        setSkillThree(parsedSkills[2].replace(/"/g, ""));
+        setSkillFour(parsedSkills[3].replace(/"/g, ""));
+      })
+      .catch((err) => {
+        console.error(err);
+        setFetchLoading(false);
       });
   };
 
@@ -159,9 +150,7 @@ const Competencies = ({ user }: any) => {
           setSaveLoading(false);
           setRenderInputComponent(false);
           getCompetency();
-          setTimeout(() => {
-            getAllCompetencyData();
-          }, 2000);
+          getAllCompetencyData();
         })
         .catch((error) => {
           console.error(error);
