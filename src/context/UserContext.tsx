@@ -83,6 +83,7 @@ interface UserContextType {
   getAllUserData: () => Promise<void>;
   getAllClientData: () => Promise<void>;
   getFeedbackBotsData: () => Promise<void>;
+  getRequestedTestsFn: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -518,6 +519,11 @@ export const UserProvider = ({
     setUserConnections(connections.data);
   };
 
+  const getRequestedTestsFn = async () => {
+    const requestedTestData = await getRequestedTests(userId);
+    setRequestedTestsData(requestedTestData);
+  };
+
   useEffect(() => {
     if (pathname === "/profile") {
       getAllBotConversationData();
@@ -544,6 +550,7 @@ export const UserProvider = ({
       getAllUserData,
       getAllClientData,
       getFeedbackBotsData,
+      getRequestedTestsFn,
       loadingState,
       coachId,
       coacheeId,
