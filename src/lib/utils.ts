@@ -157,6 +157,7 @@ export const hideConsoleLogs = () => {
     return (console.log = function () {});
   }
 };
+
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",

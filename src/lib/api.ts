@@ -244,7 +244,6 @@ export const getUserConnections = async (userId: string) => {
   };
 };
 
-
 export const getConnections = async (coachId: string, coacheeId: string) => {
   let connections = [];
   if (coacheeId) {

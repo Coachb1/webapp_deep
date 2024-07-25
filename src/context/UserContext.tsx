@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getUserAccount } from "@/lib/utils";
+import { emptyData, getUserAccount, hideConsoleLogs } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -491,7 +491,8 @@ export const UserProvider = ({
   };
 
   useEffect(() => {
-    // console.log(window.location.href)
+    hideConsoleLogs();
+
     if (window.location.href.includes("dev-bot")) {
       basicUserConfigs(kindeUser);
       setLoadingState(false);
@@ -513,14 +514,14 @@ export const UserProvider = ({
 
   const getConnectionsFn = async () => {
     const connections = await getConnections(coachId, coacheeId);
-    console.log(connections)
-    setUserConnections(connections.data)
-  }
+    console.log(connections);
+    setUserConnections(connections.data);
+  };
 
   useEffect(() => {
     if (pathname === "/profile") {
       getAllBotConversationData();
-      getConnectionsFn()
+      getConnectionsFn();
     }
   }, [pathname]);
 
