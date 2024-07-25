@@ -23,6 +23,7 @@ import { ClientUserTeamType, ClientUserType } from "@/lib/types";
 import { Radio, Select, Tooltip } from "antd";
 import { Div } from "./ui/moving-border";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
+import { useUser } from "@/context/UserContext";
 
 interface OptionType {
   value: string;
@@ -110,6 +111,8 @@ const CreateYourOwn = ({
 
   const userContextRef = useRef<any>();
 
+  const { getRequestedTestsFn } = useUser();
+
   const handleGenerateSenario = () => {
     setGeneratedTestData([]);
     setGenerationError(false);
@@ -182,6 +185,7 @@ const CreateYourOwn = ({
             console.log("Dynamically created Test result", data);
             setGeneratedTestData(data);
             setIsloading(false);
+            getRequestedTestsFn();
             setLoadingText("Creating simulation.");
             incrementTries();
             if (data[0].message || data[0].error) {
@@ -245,6 +249,7 @@ const CreateYourOwn = ({
         const responseData = await response.json();
         console.log(responseData);
         toast.success("Succesfully assigned the simulations.");
+        getRequestedTestsFn();
         setAssignedToUsers([]);
       } else {
         toast.error("Error assigning simulation");
