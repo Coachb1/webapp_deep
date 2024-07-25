@@ -229,7 +229,7 @@ const LayoutComponent = ({
                 <>
                   {" "}
                   {subdomain === "platform" ? (
-                    <div className="coachbots-coachtalk hidden"></div>
+                    <div className="coachbots-coachtalk"></div>
                   ) : (
                     <div className="coachbots-coachtalk"></div>
                   )}
