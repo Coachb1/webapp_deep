@@ -440,7 +440,7 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
-                        target="_blank"
+                        // target="_blank"
                       >
                         <span className="max-sm:hidden">View</span>{" "}
                         <TooltipWrapper
@@ -470,7 +470,7 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
-                        target="_blank"
+                        // target="_blank"
                       >
                         <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
@@ -516,7 +516,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
-                    target="_blank"
+                    // target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -543,7 +543,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
-                    target="_blank"
+                    // target="_blank"
                   >
                     <Button
                       variant={"secondary"}
