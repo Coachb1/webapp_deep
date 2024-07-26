@@ -124,7 +124,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
         {!restrictedPages?.includes("Network Directory") &&
           !restrictedPages?.includes("Library") &&
           !restrictedPages?.includes("Creator Studio") && (
-            <div className="hidden max-sm:block max-lg:block">
+            <div className="hidden max-sm:block max-lg:block max-sm:text-xs">
               <DropdownMenu>
                 <DropdownMenuTrigger
                   asChild
@@ -134,10 +134,15 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                     <Menu className="h-6 w-6" />
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-[999] w-fit">
+                <DropdownMenuContent
+                  align="end"
+                  className="z-[999] w-fit max-sm:text-xs"
+                >
                   {!restrictedPages?.includes("Network Directory") && (
                     <DropdownMenuItem
-                      className={`${pathname === "/" ? "bg-gray-200" : null}`}
+                      className={`max-sm:text-xs ${
+                        pathname === "/" ? "bg-gray-200" : null
+                      }`}
                       asChild
                     >
                       <Link href={"/"}> Network directory</Link>
@@ -145,7 +150,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                   )}
                   {!restrictedPages?.includes("Library") && (
                     <DropdownMenuItem
-                      className={`${
+                      className={`max-sm:text-xs ${
                         pathname.includes("/library") ? "bg-gray-200" : null
                       }`}
                       asChild
@@ -156,7 +161,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
 
                   {!restrictedPages?.includes("Creator Studio") && (
                     <DropdownMenuItem
-                      className={`${
+                      className={`max-sm:text-xs ${
                         pathname.includes("/create-scenario")
                           ? "bg-gray-200"
                           : null
@@ -180,7 +185,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
                 }}
                 id="help-mode"
               />
-              <p className="">Help mode</p>
+              <p className="max-sm:text-xs ">Help mode</p>
             </div>
             <div className="h-[20px] w-[2px] bg-gray-500"></div>
             <NavProfile restrictedPages={restrictedPages} user={user} />

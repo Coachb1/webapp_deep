@@ -274,7 +274,7 @@ const Conversations = ({ user }: any) => {
                         .filter((convo) => convo.bot_type === "avatar_bot")
                         .map((conversation) => (
                           <ConversationChat
-                            type="coach-interactions"
+                            // type="coach-interactions"
                             participant={conversation.participant_name}
                             conversation={conversation.conversation}
                             date={
@@ -298,7 +298,7 @@ const Conversations = ({ user }: any) => {
                         .filter((convo) => convo.bot_type === "deep_dive")
                         .map((conversation) => (
                           <ConversationChat
-                            type="coach-interactions"
+                            // type="coach-interactions"
                             participant={conversation.participant_name}
                             conversation={conversation.conversation}
                             date={
@@ -320,7 +320,7 @@ const Conversations = ({ user }: any) => {
                         .filter((convo) => convo.bot_type === "user_bot")
                         .map((conversation) => (
                           <ConversationChat
-                            type="coach-interactions"
+                            // type="coach-interactions"
                             participant={conversation.participant_name}
                             conversation={conversation.conversation}
                             date={

@@ -33,7 +33,7 @@ const CopyToClipboard = ({
     <>
       <Button
         variant={"secondary"}
-        className={`p-2 h-8 border border-gray-200 ${className}`}
+        className={`p-2 h-8 border border-gray-200 max-sm:text-xs ${className}`}
         onClick={handleCopyClick}
       >
         {isCopied ? "Copied" : `Copy ${copyType} `}
