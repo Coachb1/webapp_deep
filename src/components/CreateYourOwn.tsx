@@ -16,6 +16,7 @@ import {
   basicAuth,
   getUserAccount,
   getUsersForClient,
+  truncateString,
 } from "@/lib/utils";
 import { toast } from "sonner";
 // import Select, { MultiValue } from "react-select";
@@ -273,16 +274,16 @@ const CreateYourOwn = ({
             {
               label: "Short",
               value: "short",
-              style: {
-                fontSize: "18px",
-              },
+              // style: {
+              //   fontSize: "18px",
+              // },
             },
             {
               label: "Standard",
               value: "standard",
-              style: {
-                fontSize: "18px",
-              },
+              // style: {
+              //   fontSize: "18px",
+              // },
             },
           ]}
           onChange={(e) => {
@@ -405,7 +406,7 @@ const CreateYourOwn = ({
           <Button
             disabled={isLoading}
             onClick={handleGenerateSenario}
-            className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+            className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092] text-sm max-sm:text-xs max-sm:w-full"
           >
             {generatedTestData.length > 0
               ? isLoading
@@ -422,7 +423,7 @@ const CreateYourOwn = ({
             <Button
               onClick={clearHanlder}
               variant={"secondary"}
-              className="max-sm:p-2 h-8 hover:brightness-105"
+              className="max-sm:p-2 h-8 hover:brightness-105 text-sm  max-sm:text-xs max-sm:w-full"
             >
               <Eraser className="mr-2 w-4 h-4" /> Clear
             </Button>
@@ -446,8 +447,12 @@ const CreateYourOwn = ({
                 <b className="my-1 text-gray-400">
                   {i === 0 ? "Simulation" : "Role play"}
                 </b>
-                <p className="text-xl mt-3 font-semibold">{test?.title}</p>
-                <p className="text-sm mt-2 mb-2">{test?.description}</p>
+                <p className="text-xl max-sm:text-sm mt-3 font-semibold">
+                  {test?.title}
+                </p>
+                <p className="text-sm max-sm:text-xs mt-2 mb-2">
+                  {test?.description}
+                </p>
               </div>
               <div className="flex justify-end mt-2">
                 <CopyToClipboard
@@ -460,17 +465,19 @@ const CreateYourOwn = ({
       </div>
       {!generationError && generatedTestData.length > 0 && (
         <div className="mb-4 flex flex-col max-sm:flex-col max-sm:items-start mt-2 border border-gray-200 p-2 rounded-md bg-gray-50 shadow-sm">
-          <p className="text-sm my-2 text-left font-semibold">
+          <p className="text-sm max-sm:text-xs my-2 text-left font-semibold">
             Assign the simulation
           </p>
-          <div className={`flex flex-row items-center gap-2`}>
+          <div
+            className={`w-full flex flex-row max-sm:flex-col items-center gap-2`}
+          >
             <Select
               placeholder="Select the users"
               className="w-full"
               virtual={false}
               mode="multiple"
               style={{
-                padding: "8px",
+                // padding: "8px",
                 textAlign: "left",
               }}
               value={assignedToUsers}
@@ -502,7 +509,7 @@ const CreateYourOwn = ({
               }}
             />
             <Button
-              className="text-sm h-fit"
+              className="text-sm max-sm:text-xs h-fit max-sm:w-full"
               onClick={() => {
                 const testcodes = generatedTestData
                   .map((test) => test.test_code)

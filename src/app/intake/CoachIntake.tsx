@@ -19,6 +19,8 @@ import {
   transformExtractedOptionalCoachee,
 } from "@/lib/utils";
 import {
+  Asterisk,
+  ChevronLeft,
   File,
   Info,
   Loader,
@@ -2415,6 +2417,18 @@ const CoachIntake = ({ user }: any) => {
         </div>
       )}
 
+      <div className="fixed left-20 top-14">
+        <Button
+          variant={"secondary"}
+          className="border border-gray-300 text-sm max-sm:hidden"
+          onClick={() => {
+            router.push("/profile");
+          }}
+        >
+          <ChevronLeft className="inline mr-1" /> Go Back
+        </Button>
+      </div>
+
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -2459,14 +2473,21 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" />{" "}
-                      <p className="text-sm">*</p> mark questions are mandatory
-                      in nature.
+                      <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                      mandatory in nature.
+                    </Badge>
+                  )}
+                  {checkIfView && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
+                      variant={"outline"}
+                    >
+                      You are viewing your bot.
                     </Badge>
                   )}
                   {checkIfEdit && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are editing your bot. All the earlier inputs will be
@@ -4343,7 +4364,7 @@ const CoachIntake = ({ user }: any) => {
               >
                 {checkIfView && (
                   <Badge
-                    className="bg-blue-200 w-fit text-blue-800"
+                    className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                     variant={"outline"}
                   >
                     You are viewing your profile.
@@ -4352,11 +4373,10 @@ const CoachIntake = ({ user }: any) => {
                 {!checkIfView && (
                   <Badge
                     variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                   >
-                    <Info className="h-4 w-4 mr-1" />{" "}
-                    <p className="text-sm">*</p> mark questions are mandatory in
-                    nature.
+                    <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                    mandatory in nature.
                   </Badge>
                 )}
                 <div>
@@ -4962,16 +4982,15 @@ const CoachIntake = ({ user }: any) => {
                   {!checkIfView && (
                     <Badge
                       variant={"secondary"}
-                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
+                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" />{" "}
-                      <p className="text-sm">*</p> mark questions are mandatory
-                      in nature.
+                      <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                      mandatory in nature.
                     </Badge>
                   )}
                   {checkIfView && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are viewing your bot.
@@ -4979,7 +4998,7 @@ const CoachIntake = ({ user }: any) => {
                   )}
                   {checkIfEdit && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are editing your bot. All the earlier inputs will be
