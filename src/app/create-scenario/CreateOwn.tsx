@@ -390,7 +390,10 @@ const CreateOwn = ({
               // setSummaryGenerationLoading(false);
             }
           } else {
-            toast.error("Error generating your summary, Please try again");
+            toast.error(
+              "Restricted video. Summary not available. Please try another.",
+              { duration: 6000 }
+            );
           }
           setSummaryGenerationLoading(false);
           enableDisableResultButton(`${video_id}`, false);

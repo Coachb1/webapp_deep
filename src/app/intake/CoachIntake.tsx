@@ -288,7 +288,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [restrictedFeatures, setRestrictedFeatures] = useState("");
 
-  const { getAllDirectoryData, getFeedbackBotsData } = useUser();
+  const { getAllDirectoryData, getFeedbackBotsData, getBotsFn } = useUser();
 
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
@@ -1105,7 +1105,7 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
-                  getAllDirectoryData();
+                  // getAllDirectoryData();
                   setTimeout(() => {
                     getAllDirectoryData();
                     router.push("/");
@@ -1466,16 +1466,17 @@ const CoachIntake = ({ user }: any) => {
                           console.log(data);
                           setCreateLoading(false);
                           if (!data.error && !data.detail) {
-                            toast.success(
+                            toast.loading(
                               "Successfully updated your profile. Redirecting you to your Profile page.",
                               {
-                                duration: 6000,
+                                duration: 10000,
                               }
                             );
                             resetAllStates();
                             setTimeout(() => {
+                              getAllDirectoryData();
                               router.push("/profile");
-                            }, 4000);
+                            }, 10000);
                           } else {
                             setCreateLoading(false);
                             toast.error(

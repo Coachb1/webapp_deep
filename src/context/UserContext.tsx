@@ -84,6 +84,7 @@ interface UserContextType {
   getAllClientData: () => Promise<void>;
   getFeedbackBotsData: () => Promise<void>;
   getRequestedTestsFn: () => Promise<void>;
+  getBotsFn: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -416,6 +417,11 @@ export const UserProvider = ({
     setFeedbackBots(feedbackBots);
   };
 
+  const getBotsFn = async () => {
+    const botsData = await getBots(userId);
+    setBotsData(botsData?.data);
+  };
+
   const getFeedbacks = async () => {
     const botsData = await getBots(userId);
     console.log(botsData);
@@ -551,6 +557,7 @@ export const UserProvider = ({
       getAllClientData,
       getFeedbackBotsData,
       getRequestedTestsFn,
+      getBotsFn,
       loadingState,
       coachId,
       coacheeId,
