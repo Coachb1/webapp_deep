@@ -133,7 +133,7 @@ const AdminReports = ({ user, clientName }: any) => {
       <div className="m-4 my-6">
         <p className="text-base max-sm:text-sm font-semibold">Actions</p>
         <div className="flex flex-row items-start gap-4 flex-wrap my-2">
-          <DataIntegration clientName={clientName} />
+          <DataIntegration clientName={clientName} user={user} />
         </div>
       </div>
     </div>

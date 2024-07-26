@@ -5,24 +5,83 @@ import { Button } from "@/components/ui/button";
 import { baseURL, basicAuth } from "@/lib/utils";
 import { Input, Modal } from "antd";
 import { Database, Loader } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const DataIntegration = ({ clientName }: { clientName: string }) => {
+const DataIntegration = ({ clientName, user }: any) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState("");
+  const [token, setToken] = useState("");
+  const [secret, setSecret] = useState("");
+  const [webhookUrlEnabled, SetWebhookUrlEnabled] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log(user.email)
+        const response = await fetch(
+          `${baseURL}/accounts/get-client-information/?for=only_client_data&email=${user.email}`,
+          {
+            headers: {
+              Authorization: basicAuth,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response, 'data')
+
+        if (!response.ok) {
+          console.error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        console.log(
+          data.data.only_client_data,
+          data.data.only_client_data.webhook_url,
+          data.data.only_client_data.webhook_token,
+          data.data.only_client_data.webhook_secret,
+          data.data.only_client_data.webhook_enabled,
+          data.data.only_client_data.webhook_url === null
+        );
+        setWebhookUrl(data.data.only_client_data.webhook_url || "");
+        setToken(data.data.only_client_data.webhook_token || "");
+        setSecret(data.data.only_client_data.webhook_secret || "");
+        SetWebhookUrlEnabled(data.data.only_client_data.webhook_enabled);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [baseURL, clientName, basicAuth]);
 
   const submitHandler = async () => {
     setLoading(true);
     try {
+      console.log(
+        secret,
+        token,
+        webhookUrl,
+        webhookUrlEnabled,
+        clientName
+      )
       const response = await fetch(
-        `${baseURL}/accounts/save-webhook-url?webhook_url=${webhookUrl}&client_id=${clientName}`,
+        `${baseURL}/accounts/get-create-or-update-client-id/`,
         {
-          method: "GET",
+          method: "PATCH",
           headers: {
             Authorization: basicAuth,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            client_name: clientName,
+            webhook_url: webhookUrl,
+            webhook_enabled: webhookUrlEnabled,
+            webhook_token: token,
+            webhook_secret: secret,
+          }),
         }
       );
       if (response.ok) {
@@ -63,21 +122,49 @@ const DataIntegration = ({ clientName }: { clientName: string }) => {
         className="w-full"
         footer={false}
       >
-        <div className="flex flex-col gap-4 w-full justify-end">
-          <div className="mt-3 flex flex-row gap-2 self-start w-full max-sm:flex-col max-md:flex-col">
+        <div className="flex flex-col gap-4 w-full">
+          <div className="mt-3 flex flex-col gap-2 self-start w-full">
             <div className="w-full flex flex-col gap-2 items-start">
               <p className="block text-sm font-medium">
-                User Interaction Data Webhook{" "}
+                User Interaction Data Webhook
               </p>
-              <div className="w-full flex flex-row gap-2 items-center justify-center">
+              <div className="w-full flex flex-col gap-2 items-start">
                 <Input
                   className="w-full text-blue-500"
+                  value={webhookUrl}
                   placeholder="Enter your webhook URL"
                   style={{ color: "#3b82f6" }}
                   onChange={(e) => {
                     setWebhookUrl(e.target.value);
                   }}
                 />
+                <Input
+                  className="w-full text-blue-500"
+                  value={token}
+                  placeholder="Enter your token"
+                  style={{ color: "#3b82f6" }}
+                  onChange={(e) => {
+                    setToken(e.target.value);
+                  }}
+                />
+                <Input
+                  className="w-full text-blue-500"
+                  value={secret}
+                  placeholder="Enter your secret"
+                  style={{ color: "#3b82f6" }}
+                  onChange={(e) => {
+                    setSecret(e.target.value);
+                  }}
+                />
+                <div className="flex items-center space-x-2 my-1.5">
+                  <Checkbox
+                    checked={webhookUrlEnabled}
+                    onCheckedChange={(checked) => {
+                      SetWebhookUrlEnabled(Boolean(checked));
+                    }}
+                  />
+                  <label className="text-xs text-gray-700">Webhook enable?</label>
+                </div>
                 <Button
                   disabled={loading || webhookUrl.length === 0}
                   onClick={() => {

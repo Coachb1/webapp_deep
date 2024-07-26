@@ -8394,7 +8394,7 @@ loadExternalModule().then(() => {
           if (isTestCode2(latestMessage)) {
             //* check if a session is already running
             console.log("responsesDone2", responsesDone2, questionIndex2);
-            if (responsesDone2 === false && questionIndex2 > 0) {
+            if (isSessionActiveStt) {
               signals.onResponse({
                 html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
               });
