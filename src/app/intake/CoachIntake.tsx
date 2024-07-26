@@ -1470,6 +1470,10 @@ const CoachIntake = ({ user }: any) => {
                               "Successfully updated your profile. Redirecting you to your Profile page.",
                               {
                                 duration: 10000,
+                                style: {
+                                  backgroundColor: "#EBFDF2",
+                                  color: "#008A2E",
+                                },
                               }
                             );
                             resetAllStates();
@@ -1655,9 +1659,13 @@ const CoachIntake = ({ user }: any) => {
                     }, 4000);
                   } else {
                     toast.loading(
-                      "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                      "Your feedback bot will be published soon and will be available via your profile/network. You may need to refresh.",
                       {
                         duration: 10000,
+                        style: {
+                          backgroundColor: "#EBFDF2",
+                          color: "#008A2E",
+                        },
                       }
                     );
                     setTimeout(() => {
@@ -2406,6 +2414,7 @@ const CoachIntake = ({ user }: any) => {
           </div>
         </div>
       )}
+
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -4872,11 +4881,11 @@ const CoachIntake = ({ user }: any) => {
                       <div className="flex flec-col">
                         {checkIfEdit ? (
                           <Button
-                            disabled={feedbackCreateLoading || !dataModified}
+                            disabled={createLoading || !dataModified}
                             className="h-8"
                           >
                             {" "}
-                            {feedbackCreateLoading ? (
+                            {createLoading ? (
                               <>
                                 <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
                                 Saving

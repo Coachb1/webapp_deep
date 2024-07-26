@@ -720,7 +720,7 @@ const MyLibrary = ({ user }: any) => {
                                                       <Accordion
                                                         type="single"
                                                         collapsible
-                                                        className="w-full text-sm text-slate-900 max-sm:p-4 rounded-xl bg-white overflow-clip border"
+                                                        className="w-full text-sm text-slate-900 rounded-xl bg-white overflow-clip border"
                                                       >
                                                         {domains.tests.map(
                                                           (

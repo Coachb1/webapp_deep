@@ -66,7 +66,7 @@ export function ParticipantListItemCard({
         <div className="bg-white relative group/card h-auto rounded-xl p-6 w-full flex flex-row max-sm:flex-col max-sm:justify-center max-sm:items-center py-0 ">
           <div className="w-fit">
             <img
-              className="h-[250px] w-[200px] max-sm:w-full  min-w-[200px] rounded-md object-cover max-sm:h-[200px] max-sm:min-w-[150px]"
+              className="h-[250px] w-[200px] max-sm:w-full  max-w-[200px] rounded-md object-cover max-sm:object-fit max-sm:h-[200px] max-sm:min-w-[150px]"
               src={
                 profilePicUrl?.includes("https://res.cloudinary.com")
                   ? profilePicUrl
@@ -103,7 +103,7 @@ export function ParticipantListItemCard({
                   <>
                     <div className="flex flex-col justify-start">
                       {coach.bot_tag && (
-                        <p className="text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
+                        <p className="text-left text-2xl font-semibold text-gray-700">
                           {coach.bot_tag}
                         </p>
                       )}
@@ -113,7 +113,7 @@ export function ParticipantListItemCard({
                     </div>
                   </>
                 ) : (
-                  <p className="flex w-full text-wrap gap-2 text-left text-2xl font-semibold text-gray-700 max-sm:text-sm">
+                  <p className="flex w-full text-wrap gap-2 text-left text-2xl font-semibold text-gray-700">
                     {convertTextToCorrectFormat(coach.name)}
                   </p>
                 )}{" "}
@@ -155,7 +155,7 @@ export function ParticipantListItemCard({
                 )}
               </div>
             </div>
-            <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row gap-2 items-center">
+            <div className="text-sm w-full font-semibold text-neutral-600 dark:text-white flex flex-row max-sm:flex-col gap-2 items-center max-sm:items-start">
               {reviewComponent}
               {(coach.profile_type === "coach" ||
                 coach.profile_type === "mentor") && (
@@ -163,7 +163,7 @@ export function ParticipantListItemCard({
                   <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden  max-lg:hidden">
                     ●
                   </span>
-                  <p className="text-sm max-sm:-ml-0 font-semibold text-gray-500">
+                  <p className="text-sm max-sm:text-xs max-sm:-ml-0 font-semibold text-gray-500">
                     {coach.total_without_question_count} Engagements
                   </p>
                 </div>
@@ -218,7 +218,7 @@ export function ParticipantListItemCard({
                 )}
               </div>
             </div>
-            <div className="flex justify-end items-center mt-10 mb-4 gap-2">
+            <div className="flex justify-end items-center mt-10 max-sm:mt-4 mb-4 gap-2">
               {requestConnectionComponent}
               {coach?.avatar_bot_id !== null &&
                 coach?.avatar_bot_url !== "" && (

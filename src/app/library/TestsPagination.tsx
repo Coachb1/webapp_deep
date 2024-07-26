@@ -26,10 +26,11 @@ const TestsPagination: React.FC<PaginationProps> = ({
         variant={"link"}
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
+        className="max-sm:text-xs"
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
       </Button>
-      <PaginationContent>
+      <PaginationContent className="text-sm max-sm:text-xs">
         {Array.from({ length: totalPages }).map((_, index) => {
           if (
             (index < maxPaginationLinks &&
@@ -68,6 +69,7 @@ const TestsPagination: React.FC<PaginationProps> = ({
         variant={"link"}
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
+        className="max-sm:text-xs"
       >
         Next <ChevronRight className="ml-2 h-4 w-4" />
       </Button>
