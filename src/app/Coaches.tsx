@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   DropdownMenu,
@@ -1204,7 +1204,7 @@ const Coaches = ({
       </>
     );
   };
-
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const { helpModeState, updateHelpModeState } = UseHelpMode();
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
@@ -1507,6 +1507,7 @@ const Coaches = ({
               <div className="flex flex-row items-center rounded-md border border-gray-300 bg-white p-1.5 py-3 shadow-md  ">
                 <Search className="mr-1 inline h-4 w-4" />
                 <input
+                  ref={searchInputRef}
                   placeholder="Search for Any Profile"
                   className="w-full border-l pl-2 text-lg outline-none max-sm:ml-1 max-sm:text-xs"
                   type="text"
@@ -1520,6 +1521,7 @@ const Coaches = ({
             <div className="mt-4">
               <div>
                 <FilterDropDown
+                  searchInputRef={searchInputRef}
                   filtersCategory={filterCategroies}
                   setParentCheckedValues={setParentCheckedValues}
                   checkedValues={parentCheckedValues}
