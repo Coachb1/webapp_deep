@@ -41,7 +41,9 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
     if (scrolledUp >= 3000) {
       setScrolled(scrolledUp);
     } else if (
-      (pathname === "/profile" || pathname === "/content-library") &&
+      (pathname === "/profile" ||
+        pathname === "/content-library" ||
+        pathname.includes("intake")) &&
       scrolledUp > 0
     ) {
       setScrolled(scrolledUp);

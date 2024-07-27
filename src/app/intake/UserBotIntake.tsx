@@ -4,17 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import {
   baseURL,
   basicAuth,
-  convertTextToCorrectFormat,
   getBotById,
   getUserAccount,
   isValidLinks,
-  isValidYoutubeLinks,
   subdomain,
   transformExtractedData,
 } from "@/lib/utils";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { Button } from "@/components/ui/button";
 import {
+  Asterisk,
   File,
   Info,
   Loader,
@@ -39,6 +38,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MediaData } from "@/lib/types";
 import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
+import { NavProfileWoProfile } from "@/components/NavProfile";
+import NetworkNav from "@/components/NetworkNav";
+import { useUser } from "@/context/UserContext";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const UserBotIntake = ({
@@ -88,14 +90,16 @@ const UserBotIntake = ({
   const [dataModified, setDataModified] = useState(false);
   const [forReapproval, setForReapproval] = useState(false);
 
+  const { getAllKnowledgeBotData } = useUser();
+
   useEffect(() => {
     if (user && !adminEdit) {
       getUserAccount(user)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data,'userinfo');
+          console.log(data, "userinfo");
           setUserId(data.uid);
-          setForReapproval(data.send_profile_for_reapproval)
+          setForReapproval(data.send_profile_for_reapproval);
         });
     } else if (adminEdit) {
       setUserId(userIdParams!);
@@ -280,7 +284,7 @@ const UserBotIntake = ({
 
     if (checkIfEdit) {
       formdata.append("bot_id", botIUidFromParams!);
-      if (forReapproval){
+      if (forReapproval) {
         formdata.append("for_reapproval", "true");
       }
     }
@@ -410,14 +414,17 @@ const UserBotIntake = ({
               console.log(data);
 
               if (data.error && data.msg) {
-                toast.error("Error creating your user bot, Please try again.");
+                toast.error(
+                  "Error creating your Knowledge Bot, Please try again."
+                );
               } else {
                 resetAllStates();
                 if (checkIfEdit) {
-                  toast.success("Successfully Updated your user bot.", {
+                  toast.success("Successfully Updated your Knowledge Bot.", {
                     duration: 6000,
                   });
                   setTimeout(() => {
+                    getAllKnowledgeBotData();
                     router.push("/profile");
                   }, 4000);
                 } else {
@@ -428,6 +435,7 @@ const UserBotIntake = ({
                     }
                   );
                   setTimeout(() => {
+                    getAllKnowledgeBotData();
                     router.push("/");
                   }, 4000);
                 }
@@ -558,6 +566,7 @@ const UserBotIntake = ({
 
   const deleteMediaDataHandler = (fileName: string) => {
     const updatedData: any = { ...mediaData };
+    setDataModified(true);
 
     for (const category in updatedData) {
       if (Array.isArray(updatedData[category])) {
@@ -574,7 +583,7 @@ const UserBotIntake = ({
 
   const undoDeleteMediaDataHandler = (fileName: string) => {
     const updatedData: any = { ...mediaData };
-
+    setDataModified(true);
     for (const category in updatedData) {
       if (Array.isArray(updatedData[category])) {
         const categoryItems = updatedData[category];
@@ -606,7 +615,7 @@ const UserBotIntake = ({
           <div className="flex flex-col gap-2">
             {checkIfView && (
               <Badge
-                className="bg-blue-200 w-fit text-blue-800"
+                className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                 variant={"outline"}
               >
                 You are viewing your knowledge bot Intake.
@@ -619,11 +628,12 @@ const UserBotIntake = ({
                   variant={"secondary"}
                   className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                 >
-                  <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
+                  <Asterisk className="h-4 w-4 mr-1" /> mark questions are
+                  mandatory in nature.
                 </Badge>
                 {checkIfEdit && (
                   <Badge
-                    className="bg-blue-200 w-fit text-blue-800"
+                    className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                     variant={"outline"}
                   >
                     You are editing your bot. All the earlier inputs will be
@@ -636,7 +646,8 @@ const UserBotIntake = ({
           <div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Enter your bot name. <span className="text-xl font-bold text-red-500">*</span>
+                Enter your bot name.{" "}
+                <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <input
                 required
@@ -664,7 +675,8 @@ const UserBotIntake = ({
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What is the primary purpose of the bot? <span className="text-xl font-bold text-red-500">*</span>
+                What is the primary purpose of the bot?{" "}
+                <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -695,7 +707,8 @@ const UserBotIntake = ({
 
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                What tasks or functions should the bot perform? <span className="text-xl font-bold text-red-500">*</span>
+                What tasks or functions should the bot perform?{" "}
+                <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -727,7 +740,8 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide the information the bot should have access to generate
-                responses? <span className="text-xl font-bold text-red-500">*</span>
+                responses?{" "}
+                <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -759,7 +773,8 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide a few common FAQs the bot should use for commonly asked
-                questions? <span className="text-xl font-bold text-red-500">*</span>
+                questions?{" "}
+                <span className="text-xl font-bold text-red-500">*</span>
               </p>
               <textarea
                 rows={4}
@@ -783,12 +798,20 @@ const UserBotIntake = ({
             </div>
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
-                Upload any relevant document or pdf to add to the bot. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
+                Upload any relevant document or pdf to add to the bot.{" "}
+                {!checkIfEdit && (
+                  <span className="text-xl font-bold text-red-500">*</span>
+                )}
               </p>
               <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                 <input
                   disabled={checkIfView === null ? false : true}
-                  required={!checkIfEdit}
+                  required={
+                    !checkIfEdit ||
+                    mediaData?.extracted_from_pdf.filter(
+                      (file) => !file.isDeleted
+                    ).length === 0
+                  }
                   type="file"
                   className="w-full text-xs my-2"
                   multiple
@@ -867,12 +890,23 @@ const UserBotIntake = ({
             <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide any relevant links and make sure the links are publicly
-                accessible. {!checkIfEdit && (<span className="text-xl font-bold text-red-500">*</span>)}
+                accessible.{" "}
+                {!checkIfEdit && (
+                  <span className="text-xl font-bold text-red-500">*</span>
+                )}
               </p>
               <textarea
                 disabled={checkIfView === null ? false : true}
                 value={releventLinks}
-                required={!checkIfEdit}
+                required={
+                  !checkIfEdit ||
+                  (mediaData?.extracted_from_youtube.filter(
+                    (link) => !link.isDeleted
+                  )?.length === 0 &&
+                    mediaData?.extracted_from_article.filter(
+                      (link) => !link.isDeleted
+                    )?.length === 0)
+                }
                 onChange={(e) => {
                   setReleventLinks(e.target.value);
                   handleInputLinks(e.target.value, "releventLinks");
