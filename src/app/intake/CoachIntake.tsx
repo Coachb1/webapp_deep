@@ -5087,7 +5087,7 @@ const CoachIntake = ({ user }: any) => {
                       const inputValue = e.target.value;
 
                       setCurrentProjects(inputValue);
-                      handleWordLimit(inputValue, 50, 80, "currentProjects");
+                      handleWordLimit(inputValue, 20, 80, "currentProjects");
                     }}
                     placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
                     rows={3}
