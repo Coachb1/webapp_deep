@@ -309,6 +309,11 @@ export const UserProvider = ({
 
           const clientUsers = await getClientUsers(userInfo.clientName);
           setClientUsers(clientUsers);
+        }
+
+        if (!userInfo.restrictedPages?.includes("Profile")) {
+          const candidateReport = await getCandidateReport(data.uid);
+          setCandidateReport(candidateReport);
 
           const userPositionDetails = await getLeaderboardPosition(
             userEmail,
@@ -316,11 +321,6 @@ export const UserProvider = ({
             data.uid
           );
           setUserPositionDetails(userPositionDetails);
-        }
-
-        if (!userInfo.restrictedPages?.includes("Profile")) {
-          const candidateReport = await getCandidateReport(data.uid);
-          setCandidateReport(candidateReport);
 
           const kudosData = await getKudosData(data.uid, userEmail);
           setKudosData(kudosData);

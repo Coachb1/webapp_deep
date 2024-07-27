@@ -2417,17 +2417,19 @@ const CoachIntake = ({ user }: any) => {
         </div>
       )}
 
-      <div className="fixed left-20 top-14">
-        <Button
-          variant={"secondary"}
-          className="border border-gray-300 text-sm max-sm:hidden"
-          onClick={() => {
-            router.push("/profile");
-          }}
-        >
-          <ChevronLeft className="inline mr-1" /> Go Back
-        </Button>
-      </div>
+      {(checkIfEdit === "true" || checkIfView === "true") && (
+        <div className="fixed left-20 top-14">
+          <Button
+            variant={"secondary"}
+            className="border border-gray-300 text-sm max-sm:hidden"
+            onClick={() => {
+              router.push("/profile");
+            }}
+          >
+            <ChevronLeft className="inline mr-1" /> Go Back
+          </Button>
+        </div>
+      )}
 
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
@@ -3132,7 +3134,12 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_youtube.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
                           setDataModified(true);
@@ -3231,7 +3238,12 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_article.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
@@ -3331,7 +3343,12 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_pdf.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
