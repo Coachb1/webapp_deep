@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getUserAccount } from "@/lib/utils";
+import { emptyData, getUserAccount, hideConsoleLogs } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -83,6 +83,8 @@ interface UserContextType {
   getAllUserData: () => Promise<void>;
   getAllClientData: () => Promise<void>;
   getFeedbackBotsData: () => Promise<void>;
+  getRequestedTestsFn: () => Promise<void>;
+  getBotsFn: () => Promise<void>;
   loadingState: boolean;
   coachId: string;
   coacheeId: string;
@@ -307,6 +309,11 @@ export const UserProvider = ({
 
           const clientUsers = await getClientUsers(userInfo.clientName);
           setClientUsers(clientUsers);
+        }
+
+        if (!userInfo.restrictedPages?.includes("Profile")) {
+          const candidateReport = await getCandidateReport(data.uid);
+          setCandidateReport(candidateReport);
 
           const userPositionDetails = await getLeaderboardPosition(
             userEmail,
@@ -314,11 +321,6 @@ export const UserProvider = ({
             data.uid
           );
           setUserPositionDetails(userPositionDetails);
-        }
-
-        if (!userInfo.restrictedPages?.includes("Profile")) {
-          const candidateReport = await getCandidateReport(data.uid);
-          setCandidateReport(candidateReport);
 
           const kudosData = await getKudosData(data.uid, userEmail);
           setKudosData(kudosData);
@@ -415,6 +417,11 @@ export const UserProvider = ({
     setFeedbackBots(feedbackBots);
   };
 
+  const getBotsFn = async () => {
+    const botsData = await getBots(userId);
+    setBotsData(botsData?.data);
+  };
+
   const getFeedbacks = async () => {
     const botsData = await getBots(userId);
     console.log(botsData);
@@ -491,7 +498,8 @@ export const UserProvider = ({
   };
 
   useEffect(() => {
-    // console.log(window.location.href)
+    hideConsoleLogs();
+
     if (window.location.href.includes("dev-bot")) {
       basicUserConfigs(kindeUser);
       setLoadingState(false);
@@ -513,14 +521,19 @@ export const UserProvider = ({
 
   const getConnectionsFn = async () => {
     const connections = await getConnections(coachId, coacheeId);
-    console.log(connections)
-    setUserConnections(connections.data)
-  }
+    console.log(connections);
+    setUserConnections(connections.data);
+  };
+
+  const getRequestedTestsFn = async () => {
+    const requestedTestData = await getRequestedTests(userId);
+    setRequestedTestsData(requestedTestData);
+  };
 
   useEffect(() => {
     if (pathname === "/profile") {
       getAllBotConversationData();
-      getConnectionsFn()
+      getConnectionsFn();
     }
   }, [pathname]);
 
@@ -543,6 +556,8 @@ export const UserProvider = ({
       getAllUserData,
       getAllClientData,
       getFeedbackBotsData,
+      getRequestedTestsFn,
+      getBotsFn,
       loadingState,
       coachId,
       coacheeId,

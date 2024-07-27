@@ -81,7 +81,7 @@ const LibraryTestsAccordian = ({
           <Accordion
             type="single"
             collapsible
-            className="w-full text-gray-500 max-sm:p-4 rounded-2xl bg-white overflow-clip"
+            className="w-full text-gray-500 rounded-2xl bg-white overflow-clip"
           >
             {paginatedShortTests.length > 0 && (
               <>

@@ -157,6 +157,7 @@ export const hideConsoleLogs = () => {
     return (console.log = function () {});
   }
 };
+
 export const getUserAccount = (user: any) => {
   return fetch(`${baseURL}/accounts/`, {
     method: "POST",
@@ -767,4 +768,11 @@ export function sortByDateDescending(data: UserIDPsType[]): UserIDPsType[] {
   const sortedData = [...data].sort(compareDates);
 
   return sortedData;
+}
+
+export function truncateString(str: string, maxLength: number) {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength - 1) + "…";
+  }
+  return str;
 }

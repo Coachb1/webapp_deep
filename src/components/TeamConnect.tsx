@@ -153,7 +153,7 @@ const TeamConnect = ({
                 }}
                 placeholder="Seeking insights from your team. For eg, I want to seek insight about @Amol as my new Project Manager in my new project"
                 rows={2}
-                className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm bg-accent"
+                className="border border-gray-200 w-full my-2 rounded-md outline-none p-2 text-sm max-sm:text-xs bg-accent"
               ></textarea>{" "}
             </div>
           </div>
@@ -171,7 +171,7 @@ const TeamConnect = ({
             <Button
               onClick={handleQuerySubmit}
               disabled={isLoading || !taggedUserId || !query}
-              className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092]"
+              className="max-sm:p-2 h-8 bg-[#2DC092] hover:brightness-105 hover:bg-[#2DC092] text-sm max-sm:text-xs"
             >
               {isLoading
                 ? "Generating"

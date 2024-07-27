@@ -440,14 +440,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
-                        target="_blank"
+                        // target="_blank"
                       >
                         <span className="max-sm:hidden">View</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="View"
                           body={
-                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <View className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
@@ -470,14 +470,14 @@ const MyPages = ({ user }: any) => {
                               : userProfile?.profile_type
                           )! + `&uid=${bot.uid}`
                         }
-                        target="_blank"
+                        // target="_blank"
                       >
                         <span className="max-sm:hidden">Edit</span>{" "}
                         <TooltipWrapper
                           className="hidden max-sm:block text-xs"
                           tooltipName="Edit"
                           body={
-                            <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
+                            <Edit className="h-3 w-3 ml-2 max-sm:ml-0 inline" />
                           }
                         />
                       </Link>
@@ -516,7 +516,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
-                    target="_blank"
+                    // target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -526,9 +526,7 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="View"
-                        body={
-                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
-                        }
+                        body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
                   </Link>
@@ -543,7 +541,7 @@ const MyPages = ({ user }: any) => {
                         userProfile.profile_type
                       )! + `&uid=`
                     }
-                    target="_blank"
+                    // target="_blank"
                   >
                     <Button
                       variant={"secondary"}
@@ -553,9 +551,7 @@ const MyPages = ({ user }: any) => {
                       <TooltipWrapper
                         className="hidden max-sm:block text-xs"
                         tooltipName="Edit"
-                        body={
-                          <ExternalLink className="h-3 w-3 ml-2 max-sm:ml-0" />
-                        }
+                        body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
                     </Button>
                   </Link>

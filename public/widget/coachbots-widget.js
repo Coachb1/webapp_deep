@@ -111,6 +111,7 @@ let clientBasedBotFooterText2 = "";
 let clientBasedReadHereText2 = "";
 let senarioSnippetURL;
 let questionSnippetLink;
+let isEmptyAudio = false;
 
 
 function createBasicAuthToken(key = "", secret = "") {
@@ -3897,6 +3898,14 @@ loadExternalModule().then(() => {
             return;
           }
 
+          console.log("At execution - Audio Empty:", isEmptyAudio);
+          if (isEmptyAudio) {
+            signals.onResponse({
+              html: "<p style='font-size: 14px;color: #991b1b;'><b>Empty response detected. Please try again.</b></p>",
+            });
+            return;
+          }
+
           body = undefined
           audioFile = undefined
 
@@ -4435,7 +4444,7 @@ loadExternalModule().then(() => {
           if (isTestCode(latestMessage)) {
             //* check if a session is already running
             console.log("responsesDone ===> ", responsesDone, questionIndex);
-            if (responsesDone === false && questionIndex > 0) {
+            if (isSessionActive) {
               signals.onResponse({
                 html: "<b>You are already in a session. Please complete the current session or  type 'STOP' to end the session.</b>",
               });
@@ -4635,7 +4644,7 @@ loadExternalModule().then(() => {
                 });
                 return;
               } else {
-                userResponses2.push(latestMessage);
+                userResponses.push(latestMessage);
               }
             }
           }
@@ -6148,6 +6157,9 @@ const openChatContainer = () => {
         // audioFileMap[`${questionIndex}`] = audioFile
         const fileUrl = window.URL.createObjectURL(audioFile);
         audioFileSrc = fileUrl;
+
+        isEmptyAudio = isAudioEmpty(audioBuffer)
+        console.log("at INIT - Is audio empty:", isEmptyAudio);
         // audioFileSrcMap[`${questionIndex}`] = fileUrl;
       };
 
@@ -6155,6 +6167,21 @@ const openChatContainer = () => {
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
+  }
+
+  function isAudioEmpty(audioBuffer) {
+    const rawData = audioBuffer.getChannelData(0); // Get audio data for the first channel
+    const threshold = 0.01; // Amplitude threshold for silence
+    let silentSamples = 0;
+  
+    for (let i = 0; i < rawData.length; i++) {
+      if (Math.abs(rawData[i]) < threshold) {
+        silentSamples++;
+      }
+    }
+  
+    const silentRatio = silentSamples / rawData.length;
+    return silentRatio > 0.99; // Consider audio empty if more than 99% is silent
   }
 
   console.log("IS RECORDING ", isRecording);

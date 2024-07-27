@@ -390,7 +390,10 @@ const CreateOwn = ({
               // setSummaryGenerationLoading(false);
             }
           } else {
-            toast.error("Error generating your summary, Please try again");
+            toast.error(
+              "Restricted video. Summary not available. Please try another.",
+              { duration: 6000 }
+            );
           }
           setSummaryGenerationLoading(false);
           enableDisableResultButton(`${video_id}`, false);
@@ -418,7 +421,7 @@ const CreateOwn = ({
           <div className="text-sm max-sm:text-xs text-left text-gray-600 ml-2 max-sm:ml-0 max-sm:my-2 flex flex-col justify-between w-full">
             <div>
               <b className="my-1">{video_title}</b>
-              <p className="text-sm my-1">{video_description}</p>
+              <p className="text-sm max-sm:text-xs my-1">{video_description}</p>
             </div>
             <div className="self-end w-full  flex flex-col max-sm:flex-col gap-2 justify-end text-right max-sm:mt-2">
               <div className="flex flex-row max-sm:flex-col max-sm:w-full gap-2 self-end w-fit">
@@ -430,7 +433,7 @@ const CreateOwn = ({
                     generatedSummary.length > 0
                   }
                   variant="secondary"
-                  className="h-8 border border-gray-200 max-sm:w-full"
+                  className="h-8 border border-gray-200 max-sm:w-full max-sm:text-xs"
                   onClick={() => {
                     generateYoutubeSummary("short");
                     enableDisableResultButton(`${video_id}`);
@@ -1354,7 +1357,7 @@ const CreateOwn = ({
                                                       <Accordion
                                                         type="single"
                                                         collapsible
-                                                        className="w-full  text-slate-900 max-sm:p-4 rounded-2xl bg-white overflow-clip border"
+                                                        className="w-full  text-slate-900 rounded-2xl bg-white overflow-clip border"
                                                       >
                                                         {knowledgeBots.length ===
                                                         0 ? (
@@ -1376,14 +1379,14 @@ const CreateOwn = ({
                                                                   "border-b-0"
                                                                 }`}
                                                               >
-                                                                <AccordionTrigger className="text-left text-sm max-sm:text-xs">
+                                                                <AccordionTrigger className="text-left text-sm max-sm:text-[14px]">
                                                                   <div className="flex flex-col items-start">
                                                                     <span>
                                                                       {
                                                                         bot.bot_name
                                                                       }
                                                                     </span>
-                                                                    <span className="text-xs font-semibold my-1">
+                                                                    <span className="text-xs font-semibold my-1 max-sm:text-[12px]">
                                                                       Created by{" "}
                                                                       <span className="font-extrabold">
                                                                         {
@@ -1408,7 +1411,7 @@ const CreateOwn = ({
                                                                         variant={
                                                                           "secondary"
                                                                         }
-                                                                        className="p-2 h-8 border border-gray-200"
+                                                                        className="p-2 h-8 border border-gray-200 max-sm:text-xs"
                                                                       >
                                                                         Visit
                                                                         bot{" "}

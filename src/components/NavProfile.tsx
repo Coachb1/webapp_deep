@@ -29,11 +29,11 @@ const NavProfile = ({ user }: any) => {
               <UserCircle2 className="h-6 w-6 text-zinc-700 z-[999] hover:cursor-pointer" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[999]">
+          <DropdownMenuContent align="end" className="z-[999] max-sm:text-xs ">
             <div className="flex items-center justify-center gap-2 p-2">
               <div className="flex flex-col space-x-0.5 leading-none">
                 {user.given_name && (
-                  <p className="font-medium text-sm text-black">
+                  <p className="font-medium text-sm  text-black">
                     {`${user.given_name} ${
                       user.family_name ? user.family_name : ""
                     }`}
@@ -49,14 +49,14 @@ const NavProfile = ({ user }: any) => {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="max-sm:text-xs ">
               <Link href={"/profile"} className="w-full">
                 <User className="h-4 w-4 mr-2" /> My Account
               </Link>
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className={`${
+              className={`max-sm:text-xs ${
                 pathname === "/content-library" ? "bg-gray-200" : null
               }`}
               asChild
@@ -66,7 +66,7 @@ const NavProfile = ({ user }: any) => {
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="max-sm:text-xs ">
               <Link
                 href={"https://open.coachbots.com/"}
                 target="_blank"
@@ -77,7 +77,7 @@ const NavProfile = ({ user }: any) => {
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="max-sm:text-xs ">
               <Link
                 href={"https://kbase.coachbots.com"}
                 target="_blank"
@@ -90,7 +90,7 @@ const NavProfile = ({ user }: any) => {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="max-sm:text-xs ">
               <LogoutLink>
                 {" "}
                 <LogOut className="h-4 w-4 mr-2" /> Logout

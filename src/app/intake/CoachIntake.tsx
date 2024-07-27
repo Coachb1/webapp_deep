@@ -19,6 +19,8 @@ import {
   transformExtractedOptionalCoachee,
 } from "@/lib/utils";
 import {
+  Asterisk,
+  ChevronLeft,
   File,
   Info,
   Loader,
@@ -288,7 +290,7 @@ const CoachIntake = ({ user }: any) => {
 
   const [restrictedFeatures, setRestrictedFeatures] = useState("");
 
-  const { getAllDirectoryData, getFeedbackBotsData } = useUser();
+  const { getAllDirectoryData, getFeedbackBotsData, getBotsFn } = useUser();
 
   const getClientInfoForUser = (userEmail: string) => {
     if (userEmail) {
@@ -1105,7 +1107,7 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
-                  getAllDirectoryData();
+                  // getAllDirectoryData();
                   setTimeout(() => {
                     getAllDirectoryData();
                     router.push("/");
@@ -1466,16 +1468,21 @@ const CoachIntake = ({ user }: any) => {
                           console.log(data);
                           setCreateLoading(false);
                           if (!data.error && !data.detail) {
-                            toast.success(
+                            toast.loading(
                               "Successfully updated your profile. Redirecting you to your Profile page.",
                               {
-                                duration: 6000,
+                                duration: 10000,
+                                style: {
+                                  backgroundColor: "#EBFDF2",
+                                  color: "#008A2E",
+                                },
                               }
                             );
                             resetAllStates();
                             setTimeout(() => {
+                              getAllDirectoryData();
                               router.push("/profile");
-                            }, 4000);
+                            }, 10000);
                           } else {
                             setCreateLoading(false);
                             toast.error(
@@ -1654,9 +1661,13 @@ const CoachIntake = ({ user }: any) => {
                     }, 4000);
                   } else {
                     toast.loading(
-                      "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                      "Your feedback bot will be published soon and will be available via your profile/network. You may need to refresh.",
                       {
                         duration: 10000,
+                        style: {
+                          backgroundColor: "#EBFDF2",
+                          color: "#008A2E",
+                        },
                       }
                     );
                     setTimeout(() => {
@@ -2405,6 +2416,21 @@ const CoachIntake = ({ user }: any) => {
           </div>
         </div>
       )}
+
+      {(checkIfEdit === "true" || checkIfView === "true") && (
+        <div className="fixed left-20 top-14">
+          <Button
+            variant={"secondary"}
+            className="border border-gray-300 text-sm max-sm:hidden"
+            onClick={() => {
+              router.push("/profile");
+            }}
+          >
+            <ChevronLeft className="inline mr-1" /> Go Back
+          </Button>
+        </div>
+      )}
+
       <MaxWidthWrapper className="flex pt-10 flex-col items-center justify-center text-center">
         <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold mt-10 mb-6">
           <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
@@ -2449,14 +2475,21 @@ const CoachIntake = ({ user }: any) => {
                       variant={"secondary"}
                       className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" />{" "}
-                      <p className="text-sm">*</p> mark questions are mandatory
-                      in nature.
+                      <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                      mandatory in nature.
+                    </Badge>
+                  )}
+                  {checkIfView && (
+                    <Badge
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
+                      variant={"outline"}
+                    >
+                      You are viewing your bot.
                     </Badge>
                   )}
                   {checkIfEdit && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are editing your bot. All the earlier inputs will be
@@ -3101,7 +3134,12 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={4}
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_youtube.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         value={linksReflectingWVpersonal}
                         onChange={(e) => {
                           setDataModified(true);
@@ -3200,7 +3238,12 @@ const CoachIntake = ({ user }: any) => {
                     <div>
                       <textarea
                         rows={4}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_article.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         disabled={checkIfView === null ? false : true}
                         value={linksReflectyouWished}
                         onChange={(e) => {
@@ -3300,7 +3343,12 @@ const CoachIntake = ({ user }: any) => {
                     <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
                       <input
                         disabled={checkIfView === null ? false : true}
-                        required={!checkIfEdit}
+                        required={
+                          !checkIfEdit ||
+                          mediaData?.extracted_from_pdf.filter(
+                            (file) => !file.isDeleted
+                          ).length === 0
+                        }
                         type="file"
                         className="w-full text-xs my-2"
                         multiple
@@ -4333,7 +4381,7 @@ const CoachIntake = ({ user }: any) => {
               >
                 {checkIfView && (
                   <Badge
-                    className="bg-blue-200 w-fit text-blue-800"
+                    className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                     variant={"outline"}
                   >
                     You are viewing your profile.
@@ -4342,11 +4390,10 @@ const CoachIntake = ({ user }: any) => {
                 {!checkIfView && (
                   <Badge
                     variant={"secondary"}
-                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
+                    className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                   >
-                    <Info className="h-4 w-4 mr-1" />{" "}
-                    <p className="text-sm">*</p> mark questions are mandatory in
-                    nature.
+                    <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                    mandatory in nature.
                   </Badge>
                 )}
                 <div>
@@ -4871,11 +4918,11 @@ const CoachIntake = ({ user }: any) => {
                       <div className="flex flec-col">
                         {checkIfEdit ? (
                           <Button
-                            disabled={feedbackCreateLoading || !dataModified}
+                            disabled={createLoading || !dataModified}
                             className="h-8"
                           >
                             {" "}
-                            {feedbackCreateLoading ? (
+                            {createLoading ? (
                               <>
                                 <Loader className="h-5 w-5 animate-spin mr-2" />{" "}
                                 Saving
@@ -4952,16 +4999,15 @@ const CoachIntake = ({ user }: any) => {
                   {!checkIfView && (
                     <Badge
                       variant={"secondary"}
-                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 mt-2 w-fit"
+                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
                     >
-                      <Info className="h-4 w-4 mr-1" />{" "}
-                      <p className="text-sm">*</p> mark questions are mandatory
-                      in nature.
+                      <Asterisk className="h-4 w-4 mr-1" /> marked questions are
+                      mandatory in nature.
                     </Badge>
                   )}
                   {checkIfView && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are viewing your bot.
@@ -4969,7 +5015,7 @@ const CoachIntake = ({ user }: any) => {
                   )}
                   {checkIfEdit && (
                     <Badge
-                      className="bg-blue-200 w-fit text-blue-800"
+                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                       variant={"outline"}
                     >
                       You are editing your bot. All the earlier inputs will be
@@ -5041,7 +5087,7 @@ const CoachIntake = ({ user }: any) => {
                       const inputValue = e.target.value;
 
                       setCurrentProjects(inputValue);
-                      handleWordLimit(inputValue, 50, 80, "currentProjects");
+                      handleWordLimit(inputValue, 20, 80, "currentProjects");
                     }}
                     placeholder="Highlighting the exciting projects I'm currently working on, including [Project 1], [Project 2], and [Project 3]..."
                     rows={3}

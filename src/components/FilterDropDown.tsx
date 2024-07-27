@@ -23,6 +23,7 @@ interface FilterDropDownProps {
   onUpdateCheckedValues: (newValues: string[]) => void;
   setParentCheckedValues: React.Dispatch<React.SetStateAction<string[]>>;
   filtersCategory: FilterCategoriesType[];
+  searchInputRef: React.MutableRefObject<HTMLInputElement | null>;
 }
 
 const FilterDropDown = ({
@@ -30,6 +31,7 @@ const FilterDropDown = ({
   onUpdateCheckedValues,
   setParentCheckedValues,
   filtersCategory,
+  searchInputRef,
 }: FilterDropDownProps) => {
   const [disabledFilters, setDisabledFilters] = React.useState<string[]>([]);
   const updateCheckedValues = (value: string, checked: boolean) => {
@@ -75,7 +77,7 @@ const FilterDropDown = ({
                   >
                     <Button
                       variant="outline"
-                      className="h-8 text-lg border-2 border-blue-400 w-fit p-1 px-2 shadow-lg shadow-blue-200"
+                      className="h-8 text-lg max-sm:text-xs border-2 border-blue-400 w-fit p-1 px-2 shadow-lg shadow-blue-200"
                     >
                       Profile Type <ChevronDownIcon className="h-4 w-5 ml-2" />
                     </Button>
@@ -87,7 +89,7 @@ const FilterDropDown = ({
                   >
                     <Button
                       variant="outline"
-                      className="h-8 text-lg w-fit p-1 px-2 border border-gray-200"
+                      className="h-8 text-lg max-sm:text-xs w-fit p-1 px-2 border border-gray-200"
                     >
                       {filter.filterName}{" "}
                       <ChevronDownIcon className="h-4 w-5 ml-2" />
@@ -106,7 +108,7 @@ const FilterDropDown = ({
                       />
                       <label
                         htmlFor={option}
-                        className="text-sm text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+                        className="text-sm max-sm:text-xs text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
                       >
                         {option === "accepted"
                           ? "Connections"
@@ -137,7 +139,7 @@ const FilterDropDown = ({
           />
           <label
             htmlFor={"recommended"}
-            className="text-lg  text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+            className="text-lg max-sm:text-xs  text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
           >
             {convertTextToCorrectFormat("AI Recommended")}
           </label>
@@ -146,7 +148,7 @@ const FilterDropDown = ({
       <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
         {checkedValues.map((checkedItem) => (
           <div className="flex flex-row items-center bg-gray-200 w-fit p-1 rounded-sm border border-gray-300">
-            <p className="text-sm px-1">
+            <p className="text-sm max-sm:text-xs px-1">
               {checkedItem === "accepted"
                 ? "Connections"
                 : checkedItem === "feedback_bot"
@@ -168,8 +170,13 @@ const FilterDropDown = ({
             onClick={() => {
               onUpdateCheckedValues([]);
               setDisabledFilters([]);
+
+              if (searchInputRef.current) {
+                searchInputRef.current.value = "";
+              }
             }}
             variant={"link"}
+            className="text-sm max-sm:text-xs"
           >
             Reset all
           </Button>
