@@ -6673,60 +6673,51 @@ loadExternalModule().then(() => {
             }
           });
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
+            if (
+              botPreviousConversationHistory.includes(messageText.innerText)
+            ) {
+              messageText.innerText +=
+                " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            } else if (messageText.innerText === "" && botType !== "user_bot") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
             }
-          } else if (messageText.innerText === "") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          }
 
-          if (
-            messageText.innerText.toLowerCase().includes("I am sorry but") ||
-            messageText.innerText
-              .toLowerCase()
-              .includes("not something that I am familiar") ||
-            messageText.innerText.toLowerCase().includes("i cannot answer") ||
-            messageText.innerText.toLowerCase().includes("not familiar")
-          ) {
-            messageText.innerText +=
-              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "Please explain your question or comment in different words which I may be able to understand better.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "Please explain your question or comment in different words which I may be able to understand better.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
             }
-          }
           
           botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
@@ -7160,18 +7151,20 @@ loadExternalModule().then(() => {
             }
           }
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+          if (
+            botPreviousConversationHistory.includes(messageText.innerText)
+          ) {
             messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
               audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
                 messageBubble,
                 index,
                 randomTextForId
               );
             }
-          } else if (messageText.innerText === "") {
+          } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -7179,23 +7172,13 @@ loadExternalModule().then(() => {
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 messageBubble,
                 index,
-                randomTextForId
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomTextForId
+                randomIdForAudioElement
               );
             }
           }
 
           botPreviousConversationHistory.push(messageText.innerText)
+
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
@@ -7392,41 +7375,6 @@ loadExternalModule().then(() => {
             index++;
           }
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
-            }
-          } else if (messageText.innerText === "") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          }
-
           if (
             messageText.innerText.toLowerCase().includes("I am sorry but") ||
             messageText.innerText
@@ -7443,6 +7391,32 @@ loadExternalModule().then(() => {
                 messageBubble,
                 index,
                 randomTextForId
+              );
+            }
+          }
+
+          if (
+            botPreviousConversationHistory.includes(messageText.innerText)
+          ) {
+            messageText.innerText +=
+              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "" && botType !== "user_bot") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
               );
             }
           }
