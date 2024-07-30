@@ -11,7 +11,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import NavProfile, { NavProfileWoProfile } from "./NavProfile";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UseHelpMode } from "@/lib/helpmodeContext";
 import { Switch } from "./ui/switch";
 
@@ -38,7 +38,7 @@ const NetworkNav = ({ user, restrictedPages }: any) => {
   function handleScroll() {
     var scrolledUp = window.scrollY || window.pageYOffset;
 
-    if (scrolledUp >= 3000) {
+    if (scrolledUp >= 2000) {
       setScrolled(scrolledUp);
     } else if (
       (pathname === "/profile" ||

@@ -207,6 +207,7 @@ let AttemptTestDirectSTT = false;
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = []
 let userQuestionsHistory = []
+let conversationLlmQueue = [];
 
 let allowPastingAtClientLevelStt;
 
@@ -1139,7 +1140,7 @@ async function populateBotConversation(participant_id) {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
       
-      botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
+      // botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
       if (coach_message_text && coach_message_text !== "" && index !== 0) {
         appendMessage2(coach_message_text);
       }
@@ -8261,40 +8262,44 @@ loadExternalModule().then(() => {
                   allowAudioInteraction
                 );
               } else {
-                if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
-                  if(userQuestionsHistory.filter((msg) => msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                  } else if(userQuestionsHistory.filter((msg) => msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                  } else {
-                    anthropicAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
+                console.log(
+                  "#similarity LAST QUESTION : ",
+                  userQuestionsHistory[userQuestionsHistory.length - 1]
+                );
+                let similarityValue = 0;
+
+                if (userQuestionsHistory[userQuestionsHistory.length - 1]) {
+                  const response = await fetch("/api/string-similarity", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      sentence1:
+                        userQuestionsHistory[
+                          userQuestionsHistory.length - 1
+                        ].toLowerCase(),
+                      sentence2: latestMessage.toLowerCase(),
+                    }),
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    console.log("#similarity Data : ", data);
+                    similarityValue = Number(data.similarity);
                   }
-                } else if (botSelectedLLM?.llm1?.toLowerCase().includes("gpt")) {
-                  if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
+                }
+
+                console.log("#similarity SIMILARITY VALUE : ", similarityValue);
+                console.log("#similarity LLM Queue : ", conversationLlmQueue);
+
+                if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gpt")
+                  ) {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
@@ -8304,7 +8309,24 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
-                  } else if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
+                    conversationLlmQueue.push("gemini");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueuepush("gpt");
+                  } else {
                     anthropicAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
@@ -8314,6 +8336,46 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
+                    conversationLlmQueue.push("anthropic");
+                  }
+                } else if (
+                  botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
+                ) {
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gemini")
+                  ) {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gemini");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("anthropic");
                   } else {
                     OpenAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8324,9 +8386,18 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
+                    conversationLlmQueue.push("gpt");
                   }
                 } else {
-                  if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gpt")
+                  ) {
                     OpenAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
@@ -8336,7 +8407,13 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
-                  } else if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
+                    conversationLlmQueue.push("gpt");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
                     anthropicAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
@@ -8346,6 +8423,7 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
+                    conversationLlmQueue.push("anthropic");
                   } else {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8356,6 +8434,7 @@ loadExternalModule().then(() => {
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
+                    conversationLlmQueue.push("gemini");
                   }
                 }
               }
