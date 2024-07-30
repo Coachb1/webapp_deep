@@ -119,6 +119,7 @@ const SessionNotes = ({ user }: any) => {
   };
 
   const getCommentsGiven = (userid: string) => {
+    setCommentsLoading(true)
     fetch(
       `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userid}&for=mentee`,
       {
@@ -250,11 +251,12 @@ const SessionNotes = ({ user }: any) => {
             );
             setSubmitLoading(false);
             return;
+          } else {
+            toast.success("Your comment has been successfully sent.");
+            setSubmitLoading(false);
+            getCommentsGiven(userId);
+            setCreateCommentInit(false);
           }
-          toast.success("Your comment has been successfully sent.");
-          setSubmitLoading(false);
-          getCommentsGiven(userId);
-          setCreateCommentInit(false);
         })
         .catch((err) => {
           setSubmitLoading(false);

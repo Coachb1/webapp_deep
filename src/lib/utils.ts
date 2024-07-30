@@ -190,6 +190,50 @@ export const getUserAccount = (user: any) => {
   });
 };
 
+export const getUserAccounts = async (user: any, retry: boolean = true): Promise<any> => {
+  try {
+    const response = await fetch(`${baseURL}/accounts/`, {
+      method: "POST",
+      headers: {
+        Authorization: basicAuth,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_context: {
+          name: `${user.given_name} ${user.family_name || ""}`,
+          role: "member",
+          user_attributes: {
+            tag: "deepchat_profile",
+            attributes: {
+              name: `${user.given_name} ${user.family_name || ""}`,
+              username: `${user.given_name} ${user.family_name || ""}`,
+              email: user.email,
+            },
+          },
+        },
+        identity_context: {
+          identity_type: "deepchat_unique_id",
+          value: user.email,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json() as Promise<any>; // Typecast response to UserAccountResponse
+  } catch (error) {
+    if (retry) {
+      console.warn("Request failed, retrying once...");
+      return getUserAccounts(user, false);
+    } else {
+      console.error("Request failed after retrying:", error);
+      throw error; // Rethrow the error after a failed retry
+    }
+  }
+};
+
 export function findCoacheeUID(profiles: any) {
   for (let i = 0; i < profiles.length; i++) {
     if (
