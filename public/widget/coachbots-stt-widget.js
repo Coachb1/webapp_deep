@@ -206,6 +206,7 @@ let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = []
+let userQuestionsHistory = []
 
 let allowPastingAtClientLevelStt;
 
@@ -8238,6 +8239,7 @@ loadExternalModule().then(() => {
 
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
+              
               //streaming responses
               if (botType === "deep_dive") {
                 console.log("chatGemini#####################");
@@ -8260,37 +8262,105 @@ loadExternalModule().then(() => {
                 );
               } else {
                 if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
-                  anthropicAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
+                  if(userQuestionsHistory.filter((msg) => msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else if(userQuestionsHistory.filter((msg) => msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  }
                 } else if (botSelectedLLM?.llm1?.toLowerCase().includes("gpt")) {
-                  OpenAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
+                  if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  }
                 } else {
-                  GeminiAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
+                  if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 1){
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else if(userQuestionsHistory.filter((msg) =>  msg?.toLowerCase() === latestMessage.toLowerCase()).length === 2) {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  } else {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                  }
                 }
               }
+
+              userQuestionsHistory.push(latestMessage)
 
               // conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];
