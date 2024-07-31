@@ -206,6 +206,8 @@ let AttemptTestDirectSTT = false;
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = []
+let userQuestionsHistory = []
+let conversationLlmQueue = [];
 
 let allowPastingAtClientLevelStt;
 
@@ -1138,7 +1140,7 @@ async function populateBotConversation(participant_id) {
       const coach_message_text = element["coach_message_text"];
       const participant_message_text = element["participant_message_text"];
       
-      botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
+      // botPreviousConversationHistory.push(coach_message_text.trim().replace("\n", ""))
       if (coach_message_text && coach_message_text !== "" && index !== 0) {
         appendMessage2(coach_message_text);
       }
@@ -6673,60 +6675,51 @@ loadExternalModule().then(() => {
             }
           });
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
+            if (
+              botPreviousConversationHistory.includes(messageText.innerText)
+            ) {
+              messageText.innerText +=
+                " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            } else if (messageText.innerText === "" && botType !== "user_bot") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
             }
-          } else if (messageText.innerText === "") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          }
 
-          if (
-            messageText.innerText.toLowerCase().includes("I am sorry but") ||
-            messageText.innerText
-              .toLowerCase()
-              .includes("not something that I am familiar") ||
-            messageText.innerText.toLowerCase().includes("i cannot answer") ||
-            messageText.innerText.toLowerCase().includes("not familiar")
-          ) {
-            messageText.innerText +=
-              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "Please explain your question or comment in different words which I may be able to understand better.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "Please explain your question or comment in different words which I may be able to understand better.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
             }
-          }
           
           botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
@@ -7160,18 +7153,20 @@ loadExternalModule().then(() => {
             }
           }
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
+          if (
+            botPreviousConversationHistory.includes(messageText.innerText)
+          ) {
             messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
+              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
               audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
+                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
                 messageBubble,
                 index,
                 randomTextForId
               );
             }
-          } else if (messageText.innerText === "") {
+          } else if (messageText.innerText === "" && botType !== "user_bot") {
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -7179,23 +7174,13 @@ loadExternalModule().then(() => {
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 messageBubble,
                 index,
-                randomTextForId
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomTextForId
+                randomIdForAudioElement
               );
             }
           }
 
           botPreviousConversationHistory.push(messageText.innerText)
+
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
@@ -7392,41 +7377,6 @@ loadExternalModule().then(() => {
             index++;
           }
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. Try continuing the chat or you may end and begin a new session.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
-            }
-          } else if (messageText.innerText === "") {
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          } else if (endsWithLowerCaseLetter(messageText.innerText)) {
-            messageText.innerText +=
-              " \n\n... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
-            }
-          }
-
           if (
             messageText.innerText.toLowerCase().includes("I am sorry but") ||
             messageText.innerText
@@ -7443,6 +7393,32 @@ loadExternalModule().then(() => {
                 messageBubble,
                 index,
                 randomTextForId
+              );
+            }
+          }
+
+          if (
+            botPreviousConversationHistory.includes(messageText.innerText)
+          ) {
+            messageText.innerText +=
+              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+                messageBubble,
+                index,
+                randomTextForId
+              );
+            }
+          } else if (messageText.innerText === "" && botType !== "user_bot") {
+            messageText.innerText +=
+              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+            if (streamWithAudio) {
+              audioSourceOpen(
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                messageBubble,
+                index,
+                randomIdForAudioElement
               );
             }
           }
@@ -8264,6 +8240,7 @@ loadExternalModule().then(() => {
 
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
+              
               //streaming responses
               if (botType === "deep_dive") {
                 console.log("chatGemini#####################");
@@ -8285,38 +8262,184 @@ loadExternalModule().then(() => {
                   allowAudioInteraction
                 );
               } else {
+                console.log(
+                  "#similarity LAST QUESTION : ",
+                  userQuestionsHistory[userQuestionsHistory.length - 1]
+                );
+                let similarityValue = 0;
+
+                if (userQuestionsHistory[userQuestionsHistory.length - 1]) {
+                  const response = await fetch("/api/string-similarity", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      sentence1:
+                        userQuestionsHistory[
+                          userQuestionsHistory.length - 1
+                        ].toLowerCase(),
+                      sentence2: latestMessage.toLowerCase(),
+                    }),
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    console.log("#similarity Data : ", data);
+                    similarityValue = Number(data.similarity);
+                  }
+                }
+
+                console.log("#similarity SIMILARITY VALUE : ", similarityValue);
+                console.log("#similarity LLM Queue : ", conversationLlmQueue);
+
                 if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
-                  anthropicAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
-                } else if (botSelectedLLM?.llm1?.toLowerCase().includes("gpt")) {
-                  OpenAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gpt")
+                  ) {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gemini");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueuepush("gpt");
+                  } else {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("anthropic");
+                  }
+                } else if (
+                  botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
+                ) {
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gemini")
+                  ) {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gemini");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("anthropic");
+                  } else {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gpt");
+                  }
                 } else {
-                  GeminiAiResponse(
-                    responseData.coach_message_metadata.prompt,
-                    signals,
-                    conversation_id2,
-                    latestMessage,
-                    allowAudioInteraction,
-                    botSelectedLLM.llm2,
-                    botSelectedLLM.llm3
-                  );
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gpt")
+                  ) {
+                    OpenAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gpt");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    anthropicAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("anthropic");
+                  } else {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      botSelectedLLM.llm2,
+                      botSelectedLLM.llm3
+                    );
+                    conversationLlmQueue.push("gemini");
+                  }
                 }
               }
+
+              userQuestionsHistory.push(latestMessage)
 
               // conversation_id2 = responseData["uid"];
               let coachResponse = responseData["coach_message_text"];

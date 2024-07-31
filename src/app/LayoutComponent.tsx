@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DemoPage, LoginWall, UnAuth } from "./UnAuthpage";
 import {
-  getUserAccount,
+  getUserAccounts,
   hideBots,
   hideConsoleLogs,
   subdomain,
@@ -13,7 +13,6 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
-import { Boxes } from "@/components/ui/background-boxes";
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
@@ -45,11 +44,10 @@ const LayoutComponent = ({
   hideConsoleLogs();
   useEffect(() => {
     if (user) {
-      getUserAccount(user)
-        .then((res) => res.json())
-        .then((data) => {
-          window.userIdFromWebApp = data.uid;
-        });
+      getUserAccounts(user).then((data) => {
+        console.log(data);
+        window.userIdFromWebApp = data.uid;
+      });
     }
     if (subdomain !== "localhost") {
       if (!logSessionStarted) {

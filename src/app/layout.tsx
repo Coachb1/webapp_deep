@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import LayoutComponent from "./LayoutComponent";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth, getUserAccounts } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UserProvider } from "@/context/UserContext";
@@ -34,73 +34,88 @@ const getClientUserInfo = async (
   userEmail: string | null | undefined,
   user: KindeUser | null
 ) => {
-  if (userEmail !== null && userEmail !== undefined) {
-    const userCreateResponse = await getUserAccount(user);
-    const userCreateResults = await userCreateResponse.json();
+  if (!userEmail) {
+    return emptyObject;
+  }
 
-    if (userCreateResponse.ok) {
-      const myHeaders = new Headers();
+  let attempt = 0;
+  const maxRetries = 1;
 
-      myHeaders.append("Authorization", basicAuth);
-      myHeaders.append("Content-Type", "application/json");
+  const userCreateResponse = await getUserAccounts(user);
+  console.log(userCreateResponse.uid);
 
-      const raw = JSON.stringify({
-        email: userEmail,
-      });
+  if (userCreateResponse?.uid) {
+    while (attempt <= maxRetries) {
+      try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
+        myHeaders.append("Content-Type", "application/json");
 
-      const response = await fetch(
-        `${baseURL}/accounts/create-or-assign-client-id/`,
-        {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        }
-      );
+        const raw = JSON.stringify({ email: userEmail });
 
-      const data = await response.json();
-      console.log("[layout] create-or-assign-client-id", data);
-      if (response.ok) {
         const response = await fetch(
-          `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+          `${baseURL}/accounts/create-or-assign-client-id/`,
           {
-            method: "GET",
-            headers: {
-              Authorization: basicAuth,
-            },
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
           }
         );
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data.data.user_info[0]);
-          console.log(
-            "[layout] get-client-information > ",
-            "isDemo user : ",
-            data.data.user_info[0].is_demo_user,
-            "isRestricted user : ",
-            data.data.user_info[0].is_restricted
+          console.log("[layout] create-or-assign-client-id", data);
+
+          const infoResponse = await fetch(
+            `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
           );
-          return {
-            isDemoUser: data.data.user_info[0].is_demo_user,
-            isRestricted: data.data.user_info[0].is_restricted,
-            clientExpertise: data.data.user_info[0].coach_expertise,
-            clientDepartments: data.data.user_info[0].departments,
-            restrictedPages: data.data.user_info[0].restricted_pages,
-            restrictedFeatures: data.data.user_info[0].restricted_features,
-          };
+
+          if (infoResponse.ok) {
+            const data = await infoResponse.json();
+            console.log(data.data.user_info[0]);
+            console.log(
+              "[layout] get-client-information > ",
+              "isDemo user : ",
+              data.data.user_info[0].is_demo_user,
+              "isRestricted user : ",
+              data.data.user_info[0].is_restricted
+            );
+            return {
+              isDemoUser: data.data.user_info[0].is_demo_user,
+              isRestricted: data.data.user_info[0].is_restricted,
+              clientExpertise: data.data.user_info[0].coach_expertise,
+              clientDepartments: data.data.user_info[0].departments,
+              restrictedPages: data.data.user_info[0].restricted_pages,
+              restrictedFeatures: data.data.user_info[0].restricted_features,
+            };
+          } else {
+            console.error("[layout] Failed to fetch client information");
+            return emptyObject;
+          }
         } else {
+          console.error("[layout] Failed to run CreateOrAssignClientId");
           return emptyObject;
         }
-      } else {
-        console.error(`[layout] Failed to run CreateOrAssignClientId`);
-        return emptyObject;
+      } catch (error) {
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        if (attempt >= maxRetries) {
+          break; // Exit the loop after the retry attempt
+        }
       }
-    } else {
-      return emptyObject;
+      attempt++;
     }
   } else {
     return emptyObject;
   }
+
+  console.error("All attempts failed.");
+  return emptyObject;
 };
 
 export default async function RootLayout({

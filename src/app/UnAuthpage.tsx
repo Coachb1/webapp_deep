@@ -2,11 +2,7 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
-import {
-  LoginLink,
-  LogoutLink,
-  RegisterLink,
-} from "@kinde-oss/kinde-auth-nextjs";
+import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs";
 import {
   BarChartIcon,
   ClipboardListIcon,
@@ -242,7 +238,9 @@ export const LoginWall = () => {
                 </span>
                 BOTS
               </h1>
-              <p className="mt-4 text-3xl">AI First Coaching Based Engagement Platform</p>
+              <p className="mt-4 text-3xl">
+                AI First Coaching Based Engagement Platform
+              </p>
               <div className="p-4 max-sm:px-6">
                 <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
                   How it works?
@@ -259,72 +257,9 @@ export const LoginWall = () => {
                     />
                   ))}
                 </BentoGrid>
-                {/* <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-left">
-                  <div className="bg-[#3bb3c3] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
-                    <UserIcon className="text-white text-3xl mb-4" />
-                    <h3 className="text-xl font-bold text-white">01</h3>
-                    <h3 className="text-lg font-semibold mb-2">
-                      Join The Network
-                    </h3>
-                    <p className="text-sm">
-                      Join the network as a coach or coachee. The coaches create
-                      their avatars for interim sessions or initial matches.
-                      Users can request their subject matter bots.
-                    </p>
-                  </div>
-                  <div className="bg-[#9ccc65] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
-                    <ClipboardListIcon className="text-white text-3xl mb-4" />
-                    <h3 className="text-xl font-bold text-white">02</h3>
-                    <h3 className="text-lg font-semibold mb-2">
-                      Exchange Notes & Exercises
-                    </h3>
-                    <p className="text-sm">
-                      Exchange notes based on your live sessions or just
-                      communicate. The notes are augmented with simulations for
-                      the users to practice in context to the notes.
-                    </p>
-                  </div>
-                  <div className="bg-[#ffb74d] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
-                    <LightbulbIcon className="text-white text-3xl mb-4" />
-                    <h3 className="text-xl font-bold text-white">03</h3>
-                    <h3 className="text-lg font-semibold mb-2">
-                      Develop Learning Plan
-                    </h3>
-                    <p className="text-sm">
-                      Just want to get some feedback? Create your feedback page
-                      and collect valuable feedback from your extended network.
-                      Use the same to create your own development plan with
-                      recommendations.
-                    </p>
-                  </div>
-                  <div className="bg-[#ff7043] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
-                    <SearchIcon className="text-white text-3xl mb-4" />
-                    <h3 className="text-xl font-bold text-white">04</h3>
-                    <h3 className="text-lg font-semibold mb-2">
-                      Explore & Practice Simulations
-                    </h3>
-                    <p className="text-sm">
-                      Explore simulations for any use case for your team, Use
-                      the library, create your own or use simulations based on
-                      existing learning resources.
-                    </p>
-                  </div>
-                  <div className="bg-[#e57373] text-white p-6 max-sm:p-4 rounded-lg shadow-md">
-                    <BarChartIcon className="text-white text-3xl mb-4" />
-                    <h3 className="text-xl font-bold text-white">05</h3>
-                    <h3 className="text-lg font-semibold mb-2">
-                      Track Your Progress
-                    </h3>
-                    <p className="text-sm">
-                      Track your skill scores based on simulations or
-                      interactions with coaches. Display your feedback wall and
-                      also improve based on critical feedback.
-                    </p>
-                  </div>
-                </div> */}
               </div>
               <div className="my-4 max-sm:mb-12">
-                <RegisterLink postLoginRedirectURL={pathname}>
+                <LoginLink postLoginRedirectURL={pathname}>
                   <div className="relative group cursor-pointer">
                     <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                     <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
@@ -338,7 +273,7 @@ export const LoginWall = () => {
                       </div>
                     </div>
                   </div>
-                </RegisterLink>
+                </LoginLink>
               </div>
             </MaxWidthWrapper>{" "}
           </div>

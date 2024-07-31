@@ -33,63 +33,79 @@ export const getClientUserInfo = async (
   user: KindeUser | null
 ): Promise<UserInfoType> => {
   if (userEmail !== null && userEmail !== undefined) {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", basicAuth);
-    myHeaders.append("Content-Type", "application/json");
-    const raw = JSON.stringify({
-      email: userEmail,
-    });
+    let attempt = 0;
+    const maxRetries = 1;
 
-    const response = await fetch(
-      `${baseURL}/accounts/create-or-assign-client-id/`,
-      {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      }
-    );
+    while (attempt <= maxRetries) {
+      try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", basicAuth);
+        myHeaders.append("Content-Type", "application/json");
 
-    const data = await response.json();
-    console.log("create-or-assign-client-id", data);
-    if (response.ok) {
-      const response = await fetch(
-        `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: basicAuth,
-          },
+        const raw = JSON.stringify({ email: userEmail });
+
+        const createOrAssignResponse = await fetch(
+          `${baseURL}/accounts/create-or-assign-client-id/`,
+          {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          }
+        );
+
+        if (createOrAssignResponse.ok) {
+          console.log(
+            "create-or-assign-client-id",
+            await createOrAssignResponse.json()
+          );
+
+          const clientInfoResponse = await fetch(
+            `${baseURL}/accounts/get-client-information/?for=user_info&email=${userEmail}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: basicAuth,
+              },
+            }
+          );
+
+          if (clientInfoResponse.ok) {
+            const data = await clientInfoResponse.json();
+            return {
+              clientName: data.data.user_info[0].client_name,
+              isDemoUser: data.data.user_info[0].is_demo_user,
+              isRestricted: data.data.user_info[0].is_restricted,
+              clientExpertise: parseStringList(
+                data.data.user_info[0].coach_expertise
+              ),
+              clientDepartments: parseStringList(
+                data.data.user_info[0].departments
+              ),
+              restrictedPages: data.data.user_info[0].restricted_pages,
+              restrictedFeatures: data.data.user_info[0].restricted_features,
+              headings: {
+                heading: data.data.user_info[0].heading,
+                subHeading: data.data.user_info[0].sub_heading,
+                tagLine: data.data.user_info[0].tag_line,
+              },
+              helpText: data.data.user_info[0].help_text,
+            };
+          } else {
+            throw new Error("Failed to fetch client information");
+          }
+        } else {
+          throw new Error("Failed to run CreateOrAssignClientId");
         }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          clientName: data.data.user_info[0].client_name,
-          isDemoUser: data.data.user_info[0].is_demo_user,
-          isRestricted: data.data.user_info[0].is_restricted,
-          clientExpertise: parseStringList(
-            data.data.user_info[0].coach_expertise
-          ),
-          clientDepartments: parseStringList(
-            data.data.user_info[0].departments
-          ),
-          restrictedPages: data.data.user_info[0].restricted_pages,
-          restrictedFeatures: data.data.user_info[0].restricted_features,
-          headings: {
-            heading: data.data.user_info[0].heading,
-            subHeading: data.data.user_info[0].sub_heading,
-            tagLine: data.data.user_info[0].tag_line,
-          },
-          helpText: data.data.user_info[0].help_text,
-        };
-      } else {
-        return emptyData;
+      } catch (error) {
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        if (attempt >= maxRetries) {
+          return emptyData;
+        }
       }
-    } else {
-      console.error(`Failed to run CreateOrAssignClientId`);
-      return emptyData;
+      attempt++;
     }
+    console.error(`All attempts failed.`);
+    return emptyData;
   } else {
     return emptyData;
   }

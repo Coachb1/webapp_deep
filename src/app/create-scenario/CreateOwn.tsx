@@ -866,7 +866,7 @@ const CreateOwn = ({
               <div className="pb-1 h-20 max-sm:pb-0 flex flex-row justify-center items-center text-center"></div>
               <div className="flex justify-center flex-col gap-2 max-sm:gap-1">
                 <div
-                  id="nav1"
+                  id="ac-items"
                   className="flex max-sm:px-2 justify-center flex-row z-50 gap-2 max-sm:gap-1 max-sm:text-xs flex-wrap"
                 >
                   {!restrictedFeatures?.includes("Learning-ideas") && (

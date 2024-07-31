@@ -1,6 +1,6 @@
 "use client";
 
-import { Info, Loader, PenBox, X } from "lucide-react";
+import { Loader, PenBox, X } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import {
@@ -11,10 +11,9 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth } from "@/lib/utils";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
-import { message } from "antd";
 
 const Competencies = ({ user }: any) => {
   const [skillsArray, setSkillsArray] = useState<
@@ -112,7 +111,7 @@ const Competencies = ({ user }: any) => {
     } else {
       setFetchLoading(true);
     }
-  }, [competencyData]);
+  }, []);
 
   const submitCompetenciesHandler = () => {
     if (
@@ -166,6 +165,8 @@ const Competencies = ({ user }: any) => {
     setHandlerHeading(type);
     setRenderInputComponent(true);
   };
+
+  const [dataModified, setDataModified] = useState(false);
 
   useEffect(() => {
     const skillsToDisable = [skillOne, skillTwo, skillThree, skillFour];
@@ -257,6 +258,7 @@ const Competencies = ({ user }: any) => {
                     onValueChange={(value) => {
                       console.log(value);
                       setSkillOne(value);
+                      setDataModified(true);
                     }}
                     value={skillOne}
                   >
@@ -289,6 +291,7 @@ const Competencies = ({ user }: any) => {
                   <Select
                     onValueChange={(value) => {
                       setSkillTwo(value);
+                      setDataModified(true);
                     }}
                     value={skillTwo}
                   >
@@ -321,6 +324,7 @@ const Competencies = ({ user }: any) => {
                   <Select
                     onValueChange={(value) => {
                       setSkillThree(value);
+                      setDataModified(true);
                     }}
                   >
                     <SelectTrigger className="bg-green-200 p-1 text-xs h-6 rounded-sm ml-1 ring-transparent outline-none border border-gray-300">
@@ -352,6 +356,7 @@ const Competencies = ({ user }: any) => {
                   <Select
                     onValueChange={(value) => {
                       setSkillFour(value);
+                      setDataModified(true);
                     }}
                     value={existingSkills[3]}
                   >
@@ -388,6 +393,7 @@ const Competencies = ({ user }: any) => {
                 onClick={() => {
                   setRenderInputComponent(false);
                 }}
+                disabled={saveLoading}
               >
                 Cancel <X className="ml-2 h-4 w-4" />
               </Button>
@@ -396,6 +402,7 @@ const Competencies = ({ user }: any) => {
                 onClick={() => {
                   submitCompetenciesHandler();
                 }}
+                disabled={!dataModified || saveLoading}
               >
                 {saveLoading ? (
                   <>

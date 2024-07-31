@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { KindeUser as KindeUserType } from "@kinde-oss/kinde-auth-nextjs/dist/types";
-import { emptyData, getUserAccount, hideConsoleLogs } from "@/lib/utils";
+import { emptyData, getUserAccounts, hideConsoleLogs } from "@/lib/utils";
 import {
   getActionPoints,
   getAttemptedTestsList,
@@ -34,7 +34,6 @@ import { CoachesDataType } from "@/app/Coaches";
 import {
   CategoryData,
   ClientUserTeamType,
-  ClientUserType,
   ConvertedConversation,
   FeedbackConversationType,
   KudosDetailsType,
@@ -42,14 +41,11 @@ import {
   TestsType,
   UserIDPsType,
   UserInfoType,
-  knowledgeBotJson,
   knowledgeBotType,
 } from "@/lib/types";
 import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
-import { toast } from "sonner";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
-import { DemoPage, UnAuth } from "@/app/UnAuthpage";
 import { useRouter } from "next/navigation";
 
 const font = Raleway({ subsets: ["latin"] });
@@ -214,8 +210,8 @@ export const UserProvider = ({
     }
 
     try {
-      const userAccount = await getUserAccount(user);
-      const data = await userAccount.json();
+      const data = await getUserAccounts(user);
+      console.log(data);
       setUserId(data.uid);
       setUserRole(data.role);
       setUserName(data.name);
@@ -348,7 +344,7 @@ export const UserProvider = ({
   };
 
   const getAllUserData = async () => {
-    const userAccount = await getUserAccount(kindeUser);
+    const userAccount = await getUserAccounts(kindeUser);
     const data = await userAccount.json();
     setUserId(data.uid);
     setUserRole(data.role);
@@ -387,7 +383,7 @@ export const UserProvider = ({
   };
 
   const getAllDirectoryData = async () => {
-    const userAccount = await getUserAccount(kindeUser);
+    const userAccount = await getUserAccounts(kindeUser);
     const data = await userAccount.json();
     const profiles = await getDirectoryProfiles(
       kindeUser?.email,
@@ -480,7 +476,7 @@ export const UserProvider = ({
   const isExcluded = excludedPages.some((page) => pathname.includes(page));
 
   const basicUserConfigs = async (user: KindeUserType | null) => {
-    const userAccount = await getUserAccount(user);
+    const userAccount = await getUserAccounts(user);
     const data = await userAccount.json();
     setUserId(data.uid);
     setUserRole(data.role);
