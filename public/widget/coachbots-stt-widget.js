@@ -1677,7 +1677,7 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
-    appendMessage2(`<p>${botWelcomeMessage}</p>`);
+    appendMessage2(`${botWelcomeMessage}`);
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
 
@@ -3438,7 +3438,11 @@ function createMessageNode2(message) {
   messageBubble.style.color = "#374151";
 
   const messageText = document.createElement("p");
-  messageText.innerHTML = message;
+  if(message?.includes("<")){
+    messageText.innerHTML = message;
+  } else {
+    messageText.innerText = message;
+  }
 
   messageBubble.appendChild(messageText);
   messageNode.appendChild(messageBubble);
@@ -6609,7 +6613,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -7085,7 +7089,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -7264,7 +7268,7 @@ loadExternalModule().then(() => {
             randomIdForAudioElement
           );
         }
-        messageText.innerHTML += excludeSpecialCharacters(decodedText);
+        messageText.innerText += excludeSpecialCharacters(decodedText);
         signals.onResponse({
           html: ".",
         });
@@ -7309,7 +7313,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
