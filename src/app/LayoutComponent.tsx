@@ -45,7 +45,7 @@ const LayoutComponent = ({
   useEffect(() => {
     if (user) {
       getUserAccounts(user).then((data) => {
-        console.log(data);
+        console.log("layouted component : ", data);
         window.userIdFromWebApp = data.uid;
       });
     }

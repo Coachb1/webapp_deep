@@ -345,7 +345,7 @@ export const UserProvider = ({
 
   const getAllUserData = async () => {
     const userAccount = await getUserAccounts(kindeUser);
-    const data = await userAccount.json();
+    const data = userAccount;
     setUserId(data.uid);
     setUserRole(data.role);
     setUserName(data.name);
@@ -384,7 +384,7 @@ export const UserProvider = ({
 
   const getAllDirectoryData = async () => {
     const userAccount = await getUserAccounts(kindeUser);
-    const data = await userAccount.json();
+    const data = await userAccount;
     const profiles = await getDirectoryProfiles(
       kindeUser?.email,
       data.coach_recommendation
@@ -477,7 +477,7 @@ export const UserProvider = ({
 
   const basicUserConfigs = async (user: KindeUserType | null) => {
     const userAccount = await getUserAccounts(user);
-    const data = await userAccount.json();
+    const data = userAccount;
     setUserId(data.uid);
     setUserRole(data.role);
     setUserName(data.name);
