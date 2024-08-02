@@ -15,7 +15,6 @@ export async function POST(req: Request) {
     messages: [{ role: "user", content: userInput }],
     model: "claude-3-haiku-20240307",
     stream: true,
-    temperature : 1.0
   });
 
   const stream = AnthropicStream(response);

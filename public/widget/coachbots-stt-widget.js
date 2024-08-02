@@ -6598,7 +6598,7 @@ loadExternalModule().then(() => {
     return audioCont;
   };
 
-  const anthropicAiResponse = async (
+  const anthropicAiResponse =  async (
     userInputMessage,
     signals,
     conversationId,
@@ -6607,7 +6607,7 @@ loadExternalModule().then(() => {
     nextLLM,
     fallbackLLM
   ) => {
-    console.log("anthropic", userInputMessage);
+    console.log('anthropic', userInputMessage)
     const messageNode = document.createElement("div");
     messageNode.classList.add("inner-message-container");
 
@@ -6639,9 +6639,9 @@ loadExternalModule().then(() => {
       body: JSON.stringify({
         userInput: userInputMessage,
       }),
-    });
+    })
 
-    if (response.ok) {
+    if(response.ok){
       const reader = response.body.getReader();
       const textDecoder = new TextDecoder("utf-8");
 
@@ -6650,7 +6650,7 @@ loadExternalModule().then(() => {
       });
 
       let index = 0;
-      let chunks = [];
+      let chunks = []
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -6661,85 +6661,77 @@ loadExternalModule().then(() => {
               indvMessage.innerText === "." ||
               indvMessage.innerText === "..." ||
               indvMessage.innerText === "" ||
-              indvMessage.innerText === " " ||
-              !indvMessage.innerText?.length > 0
+              indvMessage.innerText === " " ||  !indvMessage.innerText?.length > 0 
             ) {
               indvMessage.remove();
             }
 
-            if (chunks.length > 0) {
+            if(chunks.length > 0){
               audioSourceOpen(
                 chunks.join(" "),
                 messageBubble,
                 index,
                 randomIdForAudioElement
               );
-              console.log(chunks.join(" "));
-              chunks = [];
+              console.log(chunks.join(" "))
+              chunks = []
               index++;
             }
           });
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText.replace(" \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.", "")
-            messageText.innerText +=
-              " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
+            if (
+              botPreviousConversationHistory.includes(messageText.innerText)
+            ) {
+              messageText.innerText +=
+                " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
+            } else if (messageText.innerText === "" && botType !== "user_bot") {
+              messageText.innerText +=
+                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
+                  messageBubble,
+                  index,
+                  randomIdForAudioElement
+                );
+              }
             }
-          } else if (messageText.innerText === "" && botType !== "user_bot") {
-            messageText.innerText.replace("... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.", "")
-            messageText.innerText +=
-              "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
-                index,
-                randomIdForAudioElement
-              );
+
+            if (
+              messageText.innerText.toLowerCase().includes("I am sorry but") ||
+              messageText.innerText
+                .toLowerCase()
+                .includes("not something that I am familiar") ||
+              messageText.innerText.toLowerCase().includes("i cannot answer") ||
+              messageText.innerText.toLowerCase().includes("not familiar")
+            ) {
+              messageText.innerText +=
+                " \n\n Please explain your question or comment in different words which I may be able to understand better.";
+              if (streamWithAudio) {
+                audioSourceOpen(
+                  "Please explain your question or comment in different words which I may be able to understand better.",
+                  messageBubble,
+                  index,
+                  randomTextForId
+                );
+              }
             }
-          }
-
-          if (
-            messageText.innerText.toLowerCase().includes("I am sorry but") ||
-            messageText.innerText
-              .toLowerCase()
-              .includes("not something that I am familiar") ||
-            messageText.innerText.toLowerCase().includes("i cannot answer") ||
-            messageText.innerText.toLowerCase().includes("not familiar")
-          ) {
-            messageText.innerText.replace(" \n\n Please explain your question or comment in different words which I may be able to understand better.", "")
-            messageText.innerText +=
-              " \n\n Please explain your question or comment in different words which I may be able to understand better.";
-            if (streamWithAudio) {
-              audioSourceOpen(
-                "Please explain your question or comment in different words which I may be able to understand better.",
-                messageBubble,
-                index,
-                randomTextForId
-              );
-            }
-          }
-
-          botPreviousConversationHistory.push(messageText.innerText);
-
+          
+          botPreviousConversationHistory.push(messageText.innerText)
           // add user question and bot answer to the session
           sessionQnAdata.push({
             user: latestMessage,
             coach: messageText.innerText,
           });
-          console.log(
-            "sessionQnAdata :",
-            sessionQnAdata,
-            "conversationId :",
-            conversationId
-          );
+          console.log("sessionQnAdata :", sessionQnAdata, 'conversationId :', conversationId);
 
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
@@ -6781,42 +6773,32 @@ loadExternalModule().then(() => {
         }
         const decodedText = textDecoder.decode(value);
 
-        if (streamWithAudio) {
-          chunks.push(decodedText);
-          if (chunks.length > 10) {
-            audioSourceOpen(
-              chunks.join(" "),
-              messageBubble,
-              index,
-              randomIdForAudioElement
-            );
-            console.log(chunks.join(" "));
-            chunks = [];
-            index++;
-          }
+       if(streamWithAudio){
+        chunks.push(decodedText)
+        if(chunks.length > 10){
+          audioSourceOpen(
+            chunks.join(" "),
+            messageBubble,
+            index,
+            randomIdForAudioElement
+          );
+          console.log(chunks.join(" "))
+          chunks = []
+          index++;
         }
+       }
 
         messageText.innerText += excludeSpecialCharacters(decodedText);
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      if (nextLLM?.toLowerCase().includes("gemini")) {
+      if(nextLLM?.toLowerCase().includes("gemini")){
         GeminiAiResponse(
           userInputMessage,
           signals,
           conversationId,
           latestMessage,
-          streamWithAudio,
-          fallbackLLM
-        );
-      } else if(nextLLM?.toLowerCase().includes("gpt4o")) {
-        OpenAiResponse(
-          userInputMessage,
-          signals,
-          conversationId,
-          latestMessage,
-          "gpt-4o",
-          streamWithAudio,
+          streamWithAudio, 
           fallbackLLM
         );
       } else {
@@ -6825,7 +6807,6 @@ loadExternalModule().then(() => {
           signals,
           conversationId,
           latestMessage,
-          "gpt-4-turbo",
           streamWithAudio,
           fallbackLLM
         );
@@ -7164,7 +7145,6 @@ loadExternalModule().then(() => {
             messageText.innerText.toLowerCase().includes("i cannot answer") ||
             messageText.innerText.toLowerCase().includes("not familiar")
           ) {
-            messageText.innerText.replace(" \n\n Please explain your question or comment in different words which I may be able to understand better.","")
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
@@ -7180,7 +7160,6 @@ loadExternalModule().then(() => {
           if (
             botPreviousConversationHistory.includes(messageText.innerText)
           ) {
-            messageText.innerText.replace(" \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.", "")
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
@@ -7192,7 +7171,6 @@ loadExternalModule().then(() => {
               );
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
-            messageText.innerText.replace("... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.", "")
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -7298,6 +7276,7 @@ loadExternalModule().then(() => {
         index++;
       }
     } else {
+      console.log("trying anthropicAiResponse")
       if(nextLLM?.toLowerCase().includes("gpt")){
         OpenAiResponse(
           userInputMessage,
@@ -7305,17 +7284,6 @@ loadExternalModule().then(() => {
           conversationId,
           latestMessage,
           streamWithAudio,
-          "gpt-4-turbo",
-          fallbackLLM
-        );
-      } else if(nextLLM?.toLowerCase().includes("gpt4o")){
-        OpenAiResponse(
-          userInputMessage,
-          signals,
-          conversationId,
-          latestMessage,
-          streamWithAudio,
-          "gpt-4o",
           fallbackLLM
         );
       } else {
@@ -7337,7 +7305,6 @@ loadExternalModule().then(() => {
     conversationId,
     latestMessage,
     streamWithAudio,
-    selectedModel,
     nextLLM,
     fallbackLLM
   ) => {
@@ -7373,11 +7340,10 @@ loadExternalModule().then(() => {
       method: "POST",
       body: JSON.stringify({
         userInput: userInputMessage,
-        selectedModel : selectedModel
       }),
-    });
-
-    if (response.ok) {
+    })
+    
+    if(response.ok){
       const reader = response.body.getReader();
       const textDecoder = new TextDecoder("utf-8");
 
@@ -7386,7 +7352,7 @@ loadExternalModule().then(() => {
       });
 
       let index = 0;
-      let chunks = [];
+      let chunks = []
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -7423,7 +7389,6 @@ loadExternalModule().then(() => {
             messageText.innerText.toLowerCase().includes("i cannot answer") ||
             messageText.innerText.toLowerCase().includes("not familiar")
           ) {
-            messageText.innerText.replace(" \n\n Please explain your question or comment in different words which I may be able to understand better.", "")
             messageText.innerText +=
               " \n\n Please explain your question or comment in different words which I may be able to understand better.";
             if (streamWithAudio) {
@@ -7436,8 +7401,9 @@ loadExternalModule().then(() => {
             }
           }
 
-          if (botPreviousConversationHistory.includes(messageText.innerText)) {
-            messageText.innerText.replace(" \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.", "")
+          if (
+            botPreviousConversationHistory.includes(messageText.innerText)
+          ) {
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
@@ -7449,7 +7415,6 @@ loadExternalModule().then(() => {
               );
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
-            messageText.innerText.replace("... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.", "")
             messageText.innerText +=
               "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.";
             if (streamWithAudio) {
@@ -7518,18 +7483,8 @@ loadExternalModule().then(() => {
         shadowRoot.getElementById("messages").scrollBy(0, 500);
       }
     } else {
-      if(nextLLM?.toLowerCase().includes("gpt4o")){
+      if(nextLLM?.toLowerCase().includes("gpt")){
         OpenAiResponse(
-          userInputMessage,
-          signals,
-          conversationId,
-          latestMessage,
-          streamWithAudio,
-          "gpt-4o",
-          fallbackLLM
-        );
-      } else if(nextLLM?.toLowerCase().includes("anthropic")){
-        anthropicAiResponse(
           userInputMessage,
           signals,
           conversationId,
@@ -7549,30 +7504,6 @@ loadExternalModule().then(() => {
       }
     }
   };
-
-  function hasMoreThanOneDuplicate(arr) {
-    const countMap = {};
-
-    const substringsToRemove = [
-      " \n\n Please explain your question or comment in different words which I may be able to understand better.",
-      " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-      "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again."
-    ]
-  
-    for (let str of arr) {
-      let modifiedStr = str;
-      substringsToRemove.forEach(substring => {
-        modifiedStr = modifiedStr?.trim().replace(substring?.trim(), "");
-      });
-  
-      countMap[modifiedStr] = (countMap[modifiedStr] || 0) + 1;
-      if (countMap[modifiedStr] > 1) {
-        return true;
-      }
-    }
-  
-    return false;
-  }
 
   //No condition STT pending
   chatElementRef2.request = {
@@ -8363,11 +8294,6 @@ loadExternalModule().then(() => {
                 console.log("#similarity SIMILARITY VALUE : ", similarityValue);
                 console.log("#similarity LLM Queue : ", conversationLlmQueue);
 
-                console.log("#botConv botPreviousConversationHistory : ", botPreviousConversationHistory)
-                console.log("#botConv hasMoreThenTwoDuplicates : ", hasMoreThanOneDuplicate(botPreviousConversationHistory))
-
-                // botSelectedLLM.llm1 = "gpt"
-
                 if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
                   if (
                     userQuestionsHistory.filter(
@@ -8376,7 +8302,7 @@ loadExternalModule().then(() => {
                     ).length === 1 ||
                     (similarityValue > 90 &&
                       conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
+                        "gpt")
                   ) {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8392,26 +8318,6 @@ loadExternalModule().then(() => {
                     userQuestionsHistory.filter(
                       (msg) =>
                         msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt4o") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
-                  ) {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gpt-4o",
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gpt4o");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
                     ).length === 2
                   ) {
                     OpenAiResponse(
@@ -8420,7 +8326,6 @@ loadExternalModule().then(() => {
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      "gpt-4-turbo",
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
@@ -8438,7 +8343,7 @@ loadExternalModule().then(() => {
                     conversationLlmQueue.push("anthropic");
                   }
                 } else if (
-                  botSelectedLLM?.llm1?.toLowerCase() === "gpt"
+                  botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
                 ) {
                   if (
                     userQuestionsHistory.filter(
@@ -8447,27 +8352,7 @@ loadExternalModule().then(() => {
                     ).length === 1 ||
                     (similarityValue > 90 &&
                       conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt4o") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
-                  ) {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gpt-4o",
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gpt4o");
-                  } else if(
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
+                        "gemini")
                   ) {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8502,82 +8387,10 @@ loadExternalModule().then(() => {
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      "gpt-4-turbo",
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );
                     conversationLlmQueue.push("gpt");
-                  }
-                } else if (
-                  botSelectedLLM?.llm1?.toLowerCase() === "gpt4o"
-                ) {
-                  if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
-                  ) {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gpt-4-turbo",
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gpt");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gemini");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 2
-                  ) {
-                    anthropicAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("anthropic");
-                  } else {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      "gpt-4o",
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gpt4o");
                   }
                 } else {
                   if (
@@ -8587,7 +8400,7 @@ loadExternalModule().then(() => {
                     ).length === 1 ||
                     (similarityValue > 90 &&
                       conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt") || hasMoreThanOneDuplicate(botPreviousConversationHistory)
+                        "gpt")
                   ) {
                     OpenAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8595,7 +8408,6 @@ loadExternalModule().then(() => {
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      "gpt-4-turbo",
                       botSelectedLLM.llm2,
                       botSelectedLLM.llm3
                     );

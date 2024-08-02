@@ -5,15 +5,13 @@ export async function POST(req: Request) {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
-  const { userInput, selectedModel } = await req.json();
+  const { userInput } = await req.json();
 
-  console.log("selectedModel : ",selectedModel)
   const response = await openai.chat.completions.create({
-    model: selectedModel || "gpt-4-turbo",
+    model: "gpt-4-turbo",
     max_tokens: 1000,
     messages: [{ role: "user", content: userInput }],
     stream: true,
-    temperature : 1.8
   });
 
   const stream = OpenAIStream(response);
