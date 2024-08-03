@@ -1671,7 +1671,8 @@ const CoachIntake = ({ user }: any) => {
                       }
                     );
                     setTimeout(() => {
-                      getFeedbackBotsData();
+                      // getFeedbackBotsData();
+                      getAllDirectoryData()
                       router.push("/");
                     }, 10000);
                   }
