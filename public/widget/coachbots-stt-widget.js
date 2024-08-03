@@ -1584,7 +1584,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(begginSessionButton);
     }
 
-    
+
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
     if (["avatar_bot" ,'deep_dive'].includes(botType)) {
@@ -1595,6 +1595,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
+      endSessionButton.style.fontWeight = "600"
       endSessionButton.setAttribute("id", "end-session-btn")
       if(botScenarioCase === "icons_by_ai"){
         endSessionButton.innerText = "End session";
@@ -6769,6 +6770,11 @@ loadExternalModule().then(() => {
                   console.log(data);
                 });
             });
+            
+            responseSavedCount += 1
+            if (responseSavedCount >= 2 && endSessionButton) {
+              enableEndSessionButton()
+            }
           return;
         }
         const decodedText = textDecoder.decode(value);
@@ -6948,7 +6954,7 @@ loadExternalModule().then(() => {
           if (responseSavedCount >= 2 && botType.includes('deep_dive')){
             endSessionButton.setAttribute(
               "onmouseover",
-              "this.style.backgroundColor = '#e5e7eb'"
+              "this.style.backgroundColor = '#bdbdbf'"
             );
             endSessionButton.setAttribute(
               "onmouseleave",
@@ -7070,6 +7076,22 @@ loadExternalModule().then(() => {
         }
       }
     });
+  }
+
+  const enableEndSessionButton = () => {
+    endSessionButton.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#bdbdbf'"
+    );
+    endSessionButton.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#9ca3af'"
+    );
+    endSessionButton.style.backgroundColor = "#9ca3af";
+    endSessionButton.style.color = "white";
+    endSessionButton.style.cursor = "pointer";
+    endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+    endSessionButton.disabled = false;
   }
 
   const GeminiAiResponse = async (
@@ -7239,22 +7261,9 @@ loadExternalModule().then(() => {
             });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
-          if(responseSavedCount >= 2 && endSessionButton) {
-            endSessionButton.setAttribute(
-              "onmouseover",
-              "this.style.backgroundColor = '#e5e7eb'"
-            );
-            endSessionButton.setAttribute(
-              "onmouseleave",
-              "this.style.backgroundColor = '#9ca3af'"
-            );
-            endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "black";
-            endSessionButton.style.cursor = "pointer";
-            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-            endSessionButton.disabled = false;
-            console.log(endSessionButton);
-        }
+          if (responseSavedCount >= 2 && endSessionButton) {
+            enableEndSessionButton()
+          }
           return Promise.resolve();
         }
 
@@ -7429,6 +7438,11 @@ loadExternalModule().then(() => {
 
           botPreviousConversationHistory.push(messageText.innerText);
 
+          responseSavedCount += 1
+          if (responseSavedCount >= 2 && endSessionButton) {
+            enableEndSessionButton()
+          }
+
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
             headers: {
@@ -7463,6 +7477,7 @@ loadExternalModule().then(() => {
               });
             });
 
+          
           return;
         }
 
