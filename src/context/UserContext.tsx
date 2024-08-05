@@ -47,6 +47,7 @@ import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -492,6 +493,22 @@ export const UserProvider = ({
 
     console.log("getAllUserData", data);
   };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (kindeUser) {
+      intervalId = setInterval(() => {
+        fetchUserData(kindeUser.email, kindeUser, true);
+      }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     hideConsoleLogs();
