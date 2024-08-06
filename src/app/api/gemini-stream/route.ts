@@ -1,7 +1,6 @@
 import { StreamingTextResponse, GoogleGenerativeAIStream } from "ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-
 export async function POST(req: Request) {
   const { prompt, selectedModel } = await req.json();
 
@@ -19,7 +18,10 @@ export async function POST(req: Request) {
     model: selectedModel,
     generationConfig,
   });
+
   const streamingResponse = await model.generateContentStream(prompt);
+
+  console.log(await streamingResponse.response)
 
   return new StreamingTextResponse(GoogleGenerativeAIStream(streamingResponse));
 }
