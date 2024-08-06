@@ -201,6 +201,11 @@ export async function POST(req: Request) {
       method: "POST",
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        generationConfig : {
+          maxOutputTokens: 2048,
+          temperature: 0.9,
+          topP: 1,
+        }
       }),
     };
 
