@@ -6,10 +6,10 @@ describe("Init", () => {
       cy.visit("http://localhost:3000/");
       cy.contains("Login").click();
 
-      cy.origin("https://coachbots.kinde.com", () => {
-        cy.get('[data-testid="login-account-link"]').click();
+      cy.origin("https://coachbotsdev.kinde.com", () => {
+        // cy.get('[data-testid="login-account-link"]').click();
         cy.title()
-          .should("eq", "Sign in | Coachbots")
+          .should("eq", "Sign in | Coachbotsdev")
           .then(() => {
             cy.get('[data-testid="auth-email-field"]').type("a2@coachbots.com");
             cy.get('[data-testid="auth-submit-button"]').click();
@@ -28,7 +28,7 @@ describe("Init", () => {
     cy.visit("http://localhost:3000/content-library");
 
     // Open the bot
-    cy.get(".chat-icon").click(); 
+    cy.get(".chat-icon").click();
 
     // Yes / No
     cy.get("#chat-element")
@@ -43,14 +43,13 @@ describe("Init", () => {
       cy.intercept("GET", `/api/v1/tests/?test_code=${testCode}`).as(
         "testInfo"
       );
-    cy.get("#chat-element")
+      cy.get("#chat-element")
         .shadow()
         .find(".input-button-svg.inside-right")
         .click();
 
-
       // // Wait 10000 ms
-      // cy.wait(10000);	
+      // cy.wait(10000);
       // cy.get("#chat-element")
       //   .shadow()
       //   .find(`button[onclick="handleProceedClick('Yes')"]`, { timeout: 10000 })
@@ -61,9 +60,11 @@ describe("Init", () => {
         timeout: 30000,
       }).then((interception) => {
         cy.get("#chat-element")
-        .shadow()
-        .find(`button[onclick="handleProceedClick('Yes')"]`, { timeout: 10000 })
-        .click();
+          .shadow()
+          .find(`button[onclick="handleProceedClick('Yes')"]`, {
+            timeout: 10000,
+          })
+          .click();
         const testTitle = interception.response?.body.results[0].title;
         const testDescription =
           interception.response?.body.results[0].description;
@@ -74,7 +75,6 @@ describe("Init", () => {
             console.log(item.question);
           }
         );
-        
 
         cy.intercept("POST", "/api/v1/test-responses/").as("testResponse");
         questions.forEach((question, i) => {

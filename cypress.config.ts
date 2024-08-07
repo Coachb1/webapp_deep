@@ -4,4 +4,5 @@ export default {
       // implement node event listeners here
     },
   },
+  projectId: "boc1nm",
 };
