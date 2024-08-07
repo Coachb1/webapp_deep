@@ -1268,7 +1268,7 @@ const getBotDetails2 = async (botId) => {
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
     botScenarioCase = botDetails.data.scenario_case;
-    botSelectedLLM = botDetails.data.selected_llms;
+    // botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
@@ -8303,17 +8303,17 @@ loadExternalModule().then(() => {
                   conversation_id2,
                   responseData.coach_message_metadata.prompt
                 );
-              } else if (botType === "user_bot") {
-                console.log("anthropic#####################");
-
-                GeminiAiResponse(
-                  responseData.coach_message_metadata.prompt,
-                  signals,
-                  conversation_id2,
-                  latestMessage,
-                  allowAudioInteraction
-                );
-              } else {
+              } 
+              // else if (botType === "user_bot") {
+              //   GeminiAiResponse(
+              //     responseData.coach_message_metadata.prompt,
+              //     signals,
+              //     conversation_id2,
+              //     latestMessage,
+              //     allowAudioInteraction
+              //   );
+              // } 
+              else {
                 console.log(
                   "#similarity LAST QUESTION : ",
                   userQuestionsHistory[userQuestionsHistory.length - 1]
