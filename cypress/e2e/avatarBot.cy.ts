@@ -10,10 +10,10 @@ describe("Init", () => {
       cy.visit("http://localhost:3000/");
       cy.contains("Login").click();
 
-      cy.origin("https://coachbots.kinde.com", () => {
-        cy.get('[data-testid="login-account-link"]').click();
+      cy.origin("https://coachbotsdev.kinde.com", () => {
+        // cy.get('[data-testid="login-account-link"]').click();
         cy.title()
-          .should("eq", "Sign in | Coachbots")
+          .should("eq", "Sign in | Coachbotsdev")
           .then(() => {
             cy.get('[data-testid="auth-email-field"]').type("a3@coachbots.com");
             cy.get('[data-testid="auth-submit-button"]').click();
@@ -76,12 +76,12 @@ describe("Init", () => {
                             }
                           );
                         } else {
-                          cy.wait(10000)
+                          cy.wait(10000);
                           cy.get("#chat-element2")
                             .shadow()
                             .find("#text-input")
                             .type(response?.body["response_text"]);
-                          cy.wait(5000)
+                          cy.wait(5000);
                           cy.get("#chat-element2")
                             .shadow()
                             .find(".input-button-svg.inside-right")
