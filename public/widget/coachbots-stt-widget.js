@@ -8303,17 +8303,15 @@ loadExternalModule().then(() => {
                   conversation_id2,
                   responseData.coach_message_metadata.prompt
                 );
-              } 
-              // else if (botType === "user_bot") {
-              //   GeminiAiResponse(
-              //     responseData.coach_message_metadata.prompt,
-              //     signals,
-              //     conversation_id2,
-              //     latestMessage,
-              //     allowAudioInteraction
-              //   );
-              // } 
-              else {
+              } else if (botType === "user_bot") {
+                GeminiAiResponse(
+                  responseData.coach_message_metadata.prompt,
+                  signals,
+                  conversation_id2,
+                  latestMessage,
+                  allowAudioInteraction
+                );
+              } else {
                 console.log(
                   "#similarity LAST QUESTION : ",
                   userQuestionsHistory[userQuestionsHistory.length - 1]
