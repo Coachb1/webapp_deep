@@ -194,18 +194,26 @@ async function* generateResponseSequence(
 
 export async function POST(req: Request) {
   try {
-    const { prompt, selectedModel } = await req.json();
-    const url =
-      `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel || "gemini-1.0-pro"}:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
+    const { prompt, selectedModel, systemInstructions } = await req.json();
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${
+      selectedModel || "gemini-1.5-pro"
+    }:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
     const options = {
       method: "POST",
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig : {
+        generationConfig: {
           maxOutputTokens: 2048,
           temperature: 0.9,
           topP: 1,
-        }
+        },
+        systemInstruction: {
+          parts: [
+            {
+              text: systemInstructions ,
+            },
+          ],
+        },
       }),
     };
 
