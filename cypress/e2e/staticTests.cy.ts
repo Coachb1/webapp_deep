@@ -8,10 +8,10 @@ describe("Init", () => {
       cy.visit("http://localhost:3000/");
       cy.contains("Login").click();
 
-      cy.origin("https://coachbots.kinde.com", () => {
-        cy.get('[data-testid="login-account-link"]').click();
+      cy.origin("https://coachbotsdev.kinde.com", () => {
+        // cy.get('[data-testid="login-account-link"]').click();
         cy.title()
-          .should("eq", "Sign in | Coachbots")
+          .should("eq", "Sign in | Coachbotsdev")
           .then(() => {
             cy.get('[data-testid="auth-email-field"]').type(
               "xivij12069@hutov.com"
@@ -30,10 +30,10 @@ describe("Init", () => {
 
   staticTestCodes.forEach((testCode, i) => {
     it(`1 Static - ${testCode}`, () => {
-      cy.visit("http://localhost:3000/content-library");
+      cy.visit("http://localhost:3000/content-library?dev-bot");
 
       //open the bot
-      cy.get(".chat-icon2", {timeout : 30000}).click();
+      cy.get(".chat-icon2", { timeout: 30000 }).click();
 
       //yes / no
       cy.get("#chat-element2")

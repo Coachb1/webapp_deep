@@ -373,6 +373,7 @@ export interface Conversation {
   bot_name?: string; // Add bot_name to the Conversation interface
   bot_type?: string;
   scenario_case?: string;
+  bot_id : string
 }
 
 export interface ConvertedResult {
@@ -390,4 +391,6 @@ export interface ConvertedConversation {
   date: string;
   bot_name?: string; // Add bot_name to the ConvertedConversation interface
   bot_type?: string;
+  participant_uid : string
+  bot_id: string
 }

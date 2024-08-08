@@ -193,23 +193,48 @@ async function* generateResponseSequence(
 }
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
-  const options = {
-    method: "POST",
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-    }),
-  };
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    const responseJson = await response.json();
-    throw new Error("Internal server error", responseJson);
+  try {
+    const { prompt, selectedModel } = await req.json();
+    const url =
+      `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel || "gemini-1.0-pro"}:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
+    const options = {
+      method: "POST",
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig : {
+          maxOutputTokens: 2048,
+          temperature: 0.9,
+          topP: 1,
+        }
+      }),
+    };
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      const responseJson = await response.json();
+      console.error("Error response from API:", responseJson);
+      return new Response(
+        JSON.stringify({ error: responseJson.error || "Internal server error" }),
+        { status: response.status, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const responseStream = processStream(response);
+    const stream = GoogleGenerativeAIStream(responseStream);
+
+    return new StreamingTextResponse(stream);
+  } catch (error) {
+    console.error("Exception caught:", error);
+
+    let errorMessage = "Internal server error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return new Response(
+      JSON.stringify({ error: errorMessage }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
-  const responseStream = processStream(response);
-  // Convert the response into a friendly text-stream
-  const stream = GoogleGenerativeAIStream(responseStream);
-  // Respond with the stream
-  return new StreamingTextResponse(stream);
 }

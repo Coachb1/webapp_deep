@@ -47,6 +47,7 @@ import { Raleway } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -345,7 +346,7 @@ export const UserProvider = ({
 
   const getAllUserData = async () => {
     const userAccount = await getUserAccounts(kindeUser);
-    const data = await userAccount.json();
+    const data = userAccount;
     setUserId(data.uid);
     setUserRole(data.role);
     setUserName(data.name);
@@ -384,7 +385,7 @@ export const UserProvider = ({
 
   const getAllDirectoryData = async () => {
     const userAccount = await getUserAccounts(kindeUser);
-    const data = await userAccount.json();
+    const data = await userAccount;
     const profiles = await getDirectoryProfiles(
       kindeUser?.email,
       data.coach_recommendation
@@ -477,7 +478,7 @@ export const UserProvider = ({
 
   const basicUserConfigs = async (user: KindeUserType | null) => {
     const userAccount = await getUserAccounts(user);
-    const data = await userAccount.json();
+    const data = userAccount;
     setUserId(data.uid);
     setUserRole(data.role);
     setUserName(data.name);
@@ -492,6 +493,22 @@ export const UserProvider = ({
 
     console.log("getAllUserData", data);
   };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (kindeUser) {
+      intervalId = setInterval(() => {
+        fetchUserData(kindeUser.email, kindeUser, true);
+      }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     hideConsoleLogs();

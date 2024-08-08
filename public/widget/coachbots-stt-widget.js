@@ -1268,7 +1268,7 @@ const getBotDetails2 = async (botId) => {
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
     botScenarioCase = botDetails.data.scenario_case;
-    botSelectedLLM = botDetails.data.selected_llms;
+    // botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
@@ -1479,25 +1479,28 @@ const getBotDetails2 = async (botId) => {
             convertTextToOriginalFormat(event.target.textContent),
             participantId2
           );
-          fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
-            method: "POST",
-            headers: {
-              Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user_id: participantId2,
-              response_style: convertTextToOriginalFormat(
-                event.target.textContent
-              ),
-            }),
-          })
-            .then((res) => {
-              res.json;
+
+          if(participantId2){
+            fetch(`${baseURL2}/coaching-conversations/save-response-style/`, {
+              method: "POST",
+              headers: {
+                Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_id: participantId2,
+                response_style: convertTextToOriginalFormat(
+                  event.target.textContent
+                ),
+              }),
             })
-            .then((data) => {
-              data;
-            });
+              .then((res) => {
+                res.json;
+              })
+              .then((data) => {
+                data;
+              });
+          }
           dropdownButton.innerHTML =
             "Response style : " + `<b>${event.target.textContent}</b>`;
           dropdown.classList.add("hiddenn");
@@ -1584,7 +1587,7 @@ const getBotDetails2 = async (botId) => {
       buttonsWrapper.appendChild(begginSessionButton);
     }
 
-    
+
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
     if (["avatar_bot" ,'deep_dive'].includes(botType)) {
@@ -1595,6 +1598,7 @@ const getBotDetails2 = async (botId) => {
       );
       endSessionButton.style.backgroundColor = "#d3d3d3";
       endSessionButton.style.color = "#a0a0a0";
+      endSessionButton.style.fontWeight = "600"
       endSessionButton.setAttribute("id", "end-session-btn")
       if(botScenarioCase === "icons_by_ai"){
         endSessionButton.innerText = "End session";
@@ -1677,7 +1681,7 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
-    appendMessage2(`<p>${botWelcomeMessage}</p>`);
+    appendMessage2(`${botWelcomeMessage}`);
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
 
@@ -3438,7 +3442,11 @@ function createMessageNode2(message) {
   messageBubble.style.color = "#374151";
 
   const messageText = document.createElement("p");
-  messageText.innerHTML = message;
+  if(message?.includes("<")){
+    messageText.innerHTML = message;
+  } else {
+    messageText.innerText = message;
+  }
 
   messageBubble.appendChild(messageText);
   messageNode.appendChild(messageBubble);
@@ -4764,7 +4772,7 @@ async function setMcqVariablesStt() {
       resetAllVariablesStt();
 
       appendMessage2(
-        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
+        "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
       );
 
       return;
@@ -6609,7 +6617,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -6765,6 +6773,11 @@ loadExternalModule().then(() => {
                   console.log(data);
                 });
             });
+            
+            responseSavedCount += 1
+            if (responseSavedCount >= 2 && endSessionButton) {
+              enableEndSessionButton()
+            }
           return;
         }
         const decodedText = textDecoder.decode(value);
@@ -6944,7 +6957,7 @@ loadExternalModule().then(() => {
           if (responseSavedCount >= 2 && botType.includes('deep_dive')){
             endSessionButton.setAttribute(
               "onmouseover",
-              "this.style.backgroundColor = '#e5e7eb'"
+              "this.style.backgroundColor = '#bdbdbf'"
             );
             endSessionButton.setAttribute(
               "onmouseleave",
@@ -7068,14 +7081,34 @@ loadExternalModule().then(() => {
     });
   }
 
+  const enableEndSessionButton = () => {
+    endSessionButton.setAttribute(
+      "onmouseover",
+      "this.style.backgroundColor = '#bdbdbf'"
+    );
+    endSessionButton.setAttribute(
+      "onmouseleave",
+      "this.style.backgroundColor = '#9ca3af'"
+    );
+    endSessionButton.style.backgroundColor = "#9ca3af";
+    endSessionButton.style.color = "white";
+    endSessionButton.style.cursor = "pointer";
+    endSessionButton.setAttribute("onclick", `handleEndConversation()`);
+    endSessionButton.disabled = false;
+  }
+
+  let calledOnceError = 0;
+
   const GeminiAiResponse = async (
     userInputMessage,
     signals,
     conversationId,
     latestMessage,
     streamWithAudio,
-    nextLLM,
-    fallbackLLM
+    selectedModel,
+    nextModel,
+    // nextLLM,
+    // fallbackLLM
   ) => {
     userInputMessage =
       userInputMessage + `\n input: ${latestMessage}\n output: `;
@@ -7085,7 +7118,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -7107,10 +7140,11 @@ loadExternalModule().then(() => {
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
 
-    const response = await fetch("https://next-js-gemini-frontend.vercel.app/api/gemini-stream", {
+    const response = await fetch( "/api/gemini-stream",{ //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
+        selectedModel : selectedModel || "gemini-1.5-flash"
       }),
     })
 
@@ -7235,22 +7269,9 @@ loadExternalModule().then(() => {
             });
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
-          if(responseSavedCount >= 2 && endSessionButton) {
-            endSessionButton.setAttribute(
-              "onmouseover",
-              "this.style.backgroundColor = '#e5e7eb'"
-            );
-            endSessionButton.setAttribute(
-              "onmouseleave",
-              "this.style.backgroundColor = '#9ca3af'"
-            );
-            endSessionButton.style.backgroundColor = "#9ca3af";
-            endSessionButton.style.color = "black";
-            endSessionButton.style.cursor = "pointer";
-            endSessionButton.setAttribute("onclick", `handleEndConversation()`);
-            endSessionButton.disabled = false;
-            console.log(endSessionButton);
-        }
+          if (responseSavedCount >= 2 && endSessionButton) {
+            enableEndSessionButton()
+          }
           return Promise.resolve();
         }
 
@@ -7264,7 +7285,7 @@ loadExternalModule().then(() => {
             randomIdForAudioElement
           );
         }
-        messageText.innerHTML += excludeSpecialCharacters(decodedText);
+        messageText.innerText += excludeSpecialCharacters(decodedText);
         signals.onResponse({
           html: ".",
         });
@@ -7272,26 +7293,51 @@ loadExternalModule().then(() => {
         index++;
       }
     } else {
-      console.log("trying anthropicAiResponse")
-      if(nextLLM?.toLowerCase().includes("gpt")){
-        OpenAiResponse(
+      if(calledOnceError < 3){
+        calledOnceError += 1
+        GeminiAiResponse(
           userInputMessage,
           signals,
           conversationId,
           latestMessage,
           streamWithAudio,
-          fallbackLLM
+          nextModel
         );
       } else {
-        anthropicAiResponse(
-          userInputMessage,
-          signals,
-          conversationId,
-          latestMessage,
-          streamWithAudio,
-          fallbackLLM
-        );
+        signals.onResponse({
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
+        });
+        allMessages.forEach((indvMessage) => {
+          if (
+            indvMessage.innerText === "." ||
+            indvMessage.innerText === "..." ||
+            indvMessage.innerText === " " ||
+            indvMessage.innerText === "" || 
+            indvMessage.innerHTML == `<div class="message-bubble ai-message-text" style="max-width: 60%; margin-top: 4px; border-radius: 4px; background-color: rgb(243, 244, 246); color: rgb(55, 65, 81);"><p></p></div>`
+          ) {
+            indvMessage.remove();
+          }
+        });
       }
+      // if(nextLLM?.toLowerCase().includes("gpt")){
+      //   OpenAiResponse(
+      //     userInputMessage,
+      //     signals,
+      //     conversationId,
+      //     latestMessage,
+      //     streamWithAudio,
+      //     fallbackLLM
+      //   );
+      // } else {
+      //   anthropicAiResponse(
+      //     userInputMessage,
+      //     signals,
+      //     conversationId,
+      //     latestMessage,
+      //     streamWithAudio,
+      //     fallbackLLM
+      //   );
+      // }
     }
   };
 
@@ -7309,7 +7355,7 @@ loadExternalModule().then(() => {
 
     const messageBubble = document.createElement("div");
     messageBubble.classList.add("message-bubble", "ai-message-text");
-    messageBubble.style.maxWidth = "80%";
+    messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
     messageBubble.style.marginTop = "4px";
     messageBubble.style.borderRadius = "4px";
     messageBubble.style.padding = "4";
@@ -7425,6 +7471,11 @@ loadExternalModule().then(() => {
 
           botPreviousConversationHistory.push(messageText.innerText);
 
+          responseSavedCount += 1
+          if (responseSavedCount >= 2 && endSessionButton) {
+            enableEndSessionButton()
+          }
+
           fetch(`${baseURL2}/coaching-conversations/save-ai-response/`, {
             method: "POST",
             headers: {
@@ -7459,6 +7510,7 @@ loadExternalModule().then(() => {
               });
             });
 
+          
           return;
         }
 
@@ -8252,8 +8304,6 @@ loadExternalModule().then(() => {
                   responseData.coach_message_metadata.prompt
                 );
               } else if (botType === "user_bot") {
-                console.log("anthropic#####################");
-
                 GeminiAiResponse(
                   responseData.coach_message_metadata.prompt,
                   signals,
@@ -8290,56 +8340,15 @@ loadExternalModule().then(() => {
                 console.log("#similarity SIMILARITY VALUE : ", similarityValue);
                 console.log("#similarity LLM Queue : ", conversationLlmQueue);
 
-                if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
-                  if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 1 ||
-                    (similarityValue > 90 &&
-                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt")
-                  ) {
-                    GeminiAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("gemini");
-                  } else if (
-                    userQuestionsHistory.filter(
-                      (msg) =>
-                        msg?.toLowerCase() === latestMessage.toLowerCase()
-                    ).length === 2
-                  ) {
-                    OpenAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueuepush("gpt");
-                  } else {
-                    anthropicAiResponse(
-                      responseData.coach_message_metadata.prompt,
-                      signals,
-                      conversation_id2,
-                      latestMessage,
-                      allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
-                    );
-                    conversationLlmQueue.push("anthropic");
-                  }
-                } else if (
-                  botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
+                botSelectedLLM = {
+                  model1 : "gemini-1.5-flash",
+                  model2 : "gemini-1.5-pro",
+                  model3 : "gemini-1.0-pro"
+                }
+
+                if (
+                  botSelectedLLM.model1.toLocaleLowerCase() ===
+                  "gemini-1.5-flash"
                 ) {
                   if (
                     userQuestionsHistory.filter(
@@ -8348,7 +8357,7 @@ loadExternalModule().then(() => {
                     ).length === 1 ||
                     (similarityValue > 90 &&
                       conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gemini")
+                        "gemini-1.5-pro")
                   ) {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8356,39 +8365,41 @@ loadExternalModule().then(() => {
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.5-pro",
+                      "gemini-1.0-pro"
                     );
-                    conversationLlmQueue.push("gemini");
+                    conversationLlmQueue.push("gemini-1.5-pro");
                   } else if (
                     userQuestionsHistory.filter(
                       (msg) =>
                         msg?.toLowerCase() === latestMessage.toLowerCase()
                     ).length === 2
                   ) {
-                    anthropicAiResponse(
+                    GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.0-pro",
+                      "gemini-1.5-flash"
                     );
-                    conversationLlmQueue.push("anthropic");
+                    conversationLlmQueue.push("gemini-1.5-pro");
                   } else {
-                    OpenAiResponse(
+                    GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.5-flash",
+                      "gemini-1.5-pro"
                     );
-                    conversationLlmQueue.push("gpt");
+                    conversationLlmQueue.push("gemini-1.5-flash");
                   }
-                } else {
+                } else if (
+                  botSelectedLLM.model1.toLocaleLowerCase() === "gemini-1.5-pro"
+                ) {
                   if (
                     userQuestionsHistory.filter(
                       (msg) =>
@@ -8396,34 +8407,34 @@ loadExternalModule().then(() => {
                     ).length === 1 ||
                     (similarityValue > 90 &&
                       conversationLlmQueue[conversationLlmQueue?.length - 1] !==
-                        "gpt")
+                        "gemini-1.5-flash")
                   ) {
-                    OpenAiResponse(
+                    GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.5-flash",
+                      "gemini-1.0-pro"
                     );
-                    conversationLlmQueue.push("gpt");
+                    conversationLlmQueue.push("gemini-1.5-flash");
                   } else if (
                     userQuestionsHistory.filter(
                       (msg) =>
                         msg?.toLowerCase() === latestMessage.toLowerCase()
                     ).length === 2
                   ) {
-                    anthropicAiResponse(
+                    GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
                       signals,
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.0-pro",
+                      "gemini-1.5-pro"
                     );
-                    conversationLlmQueue.push("anthropic");
+                    conversationLlmQueue.push("gemini-1.0-pro");
                   } else {
                     GeminiAiResponse(
                       responseData.coach_message_metadata.prompt,
@@ -8431,12 +8442,211 @@ loadExternalModule().then(() => {
                       conversation_id2,
                       latestMessage,
                       allowAudioInteraction,
-                      botSelectedLLM.llm2,
-                      botSelectedLLM.llm3
+                      "gemini-1.5-pro",
+                      "gemini-1.5-flash"
                     );
-                    conversationLlmQueue.push("gemini");
+                    conversationLlmQueue.push("gemini-1.5-pro");
+                  }
+                } else if (
+                  botSelectedLLM.model1.toLocaleLowerCase() === "gemini-1.0-pro"
+                ) {
+                  if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 1 ||
+                    (similarityValue > 90 &&
+                      conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+                        "gemini-1.5-flash")
+                  ) {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      "gemini-1.5-flash",
+                      "gemini-1.5-pro"
+                    );
+                    conversationLlmQueue.push("gemini-1.5-flash");
+                  } else if (
+                    userQuestionsHistory.filter(
+                      (msg) =>
+                        msg?.toLowerCase() === latestMessage.toLowerCase()
+                    ).length === 2
+                  ) {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      "gemini-1.5-pro",
+                      "gemini-1.0-pro"
+                    );
+                    conversationLlmQueue.push("gemini-1.5-pro");
+                  } else {
+                    GeminiAiResponse(
+                      responseData.coach_message_metadata.prompt,
+                      signals,
+                      conversation_id2,
+                      latestMessage,
+                      allowAudioInteraction,
+                      "gemini-1.0-pro",
+                      "gemini-1.5-flash"
+                    );
+                    conversationLlmQueue.push("gemini-1.0-pro");
                   }
                 }
+
+              //   if (botSelectedLLM?.llm1?.toLowerCase().includes("anthropic")) {
+              //     if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 1 ||
+              //       (similarityValue > 90 &&
+              //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+              //           "gpt")
+              //     ) {
+              //       GeminiAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("gemini");
+              //     } else if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 2
+              //     ) {
+              //       OpenAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueuepush("gpt");
+              //     } else {
+              //       anthropicAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("anthropic");
+              //     }
+              //   } else if (
+              //     botSelectedLLM?.llm1?.toLowerCase().includes("gpt")
+              //   ) {
+              //     if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 1 ||
+              //       (similarityValue > 90 &&
+              //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+              //           "gemini")
+              //     ) {
+              //       GeminiAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("gemini");
+              //     } else if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 2
+              //     ) {
+              //       anthropicAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("anthropic");
+              //     } else {
+              //       OpenAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("gpt");
+              //     }
+              //   } else {
+              //     if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 1 ||
+              //       (similarityValue > 90 &&
+              //         conversationLlmQueue[conversationLlmQueue?.length - 1] !==
+              //           "gpt")
+              //     ) {
+              //       OpenAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("gpt");
+              //     } else if (
+              //       userQuestionsHistory.filter(
+              //         (msg) =>
+              //           msg?.toLowerCase() === latestMessage.toLowerCase()
+              //       ).length === 2
+              //     ) {
+              //       anthropicAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("anthropic");
+              //     } else {
+              //       GeminiAiResponse(
+              //         responseData.coach_message_metadata.prompt,
+              //         signals,
+              //         conversation_id2,
+              //         latestMessage,
+              //         allowAudioInteraction,
+              //         botSelectedLLM.llm2,
+              //         botSelectedLLM.llm3
+              //       );
+              //       conversationLlmQueue.push("gemini");
+              //     }
+              //   }
+
               }
 
               userQuestionsHistory.push(latestMessage)
@@ -9990,7 +10200,7 @@ loadExternalModule().then(() => {
                     }
                     resetAllVariablesStt();
                     signals.onResponse({
-                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
+                      html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                     });
                     return;
                   }
@@ -10068,7 +10278,7 @@ loadExternalModule().then(() => {
                   // console.log(resp)
                   // if (!resp.ok){
                   //   signals.onResponse({
-                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>"
+                  //     html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
                   //   })
                   // }
                   if (window.user) {
@@ -10119,7 +10329,7 @@ loadExternalModule().then(() => {
               resetAllVariablesStt();
               if (body.messages[0].text.toUpperCase() !== "STOP") {
                 signals.onResponse({
-                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
+                  html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                 });
               }
             }
@@ -10154,7 +10364,7 @@ loadExternalModule().then(() => {
 
         resetAllVariablesStt();
         signals.onResponse({
-          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. The session will be terminated. Please try again using the interaction code.</b>.</p>",
+          html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
         });
       }
     },
