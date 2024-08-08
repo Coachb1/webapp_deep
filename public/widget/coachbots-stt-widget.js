@@ -53,6 +53,19 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// create a do-follow link and append it to the body
+const createLink = (url, text) => {
+  const a = document.createElement("a");
+  a.href = url;
+  a.textContent = text;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  return a;
+};
+
+// attatch the link to the body of the page
+document.body.appendChild(createLink("https://www.coachbots.com", "CoachBots"));
+
 
 let deepChatPocElement2;
 let sessionId2 = "";
