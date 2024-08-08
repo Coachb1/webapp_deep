@@ -229,6 +229,8 @@ let clientBasedBotHeaderText = "";
 let clientBasedBotFooterText = "";
 let clientBasedReadHereText = "";
 
+let LLMsystemInstructions = "";
+
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -1281,6 +1283,7 @@ const getBotDetails2 = async (botId) => {
     globalBotDetails = botDetails;
     botType = botDetails.data.bot_type;
     botScenarioCase = botDetails.data.scenario_case;
+    LLMsystemInstructions = botDetails.data.system_instructions
     // botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
@@ -7157,7 +7160,8 @@ loadExternalModule().then(() => {
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
-        selectedModel : selectedModel || "gemini-1.5-flash"
+        selectedModel : selectedModel || "gemini-1.5-flash",
+        systemInstructions : LLMsystemInstructions 
       }),
     })
 
