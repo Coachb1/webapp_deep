@@ -64,7 +64,7 @@ const createLink = (url, text) => {
 };
 
 // attatch the link to the body of the page
-document.body.appendChild(createLink("https://www.coachbots.com", "CoachBots"));
+document.head.appendChild(createLink("https://www.coachbots.com", "CoachBots"));
 
 
 let deepChatPocElement2;
