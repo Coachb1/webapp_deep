@@ -361,11 +361,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 Disclaimer
               </Badge>
               <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-                The coach/mentor's personalized bot is designed to enhance your
-                coaching/mentoring experience. The information provided in the
-                coach/mentor's detailed sections serves as a guide, and the
-                effectiveness of coaching/mentoring is subjective. The coach can
-                override the discussion via email.
+              Knowledge Bots are created based on knowledge repositories offered by the individuals. 
+              AI can make mistakes, always double check the responses.
               </p>
             </div>
           </div>
