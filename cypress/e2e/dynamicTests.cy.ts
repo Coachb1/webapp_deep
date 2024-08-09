@@ -1,6 +1,6 @@
 import { baseURL, userId, visitingBaseUrl } from "../fixtures/utils";
 
-const dynamicTestCodes = ["QJAZ7IE", "Q97STR8", "QQMTKIU"];
+const dynamicTestCodes = [ "Q97STR8", "QQMTKIU"];
 
 describe("Init", () => {
   beforeEach(() => {

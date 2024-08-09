@@ -1,6 +1,6 @@
 import { baseURL } from "../fixtures/utils";
 
-const staticTestCodes = ["Q877O08", "Q9SSEH3"];
+const staticTestCodes = ["Q877O08", "Q9SSEH3", "QV4UZ2Y", "QYEJEPC", "Q9PYJY2", "QXHKY39", "Q2L3L5J", "QD5T9IG", "QJZC3Q8", "QN0AGCU"];
 
 describe("Init", () => {
   beforeEach(() => {
@@ -29,7 +29,7 @@ describe("Init", () => {
   });
 
   staticTestCodes.forEach((testCode, i) => {
-    it(`1 Static - ${testCode}`, () => {
+    it(`${i} Static - ${testCode}`, () => {
       cy.visit("http://localhost:3000/content-library?dev-bot");
 
       //open the bot

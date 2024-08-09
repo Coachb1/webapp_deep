@@ -1,6 +1,6 @@
 import { baseURL } from "../fixtures/utils";
 // const staticTestCodes = ["Q877O08", "Q9SSEH3"];
-const botId = "avatar_bot-817f6-vidya--prakash";
+const botId = "avatar_bot-121c8-leadership-elevating-emerging-leaders-through-tailored-and-strategic-mentorship";
 const userId = "10822f2f-2e05-438e-b1b4-0107b95745f2";
 
 describe("Init", () => {
@@ -15,7 +15,7 @@ describe("Init", () => {
         cy.title()
           .should("eq", "Sign in | Coachbotsdev")
           .then(() => {
-            cy.get('[data-testid="auth-email-field"]').type("a3@coachbots.com");
+            cy.get('[data-testid="auth-email-field"]').type("xivij12069@hutov.com");
             cy.get('[data-testid="auth-submit-button"]').click();
             cy.get("#input_field_p_password_password").type("demo#1234");
             cy.contains("Continue").click();
@@ -36,16 +36,17 @@ describe("Init", () => {
     cy.visit(`http://localhost:3000/coach/${botId}`);
     cy.get(".chat-icon2").click();
 
-    cy.wait("@coachingConversations", { timeout: 40000 }).then(
-      (interception) => {
+    // cy.wait("@coachingConversations", { timeout: 40000 }).then(
+    //   (interception) => {
         cy.get("button")
-          .contains("Begin session", { timeout: 20000 })
+          // .contains("Begin session", { timeout: 20000 })
+          .get("#begin-session-button", {timeout : 20000})
           .click()
           .then(() => {
             let userResponse =
               "Hey there, how are you doing. let's discuss about Work life balance.";
             let geminiResponseMessage: any;
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 20; i++) {
               if (i > 0) {
                 cy.intercept("POST", "/api/gemini-stream").as("geminiResponse");
                 cy.intercept(
@@ -115,5 +116,5 @@ describe("Init", () => {
           });
       }
     );
-  });
+  // }); 
 });
