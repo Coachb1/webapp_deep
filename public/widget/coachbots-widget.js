@@ -572,7 +572,7 @@ function LoadingMessageWithText2(message, shadowRoot){
     loadingElement.style.flexDirection = "row"
     loadingElement.style.alignItems = "center"
     const messageElement = document.createElement("span")
-    messageElement.innerHTML = `<b style="color : black; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">Coachbot is thinking...</b>` //${message}
+    messageElement.innerHTML = `<b style="color : black; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${ message || "Coachbot is thinking..."}</b>` //${message}
     messageElement.setAttribute("id", "loading-message")
     
     loadingElement.style.width = "fit-content"
@@ -4107,24 +4107,27 @@ loadExternalModule().then(() => {
             
             LoadingMessageWithText2("Crunching report data", shadowRoot)
 
-            const messageNode = document.createElement("div");
-            messageNode.classList.add("inner-message-container");
-            const messageBubble = document.createElement("div");
-            messageBubble.classList.add("message-bubble", "ai-message-text");
-            messageBubble.style.maxWidth = "80%";
-            messageBubble.style.marginTop = "4px";
-            messageBubble.style.borderRadius = "4px";
-            messageBubble.style.padding = "4";
-            messageBubble.style.backgroundColor = "#f3f4f6";
-            messageBubble.style.color = "#374151";
-            const messageText = document.createElement("p");
-            messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
+            // const messageNode = document.createElement("div");
+            // messageNode.classList.add("inner-message-container");
+            // const messageBubble = document.createElement("div");
+            // messageBubble.classList.add("message-bubble", "ai-message-text");
+            // messageBubble.style.maxWidth = "80%";
+            // messageBubble.style.marginTop = "4px";
+            // messageBubble.style.borderRadius = "4px";
+            // messageBubble.style.padding = "4";
+            // messageBubble.style.backgroundColor = "#f3f4f6";
+            // messageBubble.style.color = "#374151";
+            // const messageText = document.createElement("p");
+            // messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
+            //   user ? "" : "<b> Hang tight for next steps </b>"
+            // }`;
+            appendMessage(`<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b>${
               user ? "" : "<b> Hang tight for next steps </b>"
-            }`;
-            messageBubble.appendChild(messageText);
-            messageNode.appendChild(messageBubble);
-            shadowRoot.getElementById("messages").appendChild(messageNode);
-            shadowRoot.getElementById("messages").scrollBy(0, 100);
+            }`)
+            // messageBubble.appendChild(messageText);
+            // messageNode.appendChild(messageBubble);
+            // shadowRoot.getElementById("messages").appendChild(messageNode);
+            // shadowRoot.getElementById("messages").scrollBy(0, 100);
           }
 
           file = "";
@@ -4408,7 +4411,7 @@ loadExternalModule().then(() => {
               }
               return;
             } else {
-              LoadingMessageWithText2("Response loading...", shadowRoot)
+              LoadingMessageWithText2("Coachbot is thinking...", shadowRoot)
             }
             signals.onResponse({
               html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
@@ -5662,29 +5665,34 @@ loadExternalModule().then(() => {
 
                   LoadingMessageWithText2("Crunching report data", shadowRoot)
 
-                  const messageNode = document.createElement("div");
-                  messageNode.classList.add("inner-message-container");
-                  const messageBubble = document.createElement("div");
-                  messageBubble.classList.add(
-                    "message-bubble",
-                    "ai-message-text"
+                  // const messageNode = document.createElement("div");
+                  // messageNode.classList.add("inner-message-container");
+                  // const messageBubble = document.createElement("div");
+                  // messageBubble.classList.add(
+                  //   "message-bubble",
+                  //   "ai-message-text"
+                  // );
+                  // messageBubble.style.maxWidth = "80%";
+                  // messageBubble.style.marginTop = "4px";
+                  // messageBubble.style.borderRadius = "4px";
+                  // messageBubble.style.padding = "4";
+                  // messageBubble.style.backgroundColor = "#f3f4f6";
+                  // messageBubble.style.color = "#374151";
+                  // const messageText = document.createElement("p");
+                  // messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
+                  //   user ? "" : "<b> Hang tight for next steps </b>"
+                  // }`;
+                  appendMessage(
+                    `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
+                      user ? "" : "<b> Hang tight for next steps </b>"
+                    }`
                   );
-                  messageBubble.style.maxWidth = "80%";
-                  messageBubble.style.marginTop = "4px";
-                  messageBubble.style.borderRadius = "4px";
-                  messageBubble.style.padding = "4";
-                  messageBubble.style.backgroundColor = "#f3f4f6";
-                  messageBubble.style.color = "#374151";
-                  const messageText = document.createElement("p");
-                  messageText.innerHTML = `<b>That's it! Thank you for participating in the interaction. Your interaction report is being processed.</b> ${
-                    user ? "" : "<b> Hang tight for next steps </b>"
-                  }`;
-                  messageBubble.appendChild(messageText);
-                  messageNode.appendChild(messageBubble);
-                  shadowRoot
-                    .getElementById("messages")
-                    .appendChild(messageNode);
-                  shadowRoot.getElementById("messages").scrollBy(0, 100);
+                  // messageBubble.appendChild(messageText);
+                  // messageNode.appendChild(messageBubble);
+                  // shadowRoot
+                  //   .getElementById("messages")
+                  //   .appendChild(messageNode);
+                  // shadowRoot.getElementById("messages").scrollBy(0, 100);
                 }
                 if (questionIndex > 0) {
                   if (testType != "coaching" || questionIndex == 0) {
