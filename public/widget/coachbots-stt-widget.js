@@ -314,39 +314,40 @@ fetch(`${baseURL2}/accounts/`, {
       .then((res) => res.json())
       .then((data) => {
         console.log("get-client-information : ", data);
-        allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
 
-        clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
-        clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
-        clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
-       
+        if(!data.data.user_info[0].msg){
+          allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
 
-        const headerText = document.getElementById("header-text");
-        const footerText = document.getElementById("footer-text");
-        const instructionsPaneList = document.getElementById('instructions-list')
-        console.log(headerText);
-        console.log(footerText);
-
-        if (clientBasedBotHeaderText) {
-          headerText.innerText = clientBasedBotHeaderText;
+          clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
+         
+  
+          const headerText = document.getElementById("header-text");
+          const footerText = document.getElementById("footer-text");
+          const instructionsPaneList = document.getElementById('instructions-list')
+          console.log(headerText);
+          console.log(footerText);
+  
+          if (clientBasedBotHeaderText) {
+            headerText.innerText = clientBasedBotHeaderText;
+          }
+  
+          if (clientBasedBotFooterText) {
+            footerText.innerText = clientBasedBotFooterText;
+          }
+  
+          if (clientBasedReadHereText) {
+            const list = clientBasedReadHereText
+              .trim()
+              .split("\n")
+              .map((item) => {
+                return `<li>${item.trim()}</li>`;
+              });
+  
+            instructionsPaneList.innerHTML = list;
+          }
         }
-
-        if (clientBasedBotFooterText) {
-          footerText.innerText = clientBasedBotFooterText;
-        }
-
-        if (clientBasedReadHereText) {
-          const list = clientBasedReadHereText
-            .trim()
-            .split("\n")
-            .map((item) => {
-              return `<li>${item.trim()}</li>`;
-            });
-
-          instructionsPaneList.innerHTML = list;
-        }
-
-        
       });
     
   })

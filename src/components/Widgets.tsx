@@ -27,6 +27,7 @@ const Widgets = ({ from }: any) => {
       {from !== "coachDynamic" &&
         from !== "feedbackDynamic" &&
         from !== "subjectDynamic" &&
+        from !== "knowledgeBotDynamic" &&
         from !== "deepdiveDynamic" && (
           <>
             <Script src="../widget/coachbots-widget.js" />
