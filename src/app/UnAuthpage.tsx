@@ -276,61 +276,76 @@ export const LoginWall = () => {
     },
   ];
 
+  const LoginUI = () => {
+    return (
+      <div className="bg-white mt-4 max-sm:mt-16 min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
+        <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
+          <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
+            <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
+              COACH
+            </span>
+            BOTS
+          </h1>
+          <p className="mt-4 text-3xl">
+            AI First Coaching Based Engagement Platform
+          </p>
+          <div className="p-4 max-sm:px-6">
+            <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
+              How it works?
+            </h2>
+            <BentoGrid className="w-[100%] mx-auto">
+              {items.map((item, i) => (
+                <BentoGridItem
+                  key={i}
+                  title={item.title}
+                  description={item.description}
+                  header={item.header}
+                  icon={item.icon}
+                  className={`${i === 1 || i === 6 ? "md:col-span-2" : ""}`}
+                />
+              ))}
+            </BentoGrid>
+          </div>
+          <div className="my-4 max-sm:mb-12">
+            <LoginLink postLoginRedirectURL={pathname}>
+              <div className="relative group cursor-pointer">
+                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                  <div className="space-y-2">
+                    <Button
+                      variant={"secondary"}
+                      className="border border-gray-200 text-gray-600 font-bold text-xl hover:cursor-pointer w-fit"
+                    >
+                      Login <LogIn className="ml-2 h-4 w-4 inline" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </LoginLink>
+          </div>
+        </MaxWidthWrapper>{" "}
+      </div>
+    );
+  };
+
   return (
     <>
       {!pathname.includes("/feedback") &&
         !pathname.includes("/feedback/") &&
         !pathname.includes("/engagement-survey") &&
         !pathname.includes("/engagement-survey/") &&
-        !knowledgeBotDatLoading &&
-        !showKnowledgBot && (
-          <div className="bg-white mt-4 max-sm:mt-16 min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
-            <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
-              <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
-                <span className="bg-[#2DC092] text-white text-lg font-bold mr-[4px] p-[4px]">
-                  COACH
-                </span>
-                BOTS
-              </h1>
-              <p className="mt-4 text-3xl">
-                AI First Coaching Based Engagement Platform
-              </p>
-              <div className="p-4 max-sm:px-6">
-                <h2 className="text-2xl font-bold text-center text-[#034078] mb-4">
-                  How it works?
-                </h2>
-                <BentoGrid className="w-[100%] mx-auto">
-                  {items.map((item, i) => (
-                    <BentoGridItem
-                      key={i}
-                      title={item.title}
-                      description={item.description}
-                      header={item.header}
-                      icon={item.icon}
-                      className={`${i === 1 || i === 6 ? "md:col-span-2" : ""}`}
-                    />
-                  ))}
-                </BentoGrid>
-              </div>
-              <div className="my-4 max-sm:mb-12">
-                <LoginLink postLoginRedirectURL={pathname}>
-                  <div className="relative group cursor-pointer">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
-                      <div className="space-y-2">
-                        <Button
-                          variant={"secondary"}
-                          className="border border-gray-200 text-gray-600 font-bold text-xl hover:cursor-pointer w-fit"
-                        >
-                          Login <LogIn className="ml-2 h-4 w-4 inline" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </LoginLink>
-              </div>
-            </MaxWidthWrapper>{" "}
-          </div>
+        !pathname.includes("/knowledge-bot") && (
+          <>
+            <LoginUI />
+          </>
+        )}
+
+      {pathname.includes("/knowledge-bot") &&
+        !showKnowledgBot &&
+        !knowledgeBotDatLoading && (
+          <>
+            <LoginUI />
+          </>
         )}
 
       {(pathname.includes("/feedback") || pathname.includes("/feedback/")) && (
