@@ -1187,6 +1187,9 @@ async function populateBotConversation(participant_id) {
       // }
     });
     appendMessage2("<b>Previous completed or terminated conversations. New sessions from here on.</b>");
+    if(botType=== 'user_bot'){
+      appendMessage2(addStickerToMessage("System", `${botWelcomeMessage}`));
+    }
     isBotConversationPopulated = true;
   } else {
     if (botType === "user_bot") {
@@ -1700,7 +1703,11 @@ const getBotDetails2 = async (botId) => {
                       ${buttons}
                       </div>`;
     // sending welcome msg
-    appendMessage2(`${botWelcomeMessage}`);
+    if (botType === 'user_bot'){
+      appendMessage2(addStickerToMessage("System", `${botWelcomeMessage}`));
+    } else{
+      appendMessage2(`${botWelcomeMessage}`);
+    }
     // const
     const faqButtonsWrapper = document.getElementById("starting-faq-buttons");
 
