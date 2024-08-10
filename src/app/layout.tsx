@@ -42,7 +42,7 @@ const getClientUserInfo = async (
   const maxRetries = 1;
 
   const userCreateResponse = await getUserAccounts(user);
-  console.log("USER ID : ",userCreateResponse.uid);
+  console.log("USER ID : ", userCreateResponse.uid);
 
   if (userCreateResponse?.uid) {
     while (attempt <= maxRetries) {
