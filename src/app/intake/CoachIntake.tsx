@@ -3514,7 +3514,7 @@ const CoachIntake = ({ user }: any) => {
                     </div>
                   )}
                   <hr className="mt-2" />
-                  <div className="my-3">
+                  {/* <div className="my-3">
                     <p className="text-sm my-1">
                       Do you want to provide a voice sample, if you want an
                       audio avatar? (We will separately contact you for the
@@ -3549,7 +3549,7 @@ const CoachIntake = ({ user }: any) => {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                   <div className="my-3">
                     <p className="text-sm my-1">
                       Allow Coachee and Mentee to update action plan and session
