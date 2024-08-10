@@ -2861,7 +2861,8 @@ loadExternalModule().then(() => {
     </div>
    
     </div>
-    <deep-chat 
+    <deep-chat
+      avatars="true"
       id="chat-element"
       style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
       microphone='{
