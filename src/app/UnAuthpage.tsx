@@ -23,13 +23,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Feedback from "./feedback/Feedback";
 import Widgets from "@/components/Widgets";
 import Script from "next/script";
 import DeepDive from "./engagement-survey/DeepDive";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import KnowledgeBot from "./knowledge-bot/KnowledgeBot";
+import { baseURL, basicAuth } from "@/lib/utils";
 
 export const UnAuth = ({ user }: any) => {
   return (
@@ -158,8 +159,46 @@ export const DemoPage = ({ user }: any) => {
 export const LoginWall = () => {
   const pathname = usePathname();
   const [botId, setBotId] = useState("");
+  const [knowledgeBotApiData, setKnowledgeBotApiData] = useState();
+  const [knowledgeBotDatLoading, setKnowledgeBotDataLoading] = useState(true);
+
+  const [showKnowledgBot, setShowKnowledgeBot] = useState(false);
+
+  const knowledgBotApi = async (botID: string) => {
+    const response = await fetch(
+      `${baseURL}/accounts/get-bot-details/?bot_id=${botID}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("DATA FROM UNAUTH : ", data);
+      setKnowledgeBotApiData(data);
+
+      const coachScribe = document.getElementsByClassName(
+        "coachbots-coachscribe"
+      )[0];
+      if (data.data.allow_public_access && coachScribe) {
+        coachScribe.removeAttribute("style");
+      }
+
+      if (data.data.allow_public_access) {
+        setShowKnowledgeBot(true);
+      } else {
+        setShowKnowledgeBot(false);
+      }
+      setKnowledgeBotDataLoading(false);
+    } else {
+      setKnowledgeBotDataLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log(pathname);
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
     )[0];
@@ -182,6 +221,19 @@ export const LoginWall = () => {
       } else {
         const bot_id = pathname.split("/")[2];
         setBotId(bot_id);
+      }
+    } else if (
+      pathname.includes("/knowledge-bot") ||
+      pathname.includes("/knowledge-bot/")
+    ) {
+      if (pathname === "/knowledge-bot") {
+        setBotId("knowledge-c89fd-flyover-project-tracker");
+        knowledgBotApi("knowledge-c89fd-flyover-project-tracker");
+      } else if (pathname.includes("/knowledge-bot/knowledge")) {
+        console.log("COMES HERE");
+        const bot_id = pathname.split("/")[2];
+        setBotId(bot_id);
+        knowledgBotApi(bot_id);
       }
     }
   }, []);
@@ -229,7 +281,9 @@ export const LoginWall = () => {
       {!pathname.includes("/feedback") &&
         !pathname.includes("/feedback/") &&
         !pathname.includes("/engagement-survey") &&
-        !pathname.includes("/engagement-survey/") && (
+        !pathname.includes("/engagement-survey/") &&
+        !knowledgeBotDatLoading &&
+        !showKnowledgBot && (
           <div className="bg-white mt-4 max-sm:mt-16 min-h-screen h-full max-sm:h-full max-sm:min-h-screen flex flex-col items-center justify-center text-center">
             <MaxWidthWrapper className="flex flex-col items-center justify-center text-center">
               <h1 className="text-[#2DC092] border-2 border-[#2DC092] p-[3px] text-xl font-extrabold">
@@ -293,6 +347,28 @@ export const LoginWall = () => {
         <>
           <DeepDive renderType="dynamic" />
           <Widgets from="deepdiveDynamic" />
+          <Script src="../widget/coachbots-stt-widget.js" />
+          <div data-bot-id={botId} className="coachbots-coachscribe"></div>
+        </>
+      )}
+
+      {pathname.includes("/knowledge-bot") && knowledgeBotDatLoading && (
+        <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
+          <div className="p-2 bg-gray-300 rounded-md text-sm">
+            <Loader className="h-4 w-4 mr-2 animate-spin inline" />
+            Please wait while we prepare your coach.
+          </div>
+        </div>
+      )}
+
+      {!knowledgeBotDatLoading && showKnowledgBot && (
+        <>
+          <KnowledgeBot
+            renderType="dynamic"
+            apiData={knowledgeBotApiData}
+            isLoading={knowledgeBotDatLoading}
+          />
+          <Widgets from="knowledgeBotDynamic" />
           <Script src="../widget/coachbots-stt-widget.js" />
           <div data-bot-id={botId} className="coachbots-coachscribe"></div>
         </>
