@@ -28,12 +28,12 @@ const howItWorks = [
   {
     heading: "Creation of the Bot",
     description:
-      "A knowledge bot can be created by simply an intake form and attaching documents to the same. The knowledge bot can be for individual use or it can be made available to everyone in the enterprise.",
+      "A knowledge bot can be created by an intake form and attaching documents. The knowledge bot can be for individual use or it can be made available to everyone in the enterprise. It can also be available for public use if desired.",
   },
   {
     heading: "Usage of the Bot",
     description:
-      "The users can access public bots via the Knowledge Library as well as bots that might have been created for individual usage.",
+      "The bot acts as a knowledge base for the subject or entity mentioned in the header section. This knowledge base may be about a coach's knowledge, a particular project, or any subject matter described above.",
   },
 ];
 
@@ -50,51 +50,116 @@ const benefitsData = [
   },
 ];
 
-const KnowledgeBot = ({ user, renderType }: any) => {
+const KnowledgeBot = ({ user, renderType, apiData, isLoading }: any) => {
   const pathname = usePathname();
 
   const [botName, setBotName] = useState<string>("");
   const [botDescription, setBotDescription] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState("");
-  const [enrolled, SetEnrolled] = useState(true);
   const [feedbackBotId, setFeedbackBotId] = useState("");
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
 
-  const [coachProfileLink, setCoachProfileLink] = useState(
-    "https://www.linkedin.com/"
-  );
-
   const [invalidId, setInValidCoach] = useState(false);
   const [primaryPurpose, setPrimaryPurpose] = useState("");
 
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    setIsLoading(true);
+    // setIsLoading(true);
 
-    fetch(
-      `${baseURL}/accounts/get-bot-details/?bot_id=${
-        renderType === "dynamic"
-          ? pathname.split("/")[2]
-          : "knowledge-c89fd-flyover-project-tracker"
-      }`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: basicAuth,
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("KNOWLEDGE BOT DETAILS : ", data);
+    // fetch(
+    //   `${baseURL}/accounts/get-bot-details/?bot_id=${
+    //     renderType === "dynamic"
+    //       ? pathname.split("/")[2]
+    //       : "knowledge-c89fd-flyover-project-tracker"
+    //   }`,
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       Authorization: basicAuth,
+    //     },
+    //   }
+    // )
+    //   .then((res) => res.json())
+    //   .then((data) => {
 
+    if (user) {
+      fetch(
+        `${baseURL}/accounts/get-bot-details/?bot_id=${
+          renderType === "dynamic"
+            ? pathname.split("/")[2]
+            : "knowledge-c89fd-flyover-project-tracker"
+        }`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            const coachScribe = document.getElementsByClassName(
+              "coachbots-coachscribe"
+            )[0];
+
+            if (data?.error) {
+              console.log(coachScribe);
+              coachScribe.setAttribute("style", "display: none;");
+              setInValidCoach(true);
+            }
+
+            let parsedFaqJson: any;
+            if (typeof data.data.faqs === "string") {
+              parsedFaqJson = JSON.parse(data.data.faqs);
+            } else {
+              parsedFaqJson = data.data.faqs;
+            }
+
+            console.log(
+              "LOGINS -norm : strict",
+              data.data.bot_details.is_login_required,
+              data.data.bot_details.is_strict_login_required
+            );
+            setFeedbackBotId(data.data.feedback_id);
+            if (renderType === "dynamic") {
+              setBotName(data.data.bot_name);
+              setBotDescription(data.data.description);
+              setPrimaryPurpose(
+                parsedFaqJson["What is the primary purpose of the bot?"]
+              );
+            }
+            if (data.data.bot_details.is_strict_login_required && !user) {
+              coachScribe.setAttribute("style", "display: none;");
+            }
+            if (data.data.bot_details.is_login_required) {
+              if (!user) {
+                coachScribe.setAttribute("style", "display: none;");
+              }
+            }
+            setLoginRequired(data.data.bot_details.is_login_required);
+            setStrictLoginRequired(
+              data.data.bot_details.is_strict_login_required
+            );
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
+
+    if (!isLoading && !user) {
+      const data = apiData;
+      console.log("KNOWLEDGE BOT DETAILS : ", data);
+
+      if (data) {
         const coachScribe = document.getElementsByClassName(
           "coachbots-coachscribe"
         )[0];
 
-        if (data.error) {
+        if (data?.error) {
           console.log(coachScribe);
           coachScribe.setAttribute("style", "display: none;");
           setInValidCoach(true);
@@ -130,12 +195,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         }
         setLoginRequired(data.data.bot_details.is_login_required);
         setStrictLoginRequired(data.data.bot_details.is_strict_login_required);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
+      }
+    }
   }, []);
 
   const KnowlegeBotBody = () => {
@@ -148,7 +209,6 @@ const KnowledgeBot = ({ user, renderType }: any) => {
         {!loginRequired && (
           <div className="fixed bottom-28 right-[4px] z-50 max-sm:hidden">
             <span className="mr-6 text-sm font-bold">Connect now</span>
-            {/* <CornerDownRight className="ml-12 h-12 w-12 text-gray-600" /> */}
           </div>
         )}
 
@@ -236,14 +296,14 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 </Button>
               </Link>
 
-              <Link href={"#benefits"}>
+              {/* <Link href={"#benefits"}>
                 <Button
                   variant={"secondary"}
                   className="border border-gray-200 h-8 hover:cursor-pointer"
                 >
                   Benefits
                 </Button>
-              </Link>
+              </Link> */}
             </div>
 
             <div className="w-full" id="howItWorks">
@@ -299,7 +359,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 </div>
               </div>
             </div>
-            <div className="w-full" id="benefits">
+            {/* <div className="w-full" id="benefits">
               <div className={`w-full flex justify-center`}>
                 <Badge
                   variant={"secondary"}
@@ -351,7 +411,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="w-full text-center flex flex-col justify-center items-center my-8 max-sm:my-2 max-sm:mt-2">
               <Badge
@@ -361,11 +421,8 @@ const KnowledgeBot = ({ user, renderType }: any) => {
                 Disclaimer
               </Badge>
               <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-                The coach/mentor's personalized bot is designed to enhance your
-                coaching/mentoring experience. The information provided in the
-                coach/mentor's detailed sections serves as a guide, and the
-                effectiveness of coaching/mentoring is subjective. The coach can
-                override the discussion via email.
+              Knowledge Bots are created based on knowledge repositories offered by the individuals. 
+              AI can make mistakes, always double check the responses.
               </p>
             </div>
           </div>
@@ -375,7 +432,7 @@ const KnowledgeBot = ({ user, renderType }: any) => {
   };
   return (
     <>
-      {isLoading && (
+      {user && loading && (
         <div className="fixed left-0 top-0 flex h-screen w-screen overflow-x-hidden items-center justify-center bg-foreground/30 backdrop-blur-2xl z-50">
           <div className="p-2 bg-gray-300 rounded-md text-sm">
             <Loader className="h-4 w-4 mr-2 animate-spin inline" />
@@ -383,13 +440,14 @@ const KnowledgeBot = ({ user, renderType }: any) => {
           </div>
         </div>
       )}
-      {!strictLoginRequired && user && <KnowlegeBotBody />}
+      {(!isLoading || !loading) && <KnowlegeBotBody />}
+      {/* {!strictLoginRequired && user && <KnowlegeBotBody />}
       {strictLoginRequired && user && <KnowlegeBotBody />}
       {strictLoginRequired && !user && (
         <>
           <NoLoginFlag />
         </>
-      )}
+      )} */}
     </>
   );
 };

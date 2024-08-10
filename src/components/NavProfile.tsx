@@ -158,9 +158,20 @@ export const NavProfileWoProfile = ({ user }: any) => {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button variant={"default"} className={cn("text-xs h-8 px-4 z-50")}>
-          <RegisterLink postLoginRedirectURL={pathname}>Log in</RegisterLink>
-        </Button>
+        <>
+          {pathname.includes("/knowledge") ||
+            pathname.includes("/feedback") ||
+            (pathname.includes("/engagement-survey") && (
+              <Button
+                variant={"default"}
+                className={cn("text-xs h-8 px-4 z-50")}
+              >
+                <RegisterLink postLoginRedirectURL={pathname}>
+                  Log in
+                </RegisterLink>
+              </Button>
+            ))}
+        </>
       )}
     </>
   );

@@ -42,7 +42,7 @@ const getClientUserInfo = async (
   const maxRetries = 1;
 
   const userCreateResponse = await getUserAccounts(user);
-  console.log(userCreateResponse.uid);
+  console.log("USER ID : ", userCreateResponse.uid);
 
   if (userCreateResponse?.uid) {
     while (attempt <= maxRetries) {
@@ -78,7 +78,6 @@ const getClientUserInfo = async (
 
           if (infoResponse.ok) {
             const data = await infoResponse.json();
-            console.log(data.data.user_info[0]);
             console.log(
               "[layout] get-client-information > ",
               "isDemo user : ",

@@ -1,4 +1,4 @@
-import { constructMetadata } from "@/lib/utils";
+import { baseURL, basicAuth, constructMetadata } from "@/lib/utils";
 import KnowledgeBot from "../KnowledgeBot";
 import Widgets from "@/components/Widgets";
 import Script from "next/script";

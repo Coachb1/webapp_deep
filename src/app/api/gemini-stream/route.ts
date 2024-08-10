@@ -31,7 +31,7 @@ function addHelpers(response: any): any {
 function getText(response: any): string {
   if (response.candidates?.[0].content?.parts?.[0]?.text) {
     return response.candidates[0].content.parts
-      .map(({ text  } : {text : any}) => text)
+      .map(({ text }: { text: any }) => text)
       .join("");
   } else {
     return "";
@@ -164,6 +164,12 @@ function aggregateResponses(responses: any[]): any {
       }
     }
   }
+  console.log(
+    "AGGREGATED RESPONSE : ",
+    aggregatedResponse.candidates[0].content?.parts
+      .map((part: any) => part.text)
+      .join("")
+  );
   return aggregatedResponse;
 }
 
@@ -183,31 +189,59 @@ async function* generateResponseSequence(
   stream: ReadableStream<any>
 ): AsyncGenerator<any> {
   const reader = stream.getReader();
+  console.log("GETREADERVALUE (chunks) : ");
   while (true) {
     const { value, done } = await reader.read();
     if (done) {
       break;
     }
+    console.log(value.candidates[0].content);
     yield addHelpers(value);
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { prompt, selectedModel } = await req.json();
-    const url =
-      `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel || "gemini-1.0-pro"}:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
-    const options = {
-      method: "POST",
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig : {
-          maxOutputTokens: 2048,
-          temperature: 0.9,
-          topP: 1,
-        }
-      }),
-    };
+    const { prompt, selectedModel, systemInstructions } = await req.json();
+    console.log(`Selected Model : `, selectedModel)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${
+      selectedModel || "gemini-1.5-pro"
+    }:streamGenerateContent?alt=sse&key=${process.env.GEMINI_API_KEY}`;
+
+    let options: any;
+
+    if (selectedModel === "gemini-1.0-pro") {
+      options = {
+        method: "POST",
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            maxOutputTokens: 2048,
+            temperature: 0.9,
+            topP: 1,
+          },
+        }),
+      };
+    } else {
+      options = {
+        method: "POST",
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            maxOutputTokens: 2048,
+            temperature: 0.9,
+            topP: 1,
+          },
+          systemInstruction: {
+            parts: [
+              {
+                text: systemInstructions,
+              },
+            ],
+          },
+        }),
+      };
+    }
 
     const response = await fetch(url, options);
 
@@ -215,8 +249,13 @@ export async function POST(req: Request) {
       const responseJson = await response.json();
       console.error("Error response from API:", responseJson);
       return new Response(
-        JSON.stringify({ error: responseJson.error || "Internal server error" }),
-        { status: response.status, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: responseJson.error || "Internal server error",
+        }),
+        {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        }
       );
     }
 
@@ -232,9 +271,9 @@ export async function POST(req: Request) {
       errorMessage = error.message;
     }
 
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
