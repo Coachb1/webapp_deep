@@ -483,6 +483,16 @@ function createMessageNode(message) {
   const messageNode = document.createElement("div");
   messageNode.classList.add("inner-message-container");
 
+  const avatarNode = document.createElement("div")
+  avatarNode.classList.add(["avatar-container", "left-item-position"]);
+
+  const avatarImage = document.createElement("img")
+  avatarImage.setAttribute("src", botAvatarImageURL)
+  avatarImage.setAttribute("class", "avatar")
+  avatarImage.style.marginRight = "8px";
+
+  avatarNode.appendChild(avatarImage)
+
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
   messageBubble.style.maxWidth = "80%";
@@ -495,6 +505,7 @@ function createMessageNode(message) {
   messageText.innerHTML = message;
 
   messageBubble.appendChild(messageText);
+  messageNode.appendChild(avatarNode);
   messageNode.appendChild(messageBubble);
 
   return messageNode;
@@ -561,7 +572,7 @@ function LoadingMessageWithText2(message, shadowRoot){
     loadingElement.style.flexDirection = "row"
     loadingElement.style.alignItems = "center"
     const messageElement = document.createElement("span")
-    messageElement.innerHTML = `<b style="color : white; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">${message}</b>`
+    messageElement.innerHTML = `<b style="color : black; font-size: ${window.innerWidth < 768 ? "12px" : "14px"}; min-width: 4rem; margin-left: 2rem;">Coachbot is thinking...</b>` //${message}
     messageElement.setAttribute("id", "loading-message")
     
     loadingElement.style.width = "fit-content"
@@ -2876,7 +2887,7 @@ loadExternalModule().then(() => {
           "user" : {"bubble": {"backgroundColor": "#2DC092"}}
         },
         "loading": {
-          "bubble": {"fontSize": "20px", "color": "white", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "#7fdbbe"}
+          "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
         }
       }'
       textInput='{

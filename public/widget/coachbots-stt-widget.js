@@ -7041,7 +7041,6 @@ loadExternalModule().then(() => {
     canvasElement.setAttribute("id", `canvas-${index}-${randomTextForId}`);
     canvasElement.style.padding = "4px";
     canvasElement.style.borderRadius = "4px";
-    canvasElement.style.backgroundColor = "#dff2ec";
     canvasElement.width = 100;
     canvasElement.height = 40;
 
