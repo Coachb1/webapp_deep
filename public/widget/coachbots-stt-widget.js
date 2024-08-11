@@ -1193,12 +1193,12 @@ async function populateBotConversation(participant_id) {
     isBotConversationPopulated = true;
   } else {
     if (botType === "user_bot") {
-      appendMessage2(
-        addStickerToMessage(
-          "Welcome",
-          "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"
-        )
-      );
+      // appendMessage2(
+      //   addStickerToMessage(
+      //     "Welcome",
+      //     "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"
+      //   )
+      // );
     }
   }
 }
@@ -1293,7 +1293,7 @@ const getBotDetails2 = async (botId) => {
     // botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
-      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
+      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
       botWelcomeMessage = " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
     } else if (botType === "avatar_bot") {
@@ -6177,6 +6177,35 @@ loadExternalModule().then(() => {
        </div>
      `
     }
+  }
+
+
+  if(window.location.href.includes("knowledge-bot")){
+      instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
+            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
+        </ul>
+    </div>
+
+    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Purpose:</strong> This knowledge bot is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
+            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
+            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
+        </ul>
+    </div>
+
+    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+    </span>
+`
   }
 
   if (window.innerWidth < 600) {
