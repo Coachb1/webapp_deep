@@ -3098,7 +3098,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        // required={!checkIfEdit}
+                        required
                         value={discussionTopics}
                         onChange={(e) => {
                           setDataModified(true);
