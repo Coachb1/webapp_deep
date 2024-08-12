@@ -3876,7 +3876,7 @@ const audioCanvasUiForQuestions = (audio, canvas) => {
 
     analyser.getByteFrequencyData(dataArray);
 
-    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -3920,7 +3920,7 @@ const audioCanvasUI = (audio, canvas) => {
 
     analyser.getByteFrequencyData(dataArray);
 
-    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -4103,7 +4103,7 @@ const handleProceedClickStt = async (choice) => {
             const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
-              `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -4119,11 +4119,13 @@ const handleProceedClickStt = async (choice) => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
                 const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
+                const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
                 console.log(audioElement, canvasElement)
                 audioCanvasUiForQuestions(audioElement, canvasElement)
                 audioElement.addEventListener("ended", () => {
                   console.log("ENDED playing")
                   canvasElement.remove()
+                  audioDiv.remove()
                   breakElement.remove()
                 })
               }, 100);
@@ -4196,7 +4198,7 @@ const handleProceedClickStt = async (choice) => {
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -4212,11 +4214,13 @@ const handleProceedClickStt = async (choice) => {
               const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
               const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
               const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
+              const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
               console.log(audioElement, canvasElement)
               audioCanvasUiForQuestions(audioElement, canvasElement)
 
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove()
+                audioDiv.remove()
                 breakElement.remove()
               })
 
@@ -6650,7 +6654,7 @@ loadExternalModule().then(() => {
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
@@ -6668,12 +6672,14 @@ loadExternalModule().then(() => {
       const canvasElement = shadowRoot.getElementById(
         `canvas-audio-${randomIdForAudioElement}`
       );
+      const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
       const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement);
       audioCanvasUiForQuestions(audioElement, canvasElement);
 
       audioElement.addEventListener("ended", () => {
         canvasElement.remove()
+        audioDiv.remove()
         breakElement.remove()
       })
     }, 100);
@@ -7063,7 +7069,7 @@ loadExternalModule().then(() => {
 
   async function audioSourceOpen(
     inputText,
-    messageBubble,
+    audioDiv,
     index,
     randomTextForId
   ) {
@@ -7092,8 +7098,8 @@ loadExternalModule().then(() => {
     const audioSourceElement = document.createElement("source");
     audioElement.appendChild(audioSourceElement);
 
-    messageBubble.appendChild(audioElement);
-    messageBubble.appendChild(canvasElement);
+    audioDiv.appendChild(audioElement);
+    audioDiv.appendChild(canvasElement);
 
     mediaSource.addEventListener("sourceopen", async () => {
       const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
@@ -7103,7 +7109,7 @@ loadExternalModule().then(() => {
         headers: {
           Authorization:
             "Bearer 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",
-          "Content-Type": "application/json",
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
           input: inputText,
@@ -7229,6 +7235,15 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
+    const audioDiv = document.createElement("div")
+    audioDiv.setAttribute("id",`auido-div-${randomIdForAudioElement}`)
+    audioDiv.style.width = "100%"
+    audioDiv.style.height = "3rem";
+    audioDiv.style.border = "1px solid lightgray";
+    audioDiv.style.borderRadius = "4px"
+    audioDiv.style.backgroundColor = "white"
+    audioDiv.style.overflow = "hidden"
+
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
 
     const response = await fetch( "/api/gemini-stream",{ //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
@@ -7272,7 +7287,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 "Please explain your question or comment in different words which I may be able to understand better.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomTextForId
               );
@@ -7287,7 +7302,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomTextForId
               );
@@ -7298,7 +7313,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomIdForAudioElement
               );
@@ -7310,6 +7325,15 @@ loadExternalModule().then(() => {
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
+
+          setTimeout(() => {
+            const allAudioElements = shadowRoot.querySelectorAll("audio");
+
+            allAudioElements[allAudioElements.length - 1].addEventListener("ended", () => {
+              console.log("ALL PLAYERS ARE ENDED")
+              audioDiv.remove()
+            })
+          }, 200);
 
           // add user question and bot answer to the session
           sessionQnAdata.push({
@@ -7369,10 +7393,11 @@ loadExternalModule().then(() => {
 
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
+        messageBubble.appendChild(audioDiv)
         if (streamWithAudio) {
           audioSourceOpen(
             decodedText,
-            messageBubble,
+            audioDiv,
             index,
             randomIdForAudioElement
           );
@@ -7653,7 +7678,7 @@ loadExternalModule().then(() => {
         } else {
           //
           // let latestMessages = body.messages[body.messages.length - 1].text;
-          // GeminiAiResponse(latestMessages, signals,"",latestMessages, false)
+          // GeminiAiResponse(latestMessages, signals,"",latestMessages, true, "gemeni-1.5-flash")
           // return;
           if(body.messages[body.messages.length - 1].text === "No"){
             LoadingMessageWithText("Please wait, we are generating your scenario!!")
