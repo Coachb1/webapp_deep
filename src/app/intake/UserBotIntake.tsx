@@ -385,19 +385,19 @@ const UserBotIntake = ({
           console.log(deletedData);
           patchFormData.append("deleted_data", JSON.stringify(deletedData));
 
-          patchFormData.append(
-            "media_data",
-            JSON.stringify({
-              youtube_links: releventLinks
-                .split(",")
-                .filter((link) => link.includes("youtube"))
-                .join(","),
-              article_links: releventLinks
-                .split(",")
-                .filter((link) => !link.includes("youtube"))
-                .join(","),
-            })
-          );
+          // patchFormData.append(
+          //   "media_data",
+          //   JSON.stringify({
+          //     youtube_links: releventLinks
+          //       .split(",")
+          //       .filter((link) => link.includes("youtube"))
+          //       .join(","),
+          //     article_links: releventLinks
+          //       .split(",")
+          //       .filter((link) => !link.includes("youtube"))
+          //       .join(","),
+          //   })
+          // );
 
           patchFormData.append(
             "bot_id",
@@ -488,16 +488,16 @@ const UserBotIntake = ({
 
               if (resultingBot) {
                 setBotName(resultingBot.bot_attributes.bot_name);
-                console.log(
-                  transformExtractedData(
-                    resultingBot.signature_bot.data.media_data
-                  )
-                );
-                setMediaData(
-                  transformExtractedData(
-                    resultingBot.signature_bot.data.media_data
-                  )
-                );
+                // console.log(
+                //   transformExtractedData(
+                //     resultingBot.signature_bot.data.media_data
+                //   )
+                // );
+                // setMediaData(
+                //   transformExtractedData(
+                //     resultingBot.signature_bot.data.media_data
+                //   )
+                // );
                 let parsedFaqJson: any;
                 if (typeof resultingBot.signature_bot.faqs === "string") {
                   parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
@@ -887,7 +887,7 @@ const UserBotIntake = ({
                 </div>
               )}
             </div>
-            <div className="my-3">
+            {/* <div className="my-3">
               <p className="text-sm max-sm:text-xs my-1">
                 Provide any relevant links and make sure the links are publicly
                 accessible.{" "}
@@ -919,9 +919,9 @@ const UserBotIntake = ({
                 <p className="text-red-500 text-xs mt-1">
                   {(error as any)["releventLinks"]}
                 </p>
-              )}
+              )} */}
               {/* @ts-ignore */}
-              {mediaData?.extracted_from_youtube.length > 0 && (
+              {/* {mediaData?.extracted_from_youtube.length > 0 && (
                 <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                   {mediaData?.extracted_from_youtube.map((item) => (
                     <div className="flex flex-row justify-between items-center">
@@ -977,9 +977,9 @@ const UserBotIntake = ({
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
               {/* @ts-ignore */}
-              {mediaData?.extracted_from_article.length > 0 && (
+              {/* {mediaData?.extracted_from_article.length > 0 && (
                 <div className="w-full mt-1 bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                   {mediaData?.extracted_from_article.map((item) => (
                     <div className="flex flex-row justify-between items-center">
@@ -1036,7 +1036,7 @@ const UserBotIntake = ({
                   ))}
                 </div>
               )}
-            </div>
+            </div> */}
             <hr className="mb-2" />
             <div className="flex items-start space-x-2 my-1.5 ">
               <Checkbox
