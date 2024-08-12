@@ -1,17 +1,15 @@
 import { baseURL } from "../fixtures/utils";
-import { saveAs } from "file-saver";
-// const staticTestCodes = ["Q877O08", "Q9SSEH3"];
+import Papa from "papaparse";
+
 const botId =
   "avatar_bot-121c8-leadership-elevating-emerging-leaders-through-tailored-and-strategic-mentorship";
 const userId = "10822f2f-2e05-438e-b1b4-0107b95745f2";
 
-const RUNS = 3;
-const END_AT = 3;
+const RUNS = 4;
 
 describe("Init", () => {
   let botMessages: string[] = [];
   let responseTexts: string[] = [];
-
   beforeEach(() => {
     cy.viewport(1280, 1000);
     cy.session("loggedInUser", () => {
@@ -49,7 +47,6 @@ describe("Init", () => {
 
     cy.wait(10000);
     cy.get("button")
-      // .contains("Begin session", { timeout: 20000 })
       .get("#begin-session-button", { timeout: 20000 })
       .click()
       .then(() => {
@@ -66,7 +63,7 @@ describe("Init", () => {
             cy.wait("@geminiResponse", { timeout: 100000 }).then(
               (geminiResponse) => {
                 geminiResponseMessage = geminiResponse.response?.body;
-                botMessages.push(geminiResponseMessage);
+                botMessages.push(geminiResponse.response?.body);
 
                 cy.wait("@saveAIResponse", { timeout: 20000 }).then(() => {
                   const formattedQuestion = `I'll be providing you the question please pick a topic and make the converstion accordingly, here's the question ${geminiResponseMessage}. NOTE : Keep your responses in minimum 20 words and max 30 words.  NOTE: Only give response there must be not any introductory message or heading.`;
@@ -76,10 +73,9 @@ describe("Init", () => {
                       formattedQuestion
                     )}`
                   ).then((response) => {
-                    const responseText = response?.body["response_text"];
-                    responseTexts.push(responseText);
+                    userResponse = response?.body["response_text"];
 
-                    if (i === END_AT) {
+                    if (i === RUNS) {
                       cy.wait("@geminiResponse", { timeout: 100000 });
                       cy.wait("@geminiResponse", { timeout: 100000 }).then(
                         () => {
@@ -97,7 +93,14 @@ describe("Init", () => {
                       cy.get("#chat-element2")
                         .shadow()
                         .find("#text-input")
-                        .type(responseText); //response?.body["response_text"]);
+                        .type(userResponse);
+                      responseTexts.push(userResponse);
+
+                      cy.log("userInputText", userResponse);
+                      cy.log(
+                        "geminiResponseMessage",
+                        geminiResponse.response?.body
+                      );
 
                       cy.wait(5000);
                       cy.get("#chat-element2")
@@ -115,46 +118,67 @@ describe("Init", () => {
               .find("#text-input")
               .type(userResponse);
 
+            responseTexts.push(userResponse);
+
             cy.get("#chat-element2")
               .shadow()
               .find(".input-button-svg.inside-right")
               .click();
-            cy.intercept("POST", "/api/gemini-stream").as("geminiResponse");
             cy.intercept(
               "POST",
               "/api/v1/coaching-conversations/save-ai-response/"
             ).as("saveAIResponse");
           }
         }
+
         cy.wait("@saveAIResponse", { timeout: 20000 });
         cy.wait("@geminiResponse", { timeout: 20000 });
-        // cy.get("#chat-element2").shadow().find("#text-input").clear();
-        // cy.get("button").contains("End session").click();
+        cy.wait("@geminiResponse", { timeout: 20000 }).then(
+          (geminiResponse) => {
+            geminiResponseMessage = geminiResponse.response?.body;
+            cy.log("geminiResponseMessage", geminiResponse.response?.body);
+            botMessages.push(geminiResponseMessage);
+            cy.log("PUSHED", geminiResponseMessage);
+          }
+        );
       });
   });
 
+  const generateCSV = () => {
+    const data = responseTexts.map((question, index) => ({
+      i: index + 1,
+      user_question: question,
+      bot_response:
+        botMessages.filter(
+          (msg) => msg !== undefined || msg !== null || msg !== ""
+        )[index] || "",
+    }));
+
+    if (data.length > 0) {
+      const csv = Papa.unparse(data, {
+        quotes: true,
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Conversation-${botId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   afterEach(() => {
-    const csvContent =
-      "Bot Messages,Response Texts\n" +
-      botMessages
-        .map((botMessage, index) => {
-          // Escape any quotes and commas, enclose each value in quotes
-          const escapedBotMessage = `"${botMessage?.replace(/"/g, '""')}"`;
-          const escapedResponseText = `"${responseTexts[index]?.replace(
-            /"/g,
-            '""'
-          )}"`;
-          return `${escapedBotMessage},${escapedResponseText}`;
-        })
-        .join("\n");
+    cy.log("OUTPUT DATA : ", botMessages, responseTexts);
+    console.log("OUTPUT DATA : ", botMessages, responseTexts);
+    cy.log("OUTPUT DATA LENGTH : ", botMessages.length, responseTexts.length);
+    console.log(
+      "OUTPUT DATA LENGTH: ",
+      botMessages.length,
+      responseTexts.length
+    );
 
-    const csvWithBom =
-      new Uint8Array([0xef, 0xbb, 0xbf]).reduce(
-        (acc, cur) => acc + String.fromCharCode(cur),
-        ""
-      ) + csvContent;
-
-    const blob = new Blob([csvWithBom], { type: "text/csv;charset=utf-8;" });
-    // saveAs(blob, "conversation_data.csv");
+    generateCSV();
   });
 });
