@@ -7226,9 +7226,21 @@ loadExternalModule().then(() => {
     messageBubble.appendChild(messageText);
     messageNode.appendChild(avatarNode);
     messageNode.appendChild(messageBubble);
+    
+    const likeDisLike = document.createElement("div")
+    likeDisLike.setAttribute("style", "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;")
+    likeDisLike.innerHTML = `
+      <span class="like" id="likeIcon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+      </span>
+      <span class="dislike" id="dislikeIcon" >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+      </span>
+      `;
 
     gShadowRoot2 = document.getElementById("chat-element2").shadowRoot;
     gShadowRoot2.getElementById("messages").appendChild(messageNode);
+    
     gShadowRoot2.getElementById("messages").scrollBy(0, 500);
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
@@ -7243,6 +7255,7 @@ loadExternalModule().then(() => {
     audioDiv.style.borderRadius = "4px"
     audioDiv.style.backgroundColor = "white"
     audioDiv.style.overflow = "hidden"
+    audioDiv.style.marginBottom = "6px";
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
 
@@ -7263,6 +7276,7 @@ loadExternalModule().then(() => {
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
+          
           allMessages.forEach((indvMessage) => {
             if (
               indvMessage.innerText === "." ||
@@ -7321,6 +7335,64 @@ loadExternalModule().then(() => {
           }
 
           botPreviousConversationHistory.push(messageText.innerText)
+          messageBubble.appendChild(likeDisLike);
+          setTimeout(() => {
+            const likeIcon = gShadowRoot2.getElementById("likeIcon");
+            const dislikeIcon = gShadowRoot2.getElementById("dislikeIcon");
+            console.log(likeIcon, dislikeIcon)
+
+            // Add hover effect
+            likeIcon.addEventListener("mouseover", function () {
+              likeIcon.querySelector("svg").style.stroke = "black";
+              likeIcon.style.cursor = "pointer"
+            });
+
+            likeIcon.addEventListener("mouseout", function () {
+              likeIcon.querySelector("svg").style.stroke = "gray";
+              likeIcon.style.cursor = "normal"
+            });
+
+            dislikeIcon.addEventListener("mouseover", function () {
+              dislikeIcon.querySelector("svg").style.stroke = "black";
+              dislikeIcon.style.cursor = "pointer"
+            });
+
+            dislikeIcon.addEventListener("mouseout", function () {
+              dislikeIcon.querySelector("svg").style.stroke = "gray";
+              dislikeIcon.style.cursor = "normal"
+            });
+
+            // Add click functionality
+            likeIcon.addEventListener("click", function () {
+              if (!likeIcon.classList.contains("active")) {
+                likeIcon.classList.add("active");
+                likeIcon.querySelector("svg").style.fill = "gray";
+                likeIcon.querySelector("svg").style.stroke = "black";
+                dislikeIcon.classList.remove("active");
+                dislikeIcon.querySelector("svg").style.stroke = "gray";
+                dislikeIcon.querySelector("svg").style.fill = "transparent";
+              } else {
+                likeIcon.querySelector("svg").style.fill = "transparent";
+                likeIcon.querySelector("svg").style.stroke = "gray";
+                likeIcon.classList.remove("active");
+              }
+            });
+
+            dislikeIcon.addEventListener("click", function () {
+              if (!dislikeIcon.classList.contains("active")) {
+                dislikeIcon.classList.add("active");
+                dislikeIcon.querySelector("svg").style.fill = "gray";
+                dislikeIcon.querySelector("svg").style.stroke = "black";
+                likeIcon.classList.remove("active");
+                likeIcon.querySelector("svg").style.stroke = "gray";
+                likeIcon.querySelector("svg").style.fill = "transparent";
+              } else {
+                dislikeIcon.querySelector("svg").style.fill = "transparent";
+                dislikeIcon.querySelector("svg").style.stroke = "gray";
+                dislikeIcon.classList.remove("active");
+              }
+            });
+          }, 100);
 
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
@@ -7679,7 +7751,7 @@ loadExternalModule().then(() => {
         } else {
           //
           // let latestMessages = body.messages[body.messages.length - 1].text;
-          // GeminiAiResponse(latestMessages, signals,"",latestMessages, true, "gemeni-1.5-flash")
+          // GeminiAiResponse(latestMessages, signals,"",latestMessages, true, "gemeni-1.0-pro")
           // return;
           if(body.messages[body.messages.length - 1].text === "No"){
             LoadingMessageWithText("Please wait, we are generating your scenario!!")
@@ -8427,7 +8499,9 @@ loadExternalModule().then(() => {
                   signals,
                   conversation_id2,
                   latestMessage,
-                  allowAudioInteraction
+                  allowAudioInteraction,
+                  "gemini-1.5-pro",
+                  "gemini-1.5-flash"
                 );
               } else {
                 console.log(
@@ -10503,8 +10577,10 @@ const openChatContainer2 = () => {
 
   const container = shadowR.getElementById("container")
   container.oncopy = () => {
+   if(!subdomainStt.includes("localhost")){
     alert("Copying is not allowed")
     return false
+   }
   }
 
   const inputField = shadowR.getElementById("text-input")
