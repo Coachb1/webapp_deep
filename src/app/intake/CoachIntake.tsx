@@ -2178,7 +2178,6 @@ const CoachIntake = ({ user }: any) => {
       { UserDepartment: department },
       { UserAreaDomain: areaDomain },
       { UserExperience: experience },
-      { VoiceSample: voiceSample },
       { AllowActionPlan: allowSessionNotes },
     ];
 
