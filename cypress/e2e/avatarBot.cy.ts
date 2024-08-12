@@ -19,7 +19,6 @@ describe("Init", () => {
       cy.contains("Login").click();
 
       cy.origin("https://coachbotsdev.kinde.com", () => {
-        // cy.get('[data-testid="login-account-link"]').click();
         cy.title()
           .should("eq", "Sign in | Coachbotsdev")
           .then(() => {
@@ -39,15 +38,16 @@ describe("Init", () => {
   });
 
   it("Avatar bot", () => {
+    cy.visit(`http://localhost:3000/coach/${botId}`);
+
     cy.intercept(
       "GET",
       `/api/v1/coaching-conversations/bot-conversation-data/?for=user&user_id=${userId}&bot_id=${botId}`
     ).as("coachingConversations");
-    cy.visit(`http://localhost:3000/coach/${botId}`);
+
     cy.get(".chat-icon2").click();
 
-    // cy.wait("@coachingConversations", { timeout: 40000 }).then(
-    //   (interception) => {
+    cy.wait(10000);
     cy.get("button")
       // .contains("Begin session", { timeout: 20000 })
       .get("#begin-session-button", { timeout: 20000 })
@@ -155,6 +155,6 @@ describe("Init", () => {
       ) + csvContent;
 
     const blob = new Blob([csvWithBom], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "conversation_data.csv");
+    // saveAs(blob, "conversation_data.csv");
   });
 });

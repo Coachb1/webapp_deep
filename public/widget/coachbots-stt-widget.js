@@ -7329,7 +7329,7 @@ loadExternalModule().then(() => {
           setTimeout(() => {
             const allAudioElements = shadowRoot.querySelectorAll("audio");
 
-            allAudioElements[allAudioElements.length - 1].addEventListener("ended", () => {
+            allAudioElements[allAudioElements.length - 1]?.addEventListener("ended", () => {
               console.log("ALL PLAYERS ARE ENDED")
               audioDiv.remove()
             })
@@ -7393,8 +7393,9 @@ loadExternalModule().then(() => {
 
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
-        messageBubble.appendChild(audioDiv)
+     
         if (streamWithAudio) {
+          messageBubble.appendChild(audioDiv)
           audioSourceOpen(
             decodedText,
             audioDiv,
