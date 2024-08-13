@@ -2178,7 +2178,6 @@ const CoachIntake = ({ user }: any) => {
       { UserDepartment: department },
       { UserAreaDomain: areaDomain },
       { UserExperience: experience },
-      { VoiceSample: voiceSample },
       { AllowActionPlan: allowSessionNotes },
     ];
 
@@ -3099,7 +3098,7 @@ const CoachIntake = ({ user }: any) => {
                       <textarea
                         rows={2}
                         disabled={checkIfView === null ? false : true}
-                        // required={!checkIfEdit}
+                        required
                         value={discussionTopics}
                         onChange={(e) => {
                           setDataModified(true);

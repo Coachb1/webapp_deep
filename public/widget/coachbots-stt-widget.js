@@ -1193,12 +1193,12 @@ async function populateBotConversation(participant_id) {
     isBotConversationPopulated = true;
   } else {
     if (botType === "user_bot") {
-      appendMessage2(
-        addStickerToMessage(
-          "Welcome",
-          "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"
-        )
-      );
+      // appendMessage2(
+      //   addStickerToMessage(
+      //     "Welcome",
+      //     "Very good day! Looks like you are all set to start your session. Let me know what would you like to discuss today?"
+      //   )
+      // );
     }
   }
 }
@@ -1293,7 +1293,7 @@ const getBotDetails2 = async (botId) => {
     // botSelectedLLM = botDetails.data.selected_llms;
 
     if (botType === "user_bot") {
-      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask anything related to the topic shown on this page.`;
+      botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
       botWelcomeMessage = " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
     } else if (botType === "avatar_bot") {
@@ -3876,7 +3876,7 @@ const audioCanvasUiForQuestions = (audio, canvas) => {
 
     analyser.getByteFrequencyData(dataArray);
 
-    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -3920,7 +3920,7 @@ const audioCanvasUI = (audio, canvas) => {
 
     analyser.getByteFrequencyData(dataArray);
 
-    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -4103,7 +4103,7 @@ const handleProceedClickStt = async (choice) => {
             const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
-              `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -4119,11 +4119,13 @@ const handleProceedClickStt = async (choice) => {
                 const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
                 const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
+                const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
                 console.log(audioElement, canvasElement)
                 audioCanvasUiForQuestions(audioElement, canvasElement)
                 audioElement.addEventListener("ended", () => {
                   console.log("ENDED playing")
                   canvasElement.remove()
+                  audioDiv.remove()
                   breakElement.remove()
                 })
               }, 100);
@@ -4196,7 +4198,7 @@ const handleProceedClickStt = async (choice) => {
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -4212,11 +4214,13 @@ const handleProceedClickStt = async (choice) => {
               const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
               const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
               const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
+              const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
               console.log(audioElement, canvasElement)
               audioCanvasUiForQuestions(audioElement, canvasElement)
 
               audioElement.addEventListener("ended", () => {
                 canvasElement.remove()
+                audioDiv.remove()
                 breakElement.remove()
               })
 
@@ -5895,7 +5899,7 @@ loadExternalModule().then(() => {
     <div style="margin: 0; padding: 0; margin-bottom: 0.4rem; font-size: 14px;">
     <p id="header-text" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    };">Accessibility features may not work inside the bot.</p>
+    };"> ${(window.location.href.includes("knowledge-bot")) ? "Simple Knowledge Bot. Check 'Read Me' for more": "Accessibility features may not work inside the bot." } </p>
   </div>
     <div 
       id="close-top2" 
@@ -6053,7 +6057,7 @@ loadExternalModule().then(() => {
           <ul id="instructions-list">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-              <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+              <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
               <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
               <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
@@ -6132,7 +6136,7 @@ loadExternalModule().then(() => {
   if (botId) {
     const list = ` <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
     <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
-    <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
+    <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
     <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
     <li><strong>5. Avoid Unrelated Responses:</strong> In responses, it's important to avoid unrelated questions, answers, or comments, as well as overly rapid responses, as these may trigger system errors. Please be sure to adhere to the topic context (or the coach context) for best results. The aim is to simulate real-world interactions.</li>
     <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
@@ -6177,6 +6181,35 @@ loadExternalModule().then(() => {
        </div>
      `
     }
+  }
+
+
+  if(window.location.href.includes("knowledge-bot")){
+      instructionsPane.innerHTML = `
+      <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">System Instructions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Provide Full Context:</strong> Please provide the full context of your questions for optimum results.</li>
+            <li><strong>2. Ask Relevant Questions:</strong> Please ask relevant questions only, related to the topic.</li>
+        </ul>
+    </div>
+
+    <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+        <b style="font-size: 14px; margin: 4px 0 2px 0;">CoachBot Interactions</b>
+        <ul id="instructions-list">
+            <li><strong>1. Purpose:</strong> This knowledge bot is designed as a simple knowledge-based bot that responds according to the information supplied.</li>
+            <li><strong>2. Advanced Features:</strong> Our advanced coaching bots handle sessions, past history, coaching interaction styles, coach-matching logic, session notes, and recommendations.</li>
+            <li><strong>3. Contact Information:</strong> For enablement with your preferred coach or to access advanced features, contact us at info@coachbots.com.</li>
+        </ul>
+    </div>
+
+    <span id="close-intructions-pane-kbot" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+    </span>
+`
   }
 
   if (window.innerWidth < 600) {
@@ -6621,7 +6654,7 @@ loadExternalModule().then(() => {
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
@@ -6639,12 +6672,14 @@ loadExternalModule().then(() => {
       const canvasElement = shadowRoot.getElementById(
         `canvas-audio-${randomIdForAudioElement}`
       );
+      const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
       const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement);
       audioCanvasUiForQuestions(audioElement, canvasElement);
 
       audioElement.addEventListener("ended", () => {
         canvasElement.remove()
+        audioDiv.remove()
         breakElement.remove()
       })
     }, 100);
@@ -7034,7 +7069,7 @@ loadExternalModule().then(() => {
 
   async function audioSourceOpen(
     inputText,
-    messageBubble,
+    audioDiv,
     index,
     randomTextForId
   ) {
@@ -7063,8 +7098,8 @@ loadExternalModule().then(() => {
     const audioSourceElement = document.createElement("source");
     audioElement.appendChild(audioSourceElement);
 
-    messageBubble.appendChild(audioElement);
-    messageBubble.appendChild(canvasElement);
+    audioDiv.appendChild(audioElement);
+    audioDiv.appendChild(canvasElement);
 
     mediaSource.addEventListener("sourceopen", async () => {
       const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
@@ -7074,7 +7109,7 @@ loadExternalModule().then(() => {
         headers: {
           Authorization:
             "Bearer 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",
-          "Content-Type": "application/json",
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
           input: inputText,
@@ -7200,6 +7235,15 @@ loadExternalModule().then(() => {
     const allMessages = shadowRoot.getElementById("messages").childNodes;
     const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
+    const audioDiv = document.createElement("div")
+    audioDiv.setAttribute("id",`auido-div-${randomIdForAudioElement}`)
+    audioDiv.style.width = "100%"
+    audioDiv.style.height = "3rem";
+    audioDiv.style.border = "1px solid lightgray";
+    audioDiv.style.borderRadius = "4px"
+    audioDiv.style.backgroundColor = "white"
+    audioDiv.style.overflow = "hidden"
+
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
 
     const response = await fetch( "/api/gemini-stream",{ //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
@@ -7243,7 +7287,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 "Please explain your question or comment in different words which I may be able to understand better.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomTextForId
               );
@@ -7258,7 +7302,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomTextForId
               );
@@ -7269,7 +7313,7 @@ loadExternalModule().then(() => {
             if (streamWithAudio) {
               audioSourceOpen(
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
-                messageBubble,
+                audioDiv,
                 index,
                 randomIdForAudioElement
               );
@@ -7281,6 +7325,15 @@ loadExternalModule().then(() => {
           console.log("Stream complete");
           console.log("STREAMED MESSAGE -> ", messageText.innerText);
           finished = true;
+
+          setTimeout(() => {
+            const allAudioElements = shadowRoot.querySelectorAll("audio");
+
+            allAudioElements[allAudioElements.length - 1]?.addEventListener("ended", () => {
+              console.log("ALL PLAYERS ARE ENDED")
+              audioDiv.remove()
+            })
+          }, 200);
 
           // add user question and bot answer to the session
           sessionQnAdata.push({
@@ -7340,10 +7393,12 @@ loadExternalModule().then(() => {
 
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
+     
         if (streamWithAudio) {
+          messageBubble.appendChild(audioDiv)
           audioSourceOpen(
             decodedText,
-            messageBubble,
+            audioDiv,
             index,
             randomIdForAudioElement
           );
@@ -7624,7 +7679,7 @@ loadExternalModule().then(() => {
         } else {
           //
           // let latestMessages = body.messages[body.messages.length - 1].text;
-          // GeminiAiResponse(latestMessages, signals,"",latestMessages, false)
+          // GeminiAiResponse(latestMessages, signals,"",latestMessages, true, "gemeni-1.5-flash")
           // return;
           if(body.messages[body.messages.length - 1].text === "No"){
             LoadingMessageWithText("Please wait, we are generating your scenario!!")

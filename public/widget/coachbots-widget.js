@@ -1691,7 +1691,7 @@ const audioCanvasUiForQuestionsStt = (audio, canvas) => {
 
     analyser.getByteFrequencyData(dataArray);
 
-    canvasCtx.fillStyle = "#F3F4F6";
+    canvasCtx.fillStyle = "white";
     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -1862,7 +1862,7 @@ const handleProceedClick = async (choice) => {
 
             initialQuestionText =
               queDiv +
-              `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -1878,10 +1878,12 @@ const handleProceedClick = async (choice) => {
                 const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
                 const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}}`)
                 console.log(audioElement, canvasElement)
+                const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
                 audioCanvasUiForQuestionsStt(audioElement, canvasElement)
 
                 audioElement.addEventListener("ended",() => {
                   canvasElement.remove()
+                  audioDiv.remove()
                   breakElement.remove()
                 })
               }, 100);
@@ -1946,7 +1948,7 @@ const handleProceedClick = async (choice) => {
           const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
           initialQuestionText =
             queDiv +
-            `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -1961,12 +1963,14 @@ const handleProceedClick = async (choice) => {
           setTimeout(() => {
             const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
             const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
+            const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
             const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
             console.log(audioElement, canvasElement)
             audioCanvasUiForQuestionsStt(audioElement, canvasElement)
 
             audioElement.addEventListener("ended", () => {
               canvasElement.remove()
+              audioDiv.remove()
               breakElement.remove()
             })
 
@@ -3494,7 +3498,7 @@ loadExternalModule().then(() => {
     const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
     const audioCont =
       queDiv +
-      `<div ><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
@@ -3510,11 +3514,13 @@ loadExternalModule().then(() => {
       const audioElement = shadowRoot.getElementById(`audio-player-${randomIdForAudioElement}`)
       const canvasElement = shadowRoot.getElementById(`canvas-audio-${randomIdForAudioElement}`)
       const breakElement = shadowRoot.getElementById(`break-${randomIdForAudioElement}`)
+      const audioDiv = shadowRoot.getElementById(`audioDiv-${randomIdForAudioElement}`)
       console.log(audioElement, canvasElement)
       audioCanvasUiForQuestionsStt(audioElement, canvasElement)
 
       audioElement.addEventListener("ended", () => {
         canvasElement.remove()
+        audioDiv.remove()
         breakElement.remove()
       })
     }, 100);
