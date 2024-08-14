@@ -278,7 +278,8 @@ const Conversations = ({ user }: any) => {
                   </>
                 )}
                 {conversationDataAdmin.length > 0 &&
-                  conversationData.length > 0 && (
+                  (conversationData.length > 0 ||
+                    myFeedbacksData.length > 0) && (
                     <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
                   )}
                 {(conversationData.length > 0 ||
@@ -372,7 +373,7 @@ const Conversations = ({ user }: any) => {
                     </div>
                   </>
                 )}
-                {conversationData.length > 0 &&
+                {(conversationData.length > 0 || myFeedbacksData.length > 0) &&
                   feedbackConversations.length > 0 && (
                     <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
                   )}
