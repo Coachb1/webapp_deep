@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { ConvertedConversation, FeedbackConversationType } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
 
-
 function formatDate(inputDateString: string): string {
   const originalDate = new Date(inputDateString);
 
@@ -39,27 +38,31 @@ const Conversations = ({ user }: any) => {
 
   const [loading, setLoading] = useState(true);
 
-  const { botConversations, userId, } = useUser();
+  const { botConversations, userId } = useUser();
   useEffect(() => {
-    console.log(botConversations.convertsationDataAdmin)
-      setConvertsationDataAdmin(
-        botConversations.convertsationDataAdmin.filter(
-          (d) => d.participant_uid !== userId
-        )
-      );
-  
-      console.log(botConversations.convertsationDataAdmin.filter((conversation) => conversation.participant_uid !== userId));
-  
-      setConvertsationData(
-        botConversations.conversationDataUser.filter(
-          (d) => d.bot_type !== "deep_dive"
-        )
-      );
-      
-      setFeedbackConversations(botConversations.feedbackConversations);
+    console.log(botConversations.convertsationDataAdmin);
+    setConvertsationDataAdmin(
+      botConversations.convertsationDataAdmin.filter(
+        (d) => d.participant_uid !== userId
+      )
+    );
 
-      setLoading(false)
-  },[botConversations]);
+    console.log(
+      botConversations.convertsationDataAdmin.filter(
+        (conversation) => conversation.participant_uid !== userId
+      )
+    );
+
+    setConvertsationData(
+      botConversations.conversationDataUser.filter(
+        (d) => d.bot_type !== "deep_dive"
+      )
+    );
+
+    setFeedbackConversations(botConversations.feedbackConversations);
+
+    setLoading(false);
+  }, [botConversations]);
 
   return (
     <>
