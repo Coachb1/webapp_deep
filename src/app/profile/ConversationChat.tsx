@@ -13,7 +13,7 @@ const ConversationChat = ({
   type,
 }: any) => {
   return (
-    <div className="w-full border-gray-400 border bg-gray-200 my-2 px-2 rounded-xl">
+    <div className="w-full border-gray-400 border bg-gray-200 my-1 px-2 rounded-xl">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-none">
           <AccordionTrigger>
@@ -31,9 +31,11 @@ const ConversationChat = ({
                 </span>
               )}
               {type === "coach-interactions" && (
-                <span>
+                <span className="text-left">
                   <b>Bot Name</b> : {botName}{" "}
-                  <span className="max-sm:hidden mx-2">|</span>
+                  {botName?.length < 120 && (
+                    <span className="max-sm:hidden mx-2">|</span>
+                  )}
                 </span>
               )}
               <span>

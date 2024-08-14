@@ -31,6 +31,9 @@ const Conversations = ({ user }: any) => {
   const [conversationDataAdmin, setConvertsationDataAdmin] = useState<
     ConvertedConversation[]
   >([]);
+  const [myFeedbacksData, setMyFeedbacksData] = useState<
+    FeedbackConversationType[]
+  >([]);
 
   const [feedbackConversations, setFeedbackConversations] = useState<
     FeedbackConversationType[]
@@ -91,6 +94,40 @@ const Conversations = ({ user }: any) => {
           );
           console.log("convertedData USER : ", convertedData);
         }
+      }
+
+      const responseFeedback = await fetch(
+        `${baseURL}/coaching-conversations/get-attempted-bots/?user_id=${userId}&only_feedback=true`, //http://localhost:8001/api/v1/coaching-conversations/get-attempted-bots/?user_id=493dd033-57d8-4298-9320-f1240200ef86&only_feedback=true
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (responseFeedback.ok) {
+        const responseData = await responseFeedback.json();
+        console.log("responseFeedback USER", responseData);
+        const FeedbackUserConvo: FeedbackConversationType[] = responseData.map(
+          (entry: any) => ({
+            participant_name: entry.is_anonymous
+              ? "Anonymous User"
+              : entry.participant_name,
+            date: entry.date,
+            msg: Object.keys(entry.msg).map((question) => ({
+              question: question,
+              answer: entry.msg[question],
+            })),
+          })
+        );
+        console.log(FeedbackUserConvo, "FeedbackUserConvo");
+        setMyFeedbacksData(FeedbackUserConvo);
+        setMyFeedbacksData(
+          FeedbackUserConvo.sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
+        );
       }
 
       if (feedbackBotId) {
@@ -158,18 +195,21 @@ const Conversations = ({ user }: any) => {
         <div>
           {conversationDataAdmin.length > 0 ||
           conversationData.length > 0 ||
-          feedbackConversations.length > 0 ? (
+          feedbackConversations.length > 0 ||
+          myFeedbacksData.length > 0 ? (
             <div className="text-sm w-full m-4 ml-0 p-2 rounded-md text-slate-800 flex flex-col gap-2 max-sm:text-xs max-lg:text-xs max-xl:text-xs min-h-[109px]">
               <div className="flex flex-col justify-start items-start  mx-2 rounded-md">
                 {conversationDataAdmin.length > 0 && (
                   <>
-                    <Badge>Coachee & Mentee Interactions</Badge>
-                    <div className="flex flex-col w-full">
+                    <Badge className="mt-2 mb-0">
+                      Coachee & Mentee Interactions
+                    </Badge>
+                    <div className="flex flex-col w-full mt-0">
                       {/* AVATAR BOT */}
                       {conversationDataAdmin.filter(
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">
+                        <p className="mt-2 font-semibold">
                           Avatar Bots / Icons by AI
                         </p>
                       )}
@@ -193,7 +233,7 @@ const Conversations = ({ user }: any) => {
                       {conversationDataAdmin.filter(
                         (convo) => convo.bot_type === "deep_dive"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">
+                        <p className="mt-2 font-semibold">
                           Engagement Survey Bots
                         </p>
                       )}
@@ -217,7 +257,7 @@ const Conversations = ({ user }: any) => {
                       {conversationDataAdmin.filter(
                         (convo) => convo.bot_type === "user_bot"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">Knowledge Bots</p>
+                        <p className="mt-2 font-semibold">Knowledge Bots</p>
                       )}
                       {conversationDataAdmin
                         .filter((convo) => convo.bot_type === "user_bot")
@@ -241,15 +281,16 @@ const Conversations = ({ user }: any) => {
                   conversationData.length > 0 && (
                     <div className="h-[2px] w-full bg-gray-200 my-2 rounded-xl" />
                   )}
-                {conversationData.length > 0 && (
+                {(conversationData.length > 0 ||
+                  myFeedbacksData.length > 0) && (
                   <>
-                    <Badge>My Interactions</Badge>
+                    <Badge className="mt-4 mb-0">My Interactions</Badge>
                     <div className="flex flex-col w-full">
                       {/* AVATAR BOT */}
                       {conversationData.filter(
                         (convo) => convo.bot_type === "avatar_bot"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">
+                        <p className="mt-2 font-semibold">
                           Avatar Bots / Icons by AI
                         </p>
                       )}
@@ -269,11 +310,25 @@ const Conversations = ({ user }: any) => {
                           />
                         ))}
 
+                      {/* FEEDBACK CONVERSATIONS */}
+                      {myFeedbacksData.length > 0 && (
+                        <p className="mt-2 font-semibold">Feedbacks</p>
+                      )}
+                      <div className="flex flex-col w-full">
+                        {myFeedbacksData.map((conversation) => (
+                          <FeedbackConversationChat
+                            conversation={conversation.msg}
+                            date={formatDate(conversation.date)}
+                            participant={conversation.participant_name}
+                          />
+                        ))}
+                      </div>
+
                       {/* DEEP DIVE */}
                       {conversationData.filter(
                         (convo) => convo.bot_type === "deep_dive"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">
+                        <p className="mt-2 font-semibold">
                           Engagement Survey Bots
                         </p>
                       )}
@@ -297,7 +352,7 @@ const Conversations = ({ user }: any) => {
                       {conversationData.filter(
                         (convo) => convo.bot_type === "user_bot"
                       ).length > 0 && (
-                        <p className="mt-4 font-semibold">Knowledge Bots</p>
+                        <p className="mt-2 font-semibold">Knowledge Bots</p>
                       )}
                       {conversationData
                         .filter((convo) => convo.bot_type === "user_bot")
