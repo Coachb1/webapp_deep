@@ -2,6 +2,7 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function GlobalError({
   error,
@@ -21,14 +22,27 @@ export default function GlobalError({
               </span>
               BOTS
             </h1>
-            <div className="my-2 mt-4 max-w-prose">
+            <div className="my-2 mt-4 max-w-prose flex flex-col justify-center items-center gap-4">
               {" "}
-              <p className="text-lg  text-gray-600">
-                <span className="font-bold"> Uh oh!</span> Something went wrong.
-              </p>{" "}
-              <Badge variant={"destructive"} className="mt-2 p-2">
-                <p>Error : {error.message}</p>
-              </Badge>
+              <p className="text-2xl text-gray-700 font-bold">
+                Welcome to the world of CoachBots!
+              </p>
+              <div className="relative group cursor-pointer w-fit">
+                <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-violet-600 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative bg-white ring-1 ring-gray-900/5 rounded-lg leading-none flex items-top justify-start space-x-6">
+                  <div className="space-y-2">
+                    <Button
+                      onClick={() => {
+                        window.location.reload();
+                      }}
+                      variant={"secondary"}
+                      className="border border-gray-200 text-gray-600 font-bold text-xl hover:cursor-pointer w-fit"
+                    >
+                      Let's Start
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </MaxWidthWrapper>{" "}
         </main>
