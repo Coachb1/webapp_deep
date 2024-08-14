@@ -1568,7 +1568,6 @@ const Coaches = ({
           <div id="participant-listing">
             {coachesData.length > 0 &&
               currentCoachesData.map((coach, idx) => (
-                <>
                   <div
                     key={coach?.profile_id}
                     className="relative group  block p-2 h-full w-full"
@@ -1665,7 +1664,6 @@ const Coaches = ({
                       />
                     </Card>
                   </div>
-                </>
               ))}
           </div>
           {coachesData.length > 10 && (

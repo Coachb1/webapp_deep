@@ -645,16 +645,17 @@ export const getConversations = async (
 
     if (responseFeedback.ok) {
       const responseData = await responseFeedback.json();
+      console.log(responseData);
       const FeedbackConvo: FeedbackConversationType[] =
         responseData.message.map((entry: any) => ({
           participant_name: entry.is_anonymous
             ? "Anonymous User"
             : entry.participant_name,
           date: entry.date,
-          msg: {
-            question: Object.keys(entry.msg)[0],
-            answer: Object.values(entry.msg)[0],
-          },
+          msg: Object.keys(entry.msg).map((question) => ({
+            question: question,
+            answer: entry.msg[question],
+          })),
         }));
       console.log(FeedbackConvo, "FeedbackConvo");
       feedbackConversations = FeedbackConvo.sort(

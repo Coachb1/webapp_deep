@@ -1672,7 +1672,7 @@ const CoachIntake = ({ user }: any) => {
                     );
                     setTimeout(() => {
                       // getFeedbackBotsData();
-                      getAllDirectoryData()
+                      getAllDirectoryData();
                       router.push("/");
                     }, 10000);
                   }
@@ -3092,7 +3092,8 @@ const CoachIntake = ({ user }: any) => {
                   </div>
                   <div className="my-3">
                     <p className="text-sm my-1">
-                      Please add the discussion topics
+                      Please add the discussion topics (Separated by comma)
+                      <span className="text-xl font-bold text-red-500">*</span>
                     </p>
                     <div>
                       <textarea
