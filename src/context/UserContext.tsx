@@ -321,11 +321,11 @@ export const UserProvider = ({
 
           const kudosData = await getKudosData(data.uid, userEmail);
           setKudosData(kudosData);
-          const botConversations = await getConversations(
-            data.uid,
-            feedbackBots[0]?.signature_bot.bot_id
-          );
-          setBotConversations(botConversations);
+          // const botConversations = await getConversations(
+          //   data.uid,
+          //   feedbackBots[0]?.signature_bot.bot_id
+          // );
+          // setBotConversations(botConversations);
 
           const actionPoints = await getActionPoints(data.uid);
           setActionPoints(actionPoints);
@@ -545,7 +545,7 @@ export const UserProvider = ({
 
   useEffect(() => {
     if (pathname === "/profile") {
-      getAllBotConversationData();
+      // getAllBotConversationData();
       getConnectionsFn();
     }
   }, [pathname]);
