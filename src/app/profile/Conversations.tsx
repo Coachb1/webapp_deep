@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ConversationChat, { FeedbackConversationChat } from "./ConversationChat";
 import { Info, Loader } from "lucide-react";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth, convertJsonToExpectedFormat } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ConvertedConversation, FeedbackConversationType } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
@@ -38,31 +38,108 @@ const Conversations = ({ user }: any) => {
 
   const [loading, setLoading] = useState(true);
 
-  const { botConversations, userId } = useUser();
+  const { userId, feedbackBots } = useUser();
+  const hasRun = useRef(false);
+
+  const getBotConversations = async (feedbackBotId: string) => {
+    try {
+      const responseAdmin = await fetch(
+        `${baseURL}/coaching-conversations/bot-conversation-data/?for=admin&user_id=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (responseAdmin.ok) {
+        const responseData = await responseAdmin.json();
+        console.log("responseData ADMIN", responseData);
+        if (responseData[0] != "Bot not Found") {
+          const convertedData: ConvertedConversation[] =
+            convertJsonToExpectedFormat(responseData);
+          setConvertsationDataAdmin(
+            convertedData.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+          );
+          console.log("convertedData ADMIN : ", convertedData);
+        }
+      }
+
+      const responseUser = await fetch(
+        `${baseURL}/coaching-conversations/bot-conversation-data/?for=user&user_id=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (responseUser.ok) {
+        const responseData = await responseUser.json();
+        console.log("responseData USER", responseData);
+        if (responseData[0] != "Bot not Found") {
+          const convertedData: ConvertedConversation[] =
+            convertJsonToExpectedFormat(responseData);
+          setConvertsationData(
+            convertedData.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+          );
+          console.log("convertedData USER : ", convertedData);
+        }
+      }
+
+      if (feedbackBotId) {
+        const responseFeedback = await fetch(
+          `${baseURL}/accounts/get-user-feedback-data/?method=get&bot_id=${feedbackBotId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: basicAuth,
+            },
+          }
+        );
+
+        if (responseFeedback.ok) {
+          const responseData = await responseFeedback.json();
+          console.log(responseData);
+          const FeedbackConvo: FeedbackConversationType[] =
+            responseData.message.map((entry: any) => ({
+              participant_name: entry.is_anonymous
+                ? "Anonymous User"
+                : entry.participant_name,
+              date: entry.date,
+              msg: Object.keys(entry.msg).map((question) => ({
+                question: question,
+                answer: entry.msg[question],
+              })),
+            }));
+          console.log(FeedbackConvo, "FeedbackConvo");
+          setFeedbackConversations(
+            FeedbackConvo.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+          );
+        }
+        console.log("convertedData USER : ", feedbackConversations);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log(botConversations.convertsationDataAdmin);
-    setConvertsationDataAdmin(
-      botConversations.convertsationDataAdmin.filter(
-        (d) => d.participant_uid !== userId
-      )
-    );
-
-    console.log(
-      botConversations.convertsationDataAdmin.filter(
-        (conversation) => conversation.participant_uid !== userId
-      )
-    );
-
-    setConvertsationData(
-      botConversations.conversationDataUser.filter(
-        (d) => d.bot_type !== "deep_dive"
-      )
-    );
-
-    setFeedbackConversations(botConversations.feedbackConversations);
-
-    setLoading(false);
-  }, [botConversations]);
+    if (!hasRun.current) {
+      getBotConversations(feedbackBots[0]?.signature_bot.bot_id);
+      hasRun.current = true;
+    }
+  }, []);
 
   return (
     <>
@@ -78,7 +155,7 @@ const Conversations = ({ user }: any) => {
           <Info className="h-3 w-3 mr-2 inline" />
           Bot Conversation history is updated every 60 mins.
         </p>
-        <div className="">
+        <div>
           {conversationDataAdmin.length > 0 ||
           conversationData.length > 0 ||
           feedbackConversations.length > 0 ? (
