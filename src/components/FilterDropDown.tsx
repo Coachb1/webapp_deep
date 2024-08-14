@@ -66,10 +66,10 @@ const FilterDropDown = ({
   return (
     <>
       <div className="w-full flex items-center text-lg flex-row gap-2 max-sm:flex-wrap">
-        {filtersCategory.map((filter: any) => (
+        {filtersCategory.map((filter: any, i : number) => (
           <>
             {filter.filterOptions?.length > 0 && (
-              <DropdownMenu>
+              <DropdownMenu key={i}>
                 {filter.filterName === "Profile Type" ? (
                   <DropdownMenuTrigger
                     disabled={isFilterDisabled(filter.filterName)}
