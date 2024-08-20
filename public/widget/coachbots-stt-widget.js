@@ -8480,6 +8480,10 @@ loadExternalModule().then(() => {
                   allowAudioInteraction = false
                 }
 
+                if(botType === 'user_bot'){
+                  allowAudioInteraction = false
+                }
+
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
               
