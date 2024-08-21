@@ -141,11 +141,25 @@ const VersionOne = ({ user, helpModeText }: any) => {
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
-          <Link href="/knowledge-bot" target="_blank">
+          <Link
+            href="/knowledge-bot/knowledge-d6831-hr-policy-guide-bot"
+            target="_blank"
+          >
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Knowledge Bot
+              HR Policy Bot
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
+            </Button>
+          </Link>
+          <Link
+            href="/knowledge-bot/knowledge-d6831-tech-innovators-it-compliance-bot"
+            target="_blank"
+          >
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              Compliance Bot
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>

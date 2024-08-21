@@ -8503,7 +8503,7 @@ loadExternalModule().then(() => {
                   signals,
                   conversation_id2,
                   latestMessage,
-                  allowAudioInteraction,
+                  true, // True by Default | allowAudioInteraction,
                   "gemini-1.5-pro",
                   "gemini-1.5-flash"
                 );

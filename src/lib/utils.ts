@@ -190,7 +190,10 @@ export const getUserAccount = (user: any) => {
   });
 };
 
-export const getUserAccounts = async (user: any, retry: boolean = true): Promise<any> => {
+export const getUserAccounts = async (
+  user: any,
+  retry: boolean = true
+): Promise<any> => {
   try {
     const response = await fetch(`${baseURL}/accounts/`, {
       method: "POST",
@@ -773,8 +776,16 @@ export function convertJsonToExpectedFormat(
   jsonData: Conversation[]
 ): ConvertedConversation[] {
   return jsonData.map((conversation) => {
-    const { participant_name, results, role, date, bot_name, bot_type, participant_uid, bot_id } =
-      conversation;
+    const {
+      participant_name,
+      results,
+      role,
+      date,
+      bot_name,
+      bot_type,
+      participant_uid,
+      bot_id,
+    } = conversation;
     const conversationArray: ConvertedResult[] = results.map((result) => {
       const participantMessage = result.participant_message_text || "";
       const coachMessage = result.coach_message_text || "";
@@ -798,8 +809,8 @@ export function convertJsonToExpectedFormat(
       date: date,
       bot_name: bot_name, // Include bot_name in ConvertedConversation
       bot_type: bot_type,
-      participant_uid : participant_uid,
-      bot_id : bot_id
+      participant_uid: participant_uid,
+      bot_id: bot_id,
     };
   });
 }
