@@ -1090,9 +1090,13 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          appendMessage(
-            `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
-          );
+          if (senarioCase === 'assessment'){
+            appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+          } else {
+            appendMessage(
+              `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+            );
+          }
           //   gShadowRoot.getElementById(
           //     `mcq-option-${mcqFormId}`
           //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -1614,9 +1618,14 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    appendMessage(
-      `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
-    );
+    if (senarioCase === 'assessment'){
+      appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    } else {
+      appendMessage(
+        `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+      );
+    }
+    
     //   gShadowRoot.getElementById(
     //     `mcq-option-${mcqFormId}`
     //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -4339,7 +4348,10 @@ loadExternalModule().then(() => {
                     //* send report message or form to collect data : start
                     if (window.user) {
                       // sendEmail();
-                      const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      if (senarioCase === 'assessment'){
+                        message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      }
                       appendMessage(message);
                       // //* send message to start new session
                       signals.onResponse({
@@ -4434,7 +4446,10 @@ loadExternalModule().then(() => {
             } else {
               isEmailForm = false;
 
-              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              if (senarioCase === 'assessment'){
+                message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+              }
               appendMessage(message);
               // //* send message to start new session
 
@@ -6013,7 +6028,10 @@ loadExternalModule().then(() => {
                   //* send report message or form to collect data : start
                   if (window.user) {
                     // sendEmail();
-                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    if (senarioCase === 'assessment'){
+                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    }
                     appendMessage(message);
                     // //* send message to start new session
 
