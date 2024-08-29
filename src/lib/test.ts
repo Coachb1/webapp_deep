@@ -938,7 +938,8 @@ export const englishSupport: Test[] = [
   {
     domain: "English speaking proficiency",
     test_code: "Q5786RP",
-    title: "Assessing Valve Malfunction is a Discussion with the Supervisor on the Shop Floor (Style A)",
+    title:
+      "Assessing Valve Malfunction is a Discussion with the Supervisor on the Shop Floor (Style A)",
     description:
       "During an important site inspection by city administrators at a commercial complex hosting critical city infrastructure, a significant issue arose. The main valve, which controls the water flow to all the commercial complex pipes, unexpectedly malfunctioned. This failure was particularly problematic because the inspection was meant to showcase the efficiency and reliability of the city's waterworks system. The inspection team noticed an immediate drop in water pressure across the complex, causing concerns among the administrators regarding the system’s reliability. A maintenance team had to act swiftly to troubleshoot the issue. They had to quickly determine whether the malfunction was due to a genuine mechanical failure or human error. The supplementary valve, designed to take over in such emergencies, also showed signs of low efficiency, complicating efforts further. There were additional challenges in directing water flow to each of the ten towers of the complex due to the vertically placed control valves. This incident led to urgent scrutiny of the entire valve complex network during the inspection. You are Mark, a newly appointed maintenance engineer, interacting with John, the senior inspection officer. John will ask you questions related to the malfunction of valves during the inspection walkthrough. Your intent is to demonstrate your understanding of the pipeline network and provide effective solutions for immediate resolution.",
     interaction_mode: "Audio",
@@ -946,7 +947,8 @@ export const englishSupport: Test[] = [
   {
     domain: "English speaking proficiency",
     test_code: "Q47ZIUY",
-    title: "Assessing Valve Malfunction is a Discussion with the Supervisor on the Shop Floor (Style B)",
+    title:
+      "Assessing Valve Malfunction is a Discussion with the Supervisor on the Shop Floor (Style B)",
     description:
       "During an important site inspection by city administrators at a commercial complex hosting critical city infrastructure, a significant issue arose. The main valve, which controls the water flow to all the commercial complex pipes, unexpectedly malfunctioned. This failure was particularly problematic because the inspection was meant to showcase the efficiency and reliability of the city's waterworks system. The inspection team noticed an immediate drop in water pressure across the complex, causing concerns among the administrators regarding the system’s reliability. A maintenance team had to act swiftly to troubleshoot the issue. They had to quickly determine whether the malfunction was due to a genuine mechanical failure or human error. The supplementary valve, designed to take over in such emergencies, also showed signs of low efficiency, complicating efforts further. There were additional challenges in directing water flow to each of the ten towers of the complex due to the vertically placed control valves. This incident led to urgent scrutiny of the entire valve complex network during the inspection. You are Mark, a newly appointed maintenance engineer, interacting with John, the senior inspection officer. John will ask you questions related to the malfunction of valves during the inspection walkthrough. Your intent is to demonstrate your understanding of the pipeline network and provide effective solutions for immediate resolution.",
     interaction_mode: "Audio",
@@ -1020,5 +1022,23 @@ export const InteractiveVisualSimulation: Test[] = [
     description: `A large construction has asked its top marketing executive to answer some critical questions on their next campaign plan. The company has an "old boys club" mentality. You are that marketing executive who must answer the questions of Mahesh to convince him so that women are included a part of this campaign leadership. This situation reflects the company's need to adapt to changing industry standards while addressing internal resistance to diversity in leadership roles. You are the top marketing executive, interacting with Mahesh, a senior leader in the company. Mahesh will ask you questions related to including women in the campaign leadership team. Your intent is to convince Mahesh of the benefits and necessity of including women in the campaign leadership.`,
     test_code: "Q7R47EZ",
     interaction_mode: "",
+  },
+];
+
+export const Assessment: Test[] = [
+  {
+    domain: "",
+    title: "Sales Manager Feedback",
+    description: "A sales manager's monthly feedback check in with manager.",
+    test_code: "QF4CLRR",
+    interaction_mode: "Sales Performance Management",
+  },
+  {
+    domain: "",
+    title:
+      "Optimizing Marketing Automation and Team Collaboration Amid a Tight Deadline",
+    description: `A mid-sized marketing agency is facing a critical deadline for a major client's campaign launch. The client has specific requirements for marketing automation, and the sales and marketing teams are struggling to coordinate effectively. The agency's leadership is concerned about maintaining team morale and delivering the project on time and within budget, while also ensuring the campaigns are optimized for success. You are the Marketing Director, interacting with the Agency CEO. The CEO will ask you questions related to balancing project deadlines, maintaining team morale, and fostering collaboration between sales and marketing teams. Your intent is to provide a well-thought-out plan to address the agency's challenges.`,
+    test_code: "QDO4V1I",
+    interaction_mode: "Marketing Project Management",
   },
 ];
