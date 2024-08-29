@@ -25,6 +25,7 @@ import {
   DSA,
   DataScience,
   InteractiveVisualSimulation,
+  Assessment,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -333,6 +334,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
               >
                 English Support
               </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("assessment")}
+              >
+                Assessment
+              </Button>
             </div>
           </Div>
         </div>
@@ -479,6 +488,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               badgeText="English Support"
               user={user ? true : false}
               tests={englishSupport}
+            />
+          </div>
+          <div id="assessment">
+            <HeroAccordion
+              badgeText="Assessment"
+              user={user ? true : false}
+              tests={Assessment}
             />
           </div>
         </div>
