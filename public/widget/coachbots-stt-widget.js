@@ -8495,7 +8495,7 @@ loadExternalModule().then(() => {
                 }
 
                 if(botType === 'user_bot'){
-                  allowAudioInteraction = false
+                  allowAudioInteraction = true
                 }
 
               }
