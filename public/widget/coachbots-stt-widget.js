@@ -5841,7 +5841,7 @@ loadExternalModule().then(() => {
       <img
         class="chat-icon2"
         style="height: 100%; width: 100%; border-radius:40%;"
-        src="https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+        src="https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
         alt="chat-bot-image"
       />
     </button>
@@ -10642,7 +10642,7 @@ const openChatContainer2 = () => {
       chatContainer.style["transform-origin"] = "100% 100%";
       const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
       chatIcon.src =
-        "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
 
       const backdrop2 = document.getElementById("backdrop2");
       backdrop2.style.display = "none";
@@ -10651,13 +10651,13 @@ const openChatContainer2 = () => {
 
   if (
     chatIcon2.src ===
-    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
     chatIcon2.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
     chatIcon2.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
 };
 
@@ -10680,12 +10680,12 @@ const closeFromTop2 = () => {
 
   if (
     chatIcon2.src ===
-    "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png"
+    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
     chatIcon2.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/close-btn.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
     chatIcon2.src =
-      "https://cdn.statically.io/gh/falahh6/coachbots/main/coachbot-logo-bot.png";
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
 };
