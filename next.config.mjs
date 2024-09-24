@@ -64,7 +64,7 @@ export default withSentryConfig(withSentryConfig(nextConfig, {
 // For all available options, see:
 // https://github.com/getsentry/sentry-webpack-plugin#options
 
-org: "coachbots",
+org: "coachbots-v5",
 project: "webdeep",
 sentryUrl: "https://sentry.io/",
 
