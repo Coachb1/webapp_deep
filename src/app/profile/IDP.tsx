@@ -67,6 +67,7 @@ const IDP = ({ user }: any) => {
         })
         .catch((err) => {
           console.error(err);
+          throw new Error("Error /accounts");
         });
     }
   };

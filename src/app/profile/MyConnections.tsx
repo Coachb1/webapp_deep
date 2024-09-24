@@ -52,6 +52,7 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
       .catch((err) => {
         console.log(err);
         setLoading(false);
+        throw new Error("Error getting connections.");
       });
   };
 
@@ -72,6 +73,8 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
       })
       .catch((err) => {
         console.log(err);
+
+        throw new Error("Error getting connections.");
       });
   };
 
@@ -132,6 +135,7 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
           toast.error("Error accepting the request!");
           console.error(err);
           setAcceptLoading(false);
+          throw new Error("Error accepting connection.");
         });
     };
     return (
@@ -187,6 +191,8 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
           toast.error("Error rejecting the request!");
           console.error(err);
           setRejectLoading(false);
+
+          throw new Error("Error rejecting connection.");
         });
     };
     return (

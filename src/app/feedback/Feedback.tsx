@@ -193,6 +193,7 @@ const Feedback = ({ user, renderType }: any) => {
         })
         .catch((err) => {
           console.error(err);
+          throw new Error("Error /accounts");
         });
     }
 
@@ -294,12 +295,14 @@ const Feedback = ({ user, renderType }: any) => {
           .catch((err) => {
             setIsLoading(false);
             console.log(err);
+            throw new Error("Error getting feedback data");
           });
       })
       .catch((err) => {
         setIsLoading(false);
         console.error(err);
         setInValidCoach(true);
+        throw new Error("Error getting bot details");
       });
   }, []);
 
@@ -339,6 +342,8 @@ const Feedback = ({ user, renderType }: any) => {
       })
       .catch((err) => {
         console.log(err);
+
+        throw new Error("Error getting feedback data");
       });
   }, []);
 
