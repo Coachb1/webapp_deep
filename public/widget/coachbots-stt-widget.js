@@ -350,10 +350,17 @@ fetch(`${baseURL2}/accounts/`, {
             instructionsPaneList.innerHTML = list;
           }
         }
+      })
+      .catch((err) => {
+        console.log(err)
+        throw new Error("Error fetching client Info")
       });
     
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log(err)
+    throw new Error("Error User Info")
+  });
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -912,6 +919,7 @@ const handleEndFeedback = async () => {
     isFeedbackConvEnd = true;
   } catch (error) {
     console.error(`Error in get recommendation tests: ${error}`);
+    throw new Error("Error getting recommendation tests")
   }
 };
 
@@ -1099,6 +1107,7 @@ const getUserBotConversation = async (participant_id) => {
     }
   } catch (error) {
     console.error(`Error in getUserBotConversation: ${error}`);
+    throw new Error("Error in getting bot conversation")
   }
 };
 
@@ -1221,9 +1230,10 @@ const saveBotEngagement = (bot_id, user_id, field_name) => {
   )
     .then((response) => response.text())
     .then((result) => console.log("bot engagement button clicked", result))
-    .catch((error) =>
+    .catch((error) =>{
       console.error("got error in bot engagement button clicked", error)
-    );
+      throw new Error("Error in bot engagement button click")
+    });
 };
 
 const getUserProfile = async (user_id) => {
@@ -1245,7 +1255,10 @@ const getUserProfile = async (user_id) => {
         UserProfileInfo = userProfile;
       }
     })
-    .catch((error) => console.error("got error in user_profile", error));
+    .catch((error) => {
+      console.error("got error in user_profile", error)
+      throw new Error("Error getting user profiles")
+    });
 };
 
 const getIdps = async (user_id) =>{
@@ -1282,6 +1295,10 @@ const getBotDetails2 = async (botId) => {
         },
       }
     );
+
+    if(!response.ok){
+      throw new Error("Error getting bot info")
+    }
 
     const botDetails = await response.json();
     console.log("Bot Details : ", botDetails);

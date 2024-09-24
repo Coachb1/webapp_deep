@@ -235,6 +235,7 @@ const Coach = ({ user, renderType }: any) => {
                 })
                 .catch((err) => {
                   console.error(err);
+                  throw new Error("Error fetching data /coach-coachee...");
                 });
             });
         }
@@ -253,6 +254,7 @@ const Coach = ({ user, renderType }: any) => {
         console.error(err);
         setIsLoading(false);
         setInValidCoach(true);
+        throw new Error("Invalid Coach Id");
       });
   }, []);
 

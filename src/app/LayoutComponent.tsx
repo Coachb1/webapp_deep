@@ -13,6 +13,7 @@ import {
 import NetworkNav from "@/components/NetworkNav";
 import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
+import * as Sentry from "@sentry/nextjs";
 
 //GLOBAL USER - *.js
 interface CustomWindow extends Window {
@@ -43,10 +44,26 @@ const LayoutComponent = ({
 
   hideConsoleLogs();
   useEffect(() => {
+    let userId = "";
     if (user) {
       getUserAccounts(user).then((data) => {
         console.log("layouted component : ", data);
+        userId = data.uid;
         window.userIdFromWebApp = data.uid;
+      });
+
+      window.user = user;
+
+      Sentry.init({
+        dsn: "https://fbf82c6c8258272ce32a8cfbd1fa2153@o4508001030963200.ingest.us.sentry.io/4508001032601600",
+        tracesSampleRate: 1.0, // Adjust this value in production
+      });
+
+      //sentry
+      Sentry.setUser({
+        id: userId, // Replace with your user's ID
+        username: `${user.given_name} ${user.family_name}`, // Replace with your user's name
+        email: user.email || "", // Replace with your user's email
       });
     }
     if (subdomain !== "localhost") {
@@ -63,9 +80,6 @@ const LayoutComponent = ({
         setLogSessionStarted(true);
         console.log("LOG SESSION STARTED");
       }
-    }
-    if (user) {
-      window.user = user;
     }
   }, []);
 

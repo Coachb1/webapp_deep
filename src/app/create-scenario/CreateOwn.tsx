@@ -314,6 +314,7 @@ const CreateOwn = ({
           setGenerationError(true);
           setGenerateLoading(false);
           toast.error("Error generating your scenario");
+          throw new Error("Error generating your scenario");
         });
       // });
 
@@ -401,6 +402,7 @@ const CreateOwn = ({
         .catch((err) => {
           console.error(err);
           setSummaryGenerationLoading(false);
+          throw new Error("Error generating summary");
         });
     };
     return (
@@ -820,6 +822,7 @@ const CreateOwn = ({
         .catch((error) => {
           setCreateLoading(false);
           console.error("Error making API request:", error.message);
+          throw new Error("Error generating youtube search results");
         });
     }
   };

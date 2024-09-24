@@ -271,7 +271,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
 
   const allowAudioInteractionHandler = (type: boolean) => {
     setInteractionLoading(true);
-    fetch(`${baseURL}/accounts/update-user-account/`, {
+    fetch(`${baseURL}/accounts/update-user-accountt/`, {
       method: "PATCH",
       headers: {
         Authorization: basicAuth,
@@ -297,6 +297,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
       })
       .catch((err) => {
         toast.error("Error, try again.");
+        throw new Error("Error updating user preferences (audio interaction)");
         console.error(err);
       })
       .finally(() => {

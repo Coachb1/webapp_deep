@@ -478,6 +478,8 @@ const CoachIntake = ({ user }: any) => {
         })
         .catch((err) => {
           console.error(err);
+
+          throw new Error("Error /accounts");
         });
     } else if (adminEdit && userEmailParams && userIdParams && userNameParams) {
       // getClientInfoForUser(userEmailParams);
@@ -566,6 +568,8 @@ const CoachIntake = ({ user }: any) => {
             })
             .catch((err) => {
               console.error(err);
+
+              throw new Error("Error fetching data /coach-coachee...");
             });
 
           if (
@@ -596,6 +600,8 @@ const CoachIntake = ({ user }: any) => {
               })
               .catch((err) => {
                 console.error(err);
+
+                throw new Error("Error fetching data /get-bots");
               });
           }
         });
@@ -1072,6 +1078,8 @@ const CoachIntake = ({ user }: any) => {
                             );
                             console.error(err);
                             setCreateLoading(false);
+
+                            throw new Error("Error creating coach profile");
                           });
                       } else {
                         setCreateLoading(false);
@@ -1097,6 +1105,8 @@ const CoachIntake = ({ user }: any) => {
                           duration: 6000,
                         }
                       );
+
+                      throw new Error("Error creating coach profile");
                     });
                 } else {
                   resetAllStates();
@@ -1120,6 +1130,8 @@ const CoachIntake = ({ user }: any) => {
                 toast.error(
                   "Error creating your coach profile. Please try again."
                 );
+
+                throw new Error("Error creating coach profile");
               });
           } else {
             console.log("edit", myHeaders);
@@ -1502,6 +1514,8 @@ const CoachIntake = ({ user }: any) => {
                           );
                           console.error(err);
                           setCreateLoading(false);
+
+                          throw new Error("Error creating coach profile");
                         });
                     } else {
                       setCreateLoading(false);
@@ -1562,6 +1576,8 @@ const CoachIntake = ({ user }: any) => {
                 console.error(err);
                 toast.error("Error updating your profile. Please try again.");
                 setCreateLoading(false);
+
+                throw new Error("Error updating coach profile");
               });
           }
         }
@@ -1695,6 +1711,8 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
+
+                  throw new Error("Error updating feedback bot");
                 } else {
                   toast.error(
                     "Error creating your feedback bot. Please try again.",
@@ -1702,6 +1720,7 @@ const CoachIntake = ({ user }: any) => {
                       duration: 6000,
                     }
                   );
+                  throw new Error("Error updating feedback bot");
                 }
               });
           });
@@ -2650,6 +2669,10 @@ const CoachIntake = ({ user }: any) => {
                               .catch((err) => {
                                 setProfileImageUrl(
                                   "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+
+                                throw new Error(
+                                  "Claudinary upload error - profile_image"
                                 );
                               });
                           }
@@ -4551,6 +4574,10 @@ const CoachIntake = ({ user }: any) => {
                                 setDataModified(true);
                                 setProfileImageUrl(
                                   "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                );
+
+                                throw new Error(
+                                  "Claudinary upload error - profile_image"
                                 );
                               });
                           }

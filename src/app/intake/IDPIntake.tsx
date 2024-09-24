@@ -158,6 +158,8 @@ const IDPIntake = ({ user }: any) => {
         // toast.error("Error while generating your IDP, Please try again!");
         // setSubmitLoading(false);
         console.error(err);
+
+        throw new Error("Error  generating  IDP.");
       });
   };
 
@@ -261,11 +263,15 @@ const IDPIntake = ({ user }: any) => {
               variant={"secondary"}
               className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1"
             >
-              <Info className="h-4 w-4 mr-1" /> <p className="text-sm" >*</p> mark questions are mandatory in nature.
+              <Info className="h-4 w-4 mr-1" /> <p className="text-sm">*</p>{" "}
+              mark questions are mandatory in nature.
             </Badge>
             <div>
               <div className="my-3">
-                <p className="text-sm max-sm:text-xs my-1">Enter your name <span className="text-xl font-bold text-red-500">*</span></p>
+                <p className="text-sm max-sm:text-xs my-1">
+                  Enter your name{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
+                </p>
                 <input
                   value={convertTextToCorrectFormat(name)}
                   disabled
@@ -277,7 +283,8 @@ const IDPIntake = ({ user }: any) => {
               </div>
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  Few professional accomplishments you are proud of? <span className="text-xl font-bold text-red-500">*</span>
+                  Few professional accomplishments you are proud of?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   value={professionalAcc}
@@ -308,7 +315,8 @@ const IDPIntake = ({ user }: any) => {
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
                   What areas of work do you often get critical feedback or you
-                  believe is your drawback? <span className="text-xl font-bold text-red-500">*</span>
+                  believe is your drawback?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -338,7 +346,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What are some areas you want to improve? <span className="text-xl font-bold text-red-500">*</span>
+                  What are some areas you want to improve?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -368,7 +377,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What would you believe may derail your plan? <span className="text-xl font-bold text-red-500">*</span>
+                  What would you believe may derail your plan?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -398,7 +408,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What is the immediate 90 day focus? <span className="text-xl font-bold text-red-500">*</span>
+                  What is the immediate 90 day focus?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -428,7 +439,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What are your long term (12-24 months) goals? <span className="text-xl font-bold text-red-500">*</span>
+                  What are your long term (12-24 months) goals?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -458,7 +470,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What do you believe should be your priorities? <span className="text-xl font-bold text-red-500">*</span>
+                  What do you believe should be your priorities?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -482,7 +495,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What learning and certifications do you already have? <span className="text-xl font-bold text-red-500">*</span>
+                  What learning and certifications do you already have?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required
@@ -512,7 +526,8 @@ const IDPIntake = ({ user }: any) => {
 
               <div className="my-3">
                 <p className="text-sm max-sm:text-xs my-1">
-                  What domain and subject areas do you specialize in? <span className="text-xl font-bold text-red-500">*</span>
+                  What domain and subject areas do you specialize in?{" "}
+                  <span className="text-xl font-bold text-red-500">*</span>
                 </p>
                 <textarea
                   required

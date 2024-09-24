@@ -119,7 +119,7 @@ const SessionNotes = ({ user }: any) => {
   };
 
   const getCommentsGiven = (userid: string) => {
-    setCommentsLoading(true)
+    setCommentsLoading(true);
     fetch(
       `${baseURL}/test-attempt-sessions/save_session_notes/?mentor_id=${userid}&for=mentee`,
       {
@@ -145,7 +145,7 @@ const SessionNotes = ({ user }: any) => {
       .catch((err) => {
         setCommentsLoading(false);
         console.log(err);
-        return err;
+        throw new Error("Error fetching Session Notes");
       });
   };
 
@@ -177,6 +177,7 @@ const SessionNotes = ({ user }: any) => {
       .catch((err) => {
         console.log(err);
         setCommentsLoading(false);
+        throw new Error("Error fetching Session Notes");
       });
   };
 
@@ -261,6 +262,7 @@ const SessionNotes = ({ user }: any) => {
         .catch((err) => {
           setSubmitLoading(false);
           toast.error("Error while submitting your comment. Please try again");
+          throw new Error("Error creating session notes");
           console.error(err);
         });
     } else {

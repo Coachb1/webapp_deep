@@ -907,6 +907,7 @@ const Coaches = ({
 
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
+              throw new Error("Error while sending connection request!");
             } else {
               const updatedCoachesData = savedCoachesData.map((coach) =>
                 coach.profile_id === coachId
@@ -929,6 +930,7 @@ const Coaches = ({
             console.log(err);
             toast.error("Error while sending your request!");
             setRequestLoading(false);
+            throw new Error("Error while sending your request!");
           });
       } else {
         toast.error(
@@ -1137,6 +1139,8 @@ const Coaches = ({
         })
         .catch((err) => {
           console.error(err);
+
+          throw new Error("Error in likes");
         });
     };
 
@@ -1174,6 +1178,8 @@ const Coaches = ({
         })
         .catch((err) => {
           console.error(err);
+
+          throw new Error("Error in likes");
         });
     };
 
@@ -1568,102 +1574,102 @@ const Coaches = ({
           <div id="participant-listing">
             {coachesData.length > 0 &&
               currentCoachesData.map((coach, idx) => (
-                  <div
-                    key={coach?.profile_id}
-                    className="relative group  block p-2 h-full w-full"
-                    onMouseEnter={() => setHoveredIndex(idx)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                  >
-                    <AnimatePresence>
-                      {hoveredIndex === idx && (
-                        <motion.span
-                          className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
-                          layoutId="hoverBackground"
-                          initial={{ opacity: 0 }}
-                          animate={{
-                            opacity: 1,
-                            transition: { duration: 0.15 },
-                          }}
-                          exit={{
-                            opacity: 0,
-                            transition: { duration: 0.15, delay: 0.2 },
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
-                    <Card className="p-0">
-                      <ParticipantListItemCard
-                        coacheeId={coacheeId}
-                        coachId={coachId}
-                        coach={coach}
-                        likeComponent={
-                          <div className="mt-4">
-                            <LikeComponent
-                              profile_id={coach.profile_id}
-                              likesInfo={coach.admirer_ids}
-                            />
-                          </div>
-                        }
-                        profilePicUrl={coach.profile_pic_url}
-                        reviewComponent={
-                          <>
-                            {" "}
-                            {coach.profile_type !== "coachee" &&
-                              coach.profile_type !== "mentee" &&
-                              !restrictedFeatures?.includes("Ratings") && (
-                                <ReviewComponent
-                                  id={
-                                    coach.id_for_target_selection ===
-                                      "first_coach_profile" &&
-                                    coach.feedback_wall !== null
-                                      ? "reviews"
-                                      : undefined
-                                  }
-                                  stars={coach.rating}
-                                  totalRatings={coach.total_rating}
-                                  coachId={coach.profile_id}
-                                />
-                              )}
-                          </>
-                        }
-                        userId={userId}
-                        restrictedFeatures={restrictedFeatures}
-                        requestConnectionComponent={
-                          <>
-                            {coach.status === "accepted" ? (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                              >
-                                Connected
-                              </Button>
-                            ) : (
-                              <>
-                                {(coach.profile_type === "coach" ||
-                                  coach.profile_type === "mentor" ||
-                                  coach.profile_type === "coach-mentor") && (
-                                  <>
-                                    <>
-                                      {coacheeId.length > 0 && (
-                                        <>
-                                          <RequestionConnection
-                                            requestStatus={coach.status}
-                                            coachId={coach.profile_id}
-                                            stateCoachId={coachId}
-                                          />
-                                        </>
-                                      )}
-                                    </>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </>
-                        }
+                <div
+                  key={coach?.profile_id}
+                  className="relative group  block p-2 h-full w-full"
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <AnimatePresence>
+                    {hoveredIndex === idx && (
+                      <motion.span
+                        className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
+                        layoutId="hoverBackground"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: { duration: 0.15 },
+                        }}
+                        exit={{
+                          opacity: 0,
+                          transition: { duration: 0.15, delay: 0.2 },
+                        }}
                       />
-                    </Card>
-                  </div>
+                    )}
+                  </AnimatePresence>
+                  <Card className="p-0">
+                    <ParticipantListItemCard
+                      coacheeId={coacheeId}
+                      coachId={coachId}
+                      coach={coach}
+                      likeComponent={
+                        <div className="mt-4">
+                          <LikeComponent
+                            profile_id={coach.profile_id}
+                            likesInfo={coach.admirer_ids}
+                          />
+                        </div>
+                      }
+                      profilePicUrl={coach.profile_pic_url}
+                      reviewComponent={
+                        <>
+                          {" "}
+                          {coach.profile_type !== "coachee" &&
+                            coach.profile_type !== "mentee" &&
+                            !restrictedFeatures?.includes("Ratings") && (
+                              <ReviewComponent
+                                id={
+                                  coach.id_for_target_selection ===
+                                    "first_coach_profile" &&
+                                  coach.feedback_wall !== null
+                                    ? "reviews"
+                                    : undefined
+                                }
+                                stars={coach.rating}
+                                totalRatings={coach.total_rating}
+                                coachId={coach.profile_id}
+                              />
+                            )}
+                        </>
+                      }
+                      userId={userId}
+                      restrictedFeatures={restrictedFeatures}
+                      requestConnectionComponent={
+                        <>
+                          {coach.status === "accepted" ? (
+                            <Button
+                              disabled
+                              variant={"outline"}
+                              className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                            >
+                              Connected
+                            </Button>
+                          ) : (
+                            <>
+                              {(coach.profile_type === "coach" ||
+                                coach.profile_type === "mentor" ||
+                                coach.profile_type === "coach-mentor") && (
+                                <>
+                                  <>
+                                    {coacheeId.length > 0 && (
+                                      <>
+                                        <RequestionConnection
+                                          requestStatus={coach.status}
+                                          coachId={coach.profile_id}
+                                          stateCoachId={coachId}
+                                        />
+                                      </>
+                                    )}
+                                  </>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
+                      }
+                    />
+                  </Card>
+                </div>
               ))}
           </div>
           {coachesData.length > 10 && (

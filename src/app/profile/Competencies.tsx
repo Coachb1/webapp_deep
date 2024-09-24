@@ -86,6 +86,8 @@ const Competencies = ({ user }: any) => {
       .catch((err) => {
         console.error(err);
         setFetchLoading(false);
+
+        throw new Error("Error fetching competencies.");
       });
   };
 
@@ -155,6 +157,8 @@ const Competencies = ({ user }: any) => {
           console.error(error);
           toast.error("Problem saving your Competencies");
           setSaveLoading(false);
+
+          throw new Error("Error saving competencies.");
         });
     } else {
       setEmptyError("Please select atleast one skill for each");
