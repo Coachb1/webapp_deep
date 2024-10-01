@@ -10,6 +10,7 @@ import {
   basicAuth,
   findCoachUID,
   findCoacheeUID,
+  formatTimeWithAmPm,
   getUserAccount,
   hideBots,
 } from "@/lib/utils";
@@ -91,6 +92,11 @@ export interface CoachesDataType {
   bot_uid?: string;
   custom_user_bot_id?: string;
   is_recommended?: boolean;
+  meeting_availability: {
+    from: string;
+    to: string;
+    scheduling_link: string;
+  } | null;
 }
 
 interface FilterCategoriesType {
@@ -945,7 +951,7 @@ const Coaches = ({
             requestLoading || status === "pending" || status === "Requested"
           }
           variant={"outline"}
-          className="max-sm:w-full border border-gray-300 max-sm:text-sm"
+          className="max-sm:w-full max-md:w-full max-lg:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
             requestConnectHandler();
           }}
@@ -1214,7 +1220,7 @@ const Coaches = ({
   const { helpModeState, updateHelpModeState } = UseHelpMode();
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
-    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50">
+    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50 md:px-8 lg:px-20">
       {helpModeState && (
         <Joyride
           spotlightClicks
@@ -1576,7 +1582,7 @@ const Coaches = ({
               currentCoachesData.map((coach, idx) => (
                 <div
                   key={coach?.profile_id}
-                  className="relative group  block p-2 h-full w-full"
+                  className="relative group block p-2 h-full w-full"
                   onMouseEnter={() => setHoveredIndex(idx)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
@@ -1599,6 +1605,14 @@ const Coaches = ({
                   </AnimatePresence>
                   <Card className="p-0">
                     <ParticipantListItemCard
+                      schedullingLink={
+                        coach.meeting_availability?.scheduling_link || ""
+                      }
+                      meetTime={`${formatTimeWithAmPm(
+                        coach.meeting_availability?.from || ""
+                      )} -  ${formatTimeWithAmPm(
+                        coach.meeting_availability?.to || ""
+                      )}`}
                       coacheeId={coacheeId}
                       coachId={coachId}
                       coach={coach}
@@ -1640,7 +1654,7 @@ const Coaches = ({
                             <Button
                               disabled
                               variant={"outline"}
-                              className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
+                              className="max-sm:text-sm max-md:w-full max-lg:w-full border border-green-300 bg-green-100"
                             >
                               Connected
                             </Button>

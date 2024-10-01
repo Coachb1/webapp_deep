@@ -1,0 +1,231 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
+import { baseURL, basicAuth } from "@/lib/utils";
+
+import {
+  Input,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  TimePicker,
+  Button as AButton,
+} from "antd";
+import dayjs from "dayjs";
+import { Loader, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+const MeetingPrefrences = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [fromAvailability, setFromAvailibility] = useState("");
+  const [toAvailability, settoAvailibility] = useState("");
+  const [schedullingLink, setSchedulingLink] = useState("");
+  const [linkError, setLinkError] = useState(false);
+
+  const [priorData, setPriorData] = useState();
+
+  /*
+  availability : {
+    from : "", 
+    to : ""
+  }
+  */
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const [loading, setLoading] = useState(false);
+
+  const fetchMeetingPreferences = async () => {
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/update-coach-mentor-meeting-availability/?profile_id=${coachId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: basicAuth,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const res = await response.json();
+        setPriorData(res.data);
+
+        setFromAvailibility(res.data.from);
+        settoAvailibility(res.data.to);
+        setSchedulingLink(res.data.scheduling_link);
+      }
+    } catch (error) {
+      setFromAvailibility(new Date().toISOString());
+      console.log(new Date().toISOString());
+      settoAvailibility(new Date().toISOString());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeetingPreferences();
+  }, []);
+
+  const { coachId, getAllDirectoryData } = useUser();
+
+  const changeAvailabilityHandler = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/update-coach-mentor-meeting-availability/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: basicAuth,
+          },
+          body: JSON.stringify({
+            profile_id: coachId,
+            availability: {
+              from: fromAvailability,
+              to: toAvailability,
+              scheduling_link: schedullingLink,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Error updating meeting availability"
+        );
+      }
+
+      const data = await response.json();
+      console.log("Updated profile:", data);
+      await getAllDirectoryData();
+
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+      setIsModalOpen(false);
+    }
+  };
+
+  return (
+    <div>
+      <Button
+        size={"sm"}
+        className="ml-8 w-fit max-sm:p-1 max-sm:text-xs max-sm:h-8 max-sm:ml-4 max-sm:px-2"
+        onClick={showModal}
+      >
+        <>{priorData ? "Update" : "Add"}</>
+      </Button>
+      <Modal
+        centered
+        title="Your meeting preferences"
+        open={isModalOpen}
+        okText="Save"
+        onCancel={handleCancel}
+        footer={
+          <>
+            <AButton
+              type="primary"
+              disabled={
+                loading || linkError || !fromAvailability || !toAvailability
+              }
+              onClick={changeAvailabilityHandler}
+              className="bg-blue-500 text-white hover:bg-blue-400"
+            >
+              {loading && <Loader className="h-4 w-4 mr-1 animate-spin" />} Save
+            </AButton>
+          </>
+        }
+      >
+        <div>
+          <p className="my-2 max-sm:text-xs">Set your meeting time</p>
+          <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center">
+              <p className="m-w-fit">Start</p>{" "}
+              <TimePicker
+                use12Hours
+                disabled={loading}
+                value={dayjs(fromAvailability)}
+                onOk={(date) => {
+                  console.log(date.toISOString());
+                  setFromAvailibility(date.toISOString());
+                }}
+              />
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <p className="m-w-fit">End</p>{" "}
+              <TimePicker
+                use12Hours
+                disabled={loading}
+                value={dayjs(toAvailability)}
+                onOk={(date) => {
+                  console.log(date.toISOString());
+                  settoAvailibility(date.toISOString());
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="py-2">or</div>
+        <div>
+          <p>Add a scheduling link.</p>
+          {/* { ? (
+            <div className="border w-full p-1 my-2 px-2 rounded-md flex flex-row justify-between items-center">
+              <Link href={schedullingLink} className="text-blue-500 my-2">
+                {schedullingLink}
+              </Link>
+              <div>
+                <Popconfirm title="Would like you delete?">
+                  <div className="py-1 bg-gray-100 px-2 rounded-md hover:cursor-pointer">
+                    <Trash2 stroke="red" className="h-4 w-4" />
+                  </div>
+                </Popconfirm>
+              </div>
+            </div>
+          ) : ( */}
+          <>
+            <Input
+              placeholder="calendy.com/... or cal.com/..."
+              className="my-2"
+              value={schedullingLink}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSchedulingLink(value);
+
+                //cal.com , calendy.com
+                const regex =
+                  /(?:https?:\/\/)?(?:www\.)?(?:calendly\.com|cal\.com)\/[^\s]+/;
+                if (regex.test(value)) {
+                  setLinkError(false);
+                } else {
+                  setLinkError(true);
+                }
+              }}
+            />
+            {linkError && <p className="text-red-500">Invalid link</p>}
+          </>
+          {/* )} */}
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+export default MeetingPrefrences;

@@ -10,6 +10,7 @@ import { baseURL, basicAuth, getUserAccounts } from "@/lib/utils";
 import Providers from "./ProgressBarProvider";
 import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/dist/types";
 import { UserProvider } from "@/context/UserContext";
+import { ConfigProvider } from "antd";
 
 const font = Raleway({ subsets: ["latin"] });
 
@@ -147,17 +148,19 @@ export default async function RootLayout({
                   enableSystem
                   disableTransitionOnChange
                 >
-                  <AntdRegistry>
-                    <Providers>
-                      <LayoutComponent
-                        restrictedPages={restrictedPages}
-                        user={user}
-                        children={children}
-                        isDemoUser={isDemoUser}
-                        isRestricted={isRestricted}
-                      />
-                    </Providers>
-                  </AntdRegistry>
+                  <ConfigProvider theme={{ hashed: false }}>
+                    <AntdRegistry>
+                      <Providers>
+                        <LayoutComponent
+                          restrictedPages={restrictedPages}
+                          user={user}
+                          children={children}
+                          isDemoUser={isDemoUser}
+                          isRestricted={isRestricted}
+                        />
+                      </Providers>
+                    </AntdRegistry>
+                  </ConfigProvider>
                 </ThemeProvider>
               </>
 
