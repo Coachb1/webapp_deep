@@ -833,3 +833,20 @@ export function truncateString(str: string, maxLength: number) {
   }
   return str;
 }
+
+export function formatTimeWithAmPm(isoString: string) {
+  if (isoString === "") {
+    return "";
+  }
+  const date = new Date(isoString);
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // if hours = 0, set to 12 (midnight or noon)
+
+  const minutesFormatted = minutes < 10 ? "0" + minutes : minutes;
+
+  return `${hours}:${minutesFormatted} ${ampm}`;
+}
