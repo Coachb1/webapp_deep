@@ -521,6 +521,9 @@ function isDuplicateResponse(text) {
   return userResponses.includes(text);
 }
 
+const capitalizeFirstLetter = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 //* add a custom message to chat
 function appendMessage(message) {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -3757,7 +3760,7 @@ loadExternalModule().then(() => {
           questionText = testResponseText.response_text;
 
           // checking if botname is present or not
-          const responder_name = testResponseText.responder_display_name;
+          const responder_name = capitalizeFirstLetter(testResponseText.responder_display_name);
           if (!questionText.includes(responder_name)) {
             questionText = responder_name + " : " + questionText;
           }
@@ -3964,7 +3967,7 @@ loadExternalModule().then(() => {
               let strList = questionText.replaceAll("*", "").split(":", 2);
               if (strList.length > 1) {
                 questionText = strList[1];
-                responderName = `<b>${strList[0]}:</b><br>`;
+                responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
               }
               if (isImmersive) {
                 questionText = await TTSContainer(questionText);
@@ -4205,7 +4208,7 @@ loadExternalModule().then(() => {
                   console.log(stringList);
                   let responderName;
                   if (stringList.length > 1) {
-                    responderName = `<b>${stringList[0]}:</b><br>`;
+                    responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
                     questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                   }
                   if (isImmersive && questionIndex != 0) {
@@ -5508,7 +5511,7 @@ loadExternalModule().then(() => {
                       let strList = questionText.replaceAll("*", "").split(":", 2);
                       if (strList.length > 1) {
                         questionText = strList[1];
-                        responderName = `<b>${strList[0]}:</b><br>`;
+                        responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
                       }
                       if (isImmersive) {
                         questionText = await TTSContainer(questionText);
@@ -5841,7 +5844,7 @@ loadExternalModule().then(() => {
                       questionText = qRespnse["response_text"];
                       console.log('dynamic or orch response',qRespnse)
                       // checking if botname is present or not
-                      const responder_name = qRespnse.responder_display_name;
+                      const responder_name = capitalizeFirstLetter(qRespnse.responder_display_name);
                       if (!questionText.includes(responder_name)) {
                         questionText = responder_name + " : " + questionText;
                       }
@@ -5868,7 +5871,7 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      responderName = `<b>${stringList[0]}:</b><br>`;
+                      responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
                       questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                     }
                     if (isImmersive && questionIndex != 0) {

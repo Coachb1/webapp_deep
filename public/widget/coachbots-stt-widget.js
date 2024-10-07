@@ -499,6 +499,10 @@ function isDuplicateResponseStt(text) {
   return userResponses2.includes(text);
 }
 
+const capitalizeFirstLetterStt = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 function getAnonymousEmail() {
   const user_name = "coachbots_anonyoususer";
   const user_sid = getOrSetSessionId();
@@ -10016,9 +10020,11 @@ loadExternalModule().then(() => {
                       let strList = questionText2
                         .replaceAll("*", "")
                         .split(":", 2);
+                      
+
                       if (strList.length > 1) {
                         questionText2 = strList[1];
-                        responderName = `<b>${strList[0]}:</b><br>`;
+                        responderName = `<b>${capitalizeFirstLetterStt(strList[0])}:</b><br>`;
                       }
                       if (isImmersiveStt) {
                         questionText2 = await TTSContainerSTT(questionText2);
@@ -10354,7 +10360,7 @@ loadExternalModule().then(() => {
                       const qRespnse2 = await questionResponse2.json();
                       questionText2 = qRespnse2["response_text"];
                       // checking if botname is present or not
-                      responder_name2 = qRespnse2.responder_display_name;
+                      responder_name2 = capitalizeFirstLetterStt(qRespnse2.responder_display_name);
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
                       }
