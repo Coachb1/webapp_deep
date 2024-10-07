@@ -268,7 +268,6 @@ const MeetingPrefrences = () => {
                 use12Hours
                 disabled={loading}
                 value={dayjs(toAvailability)}
-                changeOnScroll
                 onOk={(date) => {
                   console.log(date.toISOString());
                   settoAvailibility(date.toISOString());
