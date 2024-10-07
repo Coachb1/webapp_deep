@@ -7,17 +7,14 @@ import { baseURL, basicAuth } from "@/lib/utils";
 import {
   Input,
   Modal,
-  Popconfirm,
-  Select,
-  Space,
   TimePicker,
   Button as AButton,
+  Select,
+  SelectProps,
 } from "antd";
 import dayjs from "dayjs";
-import { Loader, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const MeetingPrefrences = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,15 +23,9 @@ const MeetingPrefrences = () => {
   const [toAvailability, settoAvailibility] = useState("");
   const [schedullingLink, setSchedulingLink] = useState("");
   const [linkError, setLinkError] = useState(false);
+  const [daysSelected, setDaysSelected] = useState("");
 
   const [priorData, setPriorData] = useState();
-
-  /*
-  availability : {
-    from : "", 
-    to : ""
-  }
-  */
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -63,9 +54,10 @@ const MeetingPrefrences = () => {
         const res = await response.json();
         setPriorData(res.data);
 
-        setFromAvailibility(res.data.from);
-        settoAvailibility(res.data.to);
+        setFromAvailibility(res.data.from || dayjs("00:00:00", "HH:mm:ss"));
+        settoAvailibility(res.data.to || dayjs("00:00:00", "HH:mm:ss"));
         setSchedulingLink(res.data.scheduling_link);
+        setDaysSelected(res.data.days_selected);
       }
     } catch (error) {
       setFromAvailibility(new Date().toISOString());
@@ -98,7 +90,9 @@ const MeetingPrefrences = () => {
             availability: {
               from: fromAvailability,
               to: toAvailability,
-              scheduling_link: schedullingLink,
+              scheduling_link:
+                "https://" + schedullingLink.replace("https://", ""),
+              days_selected: daysSelected,
             },
           }),
         }
@@ -124,6 +118,82 @@ const MeetingPrefrences = () => {
     }
   };
 
+  const [rmLoaading, setRmLoading] = useState(false);
+
+  const removeSchedule = async () => {
+    setRmLoading(true);
+    try {
+      const response = await fetch(
+        `${baseURL}/accounts/update-coach-mentor-meeting-availability/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: basicAuth,
+          },
+          body: JSON.stringify({
+            profile_id: coachId,
+            availability: {
+              from: "",
+              to: "",
+              scheduling_link: "",
+              days_selected: "",
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Error updating meeting availability"
+        );
+      }
+
+      const data = await response.json();
+      console.log("Updated profile:", data);
+      await getAllDirectoryData();
+
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setRmLoading(false);
+      setIsModalOpen(false);
+    }
+  };
+
+  const daysOptions: SelectProps["options"] = [
+    {
+      label: "Monday",
+      value: "Monday",
+    },
+    {
+      label: "Tuesday",
+      value: "Tuesday",
+    },
+    {
+      label: "Wednesday",
+      value: "Wednesday",
+    },
+    {
+      label: "Thursday",
+      value: "Thursday",
+    },
+    {
+      label: "Friday",
+      value: "Friday",
+    },
+    {
+      label: "Saturday",
+      value: "Saturday",
+    },
+    {
+      label: "Sunday",
+      value: "Sunday",
+    },
+  ];
+
   return (
     <div>
       <Button
@@ -142,9 +212,29 @@ const MeetingPrefrences = () => {
         footer={
           <>
             <AButton
+              type="default"
+              disabled={
+                rmLoaading ||
+                loading ||
+                linkError ||
+                !fromAvailability ||
+                !toAvailability
+              }
+              className="bg-blue-500 hover:bg-blue-400"
+              danger
+              onClick={removeSchedule}
+            >
+              {rmLoaading && <Loader className="h-4 w-4 mr-1 animate-spin" />}{" "}
+              Remove
+            </AButton>
+            <AButton
               type="primary"
               disabled={
-                loading || linkError || !fromAvailability || !toAvailability
+                rmLoaading ||
+                loading ||
+                linkError ||
+                !fromAvailability ||
+                !toAvailability
               }
               onClick={changeAvailabilityHandler}
               className="bg-blue-500 text-white hover:bg-blue-400"
@@ -155,13 +245,16 @@ const MeetingPrefrences = () => {
         }
       >
         <div>
-          <p className="my-2 max-sm:text-xs">Set your meeting time</p>
+          <p className="my-2 max-sm:text-xs font-semibold">
+            Set your meeting time
+          </p>
           <div className="flex flex-row gap-2 items-center">
             <div className="flex flex-row gap-2 items-center">
               <p className="m-w-fit">Start</p>{" "}
               <TimePicker
                 use12Hours
                 disabled={loading}
+                changeOnScroll
                 value={dayjs(fromAvailability)}
                 onOk={(date) => {
                   console.log(date.toISOString());
@@ -175,6 +268,7 @@ const MeetingPrefrences = () => {
                 use12Hours
                 disabled={loading}
                 value={dayjs(toAvailability)}
+                changeOnScroll
                 onOk={(date) => {
                   console.log(date.toISOString());
                   settoAvailibility(date.toISOString());
@@ -182,34 +276,39 @@ const MeetingPrefrences = () => {
               />
             </div>
           </div>
+          <div className="flex flex-row gap-2 items-center mt-2">
+            <p className="m-w-fit">Days</p>
+            <Select
+              mode="multiple"
+              allowClear
+              value={daysSelected.split(", ")}
+              style={{ width: "100%" }}
+              placeholder="Please select"
+              onChange={(val) => {
+                setDaysSelected(val.join(", "));
+              }}
+              options={daysOptions}
+            />
+          </div>
         </div>
         <div className="py-2">or</div>
         <div>
-          <p>Add a scheduling link.</p>
-          {/* { ? (
-            <div className="border w-full p-1 my-2 px-2 rounded-md flex flex-row justify-between items-center">
-              <Link href={schedullingLink} className="text-blue-500 my-2">
-                {schedullingLink}
-              </Link>
-              <div>
-                <Popconfirm title="Would like you delete?">
-                  <div className="py-1 bg-gray-100 px-2 rounded-md hover:cursor-pointer">
-                    <Trash2 stroke="red" className="h-4 w-4" />
-                  </div>
-                </Popconfirm>
-              </div>
-            </div>
-          ) : ( */}
+          <p className="font-semibold">Add a scheduling link.</p>
           <>
             <Input
+              addonBefore="https://"
               placeholder="calendy.com/... or cal.com/..."
-              className="my-2"
+              className="my-2 text-blue-500"
               value={schedullingLink}
               onChange={(e) => {
                 const value = e.target.value;
                 setSchedulingLink(value);
 
-                //cal.com , calendy.com
+                if (value.length == 0) {
+                  setLinkError(false);
+                  return;
+                }
+
                 const regex =
                   /(?:https?:\/\/)?(?:www\.)?(?:calendly\.com|cal\.com)\/[^\s]+/;
                 if (regex.test(value)) {
@@ -221,7 +320,6 @@ const MeetingPrefrences = () => {
             />
             {linkError && <p className="text-red-500">Invalid link</p>}
           </>
-          {/* )} */}
         </div>
       </Modal>
     </div>
