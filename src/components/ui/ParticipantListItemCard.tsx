@@ -11,7 +11,14 @@ import {
 } from "@/lib/utils";
 import { Button } from "./button";
 import { Badge } from "./badge";
-import { ExternalLink, Star } from "lucide-react";
+import {
+  ChevronDownCircle,
+  ExternalLink,
+  List,
+  Star,
+  View,
+} from "lucide-react";
+import { Tooltip } from "antd";
 
 export function ParticipantListItemCard({
   coach,
@@ -25,6 +32,7 @@ export function ParticipantListItemCard({
   profilePicUrl,
   schedullingLink,
   meetTime,
+  daysAvailable,
 }: {
   coach: CoachesDataType;
   coacheeId: string;
@@ -37,6 +45,7 @@ export function ParticipantListItemCard({
   profilePicUrl: string | null;
   schedullingLink: string;
   meetTime: string;
+  daysAvailable: string;
 }) {
   return (
     <div id={coach.profile_id}>
@@ -66,7 +75,21 @@ export function ParticipantListItemCard({
               coach.id +
               "@coachbots.com"} */}
               {meetTime && meetTime.trim().length > 3 && (
-                <> Preferred Meet time : {meetTime}</>
+                <>
+                  {" "}
+                  <> Preferred Meet time : {meetTime}</>{" "}
+                  <>
+                    {daysAvailable && (
+                      <>
+                        {" "}
+                        | Days :{" "}
+                        <Tooltip placement="bottom" title={daysAvailable}>
+                          <ChevronDownCircle className="h-6 max-sm:h-5 w-6 max-sm:w-5 p-1 inline hover:bg-gray-200 rounded-full hover:cursor-pointer" />
+                        </Tooltip>
+                      </>
+                    )}
+                  </>
+                </>
               )}
             </span>
           )}
@@ -237,7 +260,7 @@ export function ParticipantListItemCard({
                       asChild
                       className="border border-[#2DC092] max-sm:w-full bg-white text-[#1d9770] font-semibold hover:bg-[#74d9b927] max-sm:text-sm max-md:min-w-full  max-lg:min-w-full"
                     >
-                      <Link href={"#"}>
+                      <Link target="_blank" href={schedullingLink}>
                         Schedule a meet
                         <ExternalLink className="h-4 w-4 ml-1" />
                       </Link>

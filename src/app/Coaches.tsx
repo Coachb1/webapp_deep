@@ -96,6 +96,7 @@ export interface CoachesDataType {
     from: string;
     to: string;
     scheduling_link: string;
+    days_selected: string;
   } | null;
 }
 
@@ -1548,7 +1549,7 @@ const Coaches = ({
           </div>
         )}
         <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />
-        {!restrictedFeatures?.includes("DirProfile-msg") && (
+        {/* {!restrictedFeatures?.includes("DirProfile-msg") && (
           <Badge
             variant={"secondary"}
             className="rounded-sm text-center text-base max-sm:text-xs font-normal"
@@ -1557,7 +1558,7 @@ const Coaches = ({
             email avatar that can respond as well. (AI responses, with 24 hour
             average response times)
           </Badge>
-        )}
+        )} */}
 
         <div className="mt-2 ">
           {/* {loading && (
@@ -1613,6 +1614,9 @@ const Coaches = ({
                       )} -  ${formatTimeWithAmPm(
                         coach.meeting_availability?.to || ""
                       )}`}
+                      daysAvailable={
+                        coach.meeting_availability?.days_selected || ""
+                      }
                       coacheeId={coacheeId}
                       coachId={coachId}
                       coach={coach}
