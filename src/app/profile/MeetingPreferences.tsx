@@ -90,8 +90,9 @@ const MeetingPrefrences = () => {
             availability: {
               from: fromAvailability,
               to: toAvailability,
-              scheduling_link:
-                "https://" + schedullingLink.replace("https://", ""),
+              scheduling_link: schedullingLink
+                ? "https://" + schedullingLink.replace("https://", "")
+                : "",
               days_selected: daysSelected,
             },
           }),
@@ -254,7 +255,6 @@ const MeetingPrefrences = () => {
               <TimePicker
                 use12Hours
                 disabled={loading}
-                changeOnScroll
                 value={dayjs(fromAvailability)}
                 onOk={(date) => {
                   console.log(date.toISOString());
