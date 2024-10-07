@@ -23,7 +23,7 @@ const MeetingPrefrences = () => {
   const [toAvailability, settoAvailibility] = useState("");
   const [schedullingLink, setSchedulingLink] = useState("");
   const [linkError, setLinkError] = useState(false);
-  const [daysSelected, setDaysSelected] = useState("");
+  const [daysSelected, setDaysSelected] = useState<string | null>("");
 
   const [priorData, setPriorData] = useState();
 
@@ -56,7 +56,7 @@ const MeetingPrefrences = () => {
 
         setFromAvailibility(res.data.from || dayjs("00:00:00", "HH:mm:ss"));
         settoAvailibility(res.data.to || dayjs("00:00:00", "HH:mm:ss"));
-        setSchedulingLink(res.data.scheduling_link);
+        setSchedulingLink(res.data.scheduling_link.replace("https://", ""));
         setDaysSelected(res.data.days_selected);
       }
     } catch (error) {
@@ -280,11 +280,16 @@ const MeetingPrefrences = () => {
             <Select
               mode="multiple"
               allowClear
-              value={daysSelected.split(", ")}
+              value={daysSelected && daysSelected.split(", ")}
               style={{ width: "100%" }}
               placeholder="Please select"
               onChange={(val) => {
-                setDaysSelected(val.join(", "));
+                console.log(val);
+                if (val.length > 0) {
+                  setDaysSelected((val || []).join(", "));
+                } else {
+                  setDaysSelected(null);
+                }
               }}
               options={daysOptions}
             />
@@ -298,7 +303,7 @@ const MeetingPrefrences = () => {
               addonBefore="https://"
               placeholder="calendy.com/... or cal.com/..."
               className="my-2 text-blue-500"
-              value={schedullingLink}
+              value={schedullingLink.replace("https://", "")}
               onChange={(e) => {
                 const value = e.target.value;
                 setSchedulingLink(value);
