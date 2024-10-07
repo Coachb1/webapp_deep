@@ -1758,7 +1758,7 @@ const getBotDetails2 = async (botId) => {
     //   const faqs = botDetails.faq;
     console.log("id", userId2, participantId2);
     console.log("id from web app", window.userIdFromWebApp);
-    if (!isBotConversationPopulated && !["feedback_bot",'deep_dive'].includes(botType)) {
+    if (!isBotConversationPopulated && !["feedback_bot",'deep_dive','user_bot'].includes(botType)) {
       populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
