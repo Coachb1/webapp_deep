@@ -3928,9 +3928,7 @@ const audioCanvasUiForQuestions = (audio, canvas) => {
 
 const audioCanvasUI = (audio, canvas) => {
   const canvasCtx = canvas.getContext("2d");
-  console.log(canvasCtx);
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  console.log(audioCtx);
   const analyser = audioCtx.createAnalyser();
   const source = audioCtx.createMediaElementSource(audio);
 
@@ -7115,7 +7113,7 @@ loadExternalModule().then(() => {
     canvasElement.setAttribute("id", `canvas-${index}-${randomTextForId}`);
     canvasElement.style.padding = "4px";
     canvasElement.style.borderRadius = "4px";
-    canvasElement.width = 100;
+    canvasElement.style.width = "100%";
     canvasElement.height = 40;
 
     audioCanvasUI(audioElement, canvasElement);
@@ -7252,6 +7250,7 @@ loadExternalModule().then(() => {
     avatarImage.style.marginRight = "8px";
 
     avatarNode.appendChild(avatarImage)
+    const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
     const messageText = document.createElement("p");
 
@@ -7262,10 +7261,10 @@ loadExternalModule().then(() => {
     const likeDisLike = document.createElement("div")
     likeDisLike.setAttribute("style", "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;")
     likeDisLike.innerHTML = `
-      <span class="like" id="likeIcon">
+      <span class="like" id="likeIcon-${randomIdForAudioElement}">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
       </span>
-      <span class="dislike" id="dislikeIcon" >
+      <span class="dislike" id="dislikeIcon-${randomIdForAudioElement}" >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
       </span>
       `;
@@ -7277,7 +7276,6 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
-    const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
     const audioDiv = document.createElement("div")
     audioDiv.setAttribute("id",`auido-div-${randomIdForAudioElement}`)
@@ -7369,8 +7367,8 @@ loadExternalModule().then(() => {
           botPreviousConversationHistory.push(messageText.innerText)
           messageBubble.appendChild(likeDisLike);
           setTimeout(() => {
-            const likeIcon = gShadowRoot2.getElementById("likeIcon");
-            const dislikeIcon = gShadowRoot2.getElementById("dislikeIcon");
+            const likeIcon = gShadowRoot2.getElementById(`likeIcon-${randomIdForAudioElement}`);
+            const dislikeIcon = gShadowRoot2.getElementById(`dislikeIcon-${randomIdForAudioElement}`);
             console.log(likeIcon, dislikeIcon)
 
             // Add hover effect
