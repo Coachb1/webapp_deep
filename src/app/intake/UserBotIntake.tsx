@@ -451,7 +451,13 @@ const UserBotIntake = ({
               );
             });
         } else {
-          toast.error("Error creating user bot.");
+          if (data.error === "Bot already exists") {
+            toast.error(
+              "This bot already exists, please change the Name of the bot and try again."
+            );
+          } else {
+            toast.error("Error creating your Knowledge Bot, Please try again.");
+          }
         }
         setSubmitLoading(false);
       })
