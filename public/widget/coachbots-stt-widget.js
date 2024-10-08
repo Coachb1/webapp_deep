@@ -7113,7 +7113,7 @@ loadExternalModule().then(() => {
     canvasElement.setAttribute("id", `canvas-${index}-${randomTextForId}`);
     canvasElement.style.padding = "4px";
     canvasElement.style.borderRadius = "4px";
-    canvasElement.style.width = "100%";
+    canvasElement.width = 100;
     canvasElement.height = 40;
 
     audioCanvasUI(audioElement, canvasElement);
