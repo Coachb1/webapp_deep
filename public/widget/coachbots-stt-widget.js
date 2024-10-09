@@ -7097,12 +7097,14 @@ loadExternalModule().then(() => {
     });
   };  
 
-  async function audioSourceOpen(
-    inputText,
-    audioDiv,
-    index,
-    randomTextForId
-  ) {
+  async function audioSourceOpen(inputText, audioDiv, index, randomTextForId) {
+    console.log(
+      "@audioSourceOpen : ",
+      inputText,
+      audioDiv,
+      index,
+      randomTextForId
+    );
     const audioElement = document.createElement("audio");
     audioElement.setAttribute(
       "id",
@@ -7119,8 +7121,8 @@ loadExternalModule().then(() => {
     audioCanvasUI(audioElement, canvasElement);
 
     audioElement.addEventListener("ended", () => {
-      canvasElement.remove()
-    })
+      canvasElement.remove();
+    });
 
     const mediaSource = new MediaSource();
     audioElement.src = URL.createObjectURL(mediaSource);
@@ -7134,65 +7136,73 @@ loadExternalModule().then(() => {
     mediaSource.addEventListener("sourceopen", async () => {
       const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
 
-      const response = await fetch("https://api.openai.com/v1/audio/speech", {
-        method: "POST",
-        headers: {
-          Authorization:
-            "Bearer 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",
+      try {
+        const response = await fetch("https://api.openai.com/v1/audio/speech", {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Bearer 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",
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: inputText,
-          model: "tts-1",
-          response_format: "mp3",
-          voice: "echo",
-        }),
-      });
-
-      const reader = response.body.getReader();
-
-      if (index === 0) {
-        reader.read().then(function process({ done, value }) {
-          if (done) {
-            if (mediaSource.readyState === "open") mediaSource.endOfStream();
-            return;
-          }
-          sourceBuffer.appendBuffer(value);
-
-          sourceBuffer.addEventListener("updateend", () => {
-            if (!sourceBuffer.updating && mediaSource.readyState === "open") {
-              reader.read().then(process);
-            }
-          });
+          },
+          body: JSON.stringify({
+            input: inputText,
+            model: "tts-1",
+            response_format: "mp3",
+            voice: "echo",
+          }),
         });
-      } else {
-        const shadowRootAud =
-          document.getElementById("chat-element2").shadowRoot;
-        const previousPlayer = shadowRootAud.getElementById(
-          `audio-player-stream-${index - 1}-${randomTextForId}`
-        );
-        if (previousPlayer) {
-          previousPlayer.addEventListener("ended", () => {
-            console.log("PLAYER HAS ENDED");
-            reader.read().then(function process({ done, value }) {
-              if (done) {
-                if (mediaSource.readyState === "open")
-                  mediaSource.endOfStream();
-                return;
-              }
-              sourceBuffer.appendBuffer(value);
 
-              sourceBuffer.addEventListener("updateend", () => {
-                if (
-                  !sourceBuffer.updating &&
-                  mediaSource.readyState === "open"
-                ) {
-                  reader.read().then(process);
-                }
-              });
+        if (!response.ok) {
+          throw new Error("Speech api error");
+        }
+
+        const reader = response.body.getReader();
+
+        if (index === 0) {
+          reader.read().then(function process({ done, value }) {
+            if (done) {
+              if (mediaSource.readyState === "open") mediaSource.endOfStream();
+              return;
+            }
+            sourceBuffer.appendBuffer(value);
+
+            sourceBuffer.addEventListener("updateend", () => {
+              if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+                reader.read().then(process);
+              }
             });
           });
+        } else {
+          const shadowRootAud =
+            document.getElementById("chat-element2").shadowRoot;
+          const previousPlayer = shadowRootAud.getElementById(
+            `audio-player-stream-${index - 1}-${randomTextForId}`
+          );
+          if (previousPlayer) {
+            previousPlayer.addEventListener("ended", () => {
+              console.log("PLAYER HAS ENDED");
+              reader.read().then(function process({ done, value }) {
+                if (done) {
+                  if (mediaSource.readyState === "open")
+                    mediaSource.endOfStream();
+                  return;
+                }
+                sourceBuffer.appendBuffer(value);
+
+                sourceBuffer.addEventListener("updateend", () => {
+                  if (
+                    !sourceBuffer.updating &&
+                    mediaSource.readyState === "open"
+                  ) {
+                    reader.read().then(process);
+                  }
+                });
+              });
+            });
+          }
         }
+      } catch (error) {
+        console.log("Speech API ERROR")
       }
     });
   }
@@ -7303,9 +7313,20 @@ loadExternalModule().then(() => {
       const decoder = new TextDecoder("utf-8");
 
       let index = 0;
+      let text = ""
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
+
+         if(streamWithAudio){
+          messageBubble.appendChild(audioDiv)
+          audioSourceOpen(
+            text,
+            audioDiv,
+            0,
+            randomIdForAudioElement
+          );
+         }
           
           allMessages.forEach((indvMessage) => {
             if (
@@ -7332,8 +7353,8 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 "Please explain your question or comment in different words which I may be able to understand better.",
                 audioDiv,
-                index,
-                randomTextForId
+                1,
+                randomIdForAudioElement
               );
             }
           }
@@ -7347,8 +7368,8 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
                 audioDiv,
-                index,
-                randomTextForId
+                1,
+                randomIdForAudioElement
               );
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
@@ -7358,7 +7379,7 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 audioDiv,
-                index,
+                1,
                 randomIdForAudioElement
               );
             }
@@ -7496,16 +7517,17 @@ loadExternalModule().then(() => {
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
      
-        if (streamWithAudio) {
-          messageBubble.appendChild(audioDiv)
-          audioSourceOpen(
-            decodedText,
-            audioDiv,
-            index,
-            randomIdForAudioElement
-          );
-        }
+        // if (streamWithAudio) {
+        //   messageBubble.appendChild(audioDiv)
+        //   audioSourceOpen(
+        //     decodedText,
+        //     audioDiv,
+        //     index,
+        //     randomIdForAudioElement
+        //   );
+        // }
         messageText.innerText += excludeSpecialCharacters(decodedText);
+        text += excludeSpecialCharacters(decodedText)
         signals.onResponse({
           html: ".",
         });
