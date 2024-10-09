@@ -359,17 +359,15 @@ const Coach = ({ user, renderType }: any) => {
                 </>
               )}
 
-              <div className="my-4 max-sm:text-xs text-[#2f2323] w-full flex flex-row justify-center">
+              <div className="my-4 max-sm:text-xs text-[#2f2323] w-full flex flex-col justify-center items-center">
                 <p className="p-2 pb-4 border-gray-300 bg-white max-sm:text-justify text-sm max-sm:text-xs w-[85%] max-sm:w-full">
                   {" "}
-                  This is your coach/mentor’s personalized bot. Here, you would
-                  typically find a detailed description of your
-                  coach/mentor—highlighting their expertise, approach, and
-                  unique coaching/mentoring style. Dive into the detailed
-                  sections to explore the benefits and learn how it works. Our
-                  bot is trained on the coach/ mentor’s style, ideologies, and
-                  coaching/mentoring style, ensuring a tailored and effective
-                  coaching experience.{" "}
+                  Note : Please note that the AI communication is driven by
+                  curated information as provided by the user. The coaching
+                  advise is derived from the knowledge base. But it may not
+                  always depict the coach response in real life situation.
+                  Transcript is provided in Bot response and email for
+                  validation.
                 </p>
               </div>
 
