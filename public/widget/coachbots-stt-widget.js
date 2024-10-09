@@ -7153,6 +7153,7 @@ loadExternalModule().then(() => {
         });
 
         if (!response.ok) {
+          audioElement.dispatchEvent(new Event("ended"));
           throw new Error("Speech api error");
         }
 
@@ -7202,7 +7203,8 @@ loadExternalModule().then(() => {
           }
         }
       } catch (error) {
-        console.log("Speech API ERROR")
+        audioElement.dispatchEvent(new Event("ended"));
+        console.error("Speech API ERROR")
       }
     });
   }
