@@ -70,6 +70,26 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  .ant-btn,
+  .ant-btn-primary,
+  .ant-btn-color-primary,
+  .ant-btn-variant-solid,
+  .ant-btn-sm {
+    color: gray;
+  }
+}
+
+.ant-popconfirm-buttons button {
+  color: gray;
+}
+
+.ant-picker-ok button span {
+  color: gray;
+}
+
+.ant-picker-ok button:hover span {
+  color: white;
 }
 
 .grainy {

@@ -211,6 +211,8 @@ const CreateYourOwn = ({
         if (awaitedData) clearTimeout(awaitedData);
         if (retryTimeout) clearTimeout(retryTimeout);
         console.error(error);
+
+        throw new Error("Error creating Scenario");
       }
     }
   };

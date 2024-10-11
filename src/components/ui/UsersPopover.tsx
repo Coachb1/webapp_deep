@@ -120,6 +120,7 @@ export const ActionsPopver = ({
       .catch((err) => {
         toast.error("Error, try again.");
         console.error(err);
+        throw new Error("Error upading client preferences (audio interaction)");
       })
       .finally(() => {
         setLoading(false);

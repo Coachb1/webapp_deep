@@ -11,7 +11,14 @@ import {
 } from "@/lib/utils";
 import { Button } from "./button";
 import { Badge } from "./badge";
-import { ExternalLink, Star } from "lucide-react";
+import {
+  ChevronDownCircle,
+  ExternalLink,
+  List,
+  Star,
+  View,
+} from "lucide-react";
+import { Tooltip } from "antd";
 
 export function ParticipantListItemCard({
   coach,
@@ -23,6 +30,9 @@ export function ParticipantListItemCard({
   restrictedFeatures,
   requestConnectionComponent,
   profilePicUrl,
+  schedullingLink,
+  meetTime,
+  daysAvailable,
 }: {
   coach: CoachesDataType;
   coacheeId: string;
@@ -33,6 +43,9 @@ export function ParticipantListItemCard({
   restrictedFeatures: string | null;
   requestConnectionComponent: ReactNode;
   profilePicUrl: string | null;
+  schedullingLink: string;
+  meetTime: string;
+  daysAvailable: string;
 }) {
   return (
     <div id={coach.profile_id}>
@@ -46,21 +59,40 @@ export function ParticipantListItemCard({
         </span>
         {(coach.profile_type === "coach" ||
           coach.profile_type === "mentor" ||
-          coach.profile_type === "coach-mentor") && (
-          <span
-            id={
-              coach.id_for_target_selection === "first_coach_profile" &&
-              coach.feedback_wall !== null
-                ? "email"
-                : undefined
-            }
-            className="z-[1] ml-4 mr-4  rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] max-sm:mr-2 "
-          >
-            {coach.name.replace(/\s/g, "").toLowerCase() +
+          coach.profile_type === "coach-mentor") &&
+          meetTime &&
+          meetTime.trim().length > 3 && (
+            <span
+              id={
+                coach.id_for_target_selection === "first_coach_profile" &&
+                coach.feedback_wall !== null
+                  ? "email"
+                  : undefined
+              }
+              className="z-[1] ml-4 mr-4 font-sans rounded-2xl  self-end border-2 border-gray-300 bg-white px-3 py-1 text-sm font-semibold text-gray-500 max-lg:text-xs max-sm:ml-2 max-sm:p-1 max-sm:text-[10px] max-sm:mr-2 "
+            >
+              {/* {coach.name.replace(/\s/g, "").toLowerCase() +
               coach.id +
-              "@coachbots.com"}
-          </span>
-        )}
+              "@coachbots.com"} */}
+              {meetTime && meetTime.trim().length > 3 && (
+                <>
+                  {" "}
+                  <> Preferred Meet time : {meetTime}</>{" "}
+                  <>
+                    {daysAvailable && (
+                      <>
+                        {" "}
+                        | Days :{" "}
+                        <Tooltip placement="bottom" title={daysAvailable}>
+                          <ChevronDownCircle className="h-6 max-sm:h-5 w-6 max-sm:w-5 p-1 inline hover:bg-gray-200 rounded-full hover:cursor-pointer" />
+                        </Tooltip>
+                      </>
+                    )}
+                  </>
+                </>
+              )}
+            </span>
+          )}
       </div>
       <div className="inter-var w-full py-0 mt-4">
         <div className="bg-white relative group/card h-auto rounded-xl p-6 w-full flex flex-row max-sm:flex-col max-sm:justify-center max-sm:items-center py-0 ">
@@ -218,35 +250,53 @@ export function ParticipantListItemCard({
                 )}
               </div>
             </div>
-            <div className="flex justify-end items-center mt-10 max-sm:mt-4 mb-4 gap-2">
+            <div className="flex justify-end flex-row max-md:flex-col  max-lg:flex-col max-sm:flex-col max-sm:flex-wrap items-center mt-10 max-sm:mt-4 mb-4 gap-2 max-md:w-full max-lg:w-full">
+              {coach?.avatar_bot_id !== null &&
+                coach?.avatar_bot_url !== "" &&
+                coach.profile_type !== "icons_by_ai" &&
+                schedullingLink && (
+                  <>
+                    <Button
+                      asChild
+                      className="border border-[#2DC092] max-sm:w-full bg-white text-[#1d9770] font-semibold hover:bg-[#74d9b927] max-sm:text-sm max-md:min-w-full  max-lg:min-w-full"
+                    >
+                      <Link target="_blank" href={schedullingLink}>
+                        Schedule a meet
+                        <ExternalLink className="h-4 w-4 ml-1" />
+                      </Link>
+                    </Button>
+                  </>
+                )}
               {requestConnectionComponent}
               {coach?.avatar_bot_id !== null &&
                 coach?.avatar_bot_url !== "" && (
-                  <div className="max-sm:w-full">
-                    <Button
-                      variant={"secondary"}
-                      className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm"
-                      disabled={
-                        coacheeId.length === 0 &&
-                        userId !== coach.user_id &&
-                        coach.profile_type !== "icons_by_ai"
-                      }
-                    >
-                      <Link
-                        href={handleLinks(coach.avatar_bot_url)}
-                        target="_blank"
-                        className="flex flex-row items-center"
+                  <>
+                    <div className="max-sm:w-full max-md:w-full max-lg:w-full">
+                      <Button
+                        variant={"secondary"}
+                        className="w-fit border border-gray-300 bg-[#2DC092] hover:bg-[#74d9b9d2] font-bold text-white max-sm:w-full max-sm:text-sm max-md:min-w-full  max-lg:min-w-full"
+                        disabled={
+                          coacheeId.length === 0 &&
+                          userId !== coach.user_id &&
+                          coach.profile_type !== "icons_by_ai"
+                        }
                       >
-                        <p>
-                          {coach.profile_type === "skill_bot" ||
-                          coach.profile_type === "coachbots"
-                            ? "Skill Chat"
-                            : "AI Frame"}{" "}
-                        </p>
-                        <ExternalLink className="ml-1 h-4 w-4 inline" />
-                      </Link>
-                    </Button>
-                  </div>
+                        <Link
+                          href={handleLinks(coach.avatar_bot_url)}
+                          target="_blank"
+                          className="flex flex-row items-center"
+                        >
+                          <p>
+                            {coach.profile_type === "skill_bot" ||
+                            coach.profile_type === "coachbots"
+                              ? "Skill Chat"
+                              : "AI Frame"}{" "}
+                          </p>
+                          <ExternalLink className="ml-1 h-4 w-4 inline" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </>
                 )}
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   basicAuth,
   findCoachUID,
   findCoacheeUID,
+  formatTimeWithAmPm,
   getUserAccount,
   hideBots,
 } from "@/lib/utils";
@@ -91,6 +92,12 @@ export interface CoachesDataType {
   bot_uid?: string;
   custom_user_bot_id?: string;
   is_recommended?: boolean;
+  meeting_availability: {
+    from: string;
+    to: string;
+    scheduling_link: string;
+    days_selected: string;
+  } | null;
 }
 
 interface FilterCategoriesType {
@@ -907,6 +914,7 @@ const Coaches = ({
 
             if (data.error || data.non_field_errors) {
               toast.error("Error while sending your request!");
+              throw new Error("Error while sending connection request!");
             } else {
               const updatedCoachesData = savedCoachesData.map((coach) =>
                 coach.profile_id === coachId
@@ -929,6 +937,7 @@ const Coaches = ({
             console.log(err);
             toast.error("Error while sending your request!");
             setRequestLoading(false);
+            throw new Error("Error while sending your request!");
           });
       } else {
         toast.error(
@@ -943,7 +952,7 @@ const Coaches = ({
             requestLoading || status === "pending" || status === "Requested"
           }
           variant={"outline"}
-          className="max-sm:w-full border border-gray-300 max-sm:text-sm"
+          className="max-sm:w-full max-md:w-full max-lg:w-full border border-gray-300 max-sm:text-sm"
           onClick={() => {
             requestConnectHandler();
           }}
@@ -1137,6 +1146,8 @@ const Coaches = ({
         })
         .catch((err) => {
           console.error(err);
+
+          throw new Error("Error in likes");
         });
     };
 
@@ -1174,6 +1185,8 @@ const Coaches = ({
         })
         .catch((err) => {
           console.error(err);
+
+          throw new Error("Error in likes");
         });
     };
 
@@ -1208,7 +1221,7 @@ const Coaches = ({
   const { helpModeState, updateHelpModeState } = UseHelpMode();
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   return (
-    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50">
+    <MaxWidthWrapper className="flex flex-col items-center justify-center pt-20 text-center z-50 md:px-8 lg:px-20">
       {helpModeState && (
         <Joyride
           spotlightClicks
@@ -1536,7 +1549,7 @@ const Coaches = ({
           </div>
         )}
         <div className="my-2 h-[2px] bg-gray-300 rounded-lg" />
-        {!restrictedFeatures?.includes("DirProfile-msg") && (
+        {/* {!restrictedFeatures?.includes("DirProfile-msg") && (
           <Badge
             variant={"secondary"}
             className="rounded-sm text-center text-base max-sm:text-xs font-normal"
@@ -1545,7 +1558,7 @@ const Coaches = ({
             email avatar that can respond as well. (AI responses, with 24 hour
             average response times)
           </Badge>
-        )}
+        )} */}
 
         <div className="mt-2 ">
           {/* {loading && (
@@ -1568,102 +1581,113 @@ const Coaches = ({
           <div id="participant-listing">
             {coachesData.length > 0 &&
               currentCoachesData.map((coach, idx) => (
-                  <div
-                    key={coach?.profile_id}
-                    className="relative group  block p-2 h-full w-full"
-                    onMouseEnter={() => setHoveredIndex(idx)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                  >
-                    <AnimatePresence>
-                      {hoveredIndex === idx && (
-                        <motion.span
-                          className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
-                          layoutId="hoverBackground"
-                          initial={{ opacity: 0 }}
-                          animate={{
-                            opacity: 1,
-                            transition: { duration: 0.15 },
-                          }}
-                          exit={{
-                            opacity: 0,
-                            transition: { duration: 0.15, delay: 0.2 },
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
-                    <Card className="p-0">
-                      <ParticipantListItemCard
-                        coacheeId={coacheeId}
-                        coachId={coachId}
-                        coach={coach}
-                        likeComponent={
-                          <div className="mt-4">
-                            <LikeComponent
-                              profile_id={coach.profile_id}
-                              likesInfo={coach.admirer_ids}
-                            />
-                          </div>
-                        }
-                        profilePicUrl={coach.profile_pic_url}
-                        reviewComponent={
-                          <>
-                            {" "}
-                            {coach.profile_type !== "coachee" &&
-                              coach.profile_type !== "mentee" &&
-                              !restrictedFeatures?.includes("Ratings") && (
-                                <ReviewComponent
-                                  id={
-                                    coach.id_for_target_selection ===
-                                      "first_coach_profile" &&
-                                    coach.feedback_wall !== null
-                                      ? "reviews"
-                                      : undefined
-                                  }
-                                  stars={coach.rating}
-                                  totalRatings={coach.total_rating}
-                                  coachId={coach.profile_id}
-                                />
-                              )}
-                          </>
-                        }
-                        userId={userId}
-                        restrictedFeatures={restrictedFeatures}
-                        requestConnectionComponent={
-                          <>
-                            {coach.status === "accepted" ? (
-                              <Button
-                                disabled
-                                variant={"outline"}
-                                className="max-sm:text-sm max-sm:w-full border border-green-300 bg-green-100"
-                              >
-                                Connected
-                              </Button>
-                            ) : (
-                              <>
-                                {(coach.profile_type === "coach" ||
-                                  coach.profile_type === "mentor" ||
-                                  coach.profile_type === "coach-mentor") && (
-                                  <>
-                                    <>
-                                      {coacheeId.length > 0 && (
-                                        <>
-                                          <RequestionConnection
-                                            requestStatus={coach.status}
-                                            coachId={coach.profile_id}
-                                            stateCoachId={coachId}
-                                          />
-                                        </>
-                                      )}
-                                    </>
-                                  </>
-                                )}
-                              </>
-                            )}
-                          </>
-                        }
+                <div
+                  key={coach?.profile_id}
+                  className="relative group block p-2 h-full w-full"
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <AnimatePresence>
+                    {hoveredIndex === idx && (
+                      <motion.span
+                        className="absolute inset-0 h-full w-full bg-neutral-200  block rounded-3xl"
+                        layoutId="hoverBackground"
+                        initial={{ opacity: 0 }}
+                        animate={{
+                          opacity: 1,
+                          transition: { duration: 0.15 },
+                        }}
+                        exit={{
+                          opacity: 0,
+                          transition: { duration: 0.15, delay: 0.2 },
+                        }}
                       />
-                    </Card>
-                  </div>
+                    )}
+                  </AnimatePresence>
+                  <Card className="p-0">
+                    <ParticipantListItemCard
+                      schedullingLink={
+                        coach.meeting_availability?.scheduling_link || ""
+                      }
+                      meetTime={`${formatTimeWithAmPm(
+                        coach.meeting_availability?.from || ""
+                      )} -  ${formatTimeWithAmPm(
+                        coach.meeting_availability?.to || ""
+                      )}`}
+                      daysAvailable={
+                        coach.meeting_availability?.days_selected || ""
+                      }
+                      coacheeId={coacheeId}
+                      coachId={coachId}
+                      coach={coach}
+                      likeComponent={
+                        <div className="mt-4">
+                          <LikeComponent
+                            profile_id={coach.profile_id}
+                            likesInfo={coach.admirer_ids}
+                          />
+                        </div>
+                      }
+                      profilePicUrl={coach.profile_pic_url}
+                      reviewComponent={
+                        <>
+                          {" "}
+                          {coach.profile_type !== "coachee" &&
+                            coach.profile_type !== "mentee" &&
+                            !restrictedFeatures?.includes("Ratings") && (
+                              <ReviewComponent
+                                id={
+                                  coach.id_for_target_selection ===
+                                    "first_coach_profile" &&
+                                  coach.feedback_wall !== null
+                                    ? "reviews"
+                                    : undefined
+                                }
+                                stars={coach.rating}
+                                totalRatings={coach.total_rating}
+                                coachId={coach.profile_id}
+                              />
+                            )}
+                        </>
+                      }
+                      userId={userId}
+                      restrictedFeatures={restrictedFeatures}
+                      requestConnectionComponent={
+                        <>
+                          {coach.status === "accepted" ? (
+                            <Button
+                              disabled
+                              variant={"outline"}
+                              className="max-sm:text-sm max-md:w-full max-lg:w-full border border-green-300 bg-green-100"
+                            >
+                              Connected
+                            </Button>
+                          ) : (
+                            <>
+                              {(coach.profile_type === "coach" ||
+                                coach.profile_type === "mentor" ||
+                                coach.profile_type === "coach-mentor") && (
+                                <>
+                                  <>
+                                    {coacheeId.length > 0 && (
+                                      <>
+                                        <RequestionConnection
+                                          requestStatus={coach.status}
+                                          coachId={coach.profile_id}
+                                          stateCoachId={coachId}
+                                        />
+                                      </>
+                                    )}
+                                  </>
+                                </>
+                              )}
+                            </>
+                          )}
+                        </>
+                      }
+                    />
+                  </Card>
+                </div>
               ))}
           </div>
           {coachesData.length > 10 && (

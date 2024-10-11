@@ -25,6 +25,7 @@ import {
   DSA,
   DataScience,
   InteractiveVisualSimulation,
+  Assessment,
 } from "@/lib/test";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -141,11 +142,25 @@ const VersionOne = ({ user, helpModeText }: any) => {
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
-          <Link href="/knowledge-bot" target="_blank">
+          <Link
+            href="/knowledge-bot/knowledge-d6831-hr-policy-guide-bot"
+            target="_blank"
+          >
             <Button
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
-              Knowledge Bot
+              HR Policy Bot
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
+            </Button>
+          </Link>
+          <Link
+            href="/knowledge-bot/knowledge-d6831-tech-innovators-it-compliance-bot"
+            target="_blank"
+          >
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              Compliance Bot
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
@@ -319,6 +334,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
               >
                 English Support
               </Button>
+
+              <Button
+                variant={"secondary"}
+                className="border border-gray-200 h-8 hover:cursor-pointer max-sm:text-xs"
+                onClick={() => scrollToView("assessment")}
+              >
+                Assessment
+              </Button>
             </div>
           </Div>
         </div>
@@ -465,6 +488,13 @@ const VersionOne = ({ user, helpModeText }: any) => {
               badgeText="English Support"
               user={user ? true : false}
               tests={englishSupport}
+            />
+          </div>
+          <div id="assessment">
+            <HeroAccordion
+              badgeText="Assessment"
+              user={user ? true : false}
+              tests={Assessment}
             />
           </div>
         </div>

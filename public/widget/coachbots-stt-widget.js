@@ -350,10 +350,17 @@ fetch(`${baseURL2}/accounts/`, {
             instructionsPaneList.innerHTML = list;
           }
         }
+      })
+      .catch((err) => {
+        console.log(err)
+        throw new Error("Error fetching client Info")
       });
     
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log(err)
+    throw new Error("Error User Info")
+  });
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -491,6 +498,10 @@ function isTestCode2(text) {
 function isDuplicateResponseStt(text) {
   return userResponses2.includes(text);
 }
+
+const capitalizeFirstLetterStt = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 function getAnonymousEmail() {
   const user_name = "coachbots_anonyoususer";
@@ -912,6 +923,7 @@ const handleEndFeedback = async () => {
     isFeedbackConvEnd = true;
   } catch (error) {
     console.error(`Error in get recommendation tests: ${error}`);
+    throw new Error("Error getting recommendation tests")
   }
 };
 
@@ -1099,6 +1111,7 @@ const getUserBotConversation = async (participant_id) => {
     }
   } catch (error) {
     console.error(`Error in getUserBotConversation: ${error}`);
+    throw new Error("Error in getting bot conversation")
   }
 };
 
@@ -1221,9 +1234,10 @@ const saveBotEngagement = (bot_id, user_id, field_name) => {
   )
     .then((response) => response.text())
     .then((result) => console.log("bot engagement button clicked", result))
-    .catch((error) =>
+    .catch((error) =>{
       console.error("got error in bot engagement button clicked", error)
-    );
+      throw new Error("Error in bot engagement button click")
+    });
 };
 
 const getUserProfile = async (user_id) => {
@@ -1245,7 +1259,10 @@ const getUserProfile = async (user_id) => {
         UserProfileInfo = userProfile;
       }
     })
-    .catch((error) => console.error("got error in user_profile", error));
+    .catch((error) => {
+      console.error("got error in user_profile", error)
+      throw new Error("Error getting user profiles")
+    });
 };
 
 const getIdps = async (user_id) =>{
@@ -1282,6 +1299,10 @@ const getBotDetails2 = async (botId) => {
         },
       }
     );
+
+    if(!response.ok){
+      throw new Error("Error getting bot info")
+    }
 
     const botDetails = await response.json();
     console.log("Bot Details : ", botDetails);
@@ -1737,7 +1758,7 @@ const getBotDetails2 = async (botId) => {
     //   const faqs = botDetails.faq;
     console.log("id", userId2, participantId2);
     console.log("id from web app", window.userIdFromWebApp);
-    if (!isBotConversationPopulated && !["feedback_bot",'deep_dive'].includes(botType)) {
+    if (!isBotConversationPopulated && !["feedback_bot",'deep_dive','user_bot'].includes(botType)) {
       populateBotConversation(window.userIdFromWebApp);
     }
     return botDetails;
@@ -3404,9 +3425,13 @@ const handleEndCoachingClick2 = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    appendMessage2(
-      `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
-    );
+    if (senarioCase2 === 'assessment'){
+      appendMessage2("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    } else {
+      appendMessage2(
+        `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+      );
+    }
     //   gShadowRoot.getElementById(
     //     `mcq-option-${mcqFormId}`
     //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -3903,9 +3928,7 @@ const audioCanvasUiForQuestions = (audio, canvas) => {
 
 const audioCanvasUI = (audio, canvas) => {
   const canvasCtx = canvas.getContext("2d");
-  console.log(canvasCtx);
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  console.log(audioCtx);
   const analyser = audioCtx.createAnalyser();
   const source = audioCtx.createMediaElementSource(audio);
 
@@ -4863,7 +4886,11 @@ async function setMcqVariablesStt() {
 
         if (window.user) {
           // append custom message to chat
-          const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+          let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+
+          if (senarioCase2 === 'assessment'){
+            message2 = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+          }
           appendMessage2(message2);
 
           //* send message to start new session
@@ -4975,8 +5002,11 @@ async function submitEmailAndName2() {
         increaseActionPointStt(userId2, "interaction_attempted");
       }
       // append custom message to chat
-      const message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+      let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
+      if (senarioCase2 === 'assessment'){
+        message2 = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+      }
       //* send message to start new session
       // if (!user2) {
       //   appendMessage2(message2);
@@ -7067,12 +7097,14 @@ loadExternalModule().then(() => {
     });
   };  
 
-  async function audioSourceOpen(
-    inputText,
-    audioDiv,
-    index,
-    randomTextForId
-  ) {
+  async function audioSourceOpen(inputText, audioDiv, index, randomTextForId) {
+    console.log(
+      "@audioSourceOpen : ",
+      inputText,
+      audioDiv,
+      index,
+      randomTextForId
+    );
     const audioElement = document.createElement("audio");
     audioElement.setAttribute(
       "id",
@@ -7083,14 +7115,14 @@ loadExternalModule().then(() => {
     canvasElement.setAttribute("id", `canvas-${index}-${randomTextForId}`);
     canvasElement.style.padding = "4px";
     canvasElement.style.borderRadius = "4px";
-    canvasElement.width = 100;
+    canvasElement.style.width = "100%";
     canvasElement.height = 40;
 
     audioCanvasUI(audioElement, canvasElement);
 
     audioElement.addEventListener("ended", () => {
-      canvasElement.remove()
-    })
+      canvasElement.remove();
+    });
 
     const mediaSource = new MediaSource();
     audioElement.src = URL.createObjectURL(mediaSource);
@@ -7104,65 +7136,75 @@ loadExternalModule().then(() => {
     mediaSource.addEventListener("sourceopen", async () => {
       const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
 
-      const response = await fetch("https://api.openai.com/v1/audio/speech", {
-        method: "POST",
-        headers: {
-          Authorization:
-            "Bearer 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",
+      try {
+        const response = await fetch("https://api.openai.com/v1/audio/speech", {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Bearer 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",
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: inputText,
-          model: "tts-1",
-          response_format: "mp3",
-          voice: "echo",
-        }),
-      });
-
-      const reader = response.body.getReader();
-
-      if (index === 0) {
-        reader.read().then(function process({ done, value }) {
-          if (done) {
-            if (mediaSource.readyState === "open") mediaSource.endOfStream();
-            return;
-          }
-          sourceBuffer.appendBuffer(value);
-
-          sourceBuffer.addEventListener("updateend", () => {
-            if (!sourceBuffer.updating && mediaSource.readyState === "open") {
-              reader.read().then(process);
-            }
-          });
+          },
+          body: JSON.stringify({
+            input: inputText,
+            model: "tts-1",
+            response_format: "mp3",
+            voice: "echo",
+          }),
         });
-      } else {
-        const shadowRootAud =
-          document.getElementById("chat-element2").shadowRoot;
-        const previousPlayer = shadowRootAud.getElementById(
-          `audio-player-stream-${index - 1}-${randomTextForId}`
-        );
-        if (previousPlayer) {
-          previousPlayer.addEventListener("ended", () => {
-            console.log("PLAYER HAS ENDED");
-            reader.read().then(function process({ done, value }) {
-              if (done) {
-                if (mediaSource.readyState === "open")
-                  mediaSource.endOfStream();
-                return;
-              }
-              sourceBuffer.appendBuffer(value);
 
-              sourceBuffer.addEventListener("updateend", () => {
-                if (
-                  !sourceBuffer.updating &&
-                  mediaSource.readyState === "open"
-                ) {
-                  reader.read().then(process);
-                }
-              });
+        if (!response.ok) {
+          audioElement.dispatchEvent(new Event("ended"));
+          throw new Error("Speech api error");
+        }
+
+        const reader = response.body.getReader();
+
+        if (index === 0) {
+          reader.read().then(function process({ done, value }) {
+            if (done) {
+              if (mediaSource.readyState === "open") mediaSource.endOfStream();
+              return;
+            }
+            sourceBuffer.appendBuffer(value);
+
+            sourceBuffer.addEventListener("updateend", () => {
+              if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+                reader.read().then(process);
+              }
             });
           });
+        } else {
+          const shadowRootAud =
+            document.getElementById("chat-element2").shadowRoot;
+          const previousPlayer = shadowRootAud.getElementById(
+            `audio-player-stream-${index - 1}-${randomTextForId}`
+          );
+          if (previousPlayer) {
+            previousPlayer.addEventListener("ended", () => {
+              console.log("PLAYER HAS ENDED");
+              reader.read().then(function process({ done, value }) {
+                if (done) {
+                  if (mediaSource.readyState === "open")
+                    mediaSource.endOfStream();
+                  return;
+                }
+                sourceBuffer.appendBuffer(value);
+
+                sourceBuffer.addEventListener("updateend", () => {
+                  if (
+                    !sourceBuffer.updating &&
+                    mediaSource.readyState === "open"
+                  ) {
+                    reader.read().then(process);
+                  }
+                });
+              });
+            });
+          }
         }
+      } catch (error) {
+        audioElement.dispatchEvent(new Event("ended"));
+        console.error("Speech API ERROR")
       }
     });
   }
@@ -7220,6 +7262,7 @@ loadExternalModule().then(() => {
     avatarImage.style.marginRight = "8px";
 
     avatarNode.appendChild(avatarImage)
+    const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
     const messageText = document.createElement("p");
 
@@ -7230,10 +7273,10 @@ loadExternalModule().then(() => {
     const likeDisLike = document.createElement("div")
     likeDisLike.setAttribute("style", "display:flex; flex-direction: row; gap: 8px; border-top: 2px solid lightgray; padding: 10px 0 6px 0; width: 100%; margin-top: 4px;")
     likeDisLike.innerHTML = `
-      <span class="like" id="likeIcon">
+      <span class="like" id="likeIcon-${randomIdForAudioElement}">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
       </span>
-      <span class="dislike" id="dislikeIcon" >
+      <span class="dislike" id="dislikeIcon-${randomIdForAudioElement}" >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thumbs-down"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
       </span>
       `;
@@ -7245,7 +7288,6 @@ loadExternalModule().then(() => {
 
     const shadowRoot = document.getElementById("chat-element2").shadowRoot;
     const allMessages = shadowRoot.getElementById("messages").childNodes;
-    const randomIdForAudioElement = generateRandomAlphanumeric(10);
 
     const audioDiv = document.createElement("div")
     audioDiv.setAttribute("id",`auido-div-${randomIdForAudioElement}`)
@@ -7273,9 +7315,20 @@ loadExternalModule().then(() => {
       const decoder = new TextDecoder("utf-8");
 
       let index = 0;
+      let text = ""
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
+
+         if(streamWithAudio){
+          messageBubble.appendChild(audioDiv)
+          audioSourceOpen(
+            text,
+            audioDiv,
+            0,
+            randomIdForAudioElement
+          );
+         }
           
           allMessages.forEach((indvMessage) => {
             if (
@@ -7302,8 +7355,8 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 "Please explain your question or comment in different words which I may be able to understand better.",
                 audioDiv,
-                index,
-                randomTextForId
+                1,
+                randomIdForAudioElement
               );
             }
           }
@@ -7317,8 +7370,8 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 " If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.",
                 audioDiv,
-                index,
-                randomTextForId
+                1,
+                randomIdForAudioElement
               );
             }
           } else if (messageText.innerText === "" && botType !== "user_bot") {
@@ -7328,7 +7381,7 @@ loadExternalModule().then(() => {
               audioSourceOpen(
                 "... Excuse me, I just lost my thought. If you havent got what you wanted, please ask me again.",
                 audioDiv,
-                index,
+                1,
                 randomIdForAudioElement
               );
             }
@@ -7337,8 +7390,8 @@ loadExternalModule().then(() => {
           botPreviousConversationHistory.push(messageText.innerText)
           messageBubble.appendChild(likeDisLike);
           setTimeout(() => {
-            const likeIcon = gShadowRoot2.getElementById("likeIcon");
-            const dislikeIcon = gShadowRoot2.getElementById("dislikeIcon");
+            const likeIcon = gShadowRoot2.getElementById(`likeIcon-${randomIdForAudioElement}`);
+            const dislikeIcon = gShadowRoot2.getElementById(`dislikeIcon-${randomIdForAudioElement}`);
             console.log(likeIcon, dislikeIcon)
 
             // Add hover effect
@@ -7466,16 +7519,17 @@ loadExternalModule().then(() => {
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
      
-        if (streamWithAudio) {
-          messageBubble.appendChild(audioDiv)
-          audioSourceOpen(
-            decodedText,
-            audioDiv,
-            index,
-            randomIdForAudioElement
-          );
-        }
+        // if (streamWithAudio) {
+        //   messageBubble.appendChild(audioDiv)
+        //   audioSourceOpen(
+        //     decodedText,
+        //     audioDiv,
+        //     index,
+        //     randomIdForAudioElement
+        //   );
+        // }
         messageText.innerText += excludeSpecialCharacters(decodedText);
+        text += excludeSpecialCharacters(decodedText)
         signals.onResponse({
           html: ".",
         });
@@ -7945,7 +7999,10 @@ loadExternalModule().then(() => {
                   html: thumbsupdiv,
                 });
               } else {
-                const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                if (senarioCase2 === 'assessment'){
+                  message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                }
                 appendMessage2(message);
                 // //* send message to start new session
                 signals.onResponse({
@@ -8480,6 +8537,10 @@ loadExternalModule().then(() => {
                   allowAudioInteraction = false
                 }
 
+                if(botType === 'user_bot'){
+                  allowAudioInteraction = true
+                }
+
               }
               console.log("allowAudioInteraction => ", allowAudioInteraction)
               
@@ -8499,7 +8560,7 @@ loadExternalModule().then(() => {
                   signals,
                   conversation_id2,
                   latestMessage,
-                  allowAudioInteraction,
+                  true, // True by Default | allowAudioInteraction,
                   "gemini-1.5-pro",
                   "gemini-1.5-flash"
                 );
@@ -9981,9 +10042,11 @@ loadExternalModule().then(() => {
                       let strList = questionText2
                         .replaceAll("*", "")
                         .split(":", 2);
+                      
+
                       if (strList.length > 1) {
                         questionText2 = strList[1];
-                        responderName = `<b>${strList[0]}:</b><br>`;
+                        responderName = `<b>${capitalizeFirstLetterStt(strList[0])}:</b><br>`;
                       }
                       if (isImmersiveStt) {
                         questionText2 = await TTSContainerSTT(questionText2);
@@ -10319,7 +10382,7 @@ loadExternalModule().then(() => {
                       const qRespnse2 = await questionResponse2.json();
                       questionText2 = qRespnse2["response_text"];
                       // checking if botname is present or not
-                      responder_name2 = qRespnse2.responder_display_name;
+                      responder_name2 = capitalizeFirstLetterStt(qRespnse2.responder_display_name);
                       if (!questionText2.includes(responder_name2)) {
                         questionText2 = responder_name2 + " : " + questionText2;
                       }
@@ -10478,7 +10541,10 @@ loadExternalModule().then(() => {
                   // }
                   if (window.user) {
                     // sendEmail();
-                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    if (senarioCase2 === 'assessment'){
+                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    }
                     appendMessage2(message);
                     // //* send message to start new session
                     signals.onResponse({

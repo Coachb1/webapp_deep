@@ -3,114 +3,25 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import Link from "next/link";
-import { ExternalLink, Link2, Loader } from "lucide-react";
+import { ExternalLink, Loader } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { useRouter } from "next/navigation";
-import { baseURL, basicAuth, getUserAccount } from "@/lib/utils";
+import { baseURL, basicAuth } from "@/lib/utils";
 import HelpMode from "@/components/HelpMode";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
-import { KudosDetailsType } from "@/lib/types";
+import MeetingPrefrences from "./MeetingPreferences";
 
 const UserProfile = ({ user, userRole, helpModeText }: any) => {
-  // const [candidateReportUrl, setCandidateReportUrl] = useState("");
   const [testAttempedCount, setTestAttemptedCount] = useState();
   const pathname = useRouter();
 
-  // const [userId, setUserId] = useState("");
-  // const [userKudosData, setUserKudosData] = useState<KudosDetailsType[]>([]);
-  // const [totalUsersForFeedback, setTotalUsersForFeedback] = useState();
-
   const [userAllowAudioInteractions, setUserAllowAudioInteractions] =
     useState(false);
-  // const [clientAllowAudioInteractions, setClientAllowAudioInteractions] =
-  //   useState(false);
   const [interactionLoading, setInteractionLoading] = useState(false);
 
   const [plLoading, setplLoading] = useState(false);
-  // const getLeaderboardPosition = (userId: string, profileType: string) => {
-  //   fetch(
-  //     `${baseURL}/accounts/participant-leader-board-report/?email=${user.email}&by_category=true`,
-  //     {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: basicAuth,
-  //       },
-  //     }
-  //   )
-  //     .then((res) => res.json())
-  //     .then((dataa) => {
-  //       console.log(dataa);
-
-  //       if (profileType === "coach" || profileType === "mentor") {
-  //         dataa = dataa.coach_mentor;
-  //       } else if (profileType === "coachee" || profileType === "mentee") {
-  //         dataa = dataa.coachee_mentee;
-  //       } else {
-  //         dataa = dataa.full_data;
-  //       }
-
-  //       const userDetails = dataa.map(
-  //         (data: PartifipantsforLeaderBoardTypes, i: number) => {
-  //           return {
-  //             name: data.name,
-  //             user_id: data.user_id,
-  //             total_count: dataa.length,
-  //             rating: data.total_score === 0 ? dataa.length : data.rating,
-  //           };
-  //         }
-  //       );
-
-  //       const positionedUser: PositionedUserTypes[] = userDetails.filter(
-  //         (userr: PositionedUserTypes) => userr.user_id === userId
-  //       );
-
-  //       console.log(positionedUser);
-  //       setUserPositionDetails(positionedUser);
-  //       setplLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setplLoading(false);
-  //     });
-  // };
-
-  // const [kudosLoading, setKudosLoading] = useState(true);
-  // const getKudosCounts = (userId: string) => {
-  //   fetch(
-  //     `${baseURL}/accounts/feedback-leaderboard-report/?email=${user.email}`,
-  //     {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: basicAuth,
-  //       },
-  //     }
-  //   )
-  //     .then((res) => res.json())
-  //     .then((dataa) => {
-  //       console.log("lead", dataa, user.email);
-
-  //       const FilteredUserDataForKudos = dataa.group.filter(
-  //         (data: KudosDetailsType) => {
-  //           if (data.user_id === userId) {
-  //             return {
-  //               ...data,
-  //               total_users: dataa.group.length,
-  //             };
-  //           }
-  //         }
-  //       );
-  //       console.log(FilteredUserDataForKudos);
-  //       setTotalUsersForFeedback(dataa.group.length);
-  //       setUserKudosData(FilteredUserDataForKudos);
-  //       setKudosLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       setKudosLoading(false);
-  //     });
-  // };
 
   const [isAllowToggle, setIsAllowToggle] = useState(false);
   const [HelpModeSteps, setHelpModeSteps] = useState<any[]>([]);
@@ -125,6 +36,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     userPositionDetails,
     kudosData: { totalUsersForFeedback, userKudosData },
     getAllUserData,
+    coachId,
   } = useUser();
 
   useEffect(() => {
@@ -208,65 +120,6 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
     } else {
       setIsAllowToggle(false);
     }
-
-    // try {
-    //   if (user) {
-    //     getUserAccount(user)
-    //       .then((response) => response.json())
-    //       .then(async (data) => {
-    //         console.log("user_profile", data);
-
-    //         if (data.client_allow_audio_interactions) {
-    //           setIsAllowToggle(true);
-    //         } else {
-    //           setIsAllowToggle(false);
-    //         }
-
-    //         const userId = data.uid;
-    //         setUserId(userId);
-    //         await fetch(`${baseURL}/frontend-auth/get-report-url/`, {
-    //           method: "POST",
-    //           headers: {
-    //             Authorization: basicAuth,
-    //             "Content-Type": "application/json",
-    //           },
-    //           body: JSON.stringify({
-    //             user_id: data.uid,
-    //             report_type: "participantReport",
-    //             candidate_id: data.uid,
-    //           }),
-    //         })
-    //           .then((response) => response.json())
-    //           .then(async (data) => {
-    //             setCandidateReportUrl(data.url);
-    //             await fetch(
-    //               `${baseURL}/test-attempt-sessions/get-attempted-test-list/?user_id=${userId}`,
-    //               {
-    //                 method: "GET",
-    //                 headers: {
-    //                   Authorization: basicAuth,
-    //                   "Content-Type": "application/json",
-    //                 },
-    //               }
-    //             )
-    //               .then((response) => response.json())
-    //               .then((data) => {
-    //                 setTestAttemptedCount(data["data"]["total_session"]);
-    //               })
-    //               .catch((error) => {
-    //                 console.error(`Error in getAttemptedTestList: ${error}`);
-    //               });
-    //           })
-    //           .catch((error) => {
-    //             console.error("Error getting report", error);
-    //           });
-    //         getLeaderboardPosition(data.uid, data.profile_type);
-    //         getKudosCounts(data.uid);
-    //       });
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
   }, []);
 
   const allowAudioInteractionHandler = (type: boolean) => {
@@ -297,6 +150,7 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
       })
       .catch((err) => {
         toast.error("Error, try again.");
+        throw new Error("Error updating user preferences (audio interaction)");
         console.error(err);
       })
       .finally(() => {
@@ -397,6 +251,21 @@ const UserProfile = ({ user, userRole, helpModeText }: any) => {
             </div>
           </div>
         </>
+        {coachId && (
+          <>
+            <hr />
+            <div
+              id="meetings-availability"
+              className="flex flex-row items-center  my-4 w-fit"
+            >
+              <div className="text-sm max-sm:text-xs min-w-fit flex flex-row items-center">
+                <span className="mr-4"> Your meeting preferences </span>{" "}
+                <MeetingPrefrences />
+              </div>
+            </div>
+          </>
+        )}
+
         <hr />
         <div className="mt-4 mb-4">
           <div

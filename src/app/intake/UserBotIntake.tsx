@@ -446,9 +446,18 @@ const UserBotIntake = ({
               setSubmitLoading(false);
               console.error(err);
               toast.error("Error creating your user bot, Please try again.");
+              throw new Error(
+                "Error creating your user bot, Please try again."
+              );
             });
         } else {
-          toast.error("Error creating your user bot, Please try again.");
+          if (data.error === "Bot already exists") {
+            toast.error(
+              "This bot already exists, please change the Name of the bot and try again."
+            );
+          } else {
+            toast.error("Error creating your Knowledge Bot, Please try again.");
+          }
         }
         setSubmitLoading(false);
       })
@@ -456,6 +465,7 @@ const UserBotIntake = ({
         console.error(err);
         toast.loading("Error creating your user bot, Please try again.");
         setSubmitLoading(false);
+        throw new Error("Error creating user bot.");
       });
     // }
   };
@@ -920,8 +930,8 @@ const UserBotIntake = ({
                   {(error as any)["releventLinks"]}
                 </p>
               )} */}
-              {/* @ts-ignore */}
-              {/* {mediaData?.extracted_from_youtube.length > 0 && (
+            {/* @ts-ignore */}
+            {/* {mediaData?.extracted_from_youtube.length > 0 && (
                 <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                   {mediaData?.extracted_from_youtube.map((item) => (
                     <div className="flex flex-row justify-between items-center">
@@ -978,8 +988,8 @@ const UserBotIntake = ({
                   ))}
                 </div>
               )} */}
-              {/* @ts-ignore */}
-              {/* {mediaData?.extracted_from_article.length > 0 && (
+            {/* @ts-ignore */}
+            {/* {mediaData?.extracted_from_article.length > 0 && (
                 <div className="w-full mt-1 bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
                   {mediaData?.extracted_from_article.map((item) => (
                     <div className="flex flex-row justify-between items-center">

@@ -521,6 +521,9 @@ function isDuplicateResponse(text) {
   return userResponses.includes(text);
 }
 
+const capitalizeFirstLetter = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 //* add a custom message to chat
 function appendMessage(message) {
   gShadowRoot = document.getElementById("chat-element").shadowRoot;
@@ -1090,9 +1093,13 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          appendMessage(
-            `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
-          );
+          if (senarioCase === 'assessment'){
+            appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+          } else {
+            appendMessage(
+              `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+            );
+          }
           //   gShadowRoot.getElementById(
           //     `mcq-option-${mcqFormId}`
           //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -1614,9 +1621,14 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    appendMessage(
-      `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
-    );
+    if (senarioCase === 'assessment'){
+      appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    } else {
+      appendMessage(
+        `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
+      );
+    }
+    
     //   gShadowRoot.getElementById(
     //     `mcq-option-${mcqFormId}`
     //   ).innerHTML = `<p>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</p>`;
@@ -3748,7 +3760,7 @@ loadExternalModule().then(() => {
           questionText = testResponseText.response_text;
 
           // checking if botname is present or not
-          const responder_name = testResponseText.responder_display_name;
+          const responder_name = capitalizeFirstLetter(testResponseText.responder_display_name);
           if (!questionText.includes(responder_name)) {
             questionText = responder_name + " : " + questionText;
           }
@@ -3955,7 +3967,7 @@ loadExternalModule().then(() => {
               let strList = questionText.replaceAll("*", "").split(":", 2);
               if (strList.length > 1) {
                 questionText = strList[1];
-                responderName = `<b>${strList[0]}:</b><br>`;
+                responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
               }
               if (isImmersive) {
                 questionText = await TTSContainer(questionText);
@@ -4196,7 +4208,7 @@ loadExternalModule().then(() => {
                   console.log(stringList);
                   let responderName;
                   if (stringList.length > 1) {
-                    responderName = `<b>${stringList[0]}:</b><br>`;
+                    responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
                     questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                   }
                   if (isImmersive && questionIndex != 0) {
@@ -4339,7 +4351,10 @@ loadExternalModule().then(() => {
                     //* send report message or form to collect data : start
                     if (window.user) {
                       // sendEmail();
-                      const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      if (senarioCase === 'assessment'){
+                        message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      }
                       appendMessage(message);
                       // //* send message to start new session
                       signals.onResponse({
@@ -4434,7 +4449,10 @@ loadExternalModule().then(() => {
             } else {
               isEmailForm = false;
 
-              const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+              if (senarioCase === 'assessment'){
+                message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+              }
               appendMessage(message);
               // //* send message to start new session
 
@@ -5493,7 +5511,7 @@ loadExternalModule().then(() => {
                       let strList = questionText.replaceAll("*", "").split(":", 2);
                       if (strList.length > 1) {
                         questionText = strList[1];
-                        responderName = `<b>${strList[0]}:</b><br>`;
+                        responderName = `<b>${capitalizeFirstLetter(strList[0])}:</b><br>`;
                       }
                       if (isImmersive) {
                         questionText = await TTSContainer(questionText);
@@ -5826,7 +5844,7 @@ loadExternalModule().then(() => {
                       questionText = qRespnse["response_text"];
                       console.log('dynamic or orch response',qRespnse)
                       // checking if botname is present or not
-                      const responder_name = qRespnse.responder_display_name;
+                      const responder_name = capitalizeFirstLetter(qRespnse.responder_display_name);
                       if (!questionText.includes(responder_name)) {
                         questionText = responder_name + " : " + questionText;
                       }
@@ -5853,7 +5871,7 @@ loadExternalModule().then(() => {
                     console.log(stringList);
                     let responderName;
                     if (stringList.length > 1) {
-                      responderName = `<b>${stringList[0]}:</b><br>`;
+                      responderName = `<b>${capitalizeFirstLetter(stringList[0])}:</b><br>`;
                       questionText = excludeSpecialCharacters2(stringList.join("").replace(stringList[0], ""));
                     }
                     if (isImmersive && questionIndex != 0) {
@@ -6013,7 +6031,10 @@ loadExternalModule().then(() => {
                   //* send report message or form to collect data : start
                   if (window.user) {
                     // sendEmail();
-                    const message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                    if (senarioCase === 'assessment'){
+                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    }
                     appendMessage(message);
                     // //* send message to start new session
 

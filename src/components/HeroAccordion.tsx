@@ -55,7 +55,8 @@ const HeroAccordion = ({ tests, badgeText, user, id }: testTypes) => {
                                 <b>{test.domain}</b>
                               ) : (
                                 <>
-                                  <b>{test.domain}</b> - {test.title}
+                                  <b>{test.domain}</b>{" "}
+                                  {test.domain && <span> - </span>} {test.title}
                                 </>
                               )}
                             </div>
