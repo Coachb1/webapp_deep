@@ -769,23 +769,27 @@ const handleFeedbackSubmit = async () => {
     is_positive: IsPositiveFeedback ? "True" : "False",
   });
 
-  console.log('user_email',FeedbackUserEmail)
+  console.log('user_email',FeedbackUserEmail,queryparams)
 
   // sending feedback conversation to bot owner
-  const response = await fetch(
-    `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
+  try{
+    await fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("feedback email sent : ", data);
+      });
+    } catch(err){
+      console.log(`Failed to send transcript email: ${err}`)
     }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Dynamic mcq response : ", data);
-    });
 
   // saving feedback to database
   const queryparam = new URLSearchParams({
@@ -810,7 +814,7 @@ const handleFeedbackSubmit = async () => {
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log("Dynamic mcq response : ", data);
+      console.log("Feedback Submit response : ", data);
     });
 };
 const handleEndFeedback = async () => {
@@ -867,7 +871,8 @@ const handleEndFeedback = async () => {
     .then((response) => response.json())
     .then((data) => {
       console.log(" response : ", data);
-    });
+    })
+    .catch((err)=> {console.log(err);});
 
   // resetAllVariablesStt()
   appendMessage2(
@@ -978,6 +983,7 @@ const feedbackBotQnAFlow = (flow) => {
     //   );
     // }, 200);
   } else if (flow === "down") {
+    IsPositiveFeedback=false
     console.log("### FeedbackbotQuestions before rename => ", feedbackBotQuestions)
     feedbackBotQuestions = renameKey(initialfeedbackBotQuestions);
     console.log("### FeedbackbotQuestions  after rename => ", feedbackBotQuestions)
