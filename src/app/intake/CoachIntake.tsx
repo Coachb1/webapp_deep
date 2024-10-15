@@ -839,7 +839,7 @@ const CoachIntake = ({ user }: any) => {
               .then((result) => {
                 console.log(result);
 
-                const queryparam = new URLSearchParams({
+                const fitmentData = {
                   method: "post",
                   qna: JSON.stringify({
                     "1": {
@@ -863,16 +863,18 @@ const CoachIntake = ({ user }: any) => {
                   }),
                   qna_type: "fitment",
                   user_id: userId,
-                });
+                }
+                const queryparam = new URLSearchParams(fitmentData);
 
                 const resp = fetch(
-                  `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
+                  `${baseURL}/accounts/get-user-feedback-data/`,
                   {
-                    method: "GET",
+                    method: "POST",
                     headers: {
                       Authorization: basicAuth,
                       "Content-Type": "application/json",
                     },
+                    body: JSON.stringify(fitmentData)
                   }
                 );
 

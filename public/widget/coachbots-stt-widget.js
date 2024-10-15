@@ -793,8 +793,8 @@ const handleFeedbackSubmit = async () => {
       console.log(`Failed to send transcript email: ${err}`)
     }
 
-  // saving feedback to database
-  const queryparam = new URLSearchParams({
+
+  const feedbackData = {
     method: "post",
     qna: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
@@ -802,16 +802,19 @@ const handleFeedbackSubmit = async () => {
     qna_type: "feedback",
     user_id: userId2,
     is_anonymous: isAnonymous ? "True" : "False",
-  });
+  }
+  // saving feedback to database
+  const queryparam = new URLSearchParams(feedbackData);
 
   const resp = await fetch(
-    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    `${baseURL2}/accounts/get-user-feedback-data/`,
     {
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(feedbackData)
     }
   )
     .then((response) => response.json())
@@ -849,8 +852,8 @@ const handleEndFeedback = async () => {
     .then((data) => {
       console.log("Dynamic mcq response : ", data);
     });
-
-  const queryparam = new URLSearchParams({
+  
+  const feedData = {
     method: "post",
     qna: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
@@ -858,16 +861,18 @@ const handleEndFeedback = async () => {
     qna_type: "feedback",
     is_anonymous: isAnonymous ? "True" : "False",
     user_id: userId2,
-  });
+  }
+  const queryparam = new URLSearchParams(feedData);
 
   const resp = await fetch(
-    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    `${baseURL2}/accounts/get-user-feedback-data/`,
     {
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(feedData)
     }
   )
     .then((response) => response.json())
@@ -1816,22 +1821,24 @@ const handleFitmentAnalysis = async () => {
   ).innerHTML = "<b>Please Wait...</b>";
 
   // console.log(userId2, participantId2);
+  const fitmentData = {
+    method: "post",
+    qna: JSON.stringify(fitmentAnalysisQnA),
+    qna_type: "fitment",
+    user_id: participantId2,
+  }
   try {
-    const queryparam = new URLSearchParams({
-      method: "post",
-      qna: JSON.stringify(fitmentAnalysisQnA),
-      qna_type: "fitment",
-      user_id: participantId2,
-    });
+    const queryparam = new URLSearchParams(fitmentData);
 
     const resp = await fetch(
-      `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+      `${baseURL2}/accounts/get-user-feedback-data/`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(fitmentData)
       }
     );
 
@@ -8307,18 +8314,19 @@ loadExternalModule().then(() => {
                   isIntakeInProgress = false;
                   isAskingInitialQuestions = false;
                   //********** submit intake to backend: start */
-                  const queryparam = new URLSearchParams({
+                  const intakeData = {
                     method: "post",
                     qna: JSON.stringify(botInitialQuestionsQnA),
                     bot_id: botId,
                     is_positive: "False",
                     qna_type: "initial_qna",
                     user_id: userId2,
-                  });
+                  }
+                  const queryparam = new URLSearchParams(intakeData);
                   const resp = await fetch(
-                    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+                    `${baseURL2}/accounts/get-user-feedback-data/`,
                     {
-                      method: "GET",
+                      method: "POST",
                       headers: {
                         Authorization: `Basic ${createBasicAuthToken2(
                           key2,
@@ -8326,6 +8334,8 @@ loadExternalModule().then(() => {
                         )}`,
                         "Content-Type": "application/json",
                       },
+                      body: JSON.stringify(intakeData)
+
                     }
                   )
                     .then((response) => response.json())
