@@ -615,8 +615,8 @@ const getUserOrAnonymousDetails = async (choice) => {
   console.log(choice);
   disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
   if (choice === "No") {
+    isAnonymous = false;
     if (!window.user) {
-      isAnonymous = false;
       let emailForm;
       if (window.innerWidth > 768) {
         emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
@@ -760,27 +760,29 @@ const handleFeedbackSubmit = async () => {
   </div>
     `);
   increaseActionPointStt(userId2, "feedback_given");
-  const queryparams = new URLSearchParams({
+  const body_data = {
     conversation: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
     type_of_email: "feedback_conv",
     user_email: FeedbackUserEmail,
     user_name: feedbackUserName,
     is_positive: IsPositiveFeedback ? "True" : "False",
-  });
+  }
+  const queryparams = new URLSearchParams(body_data);
 
   console.log('user_email',FeedbackUserEmail,queryparams)
 
   // sending feedback conversation to bot owner
   try{
     await fetch(
-      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify(body_data)
       }
     )
       .then((response) => response.json())
