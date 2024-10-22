@@ -1331,9 +1331,9 @@ const getBotDetails2 = async (botId) => {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
       botWelcomeMessage = " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
-    } else if (botType === "avatar_bot") {
+    } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
-        "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
+        botType=== 'avatar_bot' ? "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!" : "Hello! Welcome to your \"Subjected\" coaching assistant. Please don't hesitate to ask questions about this subject matter and continue your session. The session transcripts are available to view later.";
 
         const shadowRoot = document.getElementById("chat-element2").shadowRoot;
         console.log(shadowRoot.getElementById("text-input"));
@@ -1464,7 +1464,7 @@ const getBotDetails2 = async (botId) => {
         `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
     }
 
-    if (["avatar_bot"].includes(botType)) {
+    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       const dropdownButton = document.createElement("button");
       dropdownButton.id = "styles-dropdown-button";
       dropdownButton.innerHTML = dropdownButtonText;
@@ -1596,7 +1596,7 @@ const getBotDetails2 = async (botId) => {
       });
     }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive'].includes(botType)) {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive',"subject_specific_bot"].includes(botType)) {
       // faqButtonsGenerator("fitness_analysis", "Match Score");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1647,7 +1647,7 @@ const getBotDetails2 = async (botId) => {
 
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
-    if (["avatar_bot" ,'deep_dive'].includes(botType)) {
+    if (["avatar_bot", "subject_specific_bot" ,'deep_dive'].includes(botType)) {
       endSessionButton = document.createElement("button");
       endSessionButton.setAttribute(
         "style",
@@ -2710,7 +2710,7 @@ async function handleFaqButtonClick(question) {
       }
 
       if (
-        ["avatar_bot", "helper_bot", "coachbots"].includes(botType) &&
+        ["avatar_bot", "helper_bot", "coachbots","subject_specific_bot"].includes(botType) &&
         !['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)
       ) {
         // const begginSessionMessage = `<div  style="display: flex; flex-direction: column; margin: 0; padding: 0;">
@@ -2776,7 +2776,7 @@ async function handleFaqButtonClick(question) {
       // because we are creating session on every in avatar and deepdive
       if (
           previousBotConversationId != "" &&
-          !['avatar_bot','deep_dive'].includes(botType)  
+          !['avatar_bot','deep_dive','subject_specific_bot'].includes(botType)  
           ) {
           conversation_id2 = previousBotConversationId.split(":")[0];
           sessionId2 = previousBotConversationId.split(":")[1];
@@ -8348,7 +8348,7 @@ loadExternalModule().then(() => {
                     text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                   });
                   // ****** enabling begin session button
-                  if (botType === "avatar_bot") {
+                  if (['avatar_bot', "subject_specific_bot"].includes(botType)) {
                     const begginSessionButton = document.getElementById("begin-session-button");
                     begginSessionButton.setAttribute(
                       "onmouseover",
@@ -8944,7 +8944,7 @@ loadExternalModule().then(() => {
                 }
               }
               setTimeout(() => {
-                if (["avatar_bot","deep_dive"].includes(botType)) {
+                if (["avatar_bot","deep_dive","subject_specific_bot"].includes(botType)) {
                   console.log("endSessionButton:", endSessionButton.disabled);
                   // if (endSessionButton && endSessionButton.disabled) {
                   //   endSessionButton.setAttribute(
