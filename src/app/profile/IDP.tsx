@@ -15,6 +15,7 @@ import {
   basicAuth,
   convertDateWithTime,
   getUserAccount,
+  reportsLinksSelector,
 } from "@/lib/utils";
 import { UserIDPsType } from "@/lib/types";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
@@ -114,7 +115,7 @@ const IDP = ({ user }: any) => {
                           {convertDateWithTime(idp.created)}
                         </p>{" "}
                         <div className="text-gray-400 bg-gray-400 h-5 w-[2px]" />
-                        <Link href={idp.report} target="_blank">
+                        <Link href={`${reportsLinksSelector()}/${idp.report.replace(/^https?:\/\/[^\/]+/, '')}`} target="_blank">
                           <Button
                             variant={"outline"}
                             className="h-6 text-xs w-fit bg-gray-50 border-gray-300 "
@@ -136,7 +137,7 @@ const IDP = ({ user }: any) => {
                           className="h-6 text-xs w-fit bg-blue-200"
                           onClick={() => {
                             navigator.clipboard
-                              .writeText(idp.report)
+                              .writeText(`${reportsLinksSelector()}/${idp.report.replace(/^https?:\/\/[^\/]+/, '')}`)
                               .then(() => {
                                 toast.success(
                                   "Successfuly Copied your link to clipboard!",
