@@ -79,7 +79,7 @@ const AdminProfile = ({
         </p>
         <Button className="ml-8 h-6 w-fit max-sm:ml-2">
           <Link
-            href={`https://coach-api-ovh.coachbots.com/api/test-bulk-upload`}
+            href={`${baseURL}/api/test-bulk-upload`}
             target="_blank"
             className="max-sm:text-xs"
           >
@@ -93,7 +93,7 @@ const AdminProfile = ({
         </p>
         <Button className="ml-8 h-6 w-fit max-sm:ml-2">
           <Link
-            href={`https://coach-api-ovh.coachbots.com/custom-admin`}
+            href={`${baseURL}/custom-admin`}
             target="_blank"
             className="max-sm:text-xs"
           >
