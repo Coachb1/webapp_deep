@@ -98,6 +98,9 @@ export interface CoachesDataType {
     scheduling_link: string;
     days_selected: string;
   } | null;
+  subject_specific_bot_url?: string;
+  subject_specific_bot_id?: string;
+  subject_specific_bot_snippit?: string;
 }
 
 interface FilterCategoriesType {

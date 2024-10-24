@@ -268,8 +268,10 @@ export function ParticipantListItemCard({
                   </>
                 )}
               {requestConnectionComponent}
-              {coach?.avatar_bot_id !== null &&
-                coach?.avatar_bot_url !== "" && (
+              {(coach?.avatar_bot_id !== null ||
+                coach?.subject_specific_bot_id !== null) &&
+                (coach?.avatar_bot_url !== "" ||
+                  coach?.subject_specific_bot_url !== "") && (
                   <>
                     <div className="max-sm:w-full max-md:w-full max-lg:w-full">
                       <Button
@@ -282,7 +284,11 @@ export function ParticipantListItemCard({
                         }
                       >
                         <Link
-                          href={handleLinks(coach.avatar_bot_url)}
+                          href={handleLinks(
+                            coach.avatar_bot_url ||
+                              coach.subject_specific_bot_url ||
+                              ""
+                          )}
                           target="_blank"
                           className="flex flex-row items-center"
                         >
