@@ -169,7 +169,6 @@ const MyPages = ({ user }: any) => {
     profile_id: string,
     profile_type: string
   ) => {
-    console.log({ botType, bot_id, profile_id, profile_type });
     if (
       profile_type === "coach" ||
       profile_type === "mentor" ||

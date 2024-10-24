@@ -675,6 +675,9 @@ const CoachIntake = ({ user }: any) => {
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    console.log({});
+
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {
         if (user) {
@@ -881,7 +884,7 @@ const CoachIntake = ({ user }: any) => {
               } else {
                 if (formVersion === "2") {
                   formdata.append("bot_type", "subject_specific_bot");
-                  if (checkIfEdit) {
+                  if (!checkIfEdit) {
                     formdata.append(
                       "bot_data",
                       JSON.stringify({
@@ -2166,19 +2169,26 @@ const CoachIntake = ({ user }: any) => {
                 //     .fitment_answers?.coachmentSelect
                 // );
 
-                setParticipantLevel(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.participantLevel
-                );
+                if (formVersion === "3") {
+                  setParticipantLevel(
+                    resultingBot.signature_bot.data.additional_data
+                      .fitment_answers[0]
+                  );
 
-                // setCochMentInSameDep(
-                //   [true, "true", "True"].includes(
-                //     resultingBot.signature_bot.data.additional_data
-                //       .fitment_answers[1]
-                //   )
-                //     ? "Yes"
-                //     : "No"
-                // );
+                  setCochMentInSameDep(
+                    [true, "true", "True"].includes(
+                      resultingBot.signature_bot.data.additional_data
+                        .fitment_answers[1]
+                    )
+                      ? "Yes"
+                      : "No"
+                  );
+
+                  setOutcomeSupported(
+                    resultingBot.signature_bot.data.additional_data
+                      .fitment_answers[2]
+                  );
+                }
                 // if (formVersion === "2") {
                 setBotName(resultingBot.bot_attributes?.bot_name || "");
                 setIntakeBotDescription(
@@ -2190,15 +2200,15 @@ const CoachIntake = ({ user }: any) => {
                     ?.bot_area_of_coaching || ""
                 );
                 // }
-                setCochMentInSameDep(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.coachMentInSameDep
-                );
+                // setCochMentInSameDep(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.coachMentInSameDep
+                // );
 
-                setOutcomeSupported(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers?.outcomeSupported
-                );
+                // setOutcomeSupported(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.outcomeSupported
+                // );
 
                 setPhrasesNExpressions(
                   resultingBot.signature_bot.data.additional_data
