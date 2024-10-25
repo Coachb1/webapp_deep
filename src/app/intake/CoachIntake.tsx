@@ -2709,7 +2709,7 @@ const CoachIntake = ({ user }: any) => {
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start max-sm:gap-2 justify-between">
                 <h1 className="text-xl text-left text-gray-600 font-bold">
-                  Coach & Mentor Intake
+                  Coach Intake
                 </h1>
                 {checkIfView && (
                   <Badge
@@ -3259,6 +3259,50 @@ const CoachIntake = ({ user }: any) => {
                                 {(error as any)["coachingArea"]}
                               </p>
                             )}
+                          </div>
+
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Would you like your bot to provide expressive
+                              answers using emojis?{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <div className="my-2 mb-3">
+                              <RadioGroup
+                                disabled={checkIfView === null ? false : true}
+                                required
+                                value={provideAnswersUsingEmojis}
+                                onValueChange={(value) => {
+                                  setDataModified(true);
+                                  setProvideAnswersUsingEmojis(value);
+                                }}
+                              >
+                                {["Yes", "No"].map((val, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-center space-x-2 "
+                                  >
+                                    <RadioGroupItem
+                                      value={val}
+                                      id={`r${i}+emojis ${val}`}
+                                    />
+                                    <label
+                                      htmlFor={`r${i}+emojis ${val}`}
+                                      className="text-xs text-gray-700"
+                                    >
+                                      {capitalizeText(val)}
+                                    </label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                              {Object.keys(error).includes("UseEmoji") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["UseEmoji"]}
+                                </p>
+                              )}
+                            </div>
                           </div>
 
                           <>
@@ -4648,7 +4692,7 @@ const CoachIntake = ({ user }: any) => {
                           </div>
                         )}
 
-                        {formVersion !== "1" && (
+                        {formVersion !== "1" && formVersion !== "2" && (
                           <div className="my-3">
                             <p className="text-sm my-1">
                               Would you like your AI Avatar to provide
