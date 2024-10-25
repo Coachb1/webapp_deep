@@ -351,10 +351,29 @@ const CoachIntake = ({ user }: any) => {
         })
         .catch((err) => console.error(err));
     }
-  };
+  };    
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, errorKey:string) => {
+    const fileList = e.target.files; // Get the FileList
+    if (!fileList) return; // Early return if fileList is null
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDataModified(true);
+    const files = Array.from(fileList); // Convert FileList to an array
+    const validExtensions = [".pdf", ".docx"];
+
+    const invalidFiles = files.filter((file) =>
+      !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
+  );
+
+  console.log(invalidFiles.length)
+  
+  if (invalidFiles.length > 0) {
+    setError((prevErrors) => ({ ...prevErrors, [errorKey]: "Only .pdf and .docx files are allowed." }));
+    e.target.value = ""; // Clear the input
+    console.log(error)
+    return;
+  } else {
+    setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
+  }
+  setDataModified(true);
     const selectedFiles = e.target?.files;
     const input_name = e.target?.name;
 
@@ -2709,7 +2728,7 @@ const CoachIntake = ({ user }: any) => {
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start max-sm:gap-2 justify-between">
                 <h1 className="text-xl text-left text-gray-600 font-bold">
-                  Coach & Mentor Intake
+                  Coach Intake
                 </h1>
                 {checkIfView && (
                   <Badge
@@ -3525,9 +3544,17 @@ const CoachIntake = ({ user }: any) => {
                                 name="files"
                                 accept=".pdf,.docx"
                                 onChange={async (e) => {
-                                  handleFileChange(e);
+                                  handleFileChange(e, "MainFile");
                                 }}
                               />
+                              {Object.keys(error).includes(
+                                  "MainFile"
+                                ) && (
+                                  
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["MainFile"]}
+                                  </p>
+                                )}
                             </div>
                           </div>
                           {/* @ts-ignore */}
@@ -3614,9 +3641,17 @@ const CoachIntake = ({ user }: any) => {
                                 name="optional_file"
                                 accept=".pdf,.docx"
                                 onChange={async (e) => {
-                                  handleFileChange(e);
+                                  handleFileChange(e, "PersonailtyFile");
                                 }}
                               />
+                              {Object.keys(error).includes(
+                                  "PersonailtyFile"
+                                ) && (
+                                  
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["PersonailtyFile"]}
+                                  </p>
+                                )}
                             </div>
                             {/* @ts-ignore */}
                             {optionalMediaData?.extracted_from_optional_file
@@ -4385,9 +4420,17 @@ const CoachIntake = ({ user }: any) => {
                                 name="files"
                                 accept=".pdf,.docx"
                                 onChange={async (e) => {
-                                  handleFileChange(e);
+                                  handleFileChange(e, "MainFile2");
                                 }}
                               />
+                              {Object.keys(error).includes(
+                                "MainFile2"
+                              ) && (
+                                
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MainFile2"]}
+                                </p>
+                              )}
                             </div>
                           </div>
                           {/* @ts-ignore */}
@@ -4474,9 +4517,17 @@ const CoachIntake = ({ user }: any) => {
                                 name="optional_file"
                                 accept=".pdf,.docx"
                                 onChange={async (e) => {
-                                  handleFileChange(e);
+                                  handleFileChange(e,"PersonalityFile2");
                                 }}
                               />
+                              {Object.keys(error).includes(
+                                "PersonalityFile2"
+                              ) && (
+                                
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["PersonalityFile2"]}
+                                </p>
+                              )}
                             </div>
                             {/* @ts-ignore */}
                             {optionalMediaData?.extracted_from_optional_file
@@ -5495,7 +5546,7 @@ const CoachIntake = ({ user }: any) => {
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white border w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
-                Coachee & Mentee Intake
+                Coachee Intake
               </h1>
               <p className="mb-3 text-left text-sm text-gray-600">
                 Use this to add yourself to your organization's mentoring and
@@ -5748,9 +5799,17 @@ const CoachIntake = ({ user }: any) => {
                         name="optional_file"
                         accept=".pdf,.docx"
                         onChange={async (e) => {
-                          handleFileChange(e);
+                          handleFileChange(e,"PersonalityFile3");
                         }}
                       />
+                      {Object.keys(error).includes(
+                        "PersonalityFile3"
+                      ) && (
+                        
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["PersonalityFile3"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {/* @ts-ignore */}
