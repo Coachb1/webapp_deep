@@ -2728,7 +2728,7 @@ const CoachIntake = ({ user }: any) => {
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start max-sm:gap-2 justify-between">
                 <h1 className="text-xl text-left text-gray-600 font-bold">
-                  Coach & Mentor Intake
+                  Coach Intake
                 </h1>
                 {checkIfView && (
                   <Badge
@@ -5546,7 +5546,7 @@ const CoachIntake = ({ user }: any) => {
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white border w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
-                Coachee & Mentee Intake
+                Coachee Intake
               </h1>
               <p className="mb-3 text-left text-sm text-gray-600">
                 Use this to add yourself to your organization's mentoring and

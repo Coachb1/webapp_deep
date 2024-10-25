@@ -202,7 +202,7 @@ const Conversations = ({ user }: any) => {
                 {conversationDataAdmin.length > 0 && (
                   <>
                     <Badge className="mt-2 mb-0">
-                      Coachee & Mentee Interactions
+                      Coachee Interactions
                     </Badge>
                     <div className="flex flex-col w-full mt-0">
                       {/* AVATAR BOT */}
