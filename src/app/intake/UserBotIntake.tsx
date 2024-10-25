@@ -128,7 +128,27 @@ const UserBotIntake = ({
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, errorKey:string) => {
+      const fileList = e.target.files; // Get the FileList
+      if (!fileList) return; // Early return if fileList is null
+
+      const files = Array.from(fileList); // Convert FileList to an array
+      const validExtensions = [".pdf", ".docx"];
+
+      const invalidFiles = files.filter((file) =>
+        !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
+    );
+
+    console.log(invalidFiles.length)
+    
+    if (invalidFiles.length > 0) {
+      setError((prevErrors) => ({ ...prevErrors, [errorKey]: "Only .pdf and .docx files are allowed." }));
+      e.target.value = ""; // Clear the input
+      console.log(error)
+      return;
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
+    }
     const selectedFiles = e.target?.files;
 
     if (selectedFiles) {
@@ -829,9 +849,17 @@ const UserBotIntake = ({
                   accept=".pdf,.docx"
                   onChange={async (e) => {
                     setDataModified(true);
-                    handleFileChange(e);
+                    handleFileChange(e, "MainFile");
                   }}
                 />
+                {Object.keys(error).includes(
+                        "MainFile"
+                      ) && (
+                        
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["MainFile"]}
+                        </p>
+                )}
                 <p className="m-1 ml-0 text-gray-500">
                   Attach relevant files, e.g., "User manual.pdf" or "FAQs.docx,"
                   to enhance bot knowledge.
