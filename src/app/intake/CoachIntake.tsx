@@ -21,6 +21,7 @@ import {
 import {
   Asterisk,
   ChevronLeft,
+  Eye,
   File,
   Info,
   Loader,
@@ -351,29 +352,36 @@ const CoachIntake = ({ user }: any) => {
         })
         .catch((err) => console.error(err));
     }
-  };    
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, errorKey:string) => {
+  };
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    errorKey: string
+  ) => {
     const fileList = e.target.files; // Get the FileList
     if (!fileList) return; // Early return if fileList is null
 
     const files = Array.from(fileList); // Convert FileList to an array
     const validExtensions = [".pdf", ".docx"];
 
-    const invalidFiles = files.filter((file) =>
-      !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
-  );
+    const invalidFiles = files.filter(
+      (file) =>
+        !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
+    );
 
-  console.log(invalidFiles.length)
-  
-  if (invalidFiles.length > 0) {
-    setError((prevErrors) => ({ ...prevErrors, [errorKey]: "Only .pdf and .docx files are allowed." }));
-    e.target.value = ""; // Clear the input
-    console.log(error)
-    return;
-  } else {
-    setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
-  }
-  setDataModified(true);
+    console.log(invalidFiles.length);
+
+    if (invalidFiles.length > 0) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [errorKey]: "Only .pdf and .docx files are allowed.",
+      }));
+      e.target.value = ""; // Clear the input
+      console.log(error);
+      return;
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
+    }
+    setDataModified(true);
     const selectedFiles = e.target?.files;
     const input_name = e.target?.name;
 
@@ -746,6 +754,10 @@ const CoachIntake = ({ user }: any) => {
               JSON.stringify(profileType === "coach-mentor" ? true : false)
             );
             formdata.append("area_domain", areaDomain);
+            formdata.append(
+              "allow_coachee_to_create_session",
+              `${allowSessionNotes?.toLowerCase() === "yes" ? true : false}`
+            );
 
             if (formVersion !== "1") {
               formdata.append("mentoring_preferences", mentoringPreferences);
@@ -757,11 +769,6 @@ const CoachIntake = ({ user }: any) => {
                     ? true
                     : false
                 }`
-              );
-
-              formdata.append(
-                "allow_coachee_to_create_session",
-                `${allowSessionNotes?.toLowerCase() === "yes" ? true : false}`
               );
 
               if (formVersion !== "2") {
@@ -2735,16 +2742,15 @@ const CoachIntake = ({ user }: any) => {
                     className="bg-blue-200 w-fit text-blue-800 rounded-sm"
                     variant={"outline"}
                   >
-                    You are viewing your intake information.
+                    <Eye className="h-4 w-4 mr-1" /> Viewing
                   </Badge>
                 )}
                 {checkIfEdit && (
                   <Badge
-                    className="bg-blue-200 w-fit text-blue-800 rounded-sm max-w-[40%] max-sm:max-w-none text-left"
+                    className="bg-blue-200 w-fit text-xs text-blue-800 rounded-sm max-w-[50%] max-sm:max-w-none text-left"
                     variant={"outline"}
                   >
-                    You are editing your bot. All the earlier inputs will be
-                    replaced by current inputs.
+                    <PenLine className="h-4 w-4 mr-1" /> Editing
                   </Badge>
                 )}
               </div>
@@ -3591,14 +3597,11 @@ const CoachIntake = ({ user }: any) => {
                                   handleFileChange(e, "MainFile");
                                 }}
                               />
-                              {Object.keys(error).includes(
-                                  "MainFile"
-                                ) && (
-                                  
-                                  <p className="text-red-500 text-xs mt-1">
-                                    {(error as any)["MainFile"]}
-                                  </p>
-                                )}
+                              {Object.keys(error).includes("MainFile") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MainFile"]}
+                                </p>
+                              )}
                             </div>
                           </div>
                           {/* @ts-ignore */}
@@ -3689,13 +3692,12 @@ const CoachIntake = ({ user }: any) => {
                                 }}
                               />
                               {Object.keys(error).includes(
-                                  "PersonailtyFile"
-                                ) && (
-                                  
-                                  <p className="text-red-500 text-xs mt-1">
-                                    {(error as any)["PersonailtyFile"]}
-                                  </p>
-                                )}
+                                "PersonailtyFile"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["PersonailtyFile"]}
+                                </p>
+                              )}
                             </div>
                             {/* @ts-ignore */}
                             {optionalMediaData?.extracted_from_optional_file
@@ -4467,10 +4469,7 @@ const CoachIntake = ({ user }: any) => {
                                   handleFileChange(e, "MainFile2");
                                 }}
                               />
-                              {Object.keys(error).includes(
-                                "MainFile2"
-                              ) && (
-                                
+                              {Object.keys(error).includes("MainFile2") && (
                                 <p className="text-red-500 text-xs mt-1">
                                   {(error as any)["MainFile2"]}
                                 </p>
@@ -4561,13 +4560,12 @@ const CoachIntake = ({ user }: any) => {
                                 name="optional_file"
                                 accept=".pdf,.docx"
                                 onChange={async (e) => {
-                                  handleFileChange(e,"PersonalityFile2");
+                                  handleFileChange(e, "PersonalityFile2");
                                 }}
                               />
                               {Object.keys(error).includes(
                                 "PersonalityFile2"
                               ) && (
-                                
                                 <p className="text-red-500 text-xs mt-1">
                                   {(error as any)["PersonalityFile2"]}
                                 </p>
@@ -5843,13 +5841,10 @@ const CoachIntake = ({ user }: any) => {
                         name="optional_file"
                         accept=".pdf,.docx"
                         onChange={async (e) => {
-                          handleFileChange(e,"PersonalityFile3");
+                          handleFileChange(e, "PersonalityFile3");
                         }}
                       />
-                      {Object.keys(error).includes(
-                        "PersonalityFile3"
-                      ) && (
-                        
+                      {Object.keys(error).includes("PersonalityFile3") && (
                         <p className="text-red-500 text-xs mt-1">
                           {(error as any)["PersonalityFile3"]}
                         </p>
