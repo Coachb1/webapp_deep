@@ -154,14 +154,22 @@ const CoachIntake = ({ user }: any) => {
     checked: boolean | string,
     value: string
   ) => {
-    // console.log("CheckedHandler", checked, value);
+    setDataModified(true);
+    console.log("CheckedHandler", checked, value);
     if (checked) {
-      setMentoringPreferencess([...mentoringPreferencess, value]); //filter Others
+      if (mentoringPreferencess) {
+        setMentoringPreferencess([...mentoringPreferencess, value]); //filter Others
+      } else {
+        setMentoringPreferencess([value]);
+      }
     } else if (!checked) {
       setMentoringPreferencess((prevState) =>
-        prevState.filter((val) => val !== value)
+        prevState?.filter((val) => val !== value)
       );
     }
+    setTimeout(() => {
+      console.log("mentoringPreferencess : ", mentoringPreferencess);
+    }, 100);
   };
 
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
@@ -2428,7 +2436,6 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const handleRequiredSelections = async (profile_type = "coach") => {
-    console.log(experience, "experience");
     let coachFields;
 
     if (formVersion === "1") {
@@ -2793,8 +2800,8 @@ const CoachIntake = ({ user }: any) => {
                       className="mt-2"
                       size="middle"
                       disabled={
-                        (checkIfEdit === null ? false : true) ||
-                        (checkIfView === null ? false : true)
+                        (checkIfView === null ? false : true) ||
+                        (checkIfEdit === null ? false : true)
                       }
                       value={
                         (formVersion === "1" && "no-co-pilot") ||
@@ -3118,7 +3125,7 @@ const CoachIntake = ({ user }: any) => {
                         <div className="my-3">
                           <p className="text-sm my-1">
                             Select the area/domain that you are most passionate
-                            about coaching and mentoring.{" "}
+                            about coaching.{" "}
                             <span className="text-xl font-bold text-red-500">
                               *
                             </span>
@@ -3821,7 +3828,7 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-2 border-none">
-                        {formVersion !== "1" && (
+                        {/* {formVersion !== "1" && (
                           <div className="my-3">
                             <p className="text-sm my-1">
                               Which way do you want to help the program
@@ -3871,70 +3878,111 @@ const CoachIntake = ({ user }: any) => {
                               )}
                             </div>
                           </div>
-                        )}
+                        )} */}
 
                         {formVersion !== "1" && formVersion !== "2" && (
-                          <div className="my-3">
-                            <p className="text-sm my-1">
-                              Please mention any coaching & mentoring frameworks
-                              or tools that you use in your approach.{" "}
-                              <span className="text-xl font-bold text-red-500">
-                                *
-                              </span>
-                            </p>
-                            <div className="my-1">
-                              {models.map((model) => (
-                                <div className="my-1">
-                                  {" "}
-                                  {model === "Others" ? (
-                                    <></>
-                                  ) : (
-                                    <>
-                                      <div className="flex items-center space-x-2 my-1.5 ">
-                                        <Checkbox
-                                          disabled={
-                                            (!mentoringPreferencess.includes(
-                                              model
-                                            ) &&
-                                              mentoringPreferencess.length >=
-                                                3) ||
-                                            checkIfView === null
-                                              ? false
-                                              : true
-                                          }
-                                          id={model}
-                                          onCheckedChange={(checked) => {
-                                            console.log(checked, model);
-                                            recordCoachmentFrameworks(
-                                              checked,
-                                              model
-                                            );
-                                          }}
-                                          checked={mentoringPreferencess.includes(
-                                            model
-                                          )}
-                                        />
-                                        <label
-                                          htmlFor={model}
-                                          className="text-xs text-gray-700"
-                                        >
-                                          {model}
-                                        </label>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                            {Object.keys(error).includes(
-                              "MentoringFramework"
-                            ) && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {(error as any)["MentoringFramework"]}
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please mention any coaching frameworks or tools
+                                that you use in your approach.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
                               </p>
-                            )}
-                          </div>
+                              <div className="my-1">
+                                {models.map((model) => (
+                                  <div className="my-1">
+                                    {" "}
+                                    {model === "Others" ? (
+                                      <></>
+                                    ) : (
+                                      <>
+                                        <div className="flex items-center space-x-2 my-1.5 ">
+                                          <Checkbox
+                                            disabled={
+                                              (!mentoringPreferencess?.includes(
+                                                model
+                                              ) &&
+                                                mentoringPreferencess?.length >=
+                                                  3) ||
+                                              checkIfView === null
+                                                ? false
+                                                : true
+                                            }
+                                            id={model}
+                                            onCheckedChange={(checked) => {
+                                              console.log(checked, model);
+                                              recordCoachmentFrameworks(
+                                                checked,
+                                                model
+                                              );
+                                            }}
+                                            checked={mentoringPreferencess?.includes(
+                                              model
+                                            )}
+                                          />
+                                          <label
+                                            htmlFor={model}
+                                            className="text-xs text-gray-700"
+                                          >
+                                            {model}
+                                          </label>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                              {Object.keys(error).includes(
+                                "MentoringFramework"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MentoringFramework"]}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please discuss how you have helped others as a
+                                coach or in other professional capacity.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  disabled={checkIfView === null ? false : true}
+                                  required
+                                  value={discussInCARformat}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+
+                                    setDiscussInCARformat(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      50,
+                                      80,
+                                      "discussInCARformat"
+                                    );
+                                  }}
+                                  placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "discussInCARformat"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["discussInCARformat"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </>
                         )}
+
                         <div className="my-3">
                           <p className="text-sm my-1">
                             Please rate the characteristics/skills on which you
@@ -4198,7 +4246,7 @@ const CoachIntake = ({ user }: any) => {
                       <AccordionItem value="item-media">
                         <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
                           <div>
-                            Media input.{" "}
+                            Knowledge base.{" "}
                             {/* <span className="text-xl font-bold text-red-500">
                               *
                             </span> */}
@@ -4704,46 +4752,6 @@ const CoachIntake = ({ user }: any) => {
                         {formVersion !== "1" && formVersion !== "2" && (
                           <div className="my-3">
                             <p className="text-sm my-1">
-                              Please discuss how you have helped others as a
-                              coach/mentor or in other professional capacity.{" "}
-                              <span className="text-xl font-bold text-red-500">
-                                *
-                              </span>
-                            </p>
-                            <div>
-                              <textarea
-                                rows={4}
-                                disabled={checkIfView === null ? false : true}
-                                required
-                                value={discussInCARformat}
-                                onChange={(e) => {
-                                  const inputValue = e.target.value;
-
-                                  setDiscussInCARformat(inputValue);
-                                  handleWordLimit(
-                                    inputValue,
-                                    50,
-                                    80,
-                                    "discussInCARformat"
-                                  );
-                                }}
-                                placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
-                                className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                              />
-                              {Object.keys(error).includes(
-                                "discussInCARformat"
-                              ) && (
-                                <p className="text-red-500 text-xs mt-1">
-                                  {(error as any)["discussInCARformat"]}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {formVersion !== "1" && formVersion !== "2" && (
-                          <div className="my-3">
-                            <p className="text-sm my-1">
                               Would you like your AI Avatar to provide
                               expressive answers using emojis?{" "}
                               <span className="text-xl font-bold text-red-500">
@@ -4800,10 +4808,10 @@ const CoachIntake = ({ user }: any) => {
                         <AccordionItem value="item-coaching-faqs">
                           <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
                             <div>
-                              Coaching related Questions.{" "}
-                              {/* <span className="text-xl font-bold text-red-500">
-                              *
-                            </span> */}
+                              Coaching FAQs{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent className="px-2 border-none">
@@ -4888,19 +4896,6 @@ const CoachIntake = ({ user }: any) => {
                                       </p>
                                     )}
                                   </div>
-                                </div>
-                                <hr />
-                                <div className="my-2">
-                                  <h3 className="font-semibold text-base text-gray-600">
-                                    Coaching FAQs{" "}
-                                    <span className="text-xl font-bold text-red-500">
-                                      *
-                                    </span>
-                                  </h3>
-                                  <p className="text-sm text-gray-600">
-                                    Note: Answer these in first person as if you
-                                    are answering directly to your coachee.
-                                  </p>
                                 </div>
 
                                 <div className="my-3">

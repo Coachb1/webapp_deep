@@ -180,8 +180,23 @@ export function ParticipantListItemCard({
                       "bg-green-500 hover:bg-green-400"
                     }`}
                   >
+                    {/* {coach.profile_type === "icons_by_ai"
+                      ? "Icons by AI"
+                      : coach.subject_specific_bot_id?.includes("subject")
+                      ? convertTextToCorrectFormat(coach.profile_type) +
+                        " - Subject co-pilot"
+                      : convertTextToCorrectFormat(coach.profile_type)} */}
+
                     {coach.profile_type === "icons_by_ai"
                       ? "Icons by AI"
+                      : coach.subject_specific_bot_id?.includes("subject")
+                      ? `${convertTextToCorrectFormat(
+                          coach.profile_type
+                        )} - Subject co-pilot`
+                      : coach.avatar_bot_id?.includes("avatar")
+                      ? `${convertTextToCorrectFormat(
+                          coach.profile_type
+                        )} - Coaching co-pilot`
                       : convertTextToCorrectFormat(coach.profile_type)}
                   </Badge>
                 )}
@@ -296,6 +311,10 @@ export function ParticipantListItemCard({
                             {coach.profile_type === "skill_bot" ||
                             coach.profile_type === "coachbots"
                               ? "Skill Chat"
+                              : coach.subject_specific_bot_id?.includes(
+                                  "subject"
+                                )
+                              ? "Subject co-pilot"
                               : "AI Frame"}{" "}
                           </p>
                           <ExternalLink className="ml-1 h-4 w-4 inline" />
