@@ -424,7 +424,7 @@ const Coach = ({ user, renderType }: any) => {
                           {botType === "subject_specific_bot" ? (
                             <div className="text-center">
                               <h4 className="text-sm font-semibold">
-                                Bot description
+                                Subject matter description
                               </h4>
                               <p>{parseTextToJSX(botDescription)}</p>
                             </div>
@@ -619,11 +619,9 @@ const Coach = ({ user, renderType }: any) => {
                 Disclaimer
               </Badge>
               <p className="w-[70%] text-[#7f7f7f] text-sm max-sm:text-xs max-sm:w-full">
-                The coach/mentor's personalized bot is designed to enhance your
-                coaching/mentoring experience. The information provided in the
-                coach/mentor's detailed sections serves as a guide, and the
-                effectiveness of coaching/mentoring is subjective. The coach can
-                override the discussion via email.
+                {botType === "subject_specific_bot"
+                  ? "The subject matter bot is designed to enhance your coaching/mentoring experience. The information provided by the coach is used to create the bot but the interpretation of the answers may be subjective. The coach can override the discussion via email."
+                  : "The coach/mentor's personalized bot is designed to enhance your coaching/mentoring experience. The information provided in the coach/mentor's detailed sections serves as a guide, and the effectiveness of coaching/mentoring is subjective. The coach can override the discussion via email."}
               </p>
             </div>
           </div>

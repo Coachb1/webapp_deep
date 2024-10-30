@@ -1,22 +1,8 @@
 "use client";
 
-import {
-  applicationUrl,
-  baseURL,
-  basicAuth,
-  getUserAccount,
-} from "@/lib/utils";
+import { applicationUrl } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import {
-  Code,
-  Copy,
-  Edit,
-  ExternalLink,
-  Info,
-  LinkIcon,
-  Loader,
-  View,
-} from "lucide-react";
+import { Code, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -43,7 +29,6 @@ interface BotTypeEntry {
   bot_type: string;
   bots: Bot[];
 }
-// const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
@@ -100,18 +85,18 @@ const MyPages = ({ user }: any) => {
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "AI Frame";
+      return "Coaching co-pilot";
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {
       return "Knowledge Bot";
     } else if (botType === "subject_specific_bot") {
-      return "Subject Co-pilot";
+      return "Subject co-pilot";
     }
   };
 
   const BotTypeLinks = (botType: string, bot_id: string) => {
-    if (botType === "avatar_bot") {
+    if (botType === "avatar_bot" || botType === "subject_specific_bot") {
       return `${applicationUrl()}/coach/${bot_id}`;
     } else if (botType === "feedback_bot") {
       return `${applicationUrl()}/feedback/${bot_id}`;
@@ -253,15 +238,17 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   <p
-                    className={`text-sm max-sm:text-xs inline ${
+                    className={`text-sm max-sm:text-xs text-gray-600 inline ${
                       botType.bot_type === "user_bot"
                         ? "w-[45%] max-sm:w-[70%]"
                         : "w-[45%] max-sm:w-[70%]"
                     } `}
                   >
                     <>
-                      {" "}
-                      {BotTypesHeading(botType.bot_type)}{" "}
+                      Coach -{" "}
+                      <span className="font-semibold">
+                        {BotTypesHeading(botType.bot_type)}
+                      </span>
                       {botType.bot_type === "user_bot" && (
                         <b className="text-gray-600"> - {bot.bot_name}</b>
                       )}{" "}
@@ -441,10 +428,15 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm max-sm:text-xs inline w-[45%] max-sm:w-[50%]">
+                  <p className="text-sm max-sm:text-xs text-gray-600 inline w-[45%] max-sm:w-[50%]">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
-                    {noCopilotBot?.profile_type === "coach" && <>Coach</>}
+                    {noCopilotBot?.profile_type === "coach" && (
+                      <>
+                        Coach -{" "}
+                        <span className="font-semibold">No co-pilot</span>
+                      </>
+                    )}
 
                     {/* - {userProfile.name} */}
                   </p>

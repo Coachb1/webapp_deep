@@ -351,7 +351,7 @@ const Coaches = ({
         filterName: "Profile Type",
         filterOptions: [
           "coach",
-          "mentor",
+          // "mentor",
           "coachee",
           "mentee",
           "icons_by_ai",
@@ -437,13 +437,13 @@ const Coaches = ({
           target: "#header-text",
           content: dynamicHelpTextt?.header_text
             ? dynamicHelpTextt.header_text
-            : "The directory contains the internal company coaches and mentors (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
+            : "The directory contains the internal company coaches (and their avatars) and external coaches (only avatars). If internal coaches accept connection, their avatar is also accessible via email.  It also contains the coachees and mentees as well. ",
         },
         {
           target: "#join-the-network",
           content: dynamicHelpTextt?.join_the_network
             ? dynamicHelpTextt.join_the_network
-            : "As a user, you can join as a coach/mentor or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
+            : "As a user, you can join as a coach or coachee/mentee. You can also join a peer feedback network to demonstrate the accolades you receive and collect 360-degree peer feedback. Certain features may not work if you do not join the networks. ",
         },
         {
           target: "#search-filter",
@@ -461,7 +461,7 @@ const Coaches = ({
           target: "#participant-listing",
           content: dynamicHelpTextt?.participant_listing
             ? dynamicHelpTextt.participant_listing
-            : `All participants are listed. Coach, coachees, mentors, and mentees. Coach and mentor can have dual role profiles as well. "Icons by AI" are external coaches or mentors whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
+            : `All participants are listed. Coach, coachees, and mentees. Coach  can have dual role profiles as well. "Icons by AI" are external coaches  whose AI avatars are only available. (For confidentiality, personally identifiable information is removed). The listings can also be sorted by your approved connections - it happens when both members agree to connect off platform as well.`,
         },
       ]);
 
@@ -1328,7 +1328,7 @@ const Coaches = ({
                             }
                           >
                             <Link href={"/intake/?type=coach"}>
-                              Join as Coach or Mentor{" "}
+                              Join as Coach{" "}
                               {allCoaches.length > 0 ? (
                                 <>
                                   {allCoaches[0]?.is_approved ? (
@@ -1385,7 +1385,7 @@ const Coaches = ({
                               color: "black",
                               padding: "8px",
                             }}
-                            title="You can Join the CoachBot network as a Coach or Mentor. Our platform facilitates coaches and mentors in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
+                            title="You can Join the CoachBot network as a Coach Our platform facilitates coaches in forming profiles, which evolve into AI Frames. These interactive avatars offer a unique way to connect, granting Coachees and Mentees direct access to chat functionalities and customized resources."
                           >
                             <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2 inline" />
                           </Tooltip>
@@ -1459,7 +1459,7 @@ const Coaches = ({
                               color: "black",
                               padding: "8px",
                             }}
-                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach or Mentor AI Avatar and enter into feedback loop through AI analytics. "
+                            title="You can Join the CoachBot Network as Coachee or Mentee. Coachees and mentees have the ability to craft personalized profiles on our platform, through which they can interact with Coach AI Avatar and enter into feedback loop through AI analytics. "
                           >
                             <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-2" />
                           </Tooltip>
