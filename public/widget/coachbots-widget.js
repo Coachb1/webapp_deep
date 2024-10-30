@@ -113,6 +113,7 @@ let clientBasedReadHereText2 = "";
 let senarioSnippetURL;
 let questionSnippetLink;
 let isEmptyAudio = false;
+let EmailCandidate;
 
 
 function createBasicAuthToken(key = "", secret = "") {
@@ -1094,8 +1095,8 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          if (senarioCase === 'assessment'){
-            appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+          if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+            appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
           } else {
             appendMessage(
               `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -1622,8 +1623,8 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (senarioCase === 'assessment'){
-      appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+      appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
     } else {
       appendMessage(
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -4353,8 +4354,8 @@ loadExternalModule().then(() => {
                     if (window.user) {
                       // sendEmail();
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                      if (senarioCase === 'assessment'){
-                        message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+                        appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
                       }
                       appendMessage(message);
                       // //* send message to start new session
@@ -4451,8 +4452,8 @@ loadExternalModule().then(() => {
               isEmailForm = false;
 
               let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-              if (senarioCase === 'assessment'){
-                message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+              if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+                appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
               }
               appendMessage(message);
               // //* send message to start new session
@@ -4765,6 +4766,7 @@ loadExternalModule().then(() => {
                 senarioDescription = questionData.results[0].description;
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
+                EmailCandidate = questionData.results[0].email_candidate;
                 senarioMediaDescription =
                   questionData.results[0].description_media;
                 TestUIInfo = questionData.results[0].ui_information;
@@ -6033,8 +6035,8 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (senarioCase === 'assessment'){
-                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+                      appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
                     }
                     appendMessage(message);
                     // //* send message to start new session
