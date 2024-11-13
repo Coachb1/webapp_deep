@@ -134,7 +134,7 @@ export const subdomain =
   typeof window !== "undefined" ? window.location.hostname.split(".")[0] : null;
 export const devUrl = "https://coach-api-ovh.coachbots.com/api/v1";
 // export const devUrl =  "http://127.0.0.1:8001/api/v1"
-export const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
+export const prodUrl = "https://coach-api-prod-ovh.coachbots.com/api/v1";
 export const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
 export const basicAuth =
