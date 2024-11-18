@@ -4765,7 +4765,7 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
-                if (ClientUserInformation){
+                if ((ClientUserInformation && 'report_on' in ClientUserInformation)){
                   EmailCandidate = ClientUserInformation.report_on
                 }
                 senarioMediaDescription =
