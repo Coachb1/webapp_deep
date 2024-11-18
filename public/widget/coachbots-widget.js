@@ -112,7 +112,7 @@ let senarioSnippetURL;
 let questionSnippetLink;
 let isEmptyAudio = false;
 let EmailCandidate;
-
+let ClientUserInformation;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -196,7 +196,7 @@ console.log(user === undefined);
         .then((res) => res.json())
         .then((data) => {
           console.log("get-client-information : ", data);
-      
+          ClientUserInformation = data.data.user_info[0];
           allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
           clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
           clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
@@ -4765,6 +4765,9 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
+                if (ClientUserInformation){
+                  EmailCandidate = ClientUserInformation.report_on
+                }
                 senarioMediaDescription =
                   questionData.results[0].description_media;
                 TestUIInfo = questionData.results[0].ui_information;
