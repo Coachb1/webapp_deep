@@ -232,7 +232,7 @@ let clientBasedReadHereText = "";
 let LLMsystemInstructions = "";
 let botAvatarImageURL = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8c3ZnIGZpbGw9IiMwMDAwMDAiIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIAoJCXZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8cGF0aCBkPSJNMjMsMzAuMzZIOWMtMi40MDQsMC00LjM2LTEuOTU2LTQuMzYtNC4zNlYxNWMwLTIuNDA0LDEuOTU2LTQuMzYsNC4zNi00LjM2aDMuNjU5CgkJYzAuMTY3LTEuNTY2LDEuNDE1LTIuODEzLDIuOTgxLTIuOTgxVjUuMzMzYy0xLjEzMS0wLjE3NC0yLTEuMTU0LTItMi4zMzNjMC0xLjMwMSwxLjA1OS0yLjM2LDIuMzYtMi4zNgoJCWMxLjMwMiwwLDIuMzYsMS4wNTksMi4zNiwyLjM2YzAsMS4xNzktMC44NjksMi4xNTktMiwyLjMzM1Y3LjY2YzEuNTY2LDAuMTY3LDIuODE0LDEuNDE1LDIuOTgxLDIuOTgxSDIzCgkJYzIuNDA0LDAsNC4zNiwxLjk1Niw0LjM2LDQuMzZ2MTFDMjcuMzYsMjguNDA0LDI1LjQwNCwzMC4zNiwyMywzMC4zNnogTTksMTEuMzZjLTIuMDA3LDAtMy42NCwxLjYzMy0zLjY0LDMuNjR2MTEKCQljMCwyLjAwNywxLjYzMywzLjY0LDMuNjQsMy42NGgxNGMyLjAwNywwLDMuNjQtMS42MzMsMy42NC0zLjY0VjE1YzAtMi4wMDctMS42MzMtMy42NC0zLjY0LTMuNjRIOXogTTEzLjM4NCwxMC42NGg1LjIzMQoJCUMxOC40MzksOS4zNTQsMTcuMzM0LDguMzYsMTYsOC4zNkMxNC42NjcsOC4zNiwxMy41NjEsOS4zNTQsMTMuMzg0LDEwLjY0eiBNMTYsMS4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NAoJCVMxNS4wOTYsNC42NCwxNiw0LjY0YzAuOTA0LDAsMS42NC0wLjczNiwxLjY0LTEuNjRTMTYuOTA0LDEuMzYsMTYsMS4zNnogTTIwLDI3LjM2aC04Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2CgkJczEuMDU5LTIuMzYsMi4zNi0yLjM2aDhjMS4zMDIsMCwyLjM2LDEuMDU5LDIuMzYsMi4zNlMyMS4zMDIsMjcuMzYsMjAsMjcuMzZ6IE0xMiwyMy4zNmMtMC45MDQsMC0xLjY0LDAuNzM1LTEuNjQsMS42NAoJCXMwLjczNiwxLjY0LDEuNjQsMS42NGg4YzAuOTA0LDAsMS42NC0wLjczNSwxLjY0LTEuNjRzLTAuNzM1LTEuNjQtMS42NC0xLjY0SDEyeiBNMzEsMjMuODZoLTJjLTAuMTk5LDAtMC4zNi0wLjE2MS0wLjM2LTAuMzZWMTUKCQljMC0wLjE5OSwwLjE2MS0wLjM2LDAuMzYtMC4zNmgyYzAuMTk5LDAsMC4zNiwwLjE2MSwwLjM2LDAuMzZ2OC41QzMxLjM2LDIzLjY5OSwzMS4xOTksMjMuODYsMzEsMjMuODZ6IE0yOS4zNiwyMy4xNGgxLjI3OXYtNy43OAoJCUgyOS4zNlYyMy4xNHogTTMsMjMuODZIMWMtMC4xOTksMC0wLjM2LTAuMTYxLTAuMzYtMC4zNlYxNWMwLTAuMTk5LDAuMTYxLTAuMzYsMC4zNi0wLjM2aDJjMC4xOTksMCwwLjM2LDAuMTYxLDAuMzYsMC4zNnY4LjUKCQlDMy4zNiwyMy42OTksMy4xOTksMjMuODYsMywyMy44NnogTTEuMzYsMjMuMTRoMS4yOHYtNy43OEgxLjM2VjIzLjE0eiBNMjAsMjAuMzZjLTEuMzAyLDAtMi4zNi0xLjA1OS0yLjM2LTIuMzYKCQlzMS4wNTktMi4zNiwyLjM2LTIuMzZzMi4zNiwxLjA1OSwyLjM2LDIuMzZDMjIuMzYsMTkuMzAyLDIxLjMwMiwyMC4zNiwyMCwyMC4zNnogTTIwLDE2LjM2Yy0wLjkwNCwwLTEuNjQsMC43MzYtMS42NCwxLjY0CgkJczAuNzM1LDEuNjQsMS42NCwxLjY0czEuNjQtMC43MzUsMS42NC0xLjY0UzIwLjkwNCwxNi4zNiwyMCwxNi4zNnogTTEyLDIwLjM2Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2czEuMDU5LTIuMzYsMi4zNi0yLjM2CgkJczIuMzYsMS4wNTksMi4zNiwyLjM2QzE0LjM2LDE5LjMwMiwxMy4zMDEsMjAuMzYsMTIsMjAuMzZ6IE0xMiwxNi4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NHMwLjczNiwxLjY0LDEuNjQsMS42NAoJCXMxLjY0LTAuNzM1LDEuNjQtMS42NFMxMi45MDQsMTYuMzYsMTIsMTYuMzZ6Ii8+Cgk8cmVjdCBzdHlsZT0iZmlsbDpub25lOyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+Cjwvc3ZnPg==";
 let UserAvatarImageURL = "data:image/png;base64,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"
-
+let clientuserInformation;
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -318,6 +318,8 @@ fetch(`${baseURL2}/accounts/`, {
         console.log("get-client-information : ", data);
 
         if(!data.data.user_info[0].msg){
+          clientuserInformation = data.data.user_info[0]
+
           allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
 
           clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
@@ -361,6 +363,114 @@ fetch(`${baseURL2}/accounts/`, {
     console.log(err)
     throw new Error("Error User Info")
   });
+
+
+const createUser = async(user_name, user_email)=>{
+  console.log("newusername", user_name)
+  user_name2 = user_name
+  user_email2 = user_email
+console.log("newuser_name2", user_name2)
+console.log("newuser_email2", user_email2)
+fetch(`${baseURL2}/accounts/`, {
+  method: "POST",
+  headers: {
+    Authorization: `Basic ${basicAuthToken2}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    user_context: {
+      name: user_name2,
+      role: "member",
+      user_attributes: {
+        tag: "deepchat_profile",
+        attributes: {
+          name: user_name2,
+          username: user_name2,
+          email: user_email2,
+        },
+      },
+    },
+    identity_context: {
+      identity_type: "deepchat_unique_id",
+      value: user_email2,
+    },
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("START -> ", data)
+    window.user = {
+      "given_name": user_name,
+      "email": user_email,
+  }
+    participantId2 = data.uid;
+    userId2 = data.uid;
+    userRole2 = data.role;
+
+    clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
+    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+    selectedResponseType = data.preferences?.response_style
+
+    fetch(
+      `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${basicAuthToken2}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("get-client-information : ", data);
+
+        if(!data.data.user_info[0].msg){
+          clientuserInformation = data.data.user_info[0]
+          allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
+
+          clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
+         
+  
+          const headerText = document.getElementById("header-text");
+          const footerText = document.getElementById("footer-text");
+          const instructionsPaneList = document.getElementById('instructions-list')
+          console.log(headerText);
+          console.log(footerText);
+  
+          if (clientBasedBotHeaderText) {
+            headerText.innerText = clientBasedBotHeaderText;
+          }
+  
+          if (clientBasedBotFooterText) {
+            footerText.innerText = clientBasedBotFooterText;
+          }
+  
+          if (clientBasedReadHereText) {
+            const list = clientBasedReadHereText
+              .trim()
+              .split("\n")
+              .map((item) => {
+                return `<li>${item.trim()}</li>`;
+              });
+  
+            instructionsPaneList.innerHTML = list;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        throw new Error("Error fetching client Info")
+      });
+    
+  })
+  .catch((err) => {
+    console.log(err)
+    throw new Error("Error User Info")
+  });
+}
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -6398,13 +6508,41 @@ loadExternalModule().then(() => {
 
   if (botId == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0){
-      chatElementRef2.initialMessages = [
-        {
-          html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+
+      if (snnipetConfigSTT['pyschometric'] === 'true'){
+        isEmailFormstt=true;
+        formFieldsstt = ["email","name"];
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+        chatElementRef2.initialMessages = [
+          {
+          html: `<p>Hi! Welcome to the psychometric testing powered by our Cognitive Leadership Framework.</p>`,
           role: "ai",
-        },
-      ];
-      askAccessBotCodeSTT = true;
+          },
+          {
+          html: `<b>Please enter your email to get started.</b>`,
+          role: "ai",
+          },
+        ];
+
+      }else{
+
+        chatElementRef2.initialMessages = [
+          {
+            html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`,
+            role: "ai",
+          },
+          {
+            html: `<b>Please enter your email to get started.</b>`,
+            role: "ai",
+            },
+        ];
+        isEmailFormstt=true;
+        formFieldsstt = ["email","name"];
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+
+      }
+
+
     } else{
       chatElementRef2.initialMessages = [
         {
@@ -6632,11 +6770,11 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformationStt = async (use_case, user_id = null) => {
-    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+  const getClientInformationStt = async (use_case, email = null) => {
+    let url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if (user_id && use_case === "user_info") {
-      url += `&user_id=${user_id}`;
+    if (email && use_case === "user_info") {
+      url += `&email=${email}`;
     }
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
 
@@ -7868,13 +8006,38 @@ loadExternalModule().then(() => {
           let latestMessage = body.messages[body.messages.length - 1].text;
 
           if (askAccessBotCodeSTT){
-            const code = 'DEMO2024'
-            if (latestMessage === code){
+
+            // fetching client information to get access code "AccessCode"
+            console.log(`client:`,clientuserInformation) 
+            if (!clientuserInformation){
+              clientuserInformation = await getClientInformationStt('user_info', user_email2)[0]
+              // await new Promise(resolve => setTimeout(resolve, 15000)); 
+              
+            }
+            console.log(`client-new:`,clientuserInformation,latestMessage) 
+
+            
+
+
+
+            if (!clientuserInformation?.widget_access_code){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+              })
+              return;
+            }
+            if (latestMessage === clientuserInformation?.widget_access_code){
               console.log("Access Code Matched")
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
-              } else{
+              } else if (snnipetConfigSTT['pyschometric'] === 'true'){
+                signals.onResponse({
+                  html: `Great! The assessment will have 10 scenario based question. Please enter your test code to get stated.`
+                })
+
+              }
+              else{
                 signals.onResponse(
                   {
                     html: `<b>Do you have access code for your simulation?</b><br/><br/>
@@ -8013,7 +8176,23 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: thumbsupdiv,
                 });
-              } else {
+              } else if (snnipetConfigSTT['pyschometric'] === 'true' || Object.keys(snnipetConfigSTT).length > 0){
+                  //  creating user after getting name, email "CreateUser"
+                  console.log(emailNameformJsonstt)
+                  try {
+                    await createUser(emailNameformJsonstt['name'], emailNameformJsonstt['email']);
+                    // await new Promise(resolve => setTimeout(resolve, 5000)); 
+                    signals.onResponse({
+                      html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                    });
+                    askAccessBotCodeSTT = true;
+                  } catch (error) {
+                    console.error("Error creating user:", error);
+                    signals.onResponse({
+                      html: "<p>Oops! Something went wrong. Please try again later.</p>"
+                    });
+                  }
+              }else {
                 let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                 if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
                   message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
@@ -10481,13 +10660,7 @@ loadExternalModule().then(() => {
                     });
                     return;
                   }
-                  if (!window.user) {
-                    isEmailFormstt = true;
-                    formFieldsstt = ["name", "email"];
-                    signals.onResponse({
-                      html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
-                    });
-                  }
+                  
                   let getReportBody2 = {
                     user_id: participantId2,
                     report_type: reportType2,
@@ -10545,6 +10718,29 @@ loadExternalModule().then(() => {
                   reportUrl2 = reportData2.url;
                   globalReportUrl2 = reportData2.url;
                   console.log("Report URL ===> ", reportUrl2);
+
+                  if (!window.user) {
+                    console.log('jsonemailname:', emailNameformJsonstt)
+                    if (!emailNameformJsonstt.name && !emailNameformJsonstt.email){
+                      formFieldsstt = ["name", "email"];
+                      isEmailFormstt = true;
+                      signals.onResponse({
+                        html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
+                      });
+                    } else{
+                      let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+                        message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      }
+                      appendMessage2(message);
+                      // //* send message to start new session
+                      signals.onResponse({
+                        html: "<b>Please enter another access code to start a new interaction.</b>",
+                      });
+                      submitEmailAndName2();
+                    }
+                  }
+
                   if (reportData2) {
                     responsesDone2 = true;
                   }
