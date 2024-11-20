@@ -1093,7 +1093,7 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+          if (!EmailCandidate){
             appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
           } else {
             appendMessage(
@@ -1621,7 +1621,7 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+    if (!EmailCandidate){
       appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
     } else {
       appendMessage(
@@ -4352,7 +4352,7 @@ loadExternalModule().then(() => {
                     if (window.user) {
                       // sendEmail();
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                      if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+                      if (!EmailCandidate){
                         appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
                       }
                       appendMessage(message);
@@ -4450,7 +4450,7 @@ loadExternalModule().then(() => {
               isEmailForm = false;
 
               let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-              if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+              if (!EmailCandidate){
                 appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
               }
               appendMessage(message);
@@ -4765,7 +4765,7 @@ loadExternalModule().then(() => {
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
                 EmailCandidate = questionData.results[0].email_candidate;
-                if (ClientUserInformation){
+                if (ClientUserInformation && 'report_on' in ClientUserInformation){
                   EmailCandidate = ClientUserInformation.report_on
                 }
                 senarioMediaDescription =
@@ -4794,6 +4794,9 @@ loadExternalModule().then(() => {
 
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
+                  if (ClientUserInformation && 'client_name' in ClientUserInformation){
+                    widgetClientId = ClientUserInformation.client_name
+                  }
                 } else {
                   console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
                   console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
@@ -6036,7 +6039,7 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (['assessment', 'psychometric'].includes(senarioCase) && !EmailCandidate){
+                    if (!EmailCandidate){
                       appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
                     }
                     appendMessage(message);
