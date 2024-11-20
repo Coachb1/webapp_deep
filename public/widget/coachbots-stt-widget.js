@@ -253,9 +253,9 @@ if (window.user) {
   user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""}`;
   user_email2 = window.user.email;
 } else {
-  user_name2 = "coachbots_anonyoususer";
-  user_email2 = getAnonymousEmail();
-}
+    user_name2 = "coachbots_anonyoususer";
+    user_email2 = getAnonymousEmail();
+  }
 
 if (window.LogRocket) {
   window.LogRocket.identify(user_email2, {
@@ -3552,7 +3552,7 @@ const handleEndCoachingClick2 = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+    if (!emailCandidate2){
       appendMessage2("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
     } else {
       appendMessage2(
@@ -5015,7 +5015,7 @@ async function setMcqVariablesStt() {
           // append custom message to chat
           let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
-          if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+          if (!emailCandidate2){
             message2 = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
           }
           appendMessage2(message2);
@@ -5131,7 +5131,7 @@ async function submitEmailAndName2() {
       // append custom message to chat
       let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
-      if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+      if (!emailCandidate2){
         message2 = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
       }
       //* send message to start new session
@@ -8196,7 +8196,7 @@ loadExternalModule().then(() => {
                   }
               }else {
                 let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+                if (!emailCandidate2){
                   message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                 }
                 appendMessage2(message);
@@ -9480,8 +9480,8 @@ loadExternalModule().then(() => {
                 senarioCase2 = questionData2.results[0].scenario_case;
                 emailCandidate2 = questionData2.results[0].email_candidate;
 
-                if (clientuserInformationSTT){
-                  emailCandidate2 = clientuserInformationSTT.report_on
+                if (clientuserInformationSTT && 'report_on' in clientuserInformationSTT) {
+                  emailCandidate2 = clientuserInformationSTT.report_on;
                 }
                 senarioMediaDescription2 =
                   questionData2.results[0].description_media;
@@ -9519,6 +9519,9 @@ loadExternalModule().then(() => {
 
                 if (Object.keys(snnipetConfigSTT).length > 0 ){
                   isImmersiveStt = snnipetConfigSTT.allowAudioInteraction === 'true';
+                  if (clientuserInformationSTT && 'client_name' in clientuserInformationSTT){
+                    sttWidgetClientId = clientuserInformationSTT.client_name
+                  }
                 } else{
                   console.log("clientAllowAudioInteraction2" , clientAllowAudioInteraction2)
                   console.log("userAllowAudioInteraction2" , userAllowAudioInteraction2)
@@ -10735,7 +10738,7 @@ loadExternalModule().then(() => {
                       });
                     } else{
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                      if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+                      if (!emailCandidate2){
                         message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                       }
                       appendMessage2(message);
@@ -10763,7 +10766,7 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (['assessment', 'psychometric'].includes(senarioCase2) && !emailCandidate2){
+                    if (!emailCandidate2){
                       message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                     }
                     appendMessage2(message);
