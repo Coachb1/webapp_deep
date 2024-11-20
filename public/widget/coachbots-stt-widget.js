@@ -6517,7 +6517,7 @@ loadExternalModule().then(() => {
         console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
         chatElementRef2.initialMessages = [
           {
-          html: `<p>Hi! Welcome to the psychometric testing powered by our Cognitive Leadership Framework.</p>`,
+          html: `<p>Hi! Welcome to our psychometric testing platform, powered by the Cognitive Leadership Framework. This system combines Skill Assessments and Psychometric Assessments to provide a holistic understanding of your abilities, personality traits, and leadership potential. Begin your journey towards self-discovery and growth with us!</p>`,
           role: "ai",
           },
           {
