@@ -365,7 +365,7 @@ fetch(`${baseURL2}/accounts/`, {
   });
 
 
-const createUser = async(user_name, user_email)=>{
+const createUserSTT = async(user_name, user_email)=>{
   console.log("newusername", user_name)
   user_name2 = user_name
   user_email2 = user_email
@@ -401,8 +401,8 @@ fetch(`${baseURL2}/accounts/`, {
     console.log("START -> ", data)
     if (!window.user){
       window.user = {
-        "given_name": user_name,
-        "email": user_email,
+        "given_name": user_name2,
+        "email": user_email2,
     }
     }
     participantId2 = data.uid;
@@ -6511,13 +6511,13 @@ loadExternalModule().then(() => {
   if (botId == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0){
 
-      if (snnipetConfigSTT['pyschometric'] === 'true'){
+      if (snnipetConfigSTT['psychometric'] === 'true'){
         isEmailFormstt=true;
         formFieldsstt = ["email","name"];
         console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
         chatElementRef2.initialMessages = [
           {
-          html: `<p>Hi! Welcome to the psychometric testing powered by our Cognitive Leadership Framework.</p>`,
+          html: `<p>Hi! Welcome to our psychometric testing platform, powered by the Cognitive Leadership Framework. This system combines Skill Assessments and Psychometric Assessments to provide a holistic understanding of your abilities, personality traits, and leadership potential. Begin your journey towards self-discovery and growth with us!</p>`,
           role: "ai",
           },
           {
@@ -8029,11 +8029,11 @@ loadExternalModule().then(() => {
               return;
             }
             if (latestMessage === clientuserInformationSTT?.widget_access_code){
-              console.log("Access Code Matched")
+              console.log("Access Code Matched",snnipetConfigSTT.isDemo)
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
-              } else if (snnipetConfigSTT['pyschometric'] === 'true'){
+              } else if (snnipetConfigSTT['psychometric'] === 'true'){
                 signals.onResponse({
                   html: `Great! The assessment will have 10 scenario based question. Please enter your test code to get stated.`
                 })
@@ -8178,11 +8178,11 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: thumbsupdiv,
                 });
-              } else if (snnipetConfigSTT['pyschometric'] === 'true' || Object.keys(snnipetConfigSTT).length > 0){
+              } else if (snnipetConfigSTT['psychometric'] === 'true' || Object.keys(snnipetConfigSTT).length > 0){
                   //  creating user after getting name, email "CreateUser"
                   console.log(emailNameformJsonstt)
                   try {
-                    await createUser(emailNameformJsonstt['name'], emailNameformJsonstt['email']);
+                    await createUserSTT(emailNameformJsonstt['name'], emailNameformJsonstt['email']);
                     // await new Promise(resolve => setTimeout(resolve, 5000)); 
                     signals.onResponse({
                       html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"

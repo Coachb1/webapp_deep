@@ -233,7 +233,105 @@ console.log(user === undefined);
     .catch((err) => console.log(err));
 
 
+const CreateUser = async(username,useremail)=>{
+  console.log("newusername", username)
+  user_name = username
+  user_email = useremail
+  console.log("newuser_name", user_name)
+  console.log("newuser_email", user_email)
 
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name,
+            username: user_name,
+            email: user_email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!window.user){
+        window.user = {
+          "given_name": user_name,
+          "email": user_email,
+      }
+      }
+      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
+
+
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+          ClientUserInformation = data.data.user_info[0];
+          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
+          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
+      
+      
+          const headerText2 = document.getElementById("header-text2");
+          const footerText2 = document.getElementById("footer-text2");
+          const instructionsPaneList2 = document.getElementById('instructions-list2')
+          console.log(headerText2);
+          console.log(footerText2);
+      
+          if (clientBasedBotHeaderText2) {
+            headerText2.innerText = clientBasedBotHeaderText2;
+          }
+      
+          if (clientBasedBotFooterText2) {
+            footerText2.innerText = clientBasedBotFooterText2;
+          }
+      
+          if (clientBasedReadHereText2) {
+            const list = clientBasedReadHereText2
+              .trim()
+              .split("\n")
+              .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+              });
+
+              instructionsPaneList2.innerHTML = list;
+          }
+        });
+
+    })
+    .catch((err) => console.log(err));
+
+
+}
 
 
 // sample TEst codes
@@ -2277,9 +2375,9 @@ async function handleScenarioRegenerationCT(signals) {
     currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log('is_micro', snnipetConfigSTT.isMicro)
-  if (snnipetConfigSTT.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  console.log('is_micro', snnipetConfig.isMicro)
+  if (snnipetConfig.isMicro !== undefined){
+    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
   }
 
   params.set("regeneration", true);
@@ -3176,13 +3274,37 @@ loadExternalModule().then(() => {
   }
 
   if (Object.keys(snnipetConfig).length > 0){
-    chatElementRef.initialMessages = [
-      {
-        html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+
+    if (snnipetConfig['psychometric'] === 'true'){
+      chatElementRef.initialMessages = [
+        {
+        html: `<p>Hi! Welcome to our psychometric testing platform, powered by the Cognitive Leadership Framework. This system combines Skill Assessments and Psychometric Assessments to provide a holistic understanding of your abilities, personality traits, and leadership potential. Begin your journey towards self-discovery and growth with us!</p>`,
         role: "ai",
-      },
-    ];
-    askAccessBotCode = true;
+        },
+        {
+        html: `<b>Please enter your email to get started.</b>`,
+        role: "ai",
+        },
+      ];
+
+    } else{
+
+      chatElementRef.initialMessages = [
+        {
+          html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`,
+          role: "ai",
+        },
+        {
+          html: `<b>Please enter your email to get started.</b>`,
+          role: "ai",
+          },
+      ];
+      
+    }
+    isEmailForm=true;
+    formFields = ["email","name"];
+    console.log("### formFields : ",formFields, "other data: ",`<b>Please enter your ${formFields[0]}</b>`)
+
   } else{
 
     chatElementRef.initialMessages = [
@@ -3446,11 +3568,11 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformation = async (use_case, user_id) => {
-    const url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
+  const getClientInformation = async (use_case, email=null) => {
+    let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if (user_id && use_case === "user_info") {
-      url += `&user_id=${user_id}`;
+    if (email && use_case === "user_info") {
+      url += `&email=${email}`;
     }
     try {
       const response = await fetch(url, {
@@ -4353,7 +4475,7 @@ loadExternalModule().then(() => {
                       // sendEmail();
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                       if (!EmailCandidate){
-                        appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
+                        message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                       }
                       appendMessage(message);
                       // //* send message to start new session
@@ -4409,14 +4531,39 @@ loadExternalModule().then(() => {
             document.getElementById("chat-element").shadowRoot;
 
           if (askAccessBotCode){
-            const code = 'DEMO2024'
-            if (latestMessage === code){
+            // fetching client information to get access code "AccessCode"
+            console.log(`client:`,ClientUserInformation) 
+            if (!ClientUserInformation){
+              ClientUserInformation = await getClientInformation('user_info', user_email)[0]
+              // await new Promise(resolve => setTimeout(resolve, 15000)); 
+              
+            }
+            console.log(`client-new:`,ClientUserInformation,latestMessage) 
+
+            
+
+
+
+            if (!ClientUserInformation?.widget_access_code){
+              signals.onResponse({
+                html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+              })
+              return;
+            }
+
+            if (latestMessage === ClientUserInformation?.widget_access_code){
               console.log("Access Code Matched")
               LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
                 handleOptionButtonClick("",signals)
-              } else{
+              } else if (snnipetConfig['psychometric'] === 'true'){
+                signals.onResponse({
+                  html: `Great! The assessment will have 10 scenario based question. Please enter your test code to get stated.`
+                })
+
+              } 
+              else{
                 signals.onResponse(
                   {
                     html: `<b>Do you have access code for your simulation?</b><br/><br/>
@@ -4449,17 +4596,35 @@ loadExternalModule().then(() => {
             } else {
               isEmailForm = false;
 
-              let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-              if (!EmailCandidate){
-                appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
-              }
-              appendMessage(message);
-              // //* send message to start new session
+              if (snnipetConfig['psychometric'] === 'true' || Object.keys(snnipetConfig).length > 0){
+                //  creating user after getting name, email "CreateUser"
+                console.log(emailNameformJson)
+                try {
+                  await CreateUser(emailNameformJson['name'], emailNameformJson['email']);
+                  // await new Promise(resolve => setTimeout(resolve, 5000)); 
+                  signals.onResponse({
+                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                  });
+                  askAccessBotCode = true;
+                } catch (error) {
+                  console.error("Error creating user:", error);
+                  signals.onResponse({
+                    html: "<p>Oops! Something went wrong. Please try again later.</p>"
+                  });
+                }
+              }else {
+                let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                if (!EmailCandidate){
+                  message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                }
+                appendMessage(message);
+                // //* send message to start new session
 
-              signals.onResponse({
-                html: "<b>Please enter another access code to start a new interaction.</b>",
-              });
-              submitEmailAndName();
+                signals.onResponse({
+                  html: "<b>Please enter another access code to start a new interaction.</b>",
+                });
+                submitEmailAndName();
+              }
             }
             return;
           }
@@ -6040,7 +6205,7 @@ loadExternalModule().then(() => {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
                     if (!EmailCandidate){
-                      appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
+                      message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                     }
                     appendMessage(message);
                     // //* send message to start new session
