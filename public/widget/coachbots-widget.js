@@ -3278,7 +3278,7 @@ loadExternalModule().then(() => {
     if (snnipetConfig['psychometric'] === 'true'){
       chatElementRef.initialMessages = [
         {
-        html: `<p>Hi! Welcome to our psychometric testing platform, powered by the Cognitive Leadership Framework. This system combines Skill Assessments and Psychometric Assessments to provide a holistic understanding of your abilities, personality traits, and leadership potential. Begin your journey towards self-discovery and growth with us!</p>`,
+        html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
         role: "ai",
         },
         {
@@ -3568,11 +3568,14 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformation = async (use_case, email=null) => {
+  const getClientInformation = async (use_case, email=null, client_name=null) => {
     let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
     if (email && use_case === "user_info") {
       url += `&email=${email}`;
+    }
+    if (client_name && use_case === 'only_client_data'){
+      url += `&client_name=${client_name}`
     }
     try {
       const response = await fetch(url, {
@@ -4534,7 +4537,9 @@ loadExternalModule().then(() => {
             // fetching client information to get access code "AccessCode"
             console.log(`client:`,ClientUserInformation) 
             if (!ClientUserInformation){
-              ClientUserInformation = await getClientInformation('user_info', user_email)[0]
+              ClientUserInformation = await getClientInformation('only_client_data',
+                                                                  null,
+                                                                  widgetClientId)
               // await new Promise(resolve => setTimeout(resolve, 15000)); 
               
             }
@@ -4544,12 +4549,12 @@ loadExternalModule().then(() => {
 
 
 
-            if (!ClientUserInformation?.widget_access_code){
-              signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
-              })
-              return;
-            }
+            // if (!ClientUserInformation?.widget_access_code){
+            //   signals.onResponse({
+            //     html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+            //   })
+            //   return;
+            // }
 
             if (latestMessage === ClientUserInformation?.widget_access_code){
               console.log("Access Code Matched")

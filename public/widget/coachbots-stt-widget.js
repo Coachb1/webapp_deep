@@ -6517,8 +6517,8 @@ loadExternalModule().then(() => {
         console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
         chatElementRef2.initialMessages = [
           {
-          html: `<p>Hi! Welcome to our psychometric testing platform, powered by the Cognitive Leadership Framework. This system combines Skill Assessments and Psychometric Assessments to provide a holistic understanding of your abilities, personality traits, and leadership potential. Begin your journey towards self-discovery and growth with us!</p>`,
-          role: "ai",
+            html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
+            role: "ai",
           },
           {
           html: `<b>Please enter your email to get started.</b>`,
@@ -6772,11 +6772,14 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformationStt = async (use_case, email = null) => {
+  const getClientInformationStt = async (use_case, email = null,client_name=null) => {
     let url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
     if (email && use_case === "user_info") {
       url += `&email=${email}`;
+    }
+    if (client_name && use_case === 'only_client_data'){
+      url += `&client_name=${client_name}`
     }
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
 
@@ -8012,8 +8015,10 @@ loadExternalModule().then(() => {
             // fetching client information to get access code "AccessCode"
             console.log(`client:`,clientuserInformationSTT) 
             if (!clientuserInformationSTT){
-              clientuserInformationSTT = await getClientInformationStt('user_info', user_email2)[0]
-              // await new Promise(resolve => setTimeout(resolve, 15000)); 
+              clientuserInformationSTT = await getClientInformationStt('only_client_data',
+                                                                        null,
+                                                                        sttWidgetClientId)
+              // await new Promise(resolve => setTimeout(resolve, 10000)); 
               
             }
             console.log(`client-new:`,clientuserInformationSTT,latestMessage) 
@@ -8022,12 +8027,12 @@ loadExternalModule().then(() => {
 
 
 
-            if (!clientuserInformationSTT?.widget_access_code){
-              signals.onResponse({
-                html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
-              })
-              return;
-            }
+            // if (!clientuserInformationSTT?.widget_access_code){
+            //   signals.onResponse({
+            //     html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+            //   })
+            //   return;
+            // }
             if (latestMessage === clientuserInformationSTT?.widget_access_code){
               console.log("Access Code Matched",snnipetConfigSTT.isDemo)
               askAccessBotCodeSTT = false
