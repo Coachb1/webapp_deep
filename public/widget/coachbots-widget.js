@@ -2742,6 +2742,14 @@ if(window.innerWidth < 768) {
   messageBubbleMaxWidth2 = "80%"
 }
 
+const snippetOrigin2 = () => {
+  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground") {
+    return "internal"
+  } else {
+    return "external"
+  }
+}
+
 //* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
@@ -2891,7 +2899,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin2() == "internal" ? "68vh" : "60vh" }; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}
@@ -2956,7 +2964,7 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
           Read here
         </button>
@@ -2964,8 +2972,8 @@ loadExternalModule().then(() => {
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list2">
-            <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+          <ul id="instructions-list2" style="fontSize: 8px; list-style-type: none; padding-left:20px;">
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
@@ -2986,6 +2994,7 @@ loadExternalModule().then(() => {
 
   const readMoreButton = document.getElementById('read-more-button2')
   const instructionsPane = document.getElementById('instructions-pane2')
+  const instructionsList = document.getAnimations('instructions-list2')
   const closeInstructionsPane = document.getElementById('close-intructions-pane2')
 
   readMoreButton.addEventListener("click", () => {
@@ -3015,7 +3024,13 @@ loadExternalModule().then(() => {
      <li>4 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
      <li>5 . The feedback reports may not instantaneously capture all the data. Simply try refreshing the page if anything appears missing. Thanks!</li>
     `
-    instructionsPane.innerHTML = list
+    instructionsList.innerHTML = list
+    instructionsList.style.display = "flex"
+    instructionsList.style.flexDirection = "column"
+    instructionsList.style.fontSize = "12px"
+    instructionsList.style.padding = "10px"
+    instructionsList.style.listStyleType = "none"
+    instructionsList.style.gap = "2px"
   }
 
 
