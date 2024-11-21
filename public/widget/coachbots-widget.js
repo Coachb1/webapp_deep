@@ -196,7 +196,9 @@ console.log(user === undefined);
         .then((res) => res.json())
         .then((data) => {
           console.log("get-client-information : ", data);
-          ClientUserInformation = data.data.user_info[0];
+          if (!data.data.user_info[0].msg){
+            ClientUserInformation = data.data.user_info[0];
+          }
           allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
           clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
           clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
@@ -294,7 +296,9 @@ const CreateUser = async(username,useremail)=>{
         .then((res) => res.json())
         .then((data) => {
           console.log("get-client-information : ", data);
-          ClientUserInformation = data.data.user_info[0];
+          if (!data.data.user_info[0].msg){
+            ClientUserInformation = data.data.user_info[0];
+          }
           allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
           clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
           clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
