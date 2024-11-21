@@ -5931,6 +5931,14 @@ if(window.innerWidth < 768) {
   messageBubbleMaxWidth = "80%"
 }
 
+const snippetOrigin = () => {
+  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground") {
+    return "internal"
+  } else {
+    return "external"
+  }
+}
+
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
@@ -6076,7 +6084,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "60vh"}; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
@@ -6087,7 +6095,6 @@ loadExternalModule().then(() => {
           "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
         }
       }'
-      inputAreaStyle='{"paddingTop": "2rem"}'
       displayLoadingBubble = "true";
       demo="true"
       style="border: none"
@@ -6200,7 +6207,7 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
+    }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
           Read here
@@ -6211,7 +6218,7 @@ loadExternalModule().then(() => {
       }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list">
+          <ul id="instructions-list" style="list-style-type: none;">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
@@ -6222,7 +6229,7 @@ loadExternalModule().then(() => {
         </div>
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
           <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
-          <ol>
+          <ol style="list-style-type: none;">
             <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
             <li><strong>2. Ask Open-Ended Questions:</strong> Instead of "yes" or "no" questions, ask open-ended questions that encourage deeper conversation and insightful responses from your AI Coach. Here are some examples:
               <ul>
