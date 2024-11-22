@@ -8072,13 +8072,11 @@ loadExternalModule().then(() => {
 
             // fetching client information to get access code "AccessCode"
             console.log(`client:`,clientuserInformationSTT) 
-            if (!clientuserInformationSTT){
-              clientuserInformationSTT = await getClientInformationStt('only_client_data',
+            clientuserInformationSTT = await getClientInformationStt('only_client_data',
                                                                         null,
                                                                         sttWidgetClientId)
               // await new Promise(resolve => setTimeout(resolve, 10000)); 
               
-            }
             console.log(`client-new:`,clientuserInformationSTT,latestMessage) 
 
             

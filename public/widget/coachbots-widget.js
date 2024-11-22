@@ -4610,13 +4610,11 @@ loadExternalModule().then(() => {
           if (askAccessBotCode){
             // fetching client information to get access code "AccessCode"
             console.log(`client:`,ClientUserInformation) 
-            if (!ClientUserInformation){
               ClientUserInformation = await getClientInformation('only_client_data',
                                                                   null,
                                                                   widgetClientId)
               // await new Promise(resolve => setTimeout(resolve, 15000)); 
               
-            }
             console.log(`client-new:`,ClientUserInformation,latestMessage) 
 
             
