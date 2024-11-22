@@ -6029,6 +6029,7 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
+      padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
     ">
     <div 
     style="
@@ -6084,7 +6085,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "60vh"}; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "64vh"}; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
@@ -6227,8 +6228,8 @@ loadExternalModule().then(() => {
               <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
+        ${snippetOrigin() === "internal" ? `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot Coaching interaction guide</b>
           <ol style="list-style-type: none;">
             <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
             <li><strong>2. Ask Open-Ended Questions:</strong> Instead of "yes" or "no" questions, ask open-ended questions that encourage deeper conversation and insightful responses from your AI Coach. Here are some examples:
@@ -6256,7 +6257,7 @@ loadExternalModule().then(() => {
             <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
             <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
           </ol>
-        </div>
+        </div>` : ""}
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -6272,6 +6273,20 @@ loadExternalModule().then(() => {
   const instructionsPane = document.getElementById('instructions-pane')
   const closeInstructionsPane = document.getElementById('close-intructions-pane')
   const instructionsPaneList = document.getElementById('instructions-list')
+  const botFooterXyz = document.getElementById('bot-footer')
+  const headerText = document.getElementById('header-text')
+  
+
+  if(snippetOrigin() === "external"){
+    if(botFooterXyz){
+      botFooterXyz.style.margin = "0"
+    }
+    if(headerText) {
+      headerText.style.display = "none"
+    }
+  }
+
+  
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -6292,6 +6307,12 @@ loadExternalModule().then(() => {
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
 
+  if (chatContainer2) {
+    if(snippetOrigin() === "external"){
+      chatContainer2.style.paddingBottom = "0"
+    }
+  }
+  
   if (botId === undefined) {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];

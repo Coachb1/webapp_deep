@@ -2944,6 +2944,7 @@ loadExternalModule().then(() => {
   height: fit-content;
   background-color: #f3f4f6;
   border-radius: 1rem 1rem 0 0;
+  padding : ${snippetOrigin2() === "internal" ? "0" : "0.8rem 0"};
 ">
     <div 
     style="
@@ -3001,7 +3002,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin2() == "internal" ? "68vh" : "60vh" }; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin2() == "internal" ? "68vh" : "64vh" }; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}
@@ -3064,7 +3065,7 @@ loadExternalModule().then(() => {
       attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
     >
     </deep-chat>
-    <p id="bot-footer" style="font-size: ${
+    <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
     }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
         <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
@@ -3098,6 +3099,19 @@ loadExternalModule().then(() => {
   const instructionsPane = document.getElementById('instructions-pane2')
   const instructionsList = document.getElementById('instructions-list2')
   const closeInstructionsPane = document.getElementById('close-intructions-pane2')
+  const botFooter2 = document.getElementById('bot-footer2')
+  const headerText2 = document.getElementById('header-text2')
+
+  if(snippetOrigin2() === "external"){
+    if(botFooter2){
+      botFooter2.style.margin = "0"
+    }
+    if(headerText2){
+      headerText2.style.display = "none"
+    }
+  }
+
+ 
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -3117,6 +3131,9 @@ loadExternalModule().then(() => {
   snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
   
+  if (chatContainer && snippetOrigin2() === "external") {
+      chatContainer.style.paddingBottom = "0";
+    }
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
