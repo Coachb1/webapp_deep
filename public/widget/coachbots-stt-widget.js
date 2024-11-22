@@ -5049,7 +5049,7 @@ async function proceedFormFlowStt(msg) {
     isEmailFormstt = true;
     const filedname = formFieldsstt[0];
     formFieldsstt = formFieldsstt.slice(1);
-    emailNameformJsonstt[filedname] = msg;
+    emailNameformJsonstt[filedname] = filedname === 'email' ? msg.toLowerCase() : msg;
   }
 }
 function sendEmail2(session_id, reportUrl) {
@@ -6291,7 +6291,7 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
-  
+
   if (botId === undefined) {
     const pathname = window.location.pathname;
     botId = pathname.split("/")[2];
@@ -6521,14 +6521,14 @@ loadExternalModule().then(() => {
       if (snnipetConfigSTT['psychometric'] === 'true'){
         isEmailFormstt=true;
         formFieldsstt = ["email","name"];
-        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`Please enter your ${formFieldsstt[0]}`)
         chatElementRef2.initialMessages = [
           {
             html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
             role: "ai",
           },
           {
-          html: `<b>Please enter your email to get started.</b>`,
+          html: `Please enter your email to get started.`,
           role: "ai",
           },
         ];
@@ -6541,13 +6541,13 @@ loadExternalModule().then(() => {
             role: "ai",
           },
           {
-            html: `<b>Please enter your email to get started.</b>`,
+            html: `Please enter your email to get started.`,
             role: "ai",
             },
         ];
         isEmailFormstt=true;
         formFieldsstt = ["email","name"];
-        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`<b>Please enter your ${formFieldsstt[0]}</b>`)
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`Please enter your ${formFieldsstt[0]}`)
 
       }
 
@@ -6778,6 +6778,36 @@ loadExternalModule().then(() => {
       console.error(`Error in getTestPrevilage: ${error}`);
     }
   };
+
+  const updateClientInfoSTT = async (clientName, emails) => {
+    try {
+      const response = await fetch(`${baseURL2}/accounts/get-create-or-update-client-id/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_name: clientName,
+          member_emails: emails,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Response Data:", data);
+        console.log("Successfully updated client details.");
+      } else {
+        const errorData = await response.json();
+        console.error("Error Response:", errorData);
+        console.error(`Failed to update client details. ${errorData.message || ""}`);
+      }
+    } catch (error) {
+      console.error("Network or unexpected error:", error);
+      console.error("An unexpected error occurred while updating client details.");
+    }
+  };
+  
 
   const getClientInformationStt = async (use_case, email = null,client_name=null) => {
     let url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
@@ -8042,12 +8072,13 @@ loadExternalModule().then(() => {
             // }
             if (latestMessage === clientuserInformationSTT?.widget_access_code){
               console.log("Access Code Matched",snnipetConfigSTT.isDemo)
+              updateClientInfoSTT(sttWidgetClientId,user_email2)
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
               } else if (snnipetConfigSTT['psychometric'] === 'true'){
                 signals.onResponse({
-                  html: `Great! The assessment will have 10 scenario based question. Please enter your test code to get stated.`
+                  html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
 
               }
@@ -8141,7 +8172,7 @@ loadExternalModule().then(() => {
             await proceedFormFlowStt(latestMessage);
             if (formFieldsstt.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFieldsstt[0]}<b>`,
+                html: `Please enter your ${formFieldsstt[0]}.`,
               });
             } else {
               isEmailFormstt = false;
@@ -10713,6 +10744,14 @@ loadExternalModule().then(() => {
                     };
                   } else if (senarioCase2 === "process_training") {
                     reportType2 = "processTrainingReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
+                  } else if (senarioCase2 === "psychometric") {
+                    reportType2 = "personalityPsychomatricReport";
                     getReportBody2 = {
                       user_id: participantId2,
                       report_type: reportType2,

@@ -1242,7 +1242,7 @@ async function proceedFormFlow(msg) {
     isEmailForm = true;
     const filedname = formFields[0];
     formFields = formFields.slice(1);
-    emailNameformJson[filedname] = msg;
+    emailNameformJson[filedname] = filedname === 'email'? msg.toLowerCase() : msg ;
   }
 }
 //*********** hit mail sending api */
@@ -3096,7 +3096,7 @@ loadExternalModule().then(() => {
 
   const readMoreButton = document.getElementById('read-more-button2')
   const instructionsPane = document.getElementById('instructions-pane2')
-  const instructionsList = document.getAnimations('instructions-list2')
+  const instructionsList = document.getElementById('instructions-list2')
   const closeInstructionsPane = document.getElementById('close-intructions-pane2')
 
   readMoreButton.addEventListener("click", () => {
@@ -3116,7 +3116,7 @@ loadExternalModule().then(() => {
   widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
   snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
-
+  
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
@@ -3301,7 +3301,7 @@ loadExternalModule().then(() => {
         role: "ai",
         },
         {
-        html: `<b>Please enter your email to get started.</b>`,
+        html: `Please enter your email to get started.`,
         role: "ai",
         },
       ];
@@ -3314,7 +3314,7 @@ loadExternalModule().then(() => {
           role: "ai",
         },
         {
-          html: `<b>Please enter your email to get started.</b>`,
+          html: `Please enter your email to get started.`,
           role: "ai",
           },
       ];
@@ -3322,7 +3322,7 @@ loadExternalModule().then(() => {
     }
     isEmailForm=true;
     formFields = ["email","name"];
-    console.log("### formFields : ",formFields, "other data: ",`<b>Please enter your ${formFields[0]}</b>`)
+    console.log("### formFields : ",formFields, "other data: ",`Please enter your ${formFields[0]}`)
 
   } else{
 
@@ -3586,6 +3586,36 @@ loadExternalModule().then(() => {
       console.error(`Error in getTestCodesByRule: ${error}`);
     }
   };
+
+  const updateClientInfo = async (clientName, emails) => {
+    try {
+      const response = await fetch(`${baseURL}/accounts/get-create-or-update-client-id/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_name: clientName,
+          member_emails: emails,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Response Data:", data);
+        console.log("Successfully updated client details.");
+      } else {
+        const errorData = await response.json();
+        console.error("Error Response:", errorData);
+        console.error(`Failed to update client details. ${errorData.message || ""}`);
+      }
+    } catch (error) {
+      console.error("Network or unexpected error:", error);
+      console.error("An unexpected error occurred while updating client details.");
+    }
+  };
+  
 
   const getClientInformation = async (use_case, email=null, client_name=null) => {
     let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
@@ -4471,6 +4501,14 @@ loadExternalModule().then(() => {
                   report_type: reportType,
                   test_attempt_session_id: sessionId,
                 };
+              } else if (senarioCase === "psychometric") {
+                reportType = "personalityPsychomatricReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  session_id: sessionId,
+                  interaction_id: testId,
+                };
               }
 
               console.log(getReportBody, senarioCase);
@@ -4577,13 +4615,14 @@ loadExternalModule().then(() => {
 
             if (latestMessage === ClientUserInformation?.widget_access_code){
               console.log("Access Code Matched")
-              LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
+              updateClientInfo(widgetClientId,user_email)
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
+                LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
                 handleOptionButtonClick("",signals)
               } else if (snnipetConfig['psychometric'] === 'true'){
                 signals.onResponse({
-                  html: `Great! The assessment will have 10 scenario based question. Please enter your test code to get stated.`
+                  html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
                 })
 
               } 
@@ -4606,7 +4645,7 @@ loadExternalModule().then(() => {
               LoadingMessageWithText2("Coachbot is thinking...", shadowRoot)
             }
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Pass Code</b> to proceed.</p>",
             });
             return;
           }
@@ -4615,7 +4654,7 @@ loadExternalModule().then(() => {
             await proceedFormFlow(latestMessage);
             if (formFields.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFields[0]}<b>`,
+                html: `Please enter your ${formFields[0]}.`,
               });
             } else {
               isEmailForm = false;
