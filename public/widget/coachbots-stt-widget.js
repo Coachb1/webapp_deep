@@ -5975,9 +5975,9 @@ loadExternalModule().then(() => {
       style="
         height: 4.5rem;
         width: 4.5rem;
-        background-color: white;
+        background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        border-radius:40%;
+        border-radius: 40%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -6016,7 +6016,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 0rem 1rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999 !important;
+      z-index: 1000 !important;
       hight: 75vh;
     "
   >
@@ -6210,7 +6210,7 @@ loadExternalModule().then(() => {
       window.innerWidth < 768 ? "10px" : "12px"
     }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Read here
         </button>
       </span> 
@@ -6219,7 +6219,7 @@ loadExternalModule().then(() => {
       }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list" style="list-style-type: none;">
+          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
@@ -10929,6 +10929,7 @@ loadExternalModule().then(() => {
 const openChatContainer2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+  const chatIconContainer2 = document.getElementById("chat-icon2")
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
@@ -10992,9 +10993,11 @@ const openChatContainer2 = () => {
     chatIcon2.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+    chatIconContainer2.style.backgroundColor = "#06ddb8";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
@@ -11008,6 +11011,7 @@ const closeFromTop2 = () => {
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
+  const chatIconContainer2 = document.getElementById("chat-icon2")
 
   //end session due to inactivity :- row 708
   // setTimeout(() => {
@@ -11021,9 +11025,11 @@ const closeFromTop2 = () => {
     chatIcon2.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer2.style.backgroundColor = "white";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+    chatIconContainer2.style.backgroundColor = "#06ddb8";
     chatIcon2.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }

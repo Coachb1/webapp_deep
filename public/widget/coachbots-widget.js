@@ -2890,7 +2890,7 @@ loadExternalModule().then(() => {
       style="
         height: 4.5rem;
         width: 4.5rem;
-        background-color: white;
+        background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         border-radius: 40%;
         display: flex;
@@ -2931,7 +2931,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 1rem 0rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999 !important;
+      z-index: 1000 !important;
       hiegth: 75vh;
     "
   >
@@ -3067,15 +3067,15 @@ loadExternalModule().then(() => {
     </deep-chat>
     <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Read here
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list2" style="fontSize: 8px; list-style-type: none; padding-left:20px;">
+          <ul id="instructions-list2" style="list-style-type: none; padding-left:20px; font-size: 12px;">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
@@ -6502,78 +6502,7 @@ const openChatContainer = () => {
     });
   }
 
-  // Using the ipinfo.io API
-  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     ipAddress = data.ip;
-  //   })
-  //   .catch((error) => console.error("Error fetching IP address:", error));
-
-  //   const user_data = getUserData();
-
-  //   if (user_data) {
-  //     user_name = user_data.name;
-  //     user_email = user_data.email;
-  //   } else {
-  //     user_name = "coachbots_anonyoususer";
-  //     user_sid = generateSessionId();
-  //     user_email = `${user_name}-${sid}@gmail.com`;
-  //   }
-
-  // let user_name;
-  // let user_email;
-
-  // if (user) {
-  //   user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
-  //   user_email = user.email;
-  // } else {
-  //   user_name = "coachbots_anonyoususer";
-  //   user_email = getAnonymousEmail();
-  // }
-
-  // if (window.LogRocket) {
-  //   window.LogRocket.identify(user_email, {
-  //     name: user_name,
-  //     email: user_email,
-  //   });
-  // }
-  // fetch(`${baseURL}/accounts/`, {
-  //   method: "POST",
-  //   headers: {
-  //     Authorization: `Basic ${basicAuthToken}`,
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({
-  //     user_context: {
-  //       name: user_name,
-  //       role: "member",
-  //       user_attributes: {
-  //         tag: "deepchat_profile",
-  //         attributes: {
-  //           name: user_name,
-  //           username: user_name,
-  //           email: user_email,
-  //         },
-  //       },
-  //     },
-  //     identity_context: {
-  //       identity_type: "deepchat_unique_id",
-  //       value: user_email,
-  //     },
-  //   }),
-  // })
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     clientAllowAudioInteraction = data.client_allow_audio_interactions; 
-  //     userAllowAudioInteraction = data.user_allow_audio_interactions;
-  //     prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
-
-  //     participantId = data.uid;
-  //     userId = data.uid;
-  //     userRole = data.role;
-  //   })
-  //   .catch((err) => console.log(err));
+  const chatIconContainer = document.getElementById("chat-icon")
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
@@ -6600,9 +6529,11 @@ const openChatContainer = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer.style.backgroundColor = "white"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+     chatIconContainer.style.backgroundColor = "#06ddb8"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
@@ -6620,6 +6551,7 @@ const closeFromTop = () => {
   const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
   const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
   console.log(coachScribeChatIcon, coachScribeContainer)
+  const chatIconContainer = document.getElementById("chat-icon")
 
   if (window.innerWidth < 600) {
     coachScribeChatIcon.style.display = "block";
@@ -6630,9 +6562,11 @@ const closeFromTop = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer.style.backgroundColor = "white"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+     chatIconContainer.style.backgroundColor = "#06ddb8"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
