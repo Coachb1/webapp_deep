@@ -9,8 +9,15 @@ const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
 
 
+const swipeHeader = document.getElementsByClassName('tatsu-header')[0];
+if(swipeHeader){
+  console.log("swipeHeader", swipeHeader)
+  swipeHeader.style.zIndex = 1;
+}
+
 const style = document.createElement('style');
 style.textContent = `
+    
     #dropdown {
         position: absolute;
         background-color: white;
@@ -48,6 +55,16 @@ style.textContent = `
     .ist-sc {
       scrollbar-width: thin;
       scrollbar-color: #888 #f1f1f1;
+    }
+
+    #bot-footer span {
+      font-size: 12px;
+      padding : 4px;
+    } 
+
+    #bot-footer span button {
+      padding: 1px 4px;
+      font: 16px Arial;
     }
 `;
 document.head.appendChild(style);
@@ -5932,7 +5949,7 @@ if(window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground") {
+  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground" ) {
     return "internal"
   } else {
     return "external"
@@ -6032,6 +6049,7 @@ loadExternalModule().then(() => {
       padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
     ">
     <div 
+    id="bot-header-logo-2"
     style="
       display: flex;
       justify-content: center;
@@ -6040,7 +6058,7 @@ loadExternalModule().then(() => {
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
     ">
-    <h1 style="
+    <h1 id="logo-h1" style="
       margin : 8px;
       color : #2DC092;
       border : 2px solid #2DC092;
@@ -6049,7 +6067,7 @@ loadExternalModule().then(() => {
       line-height : 20px;
       font-weight : 800;
     ">
-      <span style="
+      <span id="logo-span" style="
         background-color : #2DC092;
         color : white;
         font-size : 14px;
@@ -6276,10 +6294,24 @@ loadExternalModule().then(() => {
   const botFooterXyz = document.getElementById('bot-footer')
   const headerText = document.getElementById('header-text')
   
-
   if(snippetOrigin() === "external"){
-    if(botFooterXyz){
-      botFooterXyz.style.margin = "0"
+    if(botFooterXyz ){
+      if(!swipeHeader){
+        botFooterXyz.style.margin = "0"
+      } else {
+        botFooterXyz.style.width = "100%";
+        botFooterXyz.style.fontSize = "16px";
+
+        const footerText = document.getElementById("footer-text");
+        if (footerText) {
+          footerText.style.fontSize = "14px";
+          footerText.style.fontWeight = "600";
+        }
+        instructionsPaneList.style.fontSize = "14px";
+        instructionsPaneList.style.fontWeight = "600";
+        instructionsPaneList.style.lineHeight = "normal";
+      }
+     
     }
     if(headerText) {
       headerText.style.display = "none"
