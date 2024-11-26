@@ -6294,7 +6294,7 @@ loadExternalModule().then(() => {
   const instructionsPaneList = document.getElementById('instructions-list')
   const botFooterXyz = document.getElementById('bot-footer')
   const headerText = document.getElementById('header-text')
-  
+
   if(snippetOrigin() === "external"){
     if(botFooterXyz ){
       if(!swipeHeader){
@@ -10995,7 +10995,6 @@ const openChatContainer2 = () => {
     }
   }
 
-
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
@@ -11011,29 +11010,33 @@ const openChatContainer2 = () => {
 
     if (!botId) {
       const chatContainer = document.getElementById("chat-container");
-      chatContainer.style.scale = 0;
-      chatContainer.style["transform-origin"] = "100% 100%";
-      const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-      chatIcon.src =
-        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+      if (chatContainer) {
+        chatContainer.style.scale = 0;
+        chatContainer.style["transform-origin"] = "100% 100%";
+        const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+        chatIcon.src =
+          "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
 
-      const backdrop2 = document.getElementById("backdrop2");
-      backdrop2.style.display = "none";
+        const backdrop2 = document.getElementById("backdrop2");
+        backdrop2.style.display = "none";
+      }
     }
   }
 
-  if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
-  ) {
-    chatIconContainer2.style.backgroundColor = "white";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
-  } else {
-    chatIconContainer2.style.backgroundColor = "#06ddb8";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
-  }
+  console.log("CHAT ICON", chatIcon2.src);
+
+    if (
+      chatIcon2.src ===
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    ) {
+      chatIconContainer2.style.backgroundColor = "white";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
+    } else {
+      chatIconContainer2.style.backgroundColor = "#06ddb8";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    }
 };
 
 const closeFromTop2 = () => {
@@ -11054,16 +11057,17 @@ const closeFromTop2 = () => {
   //   }
   // }, 900000);
 
-  if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
-  ) {
-    chatIconContainer2.style.backgroundColor = "white";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
-  } else {
-    chatIconContainer2.style.backgroundColor = "#06ddb8";
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
-  }
+    if (
+      chatIcon2.src ===
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    ) {
+      chatIconContainer2.style.backgroundColor = "white";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
+    } else {
+      chatIconContainer2.style.backgroundColor = "#06ddb8";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    }
+
 };
