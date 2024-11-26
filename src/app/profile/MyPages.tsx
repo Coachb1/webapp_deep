@@ -1,22 +1,8 @@
 "use client";
 
-import {
-  applicationUrl,
-  baseURL,
-  basicAuth,
-  getUserAccount,
-} from "@/lib/utils";
+import { applicationUrl } from "@/lib/utils";
 import { Button } from "../../components/ui/button";
-import {
-  Code,
-  Copy,
-  Edit,
-  ExternalLink,
-  Info,
-  LinkIcon,
-  Loader,
-  View,
-} from "lucide-react";
+import { Code, Edit, Info, LinkIcon, Loader, View } from "lucide-react";
 import { TooltipWrapper } from "../../components/TooltipWrapper";
 
 import {
@@ -43,18 +29,26 @@ interface BotTypeEntry {
   bot_type: string;
   bots: Bot[];
 }
-// const botTypeMap: Record<string, Bot[]> = {};
 
 const MyPages = ({ user }: any) => {
   const [botTypes, setBotTypes] = useState<BotTypeEntry[]>([]);
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [botTypeMap, setBotTypeMap] = useState<Record<string, Bot[]>>({});
+  const [noCopilotBot, setNoCopilotBot] = useState<any>();
 
   const { allCoaches, botsData } = useUser();
 
   useEffect(() => {
     setUserProfile(allCoaches[0]);
+    const coachData: any = allCoaches[0];
+    console.log("allCoaches[0] : ", allCoaches[0]);
+    console.log("botsData : ", botsData);
+
+    if (coachData?.profile_type == "coach" && !coachData.bot_ids) {
+      console.log("JUST coach : ", coachData);
+      setNoCopilotBot(coachData);
+    }
 
     botsData
       .filter((bot: any) => bot.signature_bot.bot_type !== "deep_dive")
@@ -84,98 +78,25 @@ const MyPages = ({ user }: any) => {
       bot_type: botType,
       bots: botTypeMap[botType],
     }));
+
     setBotTypes(result);
     setLoading(false);
-    // if (user) {
-    //   getUserAccount(user)
-    //     .then((response) => response.json())
-    //     .then(async (data) => {
-    //       const profile = await fetch(
-    //         `${baseURL}/accounts/coach-coachee-mentor-mentee-profile/?user_id=${data.uid}`,
-    //         {
-    //           headers: {
-    //             Authorization: basicAuth,
-    //           },
-    //         }
-    //       );
-
-    //       const profileJson = await profile.json();
-    //       console.log("profile", profileJson.data[0]);
-    //       console.log("profile1", allCoaches[0]);
-
-    //       setUserProfile(profileJson.data[0]);
-
-    //       fetch(
-    //         `${baseURL}/accounts/get-bots/?user_id=${data.uid}&approved_only=false`,
-    //         {
-    //           headers: {
-    //             Authorization: basicAuth,
-    //           },
-    //         }
-    //       )
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //           console.log(
-    //             "bot data : ",
-    //             data.data.filter(
-    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-    //             )
-    //           );
-    //           data.data
-    //             .filter(
-    //               (bot: any) => bot.signature_bot.bot_type !== "deep_dive"
-    //             )
-    //             .forEach((entry: any) => {
-    //               const botType = entry.signature_bot.bot_type;
-
-    //               if (!botTypeMap[botType]) {
-    //                 botTypeMap[botType] = [];
-    //               }
-    //               const existingEntry = botTypeMap[botType].find(
-    //                 (bot) => bot.bot_id === entry.signature_bot.bot_id
-    //               );
-    //               if (!existingEntry) {
-    //                 botTypeMap[botType].push({
-    //                   bot_id: entry.signature_bot.bot_id,
-    //                   uid: entry.signature_bot.uid,
-    //                   is_approved: entry.signature_bot.is_approved,
-    //                   bot_name:
-    //                     entry.signature_bot.bot_id.includes("feedback") ||
-    //                     entry.signature_bot.bot_id.includes("knowledge")
-    //                       ? entry.bot_attributes.bot_name
-    //                       : entry.bot_attributes.coach_name,
-    //                 });
-    //               }
-    //             });
-    //           const result: BotTypeEntry[] = Object.keys(botTypeMap).map(
-    //             (botType) => ({
-    //               bot_type: botType,
-    //               bots: botTypeMap[botType],
-    //             })
-    //           );
-    //           setBotTypes(result);
-    //           setLoading(false);
-    //         })
-    //         .catch((error) => {
-    //           console.error(error);
-    //           setLoading(false);
-    //         });
-    //     });
-    // }
   }, []);
 
   const BotTypesHeading = (botType: string) => {
     if (botType === "avatar_bot") {
-      return "AI Frame";
+      return "Coaching co-pilot";
     } else if (botType === "feedback_bot") {
       return "Feedback Page";
     } else if (botType === "user_bot") {
       return "Knowledge Bot";
+    } else if (botType === "subject_specific_bot") {
+      return "Subject co-pilot";
     }
   };
 
   const BotTypeLinks = (botType: string, bot_id: string) => {
-    if (botType === "avatar_bot") {
+    if (botType === "avatar_bot" || botType === "subject_specific_bot") {
       return `${applicationUrl()}/coach/${bot_id}`;
     } else if (botType === "feedback_bot") {
       return `${applicationUrl()}/feedback/${bot_id}`;
@@ -197,12 +118,14 @@ const MyPages = ({ user }: any) => {
       profile_type === "mentor" ||
       profile_type === "coach-mentor"
     ) {
-      if (botType === "avatar_bot") {
+      if (botType === "avatar_bot" || botType === "subject_specific_bot") {
         return `/intake/?type=coach&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&view=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "user_bot") {
         return `/intake/?type=knowledge-bot&view=true&bot_id=${bot_id}`;
+      } else {
+        return `/intake/?type=coach&view=true&profile_id=${profile_id}&no-copilot=1`;
       }
     } else if (profile_type === "coachee" || profile_type === "mentee") {
       if (botType === "avatar_bot") {
@@ -236,12 +159,14 @@ const MyPages = ({ user }: any) => {
       profile_type === "mentor" ||
       profile_type === "coach-mentor"
     ) {
-      if (botType === "avatar_bot") {
+      if (botType === "avatar_bot" || botType === "subject_specific_bot") {
         return `/intake/?type=coach&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "feedback_bot") {
         return `/intake/?type=feedback&edit=true&bot_id=${bot_id}&profile_id=${profile_id}&profile_type=${profile_type}&bot_type=${botType}`;
       } else if (botType === "user_bot") {
         return `/intake/?type=knowledge-bot&edit=true&bot_id=${bot_id}`;
+      } else if (botType === "no-copilot") {
+        return `/intake/?type=coach&edit=true&profile_id=${profile_id}&no-copilot=1`;
       }
     } else if (profile_type === "coachee" || profile_type === "mentee") {
       if (botType === "avatar_bot") {
@@ -298,7 +223,8 @@ const MyPages = ({ user }: any) => {
       {!loading &&
         botTypes.length === 0 &&
         userProfile?.profile_type !== "coachee" &&
-        userProfile?.profile_type !== "mentee" && (
+        userProfile?.profile_type !== "mentee" &&
+        !noCopilotBot && (
           <>
             <div className="text-xs w-full h-20 flex items-center justify-center">
               <div>You don't have any active Pages yet!</div>{" "}
@@ -312,15 +238,17 @@ const MyPages = ({ user }: any) => {
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   <p
-                    className={`text-sm max-sm:text-xs inline ${
+                    className={`text-sm max-sm:text-xs text-gray-600 inline ${
                       botType.bot_type === "user_bot"
                         ? "w-[45%] max-sm:w-[70%]"
                         : "w-[45%] max-sm:w-[70%]"
                     } `}
                   >
                     <>
-                      {" "}
-                      {BotTypesHeading(botType.bot_type)}{" "}
+                      Coach -{" "}
+                      <span className="font-semibold">
+                        {BotTypesHeading(botType.bot_type)}
+                      </span>
                       {botType.bot_type === "user_bot" && (
                         <b className="text-gray-600"> - {bot.bot_name}</b>
                       )}{" "}
@@ -490,37 +418,45 @@ const MyPages = ({ user }: any) => {
         ))}
       </div>
       {!loading &&
-        userProfile &&
-        (userProfile.profile_type === "coachee" ||
-          userProfile.profile_type === "mentee") && (
+        ((userProfile &&
+          (userProfile.profile_type === "coachee" ||
+            userProfile.profile_type === "mentee")) ||
+          noCopilotBot) && (
           <>
             <div className="bg-gray-200 mx-4 text-sm my-4 p-2 rounded-md">
               {/* <p className="text-sm ">Coachee</p> */}
               <div className="m-4 my-1 text-sm max-sm:m-2">
                 <div className="flex items-center">
                   {/* <p className="text-sm inline w-[10%]">1</p> */}
-                  <p className="text-sm max-sm:text-xs inline w-[45%] max-sm:w-[50%]">
+                  <p className="text-sm max-sm:text-xs text-gray-600 inline w-[45%] max-sm:w-[50%]">
                     {userProfile.profile_type === "coachee" && <>Coachee</>}
                     {userProfile.profile_type === "mentee" && <>Mentee</>}
+                    {noCopilotBot?.profile_type === "coach" && (
+                      <>
+                        Coach -{" "}
+                        <span className="font-semibold">No co-pilot</span>
+                      </>
+                    )}
 
                     {/* - {userProfile.name} */}
                   </p>
                   <div className="text-gray-400 bg-gray-400 h-5 w-[2px] mx-2 " />
                   {/* FOR VIEW MODE */}
-                  <Link
-                    href={
-                      intakeBotTypeLinksForView(
-                        "coachee",
-                        "123",
-                        userProfile.uid,
-                        userProfile.profile_type
-                      )! + `&uid=`
-                    }
-                    // target="_blank"
+                  <Button
+                    variant={"secondary"}
+                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
                   >
-                    <Button
-                      variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center"
+                    <Link
+                      href={
+                        intakeBotTypeLinksForView(
+                          noCopilotBot?.profile_type || "coachee",
+                          !noCopilotBot?.avatar_bot ? "" : "123",
+                          noCopilotBot?.uid || userProfile.uid,
+                          userProfile.profile_type
+                        )! + `&uid=`
+                      }
+                      className="flex flex-row gap-1 items-center "
+                      // target="_blank"
                     >
                       <span className="max-sm:hidden">View</span>{" "}
                       <TooltipWrapper
@@ -528,24 +464,28 @@ const MyPages = ({ user }: any) => {
                         tooltipName="View"
                         body={<View className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
 
                   {/* FOR EDIT MODE */}
-                  <Link
-                    href={
-                      intakeBotTypeLinks(
-                        "coachee",
-                        "123",
-                        userProfile.uid,
-                        userProfile.profile_type
-                      )! + `&uid=`
-                    }
-                    // target="_blank"
+                  <Button
+                    variant={"secondary"}
+                    className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
+                    disabled={!noCopilotBot?.is_approved}
                   >
-                    <Button
-                      variant={"secondary"}
-                      className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
+                    <Link
+                      className="flex flex-row gap-1 items-center "
+                      href={
+                        intakeBotTypeLinks(
+                          (noCopilotBot?.profile_type === "coach" &&
+                            "no-copilot") ||
+                            "coachee",
+                          !noCopilotBot?.avatar_bot ? "" : "123",
+                          userProfile.uid,
+                          noCopilotBot?.profile_type || userProfile.profile_type
+                        )! + `&uid=`
+                      }
+                      // target="_blank"
                     >
                       <span className="max-sm:hidden">Edit</span>{" "}
                       <TooltipWrapper
@@ -553,8 +493,8 @@ const MyPages = ({ user }: any) => {
                         tooltipName="Edit"
                         body={<Edit className="h-3 w-3 ml-2 max-sm:ml-0" />}
                       />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </div>

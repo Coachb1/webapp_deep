@@ -21,6 +21,7 @@ import {
 import {
   Asterisk,
   ChevronLeft,
+  Eye,
   File,
   Info,
   Loader,
@@ -49,8 +50,21 @@ import Link from "next/link";
 import { NavProfileWoProfile } from "@/components/NavProfile";
 import NetworkNav from "@/components/NetworkNav";
 import { useUser } from "@/context/UserContext";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+interface FileData {
+  file: File;
+  id: number;
+  text: string;
+  name: string;
+}
 
 const CoachIntake = ({ user }: any) => {
   const params = useSearchParams();
@@ -62,6 +76,8 @@ const CoachIntake = ({ user }: any) => {
   const editBotType = params.get("bot_type");
   const profileTypeFromParams = params.get("profile_type");
   let userProfileId = params.get("profile_id");
+  const formVersion = params.get("v");
+  const noCopilotBot = params.get("no-copilot");
 
   const adminEdit = params.get("admin_edit");
   const userIdParams = params.get("user_id");
@@ -138,14 +154,22 @@ const CoachIntake = ({ user }: any) => {
     checked: boolean | string,
     value: string
   ) => {
-    // console.log("CheckedHandler", checked, value);
+    setDataModified(true);
+    console.log("CheckedHandler", checked, value);
     if (checked) {
-      setMentoringPreferencess([...mentoringPreferencess, value]); //filter Others
+      if (mentoringPreferencess) {
+        setMentoringPreferencess([...mentoringPreferencess, value]); //filter Others
+      } else {
+        setMentoringPreferencess([value]);
+      }
     } else if (!checked) {
       setMentoringPreferencess((prevState) =>
-        prevState.filter((val) => val !== value)
+        prevState?.filter((val) => val !== value)
       );
     }
+    setTimeout(() => {
+      console.log("mentoringPreferencess : ", mentoringPreferencess);
+    }, 100);
   };
 
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
@@ -171,7 +195,11 @@ const CoachIntake = ({ user }: any) => {
 
   const [discussInCARformat, setDiscussInCARformat] = useState("");
 
-  const [deleteExistingFiles, setDeleteExistingFiles] = useState(false);
+  //botsIntake
+  const [botName, setBotName] = useState("");
+  const [coachingArea, setCoachingArea] = useState("");
+  const [intakeBotDescription, setIntakeBotDescription] = useState("");
+  const [botDocs, setBotDocs] = useState<FileData[]>([]);
 
   //for coaches
   const [foundationalValues, setFoundationalValues] = useState("");
@@ -197,12 +225,6 @@ const CoachIntake = ({ user }: any) => {
   const [opinionsAboutKeyQualities, setOpinionsAboutKeyQualities] =
     useState("");
 
-  interface FileData {
-    file: File;
-    id: number;
-    text: string;
-    name: string;
-  }
   const [referenceDocs, setReferenceDocs] = useState<FileData[]>([]);
   const [voiceSample, setVoiceSample] = useState("");
   const [coachmentSelect, setCoachMentSelect] = useState("");
@@ -339,8 +361,34 @@ const CoachIntake = ({ user }: any) => {
         .catch((err) => console.error(err));
     }
   };
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    errorKey: string
+  ) => {
+    const fileList = e.target.files; // Get the FileList
+    if (!fileList) return; // Early return if fileList is null
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(fileList); // Convert FileList to an array
+    const validExtensions = [".pdf", ".docx"];
+
+    const invalidFiles = files.filter(
+      (file) =>
+        !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
+    );
+
+    console.log(invalidFiles.length);
+
+    if (invalidFiles.length > 0) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [errorKey]: "Only .pdf and .docx files are allowed.",
+      }));
+      e.target.value = ""; // Clear the input
+      console.log(error);
+      return;
+    } else {
+      setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
+    }
     setDataModified(true);
     const selectedFiles = e.target?.files;
     const input_name = e.target?.name;
@@ -371,6 +419,42 @@ const CoachIntake = ({ user }: any) => {
       );
 
       setReferenceDocs((prevFiles) => [...prevFiles, ...filesArray]);
+    }
+  };
+
+  const handleFileChangeBotInput = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setDataModified(true);
+    const selectedFiles = e.target?.files;
+    const input_name = e.target?.name;
+
+    if (selectedFiles) {
+      const filesArray = await Promise.all(
+        Array.from(selectedFiles).map(async (file: File) => {
+          let textContent: string = "";
+          try {
+            if (file.name.includes(".pdf")) {
+              textContent = (await extractTextFromPdf(file)) || "";
+            } else if (file.name.includes(".docx")) {
+              textContent = (await extractTextFromDocx(file)) || "";
+            }
+            console.log("text", textContent);
+          } catch (error) {
+            console.error("Error extracting text from DOCX:", error);
+            // If text extraction fails, set textContent to an empty string or handle it as needed
+            // textContent = '';
+          }
+          return {
+            file: file,
+            id: Math.floor(Math.random() * 10000),
+            text: textContent,
+            name: input_name,
+          };
+        })
+      );
+
+      setBotDocs((prevFiles) => [...prevFiles, ...filesArray]);
     }
   };
 
@@ -440,7 +524,23 @@ const CoachIntake = ({ user }: any) => {
   let userIdd: string;
 
   useEffect(() => {
+    console.log("noCopilotBot : ", noCopilotBot);
     hideBots();
+    if (!checkIfEdit && !checkIfView) {
+      if (formType === "coach" && !formVersion) {
+        setFormVersion("1");
+      }
+    } else {
+      if (formType === "coach") {
+        if (editBotType === "avatar_bot") {
+          setFormVersion("3");
+        } else if (editBotType === "subject_specific_bot") {
+          setFormVersion("2");
+        } else {
+          setFormVersion("1");
+        }
+      }
+    }
     if (formType === "coach") {
       setProfileType("coach");
     } else if (formType === "coachee") {
@@ -610,6 +710,9 @@ const CoachIntake = ({ user }: any) => {
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    console.log({});
+
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {
         if (user) {
@@ -647,9 +750,6 @@ const CoachIntake = ({ user }: any) => {
           }
           formdata.append("department", department);
 
-          formdata.append("supported_outcome", outcomeSupported);
-          formdata.append("bot_type", "avatar_bot");
-
           if (formType == "coach") {
             formdata.append(
               "profile_type",
@@ -662,141 +762,186 @@ const CoachIntake = ({ user }: any) => {
               JSON.stringify(profileType === "coach-mentor" ? true : false)
             );
             formdata.append("area_domain", areaDomain);
-            formdata.append("mentoring_preferences", mentoringPreferences);
-            formdata.append(
-              "mentoring_frameworks",
-              JSON.stringify(mentoringPreferencess.join(", "))
-            ); //coachMentFrameworks);
-            formdata.append("dominant_point_of_view", povProgramParticipants);
-            formdata.append("problem_solving_approach", problemSolvingApproach);
-            formdata.append(
-              "provided_links",
-              JSON.stringify({
-                youtube_links: linksReflectingWVpersonal,
-                article_links: linksReflectyouWished,
-              })
-            );
-            formdata.append("admired_leaders", leaderNames);
-
-            formdata.append(
-              "voice_sample",
-              `${voiceSample.toLowerCase() === "yes" ? true : false}`
-            );
-            formdata.append("coaching_for_fitment", coachmentSelect);
-            formdata.append("coaching_level", participantLevel);
-            formdata.append(
-              "coach_same_department",
-              `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
-            );
             formdata.append(
               "allow_coachee_to_create_session",
-              `${allowSessionNotes.toLowerCase() === "yes" ? true : false}`
+              `${allowSessionNotes?.toLowerCase() === "yes" ? true : false}`
             );
-            formdata.append(
-              "provide_answers_using_emojis",
-              `${
-                provideAnswersUsingEmojis.toLowerCase() === "yes" ? true : false
-              }`
-            );
-            formdata.append(
-              "significant_challenges_and_solutions",
-              significantChallenges
-            );
-            formdata.append(
-              "common_phrases_and_expressions",
-              phrasesNExpressions
-            );
-            formdata.append("mentorship_contribution", discussInCARformat);
-            formdata.append("journey_and_background", journeyAndBackground);
 
-            if (profileType === "coach") {
-              const coachQna = {
-                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                  foundationalValues,
-                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                  developmentFramewrok,
-                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                  coachingProcessOverview,
-                "How do you handle situations where I feel stuck or unsure about my next steps?":
-                  handlingSituations,
-                "How can I integrate the lessons from these sessions into my daily life?":
-                  integratingLessons,
-                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                  guidanceOnCoachingProcess,
-              };
-
-              CoachMentorQnA.coach_qna = coachQna;
+            if (formVersion !== "1") {
+              formdata.append("mentoring_preferences", mentoringPreferences);
 
               formdata.append(
-                "qna_for_coach_mentor",
-                JSON.stringify({
-                  coach: coachQna,
-                })
+                "provide_answers_using_emojis",
+                `${
+                  provideAnswersUsingEmojis?.toLowerCase() === "yes"
+                    ? true
+                    : false
+                }`
               );
-            } else if (profileType === "mentor") {
-              const QnaMentor = {
-                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                  differentCareerPath,
-                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                  problemSolvingApproachInDomain,
-                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                  overviewofMentoring,
-                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                  opportunitiesOfGrowth,
-                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                  commonChallengesOrObstacles,
-                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                  opinionsAboutKeyQualities,
-              };
 
-              CoachMentorQnA.mentor_qna = QnaMentor;
+              if (formVersion !== "2") {
+                formdata.append("bot_type", "avatar_bot");
 
-              formdata.append(
-                "qna_for_coach_mentor",
-                JSON.stringify({
-                  mentor: QnaMentor,
-                })
-              );
-            } else if (profileType === "coach-mentor") {
-              const qnaCoach = {
-                "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
-                  foundationalValues,
-                "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
-                  developmentFramewrok,
-                "Can you provide an overview of your coaching process and what I can expect from our sessions?":
-                  coachingProcessOverview,
-                "How do you handle situations where I feel stuck or unsure about my next steps?":
-                  handlingSituations,
-                "How can I integrate the lessons from these sessions into my daily life?":
-                  integratingLessons,
-                "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
-                  guidanceOnCoachingProcess,
-              };
-              CoachMentorQnA.coach_qna = qnaCoach;
+                formdata.append("supported_outcome", outcomeSupported);
+                formdata.append(
+                  "mentoring_frameworks",
+                  JSON.stringify(mentoringPreferencess.join(", "))
+                ); //coachMentFrameworks);
+                formdata.append(
+                  "dominant_point_of_view",
+                  povProgramParticipants
+                );
+                formdata.append(
+                  "problem_solving_approach",
+                  problemSolvingApproach
+                );
+                formdata.append(
+                  "provided_links",
+                  JSON.stringify({
+                    youtube_links: linksReflectingWVpersonal,
+                    article_links: linksReflectyouWished,
+                  })
+                );
+                formdata.append("admired_leaders", leaderNames);
 
-              const qnaMentor = {
-                "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
-                  differentCareerPath,
-                "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
-                  problemSolvingApproachInDomain,
-                "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
-                  overviewofMentoring,
-                "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
-                  opportunitiesOfGrowth,
-                "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
-                  commonChallengesOrObstacles,
-                "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
-                  opinionsAboutKeyQualities,
-              };
-              CoachMentorQnA.mentor_qna = qnaMentor;
+                formdata.append(
+                  "voice_sample",
+                  `${voiceSample.toLowerCase() === "yes" ? true : false}`
+                );
+                formdata.append("coaching_for_fitment", coachmentSelect);
+                formdata.append("coaching_level", participantLevel);
+                formdata.append(
+                  "coach_same_department",
+                  `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
+                );
 
-              formdata.append(
-                "qna_for_coach_mentor",
-                JSON.stringify({
-                  coach: qnaCoach,
-                  mentor: qnaMentor,
-                })
-              );
+                formdata.append(
+                  "significant_challenges_and_solutions",
+                  significantChallenges
+                );
+                formdata.append(
+                  "common_phrases_and_expressions",
+                  phrasesNExpressions
+                );
+                formdata.append("mentorship_contribution", discussInCARformat);
+                formdata.append("journey_and_background", journeyAndBackground);
+
+                if (profileType === "coach") {
+                  const coachQna = {
+                    "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                      foundationalValues,
+                    "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                      developmentFramewrok,
+                    "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                      coachingProcessOverview,
+                    "How do you handle situations where I feel stuck or unsure about my next steps?":
+                      handlingSituations,
+                    "How can I integrate the lessons from these sessions into my daily life?":
+                      integratingLessons,
+                    "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                      guidanceOnCoachingProcess,
+                  };
+
+                  CoachMentorQnA.coach_qna = coachQna;
+
+                  formdata.append(
+                    "qna_for_coach_mentor",
+                    JSON.stringify({
+                      coach: coachQna,
+                    })
+                  );
+                } else if (profileType === "mentor") {
+                  const QnaMentor = {
+                    "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                      differentCareerPath,
+                    "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                      problemSolvingApproachInDomain,
+                    "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                      overviewofMentoring,
+                    "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                      opportunitiesOfGrowth,
+                    "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                      commonChallengesOrObstacles,
+                    "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                      opinionsAboutKeyQualities,
+                  };
+
+                  CoachMentorQnA.mentor_qna = QnaMentor;
+
+                  formdata.append(
+                    "qna_for_coach_mentor",
+                    JSON.stringify({
+                      mentor: QnaMentor,
+                    })
+                  );
+                } else if (profileType === "coach-mentor") {
+                  const qnaCoach = {
+                    "As a coach, what foundational values do you believe individuals should prioritize and strive for in their personal and professional development journey?":
+                      foundationalValues,
+                    "In your role as a coach, what kind of developmental framework do you employ, and why do you consider it to be the optimal framework for facilitating personal growth ?":
+                      developmentFramewrok,
+                    "Can you provide an overview of your coaching process and what I can expect from our sessions?":
+                      coachingProcessOverview,
+                    "How do you handle situations where I feel stuck or unsure about my next steps?":
+                      handlingSituations,
+                    "How can I integrate the lessons from these sessions into my daily life?":
+                      integratingLessons,
+                    "Can you provide guidance on how to effectively balance personal and professional goals during our coaching process?":
+                      guidanceOnCoachingProcess,
+                  };
+                  CoachMentorQnA.coach_qna = qnaCoach;
+
+                  const qnaMentor = {
+                    "As a mentor, what do you think are the different career paths available in this field? What are the core skills and understanding required to continuously grow in this field?":
+                      differentCareerPath,
+                    "What is the problem solving approach in your domain and why do you think that is the right construct for growing in this field?":
+                      problemSolvingApproachInDomain,
+                    "Can you provide an overview of your mentoring approach and what I can expect from our sessions?":
+                      overviewofMentoring,
+                    "What opportunities for growth or advancement do you see in this field, and how can I position myself to capitalize on them?":
+                      opportunitiesOfGrowth,
+                    "What are some common challenges or obstacles that individuals face when pursuing success in this field, and what strategies do you suggest for overcoming them?":
+                      commonChallengesOrObstacles,
+                    "In your opinion, what are the key qualities or skills that contribute to success in the field I'm aiming to excel in, and how can I develop or enhance them?":
+                      opinionsAboutKeyQualities,
+                  };
+                  CoachMentorQnA.mentor_qna = qnaMentor;
+
+                  formdata.append(
+                    "qna_for_coach_mentor",
+                    JSON.stringify({
+                      coach: qnaCoach,
+                      mentor: qnaMentor,
+                    })
+                  );
+                }
+              } else {
+                if (formVersion === "2") {
+                  formdata.append("bot_type", "subject_specific_bot");
+                  if (!checkIfEdit) {
+                    formdata.append(
+                      "bot_data",
+                      JSON.stringify({
+                        bot_name: botName,
+                        bot_area_of_coaching: coachingArea,
+                        bot_description: intakeBotDescription,
+                      })
+                    );
+                  } else {
+                    formdata.append(
+                      "bot_data",
+                      JSON.stringify({
+                        bot_id: botIUidFromParams,
+                        bot_name: botName,
+                        bot_area_of_coaching: coachingArea,
+                        bot_description: intakeBotDescription,
+                      })
+                    );
+                  }
+                }
+                //bot specific
+                // formdata.append("bot_documents", botDocs)
+              }
             }
           } else if (formType === "coachee") {
             formdata.append("profile_type", profileType);
@@ -819,6 +964,10 @@ const CoachIntake = ({ user }: any) => {
             });
           }
 
+          formdata.forEach((val, key) => {
+            console.log(`->${key} : ${val} `);
+          });
+          // setCreateLoading(false);
           // return;
 
           if (!checkIfEdit) {
@@ -839,7 +988,7 @@ const CoachIntake = ({ user }: any) => {
               .then((result) => {
                 console.log(result);
 
-                const queryparam = new URLSearchParams({
+                const fitmentData = {
                   method: "post",
                   qna: JSON.stringify({
                     "1": {
@@ -863,107 +1012,162 @@ const CoachIntake = ({ user }: any) => {
                   }),
                   qna_type: "fitment",
                   user_id: userId,
-                });
+                };
+                const queryparam = new URLSearchParams(fitmentData);
 
-                const resp = fetch(
-                  `${baseURL}/accounts/get-user-feedback-data/?${queryparam}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: basicAuth,
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
+                // const resp = fetch(
+                //   `${baseURL}/accounts/get-user-feedback-data/`,
+                //   {
+                //     method: "POST",
+                //     headers: {
+                //       Authorization: basicAuth,
+                //       "Content-Type": "application/json",
+                //     },
+                //     body: JSON.stringify(fitmentData),
+                //   }
+                // );
 
                 setProfileId(result.data.uid);
                 userProfileId = result.data.uid;
 
-                if (formType === "coach") {
+                if (formType === "coach" && formVersion !== "1") {
                   myHeaders.append("Content-Type", "application/json");
-                  const avatarBotCreationFormData = {
-                    bot_type: "avatar_bot",
-                    profile_id: result.data.uid,
-                    bot_name: name,
-                    email: user.email,
-                    bot_details: { info: about, coach_name: name },
-                    attributes: {
-                      heading: `welcome to ${name}'s avatar bot`,
-                    },
-                    participant_id: userId,
-                    bot_base_url: `${
-                      subdomain === "playground"
-                        ? "https://playground.coachbots.com"
-                        : "https://platform.coachbots.com"
-                    }`,
-                    fitment_answer: `${participantLevel},${
-                      coachMentInSameDep.toLowerCase() === "yes" ? true : false
-                    },${outcomeSupported}`,
-                    fitment_data: {
-                      options: {
-                        "1": ["Someone Senior", "Any level"],
-                        "2": ["Yes", "No"],
-                        "3": [
-                          "Career advancement",
-                          "Skill development",
-                          "Introspection & reflection",
-                          "Networking & leadership",
-                        ],
+
+                  let avatarBotCreationFormData;
+                  if (formVersion === "2") {
+                    avatarBotCreationFormData = {
+                      bot_type: "subject_specific_bot",
+                      profile_id: result.data.uid,
+                      bot_name: botName,
+                      email: user.email,
+                      bot_details: { info: about, coach_name: name },
+                      attributes: {
+                        heading: `welcome to ${name}'s avatar bot`,
                       },
-                      mentee_que: {
-                        "1": "What level of coach & mentor do you want?",
-                        "2": "I want a coach & mentor someone from the same department.",
-                        "3": "What kind of outcome do you want from these sessions the most?",
+                      participant_id: userId,
+                      bot_base_url: `${
+                        subdomain === "playground"
+                          ? "https://playground.coachbots.com"
+                          : "https://platform.coachbots.com"
+                      }`,
+
+                      additional_data: {
+                        profile_type: "coach",
+                        area_domain: areaDomain,
+                        experience: experience,
+                        mentoring_preferences: mentoringPreferences,
+                        profile_description: about,
+                        department: department,
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
+                        provide_answers_using_emojis: `${
+                          provideAnswersUsingEmojis.toLowerCase() === "yes"
+                            ? true
+                            : false
+                        }`,
+                        allow_coachee_to_create_session: `${
+                          allowSessionNotes.toLowerCase() === "yes"
+                            ? true
+                            : false
+                        }`,
+                        discussion_topic: discussionTopics,
+                        bot_area_of_coaching: coachingArea,
+                        bot_description: intakeBotDescription,
                       },
-                      mentor_que: {
-                        "1": "What level of participant do you want to coach & mentor?",
-                        "2": "I want to coach & mentor someone in the same department.",
-                        "3": "What kind of outcome can you support in these sessions the most?",
+                      media_data: {
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
                       },
-                    },
-                    additional_data: {
-                      profile_type: "coach",
-                      area_domain: areaDomain,
-                      experience: experience,
-                      mentoring_preferences: mentoringPreferences,
-                      mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
-                      dominant_point_of_view: povProgramParticipants,
-                      problem_solving_approach: problemSolvingApproach,
-                      admired_leaders: leaderNames,
-                      profile_description: about,
-                      department: department,
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                      voice_sample: voiceSample,
-                      discuss_how_you_helped_others_in_coachMentoring:
-                        discussInCARformat,
-                      journey_and_background: journeyAndBackground,
-                      provide_answers_using_emojis: `${
-                        provideAnswersUsingEmojis.toLowerCase() === "yes"
+                    };
+                  } else if (formVersion === "3") {
+                    avatarBotCreationFormData = {
+                      bot_type: "avatar_bot",
+                      profile_id: result.data.uid,
+                      bot_name: name,
+                      email: user.email,
+                      bot_details: { info: about, coach_name: name },
+                      attributes: {
+                        heading: `welcome to ${name}'s avatar bot`,
+                      },
+                      participant_id: userId,
+                      bot_base_url: `${
+                        subdomain === "playground"
+                          ? "https://playground.coachbots.com"
+                          : "https://platform.coachbots.com"
+                      }`,
+                      fitment_answer: `${participantLevel},${
+                        coachMentInSameDep.toLowerCase() === "yes"
                           ? true
                           : false
-                      }`,
-                      common_phrases_and_expressions: phrasesNExpressions,
-                      significant_challenges_and_solutions:
-                        significantChallenges,
-                      allow_coachee_to_create_session: `${
-                        allowSessionNotes.toLowerCase() === "yes" ? true : false
-                      }`,
-                      fitment_answers: {
-                        coachmentSelect,
-                        participantLevel,
-                        coachMentInSameDep,
-                        outcomeSupported,
+                      },${outcomeSupported}`,
+                      fitment_data: {
+                        options: {
+                          "1": ["Someone Senior", "Any level"],
+                          "2": ["Yes", "No"],
+                          "3": [
+                            "Career advancement",
+                            "Skill development",
+                            "Introspection & reflection",
+                            "Networking & leadership",
+                          ],
+                        },
+                        mentee_que: {
+                          "1": "What level of coach & mentor do you want?",
+                          "2": "I want a coach & mentor someone from the same department.",
+                          "3": "What kind of outcome do you want from these sessions the most?",
+                        },
+                        mentor_que: {
+                          "1": "What level of participant do you want to coach & mentor?",
+                          "2": "I want to coach & mentor someone in the same department.",
+                          "3": "What kind of outcome can you support in these sessions the most?",
+                        },
                       },
-                      coach_qna: CoachMentorQnA.coach_qna,
-                      mentor_qna: CoachMentorQnA.mentor_qna,
-                      discussion_topic: discussionTopics,
-                    },
-                    media_data: {
-                      youtube_links: linksReflectingWVpersonal,
-                      article_links: linksReflectyouWished,
-                    },
-                  };
+                      additional_data: {
+                        profile_type: "coach",
+                        area_domain: areaDomain,
+                        experience: experience,
+                        mentoring_preferences: mentoringPreferences,
+                        mentoring_frameworks: mentoringPreferencess.join(", "), //coachMentFrameworks,
+                        dominant_point_of_view: povProgramParticipants,
+                        problem_solving_approach: problemSolvingApproach,
+                        admired_leaders: leaderNames,
+                        profile_description: about,
+                        department: department,
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
+                        voice_sample: voiceSample,
+                        discuss_how_you_helped_others_in_coachMentoring:
+                          discussInCARformat,
+                        journey_and_background: journeyAndBackground,
+                        provide_answers_using_emojis: `${
+                          provideAnswersUsingEmojis.toLowerCase() === "yes"
+                            ? true
+                            : false
+                        }`,
+                        common_phrases_and_expressions: phrasesNExpressions,
+                        significant_challenges_and_solutions:
+                          significantChallenges,
+                        allow_coachee_to_create_session: `${
+                          allowSessionNotes.toLowerCase() === "yes"
+                            ? true
+                            : false
+                        }`,
+                        fitment_answers: {
+                          coachmentSelect,
+                          participantLevel,
+                          coachMentInSameDep,
+                          outcomeSupported,
+                        },
+                        coach_qna: CoachMentorQnA.coach_qna,
+                        mentor_qna: CoachMentorQnA.mentor_qna,
+                        discussion_topic: discussionTopics,
+                      },
+                      media_data: {
+                        youtube_links: linksReflectingWVpersonal,
+                        article_links: linksReflectyouWished,
+                      },
+                    };
+                  }
 
                   fetch(`${baseURL}/accounts/create-bot-by-details/`, {
                     method: checkIfEdit ? "PATCH" : "POST",
@@ -982,47 +1186,54 @@ const CoachIntake = ({ user }: any) => {
                         //PATCH MEDIA DATA HERE
 
                         const filesPatchFormData = new FormData();
-                        referenceDocs.forEach(({ file, text, name }) => {
-                          console.log("name", name);
-                          console.log("file", file.name);
-                          if (name === "optional_file") {
-                            filesPatchFormData.append(
-                              "optional_file",
-                              `file_name:${file.name} text_file:${text}`
-                            );
-                            console.log(text);
-                          } else {
-                            if (file.name.includes(".pdf")) {
-                              if (text) {
-                                filesPatchFormData.append(
-                                  "pdf_data",
-                                  `file_name:${file.name} text_file:${text}`
-                                );
-                                console.log(text);
-                              } else {
-                                filesPatchFormData.append(
-                                  `attached_pdfs`,
-                                  file,
-                                  file.name.trim()
-                                );
-                              }
-                            } else if (file.name.includes(".docx")) {
-                              if (text) {
-                                filesPatchFormData.append(
-                                  `doc_data`,
-                                  `file_name:${file.name} text_file:${text}`
-                                );
-                                console.log(text);
-                              } else {
-                                filesPatchFormData.append(
-                                  `attached_docs`,
-                                  file,
-                                  file.name.trim()
-                                );
+                        [...referenceDocs, ...botDocs].forEach(
+                          ({ file, text, name }) => {
+                            console.log("name", name);
+                            console.log("file", file.name);
+                            if (name === "optional_file") {
+                              filesPatchFormData.append(
+                                "optional_file",
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                              console.log(text);
+                            } else if (name === "bot_files") {
+                              filesPatchFormData.append(
+                                "bot_docs",
+                                `file_name:${file.name} text_file:${text}`
+                              );
+                            } else {
+                              if (file.name.includes(".pdf")) {
+                                if (text) {
+                                  filesPatchFormData.append(
+                                    "pdf_data",
+                                    `file_name:${file.name} text_file:${text}`
+                                  );
+                                  console.log(text);
+                                } else {
+                                  filesPatchFormData.append(
+                                    `attached_pdfs`,
+                                    file,
+                                    file.name.trim()
+                                  );
+                                }
+                              } else if (file.name.includes(".docx")) {
+                                if (text) {
+                                  filesPatchFormData.append(
+                                    `doc_data`,
+                                    `file_name:${file.name} text_file:${text}`
+                                  );
+                                  console.log(text);
+                                } else {
+                                  filesPatchFormData.append(
+                                    `attached_docs`,
+                                    file,
+                                    file.name.trim()
+                                  );
+                                }
                               }
                             }
                           }
-                        });
+                        );
 
                         filesPatchFormData.append("bot_id", data.bot_uid);
 
@@ -1837,7 +2048,7 @@ const CoachIntake = ({ user }: any) => {
                 setLoading(false);
               });
           });
-      } else if (formType === "coach") {
+      } else if (formType === "coach" && noCopilotBot !== "1") {
         console.log("hello 3");
         console.log(formType);
         getUserAccount(user)
@@ -1992,24 +2203,46 @@ const CoachIntake = ({ user }: any) => {
                 //     .fitment_answers?.coachmentSelect
                 // );
 
-                setParticipantLevel(
-                  resultingBot.signature_bot.data.additional_data
-                    .fitment_answers[0]
-                );
-
-                setCochMentInSameDep(
-                  [true, "true", "True"].includes(
+                if (formVersion === "3") {
+                  setParticipantLevel(
                     resultingBot.signature_bot.data.additional_data
-                      .fitment_answers[1]
-                  )
-                    ? "Yes"
-                    : "No"
-                );
+                      .fitment_answers[0]
+                  );
 
-                setOutcomeSupported(
+                  setCochMentInSameDep(
+                    [true, "true", "True"].includes(
+                      resultingBot.signature_bot.data.additional_data
+                        .fitment_answers[1]
+                    )
+                      ? "Yes"
+                      : "No"
+                  );
+
+                  setOutcomeSupported(
+                    resultingBot.signature_bot.data.additional_data
+                      .fitment_answers[2]
+                  );
+                }
+                // if (formVersion === "2") {
+                setBotName(resultingBot.bot_attributes?.bot_name || "");
+                setIntakeBotDescription(
                   resultingBot.signature_bot.data.additional_data
-                    .fitment_answers[2]
+                    ?.bot_description || ""
                 );
+                setCoachingArea(
+                  resultingBot.signature_bot.data.additional_data
+                    ?.bot_area_of_coaching || ""
+                );
+                // }
+                // setCochMentInSameDep(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.coachMentInSameDep
+                // );
+
+                // setOutcomeSupported(
+                //   resultingBot.signature_bot.data.additional_data
+                //     .fitment_answers?.outcomeSupported
+                // );
 
                 setPhrasesNExpressions(
                   resultingBot.signature_bot.data.additional_data
@@ -2091,7 +2324,7 @@ const CoachIntake = ({ user }: any) => {
                 setLoading(false);
               });
           });
-      } else if (formType === "coachee") {
+      } else if (formType === "coachee" || noCopilotBot === "1") {
         getUserAccount(user)
           .then((res) => res.json())
           .then((data) => {
@@ -2107,7 +2340,10 @@ const CoachIntake = ({ user }: any) => {
               .then((data) => {
                 console.log(data);
                 const resultingBot = data.data;
-                console.log("Bot details for edit - coachee", resultingBot);
+                console.log(
+                  "Bot details for edit - coachee || no-copilot",
+                  resultingBot
+                );
                 if (!adminEdit) {
                   setName(
                     `${user.given_name} ${
@@ -2154,6 +2390,21 @@ const CoachIntake = ({ user }: any) => {
                 if (resultingBot.optional_file_data) {
                   setUpdatedOptionalFile(resultingBot.optional_file_data);
                 }
+
+                if (noCopilotBot === "1") {
+                  setAreaDomain(resultingBot.area_domain);
+                  setAllowSessionNotes(
+                    resultingBot.allow_coachee_to_create_session
+                  );
+
+                  setAllowSessionNotes(
+                    [true, "true", "True"].includes(
+                      resultingBot.allow_coachee_to_create_session
+                    )
+                      ? "Yes"
+                      : "No"
+                  );
+                }
                 setLoading(false);
               });
           });
@@ -2185,20 +2436,39 @@ const CoachIntake = ({ user }: any) => {
   };
 
   const handleRequiredSelections = async (profile_type = "coach") => {
-    console.log(experience, "experience");
+    let coachFields;
 
-    const coachFields = [
-      { SupportOutcome: outcomeSupported },
-      { coachSameDepartment: coachMentInSameDep },
-      { ParticipantLevel: participantLevel },
-      { UseEmoji: provideAnswersUsingEmojis },
-      { MentoringFramework: mentoringPreferencess },
-      { UserMentoringPre: mentoringPreferences },
-      { UserDepartment: department },
-      { UserAreaDomain: areaDomain },
-      { UserExperience: experience },
-      { AllowActionPlan: allowSessionNotes },
-    ];
+    if (formVersion === "1") {
+      coachFields = [
+        { UserDepartment: department },
+        { UserAreaDomain: areaDomain },
+        { UserExperience: experience },
+        { AllowActionPlan: allowSessionNotes },
+      ];
+    } else if (formVersion === "2") {
+      console.log("here");
+      coachFields = [
+        { UseEmoji: provideAnswersUsingEmojis },
+        { UserMentoringPre: mentoringPreferences },
+        { UserDepartment: department },
+        { UserAreaDomain: areaDomain },
+        { UserExperience: experience },
+        { AllowActionPlan: allowSessionNotes },
+      ];
+    } else {
+      coachFields = [
+        { SupportOutcome: outcomeSupported },
+        { coachSameDepartment: coachMentInSameDep },
+        { ParticipantLevel: participantLevel },
+        { UseEmoji: provideAnswersUsingEmojis },
+        { MentoringFramework: mentoringPreferencess },
+        { UserMentoringPre: mentoringPreferences },
+        { UserDepartment: department },
+        { UserAreaDomain: areaDomain },
+        { UserExperience: experience },
+        { AllowActionPlan: allowSessionNotes },
+      ];
+    }
 
     const coacheeFields = [
       { SupportOutcome: outcomeSupported },
@@ -2214,7 +2484,7 @@ const CoachIntake = ({ user }: any) => {
 
     listOfFields.forEach((field) => {
       Object.entries(field).forEach(([key, value]) => {
-        if (value.length == 0) {
+        if (value?.length == 0) {
           errors.push("field required");
         }
         handleRequiredSelection(value, key);
@@ -2245,7 +2515,7 @@ const CoachIntake = ({ user }: any) => {
     errorMessage = "This field is required."
   ) => {
     console.log("input_value", input_value);
-    if (input_value.length > 0) {
+    if (input_value?.length > 0) {
       setDataModified(true);
       setError((prevErrors) => ({
         ...prevErrors,
@@ -2412,6 +2682,12 @@ const CoachIntake = ({ user }: any) => {
     }
   };
 
+  const setFormVersion = (version: string) => {
+    const query = new URLSearchParams(window.location.search); // Get existing query params
+    query.set("v", version); // Set or update the formVersion param
+    router.push(`${window.location.pathname}?${query.toString()}`);
+  };
+
   return (
     <div className="bg-white min-h-[120vh] h-full max-sm:h-full max-sm:min-h-screen pb-16">
       <div className="fixed w-full flex items-center justify-end p-4 h-6 py-8 !z-[800]">
@@ -2464,13 +2740,31 @@ const CoachIntake = ({ user }: any) => {
         {formType === "coach" && (
           <div className="flex flex-col justify-center items-center w-full ">
             <div className="bg-white border w-[65%] max-md:w-[80%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
-              <h1 className="text-xl text-left text-gray-600 font-bold">
-                Coach & Mentor Intake
-              </h1>
-              <p className="mb-3 text-left text-sm text-gray-600">
+              <div className="flex flex-row max-sm:flex-col items-center max-sm:items-start max-sm:gap-2 justify-between">
+                <h1 className="text-xl text-left text-gray-600 font-bold">
+                  Coach Intake
+                </h1>
+                {checkIfView && (
+                  <Badge
+                    className="bg-blue-200 w-fit text-blue-800 rounded-sm"
+                    variant={"outline"}
+                  >
+                    <Eye className="h-4 w-4 mr-1" /> Viewing
+                  </Badge>
+                )}
+                {checkIfEdit && (
+                  <Badge
+                    className="bg-blue-200 w-fit text-xs text-blue-800 rounded-sm max-w-[50%] max-sm:max-w-none text-left"
+                    variant={"outline"}
+                  >
+                    <PenLine className="h-4 w-4 mr-1" /> Editing
+                  </Badge>
+                )}
+              </div>
+              {/* <p className="mb-3 text-left text-sm text-gray-600">
                 Information provided will be used to create your avatar! ( Est
                 time : 15 mins)
-              </p>
+              </p> */}
               <form
                 className="text-left"
                 onSubmit={async (e: FormEvent<HTMLFormElement>) => {
@@ -2492,32 +2786,66 @@ const CoachIntake = ({ user }: any) => {
                   {!checkIfView && (
                     <Badge
                       variant={"secondary"}
-                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-1 w-fit"
+                      className="rounded-sm bg-[#fef3c7] text-[#d97706] p-0.5 mt-1 w-fit"
                     >
                       <Asterisk className="h-4 w-4 mr-1" /> marked questions are
                       mandatory in nature.
                     </Badge>
                   )}
-                  {checkIfView && (
-                    <Badge
-                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
-                      variant={"outline"}
-                    >
-                      You are viewing your bot.
-                    </Badge>
-                  )}
-                  {checkIfEdit && (
-                    <Badge
-                      className="bg-blue-200 w-fit text-blue-800 rounded-sm"
-                      variant={"outline"}
-                    >
-                      You are editing your bot. All the earlier inputs will be
-                      replaced by current inputs.
-                    </Badge>
-                  )}
                 </div>
                 <div>
-                  <div className="my-3">
+                  <div className="my-3 bg-gray-100 p-2 rounded-md">
+                    <p className="text-sm my-1 font-bold">Type</p>
+                    <Radio.Group
+                      className="mt-2"
+                      size="middle"
+                      disabled={
+                        (checkIfView === null ? false : true) ||
+                        (checkIfEdit === null ? false : true)
+                      }
+                      value={
+                        (formVersion === "1" && "no-co-pilot") ||
+                        (formVersion === "2" && "subject-copilot") ||
+                        (formVersion === "3" && "coaching-copilot")
+                      }
+                      options={[
+                        {
+                          label: "No Co-pilot",
+                          value: "no-co-pilot",
+                        },
+                        {
+                          label: "Subject Co-pilot (10 mins)",
+                          value: "subject-copilot",
+                        },
+                        {
+                          label: "Coaching Co-pilot (25 Mins)",
+                          value: "coaching-copilot",
+                        },
+                      ]}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "no-co-pilot") {
+                          setFormVersion("1");
+                        } else if (value === "subject-copilot") {
+                          setFormVersion("2");
+                        } else {
+                          setFormVersion("3");
+                        }
+                      }}
+                      optionType={
+                        window.innerWidth < 768 ? "default" : "button"
+                      }
+                    />
+                    <p className="text-sm pt-3">
+                      {formVersion === "1" &&
+                        "If selected, no AI-assisted communication will be used."}
+                      {formVersion === "2" &&
+                        "This allows the coach to create an AI assistant specialized in specific topics. This co-pilot can help with AI-based communication on niche subjects."}
+                      {formVersion === "3" &&
+                        "This is the most comprehensive option. It creates an AI assistant specifically for coaching that evolves over time. The co-pilot's development is carefully guided by the coach's input and customized AI model training."}
+                    </p>
+                  </div>
+                  {/* <div className="my-3">
                     <p className="text-sm my-1">Select your profile type</p>
                     <Radio.Group
                       disabled={
@@ -2543,1764 +2871,2639 @@ const CoachIntake = ({ user }: any) => {
                         console.log(e.target.value);
                         setProfileType(e.target.value);
                       }}
-                      optionType="button"
+                      optionType="default"
                     />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Enter your name{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <input
-                      value={name}
-                      required
-                      minLength={10}
-                      maxLength={30}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        handleWordLimit(e.target.value, 10, 30, "Name");
-                      }}
-                      disabled
-                      placeholder="Aarav Sharma"
-                      type="text"
-                      className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                    {/* {Object.keys(error).includes("Name") && (
+                  </div> */}
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full mt-0 mx-0 border rounded-md"
+                  >
+                    <AccordionItem value="item-basic">
+                      <AccordionTrigger className="text-sm py-0 font-bold p-1 border-none px-2">
+                        <div>
+                          Basic Description.{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-2 border-none">
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Enter your name{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <input
+                            value={name}
+                            required
+                            minLength={10}
+                            maxLength={30}
+                            onChange={(e) => {
+                              setName(e.target.value);
+                              handleWordLimit(e.target.value, 10, 30, "Name");
+                            }}
+                            disabled
+                            placeholder="Aarav Sharma"
+                            type="text"
+                            className="w-full hover:cursor-not-allowed bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                          />
+                          {/* {Object.keys(error).includes("Name") && (
                       <p className="text-red-500 text-xs mt-1">
                         {(error as any)["Name"]}
                       </p>
                     )} */}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add a profile description.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <textarea
-                      value={about}
-                      required
-                      disabled={checkIfView === null ? false : true}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-
-                        setAbout(inputValue);
-                        handleWordLimit(
-                          inputValue,
-                          30,
-                          80,
-                          "Profile Description"
-                        );
-                      }}
-                      placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
-                      rows={3}
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                    />
-                    {Object.keys(error).includes("Profile Description") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["Profile Description"]}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Total number of years of experience.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <RadioGroup
-                        value={experience}
-                        required
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setExperience(value);
-                        }}
-                        disabled={checkIfView === null ? false : true}
-                      >
-                        {[
-                          "0 - 5 years",
-                          "5 - 10 years",
-                          "10 - 20 years",
-                          "20+ years",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("UserExperience") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserExperience"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-4">
-                    <p className="text-sm my-1">
-                      Please add a professional picture to be added with your
-                      profile.
-                    </p>
-                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                      <input
-                        // required={!checkIfEdit}
-                        type="file"
-                        name="myImage"
-                        accept="image/*"
-                        onChange={(e) => {
-                          setDataModified(true);
-                          //@ts-ignore
-                          setProfileImage(e.target.files[0]);
-                          if (checkIfEdit) {
-                            const uploadedImage = handleImageUpload(
-                              //@ts-ignore
-                              e.target.files[0]
-                            );
-                            uploadedImage
-                              .then((data) => {
-                                setProfileImageUrl(data);
-                                console.log(data);
-                              })
-                              .catch((err) => {
-                                setProfileImageUrl(
-                                  "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
-                                );
-
-                                throw new Error(
-                                  "Claudinary upload error - profile_image"
-                                );
-                              });
-                          }
-                        }}
-                        disabled={checkIfView === null ? false : true}
-                        className="w-fit"
-                      />{" "}
-                      <p className="m-1 mt-2 ml-0 text-gray-500">
-                        Upload image with (240px * 240px) under 2MB
-                      </p>
-                    </div>
-                  </div>
-                  <div className="my-4">
-                    <p className="text-sm my-1">
-                      Please share your journey and background story,
-                      highlighting experiences that have shaped your path to
-                      where you are today?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <textarea
-                      rows={4}
-                      required
-                      disabled={checkIfView === null ? false : true}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-
-                        setJourneyAndBackground(inputValue);
-                        handleWordLimit(
-                          inputValue,
-                          50,
-                          80,
-                          "journeyAndBackground"
-                        );
-                      }}
-                      value={journeyAndBackground}
-                      placeholder="Seeking guidance to enhance leadership skills, manage work-life balance, and navigate career transitions as a marketing professional."
-                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                    />
-                    {Object.keys(error).includes("journeyAndBackground") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["journeyAndBackground"]}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Which department/ business unit you belong to?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <RadioGroup
-                      value={department}
-                      required
-                      disabled={checkIfView === null ? false : true}
-                      onValueChange={(value) => {
-                        setDataModified(true);
-                        setDepartment(value);
-                      }}
-                    >
-                      {departments.map((val: string, i: number) => (
-                        <div key={i} className="flex items-center space-x-2 ">
-                          <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                          <label
-                            htmlFor={`r${i}+1 ${val}`}
-                            className="text-xs text-gray-700"
-                          >
-                            {capitalizeText(val)}
-                          </label>
                         </div>
-                      ))}
-                    </RadioGroup>
-                    {Object.keys(error).includes("UserDepartment") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["UserDepartment"]}
-                      </p>
-                    )}
-                  </div>
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Please add a profile description.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <textarea
+                            value={about}
+                            required
+                            disabled={checkIfView === null ? false : true}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Select the area/domain that you are most passionate about
-                      coaching and mentoring.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                      <Tooltip
-                        overlayInnerStyle={{
-                          backgroundColor: "white",
-                          color: "black",
-                          padding: "8px",
-                        }}
-                        title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
-                      >
-                        <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
-                      </Tooltip>
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={areaDomain}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setAreaDomain(value);
-                        }}
-                      >
-                        {areaDomains.map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem
-                              className={`rounded-sm`}
-                              value={val}
-                              id={`r${i}+1 ${val}`}
+                              setAbout(inputValue);
+                              handleWordLimit(
+                                inputValue,
+                                30,
+                                80,
+                                "Profile Description"
+                              );
+                            }}
+                            placeholder="Share your coaching expertise, experience, and approach. Help clients understand how you can support their goals."
+                            rows={3}
+                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                          />
+                          {Object.keys(error).includes(
+                            "Profile Description"
+                          ) && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["Profile Description"]}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Total number of years of experience.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <div>
+                            <RadioGroup
+                              value={experience}
+                              required
+                              onValueChange={(value) => {
+                                setDataModified(true);
+                                setExperience(value);
+                              }}
+                              disabled={checkIfView === null ? false : true}
+                            >
+                              {[
+                                "0 - 5 years",
+                                "5 - 10 years",
+                                "10 - 20 years",
+                                "20+ years",
+                              ].map((val, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center space-x-2 "
+                                >
+                                  <RadioGroupItem
+                                    value={val}
+                                    id={`r${i}+1 ${val}`}
+                                  />
+                                  <label
+                                    htmlFor={`r${i}+1 ${val}`}
+                                    className="text-xs text-gray-700"
+                                  >
+                                    {capitalizeText(val)}
+                                  </label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                            {Object.keys(error).includes("UserExperience") && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["UserExperience"]}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="my-4">
+                          <p className="text-sm my-1">
+                            Please add a professional picture to be added with
+                            your profile.
+                          </p>
+                          <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                            <input
+                              // required={!checkIfEdit}
+                              type="file"
+                              name="myImage"
+                              accept="image/*"
+                              onChange={(e) => {
+                                setDataModified(true);
+                                //@ts-ignore
+                                setProfileImage(e.target.files[0]);
+                                if (checkIfEdit) {
+                                  const uploadedImage = handleImageUpload(
+                                    //@ts-ignore
+                                    e.target.files[0]
+                                  );
+                                  uploadedImage
+                                    .then((data) => {
+                                      setProfileImageUrl(data);
+                                      console.log(data);
+                                    })
+                                    .catch((err) => {
+                                      setProfileImageUrl(
+                                        "https://res.cloudinary.com/dtbl4jg02/image/upload/v1715941993/naqedaza5tw8isro11qr.png"
+                                      );
+
+                                      throw new Error(
+                                        "Claudinary upload error - profile_image"
+                                      );
+                                    });
+                                }
+                              }}
+                              disabled={checkIfView === null ? false : true}
+                              className="w-fit"
+                            />{" "}
+                            <p className="m-1 mt-2 ml-0 text-gray-500">
+                              Upload image with (240px * 240px) under 2MB
+                            </p>
+                          </div>
+                        </div>
+                        {formVersion !== "1" && formVersion !== "2" && (
+                          <div className="my-4">
+                            <p className="text-sm my-1">
+                              Please share your journey and background story,
+                              highlighting experiences that have shaped your
+                              path to where you are today?{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <textarea
+                              rows={4}
+                              required
+                              disabled={checkIfView === null ? false : true}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+
+                                setJourneyAndBackground(inputValue);
+                                handleWordLimit(
+                                  inputValue,
+                                  50,
+                                  80,
+                                  "journeyAndBackground"
+                                );
+                              }}
+                              value={journeyAndBackground}
+                              placeholder="Seeking guidance to enhance leadership skills, manage work-life balance, and navigate career transitions as a marketing professional."
+                              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                             />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {val}
-                            </label>
+                            {Object.keys(error).includes(
+                              "journeyAndBackground"
+                            ) && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["journeyAndBackground"]}
+                              </p>
+                            )}
                           </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("UserAreaDomain") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserAreaDomain"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                        )}
 
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Which way do you want to help the program participants the
-                      most?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={mentoringPreferences}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setMentoringPreferences(value);
-                        }}
-                      >
-                        {[
-                          "Mentoring (Skills Enhancement)",
-                          "Coaching (Reflection)",
-                          "Both",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("UserMentoringPre") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UserMentoringPre"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please mention any coaching & mentoring frameworks or
-                      tools that you use in your approach.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div className="my-1">
-                      {models.map((model) => (
-                        <div className="my-1">
-                          {" "}
-                          {model === "Others" ? (
-                            <>
-                              {/* <div className="flex items-center space-x-2 ">
-                                <Checkbox
-                                  id={model}
-                                  disabled={
-                                    !mentoringPreferencess.includes(model) &&
-                                    mentoringPreferencess.length >= 3
-                                  }
-                                  onCheckedChange={(checked) => {
-                                    console.log(checked, model);
-                                    recordCoachmentFrameworks(checked, model);
-                                  }}
-                                />
-                                <input
-                                  required
-                                  disabled={
-                                    !mentoringPreferencess.includes(model)
-                                  }
-                                  onChange={(e) => {
-                                    setOtherMentoringFrameworkValue(
-                                      e.target.value
-                                    );
-                                  }}
-                                  onBlur={(e) => {
-                                    recordCoachmentFrameworks(
-                                      true,
-                                      e.target.value
-                                    );
-                                  }}
-                                  placeholder={model}
-                                  type="text"
-                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                                />
-                              </div> */}
-                            </>
-                          ) : (
-                            <>
-                              <div className="flex items-center space-x-2 my-1.5 ">
-                                <Checkbox
-                                  disabled={
-                                    (!mentoringPreferencess.includes(model) &&
-                                      mentoringPreferencess.length >= 3) ||
-                                    checkIfView === null
-                                      ? false
-                                      : true
-                                  }
-                                  id={model}
-                                  onCheckedChange={(checked) => {
-                                    console.log(checked, model);
-                                    recordCoachmentFrameworks(checked, model);
-                                  }}
-                                  checked={mentoringPreferencess.includes(
-                                    model
-                                  )}
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Which department/ business unit you belong to?{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <RadioGroup
+                            value={department}
+                            required
+                            disabled={checkIfView === null ? false : true}
+                            onValueChange={(value) => {
+                              setDataModified(true);
+                              setDepartment(value);
+                            }}
+                          >
+                            {departments.map((val: string, i: number) => (
+                              <div
+                                key={i}
+                                className="flex items-center space-x-2 "
+                              >
+                                <RadioGroupItem
+                                  value={val}
+                                  id={`r${i}+1 ${val}`}
                                 />
                                 <label
-                                  htmlFor={model}
+                                  htmlFor={`r${i}+1 ${val}`}
                                   className="text-xs text-gray-700"
                                 >
-                                  {model}
+                                  {capitalizeText(val)}
                                 </label>
                               </div>
-                            </>
+                            ))}
+                          </RadioGroup>
+                          {Object.keys(error).includes("UserDepartment") && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["UserDepartment"]}
+                            </p>
                           )}
                         </div>
-                      ))}
-                    </div>
-                    {Object.keys(error).includes("MentoringFramework") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["MentoringFramework"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please rate the characteristics/skills on which you will
-                      rate yourself near the lows.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <CharactericticsSelect
-                      disabled={checkIfView === null ? false : true}
-                      value={characteristicsRateLows}
-                      onCharacteristicsSelect={onCharacteristicsSelectLow}
-                      options={characteristicsList}
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please rate the characteristics/skills on which you will
-                      rate yourself highly.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <CharactericticsSelect
-                      disabled={checkIfView === null ? false : true}
-                      value={characteristicsRateHigh}
-                      onCharacteristicsSelect={onCharacteristicsSelectHigh}
-                      options={characteristicsList}
-                    />
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please articulate your dominant point of view which you
-                      want to discuss with the program participants as a general
-                      starting point.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required
-                        value={povProgramParticipants}
-                        disabled={checkIfView === null ? false : true}
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
 
-                          setPovProgramParticipants(inputValue);
-                          handleWordLimit(
-                            inputValue,
-                            30,
-                            80,
-                            "povProgramParticipants"
-                          );
-                        }}
-                        placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes(
-                        "povProgramParticipants"
-                      ) && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["povProgramParticipants"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What is your general approach towards problem solving?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={problemSolvingApproach}
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
-
-                          setProblemSolvingApproach(inputValue);
-                          handleWordLimit(
-                            inputValue,
-                            30,
-                            80,
-                            "problemSolvingApproach"
-                          );
-                        }}
-                        placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes(
-                        "problemSolvingApproach"
-                      ) && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["problemSolvingApproach"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What were the 3 most significant challenges you
-                      encountered in your journey, and how did you successfully
-                      navigate and overcome them?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
-
-                          setSignificantChallenges(inputValue);
-                          handleWordLimit(
-                            inputValue,
-                            50,
-                            80,
-                            "significantChallenges"
-                          );
-                        }}
-                        value={significantChallenges}
-                        placeholder="Explain your top challenges and how you overcame them. For example - helped new joiners navigate team conflicts by fostering open communication."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes("significantChallenges") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["significantChallenges"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Are there any phrases or expressions you find yourself
-                      using often in conversations? These could be catchphrases,
-                      favorite quotes, or unique sayings that reflect your
-                      personality.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
-
-                          setPhrasesNExpressions(inputValue);
-                          handleWordLimit(
-                            inputValue,
-                            50,
-                            80,
-                            "phrasesNExpressions"
-                          );
-                        }}
-                        value={phrasesNExpressions}
-                        placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes("phrasesNExpressions") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["phrasesNExpressions"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add names of 1-2 well-known leaders that you
-                      admire.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <input
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        onChange={(e) => {
-                          setLeaderNames(e.target.value);
-                        }}
-                        value={leaderNames}
-                        placeholder="Bill Gates, Ratan Tata"
-                        type="text"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please add the discussion topics (Separated by comma)
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={2}
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        value={discussionTopics}
-                        onChange={(e) => {
-                          setDataModified(true);
-                          setDiscussionTopics(e.target.value);
-                          handleDiscussionTopics(
-                            e.target.value,
-                            "discussionTopics"
-                          );
-                        }}
-                        placeholder="You can enter 4-5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
-                      />
-                    </div>
-                    {Object.keys(error).includes("discussionTopics") && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {(error as any)["discussionTopics"]}
-                      </p>
-                    )}
-                  </div>
-                  <hr />
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter 1-2 YouTube links that reflect your worldview
-                      on personal & professional development. (Separate multiple
-                      links by comma){" "}
-                      {!checkIfEdit && (
-                        <span className="text-xl font-bold text-red-500">
-                          *
-                        </span>
-                      )}
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        disabled={checkIfView === null ? false : true}
-                        required={
-                          !checkIfEdit ||
-                          mediaData?.extracted_from_youtube.filter(
-                            (file) => !file.isDeleted
-                          ).length === 0
-                        }
-                        value={linksReflectingWVpersonal}
-                        onChange={(e) => {
-                          setDataModified(true);
-                          setLinksReflectingWVpersonal(e.target.value);
-                          handleInputLinks(
-                            e.target.value,
-                            "linksReflectingWVpersonal"
-                          );
-                        }}
-                        placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
-                      />
-                      {Object.keys(error).includes(
-                        "linksReflectingWVpersonal"
-                      ) && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["linksReflectingWVpersonal"]}
-                        </p>
-                      )}
-                      {/* @ts-ignore */}
-                      {mediaData?.extracted_from_youtube.length > 0 && (
-                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                          {mediaData?.extracted_from_youtube.map((item) => (
-                            <div className="flex flex-row justify-between items-center">
-                              <Link
-                                href={item.fileName}
-                                target="_target"
-                                className={`text-xs text-blue-500 truncate ${
-                                  item.isDeleted && "line-through"
-                                }`}
-                              >
-                                {item.fileName}
-                              </Link>
-                              {checkIfEdit && (
-                                <div className="flex flex-row gap-2 min-w-fit">
-                                  <Button
-                                    variant={"outline"}
-                                    className="h-6 text-xs w-fit"
-                                    type="button"
-                                    onClick={() => {
-                                      deleteMediaDataHandler(item.fileName);
-                                    }}
-                                    disabled={item.isDeleted}
-                                  >
-                                    <span className="max-sm:hidden">
-                                      Delete
-                                    </span>
-                                    <TooltipWrapper
-                                      className="hidden max-sm:block text-xs"
-                                      tooltipName="Delete"
-                                      body={
-                                        <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                      }
-                                    />
-                                  </Button>
-                                  <Button
-                                    variant={"outline"}
-                                    className="h-6 text-xs w-fit"
-                                    type="button"
-                                    disabled={!item.isDeleted}
-                                    onClick={() => {
-                                      undoDeleteMediaDataHandler(item.fileName);
-                                    }}
-                                  >
-                                    <span className="max-sm:hidden">
-                                      Undo delete
-                                    </span>
-                                    <TooltipWrapper
-                                      className="hidden max-sm:block text-xs"
-                                      tooltipName="Undo delete"
-                                      body={
-                                        <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                      }
-                                    />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please enter 1-2 article links that reflect what you
-                      wished everyone would follow in their growth journey.
-                      (Separate multiple links by comma){" "}
-                      {!checkIfEdit && (
-                        <span className="text-xl font-bold text-red-500">
-                          *
-                        </span>
-                      )}
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        required={
-                          !checkIfEdit ||
-                          mediaData?.extracted_from_article.filter(
-                            (file) => !file.isDeleted
-                          ).length === 0
-                        }
-                        disabled={checkIfView === null ? false : true}
-                        value={linksReflectyouWished}
-                        onChange={(e) => {
-                          setDataModified(true);
-                          setLinksReflectyouWished(e.target.value);
-                          handleInputLinks(
-                            e.target.value,
-                            "linksReflectyouWished"
-                          );
-                        }}
-                        placeholder="(Let's say you came across an article that you liked a lot and you think it will help the program participants to grow, you can add that link. E.g you want to generally talk about empathy, you can add this article: https://www.mindtools.com/agz0gft/empathy-at-work)"
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
-                      />
-                      {Object.keys(error).includes("linksReflectyouWished") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["linksReflectyouWished"]}
-                        </p>
-                      )}
-                      {/* @ts-ignore */}
-                      {mediaData?.extracted_from_article.length > 0 ? (
-                        <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                          {mediaData?.extracted_from_article.map((item) => (
-                            <div className="flex flex-row justify-between items-center">
-                              <Link
-                                href={item.fileName}
-                                target="_target"
-                                className={`text-xs text-blue-500 truncate ${
-                                  item.isDeleted && "line-through"
-                                }`}
-                              >
-                                {item.fileName}
-                              </Link>
-                              {checkIfEdit && (
-                                <div className="flex flex-row gap-2 min-w-fit">
-                                  <Button
-                                    variant={"outline"}
-                                    className="h-6 text-xs w-fit"
-                                    type="button"
-                                    disabled={item.isDeleted}
-                                    onClick={() => {
-                                      deleteMediaDataHandler(item.fileName);
-                                    }}
-                                  >
-                                    <span className="max-sm:hidden">
-                                      Delete
-                                    </span>
-                                    <TooltipWrapper
-                                      className="hidden max-sm:block text-xs"
-                                      tooltipName="Delete"
-                                      body={
-                                        <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                      }
-                                    />
-                                  </Button>
-                                  <Button
-                                    variant={"outline"}
-                                    className="h-6 text-xs w-fit"
-                                    type="button"
-                                    disabled={!item.isDeleted}
-                                    onClick={() => {
-                                      undoDeleteMediaDataHandler(item.fileName);
-                                    }}
-                                  >
-                                    <span className="max-sm:hidden">
-                                      Undo delete
-                                    </span>
-                                    <TooltipWrapper
-                                      className="hidden max-sm:block text-xs"
-                                      tooltipName="Undo delete"
-                                      body={
-                                        <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                      }
-                                    />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                  <div className="my-3 ">
-                    <p className="text-sm my-1">
-                      Please add any document or file that you believe are
-                      reference materials that may help your mentees and
-                      participants. Feel free to upload relevant materials:
-                      guides, templates, and resources that support your mentees
-                      and participants in their learning journey.{" "}
-                      {!checkIfEdit && (
-                        <span className="text-xl font-bold text-red-500">
-                          *
-                        </span>
-                      )}
-                    </p>
-
-                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                      <input
-                        disabled={checkIfView === null ? false : true}
-                        required={
-                          !checkIfEdit ||
-                          mediaData?.extracted_from_pdf.filter(
-                            (file) => !file.isDeleted
-                          ).length === 0
-                        }
-                        type="file"
-                        className="w-full text-xs my-2"
-                        multiple
-                        name="files"
-                        accept=".pdf,.docx"
-                        onChange={async (e) => {
-                          handleFileChange(e);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {/* @ts-ignore */}
-                  {mediaData?.extracted_from_pdf.length > 0 && (
-                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                      {mediaData?.extracted_from_pdf.map((item) => (
-                        <div className="flex flex-row justify-between items-center">
-                          <div className="flex flex-row items-center gap-2">
-                            <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                            <span
-                              className={`text-xs text-blue-500 truncate ${
-                                item.isDeleted && "line-through"
-                              }`}
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Select the area/domain that you are most passionate
+                            about coaching.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                            <Tooltip
+                              overlayInnerStyle={{
+                                backgroundColor: "white",
+                                color: "black",
+                                padding: "8px",
+                              }}
+                              title="The department and expertise options for a coach/mentor are customized for each enterprise. Sample values are currently shown."
                             >
-                              {item.fileName}
+                              <Info className="h-5 w-5 p-[2px] hover:bg-gray-50 hover:cursor-pointer ml-1 inline" />
+                            </Tooltip>
+                          </p>
+                          <div className="my-2 mb-3">
+                            <RadioGroup
+                              required
+                              disabled={checkIfView === null ? false : true}
+                              value={areaDomain}
+                              onValueChange={(value) => {
+                                setDataModified(true);
+                                setAreaDomain(value);
+                              }}
+                            >
+                              {areaDomains.map((val, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center space-x-2 "
+                                >
+                                  <RadioGroupItem
+                                    className={`rounded-sm`}
+                                    value={val}
+                                    id={`r${i}+1 ${val}`}
+                                  />
+                                  <label
+                                    htmlFor={`r${i}+1 ${val}`}
+                                    className="text-xs text-gray-700"
+                                  >
+                                    {val}
+                                  </label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                            {Object.keys(error).includes("UserAreaDomain") && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["UserAreaDomain"]}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </AccordionContent>{" "}
+                    </AccordionItem>
+                  </Accordion>
+
+                  {/* Bot related FAQs */}
+                  {formVersion === "2" && (
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="w-full mt-6 mx-0 border rounded-md"
+                    >
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger className="text-sm py-0 font-bold p-1 border-none px-2">
+                          <div>
+                            Questions related to your bot.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
                             </span>
                           </div>
-                          {checkIfEdit && (
-                            <div className="flex flex-row gap-2 min-w-fit">
-                              <Button
-                                variant={"outline"}
-                                className="h-6 text-xs w-fit"
-                                type="button"
-                                disabled={item.isDeleted}
-                                onClick={() => {
-                                  deleteMediaDataHandler(item.fileName);
+                        </AccordionTrigger>
+                        <AccordionContent className="px-2 border-none">
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Enter the bot name{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <input
+                              value={botName}
+                              required
+                              onChange={(e) => {
+                                setBotName(e.target.value);
+                                handleWordLimit(
+                                  e.target.value,
+                                  1,
+                                  3,
+                                  "botName"
+                                );
+                              }}
+                              placeholder="Coaching..."
+                              type="text"
+                              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                            />
+                            {Object.keys(error).includes("botName") && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["botName"]}
+                              </p>
+                            )}
+                          </div>
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Enter your bot description{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <textarea
+                              rows={4}
+                              required
+                              value={intakeBotDescription}
+                              disabled={checkIfView === null ? false : true}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+
+                                setIntakeBotDescription(inputValue);
+                                handleWordLimit(
+                                  inputValue,
+                                  30,
+                                  80,
+                                  "intakeBotDescription"
+                                );
+                              }}
+                              placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                            />
+                            {Object.keys(error).includes(
+                              "intakeBotDescription"
+                            ) && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["intakeBotDescription"]}
+                              </p>
+                            )}
+                          </div>
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Area of coaching{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <textarea
+                              rows={4}
+                              required
+                              value={coachingArea}
+                              disabled={checkIfView === null ? false : true}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+
+                                setCoachingArea(inputValue);
+                                handleWordLimit(
+                                  inputValue,
+                                  30,
+                                  80,
+                                  "coachingArea"
+                                );
+                              }}
+                              placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                            />
+                            {Object.keys(error).includes("coachingArea") && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["coachingArea"]}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Would you like your bot to provide expressive
+                              answers using emojis?{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <div className="my-2 mb-3">
+                              <RadioGroup
+                                disabled={checkIfView === null ? false : true}
+                                required
+                                value={provideAnswersUsingEmojis}
+                                onValueChange={(value) => {
+                                  setDataModified(true);
+                                  setProvideAnswersUsingEmojis(value);
                                 }}
                               >
-                                <span className="max-sm:hidden">Delete</span>
-                                <TooltipWrapper
-                                  className="hidden max-sm:block text-xs"
-                                  tooltipName="Delete"
-                                  body={
-                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                {["Yes", "No"].map((val, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-center space-x-2 "
+                                  >
+                                    <RadioGroupItem
+                                      value={val}
+                                      id={`r${i}+emojis ${val}`}
+                                    />
+                                    <label
+                                      htmlFor={`r${i}+emojis ${val}`}
+                                      className="text-xs text-gray-700"
+                                    >
+                                      {capitalizeText(val)}
+                                    </label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                              {Object.keys(error).includes("UseEmoji") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["UseEmoji"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm font-semibold">
+                                Knowledge base
+                              </p>
+                              <p className="text-sm my-1">
+                                {formVersion !== "2"
+                                  ? `Please enter 1-2 YouTube links that reflect your worldview on personal & professional development. (Separate multiple links by comma)`
+                                  : `Please enter 1-2 YouTube links related to the Subject matter. (Separate multiple links by comma)`}
+                                {!checkIfEdit && (
+                                  <span className="text-xl font-bold text-red-500">
+                                    *
+                                  </span>
+                                )}
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  disabled={checkIfView === null ? false : true}
+                                  required={
+                                    !checkIfEdit ||
+                                    mediaData?.extracted_from_youtube.filter(
+                                      (file) => !file.isDeleted
+                                    ).length === 0
                                   }
+                                  value={linksReflectingWVpersonal}
+                                  onChange={(e) => {
+                                    setDataModified(true);
+                                    setLinksReflectingWVpersonal(
+                                      e.target.value
+                                    );
+                                    handleInputLinks(
+                                      e.target.value,
+                                      "linksReflectingWVpersonal"
+                                    );
+                                  }}
+                                  placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
                                 />
-                              </Button>
-                              <Button
-                                variant={"outline"}
-                                className="h-6 text-xs w-fit"
-                                type="button"
-                                disabled={!item.isDeleted}
-                                onClick={() => {
-                                  undoDeleteMediaDataHandler(item.fileName);
-                                }}
-                              >
-                                <span className="max-sm:hidden">
-                                  Undo delete
+                                {Object.keys(error).includes(
+                                  "linksReflectingWVpersonal"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {
+                                      (error as any)[
+                                        "linksReflectingWVpersonal"
+                                      ]
+                                    }
+                                  </p>
+                                )}
+                                {/* @ts-ignore */}
+                                {mediaData?.extracted_from_youtube.length >
+                                  0 && (
+                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                    {mediaData?.extracted_from_youtube.map(
+                                      (item) => (
+                                        <div className="flex flex-row justify-between items-center">
+                                          <Link
+                                            href={item.fileName}
+                                            target="_target"
+                                            className={`text-xs text-blue-500 truncate ${
+                                              item.isDeleted && "line-through"
+                                            }`}
+                                          >
+                                            {item.fileName}
+                                          </Link>
+                                          {checkIfEdit && (
+                                            <div className="flex flex-row gap-2 min-w-fit">
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                onClick={() => {
+                                                  deleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                                disabled={item.isDeleted}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Delete"
+                                                  body={
+                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={!item.isDeleted}
+                                                onClick={() => {
+                                                  undoDeleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Undo delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Undo delete"
+                                                  body={
+                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                {formVersion !== "2"
+                                  ? `Please enter 1-2 article links that reflect what you wished everyone would follow in their growth journey. (Separate multiple links by comma)`
+                                  : `Please enter 1-2 article links related to the Subject matter. (Separate multiple links by comma)`}{" "}
+                                {!checkIfEdit && (
+                                  <span className="text-xl font-bold text-red-500">
+                                    *
+                                  </span>
+                                )}
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  required={
+                                    !checkIfEdit ||
+                                    mediaData?.extracted_from_article.filter(
+                                      (file) => !file.isDeleted
+                                    ).length === 0
+                                  }
+                                  disabled={checkIfView === null ? false : true}
+                                  value={linksReflectyouWished}
+                                  onChange={(e) => {
+                                    setDataModified(true);
+                                    setLinksReflectyouWished(e.target.value);
+                                    handleInputLinks(
+                                      e.target.value,
+                                      "linksReflectyouWished"
+                                    );
+                                  }}
+                                  placeholder="(Let's say you came across an article that you liked a lot and you think it will help the program participants to grow, you can add that link. E.g you want to generally talk about empathy, you can add this article: https://www.mindtools.com/agz0gft/empathy-at-work)"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                                />
+                                {Object.keys(error).includes(
+                                  "linksReflectyouWished"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["linksReflectyouWished"]}
+                                  </p>
+                                )}
+                                {/* @ts-ignore */}
+                                {mediaData?.extracted_from_article.length >
+                                0 ? (
+                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                    {mediaData?.extracted_from_article.map(
+                                      (item) => (
+                                        <div className="flex flex-row justify-between items-center">
+                                          <Link
+                                            href={item.fileName}
+                                            target="_target"
+                                            className={`text-xs text-blue-500 truncate ${
+                                              item.isDeleted && "line-through"
+                                            }`}
+                                          >
+                                            {item.fileName}
+                                          </Link>
+                                          {checkIfEdit && (
+                                            <div className="flex flex-row gap-2 min-w-fit">
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={item.isDeleted}
+                                                onClick={() => {
+                                                  deleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Delete"
+                                                  body={
+                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={!item.isDeleted}
+                                                onClick={() => {
+                                                  undoDeleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Undo delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Undo delete"
+                                                  body={
+                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          </>
+
+                          <div className="my-3 ">
+                            <p className="text-sm my-1">
+                              Please add any document or file that you believe
+                              are reference materials that may help your mentees
+                              and participants. Feel free to upload relevant
+                              materials: guides, templates, and resources that
+                              support your mentees and participants in their
+                              learning journey.{" "}
+                              {!checkIfEdit && (
+                                <span className="text-xl font-bold text-red-500">
+                                  *
                                 </span>
-                                <TooltipWrapper
-                                  className="hidden max-sm:block text-xs"
-                                  tooltipName="Undo delete"
-                                  body={
-                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                  }
-                                />
-                              </Button>
+                              )}
+                            </p>
+
+                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                              <input
+                                disabled={checkIfView === null ? false : true}
+                                required={
+                                  !checkIfEdit ||
+                                  mediaData?.extracted_from_pdf.filter(
+                                    (file) => !file.isDeleted
+                                  ).length === 0
+                                }
+                                type="file"
+                                className="w-full text-xs my-2"
+                                multiple
+                                name="files"
+                                accept=".pdf,.docx"
+                                onChange={async (e) => {
+                                  handleFileChange(e, "MainFile");
+                                }}
+                              />
+                              {Object.keys(error).includes("MainFile") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MainFile"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {/* @ts-ignore */}
+                          {mediaData?.extracted_from_pdf.length > 0 && (
+                            <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                              {mediaData?.extracted_from_pdf.map((item) => (
+                                <div className="flex flex-row justify-between items-center">
+                                  <div className="flex flex-row items-center gap-2">
+                                    <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                    <span
+                                      className={`text-xs text-blue-500 truncate ${
+                                        item.isDeleted && "line-through"
+                                      }`}
+                                    >
+                                      {item.fileName}
+                                    </span>
+                                  </div>
+                                  {checkIfEdit && (
+                                    <div className="flex flex-row gap-2 min-w-fit">
+                                      <Button
+                                        variant={"outline"}
+                                        className="h-6 text-xs w-fit"
+                                        type="button"
+                                        disabled={item.isDeleted}
+                                        onClick={() => {
+                                          deleteMediaDataHandler(item.fileName);
+                                        }}
+                                      >
+                                        <span className="max-sm:hidden">
+                                          Delete
+                                        </span>
+                                        <TooltipWrapper
+                                          className="hidden max-sm:block text-xs"
+                                          tooltipName="Delete"
+                                          body={
+                                            <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                          }
+                                        />
+                                      </Button>
+                                      <Button
+                                        variant={"outline"}
+                                        className="h-6 text-xs w-fit"
+                                        type="button"
+                                        disabled={!item.isDeleted}
+                                        onClick={() => {
+                                          undoDeleteMediaDataHandler(
+                                            item.fileName
+                                          );
+                                        }}
+                                      >
+                                        <span className="max-sm:hidden">
+                                          Undo delete
+                                        </span>
+                                        <TooltipWrapper
+                                          className="hidden max-sm:block text-xs"
+                                          tooltipName="Undo delete"
+                                          body={
+                                            <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                          }
+                                        />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <hr className="mt-2" />
-                  <div className="my-3 ">
-                    <p className="text-sm my-1">
-                      Please upload any personality assessment (e.g. DISC) or
-                      other profiles that you might have. It will be used for
-                      recommendation of the appropriate coaching style.
-                    </p>
+                          <hr className="mt-2" />
+                          <div className="my-3 ">
+                            <p className="text-sm my-1">
+                              Please upload any personality assessment (e.g.
+                              DISC) or other profiles that you might have. It
+                              will be used for recommendation of the appropriate
+                              coaching style.
+                            </p>
 
-                    <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                      <input
-                        disabled={checkIfView === null ? false : true}
-                        // required={!checkIfEdit}
-                        type="file"
-                        className="w-full text-xs my-2"
-                        multiple
-                        name="optional_file"
-                        accept=".pdf,.docx"
-                        onChange={async (e) => {
-                          handleFileChange(e);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {/* @ts-ignore */}
-                  {optionalMediaData?.extracted_from_optional_file.length >
-                    0 && (
-                    <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
-                      {optionalMediaData?.extracted_from_optional_file.map(
-                        (item) => (
-                          <div className="flex flex-row justify-between items-center">
-                            <div className="flex flex-row items-center gap-2">
-                              <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
-                              <span
-                                className={`text-xs text-blue-500 truncate ${
-                                  item.isDeleted && "line-through"
-                                }`}
-                              >
-                                {item.fileName}
-                              </span>
+                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                              <input
+                                disabled={checkIfView === null ? false : true}
+                                // required={!checkIfEdit}
+                                type="file"
+                                className="w-full text-xs my-2"
+                                multiple
+                                name="optional_file"
+                                accept=".pdf,.docx"
+                                onChange={async (e) => {
+                                  handleFileChange(e, "PersonailtyFile");
+                                }}
+                              />
+                              {Object.keys(error).includes(
+                                "PersonailtyFile"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["PersonailtyFile"]}
+                                </p>
+                              )}
                             </div>
-                            {checkIfEdit && (
-                              <div className="flex flex-row gap-2 min-w-fit">
-                                <Button
-                                  variant={"outline"}
-                                  className="h-6 text-xs w-fit"
-                                  type="button"
-                                  disabled={item.isDeleted}
-                                  onClick={() => {
-                                    deleteOptionalMediaDataHandler(
-                                      item.fileName
-                                    );
-                                  }}
-                                >
-                                  <span className="max-sm:hidden">Delete</span>
-                                  <TooltipWrapper
-                                    className="hidden max-sm:block text-xs"
-                                    tooltipName="Delete"
-                                    body={
-                                      <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
-                                    }
-                                  />
-                                </Button>
-                                <Button
-                                  variant={"outline"}
-                                  className="h-6 text-xs w-fit"
-                                  type="button"
-                                  disabled={!item.isDeleted}
-                                  onClick={() => {
-                                    undoDeleteOptionalMediaDataHandler(
-                                      item.fileName
-                                    );
-                                  }}
-                                >
-                                  <span className="max-sm:hidden">
-                                    Undo delete
-                                  </span>
-                                  <TooltipWrapper
-                                    className="hidden max-sm:block text-xs"
-                                    tooltipName="Undo delete"
-                                    body={
-                                      <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
-                                    }
-                                  />
-                                </Button>
+                            {/* @ts-ignore */}
+                            {optionalMediaData?.extracted_from_optional_file
+                              .length > 0 && (
+                              <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                {optionalMediaData?.extracted_from_optional_file.map(
+                                  (item) => (
+                                    <div className="flex flex-row justify-between items-center">
+                                      <div className="flex flex-row items-center gap-2">
+                                        <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                        <span
+                                          className={`text-xs text-blue-500 truncate ${
+                                            item.isDeleted && "line-through"
+                                          }`}
+                                        >
+                                          {item.fileName}
+                                        </span>
+                                      </div>
+                                      {checkIfEdit && (
+                                        <div className="flex flex-row gap-2 min-w-fit">
+                                          <Button
+                                            variant={"outline"}
+                                            className="h-6 text-xs w-fit"
+                                            type="button"
+                                            disabled={item.isDeleted}
+                                            onClick={() => {
+                                              deleteOptionalMediaDataHandler(
+                                                item.fileName
+                                              );
+                                            }}
+                                          >
+                                            <span className="max-sm:hidden">
+                                              Delete
+                                            </span>
+                                            <TooltipWrapper
+                                              className="hidden max-sm:block text-xs"
+                                              tooltipName="Delete"
+                                              body={
+                                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                              }
+                                            />
+                                          </Button>
+                                          <Button
+                                            variant={"outline"}
+                                            className="h-6 text-xs w-fit"
+                                            type="button"
+                                            disabled={!item.isDeleted}
+                                            onClick={() => {
+                                              undoDeleteOptionalMediaDataHandler(
+                                                item.fileName
+                                              );
+                                            }}
+                                          >
+                                            <span className="max-sm:hidden">
+                                              Undo delete
+                                            </span>
+                                            <TooltipWrapper
+                                              className="hidden max-sm:block text-xs"
+                                              tooltipName="Undo delete"
+                                              body={
+                                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                              }
+                                            />
+                                          </Button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
-                        )
-                      )}
-                    </div>
+                          {/* <div className="my-3 ">
+                            <p className="text-sm my-1">
+                              Please add any document or file that supports the
+                              knowledge of your bot niche.{" "}
+                              {!checkIfEdit && (
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              )}
+                            </p>
+
+                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                              <input
+                                disabled={checkIfView === null ? false : true}
+                                required={
+                                  !checkIfEdit ||
+                                  mediaData?.extracted_from_pdf.filter(
+                                    (file) => !file.isDeleted
+                                  ).length === 0
+                                }
+                                type="file"
+                                className="w-full text-xs my-2"
+                                multiple
+                                name="bot_files"
+                                accept=".pdf,.docx"
+                                onChange={async (e) => {
+                                  handleFileChangeBotInput(e);
+                                }}
+                              />
+                            </div>
+                          </div> */}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   )}
-                  <hr className="mt-2" />
-                  {/* <div className="my-3">
-                    <p className="text-sm my-1">
-                      Do you want to provide a voice sample, if you want an
-                      audio avatar? (We will separately contact you for the
-                      same){" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={voiceSample}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setVoiceSample(value);
-                        }}
-                      >
-                        {["Yes", "No"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
+
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full my-4 mx-0 border rounded-md"
+                  >
+                    <AccordionItem value="item-1">
+                      <AccordionTrigger className="text-sm py-0 font-bold p-1 border-none px-2">
+                        <div>
+                          Personality preferences{" "}
+                          <span className="text-xl font-bold text-red-500">
+                            *
+                          </span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-2 border-none">
+                        {/* {formVersion !== "1" && (
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Which way do you want to help the program
+                              participants the most?{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <div className="my-2 mb-3">
+                              <RadioGroup
+                                required
+                                disabled={checkIfView === null ? false : true}
+                                value={mentoringPreferences}
+                                onValueChange={(value) => {
+                                  setDataModified(true);
+                                  setMentoringPreferences(value);
+                                }}
+                              >
+                                {[
+                                  "Mentoring (Skills Enhancement)",
+                                  "Coaching (Reflection)",
+                                  "Both",
+                                ].map((val, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-center space-x-2 "
+                                  >
+                                    <RadioGroupItem
+                                      value={val}
+                                      id={`r${i}+1 ${val}`}
+                                    />
+                                    <label
+                                      htmlFor={`r${i}+1 ${val}`}
+                                      className="text-xs text-gray-700"
+                                    >
+                                      {capitalizeText(val)}
+                                    </label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                              {Object.keys(error).includes(
+                                "UserMentoringPre"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["UserMentoringPre"]}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("VoiceSample") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["VoiceSample"]}
-                        </p>
-                      )}
-                    </div>
-                  </div> */}
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Allow Coachee and Mentee to update action plan and session
-                      notes?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        value={allowSessionNotes}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setAllowSessionNotes(value);
-                        }}
-                      >
-                        {["Yes", "No"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+e ${val}`} />
-                            <label
-                              htmlFor={`r${i}+e ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("AllowActionPlan") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["AllowActionPlan"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                        )} */}
 
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Please discuss how you have helped others as a
-                      coach/mentor or in other professional capacity.{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div>
-                      <textarea
-                        rows={4}
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        value={discussInCARformat}
-                        onChange={(e) => {
-                          const inputValue = e.target.value;
+                        {formVersion !== "1" && formVersion !== "2" && (
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please mention any coaching frameworks or tools
+                                that you use in your approach.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div className="my-1">
+                                {models.map((model) => (
+                                  <div className="my-1">
+                                    {" "}
+                                    {model === "Others" ? (
+                                      <></>
+                                    ) : (
+                                      <>
+                                        <div className="flex items-center space-x-2 my-1.5 ">
+                                          <Checkbox
+                                            disabled={
+                                              (!mentoringPreferencess?.includes(
+                                                model
+                                              ) &&
+                                                mentoringPreferencess?.length >=
+                                                  3) ||
+                                              checkIfView === null
+                                                ? false
+                                                : true
+                                            }
+                                            id={model}
+                                            onCheckedChange={(checked) => {
+                                              console.log(checked, model);
+                                              recordCoachmentFrameworks(
+                                                checked,
+                                                model
+                                              );
+                                            }}
+                                            checked={mentoringPreferencess?.includes(
+                                              model
+                                            )}
+                                          />
+                                          <label
+                                            htmlFor={model}
+                                            className="text-xs text-gray-700"
+                                          >
+                                            {model}
+                                          </label>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                              {Object.keys(error).includes(
+                                "MentoringFramework"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MentoringFramework"]}
+                                </p>
+                              )}
+                            </div>
 
-                          setDiscussInCARformat(inputValue);
-                          handleWordLimit(
-                            inputValue,
-                            50,
-                            80,
-                            "discussInCARformat"
-                          );
-                        }}
-                        placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
-                        className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                      />
-                      {Object.keys(error).includes("discussInCARformat") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["discussInCARformat"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please discuss how you have helped others as a
+                                coach or in other professional capacity.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  disabled={checkIfView === null ? false : true}
+                                  required
+                                  value={discussInCARformat}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
 
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      Would you like your AI Avatar to provide expressive
-                      answers using emojis?{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        value={provideAnswersUsingEmojis}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setProvideAnswersUsingEmojis(value);
-                        }}
-                      >
-                        {["Yes", "No"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem
-                              value={val}
-                              id={`r${i}+emojis ${val}`}
+                                    setDiscussInCARformat(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      50,
+                                      80,
+                                      "discussInCARformat"
+                                    );
+                                  }}
+                                  placeholder="Please mention these personal transformation stories in CAR format - Context, Action, and Result achieved."
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "discussInCARformat"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["discussInCARformat"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Please rate the characteristics/skills on which you
+                            will rate yourself near the lows.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <CharactericticsSelect
+                            disabled={checkIfView === null ? false : true}
+                            value={characteristicsRateLows}
+                            onCharacteristicsSelect={onCharacteristicsSelectLow}
+                            options={characteristicsList}
+                          />
+                        </div>
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Please rate the characteristics/skills on which you
+                            will rate yourself highly.{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <CharactericticsSelect
+                            disabled={checkIfView === null ? false : true}
+                            value={characteristicsRateHigh}
+                            onCharacteristicsSelect={
+                              onCharacteristicsSelectHigh
+                            }
+                            options={characteristicsList}
+                          />
+                        </div>
+
+                        {formVersion !== "1" && formVersion !== "2" && (
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please articulate your dominant point of view
+                                which you want to discuss with the program
+                                participants as a general starting point.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  required
+                                  value={povProgramParticipants}
+                                  disabled={checkIfView === null ? false : true}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+
+                                    setPovProgramParticipants(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      30,
+                                      80,
+                                      "povProgramParticipants"
+                                    );
+                                  }}
+                                  placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "povProgramParticipants"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["povProgramParticipants"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                What is your general approach towards problem
+                                solving?{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  required
+                                  disabled={checkIfView === null ? false : true}
+                                  value={problemSolvingApproach}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+
+                                    setProblemSolvingApproach(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      30,
+                                      80,
+                                      "problemSolvingApproach"
+                                    );
+                                  }}
+                                  placeholder="My approach involves systematic analysis, creativity, and collaboration to find innovative, effective solutions..."
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "problemSolvingApproach"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["problemSolvingApproach"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {formVersion !== "1" && formVersion !== "2" && (
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                What were the 3 most significant challenges you
+                                encountered in your journey, and how did you
+                                successfully navigate and overcome them?{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  required
+                                  disabled={checkIfView === null ? false : true}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+
+                                    setSignificantChallenges(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      50,
+                                      80,
+                                      "significantChallenges"
+                                    );
+                                  }}
+                                  value={significantChallenges}
+                                  placeholder="Explain your top challenges and how you overcame them. For example - helped new joiners navigate team conflicts by fostering open communication."
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "significantChallenges"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["significantChallenges"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Are there any phrases or expressions you find
+                                yourself using often in conversations? These
+                                could be catchphrases, favorite quotes, or
+                                unique sayings that reflect your personality.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  disabled={checkIfView === null ? false : true}
+                                  required
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+
+                                    setPhrasesNExpressions(inputValue);
+                                    handleWordLimit(
+                                      inputValue,
+                                      50,
+                                      80,
+                                      "phrasesNExpressions"
+                                    );
+                                  }}
+                                  value={phrasesNExpressions}
+                                  placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                                {Object.keys(error).includes(
+                                  "phrasesNExpressions"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["phrasesNExpressions"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please add names of 1-2 well-known leaders that
+                                you admire.{" "}
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              </p>
+                              <div>
+                                <input
+                                  required
+                                  disabled={checkIfView === null ? false : true}
+                                  onChange={(e) => {
+                                    setLeaderNames(e.target.value);
+                                  }}
+                                  value={leaderNames}
+                                  placeholder="Bill Gates, Ratan Tata"
+                                  type="text"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Please add the discussion topics (Separated by
+                            comma)
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <div>
+                            <textarea
+                              rows={2}
+                              disabled={checkIfView === null ? false : true}
+                              required
+                              value={discussionTopics}
+                              onChange={(e) => {
+                                setDataModified(true);
+                                setDiscussionTopics(e.target.value);
+                                handleDiscussionTopics(
+                                  e.target.value,
+                                  "discussionTopics"
+                                );
+                              }}
+                              placeholder="You can enter 4-5 Discussion Topics you'd like to discuss. eg: Talent empowerment. Please seperate each topic using comma."
+                              className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
                             />
-                            <label
-                              htmlFor={`r${i}+emojis ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
                           </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("UseEmoji") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["UseEmoji"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                          {Object.keys(error).includes("discussionTopics") && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {(error as any)["discussionTopics"]}
+                            </p>
+                          )}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
 
-                  {(profileType === "coach" ||
-                    profileType === "coach-mentor") && (
+                  {formVersion !== "1" && formVersion !== "2" && (
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="w-full mx-0 border rounded-md"
+                    >
+                      <AccordionItem value="item-media">
+                        <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
+                          <div>
+                            Knowledge base.{" "}
+                            {/* <span className="text-xl font-bold text-red-500">
+                              *
+                            </span> */}
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-2 border-none">
+                          <>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                {formVersion === "2"
+                                  ? `Please enter 1-2 YouTube links that reflect your worldview on personal & professional development. (Separate multiple links by comma)`
+                                  : `Please enter 1-2 YouTube links related to the Subject matter. (Separate multiple links by comma)`}
+                                {!checkIfEdit && (
+                                  <span className="text-xl font-bold text-red-500">
+                                    *
+                                  </span>
+                                )}
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  disabled={checkIfView === null ? false : true}
+                                  required={
+                                    !checkIfEdit ||
+                                    mediaData?.extracted_from_youtube.filter(
+                                      (file) => !file.isDeleted
+                                    ).length === 0
+                                  }
+                                  value={linksReflectingWVpersonal}
+                                  onChange={(e) => {
+                                    setDataModified(true);
+                                    setLinksReflectingWVpersonal(
+                                      e.target.value
+                                    );
+                                    handleInputLinks(
+                                      e.target.value,
+                                      "linksReflectingWVpersonal"
+                                    );
+                                  }}
+                                  placeholder="(Let's say you believe grit and perseverance are important for workplace success, you may consider adding this link: https://www.youtube.com/watch?v=H14bBuluwB8 )"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400  resize-none"
+                                />
+                                {Object.keys(error).includes(
+                                  "linksReflectingWVpersonal"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {
+                                      (error as any)[
+                                        "linksReflectingWVpersonal"
+                                      ]
+                                    }
+                                  </p>
+                                )}
+                                {/* @ts-ignore */}
+                                {mediaData?.extracted_from_youtube.length >
+                                  0 && (
+                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                    {mediaData?.extracted_from_youtube.map(
+                                      (item) => (
+                                        <div className="flex flex-row justify-between items-center">
+                                          <Link
+                                            href={item.fileName}
+                                            target="_target"
+                                            className={`text-xs text-blue-500 truncate ${
+                                              item.isDeleted && "line-through"
+                                            }`}
+                                          >
+                                            {item.fileName}
+                                          </Link>
+                                          {checkIfEdit && (
+                                            <div className="flex flex-row gap-2 min-w-fit">
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                onClick={() => {
+                                                  deleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                                disabled={item.isDeleted}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Delete"
+                                                  body={
+                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={!item.isDeleted}
+                                                onClick={() => {
+                                                  undoDeleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Undo delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Undo delete"
+                                                  body={
+                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                Please enter 1-2 article links that reflect what
+                                you wished everyone would follow in their growth
+                                journey. (Separate multiple links by comma){" "}
+                                {!checkIfEdit && (
+                                  <span className="text-xl font-bold text-red-500">
+                                    *
+                                  </span>
+                                )}
+                              </p>
+                              <div>
+                                <textarea
+                                  rows={4}
+                                  required={
+                                    !checkIfEdit ||
+                                    mediaData?.extracted_from_article.filter(
+                                      (file) => !file.isDeleted
+                                    ).length === 0
+                                  }
+                                  disabled={checkIfView === null ? false : true}
+                                  value={linksReflectyouWished}
+                                  onChange={(e) => {
+                                    setDataModified(true);
+                                    setLinksReflectyouWished(e.target.value);
+                                    handleInputLinks(
+                                      e.target.value,
+                                      "linksReflectyouWished"
+                                    );
+                                  }}
+                                  placeholder="(Let's say you came across an article that you liked a lot and you think it will help the program participants to grow, you can add that link. E.g you want to generally talk about empathy, you can add this article: https://www.mindtools.com/agz0gft/empathy-at-work)"
+                                  className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 resize-none"
+                                />
+                                {Object.keys(error).includes(
+                                  "linksReflectyouWished"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["linksReflectyouWished"]}
+                                  </p>
+                                )}
+                                {/* @ts-ignore */}
+                                {mediaData?.extracted_from_article.length >
+                                0 ? (
+                                  <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                    {mediaData?.extracted_from_article.map(
+                                      (item) => (
+                                        <div className="flex flex-row justify-between items-center">
+                                          <Link
+                                            href={item.fileName}
+                                            target="_target"
+                                            className={`text-xs text-blue-500 truncate ${
+                                              item.isDeleted && "line-through"
+                                            }`}
+                                          >
+                                            {item.fileName}
+                                          </Link>
+                                          {checkIfEdit && (
+                                            <div className="flex flex-row gap-2 min-w-fit">
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={item.isDeleted}
+                                                onClick={() => {
+                                                  deleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Delete"
+                                                  body={
+                                                    <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                              <Button
+                                                variant={"outline"}
+                                                className="h-6 text-xs w-fit"
+                                                type="button"
+                                                disabled={!item.isDeleted}
+                                                onClick={() => {
+                                                  undoDeleteMediaDataHandler(
+                                                    item.fileName
+                                                  );
+                                                }}
+                                              >
+                                                <span className="max-sm:hidden">
+                                                  Undo delete
+                                                </span>
+                                                <TooltipWrapper
+                                                  className="hidden max-sm:block text-xs"
+                                                  tooltipName="Undo delete"
+                                                  body={
+                                                    <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                                  }
+                                                />
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          </>
+
+                          <div className="my-3 ">
+                            <p className="text-sm my-1">
+                              Please add any document or file that you believe
+                              are reference materials that may help your mentees
+                              and participants. Feel free to upload relevant
+                              materials: guides, templates, and resources that
+                              support your mentees and participants in their
+                              learning journey.{" "}
+                              {!checkIfEdit && (
+                                <span className="text-xl font-bold text-red-500">
+                                  *
+                                </span>
+                              )}
+                            </p>
+
+                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                              <input
+                                disabled={checkIfView === null ? false : true}
+                                required={
+                                  !checkIfEdit ||
+                                  mediaData?.extracted_from_pdf.filter(
+                                    (file) => !file.isDeleted
+                                  ).length === 0
+                                }
+                                type="file"
+                                className="w-full text-xs my-2"
+                                multiple
+                                name="files"
+                                accept=".pdf,.docx"
+                                onChange={async (e) => {
+                                  handleFileChange(e, "MainFile2");
+                                }}
+                              />
+                              {Object.keys(error).includes("MainFile2") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["MainFile2"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {/* @ts-ignore */}
+                          {mediaData?.extracted_from_pdf.length > 0 && (
+                            <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                              {mediaData?.extracted_from_pdf.map((item) => (
+                                <div className="flex flex-row justify-between items-center">
+                                  <div className="flex flex-row items-center gap-2">
+                                    <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                    <span
+                                      className={`text-xs text-blue-500 truncate ${
+                                        item.isDeleted && "line-through"
+                                      }`}
+                                    >
+                                      {item.fileName}
+                                    </span>
+                                  </div>
+                                  {checkIfEdit && (
+                                    <div className="flex flex-row gap-2 min-w-fit">
+                                      <Button
+                                        variant={"outline"}
+                                        className="h-6 text-xs w-fit"
+                                        type="button"
+                                        disabled={item.isDeleted}
+                                        onClick={() => {
+                                          deleteMediaDataHandler(item.fileName);
+                                        }}
+                                      >
+                                        <span className="max-sm:hidden">
+                                          Delete
+                                        </span>
+                                        <TooltipWrapper
+                                          className="hidden max-sm:block text-xs"
+                                          tooltipName="Delete"
+                                          body={
+                                            <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                          }
+                                        />
+                                      </Button>
+                                      <Button
+                                        variant={"outline"}
+                                        className="h-6 text-xs w-fit"
+                                        type="button"
+                                        disabled={!item.isDeleted}
+                                        onClick={() => {
+                                          undoDeleteMediaDataHandler(
+                                            item.fileName
+                                          );
+                                        }}
+                                      >
+                                        <span className="max-sm:hidden">
+                                          Undo delete
+                                        </span>
+                                        <TooltipWrapper
+                                          className="hidden max-sm:block text-xs"
+                                          tooltipName="Undo delete"
+                                          body={
+                                            <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                          }
+                                        />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <hr className="mt-2" />
+                          <div className="my-3 ">
+                            <p className="text-sm my-1">
+                              Please upload any personality assessment (e.g.
+                              DISC) or other profiles that you might have. It
+                              will be used for recommendation of the appropriate
+                              coaching style.
+                            </p>
+
+                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
+                              <input
+                                disabled={checkIfView === null ? false : true}
+                                // required={!checkIfEdit}
+                                type="file"
+                                className="w-full text-xs my-2"
+                                multiple
+                                name="optional_file"
+                                accept=".pdf,.docx"
+                                onChange={async (e) => {
+                                  handleFileChange(e, "PersonalityFile2");
+                                }}
+                              />
+                              {Object.keys(error).includes(
+                                "PersonalityFile2"
+                              ) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["PersonalityFile2"]}
+                                </p>
+                              )}
+                            </div>
+                            {/* @ts-ignore */}
+                            {optionalMediaData?.extracted_from_optional_file
+                              .length > 0 && (
+                              <div className="w-full bg-red-50 border border-red-200 rounded-md p-2 max-sm:px-1 flex flex-col gap-1">
+                                {optionalMediaData?.extracted_from_optional_file.map(
+                                  (item) => (
+                                    <div className="flex flex-row justify-between items-center">
+                                      <div className="flex flex-row items-center gap-2">
+                                        <File className="h-4 w-4 ml-2 max-sm:ml-0 inline" />{" "}
+                                        <span
+                                          className={`text-xs text-blue-500 truncate ${
+                                            item.isDeleted && "line-through"
+                                          }`}
+                                        >
+                                          {item.fileName}
+                                        </span>
+                                      </div>
+                                      {checkIfEdit && (
+                                        <div className="flex flex-row gap-2 min-w-fit">
+                                          <Button
+                                            variant={"outline"}
+                                            className="h-6 text-xs w-fit"
+                                            type="button"
+                                            disabled={item.isDeleted}
+                                            onClick={() => {
+                                              deleteOptionalMediaDataHandler(
+                                                item.fileName
+                                              );
+                                            }}
+                                          >
+                                            <span className="max-sm:hidden">
+                                              Delete
+                                            </span>
+                                            <TooltipWrapper
+                                              className="hidden max-sm:block text-xs"
+                                              tooltipName="Delete"
+                                              body={
+                                                <Trash2 className="h-3 w-3 ml-2 max-sm:ml-0" />
+                                              }
+                                            />
+                                          </Button>
+                                          <Button
+                                            variant={"outline"}
+                                            className="h-6 text-xs w-fit"
+                                            type="button"
+                                            disabled={!item.isDeleted}
+                                            onClick={() => {
+                                              undoDeleteOptionalMediaDataHandler(
+                                                item.fileName
+                                              );
+                                            }}
+                                          >
+                                            <span className="max-sm:hidden">
+                                              Undo delete
+                                            </span>
+                                            <TooltipWrapper
+                                              className="hidden max-sm:block text-xs"
+                                              tooltipName="Undo delete"
+                                              body={
+                                                <UndoDot className="h-4 w-4 ml-2 max-sm:ml-0" />
+                                              }
+                                            />
+                                          </Button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  )}
+
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full mt-4 mx-0 border rounded-md"
+                  >
+                    <AccordionItem value="item-acc">
+                      <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
+                        <div>Account preferences</div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-2 border-none">
+                        <div className="my-3">
+                          <p className="text-sm my-1">
+                            Allow Coachee and Mentee to update action plan and
+                            session notes?{" "}
+                            <span className="text-xl font-bold text-red-500">
+                              *
+                            </span>
+                          </p>
+                          <div className="my-2 mb-3">
+                            <RadioGroup
+                              disabled={checkIfView === null ? false : true}
+                              required
+                              value={allowSessionNotes}
+                              onValueChange={(value) => {
+                                setDataModified(true);
+                                setAllowSessionNotes(value);
+                              }}
+                            >
+                              {["Yes", "No"].map((val, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center space-x-2 "
+                                >
+                                  <RadioGroupItem
+                                    value={val}
+                                    id={`r${i}+e ${val}`}
+                                  />
+                                  <label
+                                    htmlFor={`r${i}+e ${val}`}
+                                    className="text-xs text-gray-700"
+                                  >
+                                    {capitalizeText(val)}
+                                  </label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                            {Object.keys(error).includes("AllowActionPlan") && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {(error as any)["AllowActionPlan"]}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {formVersion !== "1" && formVersion !== "2" && (
+                          <div className="my-3">
+                            <p className="text-sm my-1">
+                              Would you like your AI Avatar to provide
+                              expressive answers using emojis?{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </p>
+                            <div className="my-2 mb-3">
+                              <RadioGroup
+                                disabled={checkIfView === null ? false : true}
+                                required
+                                value={provideAnswersUsingEmojis}
+                                onValueChange={(value) => {
+                                  setDataModified(true);
+                                  setProvideAnswersUsingEmojis(value);
+                                }}
+                              >
+                                {["Yes", "No"].map((val, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-center space-x-2 "
+                                  >
+                                    <RadioGroupItem
+                                      value={val}
+                                      id={`r${i}+emojis ${val}`}
+                                    />
+                                    <label
+                                      htmlFor={`r${i}+emojis ${val}`}
+                                      className="text-xs text-gray-700"
+                                    >
+                                      {capitalizeText(val)}
+                                    </label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                              {Object.keys(error).includes("UseEmoji") && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {(error as any)["UseEmoji"]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  {formVersion !== "1" && formVersion !== "2" && (
                     <>
-                      <hr />
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          As a coach, what foundational values do you believe
-                          individuals should prioritize and strive for in their
-                          personal and professional development journey?{" "}
-                          <span className="text-xl font-bold text-red-500">
-                            *
-                          </span>
-                        </p>
-                        <div>
-                          <textarea
-                            disabled={checkIfView === null ? false : true}
-                            rows={4}
-                            required
-                            value={foundationalValues}
-                            onChange={(e) => {
-                              setFoundationalValues(e.target.value);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "foundationalValues"
-                              );
-                            }}
-                            placeholder="Identify core principles like integrity, resilience, and empathy essential for personal and professional growth."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "foundationalValues"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["foundationalValues"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          In your role as a coach, what kind of developmental
-                          framework do you employ, and why do you consider it to
-                          be the optimal framework for facilitating personal
-                          growth ?{" "}
-                          <span className="text-xl font-bold text-red-500">
-                            *
-                          </span>
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={developmentFramewrok}
-                            onChange={(e) => {
-                              setDevelopmentFrameworks(e.target.value);
-                              setDataModified(true);
-                              handleWordLimitMin(
-                                e.target.value,
-                                20,
-                                "developmentFramewrok"
-                              );
-                            }}
-                            placeholder="I utilize a blend of reflective practice, goal setting, and accountability to foster holistic personal development.)"
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
-                          />
-                          {Object.keys(error).includes(
-                            "developmentFramewrok"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["developmentFramewrok"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <hr />
-                      <div className="my-2">
-                        <h3 className="font-semibold text-base text-gray-600">
-                          Coaching FAQs{" "}
-                          <span className="text-xl font-bold text-red-500">
-                            *
-                          </span>
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Note: Answer these in first person as if you are
-                          answering directly to your coachee.
-                        </p>
-                      </div>
+                      <Accordion
+                        type="single"
+                        collapsible
+                        className="w-full mt-4 mx-0 border rounded-md"
+                      >
+                        <AccordionItem value="item-coaching-faqs">
+                          <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
+                            <div>
+                              Coaching FAQs{" "}
+                              <span className="text-xl font-bold text-red-500">
+                                *
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-2 border-none">
+                            {(profileType === "coach" ||
+                              profileType === "coach-mentor") && (
+                              <>
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    As a coach, what foundational values do you
+                                    believe individuals should prioritize and
+                                    strive for in their personal and
+                                    professional development journey?{" "}
+                                    <span className="text-xl font-bold text-red-500">
+                                      *
+                                    </span>
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      rows={4}
+                                      required
+                                      value={foundationalValues}
+                                      onChange={(e) => {
+                                        setFoundationalValues(e.target.value);
+                                        handleWordLimitMin(
+                                          e.target.value,
+                                          20,
+                                          "foundationalValues"
+                                        );
+                                      }}
+                                      placeholder="Identify core principles like integrity, resilience, and empathy essential for personal and professional growth."
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                                    />
+                                    {Object.keys(error).includes(
+                                      "foundationalValues"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["foundationalValues"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    In your role as a coach, what kind of
+                                    developmental framework do you employ, and
+                                    why do you consider it to be the optimal
+                                    framework for facilitating personal growth ?{" "}
+                                    <span className="text-xl font-bold text-red-500">
+                                      *
+                                    </span>
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={developmentFramewrok}
+                                      onChange={(e) => {
+                                        setDevelopmentFrameworks(
+                                          e.target.value
+                                        );
+                                        setDataModified(true);
+                                        handleWordLimitMin(
+                                          e.target.value,
+                                          20,
+                                          "developmentFramewrok"
+                                        );
+                                      }}
+                                      placeholder="I utilize a blend of reflective practice, goal setting, and accountability to foster holistic personal development.)"
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 "
+                                    />
+                                    {Object.keys(error).includes(
+                                      "developmentFramewrok"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["developmentFramewrok"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
 
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          Can you provide an overview of your coaching process
-                          and what I can expect from our sessions?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={coachingProcessOverview}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    Can you provide an overview of your coaching
+                                    process and what I can expect from our
+                                    sessions?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={coachingProcessOverview}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
 
-                              setCoachingProcessOverview(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "coachingProcessOverview"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "coachingProcessOverview"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["coachingProcessOverview"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                                        setCoachingProcessOverview(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "coachingProcessOverview"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "coachingProcessOverview"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "coachingProcessOverview"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
 
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          How do you handle situations where I feel stuck or
-                          unsure about my next steps?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={handlingSituations}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    How do you handle situations where I feel
+                                    stuck or unsure about my next steps?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={handlingSituations}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
 
-                              setHandlingSituations(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "handlingSituations"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "handlingSituations"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["handlingSituations"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                                        setHandlingSituations(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "handlingSituations"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "handlingSituations"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["handlingSituations"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
 
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          How can I integrate the lessons from these sessions
-                          into my daily life?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={integratingLessons}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    How can I integrate the lessons from these
+                                    sessions into my daily life?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={integratingLessons}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
 
-                              setIntegratongLessons(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "integratingLessons"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "integratingLessons"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["integratingLessons"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                                        setIntegratongLessons(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "integratingLessons"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "integratingLessons"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["integratingLessons"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
 
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          Can you provide guidance on how to effectively balance
-                          personal and professional goals during our coaching
-                          process?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={guidanceOnCoachingProcess}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    Can you provide guidance on how to
+                                    effectively balance personal and
+                                    professional goals during our coaching
+                                    process?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={guidanceOnCoachingProcess}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
 
-                              setGuidanceOnCoachingProcess(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "guidanceOnCoachingProcess"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "guidanceOnCoachingProcess"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["guidanceOnCoachingProcess"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                                        setGuidanceOnCoachingProcess(
+                                          inputValue
+                                        );
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "guidanceOnCoachingProcess"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "guidanceOnCoachingProcess"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "guidanceOnCoachingProcess"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                            {(profileType === "mentor" ||
+                              profileType === "coach-mentor") && (
+                              <>
+                                <hr />
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    As a mentor, what do you think are the
+                                    different career paths available in this
+                                    field? What are the core skills and
+                                    understanding required to continuously grow
+                                    in this field?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={differentCareerPath}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setDifferentCareerPath(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "differentCareerPath"
+                                        );
+                                      }}
+                                      placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "differentCareerPath"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["differentCareerPath"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    What is the problem-solving approach in your
+                                    domain and why do you think that is the
+                                    right construct for growing in this field?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={problemSolvingApproachInDomain}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setProblemSolvingApproachInDomain(
+                                          inputValue
+                                        );
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "problemSolvingApproachInDomain"
+                                        );
+                                      }}
+                                      placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "problemSolvingApproachInDomain"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "problemSolvingApproachInDomain"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <hr />
+                                <div className="my-2">
+                                  <h3 className="font-semibold text-base text-gray-600">
+                                    Mentoring FAQs{" "}
+                                    <span className="text-xl font-bold text-red-500">
+                                      *
+                                    </span>
+                                  </h3>
+                                  <p className="text-sm text-gray-600">
+                                    Note: Answer these in first person as if you
+                                    are answering directly to your mentee.
+                                  </p>
+                                </div>
+
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    Can you provide an overview of your
+                                    mentoring approach and what I can expect
+                                    from our sessions?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={overviewofMentoring}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setOverviewOfMentoring(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "overviewofMentoring"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "overviewofMentoring"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {(error as any)["overviewofMentoring"]}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    What opportunities for growth or advancement
+                                    do you see in this field, and how can I
+                                    position myself to capitalize on them?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={opportunitiesOfGrowth}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setOpportunitiesOfGrowth(inputValue);
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "opportunitiesOfGrowth"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "opportunitiesOfGrowth"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "opportunitiesOfGrowth"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    What are some common challenges or obstacles
+                                    that individuals face when pursuing success
+                                    in this field, and what strategies do you
+                                    suggest for overcoming them?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={commonChallengesOrObstacles}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setCommenChallengesOrObstacles(
+                                          inputValue
+                                        );
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "commenChallengesOrObstacles"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "commenChallengesOrObstacles"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "commenChallengesOrObstacles"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="my-3">
+                                  <p className="text-sm my-1">
+                                    In your opinion, what are the key qualities
+                                    or skills that contribute to success in the
+                                    field I'm aiming to excel in, and how can I
+                                    develop or enhance them?
+                                  </p>
+                                  <div>
+                                    <textarea
+                                      rows={4}
+                                      disabled={
+                                        checkIfView === null ? false : true
+                                      }
+                                      required
+                                      value={opinionsAboutKeyQualities}
+                                      onChange={(e) => {
+                                        const inputValue = e.target.value;
+
+                                        setOpinionsAboutKeyQualities(
+                                          inputValue
+                                        );
+                                        handleWordLimit(
+                                          inputValue,
+                                          50,
+                                          80,
+                                          "opinionsAboutKeyQualities"
+                                        );
+                                      }}
+                                      placeholder=""
+                                      className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
+                                    />
+                                    {Object.keys(error).includes(
+                                      "opinionsAboutKeyQualities"
+                                    ) && (
+                                      <p className="text-red-500 text-xs mt-1">
+                                        {
+                                          (error as any)[
+                                            "opinionsAboutKeyQualities"
+                                          ]
+                                        }
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </AccordionContent>{" "}
+                        </AccordionItem>
+                      </Accordion>
                     </>
                   )}
-                  {(profileType === "mentor" ||
-                    profileType === "coach-mentor") && (
+                  {formVersion !== "1" && formVersion !== "2" && (
                     <>
-                      <hr />
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          As a mentor, what do you think are the different
-                          career paths available in this field? What are the
-                          core skills and understanding required to continuously
-                          grow in this field?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={differentCareerPath}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setDifferentCareerPath(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "differentCareerPath"
-                              );
-                            }}
-                            placeholder="There are plenty of career avenues like data analysis or software development. You can work on core skills like coding and statistical analysis."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "differentCareerPath"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["differentCareerPath"]}
+                      <Accordion
+                        type="single"
+                        collapsible
+                        className="w-full mt-4 mx-0 border rounded-md"
+                      >
+                        <AccordionItem value="item-coaching-faqs">
+                          <AccordionTrigger className="text-sm py-0 font-bold p-2 border-none px-2">
+                            <div>
+                              Quick Match Analysis.{" "}
+                              {/* <span className="text-xl font-bold text-red-500">
+                              *
+                            </span> */}
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-2 border-none">
+                            <p className="text-sm text-gray-600">
+                              This section analyzes your fitment with the
+                              participant, as if it were a face to face
+                              engagement.
                             </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What is the problem-solving approach in your domain
-                          and why do you think that is the right construct for
-                          growing in this field?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={problemSolvingApproachInDomain}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setProblemSolvingApproachInDomain(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "problemSolvingApproachInDomain"
-                              );
-                            }}
-                            placeholder="I like a problem-solving approach that emphasizes critical thinking and collaboration. In this field, effective solutions often arise from teamwork and well-defined methodologies."
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "problemSolvingApproachInDomain"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["problemSolvingApproachInDomain"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <hr />
-                      <div className="my-2">
-                        <h3 className="font-semibold text-base text-gray-600">
-                          Mentoring FAQs{" "}
-                          <span className="text-xl font-bold text-red-500">
-                            *
-                          </span>
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Note: Answer these in first person as if you are
-                          answering directly to your mentee.
-                        </p>
-                      </div>
-
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          Can you provide an overview of your mentoring approach
-                          and what I can expect from our sessions?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={overviewofMentoring}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setOverviewOfMentoring(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "overviewofMentoring"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "overviewofMentoring"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["overviewofMentoring"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What opportunities for growth or advancement do you
-                          see in this field, and how can I position myself to
-                          capitalize on them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={opportunitiesOfGrowth}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setOpportunitiesOfGrowth(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "opportunitiesOfGrowth"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "opportunitiesOfGrowth"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["opportunitiesOfGrowth"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          What are some common challenges or obstacles that
-                          individuals face when pursuing success in this field,
-                          and what strategies do you suggest for overcoming
-                          them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={commonChallengesOrObstacles}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setCommenChallengesOrObstacles(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "commenChallengesOrObstacles"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "commenChallengesOrObstacles"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["commenChallengesOrObstacles"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="my-3">
-                        <p className="text-sm my-1">
-                          In your opinion, what are the key qualities or skills
-                          that contribute to success in the field I'm aiming to
-                          excel in, and how can I develop or enhance them?
-                        </p>
-                        <div>
-                          <textarea
-                            rows={4}
-                            disabled={checkIfView === null ? false : true}
-                            required
-                            value={opinionsAboutKeyQualities}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-
-                              setOpinionsAboutKeyQualities(inputValue);
-                              handleWordLimit(
-                                inputValue,
-                                50,
-                                80,
-                                "opinionsAboutKeyQualities"
-                              );
-                            }}
-                            placeholder=""
-                            className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
-                          />
-                          {Object.keys(error).includes(
-                            "opinionsAboutKeyQualities"
-                          ) && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {(error as any)["opinionsAboutKeyQualities"]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                What level of participant you want to interact
+                                with ?
+                              </p>
+                              <div className="my-2 mb-3">
+                                <RadioGroup
+                                  required
+                                  disabled={checkIfView === null ? false : true}
+                                  value={participantLevel}
+                                  onValueChange={(value) => {
+                                    setDataModified(true);
+                                    setParticipantLevel(value);
+                                  }}
+                                >
+                                  {["Some Junior", "Any level"].map(
+                                    (val, i) => (
+                                      <div
+                                        key={i}
+                                        className="flex items-center space-x-2 "
+                                      >
+                                        <RadioGroupItem
+                                          value={val}
+                                          id={`r${i}+1 ${val}`}
+                                        />
+                                        <label
+                                          htmlFor={`r${i}+1 ${val}`}
+                                          className="text-xs text-gray-700"
+                                        >
+                                          {capitalizeText(val)}
+                                        </label>
+                                      </div>
+                                    )
+                                  )}
+                                </RadioGroup>
+                                {Object.keys(error).includes(
+                                  "ParticipantLevel"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["ParticipantLevel"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                I want to coach & mentor someone in the same
+                                department.
+                              </p>
+                              <div className="my-2 mb-3">
+                                <RadioGroup
+                                  disabled={checkIfView === null ? false : true}
+                                  required
+                                  value={coachMentInSameDep}
+                                  onValueChange={(value) => {
+                                    setDataModified(true);
+                                    setCochMentInSameDep(value);
+                                  }}
+                                >
+                                  {["Yes", "No"].map((val, i) => (
+                                    <div
+                                      key={i}
+                                      className="flex items-center space-x-2 "
+                                    >
+                                      <RadioGroupItem
+                                        value={val}
+                                        id={`r${i}+1 ${val}`}
+                                      />
+                                      <label
+                                        htmlFor={`r${i}+1 ${val}`}
+                                        className="text-xs text-gray-700"
+                                      >
+                                        {capitalizeText(val)}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </RadioGroup>
+                                {Object.keys(error).includes(
+                                  "coachSameDepartment"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["coachSameDepartment"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="my-3">
+                              <p className="text-sm my-1">
+                                What kind of outcome can you support in these
+                                sessions the most?
+                              </p>
+                              <div className="my-2 mb-3">
+                                <RadioGroup
+                                  disabled={checkIfView === null ? false : true}
+                                  value={outcomeSupported}
+                                  required
+                                  onValueChange={(value) => {
+                                    setDataModified(true);
+                                    setOutcomeSupported(value);
+                                  }}
+                                >
+                                  {[
+                                    "Career Advancement",
+                                    "Skill Development",
+                                    "Introspection & Reflection",
+                                    "Networking & Leadership",
+                                  ].map((val, i) => (
+                                    <div
+                                      key={i}
+                                      className="flex items-center space-x-2 "
+                                    >
+                                      <RadioGroupItem
+                                        className="rounded-sm"
+                                        value={val}
+                                        id={`r${i}+1 ${val}`}
+                                      />
+                                      <label
+                                        htmlFor={`r${i}+1 ${val}`}
+                                        className="text-xs text-gray-700"
+                                      >
+                                        {capitalizeText(val)}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </RadioGroup>
+                                {Object.keys(error).includes(
+                                  "SupportOutcome"
+                                ) && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {(error as any)["SupportOutcome"]}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </AccordionContent>{" "}
+                        </AccordionItem>
+                      </Accordion>
                     </>
                   )}
-                  <hr />
-                  <div className="my-2">
-                    <h3 className="font-semibold text-base text-gray-600">
-                      Quick Match Analysis{" "}
-                      <span className="text-xl font-bold text-red-500">*</span>
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      This section analyzes your fitment with the participant,
-                      as if it were a face to face engagement.
-                    </p>
-                  </div>
-                  {/* <div className="my-3">
-                    <p className="text-sm my-1">
-                      Do you want to coach/mentor anyone or only participants
-                      who have a basic fitment?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        value={coachmentSelect}
-                        onValueChange={(value) => {
-                          setCoachMentSelect(value);
-                        }}
-                      >
-                        {["Anyone", "With fitment only"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
-                  </div> */}
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What level of participant you want to interact with ?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        required
-                        disabled={checkIfView === null ? false : true}
-                        value={participantLevel}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setParticipantLevel(value);
-                        }}
-                      >
-                        {["Some Junior", "Any level"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("ParticipantLevel") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["ParticipantLevel"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      I want to coach & mentor someone in the same department.
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        disabled={checkIfView === null ? false : true}
-                        required
-                        value={coachMentInSameDep}
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setCochMentInSameDep(value);
-                        }}
-                      >
-                        {["Yes", "No"].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem value={val} id={`r${i}+1 ${val}`} />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("coachSameDepartment") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["coachSameDepartment"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="my-3">
-                    <p className="text-sm my-1">
-                      What kind of outcome can you support in these sessions the
-                      most?
-                    </p>
-                    <div className="my-2 mb-3">
-                      <RadioGroup
-                        disabled={checkIfView === null ? false : true}
-                        value={outcomeSupported}
-                        required
-                        onValueChange={(value) => {
-                          setDataModified(true);
-                          setOutcomeSupported(value);
-                        }}
-                      >
-                        {[
-                          "Career Advancement",
-                          "Skill Development",
-                          "Introspection & Reflection",
-                          "Networking & Leadership",
-                        ].map((val, i) => (
-                          <div key={i} className="flex items-center space-x-2 ">
-                            <RadioGroupItem
-                              className="rounded-sm"
-                              value={val}
-                              id={`r${i}+1 ${val}`}
-                            />
-                            <label
-                              htmlFor={`r${i}+1 ${val}`}
-                              className="text-xs text-gray-700"
-                            >
-                              {capitalizeText(val)}
-                            </label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                      {Object.keys(error).includes("SupportOutcome") && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["SupportOutcome"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  {!checkIfView && <hr className="my-2" />}
+
                   {!checkIfView && (
                     <>
-                      <hr className="my-2" />
-                      <div className="flex items-start space-x-2 my-1.5 ">
+                      <div className="flex items-start space-x-2 my-4">
                         <Checkbox
                           checked={
                             checkIfEdit ? true : Boolean(privacyInfoChecked)
@@ -4309,7 +5512,7 @@ const CoachIntake = ({ user }: any) => {
                             setPrivaciInfoChecked(checked);
                           }}
                         />
-                        <label className="text-xs text-gray-700">
+                        <label className="text-sm text-gray-700">
                           We respect your data and privacy. Any data is handled
                           per the data security and privacy policy of the
                           organization holding the platform license. Please
@@ -4323,7 +5526,7 @@ const CoachIntake = ({ user }: any) => {
                         {checkIfEdit ? (
                           <Button
                             disabled={createLoading || !dataModified}
-                            className="h-8"
+                            className="h-8 w-full"
                           >
                             {" "}
                             {createLoading ? (
@@ -4341,7 +5544,7 @@ const CoachIntake = ({ user }: any) => {
                         ) : (
                           <Button
                             disabled={createLoading || !privacyInfoChecked}
-                            className="h-8"
+                            className="h-8 w-full"
                           >
                             {" "}
                             {createLoading ? (
@@ -4380,7 +5583,7 @@ const CoachIntake = ({ user }: any) => {
           <div className="flex flex-col justify-center items-center w-full">
             <div className="bg-white border w-[60%] max-lg:w-[80%] max-sm:w-[90%] h-fit p-4 mt-5 rounded-md mb-4">
               <h1 className="text-xl text-left text-gray-600 font-bold">
-                Coachee & Mentee Intake
+                Coachee Intake
               </h1>
               <p className="mb-3 text-left text-sm text-gray-600">
                 Use this to add yourself to your organization's mentoring and
@@ -4633,9 +5836,14 @@ const CoachIntake = ({ user }: any) => {
                         name="optional_file"
                         accept=".pdf,.docx"
                         onChange={async (e) => {
-                          handleFileChange(e);
+                          handleFileChange(e, "PersonalityFile3");
                         }}
                       />
+                      {Object.keys(error).includes("PersonalityFile3") && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {(error as any)["PersonalityFile3"]}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {/* @ts-ignore */}

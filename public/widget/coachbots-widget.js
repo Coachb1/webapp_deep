@@ -9,6 +9,7 @@ const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
 // const baseURL="https://coach-api-gke-prod.coachbots.com/api/v1" //local
 
+
 let deepChatPocElement;
 let sessionId = "";
 let userId = "";
@@ -112,7 +113,8 @@ let clientBasedReadHereText2 = "";
 let senarioSnippetURL;
 let questionSnippetLink;
 let isEmptyAudio = false;
-
+let EmailCandidate;
+let ClientUserInformation;
 
 function createBasicAuthToken(key = "", secret = "") {
   const token =
@@ -196,7 +198,9 @@ console.log(user === undefined);
         .then((res) => res.json())
         .then((data) => {
           console.log("get-client-information : ", data);
-      
+          if (!data.data.user_info[0].msg){
+            ClientUserInformation = data.data.user_info[0];
+          }
           allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
           clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
           clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
@@ -233,7 +237,107 @@ console.log(user === undefined);
     .catch((err) => console.log(err));
 
 
+const CreateUser = async(username,useremail)=>{
+  console.log("newusername", username)
+  user_name = username
+  user_email = useremail
+  console.log("newuser_name", user_name)
+  console.log("newuser_email", user_email)
 
+  fetch(`${baseURL}/accounts/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basicAuthToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      user_context: {
+        name: user_name,
+        role: "member",
+        user_attributes: {
+          tag: "deepchat_profile",
+          attributes: {
+            name: user_name,
+            username: user_name,
+            email: user_email,
+          },
+        },
+      },
+      identity_context: {
+        identity_type: "deepchat_unique_id",
+        value: user_email,
+      },
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!window.user){
+        window.user = {
+          "given_name": user_name,
+          "email": user_email,
+      }
+      }
+      clientAllowAudioInteraction = data.client_allow_audio_interactions; 
+      userAllowAudioInteraction = data.user_allow_audio_interactions;
+      prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
+
+      participantId = data.uid;
+      userId = data.uid;
+      userRole = data.role;
+
+
+      fetch(
+        `${baseURL}/accounts/get-client-information/?for=user_info&email=${user_email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Basic ${basicAuthToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("get-client-information : ", data);
+          if (!data.data.user_info[0].msg){
+            ClientUserInformation = data.data.user_info[0];
+          }
+          allowPastingAtClientLevel = data.data.user_info[0].ui_information.allow_paste_answer
+          clientBasedBotHeaderText2 = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText2 = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText2 = data.data.user_info[0].ui_information.read_text
+      
+      
+          const headerText2 = document.getElementById("header-text2");
+          const footerText2 = document.getElementById("footer-text2");
+          const instructionsPaneList2 = document.getElementById('instructions-list2')
+          console.log(headerText2);
+          console.log(footerText2);
+      
+          if (clientBasedBotHeaderText2) {
+            headerText2.innerText = clientBasedBotHeaderText2;
+          }
+      
+          if (clientBasedBotFooterText2) {
+            footerText2.innerText = clientBasedBotFooterText2;
+          }
+      
+          if (clientBasedReadHereText2) {
+            const list = clientBasedReadHereText2
+              .trim()
+              .split("\n")
+              .map((item) => {
+                  return `<li>${item.trim()}</li>`;
+              });
+
+              instructionsPaneList2.innerHTML = list;
+          }
+        });
+
+    })
+    .catch((err) => console.log(err));
+
+
+}
 
 
 // sample TEst codes
@@ -1093,8 +1197,8 @@ async function setMcqVariables() {
 
         if (window.user) {
           // append custom message to chat
-          if (senarioCase === 'assessment'){
-            appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+          if (!EmailCandidate){
+            appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
           } else {
             appendMessage(
               `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -1140,7 +1244,7 @@ async function proceedFormFlow(msg) {
     isEmailForm = true;
     const filedname = formFields[0];
     formFields = formFields.slice(1);
-    emailNameformJson[filedname] = msg;
+    emailNameformJson[filedname] = filedname === 'email'? msg.toLowerCase() : msg ;
   }
 }
 //*********** hit mail sending api */
@@ -1621,8 +1725,8 @@ const handleEndCoachingClick = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (senarioCase === 'assessment'){
-      appendMessage("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    if (!EmailCandidate){
+      appendMessage("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
     } else {
       appendMessage(
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -2277,9 +2381,9 @@ async function handleScenarioRegenerationCT(signals) {
     currentURL
   );
   params.set("access_token", `Basic ${createBasicAuthToken2(key2, secret2)}`);
-  console.log('is_micro', snnipetConfigSTT.isMicro)
-  if (snnipetConfigSTT.isMicro !== undefined){
-    params.set("is_micro", `${snnipetConfigSTT.isMicro === 'true'? true : false}`);
+  console.log('is_micro', snnipetConfig.isMicro)
+  if (snnipetConfig.isMicro !== undefined){
+    params.set("is_micro", `${snnipetConfig.isMicro === 'true'? true : false}`);
   }
 
   params.set("regeneration", true);
@@ -2742,6 +2846,14 @@ if(window.innerWidth < 768) {
   messageBubbleMaxWidth2 = "80%"
 }
 
+const snippetOrigin2 = () => {
+  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground") {
+    return "internal"
+  } else {
+    return "external"
+  }
+}
+
 //* Function to handle button click for no-code flow : end
 
 async function loadExternalModule() {
@@ -2780,7 +2892,7 @@ loadExternalModule().then(() => {
       style="
         height: 4.5rem;
         width: 4.5rem;
-        background-color: white;
+        background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
         border-radius: 40%;
         display: flex;
@@ -2821,7 +2933,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 1rem 0rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999 !important;
+      z-index: 1000 !important;
       hiegth: 75vh;
     "
   >
@@ -2834,6 +2946,7 @@ loadExternalModule().then(() => {
   height: fit-content;
   background-color: #f3f4f6;
   border-radius: 1rem 1rem 0 0;
+  padding : ${snippetOrigin2() === "internal" ? "0" : "0.8rem 0"};
 ">
     <div 
     style="
@@ -2891,7 +3004,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin2() == "internal" ? "68vh" : "64vh" }; border: none;"
       microphone='{
         "files": {"format": "mp3", "maxNumberOfFiles": 1},
         "button": {"position": "outside-right"}
@@ -2954,18 +3067,18 @@ loadExternalModule().then(() => {
       attachmentContainerStyle='{"backgroundColor": "transparent", "width" : "fit-content", "position": "absolute", "right": "10%"}'
     >
     </deep-chat>
-    <p id="bot-footer" style="font-size: ${
+    <p id="bot-footer2" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
+    }; width: ${snippetOrigin2() === "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:25px;"> <span id="footer-text2" style="font-size: 12px;">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>  <span id="read-more-button2" onmouseover="this.style.cursor ='pointer'">
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Read here
         </button>
       </span> 
       <div id="instructions-pane2" style="position : absolute; left : 0px; bottom: 0px; right : 0px; width: 95%; border-radius: 10px; background-color: #eff6ff; margin: 20px; margin-left:  ${window.innerWidth < 768 ? "5px" : "25px" }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div style="font-size: 12px;">
         <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list2">
-            <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
+          <ul id="instructions-list2" style="list-style-type: none; padding-left:20px; font-size: 12px;">
+              <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. For Engagement Surveys:</strong> Consider responding to at least five questions for completeness. Always review requestor instructions in the email or on the page for details.</li>
               <li><strong>4. For Feedback Bots:</strong> Consider responding to at least five questions for completeness and hit the submit button for the record. Only positive feedback is displayed publicly, while critical feedback is delivered over email privately.</li>
@@ -2986,7 +3099,21 @@ loadExternalModule().then(() => {
 
   const readMoreButton = document.getElementById('read-more-button2')
   const instructionsPane = document.getElementById('instructions-pane2')
+  const instructionsList = document.getElementById('instructions-list2')
   const closeInstructionsPane = document.getElementById('close-intructions-pane2')
+  const botFooter2 = document.getElementById('bot-footer2')
+  const headerText2 = document.getElementById('header-text2')
+
+  if(snippetOrigin2() === "external"){
+    if(botFooter2){
+      botFooter2.style.margin = "0"
+    }
+    if(headerText2){
+      headerText2.style.display = "none"
+    }
+  }
+
+ 
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -3005,7 +3132,10 @@ loadExternalModule().then(() => {
   widgetClientId = document.querySelector(".coachbots-coachtalk").dataset.clientId;
   snnipetConfig = document.querySelector(".coachbots-coachtalk").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachtalk").dataset )
-
+  
+  if (chatContainer && snippetOrigin2() === "external") {
+      chatContainer.style.paddingBottom = "0";
+    }
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
@@ -3015,7 +3145,13 @@ loadExternalModule().then(() => {
      <li>4 . In rare cases, delays in responses and reports may occur due to system availability issues.</li>
      <li>5 . The feedback reports may not instantaneously capture all the data. Simply try refreshing the page if anything appears missing. Thanks!</li>
     `
-    instructionsPane.innerHTML = list
+    instructionsList.innerHTML = list
+    instructionsList.style.display = "flex"
+    instructionsList.style.flexDirection = "column"
+    instructionsList.style.fontSize = "12px"
+    instructionsList.style.padding = "10px"
+    instructionsList.style.listStyleType = "none"
+    instructionsList.style.gap = "2px"
   }
 
 
@@ -3176,13 +3312,37 @@ loadExternalModule().then(() => {
   }
 
   if (Object.keys(snnipetConfig).length > 0){
-    chatElementRef.initialMessages = [
-      {
-        html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+
+    if (snnipetConfig['psychometric'] === 'true'){
+      chatElementRef.initialMessages = [
+        {
+        html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
         role: "ai",
-      },
-    ];
-    askAccessBotCode = true;
+        },
+        {
+        html: `Please enter your email to get started.`,
+        role: "ai",
+        },
+      ];
+
+    } else{
+
+      chatElementRef.initialMessages = [
+        {
+          html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`,
+          role: "ai",
+        },
+        {
+          html: `Please enter your email to get started.`,
+          role: "ai",
+          },
+      ];
+      
+    }
+    isEmailForm=true;
+    formFields = ["email","name"];
+    console.log("### formFields : ",formFields, "other data: ",`Please enter your ${formFields[0]}`)
+
   } else{
 
     chatElementRef.initialMessages = [
@@ -3446,11 +3606,44 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformation = async (use_case, user_id) => {
-    const url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
+  const updateClientInfo = async (clientName, emails) => {
+    try {
+      const response = await fetch(`${baseURL}/accounts/get-create-or-update-client-id/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken(key, secret)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_name: clientName,
+          member_emails: emails,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Response Data:", data);
+        console.log("Successfully updated client details.");
+      } else {
+        const errorData = await response.json();
+        console.error("Error Response:", errorData);
+        console.error(`Failed to update client details. ${errorData.message || ""}`);
+      }
+    } catch (error) {
+      console.error("Network or unexpected error:", error);
+      console.error("An unexpected error occurred while updating client details.");
+    }
+  };
+  
+
+  const getClientInformation = async (use_case, email=null, client_name=null) => {
+    let url = `${baseURL}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if (user_id && use_case === "user_info") {
-      url += `&user_id=${user_id}`;
+    if (email && use_case === "user_info") {
+      url += `&email=${email}`;
+    }
+    if (client_name && use_case === 'only_client_data'){
+      url += `&client_name=${client_name}`
     }
     try {
       const response = await fetch(url, {
@@ -4327,6 +4520,14 @@ loadExternalModule().then(() => {
                   report_type: reportType,
                   test_attempt_session_id: sessionId,
                 };
+              } else if (senarioCase === "psychometric") {
+                reportType = "personalityPsychomatricReport";
+                getReportBody = {
+                  user_id: participantId,
+                  report_type: reportType,
+                  session_id: sessionId,
+                  interaction_id: testId,
+                };
               }
 
               console.log(getReportBody, senarioCase);
@@ -4352,8 +4553,8 @@ loadExternalModule().then(() => {
                     if (window.user) {
                       // sendEmail();
                       let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                      if (senarioCase === 'assessment'){
-                        message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      if (!EmailCandidate){
+                        message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                       }
                       appendMessage(message);
                       // //* send message to start new session
@@ -4409,14 +4610,40 @@ loadExternalModule().then(() => {
             document.getElementById("chat-element").shadowRoot;
 
           if (askAccessBotCode){
-            const code = 'DEMO2024'
-            if (latestMessage === code){
+            // fetching client information to get access code "AccessCode"
+            console.log(`client:`,ClientUserInformation) 
+              ClientUserInformation = await getClientInformation('only_client_data',
+                                                                  null,
+                                                                  widgetClientId)
+              // await new Promise(resolve => setTimeout(resolve, 15000)); 
+              
+            console.log(`client-new:`,ClientUserInformation,latestMessage) 
+
+            
+
+
+
+            // if (!ClientUserInformation?.widget_access_code){
+            //   signals.onResponse({
+            //     html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+            //   })
+            //   return;
+            // }
+
+            if (latestMessage === ClientUserInformation?.widget_access_code){
               console.log("Access Code Matched")
-              LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
+              updateClientInfo(widgetClientId,user_email)
               askAccessBotCode = false
               if (snnipetConfig.isDemo === 'true'){
+                LoadingMessageWithText2("Please wait, we are generating your scenario!!",shadowRoot)
                 handleOptionButtonClick("",signals)
-              } else{
+              } else if (snnipetConfig['psychometric'] === 'true'){
+                signals.onResponse({
+                  html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
+                })
+
+              } 
+              else{
                 signals.onResponse(
                   {
                     html: `<b>Do you have access code for your simulation?</b><br/><br/>
@@ -4435,7 +4662,7 @@ loadExternalModule().then(() => {
               LoadingMessageWithText2("Coachbot is thinking...", shadowRoot)
             }
             signals.onResponse({
-              html: "<p style='font-size: 14px;color: #991b1b;'>Enter a valid code to proceed.</p>",
+              html: "<p style='font-size: 14px;color: #991b1b;'>Please enter a valid <b>Pass Code</b> to proceed.</p>",
             });
             return;
           }
@@ -4444,22 +4671,40 @@ loadExternalModule().then(() => {
             await proceedFormFlow(latestMessage);
             if (formFields.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFields[0]}<b>`,
+                html: `Please enter your ${formFields[0]}.`,
               });
             } else {
               isEmailForm = false;
 
-              let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-              if (senarioCase === 'assessment'){
-                message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
-              }
-              appendMessage(message);
-              // //* send message to start new session
+              if (snnipetConfig['psychometric'] === 'true' || Object.keys(snnipetConfig).length > 0){
+                //  creating user after getting name, email "CreateUser"
+                console.log(emailNameformJson)
+                try {
+                  await CreateUser(emailNameformJson['name'], emailNameformJson['email']);
+                  // await new Promise(resolve => setTimeout(resolve, 5000)); 
+                  signals.onResponse({
+                    html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                  });
+                  askAccessBotCode = true;
+                } catch (error) {
+                  console.error("Error creating user:", error);
+                  signals.onResponse({
+                    html: "<p>Oops! Something went wrong. Please try again later.</p>"
+                  });
+                }
+              }else {
+                let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                if (!EmailCandidate){
+                  message ="<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                }
+                appendMessage(message);
+                // //* send message to start new session
 
-              signals.onResponse({
-                html: "<b>Please enter another access code to start a new interaction.</b>",
-              });
-              submitEmailAndName();
+                signals.onResponse({
+                  html: "<b>Please enter another access code to start a new interaction.</b>",
+                });
+                submitEmailAndName();
+              }
             }
             return;
           }
@@ -4764,6 +5009,10 @@ loadExternalModule().then(() => {
                 senarioDescription = questionData.results[0].description;
                 senarioTitle = questionData.results[0].title;
                 senarioCase = questionData.results[0].scenario_case;
+                EmailCandidate = questionData.results[0].email_candidate;
+                if (ClientUserInformation && 'report_on' in ClientUserInformation){
+                  EmailCandidate = ClientUserInformation.report_on
+                }
                 senarioMediaDescription =
                   questionData.results[0].description_media;
                 TestUIInfo = questionData.results[0].ui_information;
@@ -4790,6 +5039,9 @@ loadExternalModule().then(() => {
 
                 if (Object.keys(snnipetConfig).length > 0){
                   isImmersive = snnipetConfig.allowAudioInteraction === 'true';
+                  if (ClientUserInformation && 'client_name' in ClientUserInformation){
+                    widgetClientId = ClientUserInformation.client_name
+                  }
                 } else {
                   console.log("clientAllowAudioInteraction" , clientAllowAudioInteraction)
                   console.log("userAllowAudioInteraction" , userAllowAudioInteraction)
@@ -6032,8 +6284,8 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (senarioCase === 'assessment'){
-                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    if (!EmailCandidate){
+                      message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                     }
                     appendMessage(message);
                     // //* send message to start new session
@@ -6252,78 +6504,7 @@ const openChatContainer = () => {
     });
   }
 
-  // Using the ipinfo.io API
-  // fetch("https://ipinfo.io/106.221.193.225?token=4ba5b2bde0816f")
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     ipAddress = data.ip;
-  //   })
-  //   .catch((error) => console.error("Error fetching IP address:", error));
-
-  //   const user_data = getUserData();
-
-  //   if (user_data) {
-  //     user_name = user_data.name;
-  //     user_email = user_data.email;
-  //   } else {
-  //     user_name = "coachbots_anonyoususer";
-  //     user_sid = generateSessionId();
-  //     user_email = `${user_name}-${sid}@gmail.com`;
-  //   }
-
-  // let user_name;
-  // let user_email;
-
-  // if (user) {
-  //   user_name = `${user.given_name} ${user.family_name ? user.family_name : ""}`;
-  //   user_email = user.email;
-  // } else {
-  //   user_name = "coachbots_anonyoususer";
-  //   user_email = getAnonymousEmail();
-  // }
-
-  // if (window.LogRocket) {
-  //   window.LogRocket.identify(user_email, {
-  //     name: user_name,
-  //     email: user_email,
-  //   });
-  // }
-  // fetch(`${baseURL}/accounts/`, {
-  //   method: "POST",
-  //   headers: {
-  //     Authorization: `Basic ${basicAuthToken}`,
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({
-  //     user_context: {
-  //       name: user_name,
-  //       role: "member",
-  //       user_attributes: {
-  //         tag: "deepchat_profile",
-  //         attributes: {
-  //           name: user_name,
-  //           username: user_name,
-  //           email: user_email,
-  //         },
-  //       },
-  //     },
-  //     identity_context: {
-  //       identity_type: "deepchat_unique_id",
-  //       value: user_email,
-  //     },
-  //   }),
-  // })
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     clientAllowAudioInteraction = data.client_allow_audio_interactions; 
-  //     userAllowAudioInteraction = data.user_allow_audio_interactions;
-  //     prioritiseUserAllowInteraction = data.prioritize_user_audio_interaction;
-
-  //     participantId = data.uid;
-  //     userId = data.uid;
-  //     userRole = data.role;
-  //   })
-  //   .catch((err) => console.log(err));
+  const chatIconContainer = document.getElementById("chat-icon")
 
   if (chatContainer.style.scale === "1") {
     chatContainer.style.scale = 0;
@@ -6350,9 +6531,11 @@ const openChatContainer = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer.style.backgroundColor = "white"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+     chatIconContainer.style.backgroundColor = "#06ddb8"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }
@@ -6370,6 +6553,7 @@ const closeFromTop = () => {
   const coachScribeChatIcon = document.getElementsByClassName("chat-icon2")?.[0]
   const coachScribeContainer = document.getElementsByClassName("chat-icon-container2")?.[0]
   console.log(coachScribeChatIcon, coachScribeContainer)
+  const chatIconContainer = document.getElementById("chat-icon")
 
   if (window.innerWidth < 600) {
     coachScribeChatIcon.style.display = "block";
@@ -6380,9 +6564,11 @@ const closeFromTop = () => {
     chatIcon.src ===
     "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
   ) {
+    chatIconContainer.style.backgroundColor = "white"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
   } else {
+     chatIconContainer.style.backgroundColor = "#06ddb8"
     chatIcon.src =
       "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
   }

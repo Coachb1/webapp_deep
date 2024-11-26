@@ -8,10 +8,17 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
 
+const swipeHeader = document.getElementsByClassName('tatsu-header')[0];
+if(swipeHeader){
+  console.log("swipeHeader", swipeHeader)
+  swipeHeader.style.zIndex = 1;
+}
+
 // const baseURL2="https://coach-api-gke-prod.coachbots.com/api/v1" //local
 
 const style = document.createElement('style');
 style.textContent = `
+    
     #dropdown {
         position: absolute;
         background-color: white;
@@ -49,6 +56,16 @@ style.textContent = `
     .ist-sc {
       scrollbar-width: thin;
       scrollbar-color: #888 #f1f1f1;
+    }
+
+    #bot-footer span {
+      font-size: 12px;
+      padding : 4px;
+    } 
+
+    #bot-footer span button {
+      padding: 1px 4px;
+      font: 16px Arial;
     }
 `;
 document.head.appendChild(style);
@@ -216,6 +233,7 @@ let responseSavedCount = 0;
 let snnipetConfigSTT;
 let askAccessBotCodeSTT = false;
 let AttemptTestDirectSTT = false;
+let emailCandidate2;
 
 let selectedResponseType = undefined;
 let botPreviousConversationHistory = []
@@ -232,7 +250,7 @@ let clientBasedReadHereText = "";
 let LLMsystemInstructions = "";
 let botAvatarImageURL = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8c3ZnIGZpbGw9IiMwMDAwMDAiIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIAoJCXZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+Cgk8cGF0aCBkPSJNMjMsMzAuMzZIOWMtMi40MDQsMC00LjM2LTEuOTU2LTQuMzYtNC4zNlYxNWMwLTIuNDA0LDEuOTU2LTQuMzYsNC4zNi00LjM2aDMuNjU5CgkJYzAuMTY3LTEuNTY2LDEuNDE1LTIuODEzLDIuOTgxLTIuOTgxVjUuMzMzYy0xLjEzMS0wLjE3NC0yLTEuMTU0LTItMi4zMzNjMC0xLjMwMSwxLjA1OS0yLjM2LDIuMzYtMi4zNgoJCWMxLjMwMiwwLDIuMzYsMS4wNTksMi4zNiwyLjM2YzAsMS4xNzktMC44NjksMi4xNTktMiwyLjMzM1Y3LjY2YzEuNTY2LDAuMTY3LDIuODE0LDEuNDE1LDIuOTgxLDIuOTgxSDIzCgkJYzIuNDA0LDAsNC4zNiwxLjk1Niw0LjM2LDQuMzZ2MTFDMjcuMzYsMjguNDA0LDI1LjQwNCwzMC4zNiwyMywzMC4zNnogTTksMTEuMzZjLTIuMDA3LDAtMy42NCwxLjYzMy0zLjY0LDMuNjR2MTEKCQljMCwyLjAwNywxLjYzMywzLjY0LDMuNjQsMy42NGgxNGMyLjAwNywwLDMuNjQtMS42MzMsMy42NC0zLjY0VjE1YzAtMi4wMDctMS42MzMtMy42NC0zLjY0LTMuNjRIOXogTTEzLjM4NCwxMC42NGg1LjIzMQoJCUMxOC40MzksOS4zNTQsMTcuMzM0LDguMzYsMTYsOC4zNkMxNC42NjcsOC4zNiwxMy41NjEsOS4zNTQsMTMuMzg0LDEwLjY0eiBNMTYsMS4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NAoJCVMxNS4wOTYsNC42NCwxNiw0LjY0YzAuOTA0LDAsMS42NC0wLjczNiwxLjY0LTEuNjRTMTYuOTA0LDEuMzYsMTYsMS4zNnogTTIwLDI3LjM2aC04Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2CgkJczEuMDU5LTIuMzYsMi4zNi0yLjM2aDhjMS4zMDIsMCwyLjM2LDEuMDU5LDIuMzYsMi4zNlMyMS4zMDIsMjcuMzYsMjAsMjcuMzZ6IE0xMiwyMy4zNmMtMC45MDQsMC0xLjY0LDAuNzM1LTEuNjQsMS42NAoJCXMwLjczNiwxLjY0LDEuNjQsMS42NGg4YzAuOTA0LDAsMS42NC0wLjczNSwxLjY0LTEuNjRzLTAuNzM1LTEuNjQtMS42NC0xLjY0SDEyeiBNMzEsMjMuODZoLTJjLTAuMTk5LDAtMC4zNi0wLjE2MS0wLjM2LTAuMzZWMTUKCQljMC0wLjE5OSwwLjE2MS0wLjM2LDAuMzYtMC4zNmgyYzAuMTk5LDAsMC4zNiwwLjE2MSwwLjM2LDAuMzZ2OC41QzMxLjM2LDIzLjY5OSwzMS4xOTksMjMuODYsMzEsMjMuODZ6IE0yOS4zNiwyMy4xNGgxLjI3OXYtNy43OAoJCUgyOS4zNlYyMy4xNHogTTMsMjMuODZIMWMtMC4xOTksMC0wLjM2LTAuMTYxLTAuMzYtMC4zNlYxNWMwLTAuMTk5LDAuMTYxLTAuMzYsMC4zNi0wLjM2aDJjMC4xOTksMCwwLjM2LDAuMTYxLDAuMzYsMC4zNnY4LjUKCQlDMy4zNiwyMy42OTksMy4xOTksMjMuODYsMywyMy44NnogTTEuMzYsMjMuMTRoMS4yOHYtNy43OEgxLjM2VjIzLjE0eiBNMjAsMjAuMzZjLTEuMzAyLDAtMi4zNi0xLjA1OS0yLjM2LTIuMzYKCQlzMS4wNTktMi4zNiwyLjM2LTIuMzZzMi4zNiwxLjA1OSwyLjM2LDIuMzZDMjIuMzYsMTkuMzAyLDIxLjMwMiwyMC4zNiwyMCwyMC4zNnogTTIwLDE2LjM2Yy0wLjkwNCwwLTEuNjQsMC43MzYtMS42NCwxLjY0CgkJczAuNzM1LDEuNjQsMS42NCwxLjY0czEuNjQtMC43MzUsMS42NC0xLjY0UzIwLjkwNCwxNi4zNiwyMCwxNi4zNnogTTEyLDIwLjM2Yy0xLjMwMSwwLTIuMzYtMS4wNTktMi4zNi0yLjM2czEuMDU5LTIuMzYsMi4zNi0yLjM2CgkJczIuMzYsMS4wNTksMi4zNiwyLjM2QzE0LjM2LDE5LjMwMiwxMy4zMDEsMjAuMzYsMTIsMjAuMzZ6IE0xMiwxNi4zNmMtMC45MDQsMC0xLjY0LDAuNzM2LTEuNjQsMS42NHMwLjczNiwxLjY0LDEuNjQsMS42NAoJCXMxLjY0LTAuNzM1LDEuNjQtMS42NFMxMi45MDQsMTYuMzYsMTIsMTYuMzZ6Ii8+Cgk8cmVjdCBzdHlsZT0iZmlsbDpub25lOyIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+Cjwvc3ZnPg==";
 let UserAvatarImageURL = "data:image/png;base64,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"
-
+let clientuserInformationSTT;
 function createBasicAuthToken2(key2 = "", secret2 = "") {
   const token2 =
     "Yzc3MjFmZGItYTllMC00YTYxLWEzMTYtNDRhODA1N2VkMjY0OjhjNWNlZWZlLTY2Y2QtNDliZi04MTY5LTBhNjMwMmU5NmZlMA==";
@@ -253,9 +271,9 @@ if (window.user) {
   user_name2 = `${window.user.given_name} ${window.user.family_name ? window.user.family_name : ""}`;
   user_email2 = window.user.email;
 } else {
-  user_name2 = "coachbots_anonyoususer";
-  user_email2 = getAnonymousEmail();
-}
+    user_name2 = "coachbots_anonyoususer";
+    user_email2 = getAnonymousEmail();
+  }
 
 if (window.LogRocket) {
   window.LogRocket.identify(user_email2, {
@@ -318,6 +336,8 @@ fetch(`${baseURL2}/accounts/`, {
         console.log("get-client-information : ", data);
 
         if(!data.data.user_info[0].msg){
+          clientuserInformationSTT = data.data.user_info[0]
+
           allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
 
           clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
@@ -361,6 +381,116 @@ fetch(`${baseURL2}/accounts/`, {
     console.log(err)
     throw new Error("Error User Info")
   });
+
+
+const createUserSTT = async(user_name, user_email)=>{
+  console.log("newusername", user_name)
+  user_name2 = user_name
+  user_email2 = user_email
+console.log("newuser_name2", user_name2)
+console.log("newuser_email2", user_email2)
+fetch(`${baseURL2}/accounts/`, {
+  method: "POST",
+  headers: {
+    Authorization: `Basic ${basicAuthToken2}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    user_context: {
+      name: user_name2,
+      role: "member",
+      user_attributes: {
+        tag: "deepchat_profile",
+        attributes: {
+          name: user_name2,
+          username: user_name2,
+          email: user_email2,
+        },
+      },
+    },
+    identity_context: {
+      identity_type: "deepchat_unique_id",
+      value: user_email2,
+    },
+  }),
+})
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("START -> ", data)
+    if (!window.user){
+      window.user = {
+        "given_name": user_name2,
+        "email": user_email2,
+    }
+    }
+    participantId2 = data.uid;
+    userId2 = data.uid;
+    userRole2 = data.role;
+
+    clientAllowAudioInteraction2 = data.client_allow_audio_interactions; 
+    userAllowAudioInteraction2 = data.user_allow_audio_interactions;
+    prioritiseUserAllowInteraction2 = data.prioritize_user_audio_interaction;
+    selectedResponseType = data.preferences?.response_style
+
+    fetch(
+      `${baseURL2}/accounts/get-client-information/?for=user_info&email=${user_email2}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Basic ${basicAuthToken2}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("get-client-information : ", data);
+
+        if(!data.data.user_info[0].msg){
+          clientuserInformationSTT = data.data.user_info[0]
+          allowPastingAtClientLevelStt = data.data.user_info[0].ui_information.allow_paste_answer
+
+          clientBasedBotHeaderText = data.data.user_info[0].ui_information.header
+          clientBasedBotFooterText = data.data.user_info[0].ui_information.bottom_text
+          clientBasedReadHereText =  data.data.user_info[0].ui_information.read_text
+         
+  
+          const headerText = document.getElementById("header-text");
+          const footerText = document.getElementById("footer-text");
+          const instructionsPaneList = document.getElementById('instructions-list')
+          console.log(headerText);
+          console.log(footerText);
+  
+          if (clientBasedBotHeaderText) {
+            headerText.innerText = clientBasedBotHeaderText;
+          }
+  
+          if (clientBasedBotFooterText) {
+            footerText.innerText = clientBasedBotFooterText;
+          }
+  
+          if (clientBasedReadHereText) {
+            const list = clientBasedReadHereText
+              .trim()
+              .split("\n")
+              .map((item) => {
+                return `<li>${item.trim()}</li>`;
+              });
+  
+            instructionsPaneList.innerHTML = list;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        throw new Error("Error fetching client Info")
+      });
+    
+  })
+  .catch((err) => {
+    console.log(err)
+    throw new Error("Error User Info")
+  });
+}
 
 // sample recommendation data
 let recommendationsDataStt = [
@@ -615,8 +745,8 @@ const getUserOrAnonymousDetails = async (choice) => {
   console.log(choice);
   disableOrEnableButtons(`anonymous-${uniqueSesssionContainerId}`);
   if (choice === "No") {
+    isAnonymous = false;
     if (!window.user) {
-      isAnonymous = false;
       let emailForm;
       if (window.innerWidth > 768) {
         emailForm = `<div id="feedback-email-form"style="min-width: 730px;>
@@ -760,35 +890,41 @@ const handleFeedbackSubmit = async () => {
   </div>
     `);
   increaseActionPointStt(userId2, "feedback_given");
-  const queryparams = new URLSearchParams({
+  const body_data = {
     conversation: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
     type_of_email: "feedback_conv",
     user_email: FeedbackUserEmail,
     user_name: feedbackUserName,
     is_positive: IsPositiveFeedback ? "True" : "False",
-  });
+  }
+  const queryparams = new URLSearchParams(body_data);
 
-  console.log('user_email',FeedbackUserEmail)
+  console.log('user_email',FeedbackUserEmail,queryparams)
 
   // sending feedback conversation to bot owner
-  const response = await fetch(
-    `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/?${queryparams}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
-        "Content-Type": "application/json",
-      },
+  try{
+    await fetch(
+      `${baseURL2}/test-attempt-sessions/send-feedback-transcript-email/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body_data)
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("feedback email sent : ", data);
+      });
+    } catch(err){
+      console.log(`Failed to send transcript email: ${err}`)
     }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Dynamic mcq response : ", data);
-    });
 
-  // saving feedback to database
-  const queryparam = new URLSearchParams({
+
+  const feedbackData = {
     method: "post",
     qna: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
@@ -796,21 +932,24 @@ const handleFeedbackSubmit = async () => {
     qna_type: "feedback",
     user_id: userId2,
     is_anonymous: isAnonymous ? "True" : "False",
-  });
+  }
+  // saving feedback to database
+  const queryparam = new URLSearchParams(feedbackData);
 
   const resp = await fetch(
-    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    `${baseURL2}/accounts/get-user-feedback-data/`,
     {
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(feedbackData)
     }
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log("Dynamic mcq response : ", data);
+      console.log("Feedback Submit response : ", data);
     });
 };
 const handleEndFeedback = async () => {
@@ -843,8 +982,8 @@ const handleEndFeedback = async () => {
     .then((data) => {
       console.log("Dynamic mcq response : ", data);
     });
-
-  const queryparam = new URLSearchParams({
+  
+  const feedData = {
     method: "post",
     qna: JSON.stringify(feedbackBotQnA),
     bot_id: botId,
@@ -852,22 +991,25 @@ const handleEndFeedback = async () => {
     qna_type: "feedback",
     is_anonymous: isAnonymous ? "True" : "False",
     user_id: userId2,
-  });
+  }
+  const queryparam = new URLSearchParams(feedData);
 
   const resp = await fetch(
-    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+    `${baseURL2}/accounts/get-user-feedback-data/`,
     {
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(feedData)
     }
   )
     .then((response) => response.json())
     .then((data) => {
       console.log(" response : ", data);
-    });
+    })
+    .catch((err)=> {console.log(err);});
 
   // resetAllVariablesStt()
   appendMessage2(
@@ -978,6 +1120,7 @@ const feedbackBotQnAFlow = (flow) => {
     //   );
     // }, 200);
   } else if (flow === "down") {
+    IsPositiveFeedback=false
     console.log("### FeedbackbotQuestions before rename => ", feedbackBotQuestions)
     feedbackBotQuestions = renameKey(initialfeedbackBotQuestions);
     console.log("### FeedbackbotQuestions  after rename => ", feedbackBotQuestions)
@@ -1317,9 +1460,9 @@ const getBotDetails2 = async (botId) => {
       botWelcomeMessage = `Welcome to ${botDetails.data.bot_name}. Please ask me any related query and let's dive in.`;
     } else if (botType === "deep_dive") {
       botWelcomeMessage = " Welcome to the Engagement survey. Consider this as a check in to get your detailed point of view around the topic mentioned on this page. The response to the survey can be totally anonymous - so respond frankly and give voice to critical topics important to the team. Click 'Begin Session' to get started and respond in detail.";
-    } else if (botType === "avatar_bot") {
+    } else if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       botWelcomeMessage =
-        "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!";
+        botType=== 'avatar_bot' ? "Welcome to my Coach AI Frame. I have curated some FAQs about my practice. Don't worry I will be personally looking at the conversation offline and if my AI Frame gets something wrong, I will correct it. We all are learning after all!" : "Hello! Welcome to your \"Subjected\" coaching assistant. Please don't hesitate to ask questions about this subject matter and continue your session. The session transcripts are available to view later.";
 
         const shadowRoot = document.getElementById("chat-element2").shadowRoot;
         console.log(shadowRoot.getElementById("text-input"));
@@ -1450,7 +1593,7 @@ const getBotDetails2 = async (botId) => {
         `<b>${convertTextToCorrectFormat(selectedResponseType)}</b>`;
     }
 
-    if (["avatar_bot"].includes(botType)) {
+    if (["avatar_bot", "subject_specific_bot"].includes(botType)) {
       const dropdownButton = document.createElement("button");
       dropdownButton.id = "styles-dropdown-button";
       dropdownButton.innerHTML = dropdownButtonText;
@@ -1582,7 +1725,7 @@ const getBotDetails2 = async (botId) => {
       });
     }
 
-    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive'].includes(botType)) {
+    if (botDetails.data.is_fitment_analysis && !['role_bot','skill_bot','skill_guide','icons_by_ai'].includes(botDetails.data.scenario_case) && !["user_bot",'deep_dive',"subject_specific_bot"].includes(botType)) {
       // faqButtonsGenerator("fitness_analysis", "Match Score");
       const button = document.createElement("button");
       button.setAttribute(
@@ -1633,7 +1776,7 @@ const getBotDetails2 = async (botId) => {
 
     // faqButtonsGenerator("something_else", "Begin session", `width: fit-content; padding: 4px 8px; font-size: 12px; border: 1px solid lightgray; border-radius: 4px; min-width: fit-content; background: #22c55e;`);
 
-    if (["avatar_bot" ,'deep_dive'].includes(botType)) {
+    if (["avatar_bot", "subject_specific_bot" ,'deep_dive'].includes(botType)) {
       endSessionButton = document.createElement("button");
       endSessionButton.setAttribute(
         "style",
@@ -1808,22 +1951,24 @@ const handleFitmentAnalysis = async () => {
   ).innerHTML = "<b>Please Wait...</b>";
 
   // console.log(userId2, participantId2);
+  const fitmentData = {
+    method: "post",
+    qna: JSON.stringify(fitmentAnalysisQnA),
+    qna_type: "fitment",
+    user_id: participantId2,
+  }
   try {
-    const queryparam = new URLSearchParams({
-      method: "post",
-      qna: JSON.stringify(fitmentAnalysisQnA),
-      qna_type: "fitment",
-      user_id: participantId2,
-    });
+    const queryparam = new URLSearchParams(fitmentData);
 
     const resp = await fetch(
-      `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+      `${baseURL2}/accounts/get-user-feedback-data/`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(fitmentData)
       }
     );
 
@@ -2694,7 +2839,7 @@ async function handleFaqButtonClick(question) {
       }
 
       if (
-        ["avatar_bot", "helper_bot", "coachbots"].includes(botType) &&
+        ["avatar_bot", "helper_bot", "coachbots","subject_specific_bot"].includes(botType) &&
         !['role_bot','skill_bot','skill_guide'].includes(globalBotDetails.data.scenario_case)
       ) {
         // const begginSessionMessage = `<div  style="display: flex; flex-direction: column; margin: 0; padding: 0;">
@@ -2760,7 +2905,7 @@ async function handleFaqButtonClick(question) {
       // because we are creating session on every in avatar and deepdive
       if (
           previousBotConversationId != "" &&
-          !['avatar_bot','deep_dive'].includes(botType)  
+          !['avatar_bot','deep_dive','subject_specific_bot'].includes(botType)  
           ) {
           conversation_id2 = previousBotConversationId.split(":")[0];
           sessionId2 = previousBotConversationId.split(":")[1];
@@ -3425,8 +3570,8 @@ const handleEndCoachingClick2 = async (randomId) => {
 
   if (window.user) {
     // append custom message to chat
-    if (senarioCase2 === 'assessment'){
-      appendMessage2("<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>")
+    if (!emailCandidate2){
+      appendMessage2("<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>")
     } else {
       appendMessage2(
         `<p><b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b></p>`
@@ -4888,8 +5033,8 @@ async function setMcqVariablesStt() {
           // append custom message to chat
           let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
-          if (senarioCase2 === 'assessment'){
-            message2 = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+          if (!emailCandidate2){
+            message2 = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
           }
           appendMessage2(message2);
 
@@ -4922,7 +5067,7 @@ async function proceedFormFlowStt(msg) {
     isEmailFormstt = true;
     const filedname = formFieldsstt[0];
     formFieldsstt = formFieldsstt.slice(1);
-    emailNameformJsonstt[filedname] = msg;
+    emailNameformJsonstt[filedname] = filedname === 'email' ? msg.toLowerCase() : msg;
   }
 }
 function sendEmail2(session_id, reportUrl) {
@@ -5004,8 +5149,8 @@ async function submitEmailAndName2() {
       // append custom message to chat
       let message2 = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
 
-      if (senarioCase2 === 'assessment'){
-        message2 = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+      if (!emailCandidate2){
+        message2 = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
       }
       //* send message to start new session
       // if (!user2) {
@@ -5804,6 +5949,14 @@ if(window.innerWidth < 768) {
   messageBubbleMaxWidth = "80%"
 }
 
+const snippetOrigin = () => {
+  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground" ) {
+    return "internal"
+  } else {
+    return "external"
+  }
+}
+
 async function loadExternalModule() {
   try {
     const { DeepChat } = await import(
@@ -5840,9 +5993,9 @@ loadExternalModule().then(() => {
       style="
         height: 4.5rem;
         width: 4.5rem;
-        background-color: white;
+        background-color: #06ddb8;
         box-shadow: 0px 0px 10px rgb(125, 125, 125);
-        border-radius:40%;
+        border-radius: 40%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -5881,7 +6034,7 @@ loadExternalModule().then(() => {
       border-radius: 1rem 1rem 0rem 1rem;
       box-shadow: 0px 0px 10px rgb(196, 196, 196);
       background-color: white;
-      z-index: 999 !important;
+      z-index: 1000 !important;
       hight: 75vh;
     "
   >
@@ -5894,8 +6047,10 @@ loadExternalModule().then(() => {
       height: fit-content;
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
+      padding: ${snippetOrigin() === "internal" ? "0" : "0.8rem 0"};
     ">
     <div 
+    id="bot-header-logo-2"
     style="
       display: flex;
       justify-content: center;
@@ -5904,7 +6059,7 @@ loadExternalModule().then(() => {
       background-color: #f3f4f6;
       border-radius: 1rem 1rem 0 0;
     ">
-    <h1 style="
+    <h1 id="logo-h1" style="
       margin : 8px;
       color : #2DC092;
       border : 2px solid #2DC092;
@@ -5913,7 +6068,7 @@ loadExternalModule().then(() => {
       line-height : 20px;
       font-weight : 800;
     ">
-      <span style="
+      <span id="logo-span" style="
         background-color : #2DC092;
         color : white;
         font-size : 14px;
@@ -5949,7 +6104,7 @@ loadExternalModule().then(() => {
     <deep-chat
       avatars="true"
       id="chat-element2"
-      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: 68vh; border: none;"
+      style="position: relative; top : 0; bottom: 0; left: 0 ; right: 0; width: 10%; height: ${snippetOrigin() === "internal" ? "68vh" : "64vh"}; border: none;"
       messageStyles='{
         "default": {
           "shared": {"bubble": {"maxWidth": ${JSON.stringify(messageBubbleMaxWidth)}, "marginTop": "4px", "borderRadius" : "4px", "padding" : "10px 8px", "fontWeight" : "normal"}},
@@ -5960,7 +6115,6 @@ loadExternalModule().then(() => {
           "bubble": {"fontSize": "20px", "color": "black", "width" : "2rem", "padding": "10px" ,"paddingLeft": "2rem", "backgroundColor" : "transparent"}
         }
       }'
-      inputAreaStyle='{"paddingTop": "2rem"}'
       displayLoadingBubble = "true";
       demo="true"
       style="border: none"
@@ -6073,9 +6227,9 @@ loadExternalModule().then(() => {
     </div>
     <p id="bot-footer" style="font-size: ${
       window.innerWidth < 768 ? "10px" : "12px"
-    }; width: 100%; text-align: center; padding: 0 10%; height:25px;"><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
+    }; width: ${snippetOrigin() == "internal" ? "100%" : "80%"}; text-align: center; padding: 0 10%; height:20px; "><span id="footer-text">Usage direction for Coachbots. Follow the instructions for optimum performance.</span>
       <span id="read-more-button" onmouseover="this.style.cursor ='pointer'">
-        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6"> 
+        <button style="border: 1px solid darkgrey; padding: 1px 4px; border-radius: 4px; font-weight: 600; color: #3b82f6; height: fit-content; font-size: 12px;"> 
           Read here
         </button>
       </span> 
@@ -6084,7 +6238,7 @@ loadExternalModule().then(() => {
       }; margin-bottom: 15px; z-index: 999; padding: 10px; display: none; justify-content: space-between; align-items: start;  border: 1px solid lightgray;">
         <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px;"> 
           <b style="font-size: 14px; margin: 4px 0 2px 0;">System specifications</b>
-          <ul id="instructions-list">
+          <ul id="instructions-list" style="list-style-type: none; font-size: 12px; padding-left:20px;">
               <li><strong>1. For Coaching Interactions:</strong> To maintain a record of sessions with coaches/mentors, simply click on "End & Email Summary". Your coach/mentor will receive a notification, and a transcript will be shared afterward. For Icons by AI, no emails are being sent.</li>
               <li><strong>2. For Simulations:</strong> Depending upon the subject and context, these may take several forms. The short version contains 3 questions, and the standard version contains 6 questions. Each simulation will have a detailed feedback report that will contain speech analytics if audio is sent via the system.</li>
               <li><strong>3. Knowledge Bot:</strong> Simple knowledge bot is created based on a documented set of knowledge on a specific topic. It can be knowledge based on a project, situation, or coach's specific point of view.</li>
@@ -6093,9 +6247,9 @@ loadExternalModule().then(() => {
               <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 15 to 400 words. You have the option to either type or speak your responses.</li>
           </ul>
         </div>
-        <div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
-          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot interaction guide</b>
-          <ol>
+        ${snippetOrigin() === "internal" ? `<div class="ist-sc" style="font-size: 12px; max-height: 30vh; overflow-y : scroll; padding: 0 8px; border-left: 2px solid lightgrey;">
+          <b style="font-size: 14px; margin: 4px 0 2px 0;">Coachbot Coaching interaction guide</b>
+          <ol style="list-style-type: none;">
             <li><strong>1. Define Your Goal:</strong> Before starting a conversation, take a moment to identify your specific goal for the session. Are you looking to improve your communication skills, tackle a challenging project, or develop a new habit? A clear goal helps your AI Coach tailor its guidance to your needs.</li>
             <li><strong>2. Ask Open-Ended Questions:</strong> Instead of "yes" or "no" questions, ask open-ended questions that encourage deeper conversation and insightful responses from your AI Coach. Here are some examples:
               <ul>
@@ -6122,7 +6276,7 @@ loadExternalModule().then(() => {
             <li><strong>7. Ask Follow-Up Questions:</strong> As you implement the suggestions from your AI Coach, don't hesitate to ask follow-up questions if you encounter challenges or need further clarification.</li>
             <li>Remember: Your Coachbot is here to support you on your journey. The more actively you participate in the conversation, by asking questions, providing details, and reflecting on the guidance offered, the more valuable and personalized your coaching experience will be.</li>
           </ol>
-        </div>
+        </div>` : ""}
         <span id="close-intructions-pane" onmouseover="this.style.cursor ='pointer'" style="padding : 2px; border-radius: 50%; background-color: white;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -6138,6 +6292,34 @@ loadExternalModule().then(() => {
   const instructionsPane = document.getElementById('instructions-pane')
   const closeInstructionsPane = document.getElementById('close-intructions-pane')
   const instructionsPaneList = document.getElementById('instructions-list')
+  const botFooterXyz = document.getElementById('bot-footer')
+  const headerText = document.getElementById('header-text')
+
+  if(snippetOrigin() === "external"){
+    if(botFooterXyz ){
+      if(!swipeHeader){
+        botFooterXyz.style.margin = "0"
+      } else {
+        botFooterXyz.style.width = "100%";
+        botFooterXyz.style.fontSize = "16px";
+
+        const footerText = document.getElementById("footer-text");
+        if (footerText) {
+          footerText.style.fontSize = "14px";
+          footerText.style.fontWeight = "600";
+        }
+        instructionsPaneList.style.fontSize = "14px";
+        instructionsPaneList.style.fontWeight = "600";
+        instructionsPaneList.style.lineHeight = "normal";
+      }
+     
+    }
+    if(headerText) {
+      headerText.style.display = "none"
+    }
+  }
+
+  
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -6157,6 +6339,12 @@ loadExternalModule().then(() => {
   snnipetConfigSTT = document.querySelector(".coachbots-coachscribe").dataset;
   console.log("widgetInfo: ",document.querySelector(".coachbots-coachscribe").dataset )
   console.log("stt widget ClientID :",sttWidgetClientId)
+
+  if (chatContainer2) {
+    if(snippetOrigin() === "external"){
+      chatContainer2.style.paddingBottom = "0"
+    }
+  }
   
   if (botId === undefined) {
     const pathname = window.location.pathname;
@@ -6383,13 +6571,41 @@ loadExternalModule().then(() => {
 
   if (botId == undefined) {
     if (Object.keys(snnipetConfigSTT).length > 0){
-      chatElementRef2.initialMessages = [
-        {
-          html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report. Please enter your passcode to get started.</p>`,
+
+      if (snnipetConfigSTT['psychometric'] === 'true'){
+        isEmailFormstt=true;
+        formFieldsstt = ["email","name"];
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`Please enter your ${formFieldsstt[0]}`)
+        chatElementRef2.initialMessages = [
+          {
+            html: `<p>Hi! Welcome to simulations & assessments powered by the Cognitive Leadership Framework. This system consists of conversational simulation for a) <b>Skill Assessments</b> and b) <b>Psychometric Assessments</b> to provide a holistic understanding of your abilities, and leadership potential. You will need an access code, an assessment code, and an email to complete your experience. Let's start!</p>`,
+            role: "ai",
+          },
+          {
+          html: `Please enter your email to get started.`,
           role: "ai",
-        },
-      ];
-      askAccessBotCodeSTT = true;
+          },
+        ];
+
+      }else{
+
+        chatElementRef2.initialMessages = [
+          {
+            html: `<p>Welcome to AI powdered simulation learning. This bot analyses the content on the page and creates a simulation and roleplay which can be attempted by the users to get insightful feedback report.</p>`,
+            role: "ai",
+          },
+          {
+            html: `Please enter your email to get started.`,
+            role: "ai",
+            },
+        ];
+        isEmailFormstt=true;
+        formFieldsstt = ["email","name"];
+        console.log("### formFieldsstt : ",formFieldsstt, "other data: ",`Please enter your ${formFieldsstt[0]}`)
+
+      }
+
+
     } else{
       chatElementRef2.initialMessages = [
         {
@@ -6617,11 +6833,44 @@ loadExternalModule().then(() => {
     }
   };
 
-  const getClientInformationStt = async (use_case, user_id = null) => {
-    const url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
+  const updateClientInfoSTT = async (clientName, emails) => {
+    try {
+      const response = await fetch(`${baseURL2}/accounts/get-create-or-update-client-id/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          client_name: clientName,
+          member_emails: emails,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Response Data:", data);
+        console.log("Successfully updated client details.");
+      } else {
+        const errorData = await response.json();
+        console.error("Error Response:", errorData);
+        console.error(`Failed to update client details. ${errorData.message || ""}`);
+      }
+    } catch (error) {
+      console.error("Network or unexpected error:", error);
+      console.error("An unexpected error occurred while updating client details.");
+    }
+  };
+  
+
+  const getClientInformationStt = async (use_case, email = null,client_name=null) => {
+    let url = `${baseURL2}/accounts/get-client-information/?for=${use_case}`;
     // use case can ====> my_lib or (user_info, user_id)
-    if (user_id && use_case === "user_info") {
-      url += `&user_id=${user_id}`;
+    if (email && use_case === "user_info") {
+      url += `&email=${email}`;
+    }
+    if (client_name && use_case === 'only_client_data'){
+      url += `&client_name=${client_name}`
     }
     // const url = `${baseURL}/tests/get-test-previlage-user/?user_id=${participantId}`;
 
@@ -7853,13 +8102,39 @@ loadExternalModule().then(() => {
           let latestMessage = body.messages[body.messages.length - 1].text;
 
           if (askAccessBotCodeSTT){
-            const code = 'DEMO2024'
-            if (latestMessage === code){
-              console.log("Access Code Matched")
+
+            // fetching client information to get access code "AccessCode"
+            console.log(`client:`,clientuserInformationSTT) 
+            clientuserInformationSTT = await getClientInformationStt('only_client_data',
+                                                                        null,
+                                                                        sttWidgetClientId)
+              // await new Promise(resolve => setTimeout(resolve, 10000)); 
+              
+            console.log(`client-new:`,clientuserInformationSTT,latestMessage) 
+
+            
+
+
+
+            // if (!clientuserInformationSTT?.widget_access_code){
+            //   signals.onResponse({
+            //     html: "<p style='font-size: 14px;color: #991b1b;'>You are not authorized user please contact your Admin.</p>"
+            //   })
+            //   return;
+            // }
+            if (latestMessage === clientuserInformationSTT?.widget_access_code){
+              console.log("Access Code Matched",snnipetConfigSTT.isDemo)
+              updateClientInfoSTT(sttWidgetClientId,user_email2)
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
-              } else{
+              } else if (snnipetConfigSTT['psychometric'] === 'true'){
+                signals.onResponse({
+                  html: `Great! Please enter the assessment code to get started. A scenario will be presented & few questions will follow based on the same.`
+                })
+
+              }
+              else{
                 signals.onResponse(
                   {
                     html: `<b>Do you have access code for your simulation?</b><br/><br/>
@@ -7949,7 +8224,7 @@ loadExternalModule().then(() => {
             await proceedFormFlowStt(latestMessage);
             if (formFieldsstt.length > 0) {
               signals.onResponse({
-                html: `<b>Please enter your ${formFieldsstt[0]}<b>`,
+                html: `Please enter your ${formFieldsstt[0]}.`,
               });
             } else {
               isEmailFormstt = false;
@@ -7998,10 +8273,26 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: thumbsupdiv,
                 });
-              } else {
+              } else if (snnipetConfigSTT['psychometric'] === 'true' || Object.keys(snnipetConfigSTT).length > 0){
+                  //  creating user after getting name, email "CreateUser"
+                  console.log(emailNameformJsonstt)
+                  try {
+                    await createUserSTT(emailNameformJsonstt['name'], emailNameformJsonstt['email']);
+                    // await new Promise(resolve => setTimeout(resolve, 5000)); 
+                    signals.onResponse({
+                      html: "<p>Fantastic. Please enter your access code provided by your admin.</p>"
+                    });
+                    askAccessBotCodeSTT = true;
+                  } catch (error) {
+                    console.error("Error creating user:", error);
+                    signals.onResponse({
+                      html: "<p>Oops! Something went wrong. Please try again later.</p>"
+                    });
+                  }
+              }else {
                 let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                if (senarioCase2 === 'assessment'){
-                  message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                if (!emailCandidate2){
+                  message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                 }
                 appendMessage2(message);
                 // //* send message to start new session
@@ -8299,18 +8590,19 @@ loadExternalModule().then(() => {
                   isIntakeInProgress = false;
                   isAskingInitialQuestions = false;
                   //********** submit intake to backend: start */
-                  const queryparam = new URLSearchParams({
+                  const intakeData = {
                     method: "post",
                     qna: JSON.stringify(botInitialQuestionsQnA),
                     bot_id: botId,
                     is_positive: "False",
                     qna_type: "initial_qna",
                     user_id: userId2,
-                  });
+                  }
+                  const queryparam = new URLSearchParams(intakeData);
                   const resp = await fetch(
-                    `${baseURL2}/accounts/get-user-feedback-data/?${queryparam}`,
+                    `${baseURL2}/accounts/get-user-feedback-data/`,
                     {
-                      method: "GET",
+                      method: "POST",
                       headers: {
                         Authorization: `Basic ${createBasicAuthToken2(
                           key2,
@@ -8318,6 +8610,8 @@ loadExternalModule().then(() => {
                         )}`,
                         "Content-Type": "application/json",
                       },
+                      body: JSON.stringify(intakeData)
+
                     }
                   )
                     .then((response) => response.json())
@@ -8329,7 +8623,7 @@ loadExternalModule().then(() => {
                     text: `Thank you for completing the ${intakebuttonText}. You can now proceed to start your session.`,
                   });
                   // ****** enabling begin session button
-                  if (botType === "avatar_bot") {
+                  if (['avatar_bot', "subject_specific_bot"].includes(botType)) {
                     const begginSessionButton = document.getElementById("begin-session-button");
                     begginSessionButton.setAttribute(
                       "onmouseover",
@@ -8925,7 +9219,7 @@ loadExternalModule().then(() => {
                 }
               }
               setTimeout(() => {
-                if (["avatar_bot","deep_dive"].includes(botType)) {
+                if (["avatar_bot","deep_dive","subject_specific_bot"].includes(botType)) {
                   console.log("endSessionButton:", endSessionButton.disabled);
                   // if (endSessionButton && endSessionButton.disabled) {
                   //   endSessionButton.setAttribute(
@@ -9279,6 +9573,11 @@ loadExternalModule().then(() => {
                 senarioDescription2 = questionData2.results[0].description;
                 senarioTitle2 = questionData2.results[0].title;
                 senarioCase2 = questionData2.results[0].scenario_case;
+                emailCandidate2 = questionData2.results[0].email_candidate;
+
+                if (clientuserInformationSTT && 'report_on' in clientuserInformationSTT) {
+                  emailCandidate2 = clientuserInformationSTT.report_on;
+                }
                 senarioMediaDescription2 =
                   questionData2.results[0].description_media;
                 testUIInfoStt = questionData2.results[0].ui_information;
@@ -9315,6 +9614,9 @@ loadExternalModule().then(() => {
 
                 if (Object.keys(snnipetConfigSTT).length > 0 ){
                   isImmersiveStt = snnipetConfigSTT.allowAudioInteraction === 'true';
+                  if (clientuserInformationSTT && 'client_name' in clientuserInformationSTT){
+                    sttWidgetClientId = clientuserInformationSTT.client_name
+                  }
                 } else{
                   console.log("clientAllowAudioInteraction2" , clientAllowAudioInteraction2)
                   console.log("userAllowAudioInteraction2" , userAllowAudioInteraction2)
@@ -10462,13 +10764,7 @@ loadExternalModule().then(() => {
                     });
                     return;
                   }
-                  if (!window.user) {
-                    isEmailFormstt = true;
-                    formFieldsstt = ["name", "email"];
-                    signals.onResponse({
-                      html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
-                    });
-                  }
+                  
                   let getReportBody2 = {
                     user_id: participantId2,
                     report_type: reportType2,
@@ -10506,6 +10802,14 @@ loadExternalModule().then(() => {
                       session_id: sessionId2,
                       interaction_id: testId2,
                     };
+                  } else if (senarioCase2 === "psychometric") {
+                    reportType2 = "personalityPsychomatricReport";
+                    getReportBody2 = {
+                      user_id: participantId2,
+                      report_type: reportType2,
+                      session_id: sessionId2,
+                      interaction_id: testId2,
+                    };
                   }
                   console.log(senarioCase2, getReportBody2);
                   const reportResponse = await fetch(
@@ -10526,6 +10830,29 @@ loadExternalModule().then(() => {
                   reportUrl2 = reportData2.url;
                   globalReportUrl2 = reportData2.url;
                   console.log("Report URL ===> ", reportUrl2);
+
+                  if (!window.user) {
+                    console.log('jsonemailname:', emailNameformJsonstt)
+                    if (!emailNameformJsonstt.name && !emailNameformJsonstt.email){
+                      formFieldsstt = ["name", "email"];
+                      isEmailFormstt = true;
+                      signals.onResponse({
+                        html: `<b>Please enter your ${formFieldsstt[0]}</b>`,
+                      });
+                    } else{
+                      let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
+                      if (!emailCandidate2){
+                        message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                      }
+                      appendMessage2(message);
+                      // //* send message to start new session
+                      signals.onResponse({
+                        html: "<b>Please enter another access code to start a new interaction.</b>",
+                      });
+                      submitEmailAndName2();
+                    }
+                  }
+
                   if (reportData2) {
                     responsesDone2 = true;
                   }
@@ -10542,8 +10869,8 @@ loadExternalModule().then(() => {
                   if (window.user) {
                     // sendEmail();
                     let message = `<b>It's showtime ✨, here is your detailed <a target="_blank" style="color: #3b82f6;text-decoration:none;" href="${globalReportUrl2}">feedback report</a>. The feedback is also emailed to you and will be available to you for 60 days.</b>`;
-                    if (senarioCase2 === 'assessment'){
-                      message = "<b>Thank you for attempting the assessment. The feedback report is sent to your manager and you may hear from them directly.</b>"
+                    if (!emailCandidate2){
+                      message = "<b>Thank you. The feedback report is sent to your manager and you may hear from them directly.</b>"
                     }
                     appendMessage2(message);
                     // //* send message to start new session
@@ -10635,6 +10962,7 @@ loadExternalModule().then(() => {
 const openChatContainer2 = () => {
   let chatContainer2 = document.getElementsByClassName("chat-container2")?.[0];
   let chatIcon2 = document.getElementsByClassName("chat-icon2")?.[0];
+  const chatIconContainer2 = document.getElementById("chat-icon2")
   let backdrop = document.getElementById("backdrop");
   backdrop.style.display = "block";
   document.body.style.overflowY = "hidden";
@@ -10667,7 +10995,6 @@ const openChatContainer2 = () => {
     }
   }
 
-
   if (chatContainer2.style.scale === "1") {
     chatContainer2.style.scale = 0;
     chatContainer2.style["transform-origin"] = "100% 100%";
@@ -10683,27 +11010,33 @@ const openChatContainer2 = () => {
 
     if (!botId) {
       const chatContainer = document.getElementById("chat-container");
-      chatContainer.style.scale = 0;
-      chatContainer.style["transform-origin"] = "100% 100%";
-      const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
-      chatIcon.src =
-        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+      if (chatContainer) {
+        chatContainer.style.scale = 0;
+        chatContainer.style["transform-origin"] = "100% 100%";
+        const chatIcon = document.getElementsByClassName("chat-icon")?.[0];
+        chatIcon.src =
+          "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
 
-      const backdrop2 = document.getElementById("backdrop2");
-      backdrop2.style.display = "none";
+        const backdrop2 = document.getElementById("backdrop2");
+        backdrop2.style.display = "none";
+      }
     }
   }
 
-  if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
-  ) {
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
-  } else {
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
-  }
+  console.log("CHAT ICON", chatIcon2.src);
+
+    if (
+      chatIcon2.src ===
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    ) {
+      chatIconContainer2.style.backgroundColor = "white";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
+    } else {
+      chatIconContainer2.style.backgroundColor = "#06ddb8";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    }
 };
 
 const closeFromTop2 = () => {
@@ -10714,6 +11047,7 @@ const closeFromTop2 = () => {
   backdrop.style.display = "none";
   chatContainer2.style.scale = 0;
   chatContainer2.style["transform-origin"] = "100% 100%";
+  const chatIconContainer2 = document.getElementById("chat-icon2")
 
   //end session due to inactivity :- row 708
   // setTimeout(() => {
@@ -10723,14 +11057,17 @@ const closeFromTop2 = () => {
   //   }
   // }, 900000);
 
-  if (
-    chatIcon2.src ===
-    "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
-  ) {
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
-  } else {
-    chatIcon2.src =
-      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
-  }
+    if (
+      chatIcon2.src ===
+      "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png"
+    ) {
+      chatIconContainer2.style.backgroundColor = "white";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/close-btn_pfiwqu.png";
+    } else {
+      chatIconContainer2.style.backgroundColor = "#06ddb8";
+      chatIcon2.src =
+        "https://res.cloudinary.com/dtbl4jg02/image/upload/coachbot-logo-bot_vrbwhu.png";
+    }
+
 };
