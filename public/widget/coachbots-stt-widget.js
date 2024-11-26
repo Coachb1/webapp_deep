@@ -8,12 +8,13 @@ const devUrlStt = "https://coach-api-gke-dev.coachbots.com/api/v1";
 const prodUrlStt = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL2 = subdomainStt === "platform" ? prodUrlStt : devUrlStt;
 
-
 const swipeHeader = document.getElementsByClassName('tatsu-header')[0];
 if(swipeHeader){
   console.log("swipeHeader", swipeHeader)
   swipeHeader.style.zIndex = 1;
 }
+
+// const baseURL2="https://coach-api-gke-prod.coachbots.com/api/v1" //local
 
 const style = document.createElement('style');
 style.textContent = `

@@ -7,6 +7,8 @@ const devUrl = "https://coach-api-gke-dev.coachbots.com/api/v1";
 const prodUrl = "https://coach-api-gke-prod.coachbots.com/api/v1";
 const baseURL = subdomain === "platform" ? prodUrl : devUrl;
 
+// const baseURL="https://coach-api-gke-prod.coachbots.com/api/v1" //local
+
 
 let deepChatPocElement;
 let sessionId = "";

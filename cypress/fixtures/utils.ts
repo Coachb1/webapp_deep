@@ -1,4 +1,5 @@
 export const baseURL = "https://coach-api-gke-dev.coachbots.com/api/v1";
+export const baseURL = "https://coach-api-gke-prod.coachbots.com/api/v1";
 export const localhost = "http://localhost:3000";
 export const playground = "https://playground.coachbots.com";
 export const visitingBaseUrl = localhost;
