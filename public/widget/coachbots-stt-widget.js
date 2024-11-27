@@ -4277,10 +4277,10 @@ const handleProceedClickStt = async (choice) => {
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
+            const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
-              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -4371,11 +4371,11 @@ const handleProceedClickStt = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
+          const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -6936,11 +6936,11 @@ loadExternalModule().then(() => {
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
+    const queDiv = `${text}<br id="break-${randomIdForAudioElement}">`;
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
