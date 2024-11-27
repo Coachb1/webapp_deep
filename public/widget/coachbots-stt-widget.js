@@ -5959,8 +5959,7 @@ if(window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname.includes("platform") || window.location.hostname.includes("playground") ) {
-    console.log("INTERNAL INTERNAL")
+  if(window.location.hostname === "localhost" || window.location.hostname === "playground.coachbots.com" || window.location.hostname === "platform.coachbots.com" ) {
     return "internal"
   } else {
     return "external"
@@ -6220,7 +6219,7 @@ loadExternalModule().then(() => {
       style=" 
         position: absolute; 
         left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
-        bottom : ${window.innerWidth < 768 ? "13vh" : "4.5rem"}; 
+        bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
         width : 80%; 
         overflow: scroll;
         scrollbar-width : none;
