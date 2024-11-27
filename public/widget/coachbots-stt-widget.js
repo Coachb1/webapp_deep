@@ -5959,7 +5959,8 @@ if(window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground" ) {
+  if(window.location.hostname === "localhost" || window.location.hostname.includes("platform") || window.location.hostname.includes("playground") ) {
+    console.log("INTERNAL INTERNAL")
     return "internal"
   } else {
     return "external"
@@ -6305,7 +6306,7 @@ loadExternalModule().then(() => {
   const headerText = document.getElementById('header-text')
 
   if(snippetOrigin() === "external"){
-    if(botFooterXyz ){
+    if(botFooterXyz){
       if(!swipeHeader){
         botFooterXyz.style.margin = "0"
       } else {
@@ -6327,8 +6328,6 @@ loadExternalModule().then(() => {
       headerText.style.display = "none"
     }
   }
-
-  
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
