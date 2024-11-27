@@ -1974,8 +1974,8 @@ const handleProceedClick = async (choice) => {
 
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element").shadowRoot
-            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
-
+            const queDiv = `<p style="max-width:80%;">${queText}</p><br id="break-${randomIdForAudioElement}">`;
+            
             initialQuestionText =
               queDiv +
               `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
@@ -1986,7 +1986,7 @@ const handleProceedClick = async (choice) => {
               <source src=${objectUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
               </audio>
-              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+              <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" style="overflow-x: hidden;" height="40"></canvas>
               </div>`;
 
               setTimeout(() => {
@@ -2073,7 +2073,7 @@ const handleProceedClick = async (choice) => {
           Your browser does not support the audio element.
           </audio>
           
-          <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+          <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" style="overflow-x: hidden;" height="40"></canvas>
           </div>`;
 
           setTimeout(() => {
@@ -3706,13 +3706,13 @@ loadExternalModule().then(() => {
       `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
-          : " min-width: 50vw !important;"
+          : "min-width: 50vw !important;"
       }" autoplay>
     <source src=${objectUrl} type="audio/mpeg" />
     Your browser does not support the audio element.
     </audio>
     
-    <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+    <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" style="overflow-x: hidden;" height="40"></canvas>
     </div>`;
 
     setTimeout(() => {
@@ -5678,6 +5678,7 @@ loadExternalModule().then(() => {
                           });
                         }
                       }
+                      
                       signals.onResponse({
                         html: questionText,
                       });
