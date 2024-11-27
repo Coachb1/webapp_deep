@@ -164,12 +164,7 @@ function aggregateResponses(responses: any[]): any {
       }
     }
   }
-  console.log(
-    "AGGREGATED RESPONSE : ",
-    aggregatedResponse.candidates[0].content?.parts
-      .map((part: any) => part.text)
-      .join("")
-  );
+  
   return aggregatedResponse;
 }
 

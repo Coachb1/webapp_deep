@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import {
   AllUserDataType,
   Categories,
-  CategoryData,
   ClientDataType,
   ClientUserTeamType,
   Conversation,
