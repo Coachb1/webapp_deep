@@ -1874,7 +1874,7 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
-      faqButtonsWrapper.style.display = "block";
+      faqButtonsWrapper.style.display = "flex";
       faqButtonsWrapper.append(buttonsWrapper);
       if (botType === 'deep_dive'){
         botInitialQuestions = {
@@ -6200,7 +6200,7 @@ loadExternalModule().then(() => {
       style=" 
         position: absolute; 
         left : ${window.innerWidth < 768 ? "1rem" : "6rem"}; 
-        bottom : ${window.innerWidth < 768 ? "13vh" : "5.5rem"}; 
+        bottom : ${window.innerWidth < 768 ? "13vh" : "4.5rem"}; 
         width : 80%; 
         overflow: scroll;
         scrollbar-width : none;
