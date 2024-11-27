@@ -599,7 +599,7 @@ function createMessageNode(message) {
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message-bubble", "ai-message-text");
-  messageBubble.style.maxWidth = "80%";
+  messageBubble.style.maxWidth = window.innerWidth < 768 ? "80%" : "60%";
   messageBubble.style.marginTop = "4px";
   messageBubble.style.borderRadius = "4px";
   messageBubble.style.padding = "4";
@@ -1974,11 +1974,11 @@ const handleProceedClick = async (choice) => {
 
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element").shadowRoot
-            const queDiv = `<p style="max-width:80%;">${queText}</p><br id="break-${randomIdForAudioElement}">`;
+            const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             
             initialQuestionText =
               queDiv +
-              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -2061,10 +2061,10 @@ const handleProceedClick = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element").shadowRoot
           
-          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
+          const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
           initialQuestionText =
             queDiv +
-            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -2847,7 +2847,7 @@ if(window.innerWidth < 768) {
 }
 
 const snippetOrigin2 = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground") {
+  if(window.location.hostname === "localhost" || window.location.hostname === "playground.coachbots.com" || window.location.hostname === "platform.coachbots.com"  ) {
     return "internal"
   } else {
     return "external"
@@ -3700,10 +3700,10 @@ loadExternalModule().then(() => {
 
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element").shadowRoot
-    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
+    const queDiv = `${text}<br id="break-${randomIdForAudioElement}">`;
     const audioCont =
       queDiv +
-      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top: 12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : "min-width: 50vw !important;"
@@ -5482,6 +5482,7 @@ loadExternalModule().then(() => {
                   console.log("QuestionIndes is : ", questionIndex);
                   if (questionIndex === 0) {
                     console.log("Yes inside if");
+                    console.log("QuestionIndes is : ", questionText);
                     initialQuestionText = questionText;
                     initialIndex = questionIndex + 1;
                     isProceed = "false";
