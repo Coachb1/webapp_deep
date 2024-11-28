@@ -66,7 +66,6 @@ const Coach = ({ user, renderType }: any) => {
   const [coachDescription, setCoachDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState("");
-  const [enrolled, SetEnrolled] = useState(true);
   const [feedbackBotId, setFeedbackBotId] = useState("");
   const [botScenarioCase, setBotScenarioCase] = useState<string | undefined>(
     ""
@@ -88,10 +87,6 @@ const Coach = ({ user, renderType }: any) => {
   //login walls
   const [loginRequired, setLoginRequired] = useState<boolean>();
   const [strictLoginRequired, setStrictLoginRequired] = useState<boolean>();
-
-  const [coachProfileLink, setCoachProfileLink] = useState(
-    "https://www.linkedin.com/"
-  );
 
   const [invalidId, setInValidCoach] = useState(false);
 
@@ -125,8 +120,10 @@ const Coach = ({ user, renderType }: any) => {
 
         setBotName(data.data.bot_name);
         setBotType(data.data.bot_type);
-        setBotAreaCoaching(data.data.additional_data.bot_area_of_coaching);
-        setBotDescription(data.data.additional_data.bot_description);
+        if (data.data.additional_data) {
+          setBotAreaCoaching(data.data.additional_data.bot_area_of_coaching);
+          setBotDescription(data.data.additional_data.bot_description);
+        }
 
         setBotScenarioCase(data.data.scenario_case);
         setFeedbackBotId(data.data.feedback_id);
