@@ -493,6 +493,8 @@ export const getLeaderboardPosition = async (
   if (response.ok) {
     let responseData = await response.json();
 
+    console.log("Leaderboard Data : ", responseData);
+
     if (profileType === "coach" || profileType === "mentor") {
       responseData = responseData.coach_mentor;
     } else if (profileType === "coachee" || profileType === "mentee") {
@@ -500,6 +502,10 @@ export const getLeaderboardPosition = async (
     } else {
       responseData = responseData.full_data;
     }
+
+    console.log(
+      `Leaderboard API\n Email : ${userEmail} \n Profile : ${profileType} \n User ID : ${userId}`
+    );
 
     const userDetails = responseData.map(
       (data: ParticipantsforLeaderBoardTypes, i: number) => {
@@ -515,6 +521,8 @@ export const getLeaderboardPosition = async (
     const positionedUser: PositionedUserTypes[] = userDetails.filter(
       (userr: PositionedUserTypes) => userr.user_id === userId
     );
+
+    console.log("Data : ", positionedUser);
     return positionedUser;
   } else {
     return [];
