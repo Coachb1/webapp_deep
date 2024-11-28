@@ -471,7 +471,13 @@ const MyPages = ({ user }: any) => {
                   <Button
                     variant={"secondary"}
                     className="h-6 text-xs w-fit bg-blue-200 inline-flex items-center ml-2"
-                    disabled={!noCopilotBot?.is_approved}
+                    disabled={
+                      noCopilotBot
+                        ? noCopilotBot?.is_approved === true
+                          ? false
+                          : true
+                        : false
+                    }
                   >
                     <Link
                       className="flex flex-row gap-1 items-center "
