@@ -6840,18 +6840,21 @@ loadExternalModule().then(() => {
     }
   };
 
-  const updateClientInfoSTT = async (clientName, emails) => {
+  const updateClientInfoSTT = async (clientName, emails, demo_emails ) => {
     try {
+      const client_data = {
+        client_name: clientName,
+        member_emails: emails,
+        demo_ids: demo_emails
+      }
+
       const response = await fetch(`${baseURL2}/accounts/get-create-or-update-client-id/`, {
         method: "PATCH",
         headers: {
           Authorization: `Basic ${createBasicAuthToken2(key2, secret2)}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          client_name: clientName,
-          member_emails: emails,
-        }),
+        body: JSON.stringify(client_data),
       });
   
       if (response.ok) {
@@ -8167,7 +8170,7 @@ loadExternalModule().then(() => {
             // }
             if (latestMessage === clientuserInformationSTT?.widget_access_code){
               console.log("Access Code Matched",snnipetConfigSTT.isDemo)
-              updateClientInfoSTT(sttWidgetClientId,user_email2)
+              updateClientInfoSTT(sttWidgetClientId,user_email2,user_email2)
               askAccessBotCodeSTT = false
               if (snnipetConfigSTT.isDemo === 'true'){
                 handleOptionButtonClick2("",signals)
