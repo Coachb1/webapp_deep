@@ -951,6 +951,7 @@ const CoachIntake = ({ user }: any) => {
               `${coachMentInSameDep.toLowerCase() === "yes" ? true : false}`
             );
             formdata.append("problem_statement", `${challengesToHelp}`);
+            formdata.append("supported_outcome", outcomeSupported);
 
             referenceDocs.forEach(({ file, text, name }) => {
               if (name === "optional_file") {
@@ -987,45 +988,6 @@ const CoachIntake = ({ user }: any) => {
               .then((response) => response.json())
               .then((result) => {
                 console.log(result);
-
-                const fitmentData = {
-                  method: "post",
-                  qna: JSON.stringify({
-                    "1": {
-                      coach:
-                        "What level of coach/mentor do you want to interact with ?",
-                      cochee: participantLevel,
-                    },
-                    "2": {
-                      coach:
-                        "I want a coach & mentor someone from the same department.",
-                      cochee:
-                        coachMentInSameDep.toLowerCase() === "yes"
-                          ? true
-                          : false,
-                    },
-                    "3": {
-                      coach:
-                        "What kind of outcome do you want from these sessions the most?",
-                      cochee: outcomeSupported,
-                    },
-                  }),
-                  qna_type: "fitment",
-                  user_id: userId,
-                };
-                const queryparam = new URLSearchParams(fitmentData);
-
-                // const resp = fetch(
-                //   `${baseURL}/accounts/get-user-feedback-data/`,
-                //   {
-                //     method: "POST",
-                //     headers: {
-                //       Authorization: basicAuth,
-                //       "Content-Type": "application/json",
-                //     },
-                //     body: JSON.stringify(fitmentData),
-                //   }
-                // );
 
                 setProfileId(result.data.uid);
                 userProfileId = result.data.uid;
