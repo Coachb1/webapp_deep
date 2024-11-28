@@ -2449,7 +2449,6 @@ const CoachIntake = ({ user }: any) => {
       console.log("here");
       coachFields = [
         { UseEmoji: provideAnswersUsingEmojis },
-        { UserMentoringPre: mentoringPreferences },
         { UserDepartment: department },
         { UserAreaDomain: areaDomain },
         { UserExperience: experience },
@@ -3283,7 +3282,7 @@ const CoachIntake = ({ user }: any) => {
                                   "coachingArea"
                                 );
                               }}
-                              placeholder="Fostering collaboration, diversity, and open discussions for shared learning and creative exploration..."
+                              placeholder="Empowering growth through personalized coaching, goal-focused conversations, and transformative insights for continuous improvement..."
                               className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                             />
                             {Object.keys(error).includes("coachingArea") && (

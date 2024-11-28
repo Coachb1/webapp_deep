@@ -12,6 +12,7 @@ import {
 import { Checkbox } from "./ui/checkbox";
 import { ChevronDownIcon, X } from "lucide-react";
 import { convertTextToCorrectFormat } from "@/lib/utils";
+import { useUser } from "@/context/UserContext";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 interface FilterCategoriesType {
@@ -63,10 +64,12 @@ const FilterDropDown = ({
     return disabledFilters.includes(filterName);
   };
 
+  const { coacheeId, coachId } = useUser();
+
   return (
     <>
       <div className="w-full flex items-center text-lg flex-row gap-2 max-sm:flex-wrap">
-        {filtersCategory.map((filter: any, i : number) => (
+        {filtersCategory.map((filter: any, i: number) => (
           <>
             {filter.filterOptions?.length > 0 && (
               <DropdownMenu key={i}>
@@ -125,25 +128,29 @@ const FilterDropDown = ({
             )}
           </>
         ))}
-        <div className="h-[20px] w-[2px] bg-gray-500 mx-2"></div>
-        <div
-          id="ai-recc"
-          className="flex flex-row items-center gap-2 border rounded-md px-2 hover:cursor-pointer"
-        >
-          <Checkbox
-            checked={checkedValues.includes("recommended")}
-            onCheckedChange={(isChecked: boolean) => {
-              updateCheckedValues("recommended", isChecked);
-            }}
-            id={"recommended"}
-          />
-          <label
-            htmlFor={"recommended"}
-            className="text-lg max-sm:text-xs  text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
-          >
-            {convertTextToCorrectFormat("AI Recommended")}
-          </label>
-        </div>
+        {coacheeId && (
+          <>
+            <div className="h-[20px] w-[2px] bg-gray-500 mx-2"></div>
+            <div
+              id="ai-recc"
+              className="flex flex-row items-center gap-2 border rounded-md px-2 hover:cursor-pointer"
+            >
+              <Checkbox
+                checked={checkedValues.includes("recommended")}
+                onCheckedChange={(isChecked: boolean) => {
+                  updateCheckedValues("recommended", isChecked);
+                }}
+                id={"recommended"}
+              />
+              <label
+                htmlFor={"recommended"}
+                className="text-lg max-sm:text-xs  text-gray-700 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 py-2 "
+              >
+                {convertTextToCorrectFormat("AI Recommended")}
+              </label>
+            </div>
+          </>
+        )}
       </div>
       <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
         {checkedValues.map((checkedItem) => (
