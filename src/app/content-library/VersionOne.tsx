@@ -9,14 +9,11 @@ import {
   meetings,
   Technology,
   Reflection,
-  DescoveryPlus,
   Sales,
   serviceslashConsulting,
-  frontLineStaff,
   presentation,
   caseStudy,
   DiversityPlus,
-  onBoarding,
   ijp,
   questionPro,
   pms,
@@ -161,6 +158,14 @@ const VersionOne = ({ user, helpModeText }: any) => {
               className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
             >
               Compliance Bot
+              <ExternalLink className="ml-2 h-4 w-4 inline" />
+            </Button>
+          </Link>
+          <Link href="https://www.coachbots.com/demo" target="_blank">
+            <Button
+              className={` h-8 text-sm max-sm:text-xs bg-indigo-400 text-white hover:bg-indigo-300`}
+            >
+              Psychometric
               <ExternalLink className="ml-2 h-4 w-4 inline" />
             </Button>
           </Link>
