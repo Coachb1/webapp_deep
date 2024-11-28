@@ -241,6 +241,7 @@ let userQuestionsHistory = []
 let conversationLlmQueue = [];
 
 let allowPastingAtClientLevelStt;
+let SubmitButtonOnclickFunction;
 
 
 let clientBasedBotHeaderText = "";
@@ -1447,6 +1448,14 @@ const getBotDetails2 = async (botId) => {
       throw new Error("Error getting bot info")
     }
 
+    //padding-space bottom
+    const shadowRootMessagesC = document.getElementById("chat-element2").shadowRoot
+    const messagesContainer = shadowRootMessagesC.getElementById("messages");
+
+    if(messagesContainer){
+      messagesContainer.style.paddingBottom = "2rem";
+    }
+
     const botDetails = await response.json();
     console.log("Bot Details : ", botDetails);
     console.log("FAQS => ", botDetails.data.faqs);
@@ -1883,7 +1892,7 @@ const getBotDetails2 = async (botId) => {
       isStrictFitment = botDetails.data.is_strict_fitment;
       isBotAudioResponse = botDetails.data.is_audio_response;
       CoachingForFitment = botDetails.data.coaching_for_fitment;
-      faqButtonsWrapper.style.display = "block";
+      faqButtonsWrapper.style.display = "flex";
       faqButtonsWrapper.append(buttonsWrapper);
       if (botType === 'deep_dive'){
         botInitialQuestions = {
@@ -4268,10 +4277,10 @@ const handleProceedClickStt = async (choice) => {
             const randomIdForAudioElement = generateRandomAlphanumeric(5);
             const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-            const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
+            const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
             initialQuestionTextStt =
               queDiv +
-              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+              `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
                 window.innerWidth < 600
                   ? "width: 200px; max-width: 200px !important;"
                   : " min-width: 50vw !important;"
@@ -4280,7 +4289,7 @@ const handleProceedClickStt = async (choice) => {
               Your browser does not support the audio element.
               </audio>
               
-              <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+              <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
               </div>`;
 
               setTimeout(() => {
@@ -4362,11 +4371,11 @@ const handleProceedClickStt = async (choice) => {
           const randomIdForAudioElement = generateRandomAlphanumeric(5);
           const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-          const queDiv = `<p>${queText}</p><br id="break-${randomIdForAudioElement}">`;
+          const queDiv = `${queText}<br id="break-${randomIdForAudioElement}">`;
           console.log(objectUrl, "url");
           initialQuestionTextStt =
             queDiv +
-            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+            `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;  margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
               window.innerWidth < 600
                 ? "width: 200px; max-width: 200px !important;"
                 : " min-width: 50vw !important;"
@@ -4375,7 +4384,7 @@ const handleProceedClickStt = async (choice) => {
             Your browser does not support the audio element.
             </audio>
             
-            <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+            <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
             </div>`;
 
             setTimeout(() => {
@@ -5950,7 +5959,7 @@ if(window.innerWidth < 768) {
 }
 
 const snippetOrigin = () => {
-  if(window.location.hostname === "localhost" || window.location.hostname === "platform" || window.location.hostname === "playground" ) {
+  if(window.location.hostname === "localhost" || window.location.hostname === "playground.coachbots.com" || window.location.hostname === "platform.coachbots.com" ) {
     return "internal"
   } else {
     return "external"
@@ -6296,7 +6305,7 @@ loadExternalModule().then(() => {
   const headerText = document.getElementById('header-text')
 
   if(snippetOrigin() === "external"){
-    if(botFooterXyz ){
+    if(botFooterXyz){
       if(!swipeHeader){
         botFooterXyz.style.margin = "0"
       } else {
@@ -6318,8 +6327,6 @@ loadExternalModule().then(() => {
       headerText.style.display = "none"
     }
   }
-
-  
 
   readMoreButton.addEventListener("click", () => {
     instructionsPane.style.display = "flex"
@@ -6929,11 +6936,11 @@ loadExternalModule().then(() => {
     const randomIdForAudioElement = generateRandomAlphanumeric(5);
     const shadowRoot = document.getElementById("chat-element2").shadowRoot
 
-    const queDiv = `<p>${text}</p><br id="break-${randomIdForAudioElement}">`;
+    const queDiv = `${text}<br id="break-${randomIdForAudioElement}">`;
     console.log(objectUrl, "url");
     const audioCont =
       queDiv +
-      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
+      `<div id="audioDiv-${randomIdForAudioElement}" style="border: 1px solid lightgray; border-radius: 4px; width: 100; background-color: white; overflow: hidden; padding: 2px; margin-top:12px;" ><audio id="audio-player-${randomIdForAudioElement}" style="${
         window.innerWidth < 600
           ? "width: 200px; max-width: 200px !important;"
           : " min-width: 50vw !important;"
@@ -6941,7 +6948,7 @@ loadExternalModule().then(() => {
       <source src=${objectUrl} type="audio/mpeg" />
       Your browser does not support the audio element.
       </audio>
-      <canvas id="canvas-audio-${randomIdForAudioElement}" width="400" height="40"></canvas>
+      <canvas id="canvas-audio-${randomIdForAudioElement}" width="800px" height="40"></canvas>
       </div>`;
 
     setTimeout(() => {
@@ -7346,7 +7353,7 @@ loadExternalModule().then(() => {
     });
   };  
 
-  async function audioSourceOpen(inputText, audioDiv, index, randomTextForId) {
+  async function audioSourceOpen(inputText, audioDiv, index, randomTextForId, signals) {
     console.log(
       "@audioSourceOpen : ",
       inputText,
@@ -7371,6 +7378,29 @@ loadExternalModule().then(() => {
 
     audioElement.addEventListener("ended", () => {
       canvasElement.remove();
+      audioDiv.remove();
+
+     if (signals) {
+       signals.onResponse({
+         html: ".",
+       });
+       setTimeout(() => {
+        const shadowRoot = document.getElementById("chat-element2").shadowRoot;
+        const allMessages = shadowRoot.getElementById("messages").childNodes;
+
+        allMessages.forEach((indvMessage) => {
+          if (
+            indvMessage.innerText === "." ||
+            indvMessage.innerText === "..." ||
+            indvMessage.innerText === " " ||
+            indvMessage.innerText === ""
+          ) {
+            indvMessage.remove();
+          }
+        });
+
+       }, 10);
+     }
     });
 
     const mediaSource = new MediaSource();
@@ -7379,27 +7409,16 @@ loadExternalModule().then(() => {
     const audioSourceElement = document.createElement("source");
     audioElement.appendChild(audioSourceElement);
 
-    audioDiv.appendChild(audioElement);
-    audioDiv.appendChild(canvasElement);
 
     mediaSource.addEventListener("sourceopen", async () => {
       const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
-
       try {
-        const response = await fetch("https://api.openai.com/v1/audio/speech", {
+        const response = await fetch("/api/openai/speech", {
           method: "POST",
-          headers: {
-            Authorization:
-              "Bearer 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",
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
-            input: inputText,
-            model: "tts-1",
-            response_format: "mp3",
-            voice: "echo",
-          }),
-        });
+           inputText,
+          })
+        })
 
         if (!response.ok) {
           audioElement.dispatchEvent(new Event("ended"));
@@ -7407,6 +7426,13 @@ loadExternalModule().then(() => {
         }
 
         const reader = response.body.getReader();
+        console.log("STARTED")
+
+        audioDiv.style.display = "block"
+        const shadowRootAUD = document.getElementById("chat-element2").shadowRoot;
+        shadowRootAUD.getElementById("messages").scrollBy(0, 500);
+        audioDiv.appendChild(audioElement);
+        audioDiv.appendChild(canvasElement);
 
         if (index === 0) {
           reader.read().then(function process({ done, value }) {
@@ -7431,6 +7457,7 @@ loadExternalModule().then(() => {
           if (previousPlayer) {
             previousPlayer.addEventListener("ended", () => {
               console.log("PLAYER HAS ENDED");
+              
               reader.read().then(function process({ done, value }) {
                 if (done) {
                   if (mediaSource.readyState === "open")
@@ -7547,10 +7574,13 @@ loadExternalModule().then(() => {
     audioDiv.style.backgroundColor = "white"
     audioDiv.style.overflow = "hidden"
     audioDiv.style.marginBottom = "6px";
+    // audioDiv.innerHTML = `<p style="padding: 8px; font-size: 14px; font-weight: 600;">Audio is loading....</p>` //Color green, italic and center
+    audioDiv.style.display = "none"
 
     console.log("BOT PREVIOUS CONVERSATION : ", botPreviousConversationHistory)
 
-    const response = await fetch( "/api/gemini-stream",{ //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
+    
+    const response = await fetch( "/api/gemini-stream", { //"https://next-js-gemini-frontend.vercel.app/api/gemini-stream",
       method: "POST",
       body: JSON.stringify({
         prompt: userInputMessage,
@@ -7568,17 +7598,21 @@ loadExternalModule().then(() => {
       while (true) {
         const { done, value } = await reader?.read();
         if (done) {
+          if (streamWithAudio) {
+            messageBubble.appendChild(audioDiv);
+            audioSourceOpen(
+              text,
+              audioDiv,
+              0,
+              randomIdForAudioElement,
+              signals
+            );
+          } else {
+            signals.onResponse({
+              html: ".",
+            });
+          }
 
-         if(streamWithAudio){
-          messageBubble.appendChild(audioDiv)
-          audioSourceOpen(
-            text,
-            audioDiv,
-            0,
-            randomIdForAudioElement
-          );
-         }
-          
           allMessages.forEach((indvMessage) => {
             if (
               indvMessage.innerText === "." ||
@@ -7610,9 +7644,7 @@ loadExternalModule().then(() => {
             }
           }
 
-          if (
-            botPreviousConversationHistory.includes(messageText.innerText)
-          ) {
+          if (botPreviousConversationHistory.includes(messageText.innerText)) {
             messageText.innerText +=
               " \n\n If my responses seem repetitive, please try to rephrase it, ask differently, or simply start a new session.";
             if (streamWithAudio) {
@@ -7636,32 +7668,36 @@ loadExternalModule().then(() => {
             }
           }
 
-          botPreviousConversationHistory.push(messageText.innerText)
+          botPreviousConversationHistory.push(messageText.innerText);
           messageBubble.appendChild(likeDisLike);
           setTimeout(() => {
-            const likeIcon = gShadowRoot2.getElementById(`likeIcon-${randomIdForAudioElement}`);
-            const dislikeIcon = gShadowRoot2.getElementById(`dislikeIcon-${randomIdForAudioElement}`);
-            console.log(likeIcon, dislikeIcon)
+            const likeIcon = gShadowRoot2.getElementById(
+              `likeIcon-${randomIdForAudioElement}`
+            );
+            const dislikeIcon = gShadowRoot2.getElementById(
+              `dislikeIcon-${randomIdForAudioElement}`
+            );
+            console.log(likeIcon, dislikeIcon);
 
             // Add hover effect
             likeIcon.addEventListener("mouseover", function () {
               likeIcon.querySelector("svg").style.stroke = "black";
-              likeIcon.style.cursor = "pointer"
+              likeIcon.style.cursor = "pointer";
             });
 
             likeIcon.addEventListener("mouseout", function () {
               likeIcon.querySelector("svg").style.stroke = "gray";
-              likeIcon.style.cursor = "normal"
+              likeIcon.style.cursor = "normal";
             });
 
             dislikeIcon.addEventListener("mouseover", function () {
               dislikeIcon.querySelector("svg").style.stroke = "black";
-              dislikeIcon.style.cursor = "pointer"
+              dislikeIcon.style.cursor = "pointer";
             });
 
             dislikeIcon.addEventListener("mouseout", function () {
               dislikeIcon.querySelector("svg").style.stroke = "gray";
-              dislikeIcon.style.cursor = "normal"
+              dislikeIcon.style.cursor = "normal";
             });
 
             // Add click functionality
@@ -7703,10 +7739,13 @@ loadExternalModule().then(() => {
           setTimeout(() => {
             const allAudioElements = shadowRoot.querySelectorAll("audio");
 
-            allAudioElements[allAudioElements.length - 1]?.addEventListener("ended", () => {
-              console.log("ALL PLAYERS ARE ENDED")
-              audioDiv.remove()
-            })
+            allAudioElements[allAudioElements.length - 1]?.addEventListener(
+              "ended",
+              () => {
+                console.log("ALL PLAYERS ARE ENDED");
+                audioDiv.remove();
+              }
+            );
           }, 200);
 
           // add user question and bot answer to the session
@@ -7760,28 +7799,32 @@ loadExternalModule().then(() => {
           shadowRoot.getElementById("messages").scrollBy(0, 500);
           responseSavedCount += 1;
           if (responseSavedCount >= 2 && endSessionButton) {
-            enableEndSessionButton()
+            enableEndSessionButton();
           }
           return Promise.resolve();
         }
 
         const decodedText = decoder.decode(value, { stream: !done });
         console.log(decodedText);
-     
-        // if (streamWithAudio) {
-        //   messageBubble.appendChild(audioDiv)
-        //   audioSourceOpen(
-        //     decodedText,
-        //     audioDiv,
-        //     index,
-        //     randomIdForAudioElement
-        //   );
-        // }
+
         messageText.innerText += excludeSpecialCharacters(decodedText);
-        text += excludeSpecialCharacters(decodedText)
-        signals.onResponse({
-          html: ".",
-        });
+        text += excludeSpecialCharacters(decodedText);
+
+        if (!streamWithAudio) {
+          signals.onResponse({
+            html: ".",
+          });
+        } else {
+          //remove loading message
+          const divsToRemove = Array.from(shadowRoot.querySelectorAll('.inner-message-container')).filter(div => {
+            return Array.from(div.children).some(child => child.classList.contains('loading-message-text'));
+          });
+          
+          divsToRemove.forEach(div => {
+            div.remove()
+          });
+          
+        }
         shadowRoot.getElementById("messages").scrollBy(0, 500);
         index++;
       }
