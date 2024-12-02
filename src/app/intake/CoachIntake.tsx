@@ -141,14 +141,10 @@ const CoachIntake = ({ user }: any) => {
     "Strengths-Based Coaching",
     "Emotional Intelligence Coaching",
     "Solution-Focused Coaching",
-    "Others",
   ];
   const [mentoringPreferencess, setMentoringPreferencess] = useState<string[]>(
     []
   );
-
-  const [otherMentoringFrameworkValue, setOtherMentoringFrameworkValue] =
-    useState("");
 
   const recordCoachmentFrameworks = (
     checked: boolean | string,
@@ -167,9 +163,6 @@ const CoachIntake = ({ user }: any) => {
         prevState?.filter((val) => val !== value)
       );
     }
-    setTimeout(() => {
-      console.log("mentoringPreferencess : ", mentoringPreferencess);
-    }, 100);
   };
 
   const [privacyInfoChecked, setPrivaciInfoChecked] = useState<
@@ -3738,37 +3731,6 @@ const CoachIntake = ({ user }: any) => {
                               </div>
                             )}
                           </div>
-                          {/* <div className="my-3 ">
-                            <p className="text-sm my-1">
-                              Please add any document or file that supports the
-                              knowledge of your bot niche.{" "}
-                              {!checkIfEdit && (
-                                <span className="text-xl font-bold text-red-500">
-                                  *
-                                </span>
-                              )}
-                            </p>
-
-                            <div className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400 ">
-                              <input
-                                disabled={checkIfView === null ? false : true}
-                                required={
-                                  !checkIfEdit ||
-                                  mediaData?.extracted_from_pdf.filter(
-                                    (file) => !file.isDeleted
-                                  ).length === 0
-                                }
-                                type="file"
-                                className="w-full text-xs my-2"
-                                multiple
-                                name="bot_files"
-                                accept=".pdf,.docx"
-                                onChange={async (e) => {
-                                  handleFileChangeBotInput(e);
-                                }}
-                              />
-                            </div>
-                          </div> */}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -3789,58 +3751,6 @@ const CoachIntake = ({ user }: any) => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-2 border-none">
-                        {/* {formVersion !== "1" && (
-                          <div className="my-3">
-                            <p className="text-sm my-1">
-                              Which way do you want to help the program
-                              participants the most?{" "}
-                              <span className="text-xl font-bold text-red-500">
-                                *
-                              </span>
-                            </p>
-                            <div className="my-2 mb-3">
-                              <RadioGroup
-                                required
-                                disabled={checkIfView === null ? false : true}
-                                value={mentoringPreferences}
-                                onValueChange={(value) => {
-                                  setDataModified(true);
-                                  setMentoringPreferences(value);
-                                }}
-                              >
-                                {[
-                                  "Mentoring (Skills Enhancement)",
-                                  "Coaching (Reflection)",
-                                  "Both",
-                                ].map((val, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex items-center space-x-2 "
-                                  >
-                                    <RadioGroupItem
-                                      value={val}
-                                      id={`r${i}+1 ${val}`}
-                                    />
-                                    <label
-                                      htmlFor={`r${i}+1 ${val}`}
-                                      className="text-xs text-gray-700"
-                                    >
-                                      {capitalizeText(val)}
-                                    </label>
-                                  </div>
-                                ))}
-                              </RadioGroup>
-                              {Object.keys(error).includes(
-                                "UserMentoringPre"
-                              ) && (
-                                <p className="text-red-500 text-xs mt-1">
-                                  {(error as any)["UserMentoringPre"]}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )} */}
-
                         {formVersion !== "1" && formVersion !== "2" && (
                           <>
                             <div className="my-3">
@@ -3852,46 +3762,49 @@ const CoachIntake = ({ user }: any) => {
                                 </span>
                               </p>
                               <div className="my-1">
-                                {models.map((model) => (
-                                  <div className="my-1">
-                                    {" "}
-                                    {model === "Others" ? (
-                                      <></>
-                                    ) : (
-                                      <>
-                                        <div className="flex items-center space-x-2 my-1.5 ">
-                                          <Checkbox
-                                            disabled={
-                                              (!mentoringPreferencess?.includes(
-                                                model
-                                              ) &&
-                                                mentoringPreferencess?.length >=
-                                                  3) ||
-                                              checkIfView === null
-                                                ? false
-                                                : true
-                                            }
-                                            id={model}
-                                            onCheckedChange={(checked) => {
-                                              console.log(checked, model);
-                                              recordCoachmentFrameworks(
-                                                checked,
-                                                model
-                                              );
-                                            }}
-                                            checked={mentoringPreferencess?.includes(
-                                              model
-                                            )}
-                                          />
-                                          <label
-                                            htmlFor={model}
-                                            className="text-xs text-gray-700"
-                                          >
-                                            {model}
-                                          </label>
-                                        </div>
-                                      </>
-                                    )}
+                                {" "}
+                                {models.map((model, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center space-x-2"
+                                  >
+                                    <Checkbox
+                                      id={`checkbox-${index}`}
+                                      checked={mentoringPreferencess.includes(
+                                        model
+                                      )}
+                                      disabled={
+                                        (mentoringPreferencess.length >= 3 &&
+                                          !mentoringPreferencess.includes(
+                                            model
+                                          )) ||
+                                        checkIfView === "true"
+                                      }
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          if (
+                                            mentoringPreferencess.length < 3
+                                          ) {
+                                            setMentoringPreferencess((prev) => [
+                                              ...prev,
+                                              model,
+                                            ]);
+                                          }
+                                        } else {
+                                          setMentoringPreferencess((prev) =>
+                                            prev.filter(
+                                              (item) => item !== model
+                                            )
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <label
+                                      htmlFor={`checkbox-${index}`}
+                                      className="text-sm"
+                                    >
+                                      {model}
+                                    </label>
                                   </div>
                                 ))}
                               </div>
@@ -4117,24 +4030,11 @@ const CoachIntake = ({ user }: any) => {
                                     const inputValue = e.target.value;
 
                                     setPhrasesNExpressions(inputValue);
-                                    handleWordLimit(
-                                      inputValue,
-                                      50,
-                                      80,
-                                      "phrasesNExpressions"
-                                    );
                                   }}
                                   value={phrasesNExpressions}
                                   placeholder="Provide a few of your favorite quotes or catchphrases like 'Progress over perfection.'"
                                   className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                 />
-                                {Object.keys(error).includes(
-                                  "phrasesNExpressions"
-                                ) && (
-                                  <p className="text-red-500 text-xs mt-1">
-                                    {(error as any)["phrasesNExpressions"]}
-                                  </p>
-                                )}
                               </div>
                             </div>
 
