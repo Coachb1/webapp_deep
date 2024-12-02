@@ -563,8 +563,6 @@ const CoachIntake = ({ user }: any) => {
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
-              // onCharacteristicsSelectLow(data.low_skill);
-              // onCharacteristicsSelectHigh(data.high_skill);
               setCharacteristicsRateLows(data.low_skill);
               setCharacteristicsRateHigh(data.high_skill);
             });
@@ -575,7 +573,6 @@ const CoachIntake = ({ user }: any) => {
           throw new Error("Error /accounts");
         });
     } else if (adminEdit && userEmailParams && userIdParams && userNameParams) {
-      // getClientInfoForUser(userEmailParams);
       setUserId(userIdParams);
       setName(userNameParams);
       userIdd = userIdParams;
@@ -596,7 +593,6 @@ const CoachIntake = ({ user }: any) => {
         });
     }
 
-    // if (formType === "coachee") {
     fetch(`${baseURL}/skills/get-characteristics-list/`, {
       method: "GET",
       headers: {
@@ -614,7 +610,6 @@ const CoachIntake = ({ user }: any) => {
         //@ts-ignore
         setCharacteristicsList(createLabelValuePairs);
       });
-    // }
 
     if (user) {
       getUserAccount(user)
@@ -703,8 +698,6 @@ const CoachIntake = ({ user }: any) => {
 
   const createSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log({});
 
     try {
       if (characteristicsRateHigh && characteristicsRateLows) {

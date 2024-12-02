@@ -5003,7 +5003,7 @@ async function setMcqVariablesStt() {
       appendMessage2(
         "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>"
       );
-
+      enableEndSessionButton()
       return;
     }
 
@@ -7489,6 +7489,7 @@ loadExternalModule().then(() => {
   }
 
   const enableEndSessionButton = () => {
+    if(!endSessionButton) return;
     endSessionButton.setAttribute(
       "onmouseover",
       "this.style.backgroundColor = '#bdbdbf'"
@@ -7843,6 +7844,7 @@ loadExternalModule().then(() => {
           nextModel
         );
       } else {
+        enableEndSessionButton()
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b></p>",
         });
@@ -10808,6 +10810,7 @@ loadExternalModule().then(() => {
                     signals.onResponse({
                       html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                     });
+                    enableEndSessionButton()
                     return;
                   }
                   
@@ -10965,6 +10968,7 @@ loadExternalModule().then(() => {
                 signals.onResponse({
                   html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
                 });
+                enableEndSessionButton()
               }
             }
           }
@@ -11000,6 +11004,7 @@ loadExternalModule().then(() => {
         signals.onResponse({
           html: "<p style='font-size: 14px;color: #991b1b;'><b>Unfortunately due to technical reasons, your earlier response could not be processed. Please start a new session.</b>.</p>",
         });
+        enableEndSessionButton()
       }
     },
   };
