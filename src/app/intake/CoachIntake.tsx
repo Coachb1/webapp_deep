@@ -4784,7 +4784,7 @@ const CoachIntake = ({ user }: any) => {
                                           "coachingProcessOverview"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Outline the steps, approach, and what clients can expect in terms of structure, feedback, and support during the sessions."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -4825,7 +4825,7 @@ const CoachIntake = ({ user }: any) => {
                                           "handlingSituations"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Describe the strategies and methods used to help clients navigate uncertainty, reframe challenges, and gain clarity in their next steps."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -4862,7 +4862,7 @@ const CoachIntake = ({ user }: any) => {
                                           "integratingLessons"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Provide actionable advice on how to apply insights and strategies gained from coaching into everyday routines and decision-making."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
@@ -4903,7 +4903,7 @@ const CoachIntake = ({ user }: any) => {
                                           "guidanceOnCoachingProcess"
                                         );
                                       }}
-                                      placeholder=""
+                                      placeholder="Offer tips and strategies for managing both personal and professional aspirations, ensuring alignment and harmony between them throughout the coaching journey."
                                       className="w-full bg-gray-100 p-2 text-xs rounded-md border border-gray-200 focus-visible:outline outline-blue-400"
                                     />
                                     {Object.keys(error).includes(
