@@ -215,7 +215,8 @@ const Coaches = ({
 }) => {
   const router = useRouter();
   const params = useSearchParams();
-  const coacheeIdFromParams = params.get("coachee_id");
+  const coacheeIdFromParams =
+    params.get("coachee_id") ?? params.get("coach_id");
 
   const [parentCheckedValues, setParentCheckedValues] = useState<string[]>([]);
   const [coachesData, setCoachesData] = useState<CoachesDataType[]>([]);

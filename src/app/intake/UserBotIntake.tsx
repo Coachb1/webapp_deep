@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import {
   Asterisk,
   File,
-  Info,
   Loader,
   PenLine,
   SendHorizonal,
@@ -27,7 +26,6 @@ import { pdfjs } from "react-pdf";
 import React, {
   Dispatch,
   FormEvent,
-  ReactNode,
   SetStateAction,
   useEffect,
   useState,
@@ -36,10 +34,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MediaData } from "@/lib/types";
-import Link from "next/link";
 import { TooltipWrapper } from "@/components/TooltipWrapper";
-import { NavProfileWoProfile } from "@/components/NavProfile";
-import NetworkNav from "@/components/NetworkNav";
 import { useUser } from "@/context/UserContext";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -128,23 +123,30 @@ const UserBotIntake = ({
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, errorKey:string) => {
-      const fileList = e.target.files; // Get the FileList
-      if (!fileList) return; // Early return if fileList is null
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    errorKey: string
+  ) => {
+    const fileList = e.target.files; // Get the FileList
+    if (!fileList) return; // Early return if fileList is null
 
-      const files = Array.from(fileList); // Convert FileList to an array
-      const validExtensions = [".pdf", ".docx"];
+    const files = Array.from(fileList); // Convert FileList to an array
+    const validExtensions = [".pdf", ".docx"];
 
-      const invalidFiles = files.filter((file) =>
+    const invalidFiles = files.filter(
+      (file) =>
         !validExtensions.includes(file.name.slice(file.name.lastIndexOf(".")))
     );
 
-    console.log(invalidFiles.length)
-    
+    console.log(invalidFiles.length);
+
     if (invalidFiles.length > 0) {
-      setError((prevErrors) => ({ ...prevErrors, [errorKey]: "Only .pdf and .docx files are allowed." }));
+      setError((prevErrors) => ({
+        ...prevErrors,
+        [errorKey]: "Only .pdf and .docx files are allowed.",
+      }));
       e.target.value = ""; // Clear the input
-      console.log(error)
+      console.log(error);
       return;
     } else {
       setError((prevErrors) => ({ ...prevErrors, [errorKey]: "" }));
@@ -518,16 +520,12 @@ const UserBotIntake = ({
 
               if (resultingBot) {
                 setBotName(resultingBot.bot_attributes.bot_name);
-                // console.log(
-                //   transformExtractedData(
-                //     resultingBot.signature_bot.data.media_data
-                //   )
-                // );
-                // setMediaData(
-                //   transformExtractedData(
-                //     resultingBot.signature_bot.data.media_data
-                //   )
-                // );
+
+                setMediaData(
+                  transformExtractedData(
+                    resultingBot.signature_bot.data.media_data
+                  )
+                );
                 let parsedFaqJson: any;
                 if (typeof resultingBot.signature_bot.faqs === "string") {
                   parsedFaqJson = JSON.parse(resultingBot.signature_bot.faqs);
@@ -852,13 +850,10 @@ const UserBotIntake = ({
                     handleFileChange(e, "MainFile");
                   }}
                 />
-                {Object.keys(error).includes(
-                        "MainFile"
-                      ) && (
-                        
-                        <p className="text-red-500 text-xs mt-1">
-                          {(error as any)["MainFile"]}
-                        </p>
+                {Object.keys(error).includes("MainFile") && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {(error as any)["MainFile"]}
+                  </p>
                 )}
                 <p className="m-1 ml-0 text-gray-500">
                   Attach relevant files, e.g., "User manual.pdf" or "FAQs.docx,"

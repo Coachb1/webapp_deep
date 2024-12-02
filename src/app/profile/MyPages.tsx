@@ -47,7 +47,7 @@ const MyPages = ({ user }: any) => {
 
     if (
       coachData?.profile_type == "coach" &&
-      !coachData.bot_ids.includes("avatar_bot")
+      !coachData.bot_ids.includes("avatar-bot")
     ) {
       console.log("JUST coach : ", coachData);
       setNoCopilotBot(coachData);
@@ -234,7 +234,7 @@ const MyPages = ({ user }: any) => {
                     } `}
                   >
                     <>
-                      Coach -{" "}
+                      {botType.bot_type !== "feedback_bot" && <>Coach - </>}
                       <span className="font-semibold">
                         {BotTypesHeading(botType.bot_type)}
                       </span>

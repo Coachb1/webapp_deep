@@ -361,8 +361,16 @@ const MyComnnections = ({ user }: { user: KindeUser | null }) => {
                         >
                           <Link
                             className="flex w-fit flex-row items-center justify-center"
-                            target="_blank"
-                            href={`/coach/${connection.coach_avatar_bot_id}`}
+                            target={
+                              connection.coach_avatar_bot_id
+                                ? "_blank"
+                                : "_self"
+                            }
+                            href={
+                              connection.coach_avatar_bot_id
+                                ? `/coach/${connection.coach_avatar_bot_id}`
+                                : `/?coach_id=${connection.coach_id}`
+                            }
                           >
                             <span className="max-sm:hidden">Visit Coach</span>{" "}
                             <TooltipWrapper
