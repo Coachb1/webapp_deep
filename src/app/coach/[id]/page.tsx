@@ -4,9 +4,15 @@ import Widgets from "@/components/Widgets";
 import Script from "next/script";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export const metadata = constructMetadata({
-  title: "AI Frame - Coachbots",
-});
+export async function generateMetadata({ params }: any) {
+  let title = "AI Frame - Coachbots";
+  if (params.id.includes("subject")) {
+    title = "Subject Copilot - Coachbots";
+  }
+  return constructMetadata({
+    title,
+  });
+}
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();

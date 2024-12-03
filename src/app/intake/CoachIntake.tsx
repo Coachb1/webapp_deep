@@ -1208,7 +1208,7 @@ const CoachIntake = ({ user }: any) => {
                             setCreateLoading(false);
                             if (!data.error && !data.detail) {
                               toast.success(
-                                "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
+                                "Your request in is the AI review pipeline and will be available in Network Directory shortly. You will receive a email when its live.",
                                 {
                                   duration: 6000,
                                 }
