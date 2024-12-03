@@ -2429,20 +2429,21 @@ const CoachIntake = ({ user }: any) => {
 
     const listOfFields = profile_type === "coach" ? coachFields : coacheeFields;
 
-    listOfFields.forEach((field) => {
-      Object.entries(field).forEach(([key, value]) => {
-        if (value?.length == 0) {
+    for (let field of listOfFields) {
+      // Using Object.entries to loop over the keys and values
+      for (let [key, value] of Object.entries(field)) {
+        // Check if value is empty
+        if (value?.length <= 0) {
           errors.push("field required");
         }
-        handleRequiredSelection(value, key);
-      });
-    });
-
-    if (errors.length > 0) {
-      return false;
-    } else {
-      return true;
+  
+        // Await the asynchronous handleRequiredSelection function
+        await handleRequiredSelection(value, key);
+      }
     }
+  
+    // Return the result based on whether there were any errors
+    return errors.length === 0;
 
     // if (experience.trim().length == 0){
     //   handleRequiredSelection(experience,'UserExperience')
@@ -2456,7 +2457,7 @@ const CoachIntake = ({ user }: any) => {
     // }
   };
 
-  const handleRequiredSelection = (
+  const handleRequiredSelection = async(
     input_value: string,
     fieldName: string,
     errorMessage = "This field is required."
