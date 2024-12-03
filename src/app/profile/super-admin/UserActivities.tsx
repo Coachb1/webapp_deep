@@ -21,6 +21,7 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
 }) => {
   const [userModificationInit, setUserModificationInit] = useState(false);
   const [userUpdateLoading, setUserUpdateLoading] = useState(false);
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(false);
   const [selectedUserForUpdate, setSelectedUserForUpdate] = useState<
     string | null
   >(null);
@@ -45,6 +46,7 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
           body: JSON.stringify({
             is_disable: newActiveStatus,
             user_email: selectedUserForUpdate,
+            send_email: sendWelcomeEmail
           }),
         }
       );
@@ -163,6 +165,20 @@ const UserActivities: React.FC<UserActivitiesProps> = ({
                 }
                 className="w-full text-sm"
               />
+            </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Send Welcome Email</p>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="sendWelcomeEmail"
+                  className="h-4 w-4"
+                  checked={sendWelcomeEmail}
+                  onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+                  disabled={!oldActiveStatus} // Disable when the user is already active
+                />
+                
+              </div>
             </div>
           </div>
           <div className="self-end">

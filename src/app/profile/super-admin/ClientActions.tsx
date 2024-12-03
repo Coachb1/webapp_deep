@@ -25,6 +25,8 @@ const ClientActions: React.FC<ClientActionsProps> = ({
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [oldClientId, setOldClientId] = useState<string | null>(null);
   const [newClientId, setNewClientId] = useState<string | null>(null);
+  const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
+
 
   const changeUsersClientHandler = async () => {
     setChangeLoading(true);
@@ -40,6 +42,7 @@ const ClientActions: React.FC<ClientActionsProps> = ({
           body: JSON.stringify({
             new_client_id: newClientId,
             user_email: selectedUser,
+            send_email: sendWelcomeEmail
           }),
         }
       );
@@ -160,6 +163,18 @@ const ClientActions: React.FC<ClientActionsProps> = ({
                 className="w-full text-sm"
               />
             </div>
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="block text-sm font-medium">Send welcome email to user</p>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={sendWelcomeEmail}
+                    onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+                  />
+                </label>
+            </div>
+          </div>
           </div>
           <div className="self-end">
             <Button
