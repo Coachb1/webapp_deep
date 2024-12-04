@@ -37,7 +37,7 @@ const EmailSign = ({ user }: any) => {
       const bot_ids = findBotIds(isApprovedData);
       setBotIds(bot_ids);
 
-      if (bot_ids.split(", ").length > 0) {
+      if (bot_ids?.split(", ").length > 0) {
         const avatarBot = bot_ids
           .split(", ")
           .filter((id: string) => id.includes("avatar"))
@@ -115,7 +115,7 @@ const EmailSign = ({ user }: any) => {
         )}
         {!loading && (
           <div className="m-4 flex flex-row gap-4 max-sm:flex-col max-lg:flex-col max-md:flex-col">
-            {coachId.length > 0 && botIds.includes("avatar-bot") && (
+            {coachId.length > 0 && botIds?.includes("avatar-bot") && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Coach Profile
@@ -159,7 +159,7 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {feedbackBots.length > 0 && botIds.includes("feedback-bot") && (
+            {feedbackBots.length > 0 && botIds?.includes("feedback-bot") && (
               <div>
                 <p className="text-sm my-1 text-gray-600 font-semibold">
                   Feedback
@@ -203,11 +203,20 @@ const EmailSign = ({ user }: any) => {
                 </div>
               </div>
             )}
-            {coachId.length === 0 && feedbackBots.length === 0 && (
+            {coachId.length > 0 && !botIds?.includes("avatar_bot") && (
               <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
                 <div>Your custom email signature is currently not active.</div>{" "}
               </div>
             )}
+            {coachId.length === 0 &&
+              coacheeId.length === 0 &&
+              feedbackBots.length === 0 && (
+                <div className="text-xs w-full my-10 max-sm:px-4 flex items-center justify-center">
+                  <div>
+                    Your custom email signature is currently not active.
+                  </div>{" "}
+                </div>
+              )}
           </div>
         )}
       </>
