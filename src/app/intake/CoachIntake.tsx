@@ -1207,12 +1207,22 @@ const CoachIntake = ({ user }: any) => {
                             console.log(data);
                             setCreateLoading(false);
                             if (!data.error && !data.detail) {
-                              toast.success(
-                                "Your request in is the AI review pipeline and will be available in Network Directory shortly. You will receive a email when its live.",
-                                {
-                                  duration: 6000,
-                                }
-                              );
+                              if (formVersion === "1") {
+                                toast.success(
+                                  "Your profile has been successfully created!",
+                                  {
+                                    duration: 6000,
+                                  }
+                                );
+                              } else {
+                                toast.success(
+                                  "Your request in is the AI review pipeline and will be available in Network Directory shortly. You will receive a email when its live.",
+                                  {
+                                    duration: 6000,
+                                  }
+                                );
+                              }
+
                               resetAllStates();
                               getAllDirectoryData();
                               setTimeout(() => {
@@ -1270,13 +1280,9 @@ const CoachIntake = ({ user }: any) => {
                 } else {
                   resetAllStates();
                   setCreateLoading(false);
-                  toast.success(
-                    "Your request in is the AI review pipeline and will be available in deployed shortly. You will receive a email when its live.",
-                    {
-                      duration: 6000,
-                    }
-                  );
-                  // getAllDirectoryData();
+                  toast.success("Your profile has been successfully created!", {
+                    duration: 6000,
+                  });
                   setTimeout(() => {
                     getAllDirectoryData();
                     router.push("/");
