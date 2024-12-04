@@ -6367,9 +6367,9 @@ loadExternalModule().then(() => {
     <li><strong>6. Optimal Response Length:</strong> Optimal responses should range between 10 to 400 words. You have the option to either type or speak your responses.</li>
 `;
     instructionsPaneList.innerHTML = list;
+    const _ = getBotDetails2(botId);
   }
 
-  const _ = getBotDetails2(botId);
 
   if(!window.location.href.includes("coachbots.com") && !window.location.href.includes("localhost")){
     const list = 
