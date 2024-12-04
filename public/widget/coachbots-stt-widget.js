@@ -1478,7 +1478,7 @@ const getBotDetails2 = async (botId) => {
   
         shadowRoot.getElementById(
           "text-input"
-        ).innerText = `Please follow provided instructions and select "Begin session"`;
+        ).setAttribute("placeholder", `Please follow provided instructions and select "Begin session"`) 
 
     } else if (botType === "feedback_bot") {
       botWelcomeMessage = addStickerToMessage(

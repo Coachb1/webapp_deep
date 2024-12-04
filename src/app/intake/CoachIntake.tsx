@@ -1935,6 +1935,7 @@ const CoachIntake = ({ user }: any) => {
 
   //handling edit
   useEffect(() => {
+    if (formVersion === null) return;
     const coachtalk = document.getElementsByClassName("coachbots-coachtalk")[0];
     const coachScribe = document.getElementsByClassName(
       "coachbots-coachscribe"
@@ -2150,7 +2151,7 @@ const CoachIntake = ({ user }: any) => {
                 //   resultingBot.signature_bot.data.additional_data
                 //     .fitment_answers?.coachmentSelect
                 // );
-
+                console.log("FORM version : ", formVersion);
                 if (formVersion === "3") {
                   setParticipantLevel(
                     resultingBot.signature_bot.data.additional_data
@@ -2358,7 +2359,7 @@ const CoachIntake = ({ user }: any) => {
           });
       }
     }
-  }, []);
+  }, [formVersion]);
 
   const [error, setError] = useState({});
 
@@ -2436,12 +2437,12 @@ const CoachIntake = ({ user }: any) => {
         if (value?.length <= 0) {
           errors.push("field required");
         }
-  
+
         // Await the asynchronous handleRequiredSelection function
         await handleRequiredSelection(value, key);
       }
     }
-  
+
     // Return the result based on whether there were any errors
     return errors.length === 0;
 
@@ -2457,7 +2458,7 @@ const CoachIntake = ({ user }: any) => {
     // }
   };
 
-  const handleRequiredSelection = async(
+  const handleRequiredSelection = async (
     input_value: string,
     fieldName: string,
     errorMessage = "This field is required."
