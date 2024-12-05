@@ -209,7 +209,7 @@ export function ParticipantListItemCard({
                   <span className="text-[12px] text-gray-300 mr-2 max-sm:hidden  max-lg:hidden">
                     ●
                   </span>
-                  <p className="text-sm max-sm:text-xs max-sm:-ml-0 font-semibold text-gray-500">
+                  <p className="text-sm max-sm:text-xs max-sm:-ml-0 font-semibold text-gray-500 font-sans">
                     <span className="text-base">
                       {coach.total_without_question_count}
                     </span>{" "}
