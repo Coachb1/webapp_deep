@@ -176,7 +176,7 @@ const EmailSign = ({ user }: any) => {
                 </p>
                 <div className="w-fit  h-[150px] bg-white p-2 border border-gray-100 shadow-sm rounded-md object-contain">
                   <div
-                    id="email-sign-avatar"
+                    id="email-sign-subject"
                     className="m-3 font-[400] font-sans  text-[12px] selection:bg-transparent"
                   >
                     <div>With best Regards,</div>
@@ -209,7 +209,7 @@ const EmailSign = ({ user }: any) => {
                   </div>
                 </div>
                 <div className="text-sm font-semibold text-gray-700 mt-2">
-                  <CopySignComponent id="email-sign-avatar" />
+                  <CopySignComponent id="email-sign-subject" />
                 </div>
               </div>
             )}
